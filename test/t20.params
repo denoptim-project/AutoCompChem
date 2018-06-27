@@ -1,0 +1,10 @@
+# 
+# Parameters for AutoCompChem: recalculation of connectivity
+#
+VERBOSITY: 4
+TASK: AddBondsForSingleElement
+TARGETELEMENT: Ru
+TOLERANCE: 0.30
+TOLERANCE2NDSHELL: 0.10
+INFILE: ../t20mol.sdf
+OUTFILE: t20results.sdf

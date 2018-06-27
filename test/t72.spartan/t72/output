@@ -1,0 +1,56 @@
+SPARTAN '14 CONFORMATION SEARCH:   (Linux/P4E)                          build  14.118
+
+
+  Using Monte-Carlo algorithm.
+
+Using rotatable bonds from user input
+Warning: global charge (+0.00) does not match input file (-999999)!
+Warning: global charge (+0.00) does not match input file (-999999)!
+
+ Conf     Energy     Temp.                      
+(  20)      kJ/mol    (K)  Local%     Remark    
+------------------------------------------------
+    1    3329.214    5000  100.00*            
+    2    3363.953    4330   50.00             
+    3    3328.789    3726   66.67* !New Best! 
+    4    3412.018    3186   50.00             
+    5    3326.664    2706   60.00* !New Best! 
+    6    3834.152    2283   50.00             
+    7    7153.388    1912   42.86             
+    8    3360.565    1591   37.50             
+    9    3328.413    1315   44.44*            
+   10    3421.476    1082   40.00             
+   11    3429.352     888   36.36             
+   12    3430.527     728   33.33             
+   13    3363.415     601   30.77             
+   14    3363.136     502   28.57             
+   15    3328.168     427   33.33*            
+   16    3324.191     373   37.50* !New Best! 
+   17    3323.669     338   41.18* !New Best! 
+   18    3405.915     316   38.89             
+   19    3434.342     305   36.84             
+   20    3319.143     301   40.00* !New Best! 
+
+ Partition function correction to the energy
+      1.805553 kJ/mol 
+ 70.060% in most favorable conformer.
+
+ Entropy correction due to conformational flexability
+      94.301573  J/mol-deg    [ <N> = 1.43  x (10 rotors)^3 ]
+  Pruning list starting with 8 molecules out of 8
+  Lowest energy conformation    3319.1430 kJ/mol
+Warning: global charge (+0.00) does not match input file (-999999)!
+
+  Reason for exit: Successful completion 
+  Mechanics CPU Time :      2:14.37
+  Mechanics Wall Time:      2:16.22
+
+
+
+SPARTAN '14 Properties Program:  (Linux/P4E)                     build  14.118 
+
+  Reason for exit: Successful completion 
+  Properties CPU Time :          .02
+  Properties Wall Time:          .34
+
+

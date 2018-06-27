@@ -1,0 +1,10 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+#
+VERBOSITY: 1
+TASK: EXTRACTTRAJECTORYFROMNWCHEMOUTPUT
+INFILE: ../t65-nwc.out
+OUTFILE:  t65-trj
+OUTFORMAT: SDFXYZ

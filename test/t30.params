@@ -1,0 +1,14 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: MeasureGeomDescriptors
+INFILE: ../t29.sdf
+$STARTSMARTS:
+dist [Fe] [$([#6;X2]~[#8;X1])]
+dist [$([#6;X2]~[#8;X1])] [$([#8;X1]~[#6;X2])]
+ang [$([#6;X2]~[#8;X1])] [Fe] [$([#6;X2]~[#8;X1])]
+dihBLA [$([#6;X2]~[#8;X1])] [Fe] [$([#6;X2]~[#8;X1])] [$([#8;X1]~[#6;X2])]
+dist [Fe] [#16]
+$END
+ONLYBONDED: true

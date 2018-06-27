@@ -1,0 +1,11 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 3
+TASK: ReorderAtomList
+INFILE: ../t58-mol.sdf
+OUTFILE: t59-reordered.sdf
+$STARTSOURCESMARTS: [Ru] [Si]
+[$(C1(C)CCCC1)]
+[$([#6]([#7])([#8])([#1])[#6])]
+$END

@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: SortSDFMolecules
+INFILE: ../t37-mol.sdf
+OUTFILE: t39sorted.sdf
+SDFPROPERTY: InChi

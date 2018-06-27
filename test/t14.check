@@ -1,0 +1,16 @@
+#!/bin/bash
+
+grep -q 'Step 3 returned Error Message: e0022-DIISConvergenceFailure' t14.log
+if [ $? != 0 ] ; then 
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: 0' t14.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

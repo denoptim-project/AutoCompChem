@@ -1,0 +1,31 @@
+#!/bin/bash
+
+n=0
+n=$(grep -c " Cl " t66-mol_mutated.sdf)
+if [ $n != 2 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=0
+n=$(grep -c " He " t66-mol_mutated.sdf)
+if [ $n != 2 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+n=0
+n=$(grep -c " Zan " t66-mol_mutated.sdf)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -q 'Termination status: 0' t66.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 4
+exit -1
+fi

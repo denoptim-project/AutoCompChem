@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: AddDummyAtoms
+TEMPLATE: ../t107-tmpl.sdf
+INFILE: ../t107-mol.sdf
+OUTFILE: t107-out.sdf

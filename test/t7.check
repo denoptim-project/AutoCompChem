@@ -1,0 +1,16 @@
+#!/bin/bash
+
+grep -q "From c = 0 and s.m. = 1 to c = -3 and s.m. = 1" t7.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: 0' t7.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

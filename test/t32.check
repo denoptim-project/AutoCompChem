@@ -1,0 +1,16 @@
+#!/bin/bash
+
+grep -q " Found [1-9].*mols with one or more atom clashes" t32.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t32.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 3
+  exit -1
+fi

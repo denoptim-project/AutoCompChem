@@ -1,0 +1,8 @@
+# 
+# Parameters for AutoCompChem: compare connectivity of two molecules
+#
+VERBOSITY: 4
+TASK: CompareTwoConnectivities
+INFILE: ../t23mol.sdf
+REFERENCE: ../t23ref.sdf
+OUTFILE: t23results.sdf

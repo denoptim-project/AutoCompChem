@@ -1,0 +1,22 @@
+#!/bin/bash
+
+grep -q "From c = -999999 and s.m. = -999999 to c = -999999 and s.m. = 3" t5.log
+if [ $? != 0 ] ; then 
+echo NOT Passed
+exit -1
+fi
+
+grep -q "Property <CHARGE> cannot be defined" t5.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: -1' t5.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

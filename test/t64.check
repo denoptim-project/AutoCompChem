@@ -1,0 +1,22 @@
+#!/bin/bash
+
+grep -q -i "NWChem output file contains: 2 steps" t64.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -i -q "File:../t64-nwc.out Steps:2 NormalTerm:true" t64.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -q 'Termination status: 0' t64.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 3
+exit -1
+fi

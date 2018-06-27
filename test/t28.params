@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 4
+TASK: AssignAtomTypes
+INFILE: ../t28.sdf
+OUTFILE: t28_at.txyz
+OUTFORMAT: TXYZ
+ATOMTYPESMAP: ../t28_AtomTypesMap

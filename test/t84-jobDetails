@@ -1,0 +1,78 @@
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=HF
+rutSection# $MTmodel_BasisSet=GenECP 5d 7f
+rutSection# $MTjobType=SP
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=1000
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=150
+optsection# $MTbasisset=$ACCPAR_$STARTAtomSpecificBasisSet:
+SMARTS [*] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs
+SMARTS [$([*]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs
+SMARTS [$([#1]~[#6]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs
+$END
+titSection# Step 1 - PBEPBE-D3 protocol_1
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=chkbasis 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=SP
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=800
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=150
+rutSection# $KVint=UltraFine
+rutSection# $KVEmpiricalDispersion=GD3
+titSection# Step 2 - PBEPBE-D3 protocol_1
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=chkbasis 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=150
+rutSection# $KVstable_$MTwfreopt=opt
+rutSection# $KVstable_$MTgeneral=rrhf
+rutSection# $KVint=UltraFine
+rutSection# $KVEmpiricalDispersion=GD3
+titSection# Step 3 - PBEPBE-D3 protocol_1
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=chkbasis 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=opt
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=200
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=150
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$KVMaxCycle=150
+rutSection# $KVint=UltraFine
+rutSection# $KVEmpiricalDispersion=GD3
+titSection# Step 4 - PBEPBE-D3 protocol_1
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=chkbasis 5d 7f
+rutSection# $KVgeom=check 
+rutSection# $KVguess=read
+rutSection# $MTjobType=freq
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=200
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=150
+rutSection# $KVint=UltraFine
+rutSection# $KVEmpiricalDispersion=GD3
+titSection# Step 5 - PBEPBE-D3 protocol_1

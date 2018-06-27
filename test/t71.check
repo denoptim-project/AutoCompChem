@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ ! -f "t71.xyz" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+n=$(wc -l t71.xyz | awk '{print $1}')
+if [ $n != 230 ] ; then
+echo NOT Passes ERROR 2
+exit -1
+fi
+
+grep -q -i "Ru.*-2\.6856.* 0\.5783.* 0\.5049" t71.xyz
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+n=$(grep -c -i "Ru.*-2\.6856.* 0\.5783.* 0\.5049" t71.xyz)
+if [ $n != 2 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+grep -q 'Termination status: 0' t71.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 5
+exit -1
+fi

@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: MeasureGeomDescriptors
+INFILE: ../t100-mol.xyz
+SMARTS: dist [N] [Fe]
+ATOMINDEXES: dih 7 1 4 8

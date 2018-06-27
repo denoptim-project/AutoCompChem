@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ref="555555556666677777788888999911111212"
+res=$(awk '/ROT_BND/{getline; print}' t38sorted.sdf | tr -d "\n")
+if [ $res != $ref ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t38.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 2
+  exit -1
+fi

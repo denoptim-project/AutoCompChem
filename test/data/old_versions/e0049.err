@@ -1,0 +1,18 @@
+#
+# Definition of Gaussian Error Message
+#
+# Reference Name 
+ReferenceName: e0049-SecondOptStepsExceeded
+# String/s to be searched in Gaussian .out file (only in the last step section)
+ErrorMessage: Optimization stopped.
+ErrorMessage: Number of steps exceeded
+Condition: match "E0040-OPTSTEPSEXCEEDED"
+Condition: match "LANL2MB"
+#
+#
+# Definition of Action to be taken when this error occours
+#
+# Type of action 
+Action: Skip_step
+# We skip the step of preliminar geometry optimization with minimum basis set
+# when such step is not converged

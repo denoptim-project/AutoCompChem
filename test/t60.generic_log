@@ -1,0 +1,19 @@
+BEGINNING OF TASK
+#
+# A Generic Log File
+#
+
+...with some log here...
+
+
+...and some other log here...
+
+Somewhere there is a sentence to match
+
+and something not to be_matched could be there
+(it will not be found because of the "_")
+
+There can also be counters for iterations
+#AccIter=3
+
+FAKE ERROR MESSAGE 1 - USED ONLY TO TEST AutoCompChem

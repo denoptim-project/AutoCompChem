@@ -1,0 +1,36 @@
+#!/bin/bash
+
+grep -q 'Mol.1 BESCAF  Dst.dist-0 Fe1:C19 = 3.432' t29.log
+if [ $? != 0 ] ; then
+  echo NOT Passed
+  exit -1
+fi
+grep -q 'Mol.2 CEPKOZ  Dst.dist-0 Fe1:C69 = 3.540' t29.log
+if [ $? != 0 ] ; then
+  echo NOT Passed
+  exit -1
+fi
+grep -q 'Mol.2 CEPKOZ  Dst.dist-0 Fe2:C69 = 1.726' t29.log
+if [ $? != 0 ] ; then
+  echo NOT Passed
+  exit -1
+fi
+grep -q 'ol.3 FEXKUQ  Dst.dist-0 Fe3:C21 = 3.251' t29.log
+if [ $? != 0 ] ; then
+  echo NOT Passed
+  exit -1
+fi
+grep -q 'Mol.3 FEXKUQ  Dst.dist-0 Fe3:C17 = 1.789' t29.log
+if [ $? != 0 ] ; then
+  echo NOT Passed
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t29.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

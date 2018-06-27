@@ -1,0 +1,7 @@
+VERBOSITY: 1
+TASK: ModifyGeometry
+INFILE: ../t104-mol.sdf
+ZMATRIXMOVE: ../t104-zmatMove
+TEMPLATEZMAT: ../t104.tmpl
+CARTESIANSCALINGFACTORS: 0.0 0.2 0.4 0.6 0.8 1.0
+OUTFILE: t104-path.sdf

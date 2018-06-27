@@ -1,0 +1,22 @@
+$SEC_*multigen $KV_geomunit=ang
+$SEC_*multigen $KV_geomtype=cartesian
+$SEC_*multigen $MT_task=energy
+$SEC_*multigen $KV_calmodel=qm/mm
+
+$SEC_*qm/mm $LIST_qmatom=$OPENBLOCK5
+6
+7
+8
+9
+$CLOSEBLOCK
+$SEC_*qm/mm $LIST_capatom=1 HLL 27 0.713
+$SEC_*qm/mm $SEC_QMKey $KV_program=g03
+$SEC_*qm/mm $SEC_QMKey $KV_method=hf
+$SEC_*qm/mm $SEC_QMKey $KV_basis=midix
+$SEC_*qm/mm $SEC_QMKey $LIST_options=6d
+$SEC_*qm/mm $LIST_capatom=1 HLL 27 0.713
+$SEC_*qm/mm $SEC_MMKey $KV_program=tinker
+$SEC_*qm/mm $SEC_MMKey $KV_method=6.3
+$SEC_*qm/mm $SEC_MMKey $KV_basis=oplsaa
+$SEC_*qm/mm $SEC_MMKey $LIST_options=$OPENBLOCKdigits 8
+$CLOSEBLOCK

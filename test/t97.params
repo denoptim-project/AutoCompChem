@@ -1,0 +1,4 @@
+VERBOSITY: 1
+TASK: PrintZMATRIX
+INFILE: ../t97-mol.sdf
+OUTFILE: t97-mol.zmat

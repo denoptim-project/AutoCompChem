@@ -1,0 +1,39 @@
+#!/bin/bash
+
+grep -q '#Candidate dummy atoms (in multihapto): 1' t47.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+grep -q 'Du: 12 #neighbours: 6' t47.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+
+grep -q 'Group 0 - Hapticity: 5 =>' t47.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+
+if [ ! -f t47-out.sdf ] ; then
+  echo NOT Passed 4
+  exit -1
+fi
+
+remainingDu=$(grep " Du " t47-out.sdf -c)
+if [ "$remainingDu" != "13" ] ; then
+  echo NOT Passed 5
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t47.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 6
+  exit -1
+fi

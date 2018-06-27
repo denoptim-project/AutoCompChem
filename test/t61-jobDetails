@@ -1,0 +1,157 @@
+$DIR_start
+$DIR_title $MT_title="Step1: SP with HF"
+$DIR_geometry $KV_units=angstrom
+$DIR_geometry $DIR_symmetry $MT_pointgroup=c1
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_task $MT_theory=scf
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_title $MT_title="Step2: SP with DFT"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_title $MT_title="Step3: geometry optimization with DFT - frozen core (IC)"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=optimize
+----END-OF-TASK----
+$DIR_title $MT_title="Step4: frequencies"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=frequencies
+----END-OF-TASK----
+$DIR_title $MT_title="Step5: geometry optimization with DFT - frozen bond (IC)"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_set $MT_variable=geometry:geometry:zmt_nzfrz 1
+$DIR_set $MT_variable=geometry:geometry:zmt_izfrz 1
+$DIR_set $MT_variable=geometry:geometry:zmt_izfrz_val 2.02731078
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=optimize
+----END-OF-TASK----
+$DIR_title $MT_title="Step6: frequencies"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=frequencies
+----END-OF-TASK----
+$DIR_title $MT_title="Step7: geometry optimization with DFT - free TS"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_task $MT_theory=dft
+$DIR_unset $MT_variable=geometry:geometry:zmt_nzfrz
+$DIR_task $MT_tasktype=saddle
+----END-OF-TASK----
+$DIR_title $MT_title="Step8: frequencies"
+$DIR_basis $DATA_basis=$OPENBLOCK
+  H library lanl2dz_ecp
+  C library lanl2dz_ecp
+  N library lanl2dz_ecp
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=frequencies

@@ -1,0 +1,19 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Note that '#' defines the commented out lines, but when a line belongs 
+# to a multiline block, '#' is treated as a normal character.
+#
+# Link 0 and Route sections from header (this file) whilw charge and spin
+# multiplicity come from the properties of SDF file
+#
+VERBOSITY: 2
+TASK: PrepareInputGaussian
+INFILE: ../t2-mol.sdf
+$STARTHEADER:
+%NPROCSHARED=16
+%CHK=test2
+%MEM=28800MB
+#P HF/LANL2MB   vshift=800   SP
+#  SCFCyc=180 SCF=(novaracc) 5d 7f
+$END

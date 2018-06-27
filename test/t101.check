@@ -1,0 +1,52 @@
+#!/bin/bash
+
+n=0;n=$(grep -c '\$\$\$\$' t101.sdf)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+n=0;n=$(grep -c '0.0000    0.0000    1.5244 C' t101.sdf)
+if [ "$n" != 1 ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+
+n=0;n=$(grep -c '1.0275    0.0000   -0.3638 H' t101.sdf)
+if [ "$n" != 1 ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+
+n=0;n=$(grep -c '1.9344   -1.2458    5.3379 H' t101.sdf)
+if [ "$n" != 1 ] ; then
+  echo NOT Passed 4
+  exit -1
+fi
+
+n=0;n=$(grep -c '0.0000    0.0000    0.0000 C ' t101.sdf)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 5
+  exit -1
+fi
+
+n=0;n=$(grep -c ' 18 17  0  0  0  0  0  0  0 ' t101.sdf)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 6
+  exit -1
+fi
+
+n=0;n=$(grep -c 'Converting ZMatrix' t101.log)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 7
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t101.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed 8
+exit -1
+fi

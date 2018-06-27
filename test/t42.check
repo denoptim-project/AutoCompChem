@@ -1,0 +1,21 @@
+#!/bin/bash
+grep -q "^0 1" t42-mol.inp
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q "^Fe       -0.000050000000        2.595354000000        3.772127000000" t42-mol.inp
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: 0' t42.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

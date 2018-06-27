@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: ExtractGeometriesFromSpartanTree
+INFILE: ../t71.spartan
+OUTFILE: t71.xyz
+OUTFORMAT: XYZ

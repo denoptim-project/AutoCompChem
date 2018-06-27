@@ -1,0 +1,8 @@
+$DIR_restart $MT_name=name_of_the_runtime_database
+$DIR_basis $DATA_basis=* library cc-pvdz
+$DIR_task $MT_theory=scf
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=energy

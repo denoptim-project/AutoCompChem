@@ -1,0 +1,13 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+#
+VERBOSITY: 1
+TASK: PrepareInputNWChem
+INFILE: ../t54-mol.sdf 
+OUTFILE: t54.nw
+JOBDETAILS: ../t54.jobDetails
+CHARGE: 0
+SPIN_MULTIPLICITY: 1
+FREEZEATM: [#7]

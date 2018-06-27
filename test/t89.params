@@ -1,0 +1,28 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: ParametrizeForceField
+INPFFFILE: ../t89_tnkMMFF.prm
+OUTFFFILE: t89_modMMFF.prm
+$STARTMOLFILES: ../t89_m1.sdf
+../t89_m2.sdf
+../t89_m3.sdf
+$END
+$STARTVAFILES: ../t89_m1.vmout
+../t89_m2.vmout
+../t89_m3.vmout
+$END
+$STARTINTCOORDBYSMARTS: 
+[Pd] [$([#15]~[Pd])] STR
+[Pd] [$([#8]~[Pd])] STR
+[Pd] [$([#7]~[Pd])] STR
+[Pd] [$([#6]~[Pd])] STR
+$END
+$STARTSMARTSTOATOMTYPEMAP:
+[Pd] type=304 class=104
+[$([#15]~[Pd])] type=90 class=26
+[$([#8]~[Pd])] type=43 class=7
+[$([#7]~[Pd])] type=47 class=8
+[$([#6]~[Pd])] type=133 class=37
+$END

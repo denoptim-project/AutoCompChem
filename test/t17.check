@@ -1,0 +1,22 @@
+#!/bin/bash
+grep -q 'RSMD from the alignment: 3\.59598725' t17.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -q 'RSM deviation of intramolecular distances: 1\.594797161457' t17.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+
+grep -q 'Termination status: 0' t17.log
+if [ $? == 0 ] ; then 
+echo Passed 
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

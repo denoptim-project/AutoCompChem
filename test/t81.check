@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ ! -f "t81_conf2.xyz" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+n=$(wc -l t81_conf2.xyz | awk '{print $1}')
+if [ $n != 66 ] ; then
+echo NOT Passes ERROR 2
+exit -1
+fi
+
+n=$(grep -c -i "Ru.*-0\.08339.*0\.51265.*-2\.5050." t81_conf2.xyz)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+n=0
+n=$(grep -c -i "H.*0\.82228.*1\.52594.*-5\.39190." t81_conf2.xyz)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+grep -q 'Termination status: 0' t81.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 5
+exit -1
+fi

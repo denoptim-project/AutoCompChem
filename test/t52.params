@@ -1,0 +1,17 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+#
+VERBOSITY: 1
+TASK: PrepareInputNWChem
+INFILE: ../t52-mol.sdf
+JOBDETAILS: ../t48-jobDetails
+CoordinatesType: internal
+$STARTFREEZEIC: 
+[*] [$([#6](~[Ru])(~[#7])~[#7])]
+[*] [$([#6](~[Ru])(~[#7])~[#7])] [*]
+[*] [Ru] [Cl]
+[*] [Ru] [$([#6](~[Ru])(~[#7])~[#7])] [*]
+
+$END 

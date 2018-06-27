@@ -1,0 +1,18 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: GenerateBasisSet
+INFILE: ../t74-mol.sdf
+OUTFILE: t74.gbs
+$STARTAtomSpecificBasisSet:
+Element H Name LANL2DZ
+Element C Name LANL2DZ
+Element N Name LANL2DZ
+Element O Name LANL2DZ
+Element S Name LANL2DZ
+Element P Name LANL2DZ
+Element Pd Link ../data/basisset/gaussian/Pd__LANL2DZ_ECP.gbs
+Element Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs
+$END
+FORMAT: Gaussian

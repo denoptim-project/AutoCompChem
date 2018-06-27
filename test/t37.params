@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 4
+TASK: SortSDFMolecules
+INFILE: ../t37-mol.sdf
+OUTFILE: t37sorted.sdf
+SDFPROPERTY: WorstOverlap

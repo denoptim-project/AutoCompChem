@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: FixAndRestartNWChem
+INFILE: ../t56-nwc.out
+NewNwFile: restart-t56.pro.nw
+JOBDETAILS: ../t56.jobDetails
+NWChemERRORS: ../data/errorsDefAndFix/nwchem6.3

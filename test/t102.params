@@ -1,0 +1,8 @@
+VERBOSITY: 1
+#TASK: PrintZMATRIX
+TASK: ModifyGeometry
+INFILE: ../t102-mol.sdf
+ZMATRIXMOVE: ../t102-zmatrixMove
+TEMPLATEZMAT: ../t102-tmpl.zmat
+CARTESIANSCALINGFACTORS: 0.0 0.2 0.4 0.6 0.8
+OUTFILE: t102-path.sdf

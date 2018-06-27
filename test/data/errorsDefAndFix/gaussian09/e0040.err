@@ -1,0 +1,37 @@
+#
+# Definition of Gaussian Error Message
+#
+# Reference Name 
+ReferenceName: e0040-OptStepsExceeded
+# String/s to be searched in Gaussian .out file (only in the last step section)
+ErrorMessage: Optimization stopped.
+ErrorMessage: Number of steps exceeded
+Condition: notMatch "E0040-OPTSTEPSEXCEEDED"
+Condition: notMatch "LOOP WITH CALCFC"
+# The loop is managed by e0041 thus avoid detecting loop cycles.
+#
+#
+# Definition of Action to be taken when this error occours
+#
+# Type of action 
+Action: REDO_STEP_ALTERING_ROUTE_OPTION
+#
+#Here we start a loop in which each end of cycle is detected as e0041
+#
+#The details of the first cycle which is the second attempt to optimize geometry
+$STARTImpose_route_params:
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $KVopt_$KVMaxCycle=25
+rutSection# $KVopt_$MTFORCECONSTANTS=CALCFC
+titSection# loop with calcFC IDXE0041=1 to fix error e0040-OptStepsExceeded
+$END
+#
+# WARNING! Do not delete "IDXE0041=1" from the title section
+#          this label is the counter to keep track of the loop.
+#
+# See file e0041.err to 
+# set the maximun number of attemopts to re-run geom.opt. 
+# The index "IDXE0041" is used to count the 
+# cycles and the job started here is the first cycle (IDXE0041=1).
+#

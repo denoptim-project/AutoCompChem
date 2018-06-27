@@ -1,0 +1,33 @@
+ This is a fake NWChem output file that was created to test AutoCompChem.
+
+
+                                NWChem Input Module
+                                -------------------
+
+... output from first task...
+
+                                NWChem Input Module
+                                -------------------
+
+... output from second task...
+
+                                NWChem Input Module
+                                -------------------
+
+... output from third task...
+
+FAKE ERROR MESSAGE 3 - USED ONLY TO TEST AutoCompChem
+ 
+---------------------------------------------------------------
+ Failed to converge in maximum number of steps or available time
+ ---------------------------------------------------------------
+
+...
+
+ ------------------------------------------------------------------------
+ dft optimize failed                                                                     0
+ ------------------------------------------------------------------------
+ This type of error is most commonly associated with calculations not reaching convergence criteria
+ ------------------------------------------------------------------------
+
+...

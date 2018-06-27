@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: ExtractLastGeometryFromSpartanTree
+INFILE: ../t72.spartan
+OUTFILE: t72_last
+OUTFORMAT: SDFXYZ

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+totAdded=$(grep -c "Adding bond between atom" t18.log )
+if [ $totAdded != 135 ] ; then 
+echo NOT Passed
+exit -1
+fi
+
+
+grep -q 'Termination status: 0' t18.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

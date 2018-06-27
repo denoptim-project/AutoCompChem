@@ -1,0 +1,21 @@
+#!/bin/bash
+grep -q ' Found 4 atom clashes' t35.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+grep -q ' Found 1 mols with one or more atom clashes' t35.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t35.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 3
+  exit -1
+fi

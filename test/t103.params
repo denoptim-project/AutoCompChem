@@ -1,0 +1,6 @@
+VERBOSITY: 1
+TASK: PrintZMATRIX
+#TORSIONONLY: any string, doesn't matter what
+#TEMPLATEZMAT: ../t104.tmpl
+INFILE: ../t103-mol.sdf
+OUTFILE: t103.zmat

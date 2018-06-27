@@ -1,0 +1,14 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: AnalyzeVDWClashes
+INFILE: ../t31-mol.sdf
+$STARTTARGETSMARTS: 
+[#7]
+[Cl]
+$END
+$STARTCUSTOMALLOWANCE:
+[#17] [#17] 2.4
+$END
+ALLOWANCE: 0.0

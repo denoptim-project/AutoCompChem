@@ -1,0 +1,16 @@
+#!/bin/bash
+
+grep -q 'Gaussian Error NOT Recognized' t13.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: -1' t13.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

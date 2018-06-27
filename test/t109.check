@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ ! -f t109-optGeoms.sdf ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+n=$(grep "M  END" t109-optGeoms.sdf -c)
+if [ "$n" != "19" ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+
+n=$(grep "\-0\.0061   \-0\.6882    0\.0000" t109-optGeoms.sdf -c)
+if [ "$n" != "1" ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+
+n=$(grep "\-0\.5311   \-1\.1890   \-0\.9204" t109-optGeoms.sdf -c)
+if [ "$n" != "1" ] ; then
+  echo NOT Passed 4
+  exit -1
+fi
+
+n=$(grep "\-0\.9585    1\.6531   -0\.0000" t109-optGeoms.sdf -c)
+if [ "$n" != "1" ] ; then
+  echo NOT Passed 5
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t109.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 4
+  exit -1
+fi

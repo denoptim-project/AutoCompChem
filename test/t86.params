@@ -1,0 +1,16 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: MeasureGeomDescriptors
+INFILE: ../t86-mol.sdf
+$STARTSMARTS:
+dist [$(CO)] [#8]
+ang [O] [$(CO)] [$(CF)]
+dih [O] [$(CO)] [$(CF)] [F]
+$END
+$STARTATOMINDEXES:
+dist 1 7
+ang 7 1 4
+dih 7 1 4 8
+$END

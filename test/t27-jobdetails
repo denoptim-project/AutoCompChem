@@ -1,0 +1,111 @@
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=HF
+rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
+rutSection# $MTjobType=SP
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=1000
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=180
+titSection# Step 1 - 3d-Builder VarSet G09 - 14 Feb 2014
+--Link1--
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=SP
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=800
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+titSection# Step 2 - 3d-Builder VarSet G09 - 14 Feb 2014
+--Link1--
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=sp
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=600
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+rutSection# $KVscf_$KVConver=5
+titSection# Step 3 - 3d-Builder VarSet G09 - 14 Feb 2014
+--Link1--
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+rutSection# $KVstable_$MTwfreopt=opt
+rutSection# $KVstable_$MTgeneral=rrhf
+titSection# Step 4 - 3d-Builder VarSet G09 - 14 Feb 2014
+--Link1--
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=opt
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=200
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=980
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$MTconvergence=loose
+rutSection# $KVopt_$KVMaxCycle=320
+rutSection# $MTiop=iop(1/19=5)
+titSection# Step 5 (first opt: DZ) - 3d-Builder VarSet G09 - 14 Feb 2014
+--Link1--
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=opt
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=400
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=980
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$KVMaxCycle=320
+rutSection# $MTiop=iop(1/19=5)
+titSection# Step 6 (second opt: DZ) - 3d-Builder VarSet G09 - 14 Feb 2014
+--Link1--
+lnkSection# Nprocshared=16
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check 
+rutSection# $KVguess=read
+rutSection# $MTjobType=freq
+rutSection# $MTsymmetry=NoSym
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVpunch=Derivatives
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=980

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+grep -q "Output name set to 't2-mol.inp'" t2.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q "From c = -999999 and s.m. = -999999 to c = -5 and s.m. = 3" t2.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: 0' t2.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

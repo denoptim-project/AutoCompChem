@@ -1,0 +1,10 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Just evaluate the output and identify the error (if any)
+#
+VERBOSITY: 2
+TASK: EvaluateGaussianOutput
+INFILE: ../t1-mol.out
+JOBDETAILS: none
+GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03

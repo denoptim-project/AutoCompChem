@@ -1,0 +1,135 @@
+$DIR_start
+$DIR_ecce_print $MT_eccefile=ecce.out
+$DIR_title $MT_title="Step1: SP with HF"
+$DIR_geometry $KV_units=angstrom
+$DIR_geometry $DIR_symmetry $MT_pointgroup=c1
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_task $MT_theory=scf
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_title $MT_title="Step2: SP with DFT"
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_geometry $MT_adjust=adjust
+$ACCPAR_$STARTZCOORD:
+[Cl] [Ru] 2.5 BondRuCl constant
+[C] [N] 
+[C] [Ru] [$(C(~[Ru])~C)] 60.0 constant
+[C] [Ru] [C] [N] constant
+$END
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_title $MT_title="Step3: pre-opt. loose"
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_driver $DIR_loose
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=optimize
+----END-OF-TASK----
+$DIR_title $MT_title="Step4: hessian"
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_geometry $MT_adjust=adjust
+$ACCPAR_$STARTZCOORD:
+[Cl] [Ru]
+[C] [N]
+[C] [Ru] [$(C(~[Ru])~C)]
+[C] [Ru] [C] [N]
+$END
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=hessian
+----END-OF-TASK----
+$DIR_title $MT_title="Step5: pre-opt."
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_driver $DIR_inhess $MT_inhess=0
+$DIR_geometry $MT_adjust=adjust
+$DIR_geometry $DIR_zcoord $DATA_zcoord=BOND 1 2 constant
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=optimize
+----END-OF-TASK----
+$DIR_title $MT_title="Step6: opt. grid=(99,590)"
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $KV_lebedev=99 14
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_driver $DIR_inhess $MT_inhess=0
+$DIR_driver $DIR_tight
+$DIR_geometry $MT_adjust=adjust
+$DIR_geometry $DIR_zcoord $DATA_zcoord=BOND 1 2 constant
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=optimize
+----END-OF-TASK----
+$DIR_title $MT_title="Step7: freq grid=(99,590)"
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $KV_lebedev=99 14
+$DIR_geometry $MT_adjust=adjust
+$DIR_geometry $DIR_zcoord $DATA_zcoord=BOND 1 2 
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=frequencies
+----END-OF-TASK----
+$DIR_title $MT_title="Step8: sabble opt."
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $KV_lebedev=99 14
+$DIR_driver $DIR_maxiter $MT_maxiter=200
+$DIR_driver $DIR_tight
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=saddle
+----END-OF-TASK----
+$DIR_title $MT_title="Step9: final frequencies"
+$DIR_basis $DATA_basis= * library lanl2dz_ecp
+$DIR_ecp $DATA_ecp=$OPENBLOCK
+  Cl library lanl2dz_ecp
+  Ru library lanl2dz_ecp
+$CLOSEBLOCK
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $KV_lebedev=99 14
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=frequencies

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ ! -f t25results.txt ]
+then
+echo NOT Passed err1
+exit -1
+fi
+
+grep -q "molA..0, 1, 2, 3, 4, 5, 6, 7. molB..7, 6, 0, 2, 3, 4, 1, 5. LowestMAD. 0.2467579494183" t25.log
+if [ $? != 0 ] ; then
+echo NOT Passed err2
+exit -1
+fi
+
+grep -q 'Termination status: 0' t25.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: PruneMolecules
+INFILE: ../t68-mol.sdf
+OUTFILE: t68-pruned.sdf
+SMARTS: [He] [#7]~[#6]~[#7]

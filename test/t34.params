@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: AnalyzeVDWClashes
+INFILE: ../t31-mol.sdf
+CUTOFF: 0.60
+ALLOWANCE: 0.35

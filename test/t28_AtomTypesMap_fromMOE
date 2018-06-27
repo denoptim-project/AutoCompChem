@@ -1,0 +1,220 @@
+#
+# Atom Type matching rules 
+#
+# Matching rules from mmff94_tm.ff made available by Rob Deeth at
+# http://www2.warwick.ac.uk/fac/sci/chemistry/research/deeth/deethgroup
+#
+# Instructions:
+# Use # to comment out lines
+#
+# Format:
+# type  task  SMARTS     comment
+#
+Du      match '[X0]'     # dummy atom
+# METALS & SEMIMETALS & HALOGENS
+FE+2    match '[Fe]'     # (MF) for LFMM calculation 
+MG+2	match '[Mg+2]'			# dipositive magnesium cation
+NA+	match '[Na+1]'			# sodium cation
+K+	match '[K+1]'			# potassium cation
+LI+	match '[Li+1]'			# lithium cation
+CA+2	match '[Ca+2]'			# dipositive calcium     
+SI	match '[Si]'			# silicon
+F	match '[F+0]'			# fluorine
+F-	match '[F-1]'			# fluorine anion
+CL	match '[Cl+0]'			# chlorine
+CL-	match '[Cl-1]'			# chloride anion
+CLO4	match '[Cl](O)(O)(O)O'		# chlorine in perchlorate anion
+BR	match '[Br+0]'			# bromine
+BR-	match '[Br-1]'			# bromide ion
+I	match '[I]'			# iodine
+# PHOSPHORUS
+P	match '[PX3]'			# [26] tricoord P
+PTET	match '[PX4]'			# [25] tetracoord P
+-P=C	match 'P=[#6]'			# [75] P doubly bonded to C
+# SULFUR
+SO2	match '[SX4]([OX1])[OX1]'	# [18] sulfone sulfur
+SO2	match '[SX4]([NX2])[OX1]'	# [18] sulfone sulfur (N analog)
+>SN	match '[S;+1X3]-[O;-1X1]'	# [17] sulfoxides
+>SN	match '[S;+1X3]-[N;-1X2]'	# [17] tricoord S in N analog of oxide
+SO2M	match '[SX3]([#O6X1])([#O6-X1])-*' # [73] S tricoord (thio)sulfinate
+SO2	match '[SX3](=*)([OX1])[OX1]'	# [18] sulfone S with double bond
+SX	match '[S;X1!i]'		# [72] terminal S (anions too)
+S=C	match '[SX1]=C'			# [16] terminal S doubly bonded to C
+SX	match '[SX1]=[CX3]-[SX1]'	# [72] thiocarboxylate anion
+Sthi	match '[sX2]'			# [44] S as in thiophene (aromatic)
+S	match '[S;X2!i]'		# [15] S in thioethers and mercaptans
+=SO	match '[SX2](=*)[OX1]'		# [74] sulfinyl S (e.g., in C=S:O)
+# OXYGEN
+OX	match '[OX1]-*'			# terminal oxygens
+O=	match '[OX1]=*'			# oxygen doubly bonded
+OM	match '[OX1]-[#6]~[!#X]'	# terminal alkoxide O, neg charge
+OM	match '[OX1-]-[#Q+0]'		# !!! is this right?
+OX	match '[OX1]*=[OX1]'		# e.g. carboxylic acid, sulfone, nitro
+OX	match '[OX1]=*[OX1]'
+O=	match '[OX1]S=*'		# [ 7] O coord bond to S=
+OX	match '[OX1]S([OX1])=*'		# [32] terminal O in sulfone
+Oar	match 'o'			# aromatic oxygen e.g. furan
+O	match '[OX2]'			# [ 6] divalent oxygen
+OH2	match '[OH2Q0]'			# oxygen on water
+O=+	match '[OX2]=*'			# oxenium (dicoord) positive O
+O+	match '[OX3]'			# oxonium (tricoord) positive O
+O=	match '[OX1-]-[S;+!X4]'		# [ 7] O coord bond to S (sulfoxide)
+OX	match '[OX1][S;+1X3][#G6-]'	# [32] O in (thio) sulfinate
+OM	match '[OX1Q0]'
+# HYDROGEN
+HN	match '[#1][#7]'		# [23] H on N
+HN2	match '[#1][#7i]'		# [28] general H on sp2 nitrogen
+HN2	match '[#1][#7]-[i]'
+HN2	match '[#1][NX3+0][SX4]([OX1])[OX1]'
+HN2	match '[#1][NX3+0][PX4]([OX1])[OX1]'
+HN=C	match '[#1]N=C'			# [27] imine or azo H
+HN=C	match '[#1]N=N'
+HN+	match '[#1][NX4]'		# [36] H on quaternary N
+HN	match '[#1][NX4][OX1]'		# [23] H on N oxide
+HN	match '[#1][NX3]([OX1])=*'	# [23] H on N= oxide
+HN	match '[#1][nX3+0](*)*'		# [23] H in pyrrole
+HN	match '[#1][#7X2-]'		# [23] H on diccord negative N
+HN	match '[#1]Nn'
+HN2	match '[#1][NX3]c'		# [28] H on NC=C
+HN2	match '[#1][NX3][#6]#C'
+HN2	match '[#1][NX3][#6]=C'
+HN2	match '[#1][NX3][#6]=N'
+HN2	match '[#1][NX3][#6]=P'
+HN2	match '[#1][NX2]S[OX1]'		# [28] H on NSO
+HN	match '[#1][NX3!i+0]-[N+!$(*[-*])]=C([NX3!i])-[NX3!i]'	# HN-NGD
+# [36] H on N in imidazolium, amidinium, guanidinium
+HN+	match '[#1][n;r5+0]1:c:[n+!$(*[-*])]:a:a1'
+HN+	match '[#1][NX3+!$(*~[-*])]=*'
+HN+	match '[#1][n+!$(*[-*])]'
+HN+	match '[#1][N!i+0]-C=[N+!$(*[-*])]'
+HN+	match '[#1][N!i+0]-[c;r5]1:[n+!$(*[-*])]:a:a:[i2]1'
+HO	match '[#1][#8]'		# [21] general H on O
+HOCC	match '[#1]OC=*'		# [29] H in enol
+HOCC	match '[#1]Oa'			# [29] H in phenol
+HOCO	match '[#1]OC=O'		# [24] H in carboxylic acids
+HOCO	match '[#1]O[#15]'		# [24] H on O~P
+HOS	match '[#1]O[#16]'		# [33] H on O-S
+HOH	match '[#1][OH2Q0]'		# [31] H in water
+HO+	match '[#1][O+]'		# [50] H on oxonium O
+HO=+	match '[#1][O+]=*'		# [52] H on oxenium O
+HP	match '[#1][#15]'		# [71] H on S or P
+HP	match '[#1][#16]'
+HC	match '[#1][#G4]'		# [ 5] general H on C/Si
+HOH	match '[#1][OX1Q0]'		# !!! TRUE?
+HB-	match '[#1]B'			# H attached to boron
+# CARBON
+Car	match 'c'			# [37] carbon as in benzene, pyrrole
+# [64] C5B: arom C beta to N: O: S: (no other aro-LP in ring)
+# [63] C5A: arom C alpha to N: O: S: (no other aro-LP in ring)
+# [79] C5 : other arom C in 5-ring hetercycle
+# [80] C in N-C-N in imidazolium ion
+#
+# Note: C5A and C5B are not used if there is resonance of charge in the
+# heterocycle (use C5); e.g., tetrazolium, imidazolium.  Also, C5 is
+# used if an atom is both C5A and C5B
+C5	match '[c;r5]1:[a#X]:a:a:a:1'
+C5	match '[c;r5]1:a:[a#X]:a:a:1'
+C5B	match '[c;r5]1:[a!i2]:[i2]:[a!i2]:[a!i2]:1'
+C5A	match '[c;r5]1:[i2]:[a!i2]:[a!i2]:[a!i2]:1'
+C5	match '[$([c;r5]1:[a!i2]:[i2]:[a!i2]:[a!i2]:1),$([c;r5]1:[i2]:[a!i2]:[a!i2]:[a!i2]:1)]'
+C5	match 'c1:[nX3]:c:[nX3+!$(*[-*])]:a:1'		# imidazolium
+C5	match 'c1:[nX3+!$(*[-*])]:c:[nX3]:a:1'
+C5	match 'c1:[n;i1X2]:[n;i2X2-]:a:a1'		# tri/tetrazolium
+C5	match '[c;r5]1:[n-!$(*[+*])]:[n;i1X2]:a:a1'	# tri/tetrazolium
+C5	match '[c;r5]1:[n;i1X2]:[n-!$(*[+*])]:a:a1'
+C5	match '[c;r5]1:a:[n-!$(*[+*])]:[n;i1+0]:a1'
+C5	match '[c;r5]1:a:[n;i1+0]:[n-!$(*[+*])]:a1'
+C5	match '[c;r5]1:a:[n-!$(*[+*])]:a:[n;i1+0]1'
+C5	match '[c;r5]1:a:[n;i1+0]:a:[n-!$(*[+*])]1'
+CIM+	match 'c1:[nX3+1!$(*[-*])]:a:a:[nX3+0]:1'		# [80]
+CIM+	match 'c1(-[NX3!i]):[nX3+1!$(*[-*])]:a:a:[i2]:1'	# [80]
+Csp2	match '[CX3]=[#G4]'		# [ 2] generic vinylic sp2 carbon
+CE4R	match '[CX3$(C=C)r4]1~*~*~*1'	# [30] olefinic C in 4-ring
+C=	match '[CX3]=[!#G4]'		# [ 3] C={N,P,O,S} elec. neg.
+CO2M	match '[CX3](=[OX1])[OX1]'	# [41] carboxylate anion
+CO2M	match '[CX3](=[SX1])[SX1]'	# [41] thiocarboxylate anion
+CNN+	match 'C(=[N+])-[N!i+0]'	# [57] C in NCN+ resonance
+Csp	match 'C(=*)=*'			# [ 4] sp carbon (2 double bonds)
+Csp	match 'C#*'			# [ 4] sp carbon (triple bond)
+C%	match '[CX1]#[NX2]'		# [60] isonitrile carbon
+C	match '[CX4]'				# [ 1] alkyl carbon, sp3
+CR4R	in-4ring and match '[CX4r4]1-*~*~*1'	# [20] sp3 carbon in 4-ring
+CR3R	in-3ring and match '[CX4r3]1-*~*1'	# [22] sp3 carbon in 3-ring
+# NITROGEN
+N	match '[N;+0X3!i]'		# [ 8] N in aliphatic amines
+NPYL	match '[nX3+0]'			# [39] pyrrole N
+NPYD	match '[nX2+0]'			# [38] pyridine N
+NPD+	match '[nX3+1!$(*[-*])]'	# [58] pyridinium-type N (FC=1)
+NPOX	match '[nX3+1][OX1-]'		# [69] pyridine N-oxide
+# [66] N5B: arom N beta to N: O: S: (only 1 aro-LP atom)
+# [65] N5A: arom N alpha to N: O: S:
+# [79] N5:  arom N in 5-heterocyclic (not A,B or both A,B)
+N5	match '[nX2]1aaaa1'
+N5B	match '[nX2]1:[a!i2]:[i2]:[a!i2]:[a!i2]:1'
+N5A	match '[nX2]1:[i2]:[a!i2]:[a!i2]:[a!i2]:1'
+#N5	match '[nX2](:[i2]):a:[i2]'
+N5	match '[$([nX2]1:[a!i2]:[i2]:[a!i2]:[a!i2]:1),$([nX2]1:[i2]:[a!i2]:[a!i2]:[a!i2]:1)]'
+N5	match 'n1:[nX3]:c:[nX3+]:a:1'	# check imidazolium
+N5	match 'n1:[nX3+]:c:[nX3]:a:1'
+N5+	match '[nX3+]1(*)aaaa1'			# [81] positive N5 
+N5+	match '[nX3]1(*)a[nX3+]([!O])aa1'	# [81] imidazolium-type
+N5OX	match '[nX3+1]1([OX1])aaaa1'	# [82] N-oxide in 5-ring
+N5M	match '[n-!$(*[+*])]'		# [76] n- in tri/tetra-azole anion
+N5M	match '[n+0i1]:[n-i2!$(*[+*])]'	# [76] n- in tri/tetra-azole anion
+N5M	match '[nX2]1[n-]ncc1'		# [76] n- in triazole anion
+N5M	match '[nX2]1cn[n-]c1'
+N5M	match '[nX2]1nc[n-]c1'
+N5M	match '[nX2]1[n-]nnc1'		# [76] n- in tetrazole anion
+N5M	match '[nX2]1[n-]ncn1'
+N5M	match '[nX2]1n[n-]nc1'
+N5M	match '[nX2]1nn[n-]c1'		# !!!! NO PLUSES IN RING
+NC#N	match '[NX3+0][PX4]([OX1])[#G6X1]'	# [43] N in phosphonamides O2
+NC#N	match '[NX2-1]([+*])[PX4]([OX1])[#G6X1]'	# [43] N in phosphonamides O2
+NC=C	match '[NX3!i][#6]#C'		# [40] NC#C
+NC=C	match '[NX3!i][#6]=C'		# [40] NC=C
+NC=C	match '[NX3!i][#6]=N'
+NC=C	match '[NX3!i][#6]=P'
+NC=C	match '[NX3!i]c'
+NC=C	match '[NX3!i][NX3+!$(*~[-*])]=*'
+N	match '[NX3!i+0]-[N+!$(*[-*])]=C([NX3!i])-[NX3!i]'
+NC=C	match '[N+0X3!i][N+0]=C'	# !!! ERROR IN MMFF DOCUMENTATION?
+NC=O	match '[N+0X3!i][#6]=[#O6]'	# [10] (thio)amide N
+NC=O	match '[N+0X3!i][N+0]=N'
+NC=O	match '[N+0X3!i]S=O'
+NM	match '[N-!iX2]'		# [62] divalent N (-1)
+NSO	match '[N-!i][S+2][#G6-]'	# [48] N- as O in SO2 group
+NSO	match '[N-!i][S+1]'		# [48] N- as O in SO group
+NM	match '[N-][S+2]([#G6-])[-]'	# [62] deprotonated sulfonamide N (-1)
+NM	match '[N-][S+1][#G6-]'		# [62] deprotonated N in sulfoxide (-1)
+NC#N	match '[NX3+0]C#N'			# [43] N on to cyano group
+NC#N	match '[NX3+0][SX4]([OX1])[#G6X1]'	# [43] N in sulfonamides
+NC#N	match '[NX2-1]([+*])[SX4]([OX1])[#G6X1]'	# [43] N in sulfonamides
+N+=	match '[N+X3!$(*[-*])]=C'	# [54] N+=C iminium
+N+=	match '[N+X3!$(*[-*])]=N'	# [54] N+=N
+NCN+	match '[NX3!i]~[CX3$(*=N)]~[N+]'	 # [55] +N=C-N resonance (+1/2)
+NCN+	match '[NX3+]~[CX3$(*=N)]~[N!i]'
+NCN+	match '[NX3!i]-[c;r5]1:[n+]:a:a:[i2]1'
+# [56] guanidinium N (+1/3)
+NGD+	match '[NX3!i]-C(=[NX3+!$(*[-*])])-[NX3!i]'
+NGD+	match '[NX3+!$(*[-*])]=C([NX3!i])[NX3!i]'
+NGD+	match '[NX3!i]-[c;r5]1:[nX3+!$(*[-*])]:a:a:[nX3]1'
+N2OX	match '[NX3]([OX1])=*'		# [67] general sp2 N-oxide
+NO3	match '[NX3](=[OX1])[OX1]'	# [45] nitro/nitrate N
+N=O	match '[NX2]=[#8]'		# [46] nitroso N
+N=C	match '[NX2]=C'			# [ 9] N in imines or azo
+N=C	match '[NX2]=N'
+NSP	match '[NX2]#*'			# [42] sp N triply bonded
+=N=	match '[NX2](=*)=*'		# [53] sp N with 2 double bonds
+NR%	match '[NX2](=[NX1])=*'		# [61] diazo N+
+=N=	match '[NX2](=C)=N'		# [53] sp N with 2 double bonds
+=N=	match '[NX2](=N)=N'		# [53] sp N with 2 double bonds
+NR%	match '[NX2]#[CX1]'		# [61] isonitrile N
+NR%	match '[NX2]#[NX1]'		# [61] N+ in azido (!!! pl)
+NSP	match '[NX1]#*'			# [42] sp N triply bonded
+NAZT	match '[NX1]=[NX2]=*'		# [47] terminal N in diazo group
+#NAZT	match '[NX1]#[NX2]'		# [47] terminal N in azido group
+N+	match '[NX4]'			# [34] quaternary N
+N3OX	match '[NX4][OX1]'		# [68] general sp3 N-oxide
+# BORON
+B-	match '[BX4]'
+#

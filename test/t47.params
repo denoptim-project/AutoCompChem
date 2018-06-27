@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 3
+TASK: RemoveDummyAtoms
+MULTIHAPTO: n
+DUSYMBOL: ATO
+INFILE: ../t47-mol.sdf
+OUTFILE: t47-out.sdf

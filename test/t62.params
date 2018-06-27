@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+#
+VERBOSITY: 1
+TASK: ExtractLastGeometryFromNWChemOutput
+INFILE: ../t62-nwc.out
+OUTFILE:  t62-lastgeom

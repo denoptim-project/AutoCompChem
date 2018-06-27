@@ -1,0 +1,9 @@
+# 
+# Parameters for AutoCompChem: recalculation of connectivity
+#
+VERBOSITY: 4
+TASK: CompareTwoGeometries
+TARGETATOMSQUERY: [Ru]
+INFILE: ../t19mol.sdf
+REFERENCE: ../t19ref.sdf
+OUTFILE: t19results.txt

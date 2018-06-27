@@ -1,0 +1,13 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+#
+VERBOSITY: 0
+TASK: MutateAtoms
+INFILE: ../t66-mol.sdf
+OUTFILE:  t66-mol_mutated.sdf
+$STARTSMARTSMAP: [Pb] Zan
+[N] He
+[He] Cl
+$END

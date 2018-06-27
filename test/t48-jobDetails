@@ -1,0 +1,52 @@
+$DIR_start
+$DIR_memory $KV_total=8mb
+$DIR_memory $KV_stack=2 
+$DIR_memory $KV_heap=2 
+$DIR_memory $KV_global=4mb
+$DIR_title $MT_title="Step:1 SP with HF"
+$DIR_geometry $MT_name="geometry name is long and contains spaces"
+$DIR_geometry $KV_units=angstrom
+$DIR_geometry $KV_anotherkeyword=2ndKeyword valueLoooooooooooooooooooong
+$DIR_geometry $KV_3rd key=trd and last value
+$DIR_geometry $DIR_symmetry $MT_pointgroup=c1
+$DIR_basis $DATA_basis=* library cc-pvdz
+$DIR_task $MT_theory=scf
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_title $MT_title="Step:2 SP with DFT"
+$DIR_geometry $MT_name="same geometry as before"
+$DIR_geometry $KV_units=angstrom
+$DIR_geometry $DIR_symmetry $MT_pointgroup=c1
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_basis $MT_name="ao basis"
+$DIR_basis $DATA_basis=$OPENBLOCK
+* library cc-pvdz
+oxygen library cc-pvtz
+nitrogen library cc-pvtz
+$CLOSEBLOCK
+$DIR_set $KV_variable=123
+$DIR_set $MT_blabla=ribla bla
+$DIR_set $KV_blabla=ribla riribla
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=energy
+----END-OF-TASK----
+$DIR_title $MT_title="Step3: geometry optimization with DFT"
+$DIR_geometry $MT_name="initial geometry"
+$DIR_geometry $KV_units=angstrom
+$DIR_geometry $DIR_symmetry $MT_pointgroup=c1
+$DIR_dft $DIR_xc $MT_functional=pbe0
+$DIR_dft $DIR_convergence $KV_energy=1e-6
+$DIR_dft $DIR_convergence $KV_density=1e-5
+$DIR_dft $DIR_grid $MT_finess=fine
+$DIR_basis $MT_name="ao basis"
+$DIR_basis $DATA_basis=$OPENBLOCK* library cc-pvtz
+oxigen library cc-pvtz
+$CLOSEBLOCK
+$DIR_unset $KV_variable=123
+$DIR_unset $MT_blabla=ribla bla
+$DIR_unset $KV_blabla=ribla riribla
+$DIR_task $MT_theory=dft
+$DIR_task $MT_tasktype=optimize

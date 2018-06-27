@@ -1,0 +1,52 @@
+#!/bin/bash
+
+n=0;n=$(grep -c '\$\$\$\$' t98-mol.zmat)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+n=0;n=$(grep -c 'Molecule: ' t98-mol.zmat)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+
+n=0;n=$(grep -c 'H 1  1.0899.* 2  109.459.* 3  109.456.* -1' t98-mol.zmat)
+if [ "$n" != 1 ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+
+n=0;n=$(grep -c '^C $' t98-mol.zmat)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 4
+  exit -1
+fi
+
+n=0;n=$(grep -c 'H 6  1.0099.* 2  120.0027.* 1  -123.092.* 0' t98-mol.zmat)
+if [ "$n" != 1 ] ; then
+  echo NOT Passed 5
+  exit -1
+fi
+
+n=0;n=$(grep -c '^H 1  1\.090.* 2  109\......... $' t98-mol.zmat)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 6
+  exit -1
+fi
+
+n=0;n=$(grep -c 'Working on mol ' t98.log)
+if [ "$n" != 2 ] ; then
+  echo NOT Passed 7
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t98.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed 8
+exit -1
+fi

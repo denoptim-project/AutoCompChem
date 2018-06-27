@@ -1,0 +1,22 @@
+#!/bin/bash
+
+grep -q -i "C.*-3\.164005.*-10\.435414.*0\.005939" t62-lastgeom.xyz
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=$(wc -l t62-lastgeom.xyz | awk '{print $1}')
+if [ "$n" != 81 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -q 'Termination status: 0' t62.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 3
+exit -1
+fi

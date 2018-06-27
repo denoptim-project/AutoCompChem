@@ -1,0 +1,46 @@
+#!/bin/bash
+
+grep -q -i "NWChem Error Recognized: Step 1 returned Error Message: test4_ONLY_FOR_TEST" t82.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -i -q "NWChem output file contains: 1 steps" t82.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -i -q "GEOMETRY" restart-t82.nw
+if [ $? != 1 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+grep -i -q "GEOMETRY" restart-t82.jd
+if [ $? != 1 ] ; then
+echo NOT Passed ERROR 5
+exit -1
+fi
+
+n=$(grep -c -i "RESTART[[:space:]]*restart-t82 " restart-t82.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 6
+exit -1
+fi
+
+n=$(grep -c -i "START" restart-t82.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 7
+exit -1
+fi
+
+grep -q 'Termination status: 0' t82.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 8
+exit -1
+fi

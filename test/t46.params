@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 3
+TASK: RemoveDummyAtoms
+LINEARITIES: m
+DUSYMBOL: ATM
+INFILE: ../t46-mol.sdf
+OUTFILE: t46-out.sdf

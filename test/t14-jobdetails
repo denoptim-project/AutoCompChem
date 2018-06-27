@@ -1,0 +1,153 @@
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=HF
+rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
+rutSection# $MTjobType=SP
+rutSection# $KVscf_$KVVShift=1000
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=180
+titSection# Step 1 - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=SP
+rutSection# $KVscf_$KVVShift=800
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+titSection# Step 2 - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $KVscf_$KVVShift=200
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+rutSection# $KVstable_$MTwfreopt=opt
+rutSection# $KVstable_$MTgeneral=rrhf
+titSection# Step 3 - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=opt
+rutSection# $KVscf_$KVVShift=200
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=380
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$MTconvergence=loose
+rutSection# $KVopt_$KVMaxCycle=320
+rutSection# $MTintegral=int(grid=sg1)
+rutSection# $MTiop=iop(1/19=5)
+titSection# Step 4 (first opt: MB) - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=sp
+rutSection# $KVscf_$KVVShift=800
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+titSection# Step 5 - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=sp
+rutSection# $KVscf_$KVVShift=600
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+rutSection# $KVscf_$KVConver=5
+titSection# Step 6 - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=280
+rutSection# $KVstable_$MTwfreopt=opt
+rutSection# $KVstable_$MTgeneral=rrhf
+titSection# Step 7 - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ/AUTO 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=opt
+rutSection# $KVscf_$KVVShift=600
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=980
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$MTconvergence=loose
+rutSection# $KVopt_$KVMaxCycle=320
+rutSection# $MTintegral=int(grid=sg1)
+rutSection# $MTiop=iop(1/19=5)
+titSection# Step 8 (second opt: DZ/AUTO) - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=opt
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=980
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$KVMaxCycle=320
+rutSection# $MTiop=iop(1/19=11)
+titSection# Step 9 (third opt: DZ) - Protocol 3d-Builder, 22 Dec 2013
+--Link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $KVgeom=check 
+rutSection# $KVguess=read
+rutSection# $MTjobType=freq
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVpunch=Derivatives
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=980

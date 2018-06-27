@@ -1,0 +1,10 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 4
+TASK: FixAndRestartGaussian 
+INFILE: ../t16.out
+NEWINPFILE: restart-t16.inp
+JOBDETAILS: ../t16-jobdetails
+#not real case scenario! job details are set just to have a formatted file in place
+GAUSSIANERRORS: ../data/errorsDefAndFix/

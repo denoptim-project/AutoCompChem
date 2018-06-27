@@ -1,0 +1,22 @@
+#!/bin/bash
+grep -q 'Counter IDXE0041 found' t16.log
+if [ $? != 0 ] ; then 
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Maximum number of cycles reaches for e0041-LoopingWithCalcFC' t16.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+
+grep -q 'Termination status: -1' t16.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

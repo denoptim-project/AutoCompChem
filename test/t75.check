@@ -1,0 +1,204 @@
+#!/bin/bash
+
+if [ ! -f "t75.gbs" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+if ! grep -q "Pd *0" t75.gbs ; then echo NOT Passes ERROR 2,1 ; exit -1 ; fi
+if ! grep -q "LANL2DZ" t75.gbs ; then echo NOT Passes ERROR 2,2 ; exit -1 ; fi
+if ! grep -q "\*\*\*\*" t75.gbs ; then echo NOT Passes ERROR 2,3 ; exit -1 ; fi
+if ! grep -q "P *0" t75.gbs ; then echo NOT Passes ERROR 2,4 ; exit -1 ; fi
+if ! grep -q "S *0" t75.gbs ; then echo NOT Passes ERROR 2,7 ; exit -1 ; fi
+if ! grep -q "FE *0" t75.gbs ; then echo NOT Passes ERROR 2,10 ; exit -1 ; fi
+if ! grep -q "S *3 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,11 ; exit -1 ; fi
+ if ! grep -q " 6\.4220000E+00 * -3\.927882E-01" t75.gbs ; then echo NOT Passes ERROR 2,12 ; exit -1 ; fi
+ if ! grep -q " 1\.8260000E+00 * 7\.712643E-01" t75.gbs ; then echo NOT Passes ERROR 2,13 ; exit -1 ; fi
+ if ! grep -q " 7\.135000E-01 * 4\.920228E-01" t75.gbs ; then echo NOT Passes ERROR 2,14 ; exit -1 ; fi
+if ! grep -q "S *4 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,15 ; exit -1 ; fi
+ if ! grep -q " 6\.4220000E+00 * 1\.786877E-01" t75.gbs ; then echo NOT Passes ERROR 2,16 ; exit -1 ; fi
+ if ! grep -q " 1\.8260000E+00 * -4\.194032E-01" t75.gbs ; then echo NOT Passes ERROR 2,17 ; exit -1 ; fi
+ if ! grep -q " 7\.135000E-01 * -4\.568185E-01" t75.gbs ; then echo NOT Passes ERROR 2,18 ; exit -1 ; fi
+ if ! grep -q " 1\.021000E-01 * 1\.1035048E+00" t75.gbs ; then echo NOT Passes ERROR 2,19 ; exit -1 ; fi
+if ! grep -q "S *1 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,20 ; exit -1 ; fi
+ if ! grep -q " 3\.63000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,21 ; exit -1 ; fi
+if ! grep -q "P *3 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,22 ; exit -1 ; fi
+ if ! grep -q " 1\.94800000E+01 * -4\.70282E-02" t75.gbs ; then echo NOT Passes ERROR 2,23 ; exit -1 ; fi
+ if ! grep -q " 2\.3890000E+00 * 6\.248841E-01" t75.gbs ; then echo NOT Passes ERROR 2,24 ; exit -1 ; fi
+ if ! grep -q " 7\.795000E-01 * 4\.722542E-01" t75.gbs ; then echo NOT Passes ERROR 2,25 ; exit -1 ; fi
+if ! grep -q "P *1 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,26 ; exit -1 ; fi
+ if ! grep -q " 7\.40000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,27 ; exit -1 ; fi
+ if ! grep -q " 2\.20000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,29 ; exit -1 ; fi
+if ! grep -q "D *4 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,30 ; exit -1 ; fi
+ if ! grep -q " 3\.70800000E+01 * 3\.29000E-02" t75.gbs ; then echo NOT Passes ERROR 2,31 ; exit -1 ; fi
+ if ! grep -q " 1\.01000000E+01 * 1\.787418E-01" t75.gbs ; then echo NOT Passes ERROR 2,32 ; exit -1 ; fi
+ if ! grep -q " 3\.2200000E+00 * 4\.487657E-01" t75.gbs ; then echo NOT Passes ERROR 2,33 ; exit -1 ; fi
+ if ! grep -q " 9\.628000E-01 * 5\.876361E-01" t75.gbs ; then echo NOT Passes ERROR 2,34 ; exit -1 ; fi
+if ! grep -q "D *1 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,35 ; exit -1 ; fi
+ if ! grep -q " 2\.262000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,36 ; exit -1 ; fi
+if ! grep -q "O *0" t75.gbs ; then echo NOT Passes ERROR 2,38 ; exit -1 ; fi
+if ! grep -q "N *0" t75.gbs ; then echo NOT Passes ERROR 2,41 ; exit -1 ; fi
+if ! grep -q "C *0" t75.gbs ; then echo NOT Passes ERROR 2,44 ; exit -1 ; fi
+if ! grep -q "H *0" t75.gbs ; then echo NOT Passes ERROR 2,47 ; exit -1 ; fi
+if ! grep -q "P3 *0" t75.gbs ; then echo NOT Passes ERROR 2,50 ; exit -1 ; fi
+if ! grep -q "S *2 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,51 ; exit -1 ; fi
+ if ! grep -q " 1\.5160000E+00 * -5\.862089E-01" t75.gbs ; then echo NOT Passes ERROR 2,52 ; exit -1 ; fi
+ if ! grep -q " 3\.369000E-01 * 1\.2994376E+00" t75.gbs ; then echo NOT Passes ERROR 2,53 ; exit -1 ; fi
+ if ! grep -q " 1\.211000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,55 ; exit -1 ; fi
+if ! grep -q "P *2 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,56 ; exit -1 ; fi
+ if ! grep -q " 3\.7050000E+00 * -6\.91472E-02" t75.gbs ; then echo NOT Passes ERROR 2,57 ; exit -1 ; fi
+ if ! grep -q " 3\.934000E-01 * 1\.0161988E+00" t75.gbs ; then echo NOT Passes ERROR 2,58 ; exit -1 ; fi
+ if ! grep -q " 1\.190000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,60 ; exit -1 ; fi
+ if ! grep -q " 2\.98000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,62 ; exit -1 ; fi
+ if ! grep -q " 3\.640000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,64 ; exit -1 ; fi
+if ! grep -q "O5 *0" t75.gbs ; then echo NOT Passes ERROR 2,66 ; exit -1 ; fi
+if ! grep -q "S *7 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,67 ; exit -1 ; fi
+ if ! grep -q " 7\.8170000000E+03 * 1\.1760E-03" t75.gbs ; then echo NOT Passes ERROR 2,68 ; exit -1 ; fi
+ if ! grep -q " 1\.1760000000E+03 * 8\.9680E-03" t75.gbs ; then echo NOT Passes ERROR 2,69 ; exit -1 ; fi
+ if ! grep -q " 2\.732000000E+02 * 4\.28680E-02" t75.gbs ; then echo NOT Passes ERROR 2,70 ; exit -1 ; fi
+ if ! grep -q " 8\.11700000E+01 * 1\.439300E-01" t75.gbs ; then echo NOT Passes ERROR 2,71 ; exit -1 ; fi
+ if ! grep -q " 2\.71800000E+01 * 3\.556300E-01" t75.gbs ; then echo NOT Passes ERROR 2,72 ; exit -1 ; fi
+ if ! grep -q " 9\.5320000E+00 * 4\.612480E-01" t75.gbs ; then echo NOT Passes ERROR 2,73 ; exit -1 ; fi
+ if ! grep -q " 3\.4140000E+00 * 1\.402060E-01" t75.gbs ; then echo NOT Passes ERROR 2,74 ; exit -1 ; fi
+ if ! grep -q " 9\.5320000E+00 * -1\.541530E-01" t75.gbs ; then echo NOT Passes ERROR 2,76 ; exit -1 ; fi
+ if ! grep -q " 9\.398000E-01 * 1\.0569140E+00" t75.gbs ; then echo NOT Passes ERROR 2,77 ; exit -1 ; fi
+ if ! grep -q " 2\.846000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,79 ; exit -1 ; fi
+if ! grep -q "P *4 *1.000 *" t75.gbs ; then echo NOT Passes ERROR 2,80 ; exit -1 ; fi
+ if ! grep -q " 3\.51800000E+01 * 1\.95800E-02" t75.gbs ; then echo NOT Passes ERROR 2,81 ; exit -1 ; fi
+ if ! grep -q " 7\.9040000E+00 * 1\.242000E-01" t75.gbs ; then echo NOT Passes ERROR 2,82 ; exit -1 ; fi
+ if ! grep -q " 2\.3050000E+00 * 3\.947140E-01" t75.gbs ; then echo NOT Passes ERROR 2,83 ; exit -1 ; fi
+ if ! grep -q " 7\.171000E-01 * 6\.273760E-01" t75.gbs ; then echo NOT Passes ERROR 2,84 ; exit -1 ; fi
+ if ! grep -q " 2\.137000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,86 ; exit -1 ; fi
+ if ! grep -q " 6\.73000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,88 ; exit -1 ; fi
+ if ! grep -q " 9\.610000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,90 ; exit -1 ; fi
+if ! grep -q "N9 *0" t75.gbs ; then echo NOT Passes ERROR 2,92 ; exit -1 ; fi
+if ! grep -q "N11 *0" t75.gbs ; then echo NOT Passes ERROR 2,95 ; exit -1 ; fi
+ if ! grep -q " 5\.9090000000E+03 * 1\.1900E-03" t75.gbs ; then echo NOT Passes ERROR 2,100 ; exit -1 ; fi
+ if ! grep -q " 8\.875000000E+02 * 9\.0990E-03" t75.gbs ; then echo NOT Passes ERROR 2,101 ; exit -1 ; fi
+ if ! grep -q " 2\.047000000E+02 * 4\.41450E-02" t75.gbs ; then echo NOT Passes ERROR 2,102 ; exit -1 ; fi
+ if ! grep -q " 5\.98400000E+01 * 1\.504640E-01" t75.gbs ; then echo NOT Passes ERROR 2,103 ; exit -1 ; fi
+ if ! grep -q " 2\.00000000E+01 * 3\.567410E-01" t75.gbs ; then echo NOT Passes ERROR 2,104 ; exit -1 ; fi
+ if ! grep -q " 7\.1930000E+00 * 4\.465330E-01" t75.gbs ; then echo NOT Passes ERROR 2,105 ; exit -1 ; fi
+ if ! grep -q " 2\.6860000E+00 * 1\.456030E-01" t75.gbs ; then echo NOT Passes ERROR 2,106 ; exit -1 ; fi
+ if ! grep -q " 7\.1930000E+00 * -1\.604050E-01" t75.gbs ; then echo NOT Passes ERROR 2,108 ; exit -1 ; fi
+ if ! grep -q " 7\.000000E-01 * 1\.0582150E+00" t75.gbs ; then echo NOT Passes ERROR 2,109 ; exit -1 ; fi
+ if ! grep -q " 2\.133000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,111 ; exit -1 ; fi
+ if ! grep -q " 2\.67900000E+01 * 1\.82540E-02" t75.gbs ; then echo NOT Passes ERROR 2,113 ; exit -1 ; fi
+ if ! grep -q " 5\.9560000E+00 * 1\.164610E-01" t75.gbs ; then echo NOT Passes ERROR 2,114 ; exit -1 ; fi
+ if ! grep -q " 1\.7070000E+00 * 3\.901780E-01" t75.gbs ; then echo NOT Passes ERROR 2,115 ; exit -1 ; fi
+ if ! grep -q " 5\.314000E-01 * 6\.371020E-01" t75.gbs ; then echo NOT Passes ERROR 2,116 ; exit -1 ; fi
+ if ! grep -q " 1\.654000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,118 ; exit -1 ; fi
+ if ! grep -q " 5\.33000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,120 ; exit -1 ; fi
+ if ! grep -q " 7\.360000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,122 ; exit -1 ; fi
+if ! grep -q "C12 *0" t75.gbs ; then echo NOT Passes ERROR 2,124 ; exit -1 ; fi
+ if ! grep -q " 2\.2631010E+00 * 4\.965480E-01" t75.gbs ; then echo NOT Passes ERROR 2,126 ; exit -1 ; fi
+ if ! grep -q " 1\.7731860E+00 * -4\.223910E-01" t75.gbs ; then echo NOT Passes ERROR 2,127 ; exit -1 ; fi
+ if ! grep -q " 4\.086190E-01 * -5\.993560E-01" t75.gbs ; then echo NOT Passes ERROR 2,128 ; exit -1 ; fi
+ if ! grep -q " 1\.391750E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,130 ; exit -1 ; fi
+ if ! grep -q " 8\.3830250E+00 * -3\.85440E-02" t75.gbs ; then echo NOT Passes ERROR 2,132 ; exit -1 ; fi
+ if ! grep -q " 1\.9931320E+00 * -2\.031850E-01" t75.gbs ; then echo NOT Passes ERROR 2,133 ; exit -1 ; fi
+ if ! grep -q " 5\.595430E-01 * -4\.981760E-01" t75.gbs ; then echo NOT Passes ERROR 2,134 ; exit -1 ; fi
+ if ! grep -q " 1\.561260E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,136 ; exit -1 ; fi
+if ! grep -q "C13 *0" t75.gbs ; then echo NOT Passes ERROR 2,138 ; exit -1 ; fi
+if ! grep -q "C15 *0" t75.gbs ; then echo NOT Passes ERROR 2,152 ; exit -1 ; fi
+if ! grep -q "C17 *0" t75.gbs ; then echo NOT Passes ERROR 2,166 ; exit -1 ; fi
+if ! grep -q "C19 *0" t75.gbs ; then echo NOT Passes ERROR 2,180 ; exit -1 ; fi
+if ! grep -q "C21 *0" t75.gbs ; then echo NOT Passes ERROR 2,194 ; exit -1 ; fi
+if ! grep -q "C22 *0" t75.gbs ; then echo NOT Passes ERROR 2,208 ; exit -1 ; fi
+if ! grep -q "C24 *0" t75.gbs ; then echo NOT Passes ERROR 2,222 ; exit -1 ; fi
+if ! grep -q "C26 *0" t75.gbs ; then echo NOT Passes ERROR 2,236 ; exit -1 ; fi
+if ! grep -q "C28 *0" t75.gbs ; then echo NOT Passes ERROR 2,250 ; exit -1 ; fi
+if ! grep -q "C56 *0" t75.gbs ; then echo NOT Passes ERROR 2,264 ; exit -1 ; fi
+ if ! grep -q " 4\.2330000000E+03 * 1\.2200E-03" t75.gbs ; then echo NOT Passes ERROR 2,266 ; exit -1 ; fi
+ if ! grep -q " 6\.349000000E+02 * 9\.3420E-03" t75.gbs ; then echo NOT Passes ERROR 2,267 ; exit -1 ; fi
+ if ! grep -q " 1\.461000000E+02 * 4\.54520E-02" t75.gbs ; then echo NOT Passes ERROR 2,268 ; exit -1 ; fi
+ if ! grep -q " 4\.25000000E+01 * 1\.546570E-01" t75.gbs ; then echo NOT Passes ERROR 2,269 ; exit -1 ; fi
+ if ! grep -q " 1\.41900000E+01 * 3\.588660E-01" t75.gbs ; then echo NOT Passes ERROR 2,270 ; exit -1 ; fi
+ if ! grep -q " 5\.1480000E+00 * 4\.386320E-01" t75.gbs ; then echo NOT Passes ERROR 2,271 ; exit -1 ; fi
+ if ! grep -q " 1\.9670000E+00 * 1\.459180E-01" t75.gbs ; then echo NOT Passes ERROR 2,272 ; exit -1 ; fi
+ if ! grep -q " 5\.1480000E+00 * -1\.683670E-01" t75.gbs ; then echo NOT Passes ERROR 2,274 ; exit -1 ; fi
+ if ! grep -q " 4\.962000E-01 * 1\.0600910E+00" t75.gbs ; then echo NOT Passes ERROR 2,275 ; exit -1 ; fi
+ if ! grep -q " 1\.533000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,277 ; exit -1 ; fi
+ if ! grep -q " 1\.81600000E+01 * 1\.85390E-02" t75.gbs ; then echo NOT Passes ERROR 2,279 ; exit -1 ; fi
+ if ! grep -q " 3\.9860000E+00 * 1\.154360E-01" t75.gbs ; then echo NOT Passes ERROR 2,280 ; exit -1 ; fi
+ if ! grep -q " 1\.1430000E+00 * 3\.861880E-01" t75.gbs ; then echo NOT Passes ERROR 2,281 ; exit -1 ; fi
+ if ! grep -q " 3\.594000E-01 * 6\.401140E-01" t75.gbs ; then echo NOT Passes ERROR 2,282 ; exit -1 ; fi
+ if ! grep -q " 1\.146000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,284 ; exit -1 ; fi
+ if ! grep -q " 3\.11000E-02 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,286 ; exit -1 ; fi
+ if ! grep -q " 5\.870000E-01 * 1\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,288 ; exit -1 ; fi
+if ! grep -q "PD *0" t75.gbs ; then echo NOT Passes ERROR 2,291 ; exit -1 ; fi
+if ! grep -q "PD-ECP *3 *28" t75.gbs ; then echo NOT Passes ERROR 2,292 ; exit -1 ; fi
+if ! grep -q "f-ul *potential *" t75.gbs ; then echo NOT Passes ERROR 2,293 ; exit -1 ; fi
+if ! grep -q " *5" t75.gbs ; then echo NOT Passes ERROR 2,294 ; exit -1 ; fi
+ if ! grep -q "0 5\.983336444E+02 * -5\.63177E-02" t75.gbs ; then echo NOT Passes ERROR 2,295 ; exit -1 ; fi
+ if ! grep -q "1 1\.624298290E+02 * -2\.01288036E+01" t75.gbs ; then echo NOT Passes ERROR 2,296 ; exit -1 ; fi
+ if ! grep -q "2 5\.15714771E+01 * -1\.058197923E+02" t75.gbs ; then echo NOT Passes ERROR 2,297 ; exit -1 ; fi
+ if ! grep -q "2 1\.64888260E+01 * -4\.25733345E+01" t75.gbs ; then echo NOT Passes ERROR 2,298 ; exit -1 ; fi
+ if ! grep -q "2 5\.8287656E+00 * -3\.6165086E+00" t75.gbs ; then echo NOT Passes ERROR 2,299 ; exit -1 ; fi
+if ! grep -q "s-ul *potential *" t75.gbs ; then echo NOT Passes ERROR 2,300 ; exit -1 ; fi
+ if ! grep -q "0 7\.33806304E+01 * 3\.0003651E+00" t75.gbs ; then echo NOT Passes ERROR 2,302 ; exit -1 ; fi
+ if ! grep -q "1 1\.47550438E+01 * 3\.24350093E+01" t75.gbs ; then echo NOT Passes ERROR 2,303 ; exit -1 ; fi
+ if ! grep -q "2 1\.78350204E+01 * 4\.590830383E+02" t75.gbs ; then echo NOT Passes ERROR 2,304 ; exit -1 ; fi
+ if ! grep -q "2 1\.27111477E+01 * -8\.680629029E+02" t75.gbs ; then echo NOT Passes ERROR 2,305 ; exit -1 ; fi
+ if ! grep -q "2 9\.3292063E+00 * 5\.144726098E+02" t75.gbs ; then echo NOT Passes ERROR 2,306 ; exit -1 ; fi
+if ! grep -q "p-ul *potential *" t75.gbs ; then echo NOT Passes ERROR 2,307 ; exit -1 ; fi
+ if ! grep -q "0 5\.56689877E+01 * 4\.9593099E+00" t75.gbs ; then echo NOT Passes ERROR 2,309 ; exit -1 ; fi
+ if ! grep -q "1 6\.42337771E+01 * 2\.11711029E+01" t75.gbs ; then echo NOT Passes ERROR 2,310 ; exit -1 ; fi
+ if ! grep -q "2 1\.76254952E+01 * 6\.050560092E+02" t75.gbs ; then echo NOT Passes ERROR 2,311 ; exit -1 ; fi
+ if ! grep -q "2 1\.19058155E+01 * -7\.269641846E+02" t75.gbs ; then echo NOT Passes ERROR 2,312 ; exit -1 ; fi
+ if ! grep -q "2 8\.5100832E+00 * 3\.963274883E+02" t75.gbs ; then echo NOT Passes ERROR 2,313 ; exit -1 ; fi
+if ! grep -q "d-ul *potential *" t75.gbs ; then echo NOT Passes ERROR 2,314 ; exit -1 ; fi
+ if ! grep -q "0 4\.99994728E+01 * 3\.0508745E+00" t75.gbs ; then echo NOT Passes ERROR 2,316 ; exit -1 ; fi
+ if ! grep -q "1 3\.97477547E+01 * 2\.22506580E+01" t75.gbs ; then echo NOT Passes ERROR 2,317 ; exit -1 ; fi
+ if ! grep -q "2 1\.14321366E+01 * 6\.748357698E+02" t75.gbs ; then echo NOT Passes ERROR 2,318 ; exit -1 ; fi
+ if ! grep -q "2 9\.1790080E+00 * -1\.0408554048E+03" t75.gbs ; then echo NOT Passes ERROR 2,319 ; exit -1 ; fi
+ if ! grep -q "2 7\.5624429E+00 * 5\.059375147E+02" t75.gbs ; then echo NOT Passes ERROR 2,320 ; exit -1 ; fi
+if ! grep -q "FE-ECP *2 *10" t75.gbs ; then echo NOT Passes ERROR 2,322 ; exit -1 ; fi
+if ! grep -q " *3" t75.gbs ; then echo NOT Passes ERROR 2,324 ; exit -1 ; fi
+ if ! grep -q "1 3\.926149787E+02 * -1\.00000000E+01" t75.gbs ; then echo NOT Passes ERROR 2,325 ; exit -1 ; fi
+ if ! grep -q "2 7\.11756979E+01 * -6\.32667518E+01" t75.gbs ; then echo NOT Passes ERROR 2,326 ; exit -1 ; fi
+ if ! grep -q "2 1\.77320281E+01 * -1\.09613338E+01" t75.gbs ; then echo NOT Passes ERROR 2,327 ; exit -1 ; fi
+ if ! grep -q "0 1\.260571895E+02 * 3\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,330 ; exit -1 ; fi
+ if ! grep -q "1 1\.381264251E+02 * 1\.81729137E+01" t75.gbs ; then echo NOT Passes ERROR 2,331 ; exit -1 ; fi
+ if ! grep -q "2 5\.42098858E+01 * 3\.391231164E+02" t75.gbs ; then echo NOT Passes ERROR 2,332 ; exit -1 ; fi
+ if ! grep -q "2 9\.2837966E+00 * 3\.171068012E+02" t75.gbs ; then echo NOT Passes ERROR 2,333 ; exit -1 ; fi
+ if ! grep -q "2 8\.6289082E+00 * -2\.073421649E+02" t75.gbs ; then echo NOT Passes ERROR 2,334 ; exit -1 ; fi
+ if ! grep -q "0 8\.31759490E+01 * 5\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,337 ; exit -1 ; fi
+ if ! grep -q "1 1\.060559938E+02 * 5\.9535930E+00" t75.gbs ; then echo NOT Passes ERROR 2,338 ; exit -1 ; fi
+ if ! grep -q "2 4\.28284937E+01 * 2\.942665527E+02" t75.gbs ; then echo NOT Passes ERROR 2,339 ; exit -1 ; fi
+ if ! grep -q "2 8\.7701805E+00 * 1\.544244635E+02" t75.gbs ; then echo NOT Passes ERROR 2,340 ; exit -1 ; fi
+ if ! grep -q "2 8\.0397818E+00 * -9\.53164249E+01" t75.gbs ; then echo NOT Passes ERROR 2,341 ; exit -1 ; fi
+if ! grep -q "P-ECP *2 *10" t75.gbs ; then echo NOT Passes ERROR 2,343 ; exit -1 ; fi
+ if ! grep -q "1 4\.621211423E+02 * -1\.00000000E+01" t75.gbs ; then echo NOT Passes ERROR 2,346 ; exit -1 ; fi
+ if ! grep -q "2 9\.36863701E+01 * -7\.94864658E+01" t75.gbs ; then echo NOT Passes ERROR 2,347 ; exit -1 ; fi
+ if ! grep -q "2 2\.12349094E+01 * -2\.83668251E+01" t75.gbs ; then echo NOT Passes ERROR 2,348 ; exit -1 ; fi
+ if ! grep -q "2 6\.3388415E+00 * -9\.8577589E+00" t75.gbs ; then echo NOT Passes ERROR 2,349 ; exit -1 ; fi
+ if ! grep -q "2 2\.0620684E+00 * -1\.0163783E+00" t75.gbs ; then echo NOT Passes ERROR 2,350 ; exit -1 ; fi
+ if ! grep -q "0 7\.80831823E+01 * 3\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,353 ; exit -1 ; fi
+ if ! grep -q "1 5\.89576810E+01 * 1\.29104154E+01" t75.gbs ; then echo NOT Passes ERROR 2,354 ; exit -1 ; fi
+ if ! grep -q "2 3\.60571255E+01 * 1\.500250298E+02" t75.gbs ; then echo NOT Passes ERROR 2,355 ; exit -1 ; fi
+ if ! grep -q "2 1\.12464453E+01 * 7\.17083146E+01" t75.gbs ; then echo NOT Passes ERROR 2,356 ; exit -1 ; fi
+ if ! grep -q "2 2\.6757561E+00 * 2\.30397012E+01" t75.gbs ; then echo NOT Passes ERROR 2,357 ; exit -1 ; fi
+if ! grep -q " *6" t75.gbs ; then echo NOT Passes ERROR 2,359 ; exit -1 ; fi
+ if ! grep -q "0 7\.51617880E+01 * 5\.0000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,360 ; exit -1 ; fi
+ if ! grep -q "1 5\.74544041E+01 * 6\.3446507E+00" t75.gbs ; then echo NOT Passes ERROR 2,361 ; exit -1 ; fi
+ if ! grep -q "2 4\.79481748E+01 * 1\.985585104E+02" t75.gbs ; then echo NOT Passes ERROR 2,362 ; exit -1 ; fi
+ if ! grep -q "2 1\.84588360E+01 * 1\.111470820E+02" t75.gbs ; then echo NOT Passes ERROR 2,363 ; exit -1 ; fi
+ if ! grep -q "2 5\.9414190E+00 * 4\.03944144E+01" t75.gbs ; then echo NOT Passes ERROR 2,364 ; exit -1 ; fi
+ if ! grep -q "2 1\.8487507E+00 * 6\.4483233E+00" t75.gbs ; then echo NOT Passes ERROR 2,365 ; exit -1 ; fi
+if ! grep -q "C-ECP *3 *2" t75.gbs ; then echo NOT Passes ERROR 2,367 ; exit -1 ; fi
+if ! grep -q " *1" t75.gbs ; then echo NOT Passes ERROR 2,369 ; exit -1 ; fi
+ if ! grep -q "2 1\.000000000E+00 * 0.000000000E+00" t75.gbs ; then echo NOT Passes ERROR 2,370 ; exit -1 ; fi
+ if ! grep -q "2 6\.401052000E+00 * 3\.3121638000E+01" t75.gbs ; then echo NOT Passes ERROR 2,373 ; exit -1 ; fi
+ if ! grep -q "2 7\.307747000E+00 * -1\.986257000E+00" t75.gbs ; then echo NOT Passes ERROR 2,376 ; exit -1 ; fi
+ if ! grep -q "2 5\.961796000E+00 * -9\.454318000E+00" t75.gbs ; then echo NOT Passes ERROR 2,379 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t75.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 3
+exit -1
+fi

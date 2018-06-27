@@ -1,0 +1,73 @@
+#!/bin/bash
+
+grep -q ' C19:Fe1 ' t30.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+grep -q ' Fe1:C19 ' t30.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+grep -q 'Mol.1 BESCAF  Ang.ang-2 C15:Fe1:C16 = 97.78' t30.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+grep -q 'Mol.1 BESCAF  Dih.dihBLA-3 C15:Fe1:C16:O6 = -45.922' t30.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 4
+  exit -1
+fi
+
+grep -q ' C69:Fe1 ' t30.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 5
+  exit -1
+fi
+grep -q ' Fe1:C69 ' t30.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 6
+  exit -1
+fi
+grep -q 'Mol.2 CEPKOZ  Dst.dist-1 C35:O9 = 1.178' t30.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 7
+  exit -1
+fi
+grep -q 'Mol.2 CEPKOZ  Dst.dist-4 Fe1:S3 = 2.275' t30.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 8
+  exit -1
+fi
+
+grep -q ' C17:Fe3:C17 = 0.0' t30.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 9
+  exit -1
+fi
+grep -q ' C17:Fe3:C17:O9 = 0.0' t30.log
+if [ $? != 1 ] ; then
+  echo NOT Passed 10
+  exit -1
+fi
+grep -q 'Mol.3 FEXKUQ  Ang.ang-2 C17:Fe3:C19 = 97.378' t30.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 11
+  exit -1
+fi
+grep -q 'Mol.3 FEXKUQ  Dst.dist-4 Fe3:S4 = 2.172' t30.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 12
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t30.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed 13
+exit -1
+fi

@@ -1,0 +1,16 @@
+VERBOSITY: 1
+TASK: GenerateBasisSet
+INFILE: ../t78-mol.sdf
+OUTFILE: t78.gbs
+$STARTAtomSpecificBasisSet:
+Element H Name LANL2DZ
+Element C Name LANL2DZ
+Element N Name LANL2DZ
+Element O Name LANL2DZ
+Element S Name LANL2DZ
+Element P Name LANL2DZ
+Element Fe Name LANL2DZ
+Element Pd Link ../data/basisset/gaussian/PD__cc-PVDZ-PP.gbs
+Element Pd link ../data/basisset/gaussian/PD__aug-cc-PVDZ-PP_diffuse.gbs
+$END
+FORMAT: Gaussian

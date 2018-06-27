@@ -1,0 +1,6 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 3
+TASK: EvaluateNWChemOutput
+INFILE: ../t64-nwc.out

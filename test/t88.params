@@ -1,0 +1,14 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 0
+TASK: ExtractVibModuleForceConstants
+MOLFILE: ../t88.sdf
+VMFILE: ../t88.vmout
+#INTCOORDBYSMARTS: [c] [P] STR
+$STARTINTCOORDBYSMARTS: [Pd] [P] STR
+[C] [$([#8]=[#6])] STR
+[Pd] [P] [c] BND
+[#1] [c] [c] [c] OOP
+[Fe] [C] [P] [c] TOR
+$END

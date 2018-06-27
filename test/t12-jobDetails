@@ -1,0 +1,27 @@
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
+rutSection# $MTjobType=SP
+rutSection# $KVscf_$KVVShift=400
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=5
+rutSection# $MTiop=iop(1/19=11)
+titSection# Testing AutoCompChem - 2 Dec 2013
+--link1--
+lnkSection# Nprocshared=8
+lnkSection# mem=28GB
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=OLYP
+rutSection# $MTmodel_BasisSet=STO-3G
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=SP
+rutSection# $KVscf_$KVVShift=800
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=5
+titSection# second step of 
+titSection# Testing AutoCompChem - 2 Dec 2013

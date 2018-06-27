@@ -1,0 +1,39 @@
+#!/bin/bash
+
+grep -q 'Found 2 dummy atoms' t46.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+
+grep -q 'Dummy atoms list: 2' t46.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+
+grep -q 'Dummy atoms list: 41' t46.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+
+if [ ! -f t46-out.sdf ] ; then
+  echo NOT Passed 4
+  exit -1
+fi
+
+remainingDu=$(grep " Du " t46-out.sdf -c)
+if [ "$remainingDu" != "12" ] ; then
+  echo NOT Passed 5
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t46.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 6
+  exit -1
+fi

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+grep -q -i "C4 frg:2 ord:0" t59.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -i -q "C10 frg:3 ord:0" t59.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -i -q "Si14 frg:1 ord:0" t59.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -i -q "H42 frg:1 ord:8" t59.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+grep -i -q "H45 frg:2 ord:23" t59.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 5
+exit -1
+fi
+
+grep -i -q "H36 frg:3 ord:14" t59.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 6
+exit -1
+fi
+
+grep -q -i 'Termination status: 0' t59.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 7
+exit -1
+fi

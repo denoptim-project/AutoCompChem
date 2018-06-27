@@ -1,0 +1,26 @@
+#!/bin/bash
+
+n=$(grep -i -c " 0\.415.* 0\.156.* \-3\.298.* N " t90-mod.sdf)
+if [ $n != 5 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -i -q "\-0\.153.* \-0\.109.* \-0\.447.* Ru " t90-mod.sdf ; if [ $? != 0 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+grep -i -q "\-0\.118.* 0\.036.* \-0\.419.* Ru " t90-mod.sdf ; if [ $? != 0 ] ; then echo NOT Passes ERROR 107 ; exit -1 ; fi
+
+grep -i -q "\-0\.084.* 0\.182.* \-0\.391.* Ru " t90-mod.sdf ; if [ $? != 0 ] ; then echo NOT Passes ERROR 208 ; exit -1 ; fi
+
+grep -i -q "\-0\.049.* 0\.327.* \-0\.363.* Ru " t90-mod.sdf ; if [ $? != 0 ] ; then echo NOT Passes ERROR 309 ; exit -1 ; fi
+
+grep -i -q "\-0\.014.* 0\.473.* \-0\.33.* Ru " t90-mod.sdf ; if [ $? != 0 ] ; then echo NOT Passes ERROR 410 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t90.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 2
+exit -1
+fi

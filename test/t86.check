@@ -1,0 +1,26 @@
+#!/bin/bash
+
+grep -q ' C4:O8 ' t86.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 1
+  exit -1
+fi
+grep -q ' F7:C1:C4 ' t86.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+grep -q 'Mol.1 M0001  Dst.dist-3 C1:F7 = 1.4877' t86.log
+if [ $? != 0 ] ; then
+  echo NOT Passed 3
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t86.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed 4
+exit -1
+fi

@@ -1,0 +1,10 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: AddDummyAtoms
+LINEARITIES: do linearities
+PLANARITIES: do planarities
+SOURCEATOMS: 16
+INFILE: ../t106-mol.sdf
+OUTFILE: t106-out.sdf

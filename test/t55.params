@@ -1,0 +1,10 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Read and interprete NWChem output file
+#
+VERBOSITY: 2
+TASK: EvaluateNWChemOutput
+INFILE: ../t55-nwc.out 
+JOBDETAILS: ../t55.jobDetails
+NWCHEMERRORS: ../data/errorsDefAndFix/nwchem6.3
