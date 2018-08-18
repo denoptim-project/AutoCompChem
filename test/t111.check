@@ -1,0 +1,46 @@
+#!/bin/bash
+
+grep -q -i "DFT Energy: -117.767629696489 53.243 298.15 63.564 74.85  TRANSITION STATE" t111.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -q -i "ignoring imaginary mode -93.28" t111.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -q -i "changing sing to imaginary mode -12.74" t111.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -q -i "scaling frequency 12.74 to 100.0" t111.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+n=$(grep -c -i "ignoring frequency 0.005" t111.log)
+if [ $n != 2 ] ; then
+echo NOT Passed ERROR 5
+exit -1
+fi
+
+grep -q -i "scaling frequency 12.58 to 100.0" t111.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 6
+exit -1
+fi
+
+grep -q 'Termination status: 0' t111.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 7
+exit -1
+fi

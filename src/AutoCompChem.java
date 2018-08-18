@@ -412,6 +412,13 @@ TODO
                 break;
             }
 
+            case "ALIGNATOMLISTS":
+            {
+                MolecularReorderer mReor = new MolecularReorderer(params);
+                mReor.alignAtomList();
+                break;
+            }
+
 /*
             case "":
             {
