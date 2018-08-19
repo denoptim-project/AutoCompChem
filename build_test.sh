@@ -166,6 +166,10 @@ echo " "
 echo "BUILDING DONE!"
 echo " "
 echo "Testing AutoCompChem..."
+if [ ! -d $tst/results ]
+then
+  mkdir $tst/results
+fi
 cd $tst/results
 rm -rf $tst/results/*
 

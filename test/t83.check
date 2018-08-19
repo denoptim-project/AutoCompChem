@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep -q -i "DFT Energy: -117.767629696489 0.084848 298.15 63.564 TRANSITION STATE" t83.log
+grep -q -i "DFT Energy: -117.767629696489 0.084848 298.15 63.564  TRANSITION STATE" t83.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 1
 exit -1
