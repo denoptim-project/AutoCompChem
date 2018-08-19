@@ -98,6 +98,9 @@ old=$(pwd)
 if [ -f "$jar/AutoCompChem.jar" ]; then
     rm $jar/AutoCompChem.jar
 fi
+if [ ! -d "$jar" ]; then
+    mkdir "$jar"
+fi
 
 # Check version of Java compiler
 javaVersion=$("$javaDir/javac" -version 2>&1 | awk '{print $2}')
