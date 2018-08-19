@@ -10,7 +10,7 @@
 # Default settings
 ACCHome=$(pwd)
 recompUibKvT="Yes"
-UIBKvantHOME="$ACCHome/../uibkvant"
+UIBKvantHOME="$ACCHome/../UiBKvant"
 uivkvantVersion="1.0"
 javaDir="/usr/bin"
 
