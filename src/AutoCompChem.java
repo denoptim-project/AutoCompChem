@@ -50,6 +50,8 @@ import uibkvant.molecule.sorting.MolecularSorter;
 import uibkvant.molecule.chelation.ChelateAnalyzer;
 import uibkvant.molecule.dummyobjects.DummyObjectsHandler;
 import uibkvant.molecule.intcoords.zmatrix.ZMatrixHandler;
+import uibkvant.perception.PerceptronTest;
+import uibkvant.files.FilesAnalyzer;
 
 /**
  * AtomCompChem (Automated Computational Chemist) is a tool meant for 
@@ -418,6 +420,18 @@ TODO
                 mReor.alignAtomList();
                 break;
             }
+
+            case "TESTPERCEPTRON":
+            {
+		PerceptronTest.runTestLogParse();
+                break;
+            }
+
+	    case "TESTTXTEXTRACTOR":
+	    {
+		FilesAnalyzer.testExtractMapOfTxtBlocksWithDelimiters();
+		break;
+	    }
 
 /*
             case "":
