@@ -100,7 +100,7 @@ beginning label), and an well defined end (label <code>$END</code>). Labeled
 blocks are used to provide complex information to AutoCompChem, that is, 
 information that is not interpreted by AutoCompChem in the first place, but is
 sent and deployed by one of the tools/routines made available in subsidiary 
-libraries (i.e., uibkvant).</li>
+libraries (i.e., uibkvant). The special meaning of the dollar sign can be escaped like in a bash script by using the backslash sign (&#92;) in front of any special character. Foe example, only the second dollar sign of the string "&#92;$end$end" is interpreted as such, while the first is escaped. As a result, AutoCompChem will interpret the second instance of "$end" as the end of a labeled block, while the first "$end" is threated as bare text.</li>
 <li><b>Comments</b>: each line starting with "<code>#</code>" is ignored unless 
 is part of a labeled block.</li>
 </ul>
