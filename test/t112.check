@@ -1,0 +1,28 @@
+#!/bin/bash
+
+grep -q -i "File:../t112-nwc.out Steps:1 NormalTerm:false Error:e6.0-AutoZ_failure" t112.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -i -q "^START *restart-t112" restart-t112.nw
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+n=$(grep -c "RESTART" restart-t112.nw)
+if [ $n != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -q 'Termination status: 0' t112.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 4
+exit -1
+fi
