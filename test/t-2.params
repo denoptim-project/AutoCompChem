@@ -1,5 +1,0 @@
-#
-# Parameters for Automated Computational Chemistry
-#
-VERBOSITY: 1
-TASK: TestTxtExtractor
