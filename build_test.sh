@@ -180,7 +180,7 @@ rm -rf $tst/results/*
 runAll=true
 #runAll=false
 
-totTests="112"
+totTests="113"
 if $runAll == true 
 then
     for i in $(seq 1 $totTests)

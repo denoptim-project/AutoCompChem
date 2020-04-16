@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ ! -f "t113.log" ]; then echo NOT Passed ERROR 1; exit -1 ; fi
+if [ ! -f "t113_final.sdf" ]; then echo NOT Passed ERROR 2; exit -1 ; fi
+
+n=0;n=$(grep -c "^VibS: scaling frequency" t113.log)
+if [ $n -ne 11 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c " TRANSITION STATE" t113.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "226.174 208" t113.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t113.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 6
+exit -1
+fi
+
