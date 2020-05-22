@@ -153,7 +153,7 @@ echo >> manifest.mf
 
 # Make archive
 find ./ -name "*.class" > compiled.txt
-$javaDir/jar cvfm AutoCompChem.jar manifest.mf *.class $lib/uibkvant-$uivkvantVersion.jar $lib/cdk-1.4.14.jar $lib/guava-20.0.jar
+$javaDir/jar cvfm AutoCompChem.jar manifest.mf *.class
 if [ ! -f "AutoCompChem.jar" ]; then
     echo " "
     echo "ERROR while making jar file"
