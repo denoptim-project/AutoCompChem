@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 3
 TASK: EvaluateGaussianOutput
 INFILE: ../t113_g16.out
 TEMPLATECONNECTIVITY: ../t113_tmpl.sdf

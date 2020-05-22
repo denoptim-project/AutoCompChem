@@ -24,7 +24,7 @@ echo NOT Passed ERROR 5
 exit -1
 fi
 
-n=$(grep -c -i "RESTART[[:space:]]*restart-t82 " restart-t82.nw)
+n=$(grep -c -i "^RESTART " restart-t82.nw)
 if [ $n != 1 ] ; then
 echo NOT Passed ERROR 6
 exit -1

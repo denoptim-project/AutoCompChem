@@ -14,7 +14,7 @@ ErrorMessage: Either AUTOZ failed or your geometry has
 Action: REDO_STEP_ALTERING_DIRECTIVES
 #Details of this action:
 $STARTimpose_directives:
-$DIR_START
+$DIR_START $MT_name=blablabla
 $DIR_TITLE $MT_title="Error fix for AUTOZ failure"
 $DIR_geometry $MT_autoz=noautoz
 $END
