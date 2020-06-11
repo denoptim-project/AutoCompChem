@@ -73,6 +73,7 @@ public class AutoCompChem
         printInit();
         if (args.length != 1)
         {
+//TODO more than one ars can be used to give params for more than one task
             printUsage();
             Terminator.withMsgAndStatus("ERROR! AutoCompChem requires "
 			+ "one (and only one) argument.",1);
