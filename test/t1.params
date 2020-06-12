@@ -6,5 +6,4 @@
 VERBOSITY: 2
 TASK: EvaluateGaussianOutput
 INFILE: ../t1-mol.out
-JOBDETAILS: none
 GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03

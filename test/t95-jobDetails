@@ -19,12 +19,15 @@ rutSection# $KVscf_$KVMaxCycle=280
 rutSection# $KVSCRF_$MTmodel=pcm
 rutSection# $KVSCRF_$KVsolvent=benzene
 rutSection# $KVSCRF_$MTopts=read
+rutSection# $KVpop_$MTnbo=nbo6read
+optSection# $MTnbo=$START\$NBO 1st row
+2nd row 
+3rd row \$END$END
 optSection# $MTpcm=$STARTradii=UAHF
 pcmdoc
 Dis
 Rep
-Cav
-$END
+Cav$END
 titSection# SP+PCM(benzene)
 --link1--
 rutSection# $MTprint=P

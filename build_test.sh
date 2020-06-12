@@ -153,7 +153,7 @@ echo >> manifest.mf
 
 # Make archive
 find ./ -name "*.class" > compiled.txt
-$javaDir/jar cvfm AutoCompChem.jar manifest.mf *.class $lib/uibkvant-$uivkvantVersion.jar $lib/cdk-1.4.14.jar $lib/guava-20.0.jar
+$javaDir/jar cvfm AutoCompChem.jar manifest.mf *.class
 if [ ! -f "AutoCompChem.jar" ]; then
     echo " "
     echo "ERROR while making jar file"
@@ -180,7 +180,7 @@ rm -rf $tst/results/*
 runAll=true
 #runAll=false
 
-totTests="111"
+totTests="113"
 if $runAll == true 
 then
     for i in $(seq 1 $totTests)
@@ -201,7 +201,7 @@ then
         fi
     done
 else
-    n=109
+    n=113
     echo "###############"
     echo "Running test $n"
     rm -f $tst/results/*
