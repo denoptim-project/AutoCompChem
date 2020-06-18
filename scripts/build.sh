@@ -96,7 +96,7 @@ function build() {
     echo "Building AutoCompChem"
 
     # Clean traces of old jar
-    rm -f jar/AutoCompChem.jar
+    rm -f AutoCompChem.jar
     
     # Check version of Java compiler
     javaVersion=$("$javaDir/javac" -version 2>&1 | awk '{print $2}')
@@ -144,9 +144,9 @@ function build() {
     
     # Make archive
     find ./ -name "*.class" > compiled.txt
-    $javaDir/jar cvfm jar/AutoCompChem.jar manifest.mf autocompchem
+    $javaDir/jar cvfm AutoCompChem.jar manifest.mf autocompchem
     # And check
-    if [ ! -f "jar/AutoCompChem.jar" ]; then
+    if [ ! -f "AutoCompChem.jar" ]; then
         echo "###########################################"
         echo "Cannot make AutoCompChem.jar"
         echo "###########################################"
@@ -167,7 +167,7 @@ function unitTesting() {
     echo "Starting unit testing"
 
     #Run all JUnit tests
-    java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:jar/AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:jar/AutoCompChem.jar --details=tree
+    java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:AutoCompChem.jar --details=tree
 
     # To run a specific test in a class
     #java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:uibkvant-1.0.jar -c uibkvant.run.JobFactoryTest
@@ -212,7 +212,7 @@ function functionalityTesting() {
         echo " "
         echo "Running test $i/${#chosenTests[@]}"
         log=t$i.log
-        $javaDir/java -jar $ACCHome/jar/AutoCompChem.jar  ../t$i.params > $log 2>&1
+        $javaDir/java -jar $ACCHome/AutoCompChem.jar  ../t$i.params > $log 2>&1
     
         ../t$i.check
     
