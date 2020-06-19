@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.errorhandling;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -17,16 +19,11 @@ package autocompchem.chemsoftware.errorhandling;
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.File;
 import java.util.Collections;
 
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
 import autocompchem.files.FilesComparatorByName;
+import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 
 /**

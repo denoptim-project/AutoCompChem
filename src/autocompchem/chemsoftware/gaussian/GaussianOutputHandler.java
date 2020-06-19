@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.util.ArrayList;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,9 +20,8 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.vecmath.Point3d;
@@ -32,19 +33,19 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.files.FilesAnalyzer;
 import autocompchem.atom.AtomUtils;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
+import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.files.FilesAnalyzer;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 /**
- * Reader and analyzer of Gaussian Output files. 
+ * Reader and analyser of Gaussian Output files. 
  * 
  * @author Marco Foscato
  */
@@ -587,7 +588,7 @@ public class GaussianOutputHandler
                     {
                         double temp = 0.0d;
                         double e = 0.0d;
-                        double corrZP = 0.0d;
+                        //double corrZP = 0.0d;
                         double corrH = 0.0d;
                         double corrS = 0.0d;
                         double traS = 0.0d;
@@ -1043,14 +1044,12 @@ public class GaussianOutputHandler
 
                                 //Get the current value of the counter
                                 int counterValue = -1;
-                                boolean counterFound = false;
                                 for (int it=0; it<tail.size(); it++)
                                 {
                                     String line = tail.get(it);
                                     line = line.toUpperCase();
                                     if (line.contains(counterName))
                                     {
-                                        counterFound = true;
                                         if (verbosity > 3)
                                         {
                                             System.out.println("Counter " 

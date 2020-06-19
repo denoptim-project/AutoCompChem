@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.qmmm;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,9 +20,8 @@ package autocompchem.chemsoftware.qmmm;
  */
 
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import autocompchem.run.Terminator;
 

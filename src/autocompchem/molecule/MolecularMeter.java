@@ -1,5 +1,8 @@
 package autocompchem.molecule;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,21 +21,17 @@ package autocompchem.molecule;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
 import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.molecule.MolecularUtils;
 
 /**
  * MolecularMeter collects measuring tools for molecular quantities
@@ -54,11 +53,6 @@ public class MolecularMeter
      * Pathname to the file containing the molecules to analyze
      */
     private String inFile;
-
-    /**
-     * Pathname to the file where to write the output
-     */
-    private String outFile;
 
     /**
      * Map of the SMARTS queries used to define the quantities to measure

@@ -1,57 +1,35 @@
 package autocompchem.ui;
 
-/*
- *   AutoCompChem
- *   Copyright (C) 2014 Marco Foscato
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.ArrayList;
 import java.util.Date;
 
-import java.lang.Throwable;
-
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.generic.GenericToolOutputHandler;
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
-import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
+import autocompchem.chemsoftware.generic.GenericToolOutputHandler;
+import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
-import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.qmmm.QMMMInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.modeling.forcefield.AtomTypeMatcher;
+import autocompchem.modeling.forcefield.ForceFieldEditor;
 import autocompchem.molecule.MolecularComparator;
 import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularMutator;
 import autocompchem.molecule.MolecularPruner;
 import autocompchem.molecule.MolecularReorderer;
-import autocompchem.molecule.MolecularGeometryEditor;
-import autocompchem.molecule.connectivity.ConnectivityGenerator;
-import autocompchem.run.Terminator;
-import autocompchem.modeling.forcefield.AtomTypeMatcher;
-import autocompchem.modeling.forcefield.ForceFieldEditor;
-import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.molecule.atomclashes.AtomClashAnalyzer;
-import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.molecule.chelation.ChelateAnalyzer;
+import autocompchem.molecule.connectivity.ConnectivityGenerator;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
+import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
-import autocompchem.files.FilesAnalyzer;
+import autocompchem.molecule.sorting.MolecularSorter;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 /**
  * Main for AtomCompChem (Automated Computational Chemist). The entry point

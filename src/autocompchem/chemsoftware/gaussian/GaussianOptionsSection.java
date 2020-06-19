@@ -18,14 +18,14 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
-import autocompchem.utils.StringUtils;
-import autocompchem.parameters.ParameterUtils;
 import autocompchem.parameters.ParameterConstants;
+import autocompchem.parameters.ParameterUtils;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 
 /**
  * Object representing "Options Section" of Gaussian input files

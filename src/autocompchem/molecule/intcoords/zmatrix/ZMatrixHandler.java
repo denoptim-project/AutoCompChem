@@ -1,5 +1,7 @@
 package autocompchem.molecule.intcoords.zmatrix;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,33 +20,31 @@ package autocompchem.molecule.intcoords.zmatrix;
  */
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Comparator;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.Atom;
-import org.openscience.cdk.Bond;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.MolecularReorderer;
-import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 
 /**

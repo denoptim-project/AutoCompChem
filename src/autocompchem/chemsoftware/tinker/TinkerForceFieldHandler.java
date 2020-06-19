@@ -19,23 +19,22 @@ package autocompchem.chemsoftware.tinker;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Map;
-import java.util.Date;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
 
 import org.openscience.cdk.AtomType;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
 import autocompchem.atom.AtomUtils;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.forcefield.ForceConstant;
-import autocompchem.modeling.forcefield.EquilibriumValue;
+import autocompchem.modeling.forcefield.ForceFieldConstants;
 import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.modeling.forcefield.ForceFieldParamsSet;
-import autocompchem.modeling.forcefield.ForceFieldConstants;
+import autocompchem.run.Terminator;
 
 
 /**

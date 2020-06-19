@@ -1,5 +1,10 @@
 package autocompchem.modeling.forcefield;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 /*   
  *   Copyright (C) 2017  Marco Foscato 
  *
@@ -18,10 +23,6 @@ package autocompchem.modeling.forcefield;
  */
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 import com.google.common.math.StatsAccumulator;
 

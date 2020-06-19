@@ -1,5 +1,7 @@
 package autocompchem.perception;
 
+import java.io.BufferedReader;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,23 +20,20 @@ package autocompchem.perception;
  */
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.TreeMap;
-import java.util.Iterator;
-import java.io.BufferedReader;
 
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.FileAsSource;
-import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelBase;
-import autocompchem.perception.circumstance.*;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.InfoChannelTypeComparator;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.text.TextAnalyzer;
 import autocompchem.run.Terminator;
+import autocompchem.text.TextAnalyzer;
 
 /**
  * Perceptron is a neuron that uses  

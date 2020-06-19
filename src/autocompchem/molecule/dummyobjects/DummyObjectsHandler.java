@@ -1,5 +1,8 @@
 package autocompchem.molecule.dummyobjects;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -19,32 +22,28 @@ package autocompchem.molecule.dummyobjects;
 
 
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.openscience.cdk.Bond;
 import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.io.IOtools;
-import autocompchem.atom.AtomUtils;
 import autocompchem.atom.AtomConstants;
-import autocompchem.run.Terminator;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.utils.ThreeDimensionalSpaceUtils;
-import autocompchem.utils.NumberUtils;
-import autocompchem.io.SDFIterator;
+import autocompchem.atom.AtomUtils;
 import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
+import autocompchem.molecule.MolecularUtils;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
+import autocompchem.utils.ThreeDimensionalSpaceUtils;
 
 /**
  * DummyObjectsHandler is a tool to handle dummy objects, such as dummy atoms 

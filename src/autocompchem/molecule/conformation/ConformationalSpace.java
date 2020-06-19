@@ -18,13 +18,7 @@ package autocompchem.molecule.conformation;
  */
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.smarts.ManySMARTSQuery;
 
 
 /**

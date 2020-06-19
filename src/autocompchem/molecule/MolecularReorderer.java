@@ -1,5 +1,9 @@
 package autocompchem.molecule;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,33 +22,21 @@ package autocompchem.molecule;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.Bond;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.geometry.alignment.KabschAlignment;
-import org.openscience.cdk.smsd.Isomorphism;
-import org.openscience.cdk.smsd.interfaces.Algorithm;
-import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IBond;
 
-//TODO remove: use utils
-import javax.vecmath.Point3d;
-
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
 import autocompchem.files.FilesManager;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
-import autocompchem.molecule.geometry.ComparatorOfGeometries;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 /**
  * Reorderer for atom lists. This tool allows to reorganize list atoms 
@@ -101,9 +93,10 @@ import autocompchem.molecule.geometry.ComparatorOfGeometries;
 public class MolecularReorderer
 {
     /**
-     * Flag inticating the input is from file
+     * Flag indicating the input is from file
      */
-    private boolean inpFromFile = false;
+    @SuppressWarnings("unused")
+	private boolean inpFromFile = false;
 
     /**
      * Name of the input file
@@ -116,7 +109,7 @@ public class MolecularReorderer
     private String refFile;
 
     /**
-     * Flag inticating the output is to be written to file
+     * Flag indicating the output is to be written to file
      */
     private boolean outToFile = false;
 
@@ -126,7 +119,7 @@ public class MolecularReorderer
     private String outFile;
 
     /**
-     * Flag inticating SMARTS-controlled reorganization (default: NO)
+     * Flag indicating SMARTS-controlled reorganisation (default: NO)
      */
     private boolean useSmarts = false;
 
@@ -138,7 +131,8 @@ public class MolecularReorderer
     /**
      * FLag reporting that all tasks are done
      */
-    private boolean allDone = false;
+    @SuppressWarnings("unused")
+	private boolean allDone = false;
 
     /**
      * Name of the atom property used to stamp a visited atom
@@ -322,7 +316,7 @@ public class MolecularReorderer
                 // NB: the information about the new atom order is stored
                 // in the properties of each Atom
 		ArrayList<Integer> usedTrg = new ArrayList<Integer>();
-		for (Map.Entry e : refToInAtmMap.entrySet())
+		for (Map.Entry<Integer, Integer> e : refToInAtmMap.entrySet())
 		{
 		    IAtom atm = mol.getAtom((Integer) e.getValue());
 		    atm.setProperty(ordCounter,(Integer) e.getKey());

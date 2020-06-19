@@ -19,7 +19,6 @@ package autocompchem.molecule.intcoords;
 
 import java.util.ArrayList;
 
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.run.Terminator;

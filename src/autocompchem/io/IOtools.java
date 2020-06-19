@@ -18,38 +18,36 @@ package autocompchem.io;
  */
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.Molecule;
-import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
-import org.openscience.cdk.io.XYZReader;
-import org.openscience.cdk.io.SDFWriter;
-import org.openscience.cdk.io.XYZWriter;
+import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.io.MDLV2000Reader;
+import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.io.XYZReader;
+import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
-import org.openscience.cdk.ChemFile;
-import org.openscience.cdk.exception.CDKException;
 
-import autocompchem.run.Terminator;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
-import autocompchem.utils.StringUtils;
+import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.utils.StringUtils;
 
 
 /**
@@ -1049,7 +1047,8 @@ public class IOtools
         System.err.println("Press <RETURN> to continue");
         try
         {
-            int inchar = System.in.read();
+            @SuppressWarnings("unused")
+			int inchar = System.in.read();
         }
         catch (IOException e)
         {

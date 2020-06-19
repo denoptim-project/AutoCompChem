@@ -1,5 +1,7 @@
 package autocompchem.utils;
 
+import java.util.regex.Matcher;
+
 /*   
  *   Copyright (C) 2017  Marco Foscato 
  *
@@ -18,9 +20,6 @@ package autocompchem.utils;
  */
 
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
-import autocompchem.run.Terminator;
 
 /**
  * Toolbox for strings

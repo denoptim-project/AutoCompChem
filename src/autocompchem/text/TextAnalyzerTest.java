@@ -1,5 +1,14 @@
 package autocompchem.text;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -19,17 +28,8 @@ package autocompchem.text;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.io.BufferedReader;
-import java.io.StringReader;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-
-import autocompchem.io.IOtools;
 
 
 /**

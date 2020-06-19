@@ -1,5 +1,8 @@
 package autocompchem.molecule.atomclashes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,21 +21,19 @@ package autocompchem.molecule.atomclashes;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
-import autocompchem.files.FilesManager;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.atom.AtomUtils;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 /**
  * AtomClashAnalyzer is a tool that analyzes interatomic distances and report
@@ -331,7 +332,6 @@ public class AtomClashAnalyzer
             {
                 //Get the molecule
                 i++;
-                boolean skipMol = false;
                 IAtomContainer mol = sdfItr.next();
                 String molName = MolecularUtils.getNameOrID(mol);
 
@@ -433,7 +433,6 @@ public class AtomClashAnalyzer
                     {
                         continue;
                     }
-                    ArrayList<IAtom> atomsMatched = new ArrayList<IAtom>();
                     List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(key);
                     for (List<Integer> innerList : allMatches)
                     {
@@ -626,7 +625,8 @@ public class AtomClashAnalyzer
         ArrayList<AtomClash> acs = results.get(i);
         
         //find closes
-        AtomClash worstac;
+        @SuppressWarnings("unused")
+		AtomClash worstac;
         double worstoverlap = 0.0;
         for (AtomClash ac : acs)
         {

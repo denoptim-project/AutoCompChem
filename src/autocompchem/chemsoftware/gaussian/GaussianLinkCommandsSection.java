@@ -1,5 +1,9 @@
 package autocompchem.chemsoftware.gaussian; 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,9 +22,6 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 /**
  * Object representing "Link 0 command" section of Gaussian input files

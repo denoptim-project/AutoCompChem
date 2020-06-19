@@ -1,4 +1,4 @@
-package autocompchem.util;
+package autocompchem.utils;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -18,8 +18,6 @@ package autocompchem.util;
  */
 
 import java.util.Comparator;
-
-import autocompchem.utils.NumberUtils;
 
 /**
  * Comparator for trings that embedd numbers

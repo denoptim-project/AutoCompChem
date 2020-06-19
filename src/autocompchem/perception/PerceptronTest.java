@@ -19,20 +19,21 @@ package autocompchem.perception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import org.junit.jupiter.api.Test;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.io.FileWriter;
 
-import autocompchem.perception.circumstance.MatchText;
+import org.junit.jupiter.api.Test;
+
 import autocompchem.perception.circumstance.CountTextMatches;
+import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.EnvironmentAsSource;
 import autocompchem.perception.infochannel.FileAsSource;
-import autocompchem.perception.infochannel.ShortTextAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.ShortTextAsSource;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 

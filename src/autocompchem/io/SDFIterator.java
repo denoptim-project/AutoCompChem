@@ -19,14 +19,11 @@ package autocompchem.io;
 
 import java.io.FileInputStream;
 
-import java.lang.Throwable;
-
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.iterator.IteratingMDLReader;
 
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.run.Terminator;
 
 /**
  * Extension of the IteratingSDFReader that allows to read molecules from an 
@@ -41,10 +38,6 @@ import autocompchem.run.Terminator;
 
 public class SDFIterator extends IteratingMDLReader
 {
-
-    //Name of the input file
-    private String inFile;
-
     //Counter for molecules
     private int nnn;
 
@@ -64,7 +57,6 @@ public class SDFIterator extends IteratingMDLReader
 	super(new FileInputStream(inFile), 
 					DefaultChemObjectBuilder.getInstance());
 	this.nnn = 0;
-	this.inFile = inFile;
 	this.separator = "\\s+";
     }
 
@@ -83,7 +75,6 @@ public class SDFIterator extends IteratingMDLReader
 	super(new FileInputStream(inFile), 
 					DefaultChemObjectBuilder.getInstance());
         this.nnn = 0;
-        this.inFile = inFile;
         this.separator = separator;
     }
 

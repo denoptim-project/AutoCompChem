@@ -18,18 +18,11 @@ package autocompchem.perception;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import autocompchem.io.IOtools;
-import autocompchem.perception.concept.*;
-import autocompchem.perception.circumstance.*;
-import autocompchem.perception.*;
-import autocompchem.perception.infochannel.*;
+import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.Situation;
 
 

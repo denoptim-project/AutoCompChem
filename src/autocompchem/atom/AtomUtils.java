@@ -1,5 +1,8 @@
 package autocompchem.atom;
 
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.config.IsotopeFactory;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -19,8 +22,6 @@ package autocompchem.atom;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IElement;
-import org.openscience.cdk.config.IsotopeFactory;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 import autocompchem.run.Terminator;
@@ -34,10 +35,6 @@ import autocompchem.run.Terminator;
 
 public class AtomUtils
 {
-
-    //Reporting flag
-    private static int repOnScreen = 0;
-
 
 //------------------------------------------------------------------------------
 
@@ -67,10 +64,8 @@ public class AtomUtils
     {
 	double r = 0.0;
 
-//      TODO use Elements (CDK 1.5)
-	PeriodicTable pt = new PeriodicTable();
         try {
-            r = pt.getVdwRadius(elSymbol);
+            r = PeriodicTable.getVdwRadius(elSymbol);
 
 //          TODO use Elements (CDK 1.5)
 //          Elements e = Elements.ofString(elSymbol);
@@ -99,14 +94,14 @@ public class AtomUtils
     {
 	boolean res = false;
         IsotopeFactory ifact = null;
-        IElement el = null;
         try {
             //Identify the element
             ifact = IsotopeFactory.getInstance(
                                         DefaultChemObjectBuilder.getInstance());
             if (ifact.isElement(symbol))
             {
-                el = ifact.getElement(symbol);
+            	@SuppressWarnings("unused")
+				IElement el = ifact.getElement(symbol);
 		res = true;
             }
         } catch (Throwable t) {

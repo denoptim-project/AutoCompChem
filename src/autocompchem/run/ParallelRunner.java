@@ -1,5 +1,8 @@
 package autocompchem.run;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -18,15 +21,13 @@ package autocompchem.run;
  */
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.Future;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
 
 
 /**

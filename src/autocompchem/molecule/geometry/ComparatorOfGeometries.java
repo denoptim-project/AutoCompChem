@@ -1,5 +1,8 @@
 package autocompchem.molecule.geometry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,39 +21,23 @@ package autocompchem.molecule.geometry;
  */
 
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.SortedMap;
-import java.util.Collection;
 
 import javax.vecmath.Point3d;
 
-import com.google.common.collect.Collections2;
-
 import org.openscience.cdk.Atom;
+import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.geometry.alignment.KabschAlignment;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IBond.Order;
-import org.openscience.cdk.interfaces.IBond.Stereo;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.smsd.Isomorphism;
 import org.openscience.cdk.smsd.interfaces.Algorithm;
-import org.openscience.cdk.geometry.alignment.KabschAlignment;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.CDKConstants;
 
 import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.molecule.coordinationgeometry.*;
-import autocompchem.molecule.connectivity.*;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.geometry.DistanceMatrix;
+import autocompchem.run.Terminator;
 
 /**
  * Tool to compare two molecular geometries

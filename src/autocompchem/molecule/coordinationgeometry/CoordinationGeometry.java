@@ -1,5 +1,7 @@
 package autocompchem.molecule.coordinationgeometry;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -18,10 +20,6 @@ package autocompchem.molecule.coordinationgeometry;
  */
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
 import javax.vecmath.Point3d;
 

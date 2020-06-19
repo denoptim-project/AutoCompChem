@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.util.ArrayList;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,20 +20,15 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import autocompchem.io.IOtools;
-import autocompchem.files.FilesManager;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
+import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
-
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
  * Restarts a NWChem job that returned an error. The tool evaluates
@@ -121,7 +118,8 @@ public class NWChemReStarter
     /**
      * Name of the errors definition tree
      */
-    private ArrayList<ErrorMessage> errorDef;
+    @SuppressWarnings("unused")
+	private ArrayList<ErrorMessage> errorDef;
 
     /**
      * Flag requiring to restart last task

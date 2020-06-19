@@ -1,5 +1,8 @@
 package autocompchem.molecule;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,33 +21,23 @@ package autocompchem.molecule;
  */
 
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.SortedMap;
-import java.util.Collection;
 
-import org.openscience.cdk.Atom;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IBond.Order;
-import org.openscience.cdk.interfaces.IBond.Stereo;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.CDKConstants;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.molecule.coordinationgeometry.*;
-import autocompchem.molecule.connectivity.*;
-import autocompchem.molecule.geometry.ComparatorOfGeometries;
-import autocompchem.geometry.DistanceMatrix;
 import autocompchem.constants.ACCConstants;
+import autocompchem.files.FilesManager;
+import autocompchem.geometry.DistanceMatrix;
+import autocompchem.io.IOtools;
+import autocompchem.molecule.connectivity.ConnectivityUtils;
+import autocompchem.molecule.coordinationgeometry.CoordinationGeometry;
+import autocompchem.molecule.coordinationgeometry.CoordinationGeometryReferences;
+import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
+import autocompchem.molecule.geometry.ComparatorOfGeometries;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 
 /**
@@ -482,6 +475,8 @@ public class MolecularComparator
                         + " MAD= " + mad;
 
         //Compare both against reference geometries with same CN
+        
+        // TODO: check why we get null if CoordinationGeometryReferences is accessed as static
         CoordinationGeometryReferences cgRefs = new
                                                CoordinationGeometryReferences();
         List<CoordinationGeometry> allReference = 

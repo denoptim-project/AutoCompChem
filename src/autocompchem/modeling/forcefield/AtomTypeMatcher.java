@@ -1,5 +1,8 @@
 package autocompchem.modeling.forcefield;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,20 +21,18 @@ package autocompchem.modeling.forcefield;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
 import autocompchem.files.FilesManager;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 /**
  * AtomTypeMatcher implements the facility to assign atom types according to a

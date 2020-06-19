@@ -18,8 +18,8 @@ package autocompchem.modeling.forcefield;
  */
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Object representing the force constant of a specific force field energy 
@@ -31,6 +31,11 @@ import java.util.HashMap;
 public class ForceConstant implements Serializable
 {
     /**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = 3144879372240681881L;
+
+	/**
      * Reference name
      */
     private String name = "noname";

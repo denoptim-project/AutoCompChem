@@ -18,6 +18,7 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.ArrayList;
+
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.interfaces.IAtom;

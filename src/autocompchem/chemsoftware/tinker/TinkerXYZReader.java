@@ -19,18 +19,18 @@ package autocompchem.chemsoftware.tinker;
 
 import java.util.ArrayList;
 
-import autocompchem.io.IOtools;
-import autocompchem.molecule.connectivity.ConnectivityTable;
-import autocompchem.run.Terminator;
-
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
+
+import autocompchem.io.IOtools;
+import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.run.Terminator;
 
 /**
  * Reader for Tinker XYZ files. This class is only a quick and dirty fix of
@@ -41,10 +41,6 @@ import org.openscience.cdk.interfaces.IBond;
 
 public class TinkerXYZReader
 {
-
-    //Input filename
-    private String filename;
-
 
 //------------------------------------------------------------------------------
 

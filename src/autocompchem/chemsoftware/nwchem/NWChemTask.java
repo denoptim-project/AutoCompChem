@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,13 +20,10 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Collections;
+import java.util.Map;
 
 import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
@@ -1168,7 +1167,8 @@ public class NWChemTask
      * particular the setDirective, setKeyword, and setDataDirective methods.
      */
 
-    private void testRecursiveAlterations()
+    @SuppressWarnings("unused")
+	private void testRecursiveAlterations()
     {
         System.out.println("-------------- TESTING CODE --------------");
         NWChemKeyword kp = new NWChemKeyword("key1",true,

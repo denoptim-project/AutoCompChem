@@ -1,41 +1,22 @@
-package autocompchem.molecule;
+package autocompchem.molecule.geometry;
 
-/*   
- *   Copyright (C) 2017  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
 import autocompchem.files.FilesManager;
-import autocompchem.parameters.ParameterStorage;
+import autocompchem.io.IOtools;
+import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
-import autocompchem.molecule.geometry.ComparatorOfGeometries;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 
 /**

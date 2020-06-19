@@ -1,5 +1,8 @@
 package autocompchem.molecule.coordinationgeometry;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -18,21 +21,9 @@ package autocompchem.molecule.coordinationgeometry;
  */
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.Collection;
 
 import com.google.common.collect.Collections2;
 
-import java.io.IOException;
-
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 
 /**

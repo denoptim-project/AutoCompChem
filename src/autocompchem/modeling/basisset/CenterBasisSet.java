@@ -1,5 +1,7 @@
 package autocompchem.modeling.basisset;
 
+import java.util.ArrayList;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,7 +20,6 @@ package autocompchem.modeling.basisset;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 
 import autocompchem.run.Terminator;
 

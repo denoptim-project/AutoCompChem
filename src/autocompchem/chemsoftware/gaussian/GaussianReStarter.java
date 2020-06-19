@@ -19,18 +19,15 @@ package autocompchem.chemsoftware.gaussian;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
-
-import autocompchem.io.IOtools;
-import autocompchem.files.FilesManager;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
-import autocompchem.chemsoftware.errorhandling.ErrorManager;
-import autocompchem.run.Terminator;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 /**
  * Restarts a Gaussian job that returned an error. The tool evaluates
@@ -102,11 +99,6 @@ public class GaussianReStarter
      * Specification of the gaussian job
      */
     private GaussianJob gaussJob;
-
-    /**
-     * Name of root folder of the errors definition tree
-     */
-    private ArrayList<ErrorMessage> errorDef;
 
     /**
      * Verbosity level
@@ -195,16 +187,6 @@ public class GaussianReStarter
         }
         FilesManager.foundAndPermissions(jdFile,true,false,false);
         this.gaussJob = new GaussianJob(jdFile);
-
-        //Get and check the list of known errors
-        String errDefPath = 
-                params.getParameter("GAUSSIANERRORS").getValue().toString();
-        if (verbosity > 0)
-        {
-            System.out.println(" Importing known errors from " + errDefPath);
-        }
-        FilesManager.foundAndPermissions(errDefPath,true,false,false);
-        this.errorDef = ErrorManager.getAll(errDefPath);
     }
 
 //------------------------------------------------------------------------------
@@ -228,13 +210,12 @@ public class GaussianReStarter
      * @param verbosity verbosity level
      */
 
-    public GaussianReStarter(String filename, String newinp, GaussianJob gJob, 
-              ArrayList<ErrorMessage> gaussErr, int verbosity)
+    public GaussianReStarter(String filename, String newinp, GaussianJob gJob,
+    		int verbosity)
     {
         this.inFile = filename;
         this.inpFile = newinp;
         this.gaussJob = gJob;
-        this.errorDef = gaussErr; 
         this.verbosity = verbosity;
     }
 
@@ -377,7 +358,6 @@ public class GaussianReStarter
             case "REDO_STEP_ALTERING_LINK_0_SECTION":
 	    {
                 //Append the failing step and all the steps that never run
-                boolean first = true;
                 for (int i=(failedStepID - 1); i<gaussJob.getNumberOfSteps(); 
 									    i++)
                 {
@@ -405,7 +385,6 @@ public class GaussianReStarter
 		    switch (mRedUnt) {
 			case "MB":
 			{
-			    mRedVal = mRedVal;
 			    break;
 			}
 			case "GB":
@@ -432,7 +411,6 @@ public class GaussianReStarter
                     switch (mOldUnt) {
                         case "MB":
                         {
-                            mOldVal = mOldVal;
 			    break;
                         }       
                         case "GB":
@@ -506,7 +484,6 @@ public class GaussianReStarter
                                                 copyOfOldStep.getRouteSection();
 
                         //Get opts to add to first step
-                        ArrayList<String> optsAsLines = new ArrayList<String>();
                         String optsAsString = details.get(
 							 "IMPOSE_ROUTE_PARAMS");
                         String[] partsOfString = optsAsString.split("\n");
@@ -638,14 +615,6 @@ public class GaussianReStarter
                                 + "option '" + keyToKeep + "' from Link 0 "
                                 + "Section. Option is not found in previous"
                                 + "job detail's file and will not be added!");
-                            //A more restrictive setting 
-                            if (false) 
-                            {    
-                            Terminator.withMsgAndStatus("ERROR! Cannot keep "
-                                + "option '" + keyToKeep + "' from Link 0 "
-                                + "Section. Option not found in previous"
-                                + "job detail's file!",-1);
-                            }
                         }
 
                         //Apply on all additional steps
@@ -682,13 +651,6 @@ public class GaussianReStarter
                                 + "option '" + keyToKeep + "' from Route "
                                 + "Section. Option is not found in previous"
                                 + "job detail's file and will not be added!");
-                            //A more restrictive setting 
-                            if (false)
-                            {
-                            Terminator.withMsgAndStatus("ERROR! Cannot keep "
-                                + "option '" + keyToKeep + "' from Route "
-                                + "Section. Option not found!",-1);
-                            }
                         }
 
                     } else if (line.startsWith(GaussianConstants.KEYMOLSEC)) {

@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.qmmm;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,13 +20,12 @@ package autocompchem.chemsoftware.qmmm;
  */
 
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Collections;
+import java.util.Map;
 
-import autocompchem.io.*;
+import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 
 /**
@@ -567,7 +568,8 @@ public class QMMMJob
      * particular the setSection, setKeyword, and setList methods.
      */
 
-    private void testRecursiveAlterations()
+    @SuppressWarnings("unused")
+	private void testRecursiveAlterations()
     {
         System.out.println("-------------- TESTING CODE --------------");
         QMMMKeyword kp = new QMMMKeyword("key1",true,

@@ -1,5 +1,9 @@
 package autocompchem.perception.situation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,12 +22,9 @@ package autocompchem.perception.situation;
  */
 
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.ArrayList;
 
-import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.infochannel.InfoChannelType;
 
 
 /**

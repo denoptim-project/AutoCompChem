@@ -1,5 +1,8 @@
 package autocompchem.atom;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /*   
  *   Copyright (C) 2017  Marco Foscato 
  *
@@ -18,8 +21,6 @@ package autocompchem.atom;
  */
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 /**
  * Storage of predefined constants related to atoms

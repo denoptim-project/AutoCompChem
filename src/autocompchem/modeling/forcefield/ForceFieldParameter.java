@@ -1,5 +1,14 @@
 package autocompchem.modeling.forcefield;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -19,15 +28,6 @@ package autocompchem.modeling.forcefield;
 
 import org.openscience.cdk.AtomType;
 
-import java.io.Serializable;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
 /**
  * Object representing a force field parameter
  *
@@ -37,6 +37,11 @@ import java.util.HashMap;
 public class ForceFieldParameter implements Serializable
 {
     /**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = -586719556948482942L;
+
+	/**
      * Reference name
      */
     private String name = "noname";

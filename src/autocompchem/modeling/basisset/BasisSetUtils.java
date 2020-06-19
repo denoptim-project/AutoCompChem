@@ -20,8 +20,8 @@ package autocompchem.modeling.basisset;
 import java.util.ArrayList;
 
 import autocompchem.io.IOtools;
-import autocompchem.utils.NumberUtils;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 
 
 /**

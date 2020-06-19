@@ -1,5 +1,10 @@
 package autocompchem.perception.infochannel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,13 +23,6 @@ package autocompchem.perception.infochannel;
  */
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import autocompchem.perception.infochannel.InfoChannelType;
 
 /**
  * A list of information channels

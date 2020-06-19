@@ -1,5 +1,7 @@
 package autocompchem.perception.infochannel;
 
+import java.io.FileReader;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -18,8 +20,6 @@ package autocompchem.perception.infochannel;
  */
 
 import java.io.Reader;
-import java.io.FileReader;
-import java.util.ArrayList;
 
 import autocompchem.files.FilesManager;
 import autocompchem.run.Terminator;

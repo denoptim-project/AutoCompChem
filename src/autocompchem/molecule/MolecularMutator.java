@@ -1,5 +1,8 @@
 package autocompchem.molecule;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,25 +21,21 @@ package autocompchem.molecule;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
 import org.openscience.cdk.Atom;
-import org.openscience.cdk.Bond;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
 import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.molecule.connectivity.ConnectivityUtils;
 
 /**
  * Mutates the identity of specific atoms. 
@@ -50,9 +49,10 @@ import autocompchem.molecule.connectivity.ConnectivityUtils;
 public class MolecularMutator
 {
     /**
-     * Flag inticating the input is from file
+     * Flag indicating the input is from file
      */
-    private boolean inpFromFile = false;
+    @SuppressWarnings("unused")
+	private boolean inpFromFile = false;
 
     /**
      * Name of the input file
@@ -60,7 +60,7 @@ public class MolecularMutator
     private String inFile;
 
     /**
-     * Flag inticating the output is to be written to file
+     * Flag indicating the output is to be written to file
      */
     private boolean outToFile = false;
 

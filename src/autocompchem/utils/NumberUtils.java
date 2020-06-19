@@ -20,8 +20,6 @@ package autocompchem.utils;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 
-import autocompchem.run.Terminator;
-
 /**
  * Toolbox for numbers
  * 

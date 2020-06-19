@@ -18,30 +18,30 @@ package autocompchem.chemsoftware.spartan;
  */
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
-import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IBond.Order;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.files.FilesAnalyzer;
 import autocompchem.atom.AtomUtils;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.constants.ACCConstants;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
+import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.constants.ACCConstants;
+import autocompchem.files.FilesAnalyzer;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 /**
  * Reader and analyzer of Spartan Output files. A defined list of 
@@ -72,11 +72,6 @@ public class SpartanOutputHandler
      * Format for molecular structure output
      */
     private String outFormat = "XYZ";
-
-    /**
-     * Flag reporting the absence of a jobdetails file
-     */
-    private boolean noJobDetails = false;
 
     /**
      * List of known errors messages
@@ -585,14 +580,12 @@ public class SpartanOutputHandler
 
                                 //Get the current value of the counter
                                 int counterValue = -1;
-                                boolean counterFound = false;
                                 for (int it=0; it<tail.size(); it++)
                                 {
                                     String line = tail.get(it);
                                     line = line.toUpperCase();
                                     if (line.contains(counterName))
                                     {
-                                        counterFound = true;
                                         if (verbosity > 3)
                                         {
                                             System.out.println("Counter " 

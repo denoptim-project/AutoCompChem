@@ -18,23 +18,16 @@ package autocompchem.chemsoftware.generic;
  */
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
+import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.files.FilesAnalyzer;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 /**
  * Reader and analyzer of GenericTool Output files. A defined list of 
@@ -422,14 +415,12 @@ public class GenericToolOutputHandler
 
 				//Get the current value of the counter
 				int counterValue = -1;
-				boolean counterFound = false;
                                 for (int it=0; it<tail.size(); it++)
                                 {
                                     String line = tail.get(it);
                                     line = line.toUpperCase();
                                     if (line.contains(counterName))
                                     {
-					counterFound = true;
                                         if (verbosity > 2)
                                         {
                                             System.out.println("Counter " 

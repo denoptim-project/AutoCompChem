@@ -1,5 +1,9 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,9 +22,6 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 /**
  * Object representing "Route Section" section of Gaussian input files
@@ -301,7 +302,6 @@ public class GaussianRouteSection
 	//Now all the rest
         for (int i=0; i<order.size(); i++)
         {
-	    String str = "";
 	    String key = order.get(i);
 
 	    //Printing and method already done

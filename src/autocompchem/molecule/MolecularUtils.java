@@ -1,5 +1,8 @@
 package autocompchem.molecule;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -19,26 +22,16 @@ package autocompchem.molecule;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.ChemObject;
-import org.openscience.cdk.Bond;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainerSet;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IBond.Order;
 
 import autocompchem.run.Terminator;
 
@@ -56,7 +49,8 @@ public class MolecularUtils
     //TODO move to constants
     private static String duSymbol = "Du";
     //TODO move to constants
-    private static double linearBendThld = 175.0;
+    @SuppressWarnings("unused")
+	private static double linearBendThld = 175.0;
 
 
 //------------------------------------------------------------------------------

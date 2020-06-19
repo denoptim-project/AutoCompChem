@@ -1,61 +1,34 @@
 package autocompchem.chemsoftware.vibmodule;
 
-/*   
- *   Copyright (C) 2016  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.Set;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomType;
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.AtomType;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond.Order;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainerSet;
-import org.openscience.cdk.CDKConstants;
 
 import com.google.common.math.StatsAccumulator;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
 import autocompchem.files.FilesAnalyzer;
-import autocompchem.atom.AtomUtils;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.constants.ACCConstants;
-import autocompchem.parameters.ParameterStorage;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.modeling.forcefield.EquilibriumValue;
+import autocompchem.modeling.forcefield.ForceConstant;
+import autocompchem.modeling.forcefield.ForceFieldConstants;
+import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
-import autocompchem.util.NumberAwareStringComparator;
-import autocompchem.modeling.forcefield.ForceConstant;
-import autocompchem.modeling.forcefield.EquilibriumValue;
-import autocompchem.modeling.forcefield.ForceFieldParameter;
-import autocompchem.modeling.forcefield.ForceFieldConstants;
+import autocompchem.utils.NumberAwareStringComparator;
 
 /**
  * Reader and analyzer of VibModule Output files. 
@@ -75,11 +48,6 @@ public class VibModuleOutputHandler
      * Name of the molecular representation file
      */
     private String molFile;
-
-    /**
-     * Name of the molecule
-     */
-    private String molName = "none";
 
     /**
      * Name of the output file for tasks run by this worker
@@ -211,7 +179,7 @@ public class VibModuleOutputHandler
         //Get and check the input SDF file (which is the chemical system)
         this.molFile = params.getParameter("MOLFILE").getValue().toString();
         FilesManager.foundAndPermissions(this.molFile,true,false,false);
-        this.molName = FilesManager.getRootOfFileName(this.molFile);
+        //this.molName = FilesManager.getRootOfFileName(this.molFile);
 
         //Get and check the output file
         if (params.contains("OUTFILE"))
@@ -464,7 +432,7 @@ public class VibModuleOutputHandler
                     continue;
                 }
                 String lineUp = line.toUpperCase();
-                String[] words = line.trim().split("\\s+");
+                String[] words = lineUp.trim().split("\\s+");
                 if (line.contains(VibModuleConstants.TITSTRSEC))
                 {
                     nstr = Integer.parseInt(words[0]);

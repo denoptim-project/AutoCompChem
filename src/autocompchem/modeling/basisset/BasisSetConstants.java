@@ -1,5 +1,7 @@
 package autocompchem.modeling.basisset;
 
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,10 +20,9 @@ package autocompchem.modeling.basisset;
  */
 
 import java.util.Map;
-import java.util.HashMap;
 
 /**
- * Storage of predefined constants related to quantum mechnical basis sets
+ * Storage of predefined constants related to quantum mechanical basis sets
  *
  * @author Marco Foscato
  */
@@ -66,7 +67,8 @@ public class BasisSetConstants
     /**
      * Map for converting angular momentum label to integer
      */
-    public final static Map<String,Integer> ANGMOMSTRTOINT = 
+    @SuppressWarnings("serial")
+	public final static Map<String,Integer> ANGMOMSTRTOINT = 
 						   new HashMap<String,Integer>()
     {
 	{
@@ -83,7 +85,8 @@ public class BasisSetConstants
     /**
      * Map for converting angular momentum integer to string label
      */
-    public final static Map<Integer,String> ANGMOMINTTOSTR =
+    @SuppressWarnings("serial")
+	public final static Map<Integer,String> ANGMOMINTTOSTR =
                                                    new HashMap<Integer,String>()
     {
         {

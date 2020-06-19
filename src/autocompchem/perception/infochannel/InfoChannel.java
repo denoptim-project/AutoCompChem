@@ -18,7 +18,6 @@ package autocompchem.perception.infochannel;
  */
 
 import java.io.Reader;
-import java.io.FileReader;
 
 /**
  * Abstract class representing any kind of information source that can be read.

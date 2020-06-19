@@ -1,5 +1,9 @@
 package autocompchem.modeling.basisset;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,23 +22,20 @@ package autocompchem.modeling.basisset;
  */
 
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
-import autocompchem.files.FilesManager;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 
 /**
@@ -598,7 +599,8 @@ public class BasisSetGenerator
      * output file
      */
 
-    private void writeBSRefNamesToOut(IAtomContainer mol)
+    @SuppressWarnings("unused")
+	private void writeBSRefNamesToOut(IAtomContainer mol)
     {
         String allMolStr = "";
         for (int i=0; i<mol.getAtomCount(); i++)

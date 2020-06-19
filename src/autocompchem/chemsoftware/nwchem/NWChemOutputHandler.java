@@ -1,29 +1,10 @@
 package autocompchem.chemsoftware.nwchem;
 
-/*   
- *   Copyright (C) 2016  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.HashMap;
 
 import javax.vecmath.Point3d;
 
@@ -34,17 +15,16 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 
-
-import autocompchem.io.IOtools;
-import autocompchem.constants.ACCConstants;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
+import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.constants.ACCConstants;
+import autocompchem.files.FilesAnalyzer;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 
 /**
  * Reader and analyzer of NWChem Output files. 
@@ -89,16 +69,6 @@ public class NWChemOutputHandler
      * Pathname where to print vibrational modes
      */
     private String outFileVibModes;
-
-    /**
-     * Name of the jobdetails file
-     */
-    private NWChemJob nwcJob;
-
-    /**
-     * Flag reporting the absence of a jobdetails file
-     */
-    private boolean noJobDetails = false;
 
     /**
      * List of known errors messages
@@ -284,6 +254,7 @@ public class NWChemOutputHandler
         if (verbosity > 0)
             System.out.println(" Adding parameters to NWChemOutputHandler");
 
+        /*
         //Get and check the job details file
         if (params.contains("JOBDETAILS"))
         {
@@ -307,6 +278,7 @@ public class NWChemOutputHandler
             }
             noJobDetails = true;
         }
+        */
 
         //Get and check the input file (which is an output from NWChem)
         this.inFile = params.getParameter("INFILE").getValue().toString();
@@ -713,7 +685,6 @@ System.out.println("FILE: "+this.outFileVibModes);
                     {
                         double temp = 0.0d;
                         double e = 0.0d;
-                        double corrZP = 0.0d;
                         double corrH = 0.0d;
                         double corrS = 0.0d;
                         double traS = 0.0d;
@@ -1043,7 +1014,6 @@ System.out.println("FILE: "+this.outFileVibModes);
         {
             //Get the error message of this candidate error
             ArrayList<String> emLines = em.getErrorMessage();
-            int numParts = emLines.size();
 
             if (verbosity > 1)
                 System.out.println(" -> Trying with "+em.getName()+" <-");
@@ -1191,14 +1161,12 @@ System.out.println("FILE: "+this.outFileVibModes);
 
                                 //Get the current value of the counter
                                 int counterValue = -1;
-                                boolean counterFound = false;
                                 for (int it=0; it<tail.size(); it++)
                                 {
                                     String line = tail.get(it);
                                     line = line.toUpperCase();
                                     if (line.contains(counterName))
                                     {
-                                        counterFound = true;
                                         if (verbosity > 3)
                                         {
                                             System.out.println("Counter " 

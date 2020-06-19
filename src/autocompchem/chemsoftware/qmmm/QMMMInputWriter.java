@@ -1,55 +1,24 @@
 package autocompchem.chemsoftware.qmmm;
 
-/*   
- *   Copyright (C) 2016  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Map;
 
-import autocompchem.io.*;
-import autocompchem.chemsoftware.qmmm.*;
-import autocompchem.chemsoftware.tinker.TinkerXYZReader;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
-import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
-import autocompchem.molecule.connectivity.ConnectivityTable;
-import autocompchem.smarts.ManySMARTSQuery;
-
-import javax.vecmath.Point3d;
-
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.AtomContainer;
+
+import autocompchem.chemsoftware.tinker.TinkerXYZReader;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 /**
  * Writes input files for QMMM.

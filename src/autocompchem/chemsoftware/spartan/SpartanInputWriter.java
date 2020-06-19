@@ -18,35 +18,33 @@ package autocompchem.chemsoftware.spartan;
  */
 
 import java.io.File;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-
-import autocompchem.io.*;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.molecule.conformation.ConformationalSpace;
-import autocompchem.molecule.conformation.ConformationalCoordinate;
-import autocompchem.molecule.conformation.ConformationalSpaceBuilder;
-import autocompchem.molecule.conformation.ConformationalMovesDefinition;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.SMARTS;
-import autocompchem.util.NumberAwareStringComparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.interfaces.IBond;
+
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.conformation.ConformationalCoordinate;
+import autocompchem.molecule.conformation.ConformationalMovesDefinition;
+import autocompchem.molecule.conformation.ConformationalSpace;
+import autocompchem.molecule.conformation.ConformationalSpaceBuilder;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.SMARTS;
+import autocompchem.utils.NumberAwareStringComparator;
 
 /**
  * Writes input files for Spartan. 
@@ -679,7 +677,8 @@ public class SpartanInputWriter
      * terminates the program.
      */
 
-    private void checkChargeSpinNotAtDefault()
+    @SuppressWarnings("unused")
+	private void checkChargeSpinNotAtDefault()
     {
         if (charge == DEFNUM)
         {
@@ -707,7 +706,7 @@ public class SpartanInputWriter
     {
         ArrayList<String> lines = new ArrayList<String>();
         lines.add(SpartanConstants.CELLOPN);
-        for (Map.Entry p : mol.getProperties().entrySet())
+        for (Map.Entry<Object, Object> p : mol.getProperties().entrySet())
         {
             lines.add(SpartanConstants.INDENT + p.getKey().toString() + "=" 
                                                      + p.getValue().toString());
@@ -726,7 +725,6 @@ public class SpartanInputWriter
     private ArrayList<String> getInputLines(IAtomContainer mol)
     {
         ArrayList<String> lines = new ArrayList<String>();
-        String ind = SpartanConstants.INDENT;
 
         //Match all SMARTS queries
         ManySMARTSQuery msq = null;
@@ -978,7 +976,6 @@ public class SpartanInputWriter
                     ArrayList<String> keywordParts = smartsOpts.get(
                                                             atmSpecKeyRuleName);
 
-                    boolean skipRule = false;
                     if (msq.getNumMatchesOfQuery(key) == 0)
                     {
                         System.out.println("WARNING! No match for SMARTS query "
@@ -1223,7 +1220,6 @@ public class SpartanInputWriter
         allCstrs.add(new ArrayList<String>()); //to collect bond-type of cstrs
         allCstrs.add(new ArrayList<String>()); //to collect angle-type
         allCstrs.add(new ArrayList<String>()); //to collect torsion-type
-        ArrayList<InternalCoord> listedICs = new ArrayList<InternalCoord>();
         for (String ruleKey : allIcRules.keySet())
         {
             if (verbosity > 2)
@@ -1576,7 +1572,6 @@ public class SpartanInputWriter
         allDynCs.add(new ArrayList<String>()); //to collect bond-type
         allDynCs.add(new ArrayList<String>()); //to collect angle-type
         allDynCs.add(new ArrayList<String>()); //to collect torsion-type
-        ArrayList<InternalCoord> listedICs = new ArrayList<InternalCoord>();
         for (String ruleKey : allIcRules.keySet())
         {
             if (verbosity > 2)
@@ -1766,7 +1761,6 @@ public class SpartanInputWriter
             int idAOnUsed = Integer.parseInt(parts[1]) - 1;
             int idBOnUsed = Integer.parseInt(parts[2]) - 1;
             int idCOnUsed = Integer.parseInt(parts[3]) - 1;
-            int idDOnUsed = Integer.parseInt(parts[4]) - 1;
             boolean alreadyDefined = false;
             switch (numIds)
             {

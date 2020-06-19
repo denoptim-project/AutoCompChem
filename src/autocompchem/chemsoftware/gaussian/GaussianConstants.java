@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,8 +21,6 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 /**
  * Storage of predefined constants for Gaussian related tools

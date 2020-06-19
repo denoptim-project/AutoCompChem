@@ -1,5 +1,7 @@
 package autocompchem.utils;
 
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,7 +20,6 @@ package autocompchem.utils;
  */
 
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Storage of predefined constants related to string handling tools

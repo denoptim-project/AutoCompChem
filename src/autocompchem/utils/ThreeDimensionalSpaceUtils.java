@@ -1,5 +1,7 @@
 package autocompchem.utils;
 
+import java.util.ArrayList;
+
 /*   
  *   Copyright (C) 2017  Marco Foscato 
  *
@@ -18,18 +20,10 @@ package autocompchem.utils;
  */
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.ArrayList;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Quat4d;
 import javax.vecmath.AxisAngle4d;
-
-import autocompchem.run.Terminator;
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Vector3d;
 
 /**
  * Toolbox for general 3D space

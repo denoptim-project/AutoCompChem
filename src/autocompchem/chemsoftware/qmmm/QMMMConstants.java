@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware.qmmm;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,8 +21,6 @@ package autocompchem.chemsoftware.qmmm;
  */
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 /**
  * Storage of predefined constants for QMMM (the software) and related tools
@@ -131,7 +132,7 @@ public class QMMMConstants
     /**
      * List of master sections
      */
-    public final static Set MASTERSECLST = new HashSet<String>(Arrays.asList(
+    public final static Set<String> MASTERSECLST = new HashSet<String>(Arrays.asList(
                                                                     MULTIGENSEC,
                                                                     MULTIOPTSEC,
                                                                     EXTOPTSEC,

@@ -1,5 +1,8 @@
 package autocompchem.molecule;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -18,20 +21,16 @@ package autocompchem.molecule;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
-import org.openscience.cdk.Bond;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.io.IOtools;
-import autocompchem.run.Terminator;
-import autocompchem.io.SDFIterator;
 import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.io.SDFIterator;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 
 /**
@@ -246,7 +245,6 @@ public class BondReviser
 		    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
                 }
 
-		List<IBond> delBnd = new ArrayList<IBond>();
 		ArrayList<IBond> targets = new ArrayList<IBond>();
 		for (String key : smarts.keySet())
 		{

@@ -1,5 +1,9 @@
 package autocompchem.perception.situation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -18,21 +22,16 @@ package autocompchem.perception.situation;
  */
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-
-import autocompchem.perception.concept.Concept;
-import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.workflow.task.IAction;
 
 import javax.servlet.jsp.el.ExpressionEvaluator;
-import javax.servlet.jsp.el.FunctionMapper;
 import javax.servlet.jsp.el.VariableResolver;
 
 import org.apache.commons.el.ExpressionEvaluatorImpl;
+
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.concept.Concept;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.workflow.task.IAction;
 
 
 /**

@@ -1,62 +1,35 @@
 package autocompchem.chemsoftware.nwchem;
 
-/*   
- *   Copyright (C) 2016  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import autocompchem.io.*;
-import autocompchem.chemsoftware.nwchem.*;
-import autocompchem.parameters.Parameter;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.run.Terminator;
-import autocompchem.files.FilesManager;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
-import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.modeling.basisset.BasisSet;
-import autocompchem.modeling.basisset.BasisSetGenerator;
-import autocompchem.modeling.basisset.BasisSetConstants;
-import autocompchem.modeling.basisset.BSMatchingRule;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.SMARTS;
-import autocompchem.util.NumberAwareStringComparator;
-import autocompchem.constants.ACCConstants;
-
-import javax.vecmath.Point3d;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.AtomContainer;
+
+import autocompchem.constants.ACCConstants;
+import autocompchem.files.FilesManager;
+import autocompchem.io.IOtools;
+import autocompchem.modeling.basisset.BSMatchingRule;
+import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
+import autocompchem.parameters.Parameter;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.SMARTS;
+import autocompchem.utils.NumberAwareStringComparator;
 
 /**
  * Writes input files for NWChem. Allows to define the directives for
@@ -1611,7 +1584,6 @@ for (String k : sortedMasterNames)
               Map<String,String> smarts, Map<String,ArrayList<String>> zCrdDets)
     {
         // Look for matches to define the IC to work with
-        Set<InternalCoord> constants = new HashSet<InternalCoord>();
         ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
         if (msq.hasProblems())
         {
@@ -1673,7 +1645,6 @@ for (String k : sortedMasterNames)
         linesDataBlock.add(new ArrayList<String>());
         linesDataBlock.add(new ArrayList<String>());
         linesDataBlock.add(new ArrayList<String>());
-        ArrayList<InternalCoord> listedICs = new ArrayList<InternalCoord>();
         for (String ruleKey : allIcRules.keySet())
         {
             ArrayList<ArrayList<Integer>> partsIcRule = allIcRules.get(ruleKey);

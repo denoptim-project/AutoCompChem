@@ -1,5 +1,7 @@
 package autocompchem.molecule.conformation;
 
+import java.util.ArrayList;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -18,20 +20,18 @@ package autocompchem.molecule.conformation;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.openscience.cdk.graph.SpanningTree;
-import org.openscience.cdk.silent.RingSet;
-import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IRingSet;
+import org.openscience.cdk.silent.RingSet;
 
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
 
 
 /**

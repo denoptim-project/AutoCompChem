@@ -18,8 +18,8 @@ package autocompchem.files;
  */
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import autocompchem.run.Terminator;
 

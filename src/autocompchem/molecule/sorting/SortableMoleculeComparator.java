@@ -18,7 +18,6 @@ package autocompchem.molecule.sorting;
  */
 
 import java.util.Comparator;
-import autocompchem.io.IOtools;
 
 /**
  * Comparator for SortableMolecules 

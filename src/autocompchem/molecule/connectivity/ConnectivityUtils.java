@@ -1,57 +1,25 @@
 package autocompchem.molecule.connectivity;
 
-/*   
- *   Copyright (C) 2014  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.vecmath.Point2d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-
-import org.openscience.cdk.config.Elements;
-import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.ChemObject;
-import org.openscience.cdk.Bond;
-import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IBond.Order;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainerSet;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.tools.manipulator.AtomContainerComparator;
 
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.molecule.SeedAtom;
-import autocompchem.molecule.SeedAtomComparator;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.run.Terminator;
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.SeedAtom;
+import autocompchem.molecule.SeedAtomComparator;
+import autocompchem.run.Terminator;
 
 /** 
  * Toolbox for molecular connectivity

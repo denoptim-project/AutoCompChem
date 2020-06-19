@@ -1,4 +1,4 @@
-package autocompchem.perception;
+package autocompchem.perception.infochannel;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -18,8 +18,6 @@ package autocompchem.perception;
  */
 
 import java.util.Comparator;
-
-import autocompchem.perception.infochannel.InfoChannelType;
 
 /**
  * Comparator for InfoChannelTypes.

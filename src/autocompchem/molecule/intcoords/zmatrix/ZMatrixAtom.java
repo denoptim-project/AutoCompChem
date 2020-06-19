@@ -19,9 +19,9 @@ package autocompchem.molecule.intcoords.zmatrix;
 
 import java.util.ArrayList;
 
-import autocompchem.utils.NumberUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 
 
 /**

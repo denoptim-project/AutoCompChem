@@ -20,8 +20,6 @@ package autocompchem.files;
 import java.io.File;
 import java.util.Comparator;
 
-import autocompchem.run.Terminator;
-
 /**
  * Compare filenames of files. Overwrites default comparator.
  * 
@@ -33,7 +31,7 @@ public class FilesComparatorByName implements Comparator<File>
 {
 
     //Flag for ascending/descending ordering
-    private static boolean ascending;
+    private boolean ascending;
 
 //-----------------------------------------------------------------------------
 

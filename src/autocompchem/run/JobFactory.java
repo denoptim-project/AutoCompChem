@@ -20,11 +20,9 @@ package autocompchem.run;
 import java.util.ArrayList;
 
 import autocompchem.files.FilesAnalyzer;
-import autocompchem.text.TextBlock;
-
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.parameters.ParameterConstants;
-import autocompchem.run.Terminator;
+import autocompchem.parameters.ParameterStorage;
+import autocompchem.text.TextBlock;
 
 
 /**

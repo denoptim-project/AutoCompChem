@@ -1,5 +1,8 @@
 package autocompchem.smarts;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -18,17 +21,10 @@ package autocompchem.smarts;
  */
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.exception.CDKException;
-
-import autocompchem.smarts.SMARTSQueryTool;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
  * SMARTS query tool capable of handling many SMARTS queries in once. 

@@ -28,7 +28,7 @@ import org.openscience.cdk.interfaces.IAtom;
 public class AtomClash
 {
     //Atoms involved
-    private IAtom atm1;
+	private IAtom atm1;
     private String ref1;
     private IAtom atm2;
     private String ref2;

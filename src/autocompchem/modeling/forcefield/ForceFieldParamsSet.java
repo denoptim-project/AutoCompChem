@@ -19,19 +19,12 @@ package autocompchem.modeling.forcefield;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.AtomType;
-
-import autocompchem.util.NumberAwareStringComparator;
-import autocompchem.modeling.forcefield.ForceConstant;
-import autocompchem.modeling.forcefield.EquilibriumValue;
-import autocompchem.modeling.forcefield.ForceFieldParameter;
-import autocompchem.modeling.forcefield.ForceFieldConstants;
 
 /**
  * Object representing a collection of consistent force field parameters, often
@@ -43,6 +36,11 @@ import autocompchem.modeling.forcefield.ForceFieldConstants;
 public class ForceFieldParamsSet implements Serializable
 {
     /**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = -5183573228916122504L;
+
+	/**
      * Reference name
      */
     private String name = "noname";

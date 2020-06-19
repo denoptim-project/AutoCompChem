@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,10 +20,9 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import autocompchem.run.Terminator;
 

@@ -18,31 +18,12 @@ package autocompchem.perception.situation;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.io.FileWriter;
+
+import org.junit.jupiter.api.Test;
 
 import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.circumstance.CountTextMatches;
-import autocompchem.perception.infochannel.EnvironmentAsSource;
-import autocompchem.perception.infochannel.FileAsSource;
-import autocompchem.perception.infochannel.ShortTextAsSource;
-import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.infochannel.InfoChannelBase;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.jsp.el.ExpressionEvaluator;
-import javax.servlet.jsp.el.FunctionMapper;
-import javax.servlet.jsp.el.VariableResolver;
-
-import org.apache.commons.el.ExpressionEvaluatorImpl;
 
 /**
  * Unit Test for Situation class
