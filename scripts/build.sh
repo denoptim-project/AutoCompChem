@@ -41,6 +41,8 @@ cat <<EOF
 
   -f      runs functionality tests after building AutoCompChem.
 
+  -l      prints the log of any functionality test that is run
+
   -n      excludes building step. Use it to run only tests.
 
 EOF
@@ -213,12 +215,15 @@ function functionalityTesting() {
         echo "Running test $i/${#chosenTests[@]}"
         log=t$i.log
         $javaDir/java -jar $ACCHome/AutoCompChem.jar  ../t$i.params > $log 2>&1
+
+        if $printFuncTestLog
+        then
+            echo "Echoing test log:"
+            cat t$i.log
+        fi
     
         ../t$i.check
     
-        #TODO make optional
-        #cat t$n.log
-            
         if [ $? != 0 ]
         then
             echo " "
@@ -245,6 +250,7 @@ runBuild=true
 buildingDone=false
 runUnitTests=false
 runFunctionalityTests=false
+printFuncTestLog=false
 chosenTests=()
 for ((i=0; i<$#; i++))
 do
@@ -259,6 +265,7 @@ do
 	      then
 	        chosenTests+=($argument)
               fi;;
+	"-l") printFuncTestLog=true;;
         "-n") runBuild=false;;
         -[a-z,A-Z,0-9]) echo "ERROR! Unrecognized option '$arg'";
               printUsage; exit 1;;
