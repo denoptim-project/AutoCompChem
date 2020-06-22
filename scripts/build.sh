@@ -37,9 +37,9 @@ cat <<EOF
 
   --help  prints this help message.
 
-  -u      runs unit tests after building AutoCompChem.
+  -u      runs unit tests after building AutoCompChem.. If followed by one or more strings (i.e., class names), then runs only the unit testing found in the given classes.
 
-  -f      runs functionality tests after building AutoCompChem.
+  -f      runs functionality tests after building AutoCompChem. If followed by one or more integer numbers, then runs only the corresponding functionality tests.
 
   -l      prints the log of any functionality test that is run
 
@@ -168,15 +168,17 @@ function build() {
 function unitTesting() {
     echo "Starting unit testing"
 
-    #Run all JUnit tests
-    java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:AutoCompChem.jar --details=tree
-
-    # To run a specific test in a class
-    #java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:uibkvant-1.0.jar -c uibkvant.run.JobFactoryTest
-
-    # To run a specific method test
-    #java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:uibkvant-1.0.jar -m uibkvant.text.TextAnalyzerTest#testExtractNestedTextBlocks
-
+    if [ ${#chosenUnitTests[@]} -gt 0 ]
+    then
+        for class in ${chosenUnitTests[@]}
+        do
+            java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" -c "$class"
+        done
+    else
+        #Run all JUnit tests
+        java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:AutoCompChem.jar --details=tree
+    fi
+    
     echo " "
     echo "UNIT TESTING DONE!"
     echo " "
@@ -251,6 +253,7 @@ buildingDone=false
 runUnitTests=false
 runFunctionalityTests=false
 printFuncTestLog=false
+chosenUnitTests=()
 chosenTests=()
 for ((i=0; i<$#; i++))
 do
@@ -258,7 +261,12 @@ do
     case "$arg" in
         "-h") printUsage; exit 1;;
         "--help") printUsage; exit 1;;
-        "-u") runUnitTests=true;;
+        "-u") runUnitTests=true
+              getArg "$i" "$#"
+              if [[ "none" != "$argument" ]]
+              then
+                chosenUnitTests+=($argument)
+              fi;;
         "-f") runFunctionalityTests=true
 	      getArg "$i" "$#" 
 	      if [[ "none" != "$argument" ]]
