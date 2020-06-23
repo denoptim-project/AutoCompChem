@@ -57,7 +57,7 @@ public class MolecularGeometryEditorTest
     	
 
 		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors(mol, 
-				move,15,0.01,5.0,0.001,1.0,0);
+				move,15,"EVEN",0.01,0.01,5.0,0.001,1.0,1);
 		
 		assertEquals(16,sf.size(), "Size of scaling factors list");
     }
@@ -79,9 +79,35 @@ public class MolecularGeometryEditorTest
     	
 
 		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors( 
-				mol,move,15,0.01,5.0,0.0001,1.0,1);
+				mol,move,15,"EVEN",0.01,0.01,5.0,0.0001,1.0,0);
 		
 		double trsh = 0.001;
+		assertTrue(Math.abs(sf.get(0)-(-0.535)) < trsh, "Check minus side");
+		assertTrue(Math.abs(sf.get(sf.size()-1)-(5.0)) < trsh, "Check plus side");
+    }
+    
+ //------------------------------------------------------------------------------
+
+    @Test
+	public void testOptimizeScalingFactorsDistribution() throws Exception
+    {
+    	IAtomContainer mol = new AtomContainer();
+    	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
+    	mol.addAtom(new Atom("O",new Point3d(2.0,0,0)));
+    	mol.addAtom(new Atom("N",new Point3d(4.0,0,0)));
+    	
+		ArrayList<Point3d> move = new ArrayList<Point3d>();
+		move.add(new Point3d(0,0,0));
+		move.add(new Point3d(0,0,0));
+		move.add(new Point3d(1.0,0,0));
+    	
+
+		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors( 
+				mol,move,15,"BalANced",0.01,0.01,5.0,0.0001,1.0,1);
+		
+		double trsh = 0.001;
+		assertEquals(15,sf.size(), "Size of scaling factors list");
+		assertTrue(Math.abs(sf.get(7)-(0.0)) < trsh, "Check ceter at 0.0");
 		assertTrue(Math.abs(sf.get(0)-(-0.535)) < trsh, "Check minus side");
 		assertTrue(Math.abs(sf.get(sf.size()-1)-(5.0)) < trsh, "Check plus side");
     }

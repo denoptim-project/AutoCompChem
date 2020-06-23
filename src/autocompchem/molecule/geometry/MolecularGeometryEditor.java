@@ -2,10 +2,7 @@ package autocompchem.molecule.geometry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.vecmath.Point3d;
 
@@ -14,9 +11,9 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
-import org.xmlcml.euclid.Point3;
 
 import autocompchem.files.FilesManager;
+import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
@@ -89,6 +86,47 @@ public class MolecularGeometryEditor
      */
     private ArrayList<Double> scaleFactors = new ArrayList<Double>(
                                                             Arrays.asList(1.0));
+    
+    /**
+     * Flag controlling optimisation of scaling factors
+     */
+    private boolean optimizeScalingFactors = false;
+    
+    /**
+     * Kind of distribution for automatically generated scaling factors
+     */
+    private String scalingFactorDistribution = "BALANCED";
+    
+    /**
+     * Number of automatically generated scaling factors 
+     */
+    private int numScalingFactors = 15;
+    
+    /**
+     * Default tolerance for interatomic distances (opt. scaling factors)
+     */
+    private static double defTolInteratmDist = 0.03;
+    
+    /**
+     * Default tolerance w.r.t the sum covalent radii (opt. scaling factors)
+     */
+    private static double defTolCovRadSum = 0.05;
+    
+    /**
+     * Default maximum overall displacement for one atom (opt. scaling factors)
+     */
+    private static double defMaxDispl = 5.0;
+    
+    /**
+     * Default convergence criteria (opt. scaling factors)
+     */
+    private static double defConvCrit = 0.0001;
+    
+    /**
+     * Default maximum step length (opt. scaling factors)
+     */
+    private static double defMaxStep = 1.0;
+    
     /**
      * Flag reporting that all tasks are done
      */
@@ -144,6 +182,12 @@ public class MolecularGeometryEditor
      * REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed
      * to be consistent with that of the reference substructure.
      * </li>
+     * <li>
+     * <b>OPTIMIZESCALINGFACTORS</b> (optional) requests the optimisation of 
+     * scaling factors to Cartesian mode and specifies i) the kind of distribution
+     *  to be produced (one string - acceptable kinds are <code>EVEN</code> and 
+     *  <code>BALANCED</code>), and ii) the number of scaling factors to generate
+     *  (one integer).</li>
      * <li>
      * <b>CARTESIANSCALINGFACTORS</b> (optional) one or more scaling factors
      * (real numbers) to be applied to the Cartesian move. The Cartesian
@@ -256,6 +300,37 @@ public class MolecularGeometryEditor
                 }
                 scaleFactors.add(d);
             }
+        }
+        
+        // Guess scaling factors
+        if (params.contains("OPTIMIZESCALINGFACTORS"))
+        {
+        	String line = params.getParameter("OPTIMIZESCALINGFACTORS")
+                    .getValue().toString();
+        	optimizeScalingFactors = true;
+            scaleFactors.clear();
+            String[] words = line.trim().split("\\s+");
+            if (words.length != 2)
+            {
+            	Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
+                        + line + "'. Expecting one word and one integer.",-1);
+            }
+            String kind = words[0];
+            if (!kind.toUpperCase().equals("EVEN") && 
+            		!kind.toUpperCase().equals("BALANCED"))
+            {
+            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + kind
+                        + "' as a scaling factor distribution kind.",-1);
+            }
+            scalingFactorDistribution = kind;
+            String num = words[1];
+            try {
+            	numScalingFactors = Integer.parseInt(num);
+            } catch (Throwable t) {
+            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
+                        + "' as the number of scaling factor to generate. "
+                        + "Expecting an integer.",-1);
+            }            
         }
 
         // Get the Cartesian move
@@ -392,6 +467,19 @@ public class MolecularGeometryEditor
             }
         }
         
+        if (optimizeScalingFactors)
+        {
+        	scaleFactors = optimizeScalingFactors(actualMol,actualMove,
+        			numScalingFactors,
+        			scalingFactorDistribution, 
+        			defTolInteratmDist, 
+        			defTolCovRadSum,
+        			defMaxDispl, 
+        			defConvCrit, 
+        			defMaxStep,
+        			verbosity-1);
+        }
+        
         if (verbosity > 0)
         {
             System.out.println(" Actual Cartesian move: ");
@@ -470,6 +558,25 @@ public class MolecularGeometryEditor
         return outMol;
     }
 
+  //-------------------------------------------------------------------------------
+  	/**
+  	 * Searches for optimal scaling factors that do not generate atom clashes or 
+  	 * exploded systems. Uses default values for all settings of the search 
+  	 * algorithm.
+  	 * @param mol the atom container with the unmodified geometry
+  	 * @param move the Cartesian move
+  	 * @param numSfSteps divide the optimised range of scaling factors in this 
+  	 * number
+  	 * @return the optimised list of scaling factors
+  	 */
+  	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
+      		ArrayList<Point3d> move, int numSfSteps) 
+  	{
+  		return optimizeScalingFactors(mol,move,numSfSteps,"EVEN",
+  				defTolInteratmDist, defTolCovRadSum,
+  				defMaxDispl, defConvCrit, defMaxStep,0);
+  	}
+    
 //-------------------------------------------------------------------------------
   	/**
   	 * Searches for optimal scaling factors that do not generate atom clashes or 
@@ -479,12 +586,22 @@ public class MolecularGeometryEditor
   	 * @param move the Cartesian move
   	 * @param numSfSteps divide the optimised range of scaling factors in this 
   	 * number  
+  	 * @param distributionKind specifies how to spear scaling factors between
+  	 * the optimised extremes. Possible values are:
+  	 * <ul>
+  	 * <li><code>EVEN</code>: 
+  	 * to spread factors evenly at <code>(range)/#steps</code>.</li>
+  	 * <li><code>BALANCED</code>: 
+  	 * to put half of the points on each side of the 0.0 scaling.</li>
+  	 * </ul>
   	 * @return the optimised list of scaling factors
   	 */
   	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
-      		ArrayList<Point3d> move, int numSfSteps) 
+      		ArrayList<Point3d> move, int numSfSteps, String distributionKind) 
   	{
-  		return optimizeScalingFactors(mol,move,numSfSteps,0.02,5.0,0.001,1.0, 0);
+  		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
+  				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
+  				defMaxStep, 0);
   	}
 //-------------------------------------------------------------------------------
 
@@ -496,19 +613,35 @@ public class MolecularGeometryEditor
   	 * @param numSfSteps divide the optimised range of scaling factors in this 
   	 * number  
   	 * of steps
-  	 * @param shortshortTolerance permits down to this % of the sum of covalent 
+  	 * @param distributionKind specifies how to spear scaling factors between
+  	 * the optimised extremes. Possible values are:
+  	 * <ul>
+  	 * <li><code>EVEN</code>: 
+  	 * to spread factors evenly at <code>(range)/#steps</code>.</li>
+  	 * <li><code>BALANCED</code>: 
+  	 * to put half of the points on each side of the 0.0 scaling.</li>
+  	 * </ul>
+  	 * @param tolInteractDist permits down to this % of the initial 
+  	 * interatomic distance
+  	 * @param tolCovRadSum permits down to this % of the sum of covalent 
   	 * radii
   	 * @param stretchLimit permits up to this displacement for a single atom.
   	 * @param convergence stop search when step falls below this value
-  	 * @param verbosity amount of log to stdout
   	 * @param maxStep maximum allowed step
+  	 * @param verbosity amount of log to stdout
   	 * @return the optimised list of scaling factors
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
-    		ArrayList<Point3d> move, int numSfSteps, double shortTolerance,
+    		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
+    		double tolInteractDist, double tolCovRadSum,
     		double stretchLimit, double convergence, double maxStep, 
     		int verbosity) 
 	{
+		if (verbosity > 0)
+        {
+		    System.out.println(" Optimizing Scaleing Factors");
+        }
+		
 		//Run optimisation twice:
 		//either maximise (+1) or minimise (-1) scaling factor.
 		double[] signs = new double[] {-1.0,1.0};
@@ -527,21 +660,25 @@ public class MolecularGeometryEditor
 			// the non-OK scaling factor closest to divide
 			double smallestToNotOK = Double.MAX_VALUE;
 			// the OK scaling factor closest to divide
-			double largestToOK = 0.0; //NB: we alsays have >0
+			double largestToOK = 0.0; //NB: we always have >0
 			// whether the current scaling factor produced an OK geometry
 			boolean isOK = true;      
 			// whether the previous scaling factor produced an OK geometry
 			boolean lastWasOK = true;  
 			boolean foundFirstNonOK = false;
-			boolean foundFirstOK = false;
+			String reason = ""; // for logging
 			double lowestDist = Double.MAX_VALUE;
 			
 			if (verbosity > 0)
             {
-			    System.out.println(" Optimizing SF");
-			    System.out.println("   Sign  MinDist    MaxDispl     Guess      "
-			    		+ "Dir     LastStep  ok/old smallest!OK  largestOK");
+			    System.out.println("   Sign  MinDist    MaxDispl     Guess"
+			    		+ "      Dir     LastStep  ok/old smallest!OK  "
+			    		+ "largestOK Notes");
             }
+			
+			// Get interatorim distances in initial geometry (for later)
+			DistanceMatrix initialDM = 
+					MolecularUtils.getInteratormicDistanceMatrix(mol);
 			
 			boolean goon = true;
 			while (goon)
@@ -562,9 +699,10 @@ public class MolecularGeometryEditor
 				}
 				
 				// Evaluate the use of the the new guess scaling factor:
-				// A) largest atomic movement has reached the given limit
-				// B) compare shortest interatomic distance against the sum 
-				// of the covalent radii
+				// A) largest atomic movement has reached the given limit,
+				// B) compare interatomic distance against the max between  
+				// B.1) the sum of the covalent radii, or
+				// B.2) the distance in the initial geometry.
 				
 				//A) largest atomic movement
 				double maxDisplacement = -Double.MAX_VALUE;
@@ -614,13 +752,30 @@ public class MolecularGeometryEditor
 			        	double dist = 
 			        			MolecularUtils.calculateInteratomicDistance(
 			        					atmI, atmJ);
-			            //System.out.println(" COVRAD: "+MolecularUtils.getAtomRef(atmI, outMol)+":"+MolecularUtils.getAtomRef(atmJ, outMol)
-			            //+" "+covRadI+" "+covRadJ+" "+dist+" limit: "+(covRadI+covRadJ)*(1.0-shortTolerance));
-			            if (dist < lowestDist)
-			            	lowestDist = dist;
+			        	
+			        	double tollInitDist = initialDM.get(i, jj)*(1.0-tolInteractDist);
+			        	double tollCovRadii = (covRadI+covRadJ)*(1.0-tolCovRadSum);
+			        	double minInteratDist;
+			        	String kk = "";
+			        	if (tollInitDist < tollCovRadii)
+			        	{
+			        		minInteratDist = tollInitDist;
+			        		kk = "initDist";
+			        	}
+			        	else
+			        	{
+			        		minInteratDist = tollCovRadii;
+					        kk = "covRad";
+			        	}
 			            
-			            if (dist < (covRadI+covRadJ)*(1.0-shortTolerance))
+			            if (dist < minInteratDist)
 			            {
+				        	lowestDist = dist;
+				        	reason = MolecularUtils.getAtomRef(atmI, outMol) 
+				        	+ ":" + MolecularUtils.getAtomRef(atmJ, outMol)
+				            + " " + covRadI + " " + covRadJ + " " + dist + "(<"
+				        	+ minInteratDist + " " + kk + ")";
+			            	   
 			            	// Here we found a pair of atoms that are moved 
 			            	// too close to each other.
 			            	// The guess scaling factor (guessSF) is "not OK"
@@ -642,7 +797,6 @@ public class MolecularGeometryEditor
             	if (isOK)
             	{
     				oldGuessSF = guessSF;
-            	    foundFirstOK = true;
             	    
             		// Keep the largest |scaling factor| that led to an OK geom
             		if(guessSF > largestToOK)
@@ -651,13 +805,13 @@ public class MolecularGeometryEditor
 	                }
 	            }
             	
-            	// Finisched with this step
+            	// Finished with this step
 				if (verbosity > 0)
 	            {
 				    String msg = String.format("%+7.1f %-11.3e %-11.3e %-11.3e "
-				    		+ "%-7.1f %-11.3e %1.1B(%1.1B) %-11.3e  %-11.3e",
+				    		+ "%-7.1f %-11.3e %1.1B(%1.1B) %-11.3e  %-11.3e %s",
 						sign,lowestDist,maxDisplacement,guessSF,direction,step,
-						isOK,lastWasOK,smallestToNotOK,largestToOK);
+						isOK,lastWasOK,smallestToNotOK,largestToOK,reason);
 				    System.out.println(msg);
 	            }
 				
@@ -695,20 +849,42 @@ public class MolecularGeometryEditor
 	    }
 		
 		// Finally generate evenly distributed scaling factors
-		double sfStep = (optimalExtremes[1]-optimalExtremes[0])/numSfSteps;
 		ArrayList<Double> chosenScalingFactors = new ArrayList<Double>();
-		for (int i=0; i<(numSfSteps+1); i++)
+		switch (distributionKind.toUpperCase())
 		{
-			chosenScalingFactors.add(optimalExtremes[0]+i*sfStep);	
-		}
+		    case "EVEN":
+				double sfStep = (optimalExtremes[1]-optimalExtremes[0])/numSfSteps;
+				for (int i=0; i<(numSfSteps+1); i++)
+				{
+					chosenScalingFactors.add(optimalExtremes[0]+i*sfStep);	
+				}
+				break;
+				
+		    case "BALANCED":
+		    	int halfPoints = numSfSteps/2;
+		    	double sfStepMinus = (0.0-optimalExtremes[0])/halfPoints;
+		    	double sfStepPlus = (optimalExtremes[1]-0.0)/halfPoints;
+		    	for (int i=halfPoints; i>0; i--)
+				{
+					chosenScalingFactors.add(-i*sfStepMinus);	
+				}
+		    	for (int i=0; i<(halfPoints+1); i++)
+				{
+					chosenScalingFactors.add(0.0+i*sfStepPlus);	
+				}
+				break;
+				
+			//TODO: add GAUSSIAN distribution, 
+			// or other with continuous change in step length
 		
-		//TODO: consider generating N/2 scaling factors on the minimum and plus 
-		// sign, rather than evenly distributed scaling factors
+		}
 		
 		if (verbosity > 0)
         {
-            System.out.println("Optimized extremes: "+optimalExtremes[0]+" "+optimalExtremes[1]);
-            System.out.println("Optimized Scaling factors: "+chosenScalingFactors);
+            System.out.println("Optimized extremes: " 
+            		+ optimalExtremes[0] + " " + optimalExtremes[1]);
+            System.out.println("Optimized Scaling factors: " 
+            		+ chosenScalingFactors);
         }
 		return chosenScalingFactors;
 	}
