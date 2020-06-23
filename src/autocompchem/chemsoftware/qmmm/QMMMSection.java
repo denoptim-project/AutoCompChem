@@ -419,8 +419,8 @@ public class QMMMSection
     {
         ArrayList<String> lines = new ArrayList<String>();
 
-	// section name (nothing in same line as section name)
-	lines.add(name.toUpperCase());
+        // section name (nothing in same line as section name)
+        lines.add(name.toUpperCase());
 
         // keywords 
         for (QMMMKeyword k : keywords)
@@ -448,7 +448,7 @@ public class QMMMSection
 
         //Finally end the section
         if (lines.size() > 1 
-	    && !QMMMConstants.MASTERSECLST.contains(name.toUpperCase()))
+            && !QMMMConstants.MASTERSECLST.contains(name.toUpperCase()))
         {
             lines.add("END");
         }

@@ -72,7 +72,7 @@ public class IOtools
 
     public static ArrayList<String> readTXT(String filename)
     {
-	return readTXT(filename, false);
+        return readTXT(filename, false);
     }
 
 //------------------------------------------------------------------------------
@@ -93,16 +93,16 @@ public class IOtools
             buffRead = new BufferedReader(new FileReader(filename));
             String line = null;
             while ((line = buffRead.readLine()) != null)
-	    {
-		if (escape)
-		{
+            {
+                if (escape)
+                {
                     allLines.add(StringUtils.escapeSpecialChars(line));
-		}
-		else
-		{
+                }
+                else
+                {
                     allLines.add(line);
-		}
-	    }
+                }
+            }
         } catch (FileNotFoundException fnf) {
             System.err.println("File Not Found: " + filename);
             System.err.println(fnf.getMessage());
@@ -250,7 +250,7 @@ public class IOtools
                         String separator, String commentLab, 
                         String start, String end)
     {
-	ArrayList<ArrayList<String>> filledForm = TextAnalyzer.readKeyValue(
+        ArrayList<ArrayList<String>> filledForm = TextAnalyzer.readKeyValue(
                                                         lines,
                                                         separator,
                                                         commentLab,
@@ -266,7 +266,7 @@ public class IOtools
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);
-	    line = StringUtils.escapeSpecialChars(line);
+            line = StringUtils.escapeSpecialChars(line);
 
             //Check if its a multiple line block
             if (line.startsWith(start))
@@ -323,7 +323,7 @@ public class IOtools
                 //Prepare key and value
                 key = key.toUpperCase();
                 value = value.trim();
-		value = StringUtils.deescapeSpecialChars(value);
+                value = StringUtils.deescapeSpecialChars(value);
 
                 //Check parameter
                 if ((key.equals("")) || (value.equals("")))
@@ -531,7 +531,7 @@ public class IOtools
      */
 
     public static void writeZMatAppend(String filename, ZMatrix zmat,
-								 boolean append)
+                                                                 boolean append)
     {
         ArrayList<String> txt = zmat.toLinesOfText(false,false);
         txt.add(0,"Molecule: " + zmat.getTitle());
@@ -555,34 +555,34 @@ public class IOtools
         try {
             buffRead = new BufferedReader(new FileReader(filename));
             String line = null;
-	    String title = "";
-	    ArrayList<String> oneBlock = new ArrayList<String>();
+            String title = "";
+            ArrayList<String> oneBlock = new ArrayList<String>();
             while ((line = buffRead.readLine()) != null)
-	    {
-		line = line.trim();
-		if (title.equals(""))
-		{
-		    title = line;
-		    continue;
-		}
-		if (line.startsWith("$$$$"))
-		{
-		    ZMatrix zmat = new ZMatrix(oneBlock);
-		    zmat.setTitle(title);
+            {
+                line = line.trim();
+                if (title.equals(""))
+                {
+                    title = line;
+                    continue;
+                }
+                if (line.startsWith("$$$$"))
+                {
+                    ZMatrix zmat = new ZMatrix(oneBlock);
+                    zmat.setTitle(title);
                     allZMats.add(zmat);
-		    oneBlock.clear();
-		    title = "";
-		}
-		else
-		{
-		    oneBlock.add(line);
-		}
-	    }
-	    if (oneBlock.size() != 0)
-	    {
+                    oneBlock.clear();
+                    title = "";
+                }
+                else
+                {
+                    oneBlock.add(line);
+                }
+            }
+            if (oneBlock.size() != 0)
+            {
                 Terminator.withMsgAndStatus("ERROR! Unterminated ZMatrix block "
                                             + "in file '" + filename + "'.",-1);
-	    }
+            }
         } catch (FileNotFoundException fnf) {
             Terminator.withMsgAndStatus("ERROR! File '" + filename 
                                                            + "' not found.",-1);
@@ -658,6 +658,57 @@ public class IOtools
                         + "chemical entities only from SDF or XYZ files.",-1);
         }
         return mols;
+    }
+  
+//------------------------------------------------------------------------------
+
+    /**
+     * Writes on a new  
+     * <a href="http://en.wikipedia.org/wiki/Chemical_table_file#SDF">SDF</a>
+     * file or appends to an existing one.
+     * @param filename target SDF file (new or existing)
+     * @param mol atom container to be written on the SDF file
+     * @param append <code>true</code> to append to existing file
+     */
+
+    public static void writeSDFAppend(String filename, ArrayList<IAtomContainer> mols,
+                                                                 boolean append)
+    {
+        SDFWriter sdfWriter = null;
+        try {
+            sdfWriter = new SDFWriter(new FileWriter(new File(filename), 
+                                                                       append));
+            for (IAtomContainer mol : mols)
+            {
+                sdfWriter.write(mol);
+            }
+        } 
+        catch (CDKException e) 
+        {
+            if (e.getMessage().contains("For input string: \"#\""))
+            {
+                System.err.println("CDK unable to write MDL file " + filename);
+            }
+            
+        } 
+        catch (Throwable t2) 
+        {
+            System.err.println("Failure in writing SDF: " + t2);
+            System.exit(-1);
+        } 
+        finally 
+        {
+            try 
+            {
+                if(sdfWriter != null)
+                     sdfWriter.close();
+            } 
+            catch (IOException ioe) 
+            {
+                System.err.println("Error in writing: " + ioe);
+                System.exit(-1);
+            }
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -1048,7 +1099,7 @@ public class IOtools
         try
         {
             @SuppressWarnings("unused")
-			int inchar = System.in.read();
+                        int inchar = System.in.read();
         }
         catch (IOException e)
         {

@@ -94,7 +94,7 @@ public class ParameterStorage
     {
         if (!this.contains(ref))
         {
-	    return null;
+            return null;
         }
         return allParams.get(ref);
     }
@@ -232,9 +232,9 @@ public class ParameterStorage
         //Get filled form
         ArrayList<ArrayList<String>> form = IOtools.readFormattedText(paramFile,
                                                    ParameterConstants.SEPARATOR,
-					         ParameterConstants.COMMENTLINE,
-			                      ParameterConstants.STARTMULTILINE,
-					       ParameterConstants.ENDMULTILINE);
+                                                 ParameterConstants.COMMENTLINE,
+                                              ParameterConstants.STARTMULTILINE,
+                                               ParameterConstants.ENDMULTILINE);
 
         //Make the ParameterStorage object
         importParameterBlocks(form);
@@ -250,11 +250,11 @@ public class ParameterStorage
 
     public void importParameters(TextBlock tb)
     {
-	importParameterBlocks(TextAnalyzer.readKeyValue(tb.getText(),
+        importParameterBlocks(TextAnalyzer.readKeyValue(tb.getText(),
                                                   ParameterConstants.SEPARATOR,
-					        ParameterConstants.COMMENTLINE,
-			                     ParameterConstants.STARTMULTILINE,
-					      ParameterConstants.ENDMULTILINE));
+                                                ParameterConstants.COMMENTLINE,
+                                             ParameterConstants.STARTMULTILINE,
+                                              ParameterConstants.ENDMULTILINE));
     }
 
 //------------------------------------------------------------------------------
@@ -273,9 +273,9 @@ public class ParameterStorage
         ArrayList<ArrayList<String>> form = IOtools.readFormattedText(filename,
                                                                           lines,
                                                    ParameterConstants.SEPARATOR,
-						 ParameterConstants.COMMENTLINE,
-					      ParameterConstants.STARTMULTILINE,
-					       ParameterConstants.ENDMULTILINE);
+                                                 ParameterConstants.COMMENTLINE,
+                                              ParameterConstants.STARTMULTILINE,
+                                               ParameterConstants.ENDMULTILINE);
 
         //Make the ParameterStorage object
         importParameterBlocks(form);        

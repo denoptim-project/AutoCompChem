@@ -96,11 +96,11 @@ public class ZMatrixAtom
 
     public ZMatrixAtom(String string, int id, boolean zeroBasedIds)
     {
-	int phase = 1;
-	if (zeroBasedIds)
-	{
-	    phase = 0;
-	}
+        int phase = 1;
+        if (zeroBasedIds)
+        {
+            phase = 0;
+        }
         String[] parts = string.trim().split("\\s+");
         switch (parts.length)
         {
@@ -210,17 +210,17 @@ public class ZMatrixAtom
         ids.add(idK);
         if (NumberUtils.isNumber(s))
         {
-	    if ("notype" == type)
-	    {
+            if ("notype" == type)
+            {
                 this.icK = new InternalCoord(id+"_ic_3",Double.parseDouble(s),
-									   ids);
+                                                                           ids);
 
-	    }
-	    else
-	    {
+            }
+            else
+            {
                 this.icK = new InternalCoord(id+"_ic_3",Double.parseDouble(s),
                                                                       ids,type);
-	    }
+            }
         }
         else
         {
@@ -231,7 +231,7 @@ public class ZMatrixAtom
             else
             {
                 this.icK = new InternalCoord(s,0.0,ids,type);
-	    }
+            }
         }
     }
 
@@ -333,7 +333,7 @@ public class ZMatrixAtom
 
     public String getName()
     {
-	return name;
+        return name;
     }
 
 //------------------------------------------------------------------------------
@@ -347,22 +347,22 @@ public class ZMatrixAtom
 
     public int getIdRef(int l)
     {
-	int id = -1;
+        int id = -1;
         switch (l)
-	{
-	    case (0):
-		id = idI;
-		break;
+        {
+            case (0):
+                id = idI;
+                break;
 
-	    case (1):
-		id = idJ;
-		break;
+            case (1):
+                id = idJ;
+                break;
 
-	    case (2):
-		id = idK;
-		break;
-	}
-	return id;
+            case (2):
+                id = idK;
+                break;
+        }
+        return id;
     }
 
 //------------------------------------------------------------------------------
@@ -376,22 +376,22 @@ public class ZMatrixAtom
 
     public InternalCoord getIC(int l)
     {
-	InternalCoord ic = null;
+        InternalCoord ic = null;
         switch (l)
         {
             case (0):
                 ic = icI;
-		break;
+                break;
 
             case (1):
                 ic = icJ;
-		break;
+                break;
 
             case (2):
                 ic = icK;
-		break;
+                break;
         }
-	return ic;
+        return ic;
     }
 
 //------------------------------------------------------------------------------
@@ -429,20 +429,20 @@ public class ZMatrixAtom
 
     public int getICsCount()
     {
-	int nICs = 0;
-	if (idI!=-1 && null!=icI)
-	{
-	    nICs++;
-	    if (idJ!=-1 && null!=icJ)
-	    {
-		nICs++;
-		if (idK!=-1 && null!=icK)
-		{
-		    nICs++;
-		}
-	    }
-	}
-	return nICs;
+        int nICs = 0;
+        if (idI!=-1 && null!=icI)
+        {
+            nICs++;
+            if (idJ!=-1 && null!=icJ)
+            {
+                nICs++;
+                if (idK!=-1 && null!=icK)
+                {
+                    nICs++;
+                }
+            }
+        }
+        return nICs;
     }
 
 //----------------------------------------------------------------------------
@@ -456,18 +456,18 @@ public class ZMatrixAtom
 
     public boolean sameIDsAs(ZMatrixAtom other)
     {
-	boolean res = false;
-	if (this.getICsCount() == other.getICsCount())
-	{
-	    switch (this.getICsCount())
-	    {
-		case 0:
-		    res = true;
-		    break;
+        boolean res = false;
+        if (this.getICsCount() == other.getICsCount())
+        {
+            switch (this.getICsCount())
+            {
+                case 0:
+                    res = true;
+                    break;
 
-		case 1:
-		    res = this.getIC(0).compareIDs(other.getIC(0).getIDs());
-		    break;
+                case 1:
+                    res = this.getIC(0).compareIDs(other.getIC(0).getIDs());
+                    break;
 
                 case 2:
                     res = this.getIC(1).compareIDs(other.getIC(1).getIDs());
@@ -476,9 +476,9 @@ public class ZMatrixAtom
                 case 3:
                     res = this.getIC(2).compareIDs(other.getIC(2).getIDs());
                     break;
-	    }
-	}
-	return res;
+            }
+        }
+        return res;
     }
 
 //------------------------------------------------------------------------------

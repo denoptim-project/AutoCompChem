@@ -42,22 +42,22 @@ public class TextAnalyzerTest
 {
     private final String NL = System.getProperty("line.separator");
     private final String TEXT = "First line" + NL + "Second line bla bla" 
-		+ NL + "3rd line" + NL + "4th line here" + NL + "5th line here";
+                + NL + "3rd line" + NL + "4th line here" + NL + "5th line here";
 
     private final String LONGTEXT = "l0 text " + NL + "l1 text KEY1" + NL 
-	+ "l2 text bla " + NL + "l3 text OPB1" + NL + "l4 text b1-1" + NL 
-	+ "l5 text b1-2" + NL + "l6 text CLB1 sdfasf" + NL + "l7 text bla bla" 
-	+ NL + "l8 text OPB2" + NL + "l9 text b2-1" + NL + "l10 text b2-2" 
-	+ NL + "l11 text b2-3 NESTEDKEY" + NL + "l12 text b2-4" + NL 
-	+ "l13 text b2-5" + NL + "l14 text b2-6 OPB3" + NL 
-	+ "l15 text b2-7 b3-1" + NL + "l16 text b2-8 b3-2 NESTEDKEY" + NL 
-	+ "l17 text CLB2 b3-3" + NL + "l18 text      b3-4" + NL 
-	+ "l19 text      CLB3" + NL + "l20 text OPB3 OPB2" + NL 
-	+ "l21 text b3-1 b2-1" + NL + "l22 text b3-2 b2-2" + NL 
-	+ "l23 text b3-3 CLB2" + NL + "l24 text b3-4" + NL + "l25 text CLB3" 
-	+ NL + "l26 text OPB1" + NL + "l27 text b1-1 OPB2" + NL 
-	+ "l28 text b1-2 b2-1" + NL + "l29 text CLB2 CLB1 KEY1" + NL 
-	+ "l30 text" + NL + "" + NL + ""; 
+        + "l2 text bla " + NL + "l3 text OPB1" + NL + "l4 text b1-1" + NL 
+        + "l5 text b1-2" + NL + "l6 text CLB1 sdfasf" + NL + "l7 text bla bla" 
+        + NL + "l8 text OPB2" + NL + "l9 text b2-1" + NL + "l10 text b2-2" 
+        + NL + "l11 text b2-3 NESTEDKEY" + NL + "l12 text b2-4" + NL 
+        + "l13 text b2-5" + NL + "l14 text b2-6 OPB3" + NL 
+        + "l15 text b2-7 b3-1" + NL + "l16 text b2-8 b3-2 NESTEDKEY" + NL 
+        + "l17 text CLB2 b3-3" + NL + "l18 text      b3-4" + NL 
+        + "l19 text      CLB3" + NL + "l20 text OPB3 OPB2" + NL 
+        + "l21 text b3-1 b2-1" + NL + "l22 text b3-2 b2-2" + NL 
+        + "l23 text b3-3 CLB2" + NL + "l24 text b3-4" + NL + "l25 text CLB3" 
+        + NL + "l26 text OPB1" + NL + "l27 text b1-1 OPB2" + NL 
+        + "l28 text b1-2 b2-1" + NL + "l29 text CLB2 CLB1 KEY1" + NL 
+        + "l30 text" + NL + "" + NL + ""; 
 
     private final ArrayList<String> slPts = new ArrayList<String>(Arrays.asList(
                 "(.*)KEY1(.*)","(.*)NESTEDKEY(.*)"));
@@ -72,7 +72,7 @@ public class TextAnalyzerTest
     public void testCountMatches() throws Exception
     {
         BufferedReader br = new BufferedReader(new StringReader(TEXT));
-	assertEquals(5,TextAnalyzer.count(br,"line"),"Total matches");
+        assertEquals(5,TextAnalyzer.count(br,"line"),"Total matches");
         br.close();
     }
 
@@ -82,25 +82,25 @@ public class TextAnalyzerTest
     public void testCountMatchesInLine() throws Exception
     {
         String l = "G.HsFFG.Hd.,-@ sdgHEG HsGhHdfv v \tG.H xFfgHsdgG.H";
-	assertEquals(8,TextAnalyzer.countInLine("H",l),"#Matches (1)");
-	assertEquals(4,TextAnalyzer.countInLine("\\.H",l),"#Matches (2)");
-	assertEquals(6,TextAnalyzer.countInLine("G.H",l),"#Matches (3)");
-	assertEquals(1,TextAnalyzer.countInLine("H$",l),"#Matches (4)");
-	assertEquals(2,TextAnalyzer.countInLine("gH",l),"#Matches (5)");
+        assertEquals(8,TextAnalyzer.countInLine("H",l),"#Matches (1)");
+        assertEquals(4,TextAnalyzer.countInLine("\\.H",l),"#Matches (2)");
+        assertEquals(6,TextAnalyzer.countInLine("G.H",l),"#Matches (3)");
+        assertEquals(1,TextAnalyzer.countInLine("H$",l),"#Matches (4)");
+        assertEquals(2,TextAnalyzer.countInLine("gH",l),"#Matches (5)");
 
-	l = "here asasd here";
-	assertEquals(2,TextAnalyzer.countInLine("here",l),"#Matches (6)");
-	// The following are overlapping queries, thus only the first one hits
-	assertEquals(1,TextAnalyzer.countInLine(".*here",l),"#Matches (7)");
-	assertEquals(1,TextAnalyzer.countInLine("here.*",l),"#Matches (8)");
-	assertEquals(1,TextAnalyzer.countInLine(".*here.*",l),"#Matches (9)");
+        l = "here asasd here";
+        assertEquals(2,TextAnalyzer.countInLine("here",l),"#Matches (6)");
+        // The following are overlapping queries, thus only the first one hits
+        assertEquals(1,TextAnalyzer.countInLine(".*here",l),"#Matches (7)");
+        assertEquals(1,TextAnalyzer.countInLine("here.*",l),"#Matches (8)");
+        assertEquals(1,TextAnalyzer.countInLine(".*here.*",l),"#Matches (9)");
 
-	l = "here asda here sd asd here";
-	assertEquals(3,TextAnalyzer.countInLine("here",l),"#Matches (10)");
-	// The following are overlapping queries, thus only the first one hits
-	assertEquals(1,TextAnalyzer.countInLine(".*here",l),"#Matches (11)");
-	assertEquals(1,TextAnalyzer.countInLine("here.*",l),"#Matches (12)");
-	assertEquals(1,TextAnalyzer.countInLine(".*here.*",l),"#Matches (13)");
+        l = "here asda here sd asd here";
+        assertEquals(3,TextAnalyzer.countInLine("here",l),"#Matches (10)");
+        // The following are overlapping queries, thus only the first one hits
+        assertEquals(1,TextAnalyzer.countInLine(".*here",l),"#Matches (11)");
+        assertEquals(1,TextAnalyzer.countInLine("here.*",l),"#Matches (12)");
+        assertEquals(1,TextAnalyzer.countInLine(".*here.*",l),"#Matches (13)");
 
     }
 
@@ -109,12 +109,12 @@ public class TextAnalyzerTest
     @Test
     public void testCountMultiMatches() throws Exception
     {
-	ArrayList<String> queries = new ArrayList<String>();
-	queries.add("here");
-	queries.add("line");
+        ArrayList<String> queries = new ArrayList<String>();
+        queries.add("here");
+        queries.add("line");
 
         BufferedReader br = new BufferedReader(new StringReader(TEXT));
-	ArrayList<ArrayList<Integer>> counts = TextAnalyzer.count(br,queries);
+        ArrayList<ArrayList<Integer>> counts = TextAnalyzer.count(br,queries);
         br.close();
 
         assertEquals(2,counts.get(0).size(),"Total matches of 'here'");
@@ -182,19 +182,19 @@ public class TextAnalyzerTest
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
-	assertEquals(4,blocks.size(),"Tutal number of blocks");
-	for (TextBlock tb : blocks)
-	{
-	    String key = tb.getIndexA() + "_" 
-		       + tb.getIndexB() + "_" 
-		       + tb.getIndexC();
-	    switch (key)
-	    {
-		case ("0_2_0"):
-	            assertEquals(0,tb.getNestedBlocks().size(), "Number of "
-			+ "nested blocks.");
-		    assertEquals(13,tb.getText().size(),"Number of text lines");
-		    break;
+        assertEquals(4,blocks.size(),"Tutal number of blocks");
+        for (TextBlock tb : blocks)
+        {
+            String key = tb.getIndexA() + "_" 
+                       + tb.getIndexB() + "_" 
+                       + tb.getIndexC();
+            switch (key)
+            {
+                case ("0_2_0"):
+                    assertEquals(0,tb.getNestedBlocks().size(), "Number of "
+                        + "nested blocks.");
+                    assertEquals(13,tb.getText().size(),"Number of text lines");
+                    break;
 
                 case ("1_3_0"):
                     assertEquals(0,tb.getNestedBlocks().size(), "Number of "
@@ -214,11 +214,11 @@ public class TextAnalyzerTest
                     assertEquals(3,tb.getText().size(),"Number of text lines");
                     break;
 
-		default:
-		    assertTrue(false, "Unexpected key in TextBlocks");
-		    break;
-	    }
-	}
+                default:
+                    assertTrue(false, "Unexpected key in TextBlocks");
+                    break;
+            }
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -226,38 +226,38 @@ public class TextAnalyzerTest
     @Test
     public void testExtractNestedTextBlocks() throws Exception
     {
-	String NESTEDBLOCKS = "#beginning" + NL
-		+ "OPB1" + NL
-		 + "inside block 1" + NL
-		 + "OPB1" + NL
-		  + "inside nested block 1.1" + NL
-		 + "CLB1" + NL
-		 + "after nested block 1.1" + NL
-		 + "OPB1" + NL
-		  + "inside nested block 1.2" + NL
-		  + "OPB1" + NL
-		   + "inside nested block 1.2.1" + NL
-		  + "CLB1" + NL
-		  + "still inside nested block 1.2" + NL
-		 + "CLB1" + NL
-		 + "after nested block 1.2" + NL
-		 + "OPB2" + NL
-		 + "inside nested block 2" + NL
-		 + "OPB1" + NL
-		  + "inside nested block 1.3" + NL
-		 + "CLB1" + NL
-		 + "still inside nested block 2" + NL
-		 + "CLB2" + NL
-		 + "after nested block 2" + NL
-		 + "OPB3" + NL
-		 + "inside nested block 3" + NL
-		 + "OPB1" + NL
-		  + "inside nested block 1.4 and inside 3" + NL
-		 + "CLB3" + NL
-		  + "inside nested block 1.4 but outside 3" + NL
-		 + "CLB1" + NL
-		 + "after nested block 3" + NL
-		+ "CLB1";
+        String NESTEDBLOCKS = "#beginning" + NL
+                + "OPB1" + NL
+                 + "inside block 1" + NL
+                 + "OPB1" + NL
+                  + "inside nested block 1.1" + NL
+                 + "CLB1" + NL
+                 + "after nested block 1.1" + NL
+                 + "OPB1" + NL
+                  + "inside nested block 1.2" + NL
+                  + "OPB1" + NL
+                   + "inside nested block 1.2.1" + NL
+                  + "CLB1" + NL
+                  + "still inside nested block 1.2" + NL
+                 + "CLB1" + NL
+                 + "after nested block 1.2" + NL
+                 + "OPB2" + NL
+                 + "inside nested block 2" + NL
+                 + "OPB1" + NL
+                  + "inside nested block 1.3" + NL
+                 + "CLB1" + NL
+                 + "still inside nested block 2" + NL
+                 + "CLB2" + NL
+                 + "after nested block 2" + NL
+                 + "OPB3" + NL
+                 + "inside nested block 3" + NL
+                 + "OPB1" + NL
+                  + "inside nested block 1.4 and inside 3" + NL
+                 + "CLB3" + NL
+                  + "inside nested block 1.4 but outside 3" + NL
+                 + "CLB1" + NL
+                 + "after nested block 3" + NL
+                + "CLB1";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
         ArrayList<TextBlock> blocks = TextAnalyzer.extractTextBlocks(br,
                                                 slPts,sPats,ePats,false,false);
@@ -301,7 +301,7 @@ for(TextBlock tb : blocks)
                     assertTrue(false, "Unexpected key in TextBlocks");
                     break;
             }
-	}
+        }
     }
 
 //TODO test grep

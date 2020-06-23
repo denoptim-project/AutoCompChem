@@ -48,28 +48,28 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName)
     {
-	ArrayList<TextBlock> blocks = FilesAnalyzer.extractTextBlocks(pathName,
-					ParameterConstants.STARTJOB, //delimiter
-					ParameterConstants.ENDJOB, //delimiter
-					false,  //don't take only first
-					false); //don't include delimiters
+        ArrayList<TextBlock> blocks = FilesAnalyzer.extractTextBlocks(pathName,
+                                        ParameterConstants.STARTJOB, //delimiter
+                                        ParameterConstants.ENDJOB, //delimiter
+                                        false,  //don't take only first
+                                        false); //don't include delimiters
 
-	// Unless there is only one set of parameters the outernmost job serves
-	// as a container of the possibly nested structure of sub-jobs.
-	Job job = new Job();
-	if (blocks.size() == 1)
-	{
-	    job = createJob(blocks.get(0));
-	}
-	else
-	{
-	    for (TextBlock tb : blocks)
-	    {
-	        Job subJob = createJob(tb);
-		job.addStep(subJob);
-	    }
-	}
-	return job;
+        // Unless there is only one set of parameters the outernmost job serves
+        // as a container of the possibly nested structure of sub-jobs.
+        Job job = new Job();
+        if (blocks.size() == 1)
+        {
+            job = createJob(blocks.get(0));
+        }
+        else
+        {
+            for (TextBlock tb : blocks)
+            {
+                Job subJob = createJob(tb);
+                job.addStep(subJob);
+            }
+        }
+        return job;
     }
 
 //------------------------------------------------------------------------------
@@ -89,17 +89,17 @@ public class JobFactory
         Job job = new Job();
         //TODO: choose job class based on parameters
         job.setParameters(oneJobParams);
-	if (tb.getNestedBlocks().size() > 0)
-	{
-	    for (TextBlock intTb : tb.getNestedBlocks())
-	    {
-		// Recursive exploration of nested structure of TextBlocks
-		Job subJob = createJob(intTb);
-		job.addStep(subJob);
-	    }
-	}
+        if (tb.getNestedBlocks().size() > 0)
+        {
+            for (TextBlock intTb : tb.getNestedBlocks())
+            {
+                // Recursive exploration of nested structure of TextBlocks
+                Job subJob = createJob(intTb);
+                job.addStep(subJob);
+            }
+        }
 
-	return job;
+        return job;
     }
 
 //------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * DistanceMatrix is a matrix in which each entry contains a number representing
- * the distance (as a concept) between two objects that are identifyed by the 
+ * the distance (as a concept) between two objects that are identified by the 
  * row and column indexes.
  *
  * @author Marco Foscato
@@ -33,7 +33,7 @@ public class DistanceMatrix
 {
     //data
     private  Map<Integer,Map<Integer,Double>> dm = 
-				     new HashMap<Integer,Map<Integer,Double>>();
+                                     new HashMap<Integer,Map<Integer,Double>>();
 
     //details
     private double maxDist;
@@ -47,8 +47,8 @@ public class DistanceMatrix
 
     public DistanceMatrix()
     {
-	this.maxDist = - Double.MAX_VALUE;
-	this.minDist = Double.MAX_VALUE;
+        this.maxDist = - Double.MAX_VALUE;
+        this.minDist = Double.MAX_VALUE;
     }
 
 //------------------------------------------------------------------------------
@@ -62,20 +62,20 @@ public class DistanceMatrix
 
     public void put(int idr, int idc, double dist)
     {
-	if (dm.keySet().contains(idr))
-	{
-	    Map<Integer,Double> row = dm.get(idr);
-	    row.put(idc, dist);
-	} else {
-	    Map<Integer,Double> newRow = new HashMap<Integer,Double>();
-	    newRow.put(idc, dist);
-	    dm.put(idr, newRow);
-	}
+        if (dm.keySet().contains(idr))
+        {
+            Map<Integer,Double> row = dm.get(idr);
+            row.put(idc, dist);
+        } else {
+            Map<Integer,Double> newRow = new HashMap<Integer,Double>();
+            newRow.put(idc, dist);
+            dm.put(idr, newRow);
+        }
 
-	if (dist > maxDist)
-	    this.maxDist = dist;
-	if ((dist < minDist) && (dist > 0.0D))
-	    this.minDist = dist;
+        if (dist > maxDist)
+            this.maxDist = dist;
+        if ((dist < minDist) && (dist > 0.0D))
+            this.minDist = dist;
     }
 
 //------------------------------------------------------------------------------
@@ -94,10 +94,10 @@ public class DistanceMatrix
             Map<Integer,Double> row = dm.get(idr);
             if (row.keySet().contains(idc))
             {
-		return true;
-	    }
-	}
-	return false;
+                return true;
+            }
+        }
+        return false;
     }
 
 //------------------------------------------------------------------------------
@@ -111,12 +111,12 @@ public class DistanceMatrix
 
     public ArrayList<Double> getAllDistsOnRow(int index)
     {
-	ArrayList<Double> allDists = new ArrayList<Double>();
+        ArrayList<Double> allDists = new ArrayList<Double>();
         for (Integer idc : dm.get(index).keySet())
         {
-	    allDists.add(dm.get(index).get(idc));
+            allDists.add(dm.get(index).get(idc));
         }
-	return allDists;
+        return allDists;
     }
 
 //------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ public class DistanceMatrix
     public double get(int idr, int idc)
     {
         Map<Integer,Double> row = dm.get(idr);
-	return row.get(idc);
+        return row.get(idc);
     }
 
 //------------------------------------------------------------------------------
@@ -162,12 +162,12 @@ public class DistanceMatrix
 
     public int getNumEntries()
     {
-	int tot = 0;
-	for (Integer idr : dm.keySet())
-	{
+        int tot = 0;
+        for (Integer idr : dm.keySet())
+        {
             Map<Integer,Double> row = dm.get(idr);
-	    tot = tot + row.keySet().size();
-	}
+            tot = tot + row.keySet().size();
+        }
         return tot;
     }
 
@@ -181,12 +181,12 @@ public class DistanceMatrix
 
     public double getMaxDistOnRow(int i)
     {
-	double max = - Double.MAX_VALUE;
-	for (Double d : getAllDistsOnRow(i))
-	{
-	    if (d>max)
-		max=d;
-	}
+        double max = - Double.MAX_VALUE;
+        for (Double d : getAllDistsOnRow(i))
+        {
+            if (d>max)
+                max=d;
+        }
         return max;
     }
 
@@ -256,7 +256,7 @@ public class DistanceMatrix
 
     public double getMaxDist()
     {
-	return maxDist;
+        return maxDist;
     }
 
 //------------------------------------------------------------------------------

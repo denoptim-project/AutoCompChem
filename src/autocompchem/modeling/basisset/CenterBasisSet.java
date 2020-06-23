@@ -120,7 +120,7 @@ public class CenterBasisSet
 
     public void addShell(Shell s)
     {
-	shells.add(s);
+        shells.add(s);
     }
 
 //------------------------------------------------------------------------------
@@ -149,32 +149,32 @@ public class CenterBasisSet
 
     public void appendComponents(CenterBasisSet other)
     {
-	// Append named basis set components
-	for (String s : other.getNamedComponents())
-	{
-	    namedComponents.add(s);
-	}
+        // Append named basis set components
+        for (String s : other.getNamedComponents())
+        {
+            namedComponents.add(s);
+        }
 
-	// Append explicit basis set component (i.e., shells)
-	for (Shell shell : other.getShells())
-	{
-	    shells.add(shell.clone());
-	}
+        // Append explicit basis set component (i.e., shells)
+        for (Shell shell : other.getShells())
+        {
+            shells.add(shell.clone());
+        }
 
-	// Append ECP components
-	for (ECPShell ecp : other.getECPShells())
-	{
-	    ecps.add(ecp.clone());
-	}
+        // Append ECP components
+        for (ECPShell ecp : other.getECPShells())
+        {
+            ecps.add(ecp.clone());
+        }
 
-	// Import ECP settings
-	if (other.getECPShells().size() > 0)
-	{
-	    this.setElement(other.getElement());
-	    this.setECPType(other.getECPType());
-	    this.setECPMaxAngMom(other.getECPMaxAngMom());
-	    this.setElectronsInECP(other.getElectronsInECP());
-	}
+        // Import ECP settings
+        if (other.getECPShells().size() > 0)
+        {
+            this.setElement(other.getElement());
+            this.setECPType(other.getECPType());
+            this.setECPMaxAngMom(other.getECPMaxAngMom());
+            this.setElectronsInECP(other.getElectronsInECP());
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ public class CenterBasisSet
      */
     public void setElement(String el)
     {
-	this.element = el;
+        this.element = el;
     }   
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ public class CenterBasisSet
 
     public void setECPType(String type)
     {
-	this.ecpType = type;
+        this.ecpType = type;
     }
 
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ public class CenterBasisSet
 
     public void setECPMaxAngMom(int maxl)
     {
-	this.maxl = maxl;
+        this.maxl = maxl;
     }
 
 //------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ public class CenterBasisSet
 
     public String getCenterId()
     {
-	return atmId;
+        return atmId;
     }
 
 //------------------------------------------------------------------------------
@@ -296,7 +296,7 @@ public class CenterBasisSet
 
     public List<String> getNamedComponents()
     {
-	return namedComponents;
+        return namedComponents;
     }
 
 //------------------------------------------------------------------------------
@@ -341,41 +341,41 @@ public class CenterBasisSet
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
-		if (namedComponents.size() > 0)
-		{
+                if (namedComponents.size() > 0)
+                {
                     for (String n : namedComponents)
-		    {
+                    {
                         sb.append(String.format("%-6s 0",atmId)).append(nl);
-			sb.append(n).append(nl);
-		        sb.append("****").append(nl);
-		    } 
-		}
-		if (shells.size() > 0)
-		{
+                        sb.append(n).append(nl);
+                        sb.append("****").append(nl);
+                    } 
+                }
+                if (shells.size() > 0)
+                {
                     sb.append(String.format("%-6s 0",atmId)).append(nl);
                     for (Shell s : shells)
                     {
                         sb.append(s.toInputFileString(format,"notUsed"));
                     }
-		    sb.append("****").append(nl);
-		}
+                    sb.append("****").append(nl);
+                }
                 break;
 
             case "NWCHEM":
                 String atmStr = Character.toUpperCase(atmId.charAt(0)) 
-					     + atmId.toLowerCase().substring(1);
+                                             + atmId.toLowerCase().substring(1);
                 for (String n : namedComponents)
                 {
-		    if (n.contains(" "))
-		    {
+                    if (n.contains(" "))
+                    {
                         sb.append(
-				 String.format("  %s library \"%s\"",atmStr,n));
-		    }
-		    else
-		    {
+                                 String.format("  %s library \"%s\"",atmStr,n));
+                    }
+                    else
+                    {
                         sb.append(String.format("  %s library %s",atmStr,n));
-		    }
-		    sb.append(nl);
+                    }
+                    sb.append(nl);
                 }
                 for (Shell s : shells)
                 {
@@ -386,7 +386,7 @@ public class CenterBasisSet
             default:
                 String msg = "ERROR! Format '" + format + "' is not a known "
                          + "format for reporting basis sets in CenterBasisSet. "
-			 + "Check your input.";
+                         + "Check your input.";
                 Terminator.withMsgAndStatus(msg,-1);
         }
         return sb.toString();
@@ -408,52 +408,52 @@ public class CenterBasisSet
     public String toInputFileStringECP(String format)
     {
         StringBuilder sb = new StringBuilder();
-	if (ecps.size() == 0)
-	{
-	    return "";
-	}
+        if (ecps.size() == 0)
+        {
+            return "";
+        }
         String nl = System.getProperty("line.separator");
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
                 sb.append(String.format("%-6s 0",atmId)).append(nl);
                 sb.append(String.format("%s %2d %3d",ecpType,maxl,ne));
-		sb.append(nl);
+                sb.append(nl);
                 for (ECPShell s : ecps)
                 {
                     sb.append(s.toInputFileString(format));
                 }
                 break;
 
-	    case "NWCHEM":
+            case "NWCHEM":
                 String atmStr = Character.toUpperCase(atmId.charAt(0)) 
-					     + atmId.toLowerCase().substring(1);
+                                             + atmId.toLowerCase().substring(1);
                 sb.append(String.format("  %s nelec %s",atmStr,ne)).append(nl);
-		boolean first = true;
+                boolean first = true;
                 for (ECPShell s : ecps)
                 {
-		    String ecpsType = s.getType();
-		    if (first && ecpsType.substring(0,1).toUpperCase().equals(
-				BasisSetConstants.ANGMOMINTTOSTR.get(maxl)))
-		    {
-		        ecpsType = "ul";
-			first = false;
-		    }
-		    else
-		    {
-			String[] parts = ecpsType.split("-");
-			ecpsType = parts[0]; 
-		    }
+                    String ecpsType = s.getType();
+                    if (first && ecpsType.substring(0,1).toUpperCase().equals(
+                                BasisSetConstants.ANGMOMINTTOSTR.get(maxl)))
+                    {
+                        ecpsType = "ul";
+                        first = false;
+                    }
+                    else
+                    {
+                        String[] parts = ecpsType.split("-");
+                        ecpsType = parts[0]; 
+                    }
                     sb.append(String.format("  %s %s",atmStr,ecpsType));
-		    sb.append(nl);
+                    sb.append(nl);
                     sb.append(s.toInputFileString(format));
                 }
-		break;
+                break;
 
             default:
                 String msg = "ERROR! Format '" + format + "' is not a known "
                              + "format for reporting ECPs in CenterBasisSet. "
-			     + "Check your input.";
+                             + "Check your input.";
                 Terminator.withMsgAndStatus(msg,-1);
         }
         return sb.toString();

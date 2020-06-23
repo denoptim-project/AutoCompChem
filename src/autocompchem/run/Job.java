@@ -90,7 +90,7 @@ public class Job implements Runnable
 
     public Job()
     {
-	this.params = new ParameterStorage();
+        this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = RunnableAppID.UNDEFINED;
     }
@@ -104,7 +104,7 @@ public class Job implements Runnable
 
     public Job(RunnableAppID appID)
     {
-	this.params = new ParameterStorage();
+        this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = appID;
     }
@@ -120,7 +120,7 @@ public class Job implements Runnable
 
     public Job(RunnableAppID appID, boolean parallelizable)
     {
-	this.params = new ParameterStorage();
+        this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = appID;
         this.parallelizable = parallelizable;
@@ -138,7 +138,7 @@ public class Job implements Runnable
 
     public Job(RunnableAppID appID, int nThreads)
     {
-	this.params = new ParameterStorage();
+        this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = appID;
         this.nThreads = nThreads;
@@ -432,7 +432,7 @@ public class Job implements Runnable
         {
             return;
         }
-	this.jobIsBeingKilled = true;
+        this.jobIsBeingKilled = true;
         Thread.currentThread().interrupt();
     }
 

@@ -49,13 +49,13 @@ public class Terminator
                 + "\n\n Thanks for using Foscato's scripts and software."
                 + "\n Mandi! ;) \n";
 
-	System.out.println(line);
+        System.out.println(line);
 
 //TODO add check if stdout and stderr are not the same
-	if (exitStatus != 0)
-	{
+        if (exitStatus != 0)
+        {
             System.err.println(line);
-	}
+        }
 
         System.exit(exitStatus);
     }

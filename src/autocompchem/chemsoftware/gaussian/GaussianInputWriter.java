@@ -452,27 +452,27 @@ public class GaussianInputWriter
                 {
                     writeSingleStepInp(mol,header,comment,outFile);
                 } 
-		else 
-		{
+                else 
+                {
                     //Update molecular representation
                     if (inFormat=="SDF")
-		    {
-			if (chargeOrSpinFromIAC(mol))
-			{
+                    {
+                        if (chargeOrSpinFromIAC(mol))
+                        {
                             gaussJob.setAllCharge(charge);
                             gaussJob.setAllSpinMultiplicity(spinMult);
-			}
+                        }
                     }
 
                     //If by any chance one of the two was not defined before
                     checkChargeSpinNotAtDefault();
 
-		    if (gaussJob.getStep(0).needsGeometry())
-		    {
+                    if (gaussJob.getStep(0).needsGeometry())
+                    {
                         GaussianMolSpecification gMolSpec  = 
-			      new GaussianMolSpecification(mol,charge,spinMult);
-		        gaussJob.getStep(0).setMolSpecification(gMolSpec);
-		    }
+                              new GaussianMolSpecification(mol,charge,spinMult);
+                        gaussJob.getStep(0).setMolSpecification(gMolSpec);
+                    }
 
                     //Update molecule/atom-specific options
                     if (inFormat=="XYZ")
@@ -488,7 +488,7 @@ public class GaussianInputWriter
                     }
                     for (int istp=0; istp<gaussJob.getNumberOfSteps(); istp++)
                     {
-			GaussianStep gStep = gaussJob.getStep(istp);
+                        GaussianStep gStep = gaussJob.getStep(istp);
                         GaussianOptionsSection gOpts = gStep.getOptionSection();
 
                         for (String oName : gOpts.getRefNames())
@@ -635,7 +635,7 @@ public class GaussianInputWriter
     {
         String result = "";
         String verbKey = ACCConstants.VERBOSITYPAR;
-	GaussianRouteSection stepRoute = gStep.getRouteSection();
+        GaussianRouteSection stepRoute = gStep.getRouteSection();
         for (String action : params.getAllParameters().keySet())
         {
             switch (action.toUpperCase()) 
@@ -646,24 +646,24 @@ public class GaussianInputWriter
                     locPars.setParameter(verbKey, 
                                    new Parameter(verbKey,"integer", verbosity));
                     BasisSetGenerator bsg = new BasisSetGenerator(locPars);
-		    bsg.setAtmIdxAsId(true);
+                    bsg.setAtmIdxAsId(true);
                     BasisSet bs = bsg.assignBasisSet(mol);
-		    String genBsKey = "GEN";
-		    if (bs.hasECP())
-		    {
-			genBsKey = "GENECP";
-		    }
-		    String bsKeyRef = GaussianConstants.SUBKEYMODELBASISET;
-		    if (stepRoute.containsKey(bsKeyRef))
-		    {
+                    String genBsKey = "GEN";
+                    if (bs.hasECP())
+                    {
+                        genBsKey = "GENECP";
+                    }
+                    String bsKeyRef = GaussianConstants.SUBKEYMODELBASISET;
+                    if (stepRoute.containsKey(bsKeyRef))
+                    {
                         String oldBsKey = stepRoute.getValue(bsKeyRef);
                         String[] parts = oldBsKey.split("\\s+");
-			for (int j=1; j<parts.length;j++)
-			{
-			    genBsKey = genBsKey + " " + parts[j];
-			}
-		    }
-		    stepRoute.put(bsKeyRef,genBsKey);
+                        for (int j=1; j<parts.length;j++)
+                        {
+                            genBsKey = genBsKey + " " + parts[j];
+                        }
+                    }
+                    stepRoute.put(bsKeyRef,genBsKey);
                     result = bs.toInputFileString("gaussian");
                     break;
 

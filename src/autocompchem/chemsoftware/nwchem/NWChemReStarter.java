@@ -119,7 +119,7 @@ public class NWChemReStarter
      * Name of the errors definition tree
      */
     @SuppressWarnings("unused")
-	private ArrayList<ErrorMessage> errorDef;
+        private ArrayList<ErrorMessage> errorDef;
 
     /**
      * Flag requiring to restart last task
@@ -195,8 +195,8 @@ public class NWChemReStarter
 
     public NWChemReStarter(ParameterStorage params) 
     {
-	//Keep track of the parameter's object
-	paramsLoc = params;
+        //Keep track of the parameter's object
+        paramsLoc = params;
 
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValue().toString();
@@ -213,15 +213,15 @@ public class NWChemReStarter
         this.nwFile = params.getParameter("NEWNWFILE").getValue().toString();
         FilesManager.mustNotExist(this.nwFile);
         this.nwcDataBaseName = FilesManager.getRootOfFileName(this.nwFile) 
-									+ ".db";
+                                                                        + ".db";
         this.newJDFile = FilesManager.getRootOfFileName(this.nwFile) + ".jd";
 
         //Get and check the output file (which is an input for NWChem)
-	if (params.contains("NWCDATABASE"))
-	{
+        if (params.contains("NWCDATABASE"))
+        {
             this.nwcDataBaseName = params.getParameter(
-					   "NWCDATABASE").getValue().toString();
-	}
+                                           "NWCDATABASE").getValue().toString();
+        }
 
         //Get and check the job details file
         String jdFile = 
@@ -234,27 +234,27 @@ public class NWChemReStarter
         this.nwcJob = new NWChemJob(jdFile);
         
         //Get and check the list of known errors
-	if (params.contains("NWCHEMERRORS"))
-	{
+        if (params.contains("NWCHEMERRORS"))
+        {
             String errDefPath = 
                 params.getParameter("NWCHEMERRORS").getValue().toString();
             if (verbosity > 0)
             {
                 System.out.println(" Importing known errors from " 
-								  + errDefPath);
+                                                                  + errDefPath);
             }
             FilesManager.foundAndPermissions(errDefPath,true,false,false);
             this.errorDef = ErrorManager.getAll(errDefPath);
-	}
-	else
-	{
-	    this.justRestartLastTask = true;
-	    if (verbosity > 0)
+        }
+        else
+        {
+            this.justRestartLastTask = true;
+            if (verbosity > 0)
             {
                 System.out.println(" WARNING! No list of known errors.");
-		System.out.println(" I can only restart the last NWChem task.");
+                System.out.println(" I can only restart the last NWChem task.");
             }
-	}
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -397,23 +397,23 @@ public class NWChemReStarter
 
         //identify the type of error-solving protocol and get the details
         String typeOfAction = "";
-	Map<String,String> efaDetails = new HashMap<String,String>();
-	if (!justRestartLastTask)
-	{
-	    typeOfAction = em.getErrorFixingAction();
+        Map<String,String> efaDetails = new HashMap<String,String>();
+        if (!justRestartLastTask)
+        {
+            typeOfAction = em.getErrorFixingAction();
             typeOfAction = typeOfAction.toUpperCase();
             efaDetails = em.getErrorFixingActionDetails();
-	}
+        }
         //Check for consistency between reality and user's request
         if (typeOfAction.equals("NONE"))
         {
             Terminator.withMsgAndStatus("ERROR! Action specified in case of "
                                         + em.getName() + " is 'NONE'", -1);
         }
-	if (justRestartLastTask)
-	{
-	    typeOfAction = "REDO_STEP_ALTERING_DIRECTIVES";
-	}
+        if (justRestartLastTask)
+        {
+            typeOfAction = "REDO_STEP_ALTERING_DIRECTIVES";
+        }
         if ((typeOfAction == null) || (typeOfAction.equals("")))
         {
             Terminator.withMsgAndStatus("ERROR! No error-fix action "
@@ -421,33 +421,33 @@ public class NWChemReStarter
         }
 
         if (verbosity > 0)
-	{
+        {
             System.out.println(" Action to fix the problem: "+typeOfAction);
-	}
+        }
 
         //Identification of the failing step
-	//
+        //
         // WARNING! Use failedStepID-1 because oEval.getNumberOfSteps()
         // works as a size() method and the number of steps as
         // from 1 to n (not from 0 to n-1)
-	//
+        //
         NWChemTask failStep = nwcJob.getStep(failedStepID - 1);
 
         //define the new NWChemJob
         NWChemJob newNwcJob = new NWChemJob();
         switch (typeOfAction) {
             case "REDO_STEP_ALTERING_DIRECTIVES":
-	    {
+            {
                 //Append the failing step and all the steps that never run
                 boolean first = true;
-		boolean wasStartDirImposed = false;
-		boolean wasRestartDirImposed = false;
+                boolean wasStartDirImposed = false;
+                boolean wasRestartDirImposed = false;
                 for (int i=(failedStepID - 1); i<nwcJob.getNumberOfSteps(); i++)
                 {
-	            if (verbosity > 1)
-		    {
+                    if (verbosity > 1)
+                    {
                         System.out.println(" Setting step "+i+" of new job");
-		    }
+                    }
 
                     //Copy from nwcJob to newNwcJob
                     NWChemTask copyOfOldStep = new NWChemTask(
@@ -455,14 +455,14 @@ public class NWChemReStarter
 
 
 /*
-		    if (verbosity > 2 && first)
-		    {
-			System.out.println(" Directives from old jobdetails:");
+                    if (verbosity > 2 && first)
+                    {
+                        System.out.println(" Directives from old jobdetails:");
                         for (NWChemDirective duD : copyOfOldStep.getAllDirectives())
                         {
                             System.out.println("  "+duD.getName());
                         }
-		    }
+                    }
 */
 
                     if (first)
@@ -479,25 +479,25 @@ public class NWChemReStarter
                     }
 
                     //Modify directives of failed step, which is the first in
-		    //the new NWChemJob
+                    //the new NWChemJob
                     if (first 
-			&& efaDetails.keySet().contains("IMPOSE_DIRECTIVES"))
+                        && efaDetails.keySet().contains("IMPOSE_DIRECTIVES"))
                     {
                         //Get directives to impose
                         String dirsOneStr = efaDetails.get("IMPOSE_DIRECTIVES");
-			ArrayList<String> dirsAsLines = new ArrayList<String>(
-				         Arrays.asList(dirsOneStr.split("\n")));
+                        ArrayList<String> dirsAsLines = new ArrayList<String>(
+                                         Arrays.asList(dirsOneStr.split("\n")));
 
-			NWChemTask dirsToAdd = new NWChemTask(dirsAsLines);
-			copyOfOldStep.impose(dirsToAdd);
+                        NWChemTask dirsToAdd = new NWChemTask(dirsAsLines);
+                        copyOfOldStep.impose(dirsToAdd);
 
                         if (verbosity > 2)
                         {
                             System.out.println(" Imposing directives:");
-			    for (NWChemDirective duD : dirsToAdd.getAllDirectives())
-        		    {
-				System.out.println("  "+duD.getName());
-			    }
+                            for (NWChemDirective duD : dirsToAdd.getAllDirectives())
+                            {
+                                System.out.println("  "+duD.getName());
+                            }
                         }
 
                         //Deal with counters in title/comment
@@ -524,12 +524,12 @@ public class NWChemReStarter
                         String dirsOneStr = efaDetails.get("REMOVE_DIRECTIVES");
                         ArrayList<String> dirsAsLines = new ArrayList<String>(
                                          Arrays.asList(dirsOneStr.split("\n")));
-			NWChemTask dirsToRemove = new NWChemTask(dirsAsLines);
-			if (dirsToRemove.hasDirective(new ArrayList<String>(),
+                        NWChemTask dirsToRemove = new NWChemTask(dirsAsLines);
+                        if (dirsToRemove.hasDirective(new ArrayList<String>(),
                                             new NWChemDirective(NWChemConstants.STARTDIR)))
-			{
-			    wasStartDirImposed=true;
-			}
+                        {
+                            wasStartDirImposed=true;
+                        }
                         if (dirsToRemove.hasDirective(new ArrayList<String>(),
                                             new NWChemDirective(NWChemConstants.RESTARTDIR)))
                         {
@@ -544,26 +544,26 @@ public class NWChemReStarter
                                 System.out.println("  "+duD.getName());
                             }
                         }
-			copyOfOldStep.delete(dirsToRemove);
-		    }
+                        copyOfOldStep.delete(dirsToRemove);
+                    }
 
-		    if (first)
-		    {
-			first = false;
-		    }
+                    if (first)
+                    {
+                        first = false;
+                    }
 
                     //Store step
                     newNwcJob.addStep(copyOfOldStep);
                 }
 
                 //Add/Update RESTART directive
-		if (!wasStartDirImposed)
-		{
+                if (!wasStartDirImposed)
+                {
                     newNwcJob.getStep(0).deleteDirective(new ArrayList<String>(),
                                                       NWChemConstants.STARTDIR);
-		}
-		if (!wasRestartDirImposed && !wasStartDirImposed)
-		{
+                }
+                if (!wasRestartDirImposed && !wasStartDirImposed)
+                {
                     NWChemDirective restartDir = new NWChemDirective(
                                                     NWChemConstants.RESTARTDIR);
                     String dbName = nwcDataBaseName;
@@ -578,14 +578,14 @@ public class NWChemReStarter
                     restartDir.addKeyword(dbKey);
                     newNwcJob.getStep(0).setDirective(new ArrayList<String>(),
                                                      restartDir,true,true,true);
-		}
+                }
 
                 //Write the new input for NWChem
                 IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
                 IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
-									false);
+                                                                        false);
 
                 break;
             }
@@ -620,21 +620,21 @@ public class NWChemReStarter
                         + typeOfAction + "' requires the definition of "
                         + "options (to be taken from the old, failing step) "
                         + "under the keyword 'KEEP_OPTIONS'. You usually want "
-			+ "to keep least the type of task "
-			+ "(i.e., scf, dft, etc.).",-1);
+                        + "to keep least the type of task "
+                        + "(i.e., scf, dft, etc.).",-1);
                 }
 
-		if (verbosity > 1)
-		{
-		    System.out.println(" Importing settings from old job");
-		}
+                if (verbosity > 1)
+                {
+                    System.out.println(" Importing settings from old job");
+                }
 
                 String otkAsString = efaDetails.get("KEEP_OPTIONS");
                 ArrayList<String> otkAsLines = new ArrayList<String>(
                                         Arrays.asList(otkAsString.split("\n")));
                 NWChemTask otkMask = new NWChemTask(otkAsLines);
 
-		NWChemTask otkTsk = failStep.extract(otkMask);
+                NWChemTask otkTsk = failStep.extract(otkMask);
 
 //TODO:del
 /*
@@ -659,28 +659,28 @@ for (String l : otkTsk.toLinesJobDetails())
                     //Deal with title
                     String title = extraStep.getTitle();
                     title = title + " Additional step " + i 
-				 + " in attempt to fix: " + failStep.getTitle();
+                                 + " in attempt to fix: " + failStep.getTitle();
                     title = "\"" + title.replaceAll("\"","") + "\"";
                     extraStep.setTitle(title);
 
                     newNwcJob.addStep(extraStep);
                 }
 
-		//Project Opts To Keep into the extra steps
+                //Project Opts To Keep into the extra steps
                 for (int i=0; i<extraNJob.getNumberOfSteps(); i++)
                 {
                     if (verbosity > 1)
                     {
                         System.out.println(" Setting extra step "+i+" of the "
-								   + "new job");
+                                                                   + "new job");
                     }
 
                     newNwcJob.getStep(i).impose(otkTsk);
-		    if (i==0)
-		    {
+                    if (i==0)
+                    {
                         //Add/Update RESTART directive
                         newNwcJob.getStep(i).deleteDirective(
-						       new ArrayList<String>(),
+                                                       new ArrayList<String>(),
                                                       NWChemConstants.STARTDIR);
                         NWChemDirective restartDir = new NWChemDirective(
                                                     NWChemConstants.RESTARTDIR);
@@ -695,13 +695,13 @@ for (String l : otkTsk.toLinesJobDetails())
                                   new ArrayList<String>(Arrays.asList(dbName)));
                         restartDir.addKeyword(dbKey);
                         newNwcJob.getStep(i).setDirective(
-						       new ArrayList<String>(),
+                                                       new ArrayList<String>(),
                                                      restartDir,true,true,true);
-		    }
+                    }
                 }
 
-		//Clean restart/start restart directive in failing step
-		failStep.deleteDirective(new ArrayList<String>(),
+                //Clean restart/start restart directive in failing step
+                failStep.deleteDirective(new ArrayList<String>(),
                                                       NWChemConstants.STARTDIR);
                 failStep.deleteDirective(new ArrayList<String>(),
                                                     NWChemConstants.RESTARTDIR);
@@ -725,15 +725,15 @@ for (String l : otkTsk.toLinesJobDetails())
 
                 //Write the new jobDetails file
                 IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
-									 false);
+                                                                         false);
                 break;
             }
             case "SKIP_STEP":
             {
                 //Copy only the steps after the failing one
-		//
+                //
                 // WARNING! failedStepID goes from 1 to n (not from 0 to n-1)
-		//
+                //
                 for (int i=failedStepID; i<nwcJob.getNumberOfSteps(); i++)
                 {
                     if (verbosity > 1)
@@ -744,8 +744,8 @@ for (String l : otkTsk.toLinesJobDetails())
                     //Copy from nwcJob to newNwcJob
                     NWChemTask copyOfOldStep = new NWChemTask(
                                         nwcJob.getStep(i).toLinesJobDetails());
-		    if (i == failedStepID)
-		    {
+                    if (i == failedStepID)
+                    {
                         //Add/Update RESTART directive
                         copyOfOldStep.deleteDirective(new ArrayList<String>(),
                                                       NWChemConstants.STARTDIR);
@@ -763,7 +763,7 @@ for (String l : otkTsk.toLinesJobDetails())
                         restartDir.addKeyword(dbKey);
                         copyOfOldStep.setDirective(new ArrayList<String>(),
                                                      restartDir,true,true,true);
-		    }
+                    }
                     newNwcJob.addStep(copyOfOldStep);
                 }
 
@@ -772,7 +772,7 @@ for (String l : otkTsk.toLinesJobDetails())
 
                 //Write the new jobDetails file
                 IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
-									false);
+                                                                        false);
                 break;
             }
 
@@ -822,10 +822,10 @@ for (String l : otkTsk.toLinesJobDetails())
                     newTitle = newTitle + w + " ";
                 }
             }
-	
-	    title = newTitle;
-	}
-	return title;
+        
+            title = newTitle;
+        }
+        return title;
     }
 
 //------------------------------------------------------------------------------

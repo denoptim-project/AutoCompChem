@@ -58,7 +58,7 @@ public class CountTextMatches extends MatchText
      */
     private enum ConstrainType
     {
-	MIN, MAX, RANGE, EXACT;
+        MIN, MAX, RANGE, EXACT;
     } 
 
 //------------------------------------------------------------------------------
@@ -74,9 +74,9 @@ public class CountTextMatches extends MatchText
 
     public CountTextMatches(String pattern, int num, InfoChannelType ict)
     {
-	super(pattern,ict);
-	this.num = num;
-	this.cnstrType = ConstrainType.EXACT; //not needed, but doesn't hurt
+        super(pattern,ict);
+        this.num = num;
+        this.cnstrType = ConstrainType.EXACT; //not needed, but doesn't hurt
     }
 
 //------------------------------------------------------------------------------
@@ -93,12 +93,12 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int num, InfoChannelType ict, 
-							      boolean negation)
+                                                              boolean negation)
     {
         super(pattern,ict);
         this.num = num;
         this.cnstrType = ConstrainType.EXACT; //not needed, but doesn't hurt
-	super.negation = negation;
+        super.negation = negation;
     }
 
 //------------------------------------------------------------------------------
@@ -116,19 +116,19 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int minOrMax, boolean pol, 
-							    InfoChannelType ict)
+                                                            InfoChannelType ict)
     {
         super(pattern,ict);
-	if (pol)
-	{
+        if (pol)
+        {
             this.min = minOrMax;
             this.cnstrType = ConstrainType.MIN;
-	}
-	else
-	{
-	    this.max = minOrMax;
+        }
+        else
+        {
+            this.max = minOrMax;
             this.cnstrType = ConstrainType.MAX;
-	}
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int min, int max, 
-							    InfoChannelType ict)
+                                                            InfoChannelType ict)
     {
         super(pattern,ict);
         this.min = min;
@@ -173,7 +173,7 @@ public class CountTextMatches extends MatchText
         this.min = min;
         this.max = max;
         this.cnstrType = ConstrainType.RANGE;
-	super.negation = negation;
+        super.negation = negation;
     }
 
 //------------------------------------------------------------------------------
@@ -189,26 +189,26 @@ public class CountTextMatches extends MatchText
     @Override
     public double calculateScore(ArrayList<String> matches)
     {
-	double score = 0.0;
-	int numMatches = matches.size();
+        double score = 0.0;
+        int numMatches = matches.size();
 
-	switch (cnstrType)
-	{
-	    case MIN:
-		if (numMatches >= min)
-		{
-		    score = 1.0;
-		}
-		break;
+        switch (cnstrType)
+        {
+            case MIN:
+                if (numMatches >= min)
+                {
+                    score = 1.0;
+                }
+                break;
 
-	    case MAX:
+            case MAX:
                 if (numMatches <= max)
                 {
                     score = 1.0;
                 }
-		break;
+                break;
 
-	    case RANGE:
+            case RANGE:
                 if ((numMatches >= min) && (numMatches <= max))
                 {
                     score = 1.0;
@@ -217,16 +217,16 @@ public class CountTextMatches extends MatchText
                         score = 0.0;
                     }
                 }
-		else
-		{
-		    if (negation)
-		    {
-			score = 1.0;
-		    }
-		}
-		break;
+                else
+                {
+                    if (negation)
+                    {
+                        score = 1.0;
+                    }
+                }
+                break;
 
-	    case EXACT:
+            case EXACT:
                 if (numMatches == num)
                 {
                     score = 1.0;
@@ -242,9 +242,9 @@ public class CountTextMatches extends MatchText
                         score = 1.0;
                     }
                 }
-		break;
+                break;
 
-	}
+        }
         return score;
     }
 
@@ -260,9 +260,9 @@ public class CountTextMatches extends MatchText
     {
         StringBuilder sb = new StringBuilder();
         sb.append("CountTextMatches [pattern:").append(super.getPattern());
-	sb.append("; min: ").append(min);
-	sb.append("; max: ").append(max);
-	sb.append("; num: ").append(num);
+        sb.append("; min: ").append(min);
+        sb.append("; max: ").append(max);
+        sb.append("; num: ").append(num);
         sb.append("; channel:").append(super.getChannelType());
         sb.append("; negation:").append(super.negation);
         sb.append("]]");

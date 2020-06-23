@@ -39,25 +39,25 @@ public class SortableMolecule
 
     public SortableMolecule(IAtomContainer mol, Object value)
     {
-	//Store molecule
-	this.mol = mol;
+        //Store molecule
+        this.mol = mol;
 
-	//Evaluate value
-	String str = value.toString();
-	if (str.matches("^[a-zA-Z]+$"))
-	{
-	    this.value = str;
-	} else if (str.matches("^[0-9.]+$"))
-	{
-	    if (str.matches("^[0-9]*\\.?[0-9]*$"))
-	    {
-		this.value = Double.valueOf(str);
-	    } else {
-		this.value = Integer.valueOf(str);
-	    }
-	} else {
-	    this.value = value;
-	} 
+        //Evaluate value
+        String str = value.toString();
+        if (str.matches("^[a-zA-Z]+$"))
+        {
+            this.value = str;
+        } else if (str.matches("^[0-9.]+$"))
+        {
+            if (str.matches("^[0-9]*\\.?[0-9]*$"))
+            {
+                this.value = Double.valueOf(str);
+            } else {
+                this.value = Integer.valueOf(str);
+            }
+        } else {
+            this.value = value;
+        } 
     }
 
 //------------------------------------------------------------------------------
@@ -71,14 +71,14 @@ public class SortableMolecule
 
     public Object getValue()
     {
-	return this.value;
+        return this.value;
     }
 
 //------------------------------------------------------------------------------
 
     public String toString()
     {
-	String s = "SortableMolecule[ " + mol.toString() + ", " + value + "]";
+        String s = "SortableMolecule[ " + mol.toString() + ", " + value + "]";
         return s;
     }
 

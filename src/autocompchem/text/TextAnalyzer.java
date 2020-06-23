@@ -58,7 +58,7 @@ public class TextAnalyzer
         while (m.find())
             count++;
 
-	return count;
+        return count;
     }
 
 //------------------------------------------------------------------------------
@@ -177,14 +177,14 @@ public class TextAnalyzer
      */
 
     public static ArrayList<String> extractTxtWithDelimiters(
-						     BufferedReader buffRead,
+                                                     BufferedReader buffRead,
                                                              String pattern1,
                                                              String pattern2,
                                                              boolean inclPatts)
     {
         ArrayList<ArrayList<String>> blocks = 
                                      extractMultiTxtBlocksWithDelimiters(
-						                      buffRead,
+                                                                      buffRead,
                                                                       pattern1,
                                                                       pattern2,
                                                                           true,
@@ -211,7 +211,7 @@ public class TextAnalyzer
 
     public static ArrayList<ArrayList<String>>
                          extractMultiTxtBlocksWithDelimiters(
-						       BufferedReader buffRead,
+                                                       BufferedReader buffRead,
                                                                String pattern1,
                                                                String pattern2,
                                                              boolean onlyFirst,
@@ -245,7 +245,7 @@ public class TextAnalyzer
 
     public static ArrayList<ArrayList<String>> 
                          extractMultiTxtBlocksWithDelimiters(
-					               BufferedReader buffRead,
+                                                       BufferedReader buffRead,
                                                 ArrayList<String> startPattrns,
                                                   ArrayList<String> endPattrns,
                                                              boolean onlyFirst,
@@ -256,23 +256,23 @@ public class TextAnalyzer
 
         Map<String,ArrayList<String>> mapBlocks =
                                   extractMapOfTxtBlocksWithDelimiters(
-							      buffRead,
+                                                              buffRead,
                                                               startPattrns,
                                                               endPattrns,
                                                               onlyFirst,
                                                               inclPatts);
 
 //TODO check leftover?
-	ArrayList<String> sortKeys = new ArrayList<String>();
-	Collections.sort(sortKeys);
-	
-	TreeMap<Integer,String> keysMap = new TreeMap<Integer,String>();
+        ArrayList<String> sortKeys = new ArrayList<String>();
+        Collections.sort(sortKeys);
+        
+        TreeMap<Integer,String> keysMap = new TreeMap<Integer,String>();
         for (String k : mapBlocks.keySet())
-	{
-	    String[] p = k.split("_");
-	    keysMap.put(Integer.parseInt(p[0]),k);
-	}
-	
+        {
+            String[] p = k.split("_");
+            keysMap.put(Integer.parseInt(p[0]),k);
+        }
+        
         for (Integer k : keysMap.keySet())
         {
             blocks.add(mapBlocks.get(keysMap.get(k)));
@@ -290,33 +290,33 @@ public class TextAnalyzer
 
     private static class MetchKeyComparator implements Comparator<String>
     {
-	@Override
-	public int compare(String a, String b)
-	{
+        @Override
+        public int compare(String a, String b)
+        {
             final int EQUAL = 0;
 
-	    String[] pA = a.split("_");
+            String[] pA = a.split("_");
             String[] pB = b.split("_");
 
             if (pA.length != 3 || pB.length != 3)
-	    {
-		return EQUAL;
-	    }
+            {
+                return EQUAL;
+            }
 
-	    Integer idA = Integer.parseInt(pA[0]);
+            Integer idA = Integer.parseInt(pA[0]);
             Integer idB = Integer.parseInt(pB[0]);
 
-	    if (idA.equals(idB))
-	    {
+            if (idA.equals(idB))
+            {
                 Integer id1A = Integer.parseInt(pA[1]);
                 Integer id1B = Integer.parseInt(pB[1]);
                 Integer id2A = Integer.parseInt(pA[2]);
                 Integer id2B = Integer.parseInt(pB[2]);
-		idA = 100000000*idA + 1000000*id1A + id2A;
-		idB = 100000000*idB + 1000000*id1B + id2B;
-	    }
-	    return idA.compareTo(idB);
-	}
+                idA = 100000000*idA + 1000000*id1A + id2A;
+                idB = 100000000*idB + 1000000*id1B + id2B;
+            }
+            return idA.compareTo(idB);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -349,13 +349,13 @@ public class TextAnalyzer
 
     public static TreeMap<String,ArrayList<String>>
                         extractMapOfTxtBlocksWithDelimiters(
-						       BufferedReader buffRead,
+                                                       BufferedReader buffRead,
                                                 ArrayList<String> startPattrns,
                                                   ArrayList<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-	return               extractMapOfTxtBlocksWithDelimiters(buffRead,
+        return               extractMapOfTxtBlocksWithDelimiters(buffRead,
                                                        new ArrayList<String>(),
                                                                   startPattrns,
                                                                     endPattrns,
@@ -393,10 +393,10 @@ public class TextAnalyzer
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-	ArrayList<String> startPattrns = new ArrayList<String>();
-	ArrayList<String> endPattrns = new ArrayList<String>();
-	startPattrns.add(startPattrn);
-	endPattrns.add(endPattrn);
+        ArrayList<String> startPattrns = new ArrayList<String>();
+        ArrayList<String> endPattrns = new ArrayList<String>();
+        startPattrns.add(startPattrn);
+        endPattrns.add(endPattrn);
 
         return extractTextBlocks(buffRead, new ArrayList<String>(),
                                                                   startPattrns,
@@ -437,9 +437,9 @@ public class TextAnalyzer
                                                              boolean inclPatts)
     {
         return extractTextBlocks(buffRead, new ArrayList<String>(), 
-					   			  startPattrns,
-								    endPattrns,
-								     onlyFirst,
+                                                                     startPattrns,
+                                                                    endPattrns,
+                                                                     onlyFirst,
                                                                      inclPatts,
                                                                          false);
     }
@@ -477,7 +477,7 @@ public class TextAnalyzer
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-	return extractTextBlocks(buffRead, slPattrns, startPattrns, endPattrns,
+        return extractTextBlocks(buffRead, slPattrns, startPattrns, endPattrns,
                                                                      onlyFirst,
                                                                      inclPatts,
                                                                          false);
@@ -512,19 +512,19 @@ public class TextAnalyzer
      */
 
     public static ArrayList<TextBlock> extractTextBlocks(
-						       BufferedReader buffRead,
+                                                       BufferedReader buffRead,
                                                    ArrayList<String> slPattrns,
                                                 ArrayList<String> startPattrns,
                                                   ArrayList<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts,
-						      boolean expandBeyondNests)
+                                                      boolean expandBeyondNests)
     {
-	// This is what we weill return
-	ArrayList<TextBlock> blocks = new ArrayList<TextBlock>();
+        // This is what we weill return
+        ArrayList<TextBlock> blocks = new ArrayList<TextBlock>();
 
-	// Initialize counters
-	ArrayList<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
+        // Initialize counters
+        ArrayList<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
         for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
         {
             countsSL.add(-1);
@@ -537,42 +537,42 @@ public class TextAnalyzer
         }
         int countMatches = -1;
 
-	// Start reading the input text feed line by line
+        // Start reading the input text feed line by line
         String msg = "";
         try {
             String line = null;
             outerLoopOnLines:
             {
-		//A unique identified for each match: becomes the key in maps
+                //A unique identified for each match: becomes the key in maps
                 AtomicInteger opnBlkKey = new AtomicInteger(0);
 
-		//Indexed list of open blocks that await closire
+                //Indexed list of open blocks that await closire
                 Map<Integer,TextBlock> openBlocks =
                                                new HashMap<Integer,TextBlock>();
 
-		//Map of open block key to pattern ID
+                //Map of open block key to pattern ID
                 Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
 
-		//Map of patter ID to activile expanding open block
-		// (there might be nested blocks, in which case we add lines 	
-		// only to the actively growing block, which is the yungest)
+                //Map of patter ID to activile expanding open block
+                // (there might be nested blocks, in which case we add lines         
+                // only to the actively growing block, which is the yungest)
                 Map<Integer,Integer> pId2AOBK = new HashMap<Integer,Integer>();
 
-		//Blocks that have been opened in the latest readline
+                //Blocks that have been opened in the latest readline
                 Set<Integer> justOpenBlocks = new HashSet<Integer>();
 
-		//Blocks that have been closed in the latest readline
+                //Blocks that have been closed in the latest readline
                 Set<Integer> closedBlocks = new HashSet<Integer>();
 
                 while ((line = buffRead.readLine()) != null)
                 {
 //TODO del
 //System.out.println("Reading line "+line);
-		    //
+                    //
                     // Handling of lines that match any of the queries
-		    //
+                    //
 
-		    //Check for any single line match
+                    //Check for any single line match
                     boolean firstSlMatch = true;
                     for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
                     {
@@ -589,13 +589,13 @@ public class TextAnalyzer
                             ArrayList<String> block = new ArrayList<String>();
                             block.add(line);
 
-			    //
-			    // WARNING: Single line mathces cannot be nested
-			    // 
+                            //
+                            // WARNING: Single line mathces cannot be nested
+                            // 
 
-			    TextBlock tb = new TextBlock(block,countMatches,
-						 pattIdx,countsSL.get(pattIdx));
-			    blocks.add(tb);
+                            TextBlock tb = new TextBlock(block,countMatches,
+                                                 pattIdx,countsSL.get(pattIdx));
+                            blocks.add(tb);
                         }
                     }
 
@@ -614,7 +614,7 @@ public class TextAnalyzer
                             }
                             countsML.set(pattIdx,1 + countsML.get(pattIdx));
 
-			    TextBlock tb = new TextBlock(countMatches,
+                            TextBlock tb = new TextBlock(countMatches,
                                                       pattIdx+slPattrns.size(),
                                                          countsML.get(pattIdx));
                             if (inclPatts)
@@ -630,12 +630,12 @@ public class TextAnalyzer
                             justOpenBlocks.add(unqOpnBlkKey);
                             openBlocks.put(unqOpnBlkKey,tb);
                             oBKey2PId.put(unqOpnBlkKey,pattIdx);
-			    pId2AOBK.put(pattIdx,unqOpnBlkKey);
+                            pId2AOBK.put(pattIdx,unqOpnBlkKey);
                         }
                     }
 
                     //Check for the end of any multiline block
-		    Set<Integer> opnBlkPattIdx = new HashSet<Integer>();
+                    Set<Integer> opnBlkPattIdx = new HashSet<Integer>();
                     opnBlkPattIdx.addAll(oBKey2PId.values());
                     for (int pattIdx : opnBlkPattIdx)
                     {
@@ -644,18 +644,18 @@ public class TextAnalyzer
                         {
                             // We close the newest open block of this specific
                             // pattIdx. Find it by sorting list of open blcks
-			    ArrayList<Integer> sortedOpnBlkKeys =
+                            ArrayList<Integer> sortedOpnBlkKeys =
                                                        new ArrayList<Integer>();
-			    for (Integer k : oBKey2PId.keySet())
-			    {
-				//Keep only those pertaining the current pair of
-				//patterns
+                            for (Integer k : oBKey2PId.keySet())
+                            {
+                                //Keep only those pertaining the current pair of
+                                //patterns
                                 if (pattIdx ==
                                     oBKey2PId.get(k).intValue())
-				{
+                                {
                                     sortedOpnBlkKeys.add(k);
-				}
-			    }
+                                }
+                            }
                             Collections.sort(sortedOpnBlkKeys); //small -> big
                             Collections.reverse(sortedOpnBlkKeys);//big -> small
 
@@ -665,33 +665,33 @@ System.out.println("Sorted list of open blocks:"+sortedOpnBlkKeys);
 for (Integer k : sortedOpnBlkKeys)
    System.out.println(" -o-> "+openBlocks.get(k).toShortString());
 */
-			    //Get the block that we are closing now
+                            //Get the block that we are closing now
                             Integer newstOBlk = sortedOpnBlkKeys.get(0);
-			    TextBlock thisBlock = openBlocks.get(newstOBlk);
+                            TextBlock thisBlock = openBlocks.get(newstOBlk);
 
                             if (inclPatts)
                             {
                                 thisBlock.appendText(line);
                             }
-			    
-			    //Nested blocks ara handled in a different way
-			    if (sortedOpnBlkKeys.size() > 1)
-			    {
-				//This is a nested block
-				//Find the parent block
-				Integer parentOBlk = sortedOpnBlkKeys.get(1);
+                            
+                            //Nested blocks ara handled in a different way
+                            if (sortedOpnBlkKeys.size() > 1)
+                            {
+                                //This is a nested block
+                                //Find the parent block
+                                Integer parentOBlk = sortedOpnBlkKeys.get(1);
 
-				//Append this current block as a nested block 
-				//of its parent block
-				openBlocks.get(parentOBlk).appendNestedBlock(
-								     thisBlock);
-			    }
-			    else
-			    {
-				//This block is not nested thus we ass it to the
-				//list of outernmost, first-level blocks
+                                //Append this current block as a nested block 
+                                //of its parent block
+                                openBlocks.get(parentOBlk).appendNestedBlock(
+                                                                     thisBlock);
+                            }
+                            else
+                            {
+                                //This block is not nested thus we ass it to the
+                                //list of outernmost, first-level blocks
                                 blocks.add(thisBlock);
-			    }
+                            }
 
 //TODO del
 //System.out.println("ML closing added block: "+thisBlock.toShortString());
@@ -711,70 +711,70 @@ for (Integer k : sortedOpnBlkKeys)
                         closedBlocks.clear();
                     }
 
-		    //
+                    //
                     // General handling of lines 
-		    //
+                    //
 
-		    if (expandBeyondNests)
-		    {
-			//Keep expanding all open blocks no matter the nesting
+                    if (expandBeyondNests)
+                    {
+                        //Keep expanding all open blocks no matter the nesting
                         for (Integer unqOpnBlkKey : openBlocks.keySet())
                         {
                             if (!justOpenBlocks.contains(unqOpnBlkKey))
                             {
                                 openBlocks.get(unqOpnBlkKey).appendText(line);
-			    }
+                            }
                         }
                     }
-		    else
-		    {
-			//Expand only the innermost block, i.e.., the most 
-			// deeply nested, i.e., the youngest block
-			// for each pattern pair ID
-			Set<Integer> activePattIdx = new HashSet<Integer>();
-			activePattIdx.addAll(oBKey2PId.values());
-		        for (int pattIdx : activePattIdx)
+                    else
+                    {
+                        //Expand only the innermost block, i.e.., the most 
+                        // deeply nested, i.e., the youngest block
+                        // for each pattern pair ID
+                        Set<Integer> activePattIdx = new HashSet<Integer>();
+                        activePattIdx.addAll(oBKey2PId.values());
+                        for (int pattIdx : activePattIdx)
                         {
-			    //Ignore strings that match matters of this ID
-			    String p1 = startPattrns.get(pattIdx);
+                            //Ignore strings that match matters of this ID
+                            String p1 = startPattrns.get(pattIdx);
                             String p2 = endPattrns.get(pattIdx);
                             if (line.matches(p1) || line.matches(p2))
-			    {
-				continue;
-			    }
+                            {
+                                continue;
+                            }
 //TODO
 //System.out.println("Searching open blocks of pattIds: "+pattIdx);
-			    Integer youngestKey = -1;
-			    for (Map.Entry e : oBKey2PId.entrySet())
-			    {
-				if (pattIdx != 
-					    ((Integer) e.getValue()).intValue())
-				{
-				    continue;
-				}
-				int candKey = ((Integer) e.getKey()).intValue();
-				//Ignore those just opened
-				if (justOpenBlocks.contains(candKey))
+                            Integer youngestKey = -1;
+                            for (Map.Entry e : oBKey2PId.entrySet())
+                            {
+                                if (pattIdx != 
+                                            ((Integer) e.getValue()).intValue())
+                                {
+                                    continue;
+                                }
+                                int candKey = ((Integer) e.getKey()).intValue();
+                                //Ignore those just opened
+                                if (justOpenBlocks.contains(candKey))
                                 {
 //TODO
 //System.out.println("   it's just opened "+candKey);
-				    continue;
-				}
+                                    continue;
+                                }
                                 if (candKey > youngestKey)
                                 {
                                     youngestKey = candKey;
                                 }
 //TODO
 //System.out.println("   candKey , youngestKey: "+candKey +" "+ youngestKey);
-			    }
-			    if (youngestKey>-1)
-			    {
+                            }
+                            if (youngestKey>-1)
+                            {
 //TODO
 //System.out.println("   adding line to "+openBlocks.get(youngestKey).toShortString());
-				openBlocks.get(youngestKey).appendText(line);
-			    }
-			}
-		    }
+                                openBlocks.get(youngestKey).appendText(line);
+                            }
+                        }
+                    }
                     justOpenBlocks.clear();
 
                     if (onlyFirst && countMatches>1)
@@ -790,7 +790,7 @@ for (Integer k : sortedOpnBlkKeys)
                 + ". " + msg,-1);
         }
 
-	return blocks;
+        return blocks;
     }
 
 //------------------------------------------------------------------------------
@@ -826,8 +826,8 @@ for (Integer k : sortedOpnBlkKeys)
 
     public static TreeMap<String,ArrayList<String>>
                         extractMapOfTxtBlocksWithDelimiters(
-						        BufferedReader buffRead,
-						   ArrayList<String> slPattrns,
+                                                        BufferedReader buffRead,
+                                                   ArrayList<String> slPattrns,
                                                 ArrayList<String> startPattrns,
                                                   ArrayList<String> endPattrns,
                                                              boolean onlyFirst,
@@ -841,7 +841,7 @@ for (Integer k : sortedOpnBlkKeys)
             countsSL.add(-1);
         }
         ArrayList<Integer> countsML = 
-				    new ArrayList<Integer>(startPattrns.size());
+                                    new ArrayList<Integer>(startPattrns.size());
         for (int pattIdx=0; pattIdx<startPattrns.size(); pattIdx++)
         {
             countsML.add(-1);
@@ -852,37 +852,37 @@ for (Integer k : sortedOpnBlkKeys)
             String line = null;
             outerLoopOnLines: 
             {
-		AtomicInteger opnBlkKey = new AtomicInteger(0);
-		Map<Integer,ArrayList<String>> openBlocks = 
-				       new HashMap<Integer,ArrayList<String>>();
-		Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
-		Map<Integer,String> oBKey2Key= new HashMap<Integer,String>();
-		Set<Integer> justOpenBlocks = new HashSet<Integer>();
-		Set<Integer> closedBlocks = new HashSet<Integer>();
+                AtomicInteger opnBlkKey = new AtomicInteger(0);
+                Map<Integer,ArrayList<String>> openBlocks = 
+                                       new HashMap<Integer,ArrayList<String>>();
+                Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
+                Map<Integer,String> oBKey2Key= new HashMap<Integer,String>();
+                Set<Integer> justOpenBlocks = new HashSet<Integer>();
+                Set<Integer> closedBlocks = new HashSet<Integer>();
 
                 while ((line = buffRead.readLine()) != null)
                 {
-		    //Check for any single line match
-		    boolean firstSlMatch = true;
-		    for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
-		    {
-			String slPattern = slPattrns.get(pattIdx);
-			if (line.matches(slPattern))
-			{
-			    if (firstSlMatch)
-			    {
+                    //Check for any single line match
+                    boolean firstSlMatch = true;
+                    for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
+                    {
+                        String slPattern = slPattrns.get(pattIdx);
+                        if (line.matches(slPattern))
+                        {
+                            if (firstSlMatch)
+                            {
                                 //NB: same 1st ID for all matches of this line
                                 countMatches++;
-				firstSlMatch = false;
-			    }
-			    countsSL.set(pattIdx,1 + countsSL.get(pattIdx));
-			    ArrayList<String> block = new ArrayList<String>();
-			    block.add(line);
-			    String key = countMatches + "_" + pattIdx + "_"
+                                firstSlMatch = false;
+                            }
+                            countsSL.set(pattIdx,1 + countsSL.get(pattIdx));
+                            ArrayList<String> block = new ArrayList<String>();
+                            block.add(line);
+                            String key = countMatches + "_" + pattIdx + "_"
                                                         + countsSL.get(pattIdx);
-			    blocks.put(key,block);
-			}
-		    }
+                            blocks.put(key,block);
+                        }
+                    }
 
                     //Check for the start of any multiline block
                     boolean firstMlMatch = true;
@@ -899,18 +899,18 @@ for (Integer k : sortedOpnBlkKeys)
                             }
                             countsML.set(pattIdx,1 + countsML.get(pattIdx));
                             ArrayList<String> block = new ArrayList<String>();
-			    if (inclPatts)
-			    {
+                            if (inclPatts)
+                            {
                                 block.add(line);
-			    }
+                            }
                             String key = countMatches + "_" 
-					 + (pattIdx+slPattrns.size())
+                                         + (pattIdx+slPattrns.size())
                                          + "_" + countsML.get(pattIdx);
-			    Integer unqOpnBlkKey = opnBlkKey.getAndIncrement();
-			    justOpenBlocks.add(unqOpnBlkKey);
-			    openBlocks.put(unqOpnBlkKey,block);
-			    oBKey2PId.put(unqOpnBlkKey,pattIdx);
-			    oBKey2Key.put(unqOpnBlkKey,key);
+                            Integer unqOpnBlkKey = opnBlkKey.getAndIncrement();
+                            justOpenBlocks.add(unqOpnBlkKey);
+                            openBlocks.put(unqOpnBlkKey,block);
+                            oBKey2PId.put(unqOpnBlkKey,pattIdx);
+                            oBKey2Key.put(unqOpnBlkKey,key);
                         }
                     }
 
@@ -920,56 +920,56 @@ for (Integer k : sortedOpnBlkKeys)
                         String pattern2 = endPattrns.get(pattIdx);
                         if (line.matches(pattern2))
                         {
-			    // We close the newest open block of this specific
-			    // pattIdx. This deals with nesting of blocks
-			    Integer newstOBlk = -1;
-			    for (Integer unqOpnBlkKey : oBKey2PId.keySet())
-			    {
-				if (pattIdx == 
-				    oBKey2PId.get(unqOpnBlkKey).intValue())
-				{
-				    if (unqOpnBlkKey > newstOBlk)
-				    {
-					newstOBlk = unqOpnBlkKey;
-				    }
-				}
-			    }
-			    ArrayList<String> block = openBlocks.get(newstOBlk);
+                            // We close the newest open block of this specific
+                            // pattIdx. This deals with nesting of blocks
+                            Integer newstOBlk = -1;
+                            for (Integer unqOpnBlkKey : oBKey2PId.keySet())
+                            {
+                                if (pattIdx == 
+                                    oBKey2PId.get(unqOpnBlkKey).intValue())
+                                {
+                                    if (unqOpnBlkKey > newstOBlk)
+                                    {
+                                        newstOBlk = unqOpnBlkKey;
+                                    }
+                                }
+                            }
+                            ArrayList<String> block = openBlocks.get(newstOBlk);
                             if (inclPatts)
                             {
                                 block.add(line);
-			    }
-			    //Finally store the closed block
-			    blocks.put(oBKey2Key.get(newstOBlk),block);
-			    closedBlocks.add(newstOBlk);
+                            }
+                            //Finally store the closed block
+                            blocks.put(oBKey2Key.get(newstOBlk),block);
+                            closedBlocks.add(newstOBlk);
                         }
                     }
 
-		    // Clear placeholders of closed blocks
-		    if (closedBlocks.size() > 0)
-		    {
-			for (Integer unqOpnBlkKey : closedBlocks)
-			{
-			    openBlocks.remove(unqOpnBlkKey);
-			    oBKey2PId.remove(unqOpnBlkKey);
-			    oBKey2Key.remove(unqOpnBlkKey);
-			}
-			closedBlocks.clear();
-		    }
+                    // Clear placeholders of closed blocks
+                    if (closedBlocks.size() > 0)
+                    {
+                        for (Integer unqOpnBlkKey : closedBlocks)
+                        {
+                            openBlocks.remove(unqOpnBlkKey);
+                            oBKey2PId.remove(unqOpnBlkKey);
+                            oBKey2Key.remove(unqOpnBlkKey);
+                        }
+                        closedBlocks.clear();
+                    }
 
-		    // keep extending the open blocks
-		    for (Integer unqOpnBlkKey : openBlocks.keySet())
-		    {
-			if (!justOpenBlocks.contains(unqOpnBlkKey))
-			{
-			    openBlocks.get(unqOpnBlkKey).add(line);
-			}
-		    }
-		    justOpenBlocks.clear();
+                    // keep extending the open blocks
+                    for (Integer unqOpnBlkKey : openBlocks.keySet())
+                    {
+                        if (!justOpenBlocks.contains(unqOpnBlkKey))
+                        {
+                            openBlocks.get(unqOpnBlkKey).add(line);
+                        }
+                    }
+                    justOpenBlocks.clear();
 
 //TODO delete old implementation not capable of hangling nested blocks
 /*
-		    //Check for a multiline block
+                    //Check for a multiline block
                     for (int pattIdx=0; pattIdx<startPattrns.size(); pattIdx++)
                     {
                         String pattern1 = startPattrns.get(pattIdx);
@@ -1009,15 +1009,15 @@ for (Integer k : sortedOpnBlkKeys)
                         }
                     }
 */
-		    if (onlyFirst && countMatches>1)
-		    {
-			break outerLoopOnLines;
-		    }
+                    if (onlyFirst && countMatches>1)
+                    {
+                        break outerLoopOnLines;
+                    }
                 }
             }
         } catch (Throwable t) {
             msg = t.getMessage();
-	    t.printStackTrace();
+            t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Unable to read bufferedReader " 
                 + ". " + msg,-1);
         } 
@@ -1086,7 +1086,7 @@ for (Integer k : sortedOpnBlkKeys)
 
     public static ArrayList<ArrayList<String>>
                      extractMultiTxtBlocksWithDelimiterAndSize(
-						       BufferedReader buffRead,
+                                                       BufferedReader buffRead,
                                                                String pattern1,
                                                                int size,
                                                                boolean inclPatt)
@@ -1226,7 +1226,7 @@ finally {
 //TODO thorw esception
  
     public static ArrayList<String> grep(BufferedReader buffRead, 
-							   Set<String> patterns)
+                                                           Set<String> patterns)
     {
         ArrayList<String> matches = new ArrayList<String>();
         boolean badTermination = false;

@@ -41,7 +41,7 @@ public class NumberUtils
 
     public static boolean isNumber(String str)
     {
-	str = formatScientificNotation(str);
+        str = formatScientificNotation(str);
         NumberFormat format = NumberFormat.getInstance();
         ParsePosition position = new ParsePosition(0);
         format.parse(str, position);
@@ -65,15 +65,15 @@ public class NumberUtils
 
     public static String formatScientificNotation(String str)
     {
-	String outStr = str;
-	if (outStr.toUpperCase().contains("D"))
-	{
-	    outStr = outStr.toUpperCase().replace("D","E");
-	}
-	if (outStr.toUpperCase().contains("E+00"))
-	{
-	    outStr = outStr.toUpperCase().replace("E+00","");
-	}
+        String outStr = str;
+        if (outStr.toUpperCase().contains("D"))
+        {
+            outStr = outStr.toUpperCase().replace("D","E");
+        }
+        if (outStr.toUpperCase().contains("E+00"))
+        {
+            outStr = outStr.toUpperCase().replace("E+00","");
+        }
         if (outStr.toUpperCase().contains("E-00"))
         {
             outStr = outStr.toUpperCase().replace("E-00","");
@@ -82,7 +82,7 @@ public class NumberUtils
         {
             outStr = outStr.toUpperCase().replace("E+","E");
         }
-	return outStr;
+        return outStr;
     }
 
 //------------------------------------------------------------------------------
@@ -95,32 +95,32 @@ public class NumberUtils
 
     public static int getPrecision(String str)
     {
-	int p = 0;
-	boolean count = false;
-	for (int i = 0; i<str.length(); i++)
-	{
+        int p = 0;
+        boolean count = false;
+        for (int i = 0; i<str.length(); i++)
+        {
             char c = str.charAt(i);
-	    // Ignore leading chars (including 0)
-	    if (!count && "123456789".indexOf(c) == -1)
-	    {
-		continue;
-	    }
-	    // Stop when anything else than a digit, comma, or point is found
-	    if (count && "0123456789.,".indexOf(c) == -1)
-	    {
-		break;
-	    }
-	    // Count digits (including tailing 0)
-	    count = true;
-	    if ("0123456789".indexOf(c) != -1)
-	    {
-		p++;
-	    }
-	}
-	// Deal with zeros (i.e., 0.000 vs 0.000000)
-	if (p==0 && str.indexOf('0')!=-1)
-	{
-	    p = 1;
+            // Ignore leading chars (including 0)
+            if (!count && "123456789".indexOf(c) == -1)
+            {
+                continue;
+            }
+            // Stop when anything else than a digit, comma, or point is found
+            if (count && "0123456789.,".indexOf(c) == -1)
+            {
+                break;
+            }
+            // Count digits (including tailing 0)
+            count = true;
+            if ("0123456789".indexOf(c) != -1)
+            {
+                p++;
+            }
+        }
+        // Deal with zeros (i.e., 0.000 vs 0.000000)
+        if (p==0 && str.indexOf('0')!=-1)
+        {
+            p = 1;
             for (int i = 0; i<str.length(); i++)
             {
                 char c = str.charAt(i);
@@ -139,10 +139,10 @@ public class NumberUtils
                 if ("0".indexOf(c) != -1)
                 {
                     p++;
-		}
+                }
             }
         }
-	return p;
+        return p;
     }
 
 //------------------------------------------------------------------------------     

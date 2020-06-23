@@ -158,8 +158,8 @@ public class GaussianReStarter
 
     public GaussianReStarter(ParameterStorage params) 
     {
-	//Keep track of the parameter's object
-	paramsLoc = params;
+        //Keep track of the parameter's object
+        paramsLoc = params;
 
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValue().toString();
@@ -211,7 +211,7 @@ public class GaussianReStarter
      */
 
     public GaussianReStarter(String filename, String newinp, GaussianJob gJob,
-    		int verbosity)
+                    int verbosity)
     {
         this.inFile = filename;
         this.inpFile = newinp;
@@ -356,10 +356,10 @@ public class GaussianReStarter
         GaussianJob newGJob = new GaussianJob();
         switch (typeOfAction) {
             case "REDO_STEP_ALTERING_LINK_0_SECTION":
-	    {
+            {
                 //Append the failing step and all the steps that never run
                 for (int i=(failedStepID - 1); i<gaussJob.getNumberOfSteps(); 
-									    i++)
+                                                                            i++)
                 {
                     //Copy from gaussJob to newGJob
                     GaussianStep copyOfOldStep = new GaussianStep(
@@ -371,52 +371,52 @@ public class GaussianReStarter
                 //Update Name of Checkpoint file in all steps
                 newGJob.setAllLinkSections("CHK",checkPointName);
 
-		//Modify all Link 0 Commands sections
+                //Modify all Link 0 Commands sections
 
-		// 1: Reduce memory requirements
-		if (details.keySet().contains("REDUCE_MEMORY_DEMADS"))
-		{
-		    String mRedStr = details.get("REDUCE_MEMORY_DEMADS");
-		    mRedStr = mRedStr.trim();
-		    mRedStr = mRedStr.toUpperCase();
-		    double mRedVal = Double.parseDouble(
-					mRedStr.replaceAll("[A-Z]+",""));
-		    String mRedUnt = mRedStr.replaceAll("[0-9]+","");
-		    switch (mRedUnt) {
-			case "MB":
-			{
-			    break;
-			}
-			case "GB":
-			{
-			    mRedVal = mRedVal * 1000;
-			    break;
+                // 1: Reduce memory requirements
+                if (details.keySet().contains("REDUCE_MEMORY_DEMADS"))
+                {
+                    String mRedStr = details.get("REDUCE_MEMORY_DEMADS");
+                    mRedStr = mRedStr.trim();
+                    mRedStr = mRedStr.toUpperCase();
+                    double mRedVal = Double.parseDouble(
+                                        mRedStr.replaceAll("[A-Z]+",""));
+                    String mRedUnt = mRedStr.replaceAll("[0-9]+","");
+                    switch (mRedUnt) {
+                        case "MB":
+                        {
+                            break;
+                        }
+                        case "GB":
+                        {
+                            mRedVal = mRedVal * 1000;
+                            break;
                         }
                         default:
-                 	    Terminator.withMsgAndStatus("ERROR! Memory must be"
-			    + " reported in MB or GB. Unable to understand '"
-			    + mRedUnt + "'.",-1);
-		    }
+                             Terminator.withMsgAndStatus("ERROR! Memory must be"
+                            + " reported in MB or GB. Unable to understand '"
+                            + mRedUnt + "'.",-1);
+                    }
 
-		    String mOldStr = "16000MB";
-		    if (failStep.getLinkCommand().hasKey("MEM"))
-		    {
-		        mOldStr = failStep.getLinkCommand().getValue("MEM");
-		    }
-		    mOldStr = mOldStr.trim();
-		    mOldStr = mOldStr.toUpperCase();
-		    double mOldVal = Double.parseDouble(
-					mOldStr.replaceAll("[a-zA-Z]+",""));
-		    String mOldUnt = mOldStr.replaceAll("[0-9]+","");
+                    String mOldStr = "16000MB";
+                    if (failStep.getLinkCommand().hasKey("MEM"))
+                    {
+                        mOldStr = failStep.getLinkCommand().getValue("MEM");
+                    }
+                    mOldStr = mOldStr.trim();
+                    mOldStr = mOldStr.toUpperCase();
+                    double mOldVal = Double.parseDouble(
+                                        mOldStr.replaceAll("[a-zA-Z]+",""));
+                    String mOldUnt = mOldStr.replaceAll("[0-9]+","");
                     switch (mOldUnt) {
                         case "MB":
                         {
-			    break;
+                            break;
                         }       
                         case "GB":
                         {
                             mOldVal = mOldVal * 1000;
-			    break;
+                            break;
                         }
                         default:
                             Terminator.withMsgAndStatus("ERROR! Memory must be"
@@ -424,16 +424,16 @@ public class GaussianReStarter
                             + mOldUnt + "'.",-1);
                     }
 
-		    double mNewVal = mOldVal - mRedVal;
-		    String mNewStr = String.format("%.0f",mNewVal) + "MB";
-		    newGJob.setAllLinkSections("MEM",mNewStr);
-		}
+                    double mNewVal = mOldVal - mRedVal;
+                    String mNewStr = String.format("%.0f",mNewVal) + "MB";
+                    newGJob.setAllLinkSections("MEM",mNewStr);
+                }
 
-		// 2: TODO add other modifications to Link 0 section here
+                // 2: TODO add other modifications to Link 0 section here
 
-		//Update Molecular specification
-		GaussianStep firstStep = newGJob.getStep(0);
-		GaussianMolSpecification firstMolSpec = firstStep.getMolSpec();
+                //Update Molecular specification
+                GaussianStep firstStep = newGJob.getStep(0);
+                GaussianMolSpecification firstMolSpec = firstStep.getMolSpec();
 
                 //Update Charge and spin in all steps
                 int charge = firstMolSpec.getCharge();
@@ -441,21 +441,21 @@ public class GaussianReStarter
                 newGJob.setAllCharge(charge);
                 newGJob.setAllSpinMultiplicity(spinMult);
 
-		//Get Molecular representation section (chk or out)
-		if (!firstStep.getRouteSection().keySet().contains(
-			GaussianConstants.LABLOUDKEY + "GEOM"))
-		{
-		    IAtomContainer initGeom = oEval.getInitialGeometry();
-		    for (int i=0; i<initGeom.getAtomCount(); i++)
-		    {
-			IAtom atm = initGeom.getAtom(i);
-			String line = atm.getSymbol()    + "   " 
-				    + atm.getPoint3d().x + "   " 
-				    + atm.getPoint3d().y + "   "
+                //Get Molecular representation section (chk or out)
+                if (!firstStep.getRouteSection().keySet().contains(
+                        GaussianConstants.LABLOUDKEY + "GEOM"))
+                {
+                    IAtomContainer initGeom = oEval.getInitialGeometry();
+                    for (int i=0; i<initGeom.getAtomCount(); i++)
+                    {
+                        IAtom atm = initGeom.getAtom(i);
+                        String line = atm.getSymbol()    + "   " 
+                                    + atm.getPoint3d().x + "   " 
+                                    + atm.getPoint3d().y + "   "
                                     + atm.getPoint3d().z + "   ";
-			firstMolSpec.addPart(line);
-		    }
-		}
+                        firstMolSpec.addPart(line);
+                    }
+                }
 
                 //Write the new INP file
                 IOtools.writeTXTAppend(inpFile,newGJob.toLinesInp(),false);
@@ -464,20 +464,20 @@ public class GaussianReStarter
                 IOtools.writeTXTAppend(newJDFile,newGJob.toLinesJob(),false);
 
                 break;
-	    }
+            }
             case "REDO_STEP_ALTERING_ROUTE_OPTION":
             {
                 //Append the failing step and all the steps that never run
                 boolean first = true;
                 for (int i=(failedStepID - 1); i<gaussJob.getNumberOfSteps(); 
-									    i++)
+                                                                            i++)
                 {
                     //Copy from gaussJob to newGJob
                     GaussianStep copyOfOldStep = new GaussianStep(
                                         gaussJob.getStep(i).toLinesJob());
                     //Modify keywords and opts in route section of failed step
                     if (first && details.keySet().contains(
-							 "IMPOSE_ROUTE_PARAMS"))
+                                                         "IMPOSE_ROUTE_PARAMS"))
                     {
                         //Get the route section of this step
                         GaussianRouteSection route = 
@@ -485,7 +485,7 @@ public class GaussianReStarter
 
                         //Get opts to add to first step
                         String optsAsString = details.get(
-							 "IMPOSE_ROUTE_PARAMS");
+                                                         "IMPOSE_ROUTE_PARAMS");
                         String[] partsOfString = optsAsString.split("\n");
                         for (int ii=0; ii<partsOfString.length; ii++)
                         {
@@ -608,7 +608,7 @@ public class GaussianReStarter
                                 GaussianLinkCommandsSection esLnk =
                                                             es.getLinkCommand();
                                 esLnk.setValue(keyToKeep,oriLnk.getValue(
-								    keyToKeep));
+                                                                    keyToKeep));
                             }
                         } else {
                             System.out.println("WARNING! Cannot keep "
@@ -624,7 +624,7 @@ public class GaussianReStarter
                             GaussianLinkCommandsSection esLnk = 
                                                             es.getLinkCommand();
                             esLnk.setValue(keyToKeep,oriLnk.getValue(
-								    keyToKeep));
+                                                                    keyToKeep));
                         }
 
                     } else if (line.startsWith(GaussianConstants.KEYROUTESEC)) {
@@ -641,9 +641,9 @@ public class GaussianReStarter
                             {
                                 GaussianStep es = newGJob.getStep(j);
                                 GaussianRouteSection esRoute = 
-							   es.getRouteSection();
+                                                           es.getRouteSection();
                                 esRoute.put(keyToKeep,oriRoute.getValue(
-								    keyToKeep));
+                                                                    keyToKeep));
                             }
 
                         } else {
@@ -690,7 +690,7 @@ public class GaussianReStarter
 
                 //Append the failing step and all the steps that never run
                 for (int i=(failedStepID - 1); i<gaussJob.getNumberOfSteps(); 
-									    i++)
+                                                                            i++)
                 {
                     //Copy from gaussJob to newGJob
                     GaussianStep copyOfOldStep = new GaussianStep(
@@ -795,10 +795,10 @@ public class GaussianReStarter
                     newTitle = newTitle + w + " ";
                 }
             }
-	
-	    title = newTitle;
-	}
-	return title;
+        
+            title = newTitle;
+        }
+        return title;
     }
 
 //------------------------------------------------------------------------------

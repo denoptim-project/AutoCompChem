@@ -18,12 +18,12 @@ public class FilesAnalyzerTest
     @Test
     public void testCountMatches() throws Exception
     {
-	String tmpPathName = "/tmp/__tmp_acc_junit";
-	IOtools.writeTXTAppend(tmpPathName,"First line",false);
-	IOtools.writeTXTAppend(tmpPathName,"Second line",true);
-	IOtools.writeTXTAppend(tmpPathName,"Third line",true);
-	
-	assertEquals(3,FilesAnalyzer.count(tmpPathName,"line"),"Total matches");
+        String tmpPathName = "/tmp/__tmp_acc_junit";
+        IOtools.writeTXTAppend(tmpPathName,"First line",false);
+        IOtools.writeTXTAppend(tmpPathName,"Second line",true);
+        IOtools.writeTXTAppend(tmpPathName,"Third line",true);
+        
+        assertEquals(3,FilesAnalyzer.count(tmpPathName,"line"),"Total matches");
     }
 
 }

@@ -53,7 +53,7 @@ public class FilesAnalyzer
         String msg = "";
         try {
             buffRead = new BufferedReader(new FileReader(filename));
-	    num = TextAnalyzer.count(buffRead,str);
+            num = TextAnalyzer.count(buffRead,str);
         } catch (Throwable t) {
             badTermination = true;
             msg = t.getMessage();            
@@ -104,7 +104,7 @@ public class FilesAnalyzer
         String msg = "";
         try {
             buffRead = new BufferedReader(new FileReader(filename));
-	    counts = TextAnalyzer.count(buffRead,lsStr);
+            counts = TextAnalyzer.count(buffRead,lsStr);
         } catch (Throwable t) {
             badTermination = true;
             msg = t.getMessage();
@@ -274,7 +274,7 @@ public class FilesAnalyzer
         ArrayList<String> endPattrns = new ArrayList<String>();
         startPattrns.add(startPattrn);
         endPattrns.add(endPattrn);
-	
+        
         FilesManager.foundAndPermissions(pathName,true,false,false);
         BufferedReader br = null;
         try
@@ -287,14 +287,14 @@ public class FilesAnalyzer
             Terminator.withMsgAndStatus("ERROR! File "+ pathName
                                                           + " not found!.",-1);
         }
-	ArrayList<TextBlock> blocks = 
+        ArrayList<TextBlock> blocks = 
               TextAnalyzer.extractTextBlocks(br, new ArrayList<String>(),
                                                                   startPattrns,
                                                                     endPattrns,
                                                                      onlyFirst,
                                                                      inclPatts,
                                                                          false);
-	return blocks;
+        return blocks;
     }
 
 //------------------------------------------------------------------------------
@@ -306,33 +306,33 @@ public class FilesAnalyzer
 
     private static class MetchKeyComparator implements Comparator<String>
     {
-	@Override
-	public int compare(String a, String b)
-	{
+        @Override
+        public int compare(String a, String b)
+        {
             final int EQUAL = 0;
 
-	    String[] pA = a.split("_");
+            String[] pA = a.split("_");
             String[] pB = b.split("_");
 
             if (pA.length != 3 || pB.length != 3)
-	    {
-		return EQUAL;
-	    }
+            {
+                return EQUAL;
+            }
 
-	    Integer idA = Integer.parseInt(pA[0]);
+            Integer idA = Integer.parseInt(pA[0]);
             Integer idB = Integer.parseInt(pB[0]);
 
-	    if (idA.equals(idB))
-	    {
+            if (idA.equals(idB))
+            {
                 Integer id1A = Integer.parseInt(pA[1]);
                 Integer id1B = Integer.parseInt(pB[1]);
                 Integer id2A = Integer.parseInt(pA[2]);
                 Integer id2B = Integer.parseInt(pB[2]);
-		idA = 100000000*idA + 1000000*id1A + id2A;
-		idB = 100000000*idB + 1000000*id1B + id2B;
-	    }
-	    return idA.compareTo(idB);
-	}
+                idA = 100000000*idA + 1000000*id1A + id2A;
+                idB = 100000000*idB + 1000000*id1B + id2B;
+            }
+            return idA.compareTo(idB);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -370,7 +370,7 @@ public class FilesAnalyzer
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-	return               extractMapOfTxtBlocksWithDelimiters(inFile,
+        return               extractMapOfTxtBlocksWithDelimiters(inFile,
                                                        new ArrayList<String>(),
                                                                   startPattrns,
                                                                     endPattrns,
@@ -411,7 +411,7 @@ public class FilesAnalyzer
 
     public static TreeMap<String,ArrayList<String>>
                         extractMapOfTxtBlocksWithDelimiters(String inFile,
-						   ArrayList<String> slPattrns,
+                                                   ArrayList<String> slPattrns,
                                                 ArrayList<String> startPattrns,
                                                   ArrayList<String> endPattrns,
                                                              boolean onlyFirst,
@@ -424,7 +424,7 @@ public class FilesAnalyzer
         String msg = "";
         try {
             buffRead = new BufferedReader(new FileReader(inFile));
-	    blocks = TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(buffRead,
+            blocks = TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(buffRead,
                                                                      slPattrns,
                                                                   startPattrns,
                                                                     endPattrns,
@@ -576,7 +576,7 @@ public class FilesAnalyzer
         String msg = "";
         try {
             buffRead = new BufferedReader(new FileReader(inFile));
-	    matches = TextAnalyzer.grep(buffRead,patterns);
+            matches = TextAnalyzer.grep(buffRead,patterns);
         } catch (Throwable t) {
             badTermination = true;
             msg = t.getMessage();

@@ -150,10 +150,10 @@ public class BSMatchingRule
         for (int j=3; j<p.length; j++)
         {
             pp = pp + p[j];
-	    if (p.length>4 && j<(p.length-1))
-	    {
-		pp = pp + " ";
-	    }
+            if (p.length>4 && j<(p.length-1))
+            {
+                pp = pp + " ";
+            }
         }
         this.refName = ruleName;
         this.type = p[0];
@@ -171,7 +171,7 @@ public class BSMatchingRule
 
     public String getRefName()
     {
-	return refName;
+        return refName;
     }
 
 //------------------------------------------------------------------------------
@@ -231,11 +231,11 @@ public class BSMatchingRule
 
     public String toParsableString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append(type).append(" ");
-	sb.append(smarts).append(" ");
-	sb.append(srcType).append(" ");
-	sb.append(source);
+        StringBuilder sb = new StringBuilder();
+        sb.append(type).append(" ");
+        sb.append(smarts).append(" ");
+        sb.append(srcType).append(" ");
+        sb.append(source);
         return sb.toString();
     }
 

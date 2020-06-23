@@ -227,7 +227,7 @@ public class AtomClashAnalyzer
         {
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
             FilesManager.mustNotExist(this.outFile);
-	    this.makeout = true;
+            this.makeout = true;
         }
 
         //Get the list of SMARTS to be matched
@@ -318,7 +318,7 @@ public class AtomClashAnalyzer
 
     /**
      * Performs the analysis of the atom clashes according to the parameters
-     * provided to the contructor: it assumes that the AtomClashAnalyzer is
+     * provided to the constructor: it assumes that the AtomClashAnalyzer is
      * used in a standalone fashion (reading structures from files).
      */
 
@@ -477,7 +477,7 @@ public class AtomClashAnalyzer
                 }
             }
 
-            //identify atoms sobject to custon allowance
+            //identify atoms subject to custom allowance
             ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
             if (msq.hasProblems())
             {
@@ -626,7 +626,7 @@ public class AtomClashAnalyzer
         
         //find closes
         @SuppressWarnings("unused")
-		AtomClash worstac;
+                AtomClash worstac;
         double worstoverlap = 0.0;
         for (AtomClash ac : acs)
         {
@@ -685,7 +685,7 @@ public class AtomClashAnalyzer
      * Sets the SMARTS queries used to identify the target atoms.
      * @param targetsmarts a map is used to provide pairs of key:values
      * where the keys are just reference names to identify the SMARTS
-     * ans the values are the actual SMARTS queries.
+     * and the values are the actual SMARTS queries.
      */
 
     public void setTargetAtomsSMARTS(Map<String,String> targetsmarts)

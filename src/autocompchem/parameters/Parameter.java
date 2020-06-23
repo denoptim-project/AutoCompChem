@@ -58,9 +58,9 @@ public class Parameter
 
     public Parameter(String reference, String type, Object value)
     {
-	this.reference = reference;
-	this.type = type; 
-	this.value = value;
+        this.reference = reference;
+        this.type = type; 
+        this.value = value;
     }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ public class Parameter
 
     public Object getValue()
     {
-	return value;
+        return value;
     }
 
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ public class Parameter
 
     public String toString()
     {
-	String str = reference + ":" + value.toString();
+        String str = reference + ":" + value.toString();
         return str;
     }
 

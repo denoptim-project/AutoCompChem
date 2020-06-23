@@ -105,7 +105,7 @@ public class ConformationalMovesDefinition
 
     public Map<String,String> getSMARTSQueries() 
     {
-	return smarts;
+        return smarts;
     }
 
 //------------------------------------------------------------------------------

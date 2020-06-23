@@ -197,16 +197,16 @@ public class DummyObjectsHandler
         //Get and check the input file (which has to be an SDF file)
         if (params.contains("SOURCEATOMS"))
         {
-	    String l = params.getParameter("SOURCEATOMS").getValue().toString();
-	    String[] words = l.trim().split("\\s+");
-	    for (int i=0; i<words.length; i++)
-	    {
-		String w = words[i];
-		if (NumberUtils.isNumber(w))
-		//NOTE: we assume 1-based indexing
-	        this.activeSrcAtmIds.add(Integer.parseInt(w)-1);
-	    }
-	}
+            String l = params.getParameter("SOURCEATOMS").getValue().toString();
+            String[] words = l.trim().split("\\s+");
+            for (int i=0; i<words.length; i++)
+            {
+                String w = words[i];
+                if (NumberUtils.isNumber(w))
+                //NOTE: we assume 1-based indexing
+                this.activeSrcAtmIds.add(Integer.parseInt(w)-1);
+            }
+        }
 
 //TODO: check consistency between use of template, or list of sources, or doLinear, etc.
 
@@ -289,7 +289,7 @@ public class DummyObjectsHandler
                 {
                     if (doLinearities)
                     {
-			includeLinearities(mol);
+                        includeLinearities(mol);
                     }
     
                     if (doPlanarities)
@@ -302,11 +302,11 @@ public class DummyObjectsHandler
                         Terminator.withMsgAndStatus("ERROR! Code for adding dummy atoms to multihapto systems is not implemented yet.",-1);
                     }
 
-		    if (0 < activeSrcAtmIds.size())
-		    {
-			addDummiedOnSources(mol,this.activeSrcAtmIds);
-			this.activeSrcAtmIds.clear();
-		    }
+                    if (0 < activeSrcAtmIds.size())
+                    {
+                        addDummiedOnSources(mol,this.activeSrcAtmIds);
+                        this.activeSrcAtmIds.clear();
+                    }
                 }
                 //Store result
                 IOtools.writeSDFAppend(outFile,mol,true);
@@ -342,14 +342,14 @@ public class DummyObjectsHandler
                 continue;
             }
 
-	    if (verbosity > 1)
-	    {
-		System.out.println("Template-Du: " 
-					  + MolecularUtils.getAtomRef(du,tmpl));
-	    }
+            if (verbosity > 1)
+            {
+                System.out.println("Template-Du: " 
+                                          + MolecularUtils.getAtomRef(du,tmpl));
+            }
 
             IAtom src = nbrs.get(0);
-	    int srcId = tmpl.getAtomNumber(src);
+            int srcId = tmpl.getAtomNumber(src);
             nbrs = tmpl.getConnectedAtomsList(src);
             if (nbrs.size() < 3)
             {
@@ -365,7 +365,7 @@ public class DummyObjectsHandler
                     // position of the Du and the src and nbrs atoms
                     // When not possible fall back on general behavior.
 
-	    IAtom srcInMol = mol.getAtom(srcId);
+            IAtom srcInMol = mol.getAtom(srcId);
             if (verbosity > 1)
             {
                 System.out.println("Adding dummy on source atom: "
@@ -445,8 +445,8 @@ public class DummyObjectsHandler
 
     public void addDummiesOnLinearities(IAtomContainer mol)
     {
-	includeLinearities(mol);
-	addDummiedOnSources(mol,activeSrcAtmIds);
+        includeLinearities(mol);
+        addDummiedOnSources(mol,activeSrcAtmIds);
     }
 
 //-----------------------------------------------------------------------------
@@ -502,7 +502,7 @@ public class DummyObjectsHandler
                                 + "dummy atom on: "  
                                 + MolecularUtils.getAtomRef(srcAtm,mol));
                         }
-		        this.activeSrcAtmIds.add(mol.getAtomNumber(srcAtm));
+                        this.activeSrcAtmIds.add(mol.getAtomNumber(srcAtm));
                     }
                 }
             }
@@ -546,7 +546,7 @@ public class DummyObjectsHandler
                     System.out.println("Adding planarity-breaking du on: " 
                                        + MolecularUtils.getAtomRef(srcAtm,mol));
                 }
-	        this.activeSrcAtmIds.add(mol.getAtomNumber(srcAtm));
+                this.activeSrcAtmIds.add(mol.getAtomNumber(srcAtm));
             }
         }
     }
@@ -561,22 +561,22 @@ public class DummyObjectsHandler
 
     public void addDummiedOnSources(IAtomContainer mol, ArrayList<Integer> srcs)
     {
-	for (int i=0; i< srcs.size(); i++)
-	{
-	    int atmId = srcs.get(i);
-	    if (0>atmId || (mol.getAtomCount()-1)<atmId)
-	    {
-		Terminator.withMsgAndStatus("ERROR! Atom index out of range "
-		    + "while adding dummy atoms. Requesting atom (1-based) '" 
-		    + (atmId+1) + "' on molecule with " + mol.getAtomCount()
-		    + " atoms.", -1);
-	    }
-	    IAtom srcAtm = mol.getAtom(atmId);
+        for (int i=0; i< srcs.size(); i++)
+        {
+            int atmId = srcs.get(i);
+            if (0>atmId || (mol.getAtomCount()-1)<atmId)
+            {
+                Terminator.withMsgAndStatus("ERROR! Atom index out of range "
+                    + "while adding dummy atoms. Requesting atom (1-based) '" 
+                    + (atmId+1) + "' on molecule with " + mol.getAtomCount()
+                    + " atoms.", -1);
+            }
+            IAtom srcAtm = mol.getAtom(atmId);
             IAtom duAtm = getDummyInSafePlace(mol,srcAtm);
             mol.addAtom(duAtm);
             IBond dummyBnd = new Bond(duAtm,srcAtm);
             mol.addBond(dummyBnd);
-	}
+        }
     }
 
 //------------------------------------------------------------------------------

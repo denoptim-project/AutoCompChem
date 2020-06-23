@@ -218,10 +218,10 @@ public class ZMatrixHandler
 
         //Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE2"))
-	{
+        {
             this.inFile2 = params.getParameter("INFILE2").getValue().toString();
             FilesManager.foundAndPermissions(this.inFile2,true,false,false);
-	}
+        }
        
         //Get the template ZMatrix
         if (params.contains("TEMPLATEZMAT"))
@@ -236,12 +236,12 @@ public class ZMatrixHandler
         if (params.contains("TORSIONONLY"))
         {
             this.onlyTors = true;
-	    if (this.useTmpl)
-	    {
+            if (this.useTmpl)
+            {
                 Terminator.withMsgAndStatus("ERROR! Inconsistent request to "
                              + "use only torsions AND a template ZMatrix.", -1);
-		
-	    }
+                
+            }
         }
 
         //Get and check output file
@@ -357,7 +357,7 @@ public class ZMatrixHandler
             {
                 Terminator.withMsgAndStatus("ERROR! Only .sdf or .zmat files "
                                     + "can be read in by ZMatrix handler. "
-				    + "Check file '" + inFile + "'.", -1);
+                                    + "Check file '" + inFile + "'.", -1);
             }
 
             if (inFile2.endsWith(".sdf"))
@@ -381,16 +381,16 @@ public class ZMatrixHandler
                     Terminator.withMsgAndStatus("ERROR! Exception returned by "
                         + "SDFIterator while reading " + inFile, -1);
                 }
-	    }
-	    else if (inFile2.endsWith(".zmat"))
+            }
+            else if (inFile2.endsWith(".zmat"))
             {
-		secondZMats = IOtools.readZMatrixFile(inFile2);
-	    }
-	    else
-	    {
-		Terminator.withMsgAndStatus("ERROR! Only .sdf or .zmat files "
-			            + "can be read in by ZMatrix handler.", -1);
-	    }
+                secondZMats = IOtools.readZMatrixFile(inFile2);
+            }
+            else
+            {
+                Terminator.withMsgAndStatus("ERROR! Only .sdf or .zmat files "
+                                    + "can be read in by ZMatrix handler.", -1);
+            }
 
             if (firstZMats.size() != secondZMats.size())
             {
@@ -405,12 +405,12 @@ public class ZMatrixHandler
                                                        + "ZMatrix handler!",-1);
         }
 
-	for (int i=0; i<firstZMats.size(); i++)
-	{
+        for (int i=0; i<firstZMats.size(); i++)
+        {
             ZMatrix zmatRes = subtractZMatrices(firstZMats.get(i),
-						secondZMats.get(i));
-	    IOtools.writeZMatAppend(outFile,zmatRes,true);
-	}
+                                                secondZMats.get(i));
+            IOtools.writeZMatAppend(outFile,zmatRes,true);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -442,36 +442,36 @@ public class ZMatrixHandler
 //TODO: May need to reorder atoms OR change connectivity according to atm list
         if (iac.getAtomCount() == 0)
         {
-	    if (null != inFile)
-	    {
+            if (null != inFile)
+            {
                 try
                 {
                     SDFIterator sdfItr = new SDFIterator(inFile);
                     if (sdfItr.hasNext())
-		    {
+                    {
                         iac = sdfItr.next();
                         if (sdfItr.hasNext())
                         {
-			    Terminator.withMsgAndStatus("ERROR! Expecting only "
-				+ "one molecule in file '"+ inFile +"'.",-1);
-			}
+                            Terminator.withMsgAndStatus("ERROR! Expecting only "
+                                + "one molecule in file '"+ inFile +"'.",-1);
+                        }
                     }
-		    else
+                    else
                     {
                         Terminator.withMsgAndStatus("ERROR! No molecule found "
-						             + "in "+inFile,-1);
+                                                             + "in "+inFile,-1);
                     }
                 } catch (Throwable t) {
                     t.printStackTrace();
                     Terminator.withMsgAndStatus("ERROR! Exception returned by "
                     + "SDFIterator while reading " + inFile, -1);
                 }
-	    }
-	    else
-	    {
+            }
+            else
+            {
                 IOtools.writeTXTAppend(outFile,"No chemical entity in ZMatrix "
                                                             + "handler!",false);
-	    }
+            }
         }
         IAtomContainer mol = iac;
 
@@ -684,32 +684,32 @@ System.out.println("tmpVal:            "+tmpVal);
 System.out.println("Math.sin(zmatIC.getValue()): "+Math.sin(Math.toRadians(zmatIC.getValue())));
 System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVal)));
 */
-			double signChange = Math.sin(
-					     Math.toRadians(zmatIC.getValue())) 
-					    * Math.sin(Math.toRadians(tmpVal)); 
+                        double signChange = Math.sin(
+                                             Math.toRadians(zmatIC.getValue())) 
+                                            * Math.sin(Math.toRadians(tmpVal)); 
                         tmpVal = tmpVal % 360.0;
                         if (Math.abs(tmpVal) > 180.0)
                         {
                             tmpVal = (-1)*s*(360.0 - Math.abs(tmpVal));
                         }
-			if (0.0 > signChange)
-			{
-			    switch (zmatIC.getType())
-			    {
-				case "0":
-				    break;
+                        if (0.0 > signChange)
+                        {
+                            switch (zmatIC.getType())
+                            {
+                                case "0":
+                                    break;
                                 case "-1":
-				    zmatIC.setType("1");
+                                    zmatIC.setType("1");
                                     break;
                                 case "1":
-				    zmatIC.setType("-1");
+                                    zmatIC.setType("-1");
                                     break;
                                 default:
-				     Terminator.withMsgAndStatus("ERROR! Type "
-					+ "of 3rd internal coordinate ('"
-					+ zmatIC.getType() +"') not known.",-1);
-			    }
-			}
+                                     Terminator.withMsgAndStatus("ERROR! Type "
+                                        + "of 3rd internal coordinate ('"
+                                        + zmatIC.getType() +"') not known.",-1);
+                            }
+                        }
 /*
                         if ("0".equals(zmatIC.getType()))
                         {
@@ -945,8 +945,8 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
 
                         // 3rd IC is dihedral angle
                         double dotProdIJIK = dIJ.x*dJK.x 
-					   + dIJ.y*dJK.y 
-					   + dIJ.z*dJK.z;
+                                           + dIJ.y*dJK.y 
+                                           + dIJ.z*dJK.z;
                         double compl = Math.sqrt(
                                        Math.max(1.0-Math.pow(dotProdIJIK,2),t));
                         Point3d dt = new Point3d(dIJ.z*dJK.y - dIJ.y*dJK.z,
@@ -976,7 +976,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                                     + "atom (0-based) " + i + ". Need a "
                                     + "linearity-breaking dummy atom bonded to "
                                     + "atom (0-based) " + zatm.getIdRef(0) 
-				    + "or an alternative pair of angles.");
+                                    + "or an alternative pair of angles.");
                         }
 
                         pt = new Point3d(pI.x + icI.getValue()*
@@ -1012,8 +1012,8 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                                                  -dIJ.x*dIK.z + dIJ.z*dIK.x,
                                                  -dIJ.y*dIK.x + dIJ.x*dIK.y);
                         double dotProdIJIK = -dIJ.x*dIK.x 
-					     -dIJ.y*dIK.y 
-					     -dIJ.z*dIK.z;
+                                             -dIJ.y*dIK.y 
+                                             -dIJ.z*dIK.z;
                         double compl = Math.max(1.0-Math.pow(dotProdIJIK,2),t);
 
                         //TODO del
@@ -1046,7 +1046,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                             System.out.println("a: "+a);
                             System.out.println("b: "+b);
                             System.out.println("c(pre-check): "+c);
-			}
+                        }
 
                         if (c >= t)
                         {
@@ -1065,12 +1065,12 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                             if (verbosity > 0)
                             {
                                 System.out.println("WARNING: negligible c="
-				    + c + " for "
+                                    + c + " for "
                                     + "atom (0-based) " + i + ". Low accuracy "
-				    + "is expected. To improve the results add "
-				    + "a dummy on atom (0-based) " 
-				    + zatm.getIdRef(0) + ", reorder atom list, "
-				    + "and build a more healty ZMatrix.");
+                                    + "is expected. To improve the results add "
+                                    + "a dummy on atom (0-based) " 
+                                    + zatm.getIdRef(0) + ", reorder atom list, "
+                                    + "and build a more healty ZMatrix.");
                             }
                         }
                         else
@@ -1431,10 +1431,10 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
             }
         }
 
-	if (this.onlyTors)
-	{
-	    typK = "0";
-	}
+        if (this.onlyTors)
+        {
+            typK = "0";
+        }
 
         // build return object
         Object[] pair = new Object[2];

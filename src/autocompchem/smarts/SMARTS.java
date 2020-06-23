@@ -55,8 +55,8 @@ public class SMARTS
 
     public SMARTS(String str)
     {
-	this.smartsAsString = str;
-	this.isSingleAtom = isSingleAtomSMARTS(str);
+        this.smartsAsString = str;
+        this.isSingleAtom = isSingleAtomSMARTS(str);
     }
 
 //------------------------------------------------------------------------------
@@ -71,12 +71,12 @@ public class SMARTS
 
     public static boolean isSingleAtomSMARTS(String s)
     {
-	boolean res = false;
-	if (s.trim().startsWith("[") && s.trim().endsWith("]"))
-	{
-	    res = true;
-	}
-	return res;
+        boolean res = false;
+        if (s.trim().startsWith("[") && s.trim().endsWith("]"))
+        {
+            res = true;
+        }
+        return res;
     }
 
 //------------------------------------------------------------------------------

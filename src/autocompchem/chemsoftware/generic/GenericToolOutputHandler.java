@@ -121,28 +121,28 @@ public class GenericToolOutputHandler
 
     public GenericToolOutputHandler(ParameterStorage params) 
     {
-	gtParams = new GenericToolParameters(params);
+        gtParams = new GenericToolParameters(params);
 
         //Define verbosity
-	if (params.contains(GenericToolConstants.VERBOSITYKEY))
-	{
+        if (params.contains(GenericToolConstants.VERBOSITYKEY))
+        {
             String s = params.getParameter(
-		       GenericToolConstants.VERBOSITYKEY).getValue().toString();
+                       GenericToolConstants.VERBOSITYKEY).getValue().toString();
             this.verbosity = Integer.parseInt(s);
-	}
+        }
         if (verbosity > 0)
-	{
-	    System.out.println(" Adding params to GenericToolOutputHandler");
-	}
+        {
+            System.out.println(" Adding params to GenericToolOutputHandler");
+        }
 
         //Get and check the input file (which is an output from GenericTool)
         this.inFile = params.getParameter(
-		   GenericToolConstants.INPUTFILENAMEKEY).getValue().toString();
+                   GenericToolConstants.INPUTFILENAMEKEY).getValue().toString();
         FilesManager.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the list of known errors
         String errDefPath = params.getParameter(
-		   GenericToolConstants.ERRORTREEROOTKEY).getValue().toString();
+                   GenericToolConstants.ERRORTREEROOTKEY).getValue().toString();
         if (verbosity > 0)
         {
             System.out.println(" Importing known errors from " + errDefPath);
@@ -187,16 +187,16 @@ public class GenericToolOutputHandler
         patterns.add(gtParams.getOutputInitialMsg());
         patterns.add(gtParams.getOutputNormalEndMsg());
         ArrayList<ArrayList<Integer>> countsAndLineNum = 
-					   FilesAnalyzer.count(inFile,patterns);
+                                           FilesAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
         ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
         ArrayList<ArrayList<Integer>> lineNums = 
-					    new ArrayList<ArrayList<Integer>>();
+                                            new ArrayList<ArrayList<Integer>>();
         //Keep all but the last array
         for (int i=0; i<(countsAndLineNum.size() - 1); i++)
-	{
+        {
             lineNums.add(countsAndLineNum.get(i));
-	}
+        }
 
         numSteps = counts.get(0); // # of "initiatin job" strings
         int numNormTerm = counts.get(1); // # of "normal termination" strings
@@ -207,22 +207,22 @@ public class GenericToolOutputHandler
                                       + numSteps + " steps");
         }
 
-	if (numSteps == 0)
-	{
-	    if (verbosity > 0)
-	    {
-		Terminator.withMsgAndStatus("ERROR! Could not identify the "
-		    + "beginning of any step in the output/log file provided. "
-		    + "Are you sure the beginning of each step is identified "
-		    + "by the string '"
-		    + gtParams.getOutputInitialMsg() + "'?",-1);
-	    }
-	}
+        if (numSteps == 0)
+        {
+            if (verbosity > 0)
+            {
+                Terminator.withMsgAndStatus("ERROR! Could not identify the "
+                    + "beginning of any step in the output/log file provided. "
+                    + "Are you sure the beginning of each step is identified "
+                    + "by the string '"
+                    + gtParams.getOutputInitialMsg() + "'?",-1);
+            }
+        }
 
         //Error identififcation
         if (numSteps != numNormTerm)
         {
-	    normalTermiated = false;
+            normalTermiated = false;
 
             if (verbosity > 0)
             {
@@ -234,8 +234,8 @@ public class GenericToolOutputHandler
             int lastInit = lineNums.get(0).get(numSteps - 1 );
             ArrayList<String> tail = IOtools.tailFrom(inFile,lastInit);
 
-	    //Compare with known errors
-	    identifyErrorMessage(tail);
+            //Compare with known errors
+            identifyErrorMessage(tail);
 
             //Report
             if (verbosity > 0)
@@ -248,15 +248,15 @@ public class GenericToolOutputHandler
                                         + actualEM.getName());
                 } else {
                     System.out.println(" GenericTool Error NOT Recognized. "
-				+ "Please "
+                                + "Please "
                                 + "identify the error by hand and then add a "
-				+ "new ErrorMessage to the list of known "
-				+ "errors.");
+                                + "new ErrorMessage to the list of known "
+                                + "errors.");
                 }
             }
         } else {
             normalTermiated = true;
-	}  
+        }  
     }
 
 //------------------------------------------------------------------------------
@@ -272,14 +272,14 @@ public class GenericToolOutputHandler
         errorIsDecoded = false;
         for (ErrorMessage em : errorDef)
         {
-	    //Get the error message of this candidate error
-	    ArrayList<String> emLines = em.getErrorMessage();
+            //Get the error message of this candidate error
+            ArrayList<String> emLines = em.getErrorMessage();
             int numParts = emLines.size();
 
-	    if (verbosity > 1)
-		System.out.println(" -> Trying with "+em.getName()+" <-");
+            if (verbosity > 1)
+                System.out.println(" -> Trying with "+em.getName()+" <-");
 
-            //Read .out file from bottom to top	looking for the error messages
+            //Read .out file from bottom to top        looking for the error messages
             int numFound = 0;
             for (int i=(tail.size() - 1); i>-1; i--)
             {
@@ -301,7 +301,7 @@ public class GenericToolOutputHandler
                         if (verbosity > 2)
                         {
                             System.out.println("Error message '" + emLine 
-								+ "' found");
+                                                                + "' found");
                         }
                         break;
                     }
@@ -316,53 +316,53 @@ public class GenericToolOutputHandler
 
             if (errorIsDecoded)
             {
-		//Are there other conditions this .out has to fulfill?
-		ArrayList<String> conditions = em.getConditions();
-		int numberOfConditions = conditions.size();
-		if (numberOfConditions != 0)
-		{
-		    int numTrue = 0;
-		    for (String cond : conditions)
-		    {
-			String[] p = cond.split("\\s+");
-			String task = p[0];
-			task = task.toUpperCase();
+                //Are there other conditions this .out has to fulfill?
+                ArrayList<String> conditions = em.getConditions();
+                int numberOfConditions = conditions.size();
+                if (numberOfConditions != 0)
+                {
+                    int numTrue = 0;
+                    for (String cond : conditions)
+                    {
+                        String[] p = cond.split("\\s+");
+                        String task = p[0];
+                        task = task.toUpperCase();
 
-			boolean isSatisfied = false;
-			switch (task)
-			{
-			    case "MATCH" :
-			    {
-				String pattern = cond.substring(task.length());
-				String[] pp = pattern.split("\"");
-				pattern = pp[1];
-				pattern = pattern.toUpperCase();
-			        if (verbosity > 2)
-				{
-				    System.out.println("Attempt to match '" 
-							      + pattern + "'.");
-				}
-				for (int it=0; it<tail.size(); it++)
-				{
-				    String line = tail.get(it);
-				    line = line.toUpperCase();
-				    if (line.contains(pattern))
-				    {
-					isSatisfied = true;
-					if (verbosity > 2)
-                        		{
-					    System.out.println("MATCH "
-						+ "condition satisfied by "
-						+ "text '" + line + "'");
-					}
-					break;
-				    }
-				}
-				break;
-			    }
+                        boolean isSatisfied = false;
+                        switch (task)
+                        {
+                            case "MATCH" :
+                            {
+                                String pattern = cond.substring(task.length());
+                                String[] pp = pattern.split("\"");
+                                pattern = pp[1];
+                                pattern = pattern.toUpperCase();
+                                if (verbosity > 2)
+                                {
+                                    System.out.println("Attempt to match '" 
+                                                              + pattern + "'.");
+                                }
+                                for (int it=0; it<tail.size(); it++)
+                                {
+                                    String line = tail.get(it);
+                                    line = line.toUpperCase();
+                                    if (line.contains(pattern))
+                                    {
+                                        isSatisfied = true;
+                                        if (verbosity > 2)
+                                        {
+                                            System.out.println("MATCH "
+                                                + "condition satisfied by "
+                                                + "text '" + line + "'");
+                                        }
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
                             case "NOTMATCH" :
-			    {
-				boolean patternFound = false;
+                            {
+                                boolean patternFound = false;
                                 String pattern = cond.substring(task.length());
                                 String[] pp = pattern.split("\"");
                                 pattern = pp[1];
@@ -377,44 +377,44 @@ public class GenericToolOutputHandler
                                         if (verbosity > 2)
                                         {
                                             System.out.println("NOTMATCH "
-						+ "condition can NOT be "
-						+ "satisfied. Pattern found "
-						+ "in test '" + line + "'");
-					}
+                                                + "condition can NOT be "
+                                                + "satisfied. Pattern found "
+                                                + "in test '" + line + "'");
+                                        }
                                         break;
                                     }
                                 }
-				if (!patternFound)
-				{
-				    isSatisfied = true;
+                                if (!patternFound)
+                                {
+                                    isSatisfied = true;
                                     if (verbosity > 2)
                                     {
-					System.out.println("NOTMATCH condition "
-						+ "satisfied.");
-				    }
-				}
+                                        System.out.println("NOTMATCH condition "
+                                                + "satisfied.");
+                                    }
+                                }
                                 break;
-			    }
+                            }
 
                             case "CHECK_COUNTER":  
-			        //Condition meant for loops with a named index
-				//Get identifier and limit of counter
-				String counterName = cond.substring(
-								 task.length());
-				String[] pp = counterName.split("\"");
-				counterName = pp[1];
-				counterName = counterName.toUpperCase();
-				int counterLimit = -1;
-				try {
-				    counterLimit = Integer.parseInt(p[2]);
-				} catch (Throwable t) {
-				    Terminator.withMsgAndStatus("ERROR! "
-					+ "Unable to read loop limit in error " 
-					+ em.getName(),-1);
-				}
+                                //Condition meant for loops with a named index
+                                //Get identifier and limit of counter
+                                String counterName = cond.substring(
+                                                                 task.length());
+                                String[] pp = counterName.split("\"");
+                                counterName = pp[1];
+                                counterName = counterName.toUpperCase();
+                                int counterLimit = -1;
+                                try {
+                                    counterLimit = Integer.parseInt(p[2]);
+                                } catch (Throwable t) {
+                                    Terminator.withMsgAndStatus("ERROR! "
+                                        + "Unable to read loop limit in error " 
+                                        + em.getName(),-1);
+                                }
 
-				//Get the current value of the counter
-				int counterValue = -1;
+                                //Get the current value of the counter
+                                int counterValue = -1;
                                 for (int it=0; it<tail.size(); it++)
                                 {
                                     String line = tail.get(it);
@@ -424,63 +424,63 @@ public class GenericToolOutputHandler
                                         if (verbosity > 2)
                                         {
                                             System.out.println("Counter " 
-						+ counterName + " found!");
-					}
-					String[] words = line.split("\\s+");
-					for (int iw=0; iw<words.length; iw++)
-					{
-					    String w = words[iw];
-					    if (w.contains(counterName))
-					    {
-						String[] ppp = w.split("=");
-						try {
-						    counterValue = 
-						       Integer.parseInt(ppp[1]);
-						} catch (Throwable t) {
-                                    		    Terminator.withMsgAndStatus(
-						        "ERROR! Unable to read "
-						        + "value of counter "
-	                                                + counterName + " in "
-							+ w,-1);
-						}
-						break;
-					    }
-					}
+                                                + counterName + " found!");
+                                        }
+                                        String[] words = line.split("\\s+");
+                                        for (int iw=0; iw<words.length; iw++)
+                                        {
+                                            String w = words[iw];
+                                            if (w.contains(counterName))
+                                            {
+                                                String[] ppp = w.split("=");
+                                                try {
+                                                    counterValue = 
+                                                       Integer.parseInt(ppp[1]);
+                                                } catch (Throwable t) {
+                                                        Terminator.withMsgAndStatus(
+                                                        "ERROR! Unable to read "
+                                                        + "value of counter "
+                                                        + counterName + " in "
+                                                        + w,-1);
+                                                }
+                                                break;
+                                            }
+                                        }
 
-					//Make sure we got the number
-					if (counterValue < 0)
-					{
-					    Terminator.withMsgAndStatus(
-						"ERROR! "
-	                                        + "Unable to read loop index "
-						+ "value in " + line,-1);
-					}
-				    
+                                        //Make sure we got the number
+                                        if (counterValue < 0)
+                                        {
+                                            Terminator.withMsgAndStatus(
+                                                "ERROR! "
+                                                + "Unable to read loop index "
+                                                + "value in " + line,-1);
+                                        }
+                                    
                                         break;
                                     } 
                                 }
 
-				//Check condition
-				if (counterValue >= counterLimit)
-				{
-				    Terminator.withMsgAndStatus("Maximum "
-				        + "number of cycles reaches for " 
-				        + em.getName() + ". " + counterName
-				        + " = " + counterValue + " (limit="
-				        + counterLimit +").",-1);
-				} else if (counterValue > 0) {
-				    if (verbosity > 2)
+                                //Check condition
+                                if (counterValue >= counterLimit)
+                                {
+                                    Terminator.withMsgAndStatus("Maximum "
+                                        + "number of cycles reaches for " 
+                                        + em.getName() + ". " + counterName
+                                        + " = " + counterValue + " (limit="
+                                        + counterLimit +").",-1);
+                                } else if (counterValue > 0) {
+                                    if (verbosity > 2)
                                     {
-					System.out.println(" Counter '" 
-					+ counterName
-					+ "' is still within the limit (next "
-					+ "iteration will have index "
-					+ (counterValue + 1) + " <= " 
-					+ counterLimit + ").");
-				    }
-				    counters.put(counterName,counterValue);
-				    isSatisfied = true;
-				} else {
+                                        System.out.println(" Counter '" 
+                                        + counterName
+                                        + "' is still within the limit (next "
+                                        + "iteration will have index "
+                                        + (counterValue + 1) + " <= " 
+                                        + counterLimit + ").");
+                                    }
+                                    counters.put(counterName,counterValue);
+                                    isSatisfied = true;
+                                } else {
                                     if (verbosity > 2)
                                     {
                                         System.out.println(" Check counter "
@@ -488,33 +488,33 @@ public class GenericToolOutputHandler
                                             + "counter "
                                             + counterName + " not found.");
                                     }
-				}
+                                }
                                 break;
 
 /*
 TODO add other tasks here
-			    case "":
-				...do something...
-				break;
+                            case "":
+                                ...do something...
+                                break;
 
 */
 
-			    default:
-				Terminator.withMsgAndStatus("ERROR! Condition "
-					+ task + " not known! "
-					+ "Check definition of error " 
-					+ em.getName(),-1);
-			}
-					
-			if (!isSatisfied)
-			    break;
-			else 
-			    numTrue++;
-		    }
+                            default:
+                                Terminator.withMsgAndStatus("ERROR! Condition "
+                                        + task + " not known! "
+                                        + "Check definition of error " 
+                                        + em.getName(),-1);
+                        }
+                                        
+                        if (!isSatisfied)
+                            break;
+                        else 
+                            numTrue++;
+                    }
 
-		    if (numberOfConditions != numTrue)
-			errorIsDecoded = false;
-		}
+                    if (numberOfConditions != numTrue)
+                        errorIsDecoded = false;
+                }
 
                 //Nothing else to do if the error is identified
                 if (errorIsDecoded)
@@ -535,7 +535,7 @@ TODO add other tasks here
 
     public boolean isErrorUnderstood()
     {
-	return errorIsDecoded;
+        return errorIsDecoded;
     }
 
 //------------------------------------------------------------------------------
@@ -574,7 +574,7 @@ TODO add other tasks here
 
     public Map<String,Integer> getCounters()
     {
-	return counters;
+        return counters;
     }
 
 //------------------------------------------------------------------------------
@@ -587,11 +587,11 @@ TODO add other tasks here
     public String getResultsAsString()
     {
         String str = "File:" + inFile + " Steps:" + numSteps + " NormalTerm:"
-			+ normalTermiated + " Error:";
-	if (errorIsDecoded)
-	    str = str + actualEM.getName();
-	else
-	    str = str + "Not Known";
+                        + normalTermiated + " Error:";
+        if (errorIsDecoded)
+            str = str + actualEM.getName();
+        else
+            str = str + "Not Known";
 
         return str;
     }

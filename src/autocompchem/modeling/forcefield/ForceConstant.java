@@ -31,11 +31,11 @@ import java.util.Map;
 public class ForceConstant implements Serializable
 {
     /**
-	 * Version ID
-	 */
-	private static final long serialVersionUID = 3144879372240681881L;
+         * Version ID
+         */
+        private static final long serialVersionUID = 3144879372240681881L;
 
-	/**
+        /**
      * Reference name
      */
     private String name = "noname";
@@ -83,10 +83,10 @@ public class ForceConstant implements Serializable
 
     public ForceConstant(String name, String type, double value, String units)
     {
-	this.name = name;
-	this.type = type;
-	this.value = value;
-	this.units = units;
+        this.name = name;
+        this.type = type;
+        this.value = value;
+        this.units = units;
     }
 
 //------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ public class ForceConstant implements Serializable
 
     public void setProperty(String propName, Object propValue)
     {
-	properties.put(propName,propValue);
+        properties.put(propName,propValue);
     }
 
 //------------------------------------------------------------------------------
@@ -172,12 +172,12 @@ public class ForceConstant implements Serializable
 
     public String toString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append("ForceConstant [name:").append(name).append(", ");
-	sb.append("value:").append(value).append(", ");
-	sb.append("units:").append(units).append(", ");
-	sb.append("properties:").append(properties.toString()).append("] ");
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("ForceConstant [name:").append(name).append(", ");
+        sb.append("value:").append(value).append(", ");
+        sb.append("units:").append(units).append(", ");
+        sb.append("properties:").append(properties.toString()).append("] ");
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

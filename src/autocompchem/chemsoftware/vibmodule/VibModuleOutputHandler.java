@@ -677,8 +677,8 @@ public class VibModuleOutputHandler
             }
             if (verbosity > 0)
             {
-		if (verbosity > 1)
-		{
+                if (verbosity > 1)
+                {
                      System.out.println(" Found " + istr + "/" + nstr + " bond "
                                    + "stretching internal coordinates.");
                     System.out.println(" Found " + ibnd + "/" + nbnd + " angle "
@@ -688,7 +688,7 @@ public class VibModuleOutputHandler
                     System.out.println(" Found " + itor + "/" + ntor + " bond "
                                    + "torsion internal coordinates.");
                     System.out.println(" Generated " + itor2 + " dihedral "
-								    + "angles");
+                                                                    + "angles");
                 }
                 System.out.println(" Total internal coordinates: " 
                                                        + (istr+ibnd+ioop+itor));
@@ -721,10 +721,10 @@ public class VibModuleOutputHandler
     public void extractForceFieldParameters()
     {
 
-	if (verbosity > -1)
-	{	
+        if (verbosity > -1)
+        {        
             System.out.println(" Extracting FF-Parameters from '"+vmFile+"'");
-	}
+        }
 
         String msg = "no msg.";
 
@@ -788,13 +788,13 @@ public class VibModuleOutputHandler
                 if (msq.getNumMatchesOfQuery(key) == 0)
                 {
                     skipRule = true;
-		    if (verbosity > 0)
-		    {
+                    if (verbosity > 0)
+                    {
                         System.out.println("WARNING! No match for SMARTS query "
                          + smarts.get(key) + " in molecule "
                          + MolecularUtils.getNameOrID(mol) + ". Skipping "
                          + "Int. Coord. definition '" + icRuleName + "'.");
-		    }
+                    }
                     break;
                 }
 
@@ -996,13 +996,13 @@ public class VibModuleOutputHandler
 
             if (usedVals == 0)
             {
-		if (verbosity > 0)
-		{
+                if (verbosity > 0)
+                {
                     System.out.println(" WARNING: no internal coord. found in "
                                    + "vibrational analysis with data for term '"
-				   + termName + "="
+                                   + termName + "="
                                    + getAllSmartsWithRef(termName) + "'. ");
-		}
+                }
                 continue;
             }
 

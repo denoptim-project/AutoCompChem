@@ -33,11 +33,11 @@ public class StringUtilsConstants
      * Map of escaped characters
      */
     public final static Map<String,String> ESCAPABLESIGNS = 
-						   new HashMap<String,String>()
+                                                   new HashMap<String,String>()
     {
-	{
-	    put("$","ACCEscapedDollar");
-	};
+        {
+            put("$","ACCEscapedDollar");
+        };
     };
 
 }

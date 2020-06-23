@@ -2,13 +2,18 @@ package autocompchem.molecule.geometry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
@@ -166,7 +171,7 @@ public class MolecularGeometryEditor
             String v = params.getParameter("VERBOSITY").getValue().toString();
             this.verbosity = Integer.parseInt(v);
         }
-	this.params = params;
+        this.params = params;
 
         if (verbosity > 0)
         {
@@ -258,11 +263,11 @@ public class MolecularGeometryEditor
             String zmtFile =
                        params.getParameter("ZMATRIXMOVE").getValue().toString();
             FilesManager.foundAndPermissions(zmtFile,true,false,false);
-	    if (IOtools.readZMatrixFile(zmtFile).size() != 1)
-	    {
-		Terminator.withMsgAndStatus("ERROR! Found multiple ZMatrices "
-					     + "in file '" + zmtFile + "'.",-1);
-	    }
+            if (IOtools.readZMatrixFile(zmtFile).size() != 1)
+            {
+                Terminator.withMsgAndStatus("ERROR! Found multiple ZMatrices "
+                                             + "in file '" + zmtFile + "'.",-1);
+            }
             this.zmtMove = IOtools.readZMatrixFile(zmtFile).get(0);
         }
 
@@ -297,17 +302,17 @@ public class MolecularGeometryEditor
                 {
                     System.out.println(" Applying ZMatrix move");
                 }
-		try
-		{
+                try
+                {
                     applyZMatrixMove();
-		}
-		catch (Throwable t)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Exception while "
-			+ "altering the ZMatrix. You might need dummy "
-			+ "atoms to define an healthier ZMatrix. Cause of the "
-			+ "exception: " + t.getMessage(), -1);
-		}
+                }
+                catch (Throwable t)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Exception while "
+                        + "altering the ZMatrix. You might need dummy "
+                        + "atoms to define an healthier ZMatrix. Cause of the "
+                        + "exception: " + t.getMessage(), -1);
+                }
         }
         else if (crtMove!=null && crtMove.size()>0)
         {
@@ -323,6 +328,7 @@ public class MolecularGeometryEditor
                     + "a Cartesian or a ZMatrix move.", -1);
         }
     }
+   
 
 //------------------------------------------------------------------------------
 
@@ -384,6 +390,7 @@ public class MolecularGeometryEditor
                 actualMove.set(i,crtMove.get(i));
             }
         }
+        
         if (verbosity > 0)
         {
             System.out.println(" Actual Cartesian move: ");
@@ -404,32 +411,14 @@ public class MolecularGeometryEditor
                                             + " factor " + scaleFactors.get(j));
             }
 
-            IAtomContainer outMol = new AtomContainer();
-            try
-            {
-                outMol = (IAtomContainer) actualMol.clone();
-            }
-            catch (Throwable t)
-            {
-                Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.",-1);
-            }
-            for (int i=0; i<outMol.getAtomCount(); i++)
-            {
-                Point3d newPt3d = new Point3d(outMol.getAtom(i).getPoint3d());
-                Point3d newMv = new Point3d(actualMove.get(i));
-                newMv.scale(scaleFactors.get(j));
-                newPt3d.add(newMv);
-                outMol.getAtom(i).setPoint3d(newPt3d);
-            }
+            // Here we finally generate one new geometry
+            IAtomContainer outMol = getGeomFromCartesianMove(actualMol,
+            		actualMove,scaleFactors.get(j));
             String outMolName = MolecularUtils.getNameOrID(inMol);
             outMolName = outMolName + " - moved by " + scaleFactors.get(j) 
                                                         + "x(Cartesian_move)";
             outMol.setProperty(CDKConstants.TITLE,outMolName);
-            outMols.add(outMol);
-            if (outToFile)
-            {
-                IOtools.writeSDFAppend(outFile,outMol,true);
-            }
+            outMols.add(outMol); 
         }
         
         if (!outToFile && verbosity > 0)
@@ -438,8 +427,241 @@ public class MolecularGeometryEditor
             System.out.println(" WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }
+        
+        if (outToFile)
+        {
+            IOtools.writeSDFAppend(outFile,outMols,false);
+        }
+        
         allDone = true;
     }
+    
+//-------------------------------------------------------------------------------
+    
+    /**
+     * This is the actual method generating new geometries by applying the 
+     * Cartesian move.
+     * @param mol the molecule to modify
+     * @param actualMove The Cartesian Move
+     * @param sf the scaling factor that multiplied the Cartesian move
+     * @return the modified geometry
+     */
+    public static IAtomContainer getGeomFromCartesianMove(IAtomContainer mol, 
+    		ArrayList<Point3d> actualMove, double sf)
+    {
+        IAtomContainer outMol = new AtomContainer();
+        try
+        {
+            outMol = (IAtomContainer) mol.clone();
+        }
+        catch (Throwable t)
+        {
+            Terminator.withMsgAndStatus("ERROR! Cannot clone molecule.",-1);
+        }
+        for (int i=0; i<outMol.getAtomCount(); i++)
+        {
+            Point3d newPt3d = new Point3d(outMol.getAtom(i).getPoint3d());
+            Point3d newMv = new Point3d(actualMove.get(i));
+            newMv.scale(sf);
+            newPt3d.add(newMv);
+            outMol.getAtom(i).setPoint3d(newPt3d);
+        }
+        return outMol;
+    }
+
+  //-------------------------------------------------------------------------------
+  	/**
+  	 * Searches for optimal scaling factors that do not generate atom clashes or 
+  	 * exploded systems. Uses default values for all settings of the search 
+  	 * algorithm.
+  	 * @param mol the atom container with the unmodified geometry
+  	 * @param move the Cartesian move
+  	 * @param numSfSteps divide the optimised range of scaling factors in this 
+  	 * number  
+  	 * @return the optimised list of scaling factors
+  	 */
+  	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
+      		ArrayList<Point3d> move, int numSfSteps) 
+  	{
+  		return optimizeScalingFactors(mol,move,numSfSteps,0.02,0.001,0);
+  	}
+//-------------------------------------------------------------------------------
+
+  	/**
+  	 * Searches for optimal scaling factors that do not generate atom clashes or 
+  	 * exploded systems.
+  	 * @param mol the atom container with the unmodified geometry
+  	 * @param move the Cartesian move
+  	 * @param numSfSteps divide the optimised range of scaling factors in this 
+  	 * number  
+  	 * of steps
+  	 * @param tolerance permit down to this % of the sum of covalent radii
+  	 * @param convergence stop search when step falls below this value
+  	 * @param verbosity amount of log to stdout
+  	 * @return the optimised list of scaling factors
+  	 */
+	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
+    		ArrayList<Point3d> move, int numSfSteps, double tolerance,
+    		double convergence,int verbosity) 
+	{
+		//Run optimisation twice:
+		//either maximise (+1) or minimise (-1) scaling factor.
+		double[] signs = new double[] {-1.0,1.0};
+		//Initialise the results
+		double[] optimalExtremes = new double[] {0.0,0.0};
+		for (int ig=0; ig<signs.length; ig++)
+		{
+			double sign = signs[ig];
+			// sign of the step in the |scaling factor| scale
+			double direction = +1.0;
+			// the initial step length
+			double step = 1.0;       
+			// initial guess for |scaling factor| (sign is given by 'sign')
+			double guessSF = 1.0;      
+			// the non-OK scaling factor closest to divide
+			double smallestToNotOK = Double.MAX_VALUE;
+			// the OK scaling factor closest to divide
+			double largestToOK = -Double.MAX_VALUE;
+			// whether the current scaling factor produced an OK geometry
+			boolean isOK = false;      
+			// whether the previous scaling factor produced an OK geometry
+			boolean lastWasOK = false;  
+			boolean foundFirstNonOK = false;
+			double lowestDist = Double.MAX_VALUE;
+			
+			if (verbosity > 0)
+            {
+			    System.out.println(" Optimizing SF");
+			    System.out.println("Sign MinDist Guess LastDirection LastStep"
+					+ " LastOK(2ndLast) smallestToNotOK  largestToOK");
+            }
+			
+			boolean goon = true;
+			while (goon)
+			{	
+				lowestDist = Double.MAX_VALUE;
+				if (Math.abs(step) < Math.abs(convergence))
+				{
+					if (verbosity > 0)
+		            {
+					    System.out.println("CONVERGED!!! |"+step
+							+"| < |"+convergence+"|");
+		            }
+					goon = false;
+					break;
+				}
+				
+				// Generate the geometry
+				IAtomContainer outMol = getGeomFromCartesianMove(mol,
+	            		move,guessSF*sign);
+				
+				// keep trace of old result
+				lastWasOK = isOK;
+	    		
+				// Evaluate the geometry: compare shortest interatomic 
+				// distance against the sum of the covalent radii
+				isOK = true;
+				loopOnAtoms:
+				for (int i=0; i<outMol.getAtomCount(); i++)
+			    {
+			    	IAtom atmI = outMol.getAtom(i);
+			    	double covRadI = PeriodicTable.getCovalentRadius(
+			    			atmI.getSymbol());
+			    	for (int jj=i+1; jj<outMol.getAtomCount(); jj++)
+			        {
+			        	IAtom atmJ = outMol.getAtom(jj);
+			            double covRadJ = PeriodicTable.getCovalentRadius(
+			            		atmJ.getSymbol());
+			        	double dist = 
+			        			MolecularUtils.calculateInteratomicDistance(
+			        					atmI, atmJ);
+			            //System.out.println(" COVRAD: "+MolecularUtils.getAtomRef(atmI, outMol)+":"+MolecularUtils.getAtomRef(atmJ, outMol)
+			            //+" "+covRadI+" "+covRadJ+" "+dist+" limit: "+(covRadI+covRadJ)*(1.0-tolerance));
+			            if (dist < lowestDist)
+			            	lowestDist = dist;
+			            if (dist < (covRadI+covRadJ)*(1.0-tolerance))
+			            {
+			            	// Here we found a pair of atoms that are moved 
+			            	// too close to each other.
+			            	// The guess scaling factor (guessSF) is "not OK"
+			            	// and we keep track of it.
+				            isOK = false;
+				            // We record the smallest |scaling factor| 
+				            // that led to a non-OK geometry
+				            if (guessSF < smallestToNotOK)
+				            {
+				            	smallestToNotOK = guessSF;
+				            }
+				            foundFirstNonOK = true;
+				            break loopOnAtoms;
+			            }
+			        }
+			    }
+            	// Keep the largest |scaling factor| that led to an OK geometry
+            	if (isOK && (guessSF > largestToOK))
+	            {
+	            	largestToOK = guessSF;
+	            }
+				
+				if (!foundFirstNonOK)
+				{
+					// first we search for one extreme that is not OK, to set 
+					// an upper limit to the search
+					guessSF = guessSF + step; // this is only |scaling factor|
+					continue; 
+				}
+				else
+				{
+					// Once we have an upper limit we can do dichotomic search
+					
+					// Step length is given by half of the unmapped range 
+					// between the two known points closest to divide
+					// NB: smallestToNotOK > largestToOK Thus 'step' > 0
+					step = (smallestToNotOK - largestToOK)*0.5;
+					
+					// The direction in which we take the step changes every 
+					// time we cross the divide
+					if (isOK && !lastWasOK)
+					{
+						direction = (-1.0)*direction;
+					}
+					else
+					{
+						if (!isOK && lastWasOK)
+							direction = (-1.0)*direction;
+					}
+					guessSF = guessSF + step*direction;
+				}
+				if (verbosity > 0)
+	            {
+				    String msg = String.format("%+7.3f %+7.3f %+7.3f %+7.3f "
+				    		+ "%+7.3f %1.1B(%1.1B) %+11.3e  %+11.3e",
+						sign,lowestDist,guessSF,direction,step,isOK,lastWasOK,
+						smallestToNotOK,largestToOK);
+				    System.out.println(msg);
+	            }
+			}
+			optimalExtremes[ig] = guessSF*sign;
+	    }
+		
+		// Finally generate evenly distributed scaling factors
+		double sfStep = (optimalExtremes[1]-optimalExtremes[0])/numSfSteps;
+		ArrayList<Double> chosenScalingFactors = new ArrayList<Double>();
+		for (int i=0; i<(numSfSteps+1); i++)
+		{
+			chosenScalingFactors.add(optimalExtremes[0]+i*sfStep);	
+		}
+		
+		//TODO: consider generating N/2 scaling factors on the minimum and plus 
+		// sign, rather than evenly distributed scaling factors
+		
+		if (verbosity > 0)
+        {
+            System.out.println("Optimized extremes: "+optimalExtremes[0]+" "+optimalExtremes[1]);
+            System.out.println("Optimized Scaling factors: "+chosenScalingFactors);
+        }
+		return chosenScalingFactors;
+	}
 
 //------------------------------------------------------------------------------
 
@@ -466,8 +688,8 @@ public class MolecularGeometryEditor
 
         // Get the ZMatrix of the molecule to work with
         //TODO del
-	// ZMatrixHandler zmh = new ZMatrixHandler(inMol,verbosity);
-	ZMatrixHandler zmh = new ZMatrixHandler(params);
+        // ZMatrixHandler zmh = new ZMatrixHandler(inMol,verbosity);
+        ZMatrixHandler zmh = new ZMatrixHandler(params);
         ZMatrix inZMatMol = zmh.makeZMatrix();
         if (verbosity > 1)
         {

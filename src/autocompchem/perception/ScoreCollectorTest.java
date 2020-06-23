@@ -56,8 +56,8 @@ public class ScoreCollectorTest
         tsc.addScore(scp3,0.333);
         tsc.addScore(n2,mcB,0.555);
 
-	assertEquals(scp1,tsc.keyWithSameSCValues(scp1));
-	assertEquals(scp1,tsc.keyWithSameSCValues(new SCPair(n1,mcA)));
-	assertEquals(null,tsc.keyWithSameSCValues(new SCPair(n2,mcA)));
+        assertEquals(scp1,tsc.keyWithSameSCValues(scp1));
+        assertEquals(scp1,tsc.keyWithSameSCValues(new SCPair(n1,mcA)));
+        assertEquals(null,tsc.keyWithSameSCValues(new SCPair(n2,mcA)));
     }
 }

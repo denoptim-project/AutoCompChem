@@ -97,14 +97,14 @@ public class NWChemJob
         {
             String line = lines.get(i).trim();
 
-	    // Look for any of the keywords that require use of atom tags
-	    if (!useTags 
-		&& line.toUpperCase().contains(BasisSetConstants.ATMSPECBS))
-	    {
-		useTags = true;
-	    }
+            // Look for any of the keywords that require use of atom tags
+            if (!useTags 
+                && line.toUpperCase().contains(BasisSetConstants.ATMSPECBS))
+            {
+                useTags = true;
+            }
 
-	    // Split and interprete each step/Task
+            // Split and interprete each step/Task
             if (line.toUpperCase().equals(NWChemConstants.TASKSEPARATORJD))
             {
                 NWChemTask step = new NWChemTask(linesOfAStep);
@@ -234,7 +234,7 @@ public class NWChemJob
 
     public boolean requiresAtomTags()
     {
-	return useTags;
+        return useTags;
     }
 
 //------------------------------------------------------------------------------
@@ -246,7 +246,7 @@ public class NWChemJob
  
     protected void setImpositionOfAtomTags(boolean value)
     {
-	useTags = value;
+        useTags = value;
     }
 
 //------------------------------------------------------------------------------

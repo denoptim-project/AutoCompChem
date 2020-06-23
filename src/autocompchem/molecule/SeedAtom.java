@@ -31,7 +31,7 @@ public class SeedAtom
 
     public SeedAtom(IAtom seed, IAtomContainer mol)
     {
-	this.seed = seed;
+        this.seed = seed;
         this.connections = mol.getConnectedAtomsCount(seed);
     }
 
@@ -44,7 +44,7 @@ public class SeedAtom
 
     public String getSymbol()
     {
-	String s = seed.getSymbol();
+        String s = seed.getSymbol();
         return s;
     }
 
@@ -57,7 +57,7 @@ public class SeedAtom
 
     public IAtom getAtom()
     {
-	return seed;
+        return seed;
     }
 
 //------------------------------------------------------------------------------

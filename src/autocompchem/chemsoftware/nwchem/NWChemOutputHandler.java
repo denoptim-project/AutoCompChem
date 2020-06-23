@@ -328,33 +328,33 @@ public class NWChemOutputHandler
         if (params.contains("PRINTVIBMODES"))
         {
             this.printVibModes = true;
-	    String s = 
-		params.getParameter("PRINTVIBMODES").getValue().toString();
+            String s = 
+                params.getParameter("PRINTVIBMODES").getValue().toString();
             String[] p = s.split("\\s+");
-	    this.selectedVibModes = new ArrayList<Integer>();
-	    for (int i=0; i<(p.length-1); i++)
+            this.selectedVibModes = new ArrayList<Integer>();
+            for (int i=0; i<(p.length-1); i++)
             {
-		String w = p[i];
-		int val = 0;
-		try
-		{
-		    val = Integer.parseInt(w);
-		} 
-		catch (Throwable t)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Cannot convert '" + w 
-			+ "' to an integer. Check selection of vibrational "
-			+ "modes in PRINTVIBMODES.", -1); 
-		}
-		if (val < 0)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Negative number "
-			+ "cannot be used to select a vibrational mode.",-1);
-		}
-		this.selectedVibModes.add(val);
-	    }
-	    this.outFileVibModes = p[p.length-1];
-	    FilesManager.mustNotExist(this.outFileVibModes);
+                String w = p[i];
+                int val = 0;
+                try
+                {
+                    val = Integer.parseInt(w);
+                } 
+                catch (Throwable t)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Cannot convert '" + w 
+                        + "' to an integer. Check selection of vibrational "
+                        + "modes in PRINTVIBMODES.", -1); 
+                }
+                if (val < 0)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Negative number "
+                        + "cannot be used to select a vibrational mode.",-1);
+                }
+                this.selectedVibModes.add(val);
+            }
+            this.outFileVibModes = p[p.length-1];
+            FilesManager.mustNotExist(this.outFileVibModes);
 
 //TODO del
 System.out.println("VIB MODES: "+this.selectedVibModes);
@@ -365,9 +365,9 @@ System.out.println("FILE: "+this.outFileVibModes);
         {
             this.useTemplateConnectivity = true;
             String fileWithTplt =
-	      params.getParameter("TEMPLATECONNECTIVITY").getValue().toString();
-	    FilesManager.foundAndPermissions(fileWithTplt,true,false,false);
-    	    this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
+              params.getParameter("TEMPLATECONNECTIVITY").getValue().toString();
+            FilesManager.foundAndPermissions(fileWithTplt,true,false,false);
+                this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
         }
 
         if (params.contains("ANALYSE"))
@@ -403,10 +403,10 @@ System.out.println("FILE: "+this.outFileVibModes);
         }        
 
         if (params.contains("IGNOREIM"))
-	{
-	    this.imThrsh = Double.parseDouble(
+        {
+            this.imThrsh = Double.parseDouble(
                         params.getParameter("IGNOREIM").getValue().toString());
-	}
+        }
 
     }
 
@@ -541,7 +541,7 @@ System.out.println("FILE: "+this.outFileVibModes);
                 patterns.add(NWChemConstants.OUTTEMP);
                 if (calcQHarmVibS)
                 {
-		    patterns.add(NWChemConstants.OUTPROJFREQ);
+                    patterns.add(NWChemConstants.OUTPROJFREQ);
                     patterns.add(NWChemConstants.OUTTRAS);
                     patterns.add(NWChemConstants.OUTROTS);
                     patterns.add(NWChemConstants.OUTVIBS);
@@ -606,19 +606,19 @@ System.out.println("FILE: "+this.outFileVibModes);
                     String key = NWChemConstants.OUTPROJFREQ;
                     if (matchesMap.containsKey(key))
                     {
-			vibModes = new ArrayList<ArrayList<Double>>();
-			int iBlock = -1; // the count of blocks of freqs
+                        vibModes = new ArrayList<ArrayList<Double>>();
+                        int iBlock = -1; // the count of blocks of freqs
                         for (Integer i : matchesMap.get(key))
                         {
-			    // Read the frequency (eigenvalue)
+                            // Read the frequency (eigenvalue)
                             String line = tail.get(i);
                             String[] p = line.split("\\s+");
                             for (int j=2; j<(p.length); j++)
                             {
                                 double freq = Double.parseDouble(p[j]);
                                 if (freq < 0.0
-				    && Math.abs(freq) >= lowestFreq 
-				    && Math.abs(freq) >= imThrsh)
+                                    && Math.abs(freq) >= lowestFreq 
+                                    && Math.abs(freq) >= imThrsh)
                                 {
                                     if (verbosity > 2)
                                     {
@@ -629,49 +629,49 @@ System.out.println("FILE: "+this.outFileVibModes);
                                 }
                                 projFrequencies.add(freq);
 
-				// Here we only add an empty mode: will be filled later
-				ArrayList<Double> mode = new ArrayList<Double>();
-				vibModes.add(mode);
+                                // Here we only add an empty mode: will be filled later
+                                ArrayList<Double> mode = new ArrayList<Double>();
+                                vibModes.add(mode);
                             }
 
-			    // Read also the vibrational mode (eigenvector)
-			    iBlock++;
-			    boolean goon = true;
-			    int r=i+1; //NB: we skip the first empty line
-			    while (goon)
-			    {
-				r++;
-				String linevm = tail.get(r);
-				String[] pv = linevm.split("\\s+");
-				if (pv.length < 2)
-				{
-				    goon = false;
-				    break;
-				}
-				for (int j=2; j<(pv.length); j++)
-				{
-				    int vmID = iBlock*6 + (j-2);
-				    double val = 0.0;
-				    try
-				    {
-					val = Double.parseDouble(pv[j]);
-				    } catch (Throwable t)
-				    {
-					Terminator.withMsgAndStatus("ERROR! "
-					+ "String '" + pv[j] + "' cannot be "
-					+ "converted to a double. Error "
-					+ "while readinf vibrational modes.",
-					-1);
-				    }
-				    vibModes.get(vmID).add(val);
-				}
-			    }
+                            // Read also the vibrational mode (eigenvector)
+                            iBlock++;
+                            boolean goon = true;
+                            int r=i+1; //NB: we skip the first empty line
+                            while (goon)
+                            {
+                                r++;
+                                String linevm = tail.get(r);
+                                String[] pv = linevm.split("\\s+");
+                                if (pv.length < 2)
+                                {
+                                    goon = false;
+                                    break;
+                                }
+                                for (int j=2; j<(pv.length); j++)
+                                {
+                                    int vmID = iBlock*6 + (j-2);
+                                    double val = 0.0;
+                                    try
+                                    {
+                                        val = Double.parseDouble(pv[j]);
+                                    } catch (Throwable t)
+                                    {
+                                        Terminator.withMsgAndStatus("ERROR! "
+                                        + "String '" + pv[j] + "' cannot be "
+                                        + "converted to a double. Error "
+                                        + "while readinf vibrational modes.",
+                                        -1);
+                                    }
+                                    vibModes.get(vmID).add(val);
+                                }
+                            }
                         }
 
-			if (printVibModes)
-			{
-			    printVibrationalModes();
-			}
+                        if (printVibModes)
+                        {
+                            printVibrationalModes();
+                        }
                     }
                     else
                     {
@@ -755,14 +755,14 @@ System.out.println("FILE: "+this.outFileVibModes);
                                 vibS = Double.parseDouble(p[4]);
 
                                 vibS = CompChemComputer.vibrationalEntropyCorr(
-							        projFrequencies,
-								temp,
-								qhThrsh,
-								imThrsh,
-								0.01,
-								verbosity);
-				corrS = traS + rotS + vibS;
-			        res = res + String.format("%.2f ",corrS); 
+                                                                projFrequencies,
+                                                                temp,
+                                                                qhThrsh,
+                                                                imThrsh,
+                                                                0.01,
+                                                                verbosity);
+                                corrS = traS + rotS + vibS;
+                                res = res + String.format("%.2f ",corrS); 
                             }
                         }
                     }
@@ -935,11 +935,11 @@ System.out.println("FILE: "+this.outFileVibModes);
                 {
                     outFile = outFile + ".sdf";
                 }
-		if (useTemplateConnectivity)
-		{
-		    ConnectivityUtils.importConnectivityFromReference(
-						mol,connectivityTemplate);
-		}
+                if (useTemplateConnectivity)
+                {
+                    ConnectivityUtils.importConnectivityFromReference(
+                                                mol,connectivityTemplate);
+                }
                 IOtools.writeSDFAppend(outFile,mol,false);
                 break;
 
@@ -972,31 +972,31 @@ System.out.println("FILE: "+this.outFileVibModes);
 
     private void printVibrationalModes()
     {
-	StringBuilder sb = new StringBuilder();
-	boolean first = true;
-	for (int vmId : selectedVibModes)
-	{
-	    if (first)
-	    {
-	        first = false;
-	    } else {
-		sb.append(">").append(System.getProperty("line.separator"));
-	    }
-	    ArrayList<Double> mode = vibModes.get(vmId);
-	    for (int atmId=0; atmId<(mode.size()/3); atmId++)
-	    {
-		sb.append(String.format(" %5.5f",mode.get(atmId*3)));
-		sb.append(String.format(" %5.5f",mode.get(atmId*3+1)));
-		sb.append(String.format(" %5.5f",mode.get(atmId*3+2)));
-		sb.append(System.getProperty("line.separator"));
-	    }
-	}
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (int vmId : selectedVibModes)
+        {
+            if (first)
+            {
+                first = false;
+            } else {
+                sb.append(">").append(System.getProperty("line.separator"));
+            }
+            ArrayList<Double> mode = vibModes.get(vmId);
+            for (int atmId=0; atmId<(mode.size()/3); atmId++)
+            {
+                sb.append(String.format(" %5.5f",mode.get(atmId*3)));
+                sb.append(String.format(" %5.5f",mode.get(atmId*3+1)));
+                sb.append(String.format(" %5.5f",mode.get(atmId*3+2)));
+                sb.append(System.getProperty("line.separator"));
+            }
+        }
         IOtools.writeTXTAppend(outFileVibModes,sb.toString(),false);
-	if (verbosity > 1)
-	{
-	    System.out.println(" Vibrational mode " + selectedVibModes 
-		+ " written to '" + outFileVibModes + "'.");
-	}
+        if (verbosity > 1)
+        {
+            System.out.println(" Vibrational mode " + selectedVibModes 
+                + " written to '" + outFileVibModes + "'.");
+        }
     }
 
 //------------------------------------------------------------------------------

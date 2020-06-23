@@ -97,7 +97,7 @@ public class ConnectivityGenerator
 
     public ConnectivityGenerator(int verbosity)
     {
-	this.verbosity = verbosity;
+        this.verbosity = verbosity;
     }
 
 //------------------------------------------------------------------------------
@@ -152,17 +152,17 @@ public class ConnectivityGenerator
         FilesManager.foundAndPermissions(this.inFile,true,false,false);
 
         //Define tolerance
-	if (params.contains("TOLERANCE"))
+        if (params.contains("TOLERANCE"))
         {
-	    String ts = params.getParameter("TOLERANCE").getValue().toString();
+            String ts = params.getParameter("TOLERANCE").getValue().toString();
             this.tolerance = Double.parseDouble(ts);
-	}
+        }
 
         //Define tolerance
         if (params.contains("TOLERANCE2NDSHELL"))
         {
             String ts = 
-		params.getParameter("TOLERANCE2NDSHELL").getValue().toString();
+                params.getParameter("TOLERANCE2NDSHELL").getValue().toString();
             this.tolerance2ndShell = Double.parseDouble(ts);
         }
 
@@ -170,7 +170,7 @@ public class ConnectivityGenerator
         if (params.contains("TARGETELEMENT"))
         {
             String ts = 
-		    params.getParameter("TARGETELEMENT").getValue().toString();
+                    params.getParameter("TARGETELEMENT").getValue().toString();
             this.targetEl = ts;
         }
 
@@ -194,13 +194,13 @@ public class ConnectivityGenerator
      */
 
     public ConnectivityGenerator(String inFile, String outFile, 
-					double tolerance, int verbosity)
+                                        double tolerance, int verbosity)
     {
         this.inFile = inFile;
         FilesManager.foundAndPermissions(this.inFile,true,false,false);
-	this.tolerance = tolerance;
+        this.tolerance = tolerance;
         this.outFile = outFile;
-	FilesManager.mustNotExist(outFile);
+        FilesManager.mustNotExist(outFile);
         this.verbosity = verbosity;
     }
 
@@ -221,17 +221,17 @@ public class ConnectivityGenerator
      */
 
     public ConnectivityGenerator(String inFile, String outFile,
-            			 double tolerance, double tolerance2ndShell, 
-				 int verbosity, String targetEl)
+                                     double tolerance, double tolerance2ndShell, 
+                                 int verbosity, String targetEl)
     {
         this.inFile = inFile;
         FilesManager.foundAndPermissions(this.inFile,true,false,false);
         this.tolerance = tolerance;
-	this.tolerance2ndShell = tolerance2ndShell;
+        this.tolerance2ndShell = tolerance2ndShell;
         this.outFile = outFile;
         FilesManager.mustNotExist(outFile);
         this.verbosity = verbosity;
-	this.targetEl = targetEl;
+        this.targetEl = targetEl;
     }
 
 //------------------------------------------------------------------------------
@@ -256,10 +256,10 @@ public class ConnectivityGenerator
 
                 //Recalculate connectivity of molecule
                 ConnectivityUtils.addConnectionsByVDWRadius(mol, 
-							    targetEl, 
-							    tolerance,
-							    tolerance2ndShell, 
-							    verbosity);
+                                                            targetEl, 
+                                                            tolerance,
+                                                            tolerance2ndShell, 
+                                                            verbosity);
 
                 //Store output
                 IOtools.writeSDFAppend(outFile,mol,true);
@@ -280,9 +280,9 @@ public class ConnectivityGenerator
 
     public void ricalculateConnectivity()
     {
-	if (verbosity > 1)
-	    System.out.println(" ConnectivityGenerator starts to work on "  
-				+ inFile);
+        if (verbosity > 1)
+            System.out.println(" ConnectivityGenerator starts to work on "  
+                                + inFile);
 
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
@@ -291,12 +291,12 @@ public class ConnectivityGenerator
                 //Get the molecule
                 IAtomContainer mol = sdfItr.next();
 
-		//Recalculate connectivity of molecule
-		ricalculateConnectivity(mol, tolerance);		
+                //Recalculate connectivity of molecule
+                ricalculateConnectivity(mol, tolerance);                
 
-		//Store output
-		IOtools.writeSDFAppend(outFile,mol,true);
-	    }
+                //Store output
+                IOtools.writeSDFAppend(outFile,mol,true);
+            }
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
@@ -314,43 +314,43 @@ public class ConnectivityGenerator
 
     private void ricalculateConnectivity(IAtomContainer mol, double tolerance)
     {
-	String molName = MolecularUtils.getNameOrID(mol);
-	int nAtms = mol.getAtomCount();
+        String molName = MolecularUtils.getNameOrID(mol);
+        int nAtms = mol.getAtomCount();
         if (verbosity > 1)
             System.out.println(" Recalculating connectivity for " + molName);
 
-	for (int i=0; i<nAtms; i++)
-	{
-	    IAtom a = mol.getAtom(i);
-	    List<IAtom> nbrs = mol.getConnectedAtomsList(a);
-	    for (int j=(i+1); j<nAtms; j++)
-	    {
-		IAtom b = mol.getAtom(j);
-		double ab = MolecularUtils.calculateInteratomicDistance(a, b);
-		double minNBD = ConnectivityUtils.getMinNonBondedDistance(
-							a.getSymbol(),
-							b.getSymbol(),
-							tolerance);
+        for (int i=0; i<nAtms; i++)
+        {
+            IAtom a = mol.getAtom(i);
+            List<IAtom> nbrs = mol.getConnectedAtomsList(a);
+            for (int j=(i+1); j<nAtms; j++)
+            {
+                IAtom b = mol.getAtom(j);
+                double ab = MolecularUtils.calculateInteratomicDistance(a, b);
+                double minNBD = ConnectivityUtils.getMinNonBondedDistance(
+                                                        a.getSymbol(),
+                                                        b.getSymbol(),
+                                                        tolerance);
 
-		if ((ab < minNBD) && (!nbrs.contains(b)))
-		{
-		    if (verbosity > 2)
-		    {
-	                System.out.println(" Adding bond between atom '" 
-						+ MolecularUtils.getAtomRef(a,mol)
-	                                        + "' and '"
+                if ((ab < minNBD) && (!nbrs.contains(b)))
+                {
+                    if (verbosity > 2)
+                    {
+                        System.out.println(" Adding bond between atom '" 
+                                                + MolecularUtils.getAtomRef(a,mol)
+                                                + "' and '"
                                                 + MolecularUtils.getAtomRef(b,mol)
-						+ "' (dist=" + ab + " - minNBD="
-						+ minNBD + "). ");
-		    }
+                                                + "' (dist=" + ab + " - minNBD="
+                                                + minNBD + "). ");
+                    }
 
-		    //TODO: add attempt to guess bond order
+                    //TODO: add attempt to guess bond order
 
-		    IBond newBnd = new Bond(a,b,IBond.Order.valueOf(defBO));
-		    mol.addBond(newBnd);
-		}
-	    }
-	}
+                    IBond newBnd = new Bond(a,b,IBond.Order.valueOf(defBO));
+                    mol.addBond(newBnd);
+                }
+            }
+        }
     }
 
 //------------------------------------------------------------------------------

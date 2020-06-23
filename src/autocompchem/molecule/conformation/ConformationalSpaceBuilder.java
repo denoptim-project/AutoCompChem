@@ -104,22 +104,22 @@ public class ConformationalSpaceBuilder
                                                             ManySMARTSQuery msq,                                                                  int verbosity)
 
     {
-	//Perceive bonds belonging to cycles
-	SpanningTree spanTree = new SpanningTree(mol);
-	IRingSet rings = new RingSet();
-	try
-	{
-	    rings = spanTree.getAllRings();
-	}
-	catch (Throwable t)
-	{
-	    t.printStackTrace();
-	    Terminator.withMsgAndStatus("ERROR! Unable to detect all rings for "
-		+ "molecule '" + MolecularUtils.getNameOrID(mol) + "'. Cause: "
-		+ t.getCause(),-1);
-	}
+        //Perceive bonds belonging to cycles
+        SpanningTree spanTree = new SpanningTree(mol);
+        IRingSet rings = new RingSet();
+        try
+        {
+            rings = spanTree.getAllRings();
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            Terminator.withMsgAndStatus("ERROR! Unable to detect all rings for "
+                + "molecule '" + MolecularUtils.getNameOrID(mol) + "'. Cause: "
+                + t.getCause(),-1);
+        }
 
-	//Generate the conformational space
+        //Generate the conformational space
         ConformationalSpace confSpace = new ConformationalSpace();
         for (String refName : moves.refNames())
         {
@@ -205,12 +205,12 @@ public class ConformationalSpaceBuilder
 
                    case 2:
                         coordType = ConformationalConstants.ROTOTYPE;
-			IAtom atm0 = atomDef.get(0);
-			IAtom atm1 = atomDef.get(1);
+                        IAtom atm0 = atomDef.get(0);
+                        IAtom atm1 = atomDef.get(1);
                         IAtom nextTo0 = getNextTo(atomDef,0,mol);
                         IAtom nextTo1 = getNextTo(atomDef,1,mol);
                         if (nextTo0 == null || nextTo1 == null ||
-			    !mol.getConnectedAtomsList(atm0).contains(atm1))
+                            !mol.getConnectedAtomsList(atm0).contains(atm1))
                         {
                             if (verbosity > 2)
                             {
@@ -220,18 +220,18 @@ public class ConformationalSpaceBuilder
                             }
                             skip = true;
                         }
-			IBond bnd = mol.getBond(atm0,atm1);
-			IRingSet rs = rings.getRings(bnd);
-			if (rs.getAtomContainerCount() != 0)
-			{
-			    if (verbosity > 2)
-			    {
-				System.out.println("Ignoring cyclic bond "
-				    + MolecularUtils.getAtomRef(atm0,mol) + "-"
-				    + MolecularUtils.getAtomRef(atm1,mol));
-			    }
-			    skip = true;
-			}
+                        IBond bnd = mol.getBond(atm0,atm1);
+                        IRingSet rs = rings.getRings(bnd);
+                        if (rs.getAtomContainerCount() != 0)
+                        {
+                            if (verbosity > 2)
+                            {
+                                System.out.println("Ignoring cyclic bond "
+                                    + MolecularUtils.getAtomRef(atm0,mol) + "-"
+                                    + MolecularUtils.getAtomRef(atm1,mol));
+                            }
+                            skip = true;
+                        }
                         coordValue = MolecularUtils.calculateTorsionAngle(
                                                      nextTo0,atm0,atm1,nextTo1);
                         break;
@@ -258,13 +258,13 @@ public class ConformationalSpaceBuilder
                     }
                     confSpace.addCoord(newCoord);
                 }
-		else
-		{
+                else
+                {
                     if (verbosity > 2)
                     {
                         System.out.println("Not a new conformationa coord.");
                     }
-		}
+                }
             }
         }        
         return confSpace;
@@ -289,17 +289,17 @@ public class ConformationalSpaceBuilder
         {
             otherId = 1;
         }
-	IAtom result = null;
+        IAtom result = null;
         List<IAtom> nbrs = mol.getConnectedAtomsList(pair.get(id));
         for (IAtom nbr : nbrs)
         {
             if (nbr != pair.get(otherId))
             {
-		result = nbr;
-		break;
+                result = nbr;
+                break;
             }
         }
-	return result;
+        return result;
     }
 
 //------------------------------------------------------------------------------

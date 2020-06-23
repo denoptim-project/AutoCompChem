@@ -42,25 +42,25 @@ public class StringUtils
 
     public static String escapeSpecialChars(String str)
     {
-	String result = str;
+        String result = str;
         for (String key : StringUtilsConstants.ESCAPABLESIGNS.keySet())
-	{
-	    if (str.contains("\\"+key))
-	    {
-	        String regex = "\\\\\\"+key;
-	        String replacement = StringUtilsConstants.ESCAPABLESIGNS.get(
-									   key);
-	        Pattern rgxPattern = Pattern.compile(regex);
+        {
+            if (str.contains("\\"+key))
+            {
+                String regex = "\\\\\\"+key;
+                String replacement = StringUtilsConstants.ESCAPABLESIGNS.get(
+                                                                           key);
+                Pattern rgxPattern = Pattern.compile(regex);
                 Matcher m = rgxPattern.matcher(result);
-	        result = m.replaceAll(replacement);
+                result = m.replaceAll(replacement);
                 if (debug)
-	        {
-		    System.out.println("Replacing " + rgxPattern 
-					+ " with " + replacement);
-		    System.out.println("After: "+result);
-	        }
-	    }
-	}
+                {
+                    System.out.println("Replacing " + rgxPattern 
+                                        + " with " + replacement);
+                    System.out.println("After: "+result);
+                }
+            }
+        }
         return result;
     }
 
@@ -79,7 +79,7 @@ public class StringUtils
         String result = str;
         for (String key : StringUtilsConstants.ESCAPABLESIGNS.keySet())
         {
-	    String replacement = StringUtilsConstants.ESCAPABLESIGNS.get(key);
+            String replacement = StringUtilsConstants.ESCAPABLESIGNS.get(key);
             if (str.contains(replacement))
             {
                 String regex = replacement;

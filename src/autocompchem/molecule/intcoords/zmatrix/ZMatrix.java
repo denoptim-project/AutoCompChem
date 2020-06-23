@@ -79,9 +79,9 @@ public class ZMatrix
 
     public ZMatrix()
     {
-	zatoms = new ArrayList<ZMatrixAtom>();
-	delBondPointers = new ArrayList<int[]>();
-	addBondPointers = new ArrayList<int[]>();
+        zatoms = new ArrayList<ZMatrixAtom>();
+        delBondPointers = new ArrayList<int[]>();
+        addBondPointers = new ArrayList<int[]>();
     }
 
 //------------------------------------------------------------------------------
@@ -96,46 +96,46 @@ public class ZMatrix
 
     public ZMatrix(ArrayList<String> lines)
     {
-	// First need to decide whether the input used 0- or 1-based atom IDs
-	boolean zeroBasedIDs = false;
-	int idBase = 0;
-	Pattern p = Pattern.compile("\\s0\\s");
+        // First need to decide whether the input used 0- or 1-based atom IDs
+        boolean zeroBasedIDs = false;
+        int idBase = 0;
+        Pattern p = Pattern.compile("\\s0\\s");
         for (String line : lines)
         {
-	    String sStr = line.trim();
-	    if (sStr.endsWith("0"))
-	    {
-		sStr = sStr.substring(0,sStr.length() - 1);
-	    }
-	    if (sStr.startsWith("0"))
-	    {
-		sStr = sStr.substring(1);
-	    }
-	    Matcher m = p.matcher(sStr);
-	    if (m.find())
-	    {
-		idBase = -1;
-		zeroBasedIDs = true;
-		break;
-	    }
-	}
-	// Now, read in the ZMatrix
-	zatoms = new ArrayList<ZMatrixAtom>();
-	for (String line : lines)
-	{
-	    idBase++;
-	    try
-	    {
-	        ZMatrixAtom atm = new ZMatrixAtom(line,idBase,zeroBasedIDs);
-	        zatoms.add(atm);
-	    }
-	    catch (Throwable t)
-	    {
-		t.printStackTrace();
-		Terminator.withMsgAndStatus("Could not import '" + line + "' "
-			+ "in a ZMatrix.",-1);
-	    }
-	}
+            String sStr = line.trim();
+            if (sStr.endsWith("0"))
+            {
+                sStr = sStr.substring(0,sStr.length() - 1);
+            }
+            if (sStr.startsWith("0"))
+            {
+                sStr = sStr.substring(1);
+            }
+            Matcher m = p.matcher(sStr);
+            if (m.find())
+            {
+                idBase = -1;
+                zeroBasedIDs = true;
+                break;
+            }
+        }
+        // Now, read in the ZMatrix
+        zatoms = new ArrayList<ZMatrixAtom>();
+        for (String line : lines)
+        {
+            idBase++;
+            try
+            {
+                ZMatrixAtom atm = new ZMatrixAtom(line,idBase,zeroBasedIDs);
+                zatoms.add(atm);
+            }
+            catch (Throwable t)
+            {
+                t.printStackTrace();
+                Terminator.withMsgAndStatus("Could not import '" + line + "' "
+                        + "in a ZMatrix.",-1);
+            }
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ public class ZMatrix
 
     public ZMatrixAtom getZAtom(int i)
     {
-	return this.zatoms.get(i);
+        return this.zatoms.get(i);
     }
 
 //------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ public class ZMatrix
 
     public void addZMatrixAtom(ZMatrixAtom atm)
     {
-	zatoms.add(atm);
+        zatoms.add(atm);
     }
 
 
@@ -183,11 +183,11 @@ public class ZMatrix
      * @param ia index of first partner of 1-2 relation
      * @param ib index of second partner of 1-2 relation
      */
-	
+        
     public void addPointerToNonBonded(int ia, int ib)
     {
-	hasBondsToDel = true;
-	delBondPointers.add(new int[] {ia,ib});
+        hasBondsToDel = true;
+        delBondPointers.add(new int[] {ia,ib});
     }
 
 //------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ public class ZMatrix
  
     public ArrayList<int[]> getPointersToNonBonded()
     {
-	return delBondPointers;
+        return delBondPointers;
     }
 
 //------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ public class ZMatrix
 
     public void addPointerToBonded(int ia, int ib)
     {
-	hasBondsToAdd = true;
+        hasBondsToAdd = true;
         addBondPointers.add(new int[] {ia,ib});
     }
 
@@ -239,7 +239,7 @@ public class ZMatrix
    
     public boolean hasAddedBonds()
     {
-	return hasBondsToAdd;
+        return hasBondsToAdd;
     }
 
 //-----------------------------------------------------------------------------
@@ -263,7 +263,7 @@ public class ZMatrix
 
     public void setTitle(String title)
     {
-	this.title = title;
+        this.title = title;
     }
 
 //-----------------------------------------------------------------------------
@@ -291,16 +291,16 @@ public class ZMatrix
 
     public boolean findTorsion(int idI, int idJ)
     {
-	boolean res = false;
+        boolean res = false;
         for (ZMatrixAtom zatm : zatoms)
-	{
-	    if (zatm.usesTorsion(idI,idJ))
-	    {
-		res = true;
-		break;
-	    }
-	}
-	return res;
+        {
+            if (zatm.usesTorsion(idI,idJ))
+            {
+                res = true;
+                break;
+            }
+        }
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -315,14 +315,14 @@ public class ZMatrix
      */
 
     public ArrayList<String> toLinesOfText(boolean useReferences, 
-							   boolean zeroBasedIds)
+                                                           boolean zeroBasedIds)
     {
-	ArrayList<String> lines = new ArrayList<String>();
-	for (ZMatrixAtom atm : zatoms)
-	{
-	    lines.add(atm.toZMatrixLine(useReferences,zeroBasedIds));
-	}	
-	return lines;
+        ArrayList<String> lines = new ArrayList<String>();
+        for (ZMatrixAtom atm : zatoms)
+        {
+            lines.add(atm.toZMatrixLine(useReferences,zeroBasedIds));
+        }        
+        return lines;
     }
 
 //------------------------------------------------------------------------------

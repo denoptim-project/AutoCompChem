@@ -43,17 +43,17 @@ public class BasisSetUtils
      */
 
     public static BasisSet importBasisSetFromGBSFile(String inFile, 
-								  int verbosity)
+                                                                  int verbosity)
     {
         String msg = "";
         BasisSet bs = new BasisSet();
         boolean isECPSection = false;
         boolean foundBSSection = false;
         CenterBasisSet cbs;
-	if (verbosity > 1)
-	{
-	    System.out.println(" Importing basis set from GBSfile " + inFile);
-	}
+        if (verbosity > 1)
+        {
+            System.out.println(" Importing basis set from GBSfile " + inFile);
+        }
         ArrayList<String> lines = IOtools.readTXT(inFile);
         for (int i=0; i<lines.size(); i++)
         {
@@ -61,20 +61,20 @@ public class BasisSetUtils
             String line = lines.get(i);
 
             // Ignote comments
-	    if (line.trim().startsWith("!"))
-	    {
-		continue;
-	    }
-	    // Ignore separators if empty basis set section 
-	    // NB: separators from non-empty basis set section are read inside 
-	    // the while loop below
+            if (line.trim().startsWith("!"))
+            {
+                continue;
+            }
+            // Ignore separators if empty basis set section 
+            // NB: separators from non-empty basis set section are read inside 
+            // the while loop below
             if (line.trim().startsWith("****"))
-	    {
-		foundBSSection = true;
-		continue;
-	    }
+            {
+                foundBSSection = true;
+                continue;
+            }
 
-	    // Ignore empty lines
+            // Ignore empty lines
             if (line.trim().equals(""))
             {
                 // ...unless the blank line separated basis set from ECP
@@ -89,11 +89,11 @@ public class BasisSetUtils
                 continue;
             }
 
-	    // If is not empty and doesn't start with "****" then is ECP
-	    if (!foundBSSection)
-	    {
-		isECPSection = true;
-	    }
+            // If is not empty and doesn't start with "****" then is ECP
+            if (!foundBSSection)
+            {
+                isECPSection = true;
+            }
 
             String[] wrds = line.trim().split("\\s+");
 
@@ -144,7 +144,7 @@ public class BasisSetUtils
                                              + "(scale fact. " + wrds[2] + ")");
                         }
                         shell = new Shell(wrds[0],Double.parseDouble(
-				NumberUtils.formatScientificNotation(wrds[2])));
+                                NumberUtils.formatScientificNotation(wrds[2])));
                     }
                     else if (wrds.length==2 
                                                && NumberUtils.isNumber(wrds[0])
@@ -153,11 +153,11 @@ public class BasisSetUtils
                         Primitive p = new Primitive();
                         p.setType(shell.getType());
                         p.setExponent(Double.parseDouble(
-				NumberUtils.formatScientificNotation(wrds[0])));
-			p.setExpPrecision(NumberUtils.getPrecision(wrds[0]));
+                                NumberUtils.formatScientificNotation(wrds[0])));
+                        p.setExpPrecision(NumberUtils.getPrecision(wrds[0]));
                         p.setCoefficient(Double.parseDouble(
-				NumberUtils.formatScientificNotation(wrds[1])));
-			p.setCoeffPrecision(NumberUtils.getPrecision(wrds[1]));
+                                NumberUtils.formatScientificNotation(wrds[1])));
+                        p.setCoeffPrecision(NumberUtils.getPrecision(wrds[1]));
                         shell.add(p);
                         if (verbosity > 2)
                         {
@@ -171,19 +171,19 @@ public class BasisSetUtils
                              + "line " + (i+1) + ". Words:" + wrds.length;
                         if (wrds.length>=1)
                         {
-			     msg = msg + ". " + wrds[0]
+                             msg = msg + ". " + wrds[0]
                              + " isNum: " + NumberUtils.isNumber(wrds[0]);
-			}
+                        }
                         if (wrds.length>=2)
                         {
                              msg = msg + "; " + wrds[1]
-			     + " isNum: " + NumberUtils.isNumber(wrds[1]);
-			}
-			if (wrds.length==3)
-			{
-			    msg = msg + "; " + wrds[2] 
+                             + " isNum: " + NumberUtils.isNumber(wrds[1]);
+                        }
+                        if (wrds.length==3)
+                        {
+                            msg = msg + "; " + wrds[2] 
                              + " isNum:" + NumberUtils.isNumber(wrds[2]);
-			}
+                        }
 
                         Terminator.withMsgAndStatus(msg,-1);
                     }
@@ -203,10 +203,10 @@ public class BasisSetUtils
                 if (verbosity > 2)
                 {
                     System.out.println("Importing ECP for '" + atmId+ "' "
-				       + " element:'" + cbs.getElement()+ "'.");
+                                       + " element:'" + cbs.getElement()+ "'.");
                 }
                 boolean keepReadingECP = true;
-		boolean addIntECCP = false;
+                boolean addIntECCP = false;
                 ECPShell ecps = new ECPShell();
                 while (keepReadingECP && i<(lines.size()-1))
                 {
@@ -229,17 +229,17 @@ public class BasisSetUtils
                     {
                         if (ecps.getSize() > 0)
                         {
-			    if (verbosity > 2)
-			    {
-				System.out.println("Appending last ECP shell '" 
-					            + ecps.getType() + "' (A)");
-			    }
+                            if (verbosity > 2)
+                            {
+                                System.out.println("Appending last ECP shell '" 
+                                                    + ecps.getType() + "' (A)");
+                            }
                             cbs.addECPShell(ecps.clone());
                         }
 
                         cbs = bs.getCenterBasisSetForCenter(wrds[0]);
-			cbs.setElement(wrds[0]);
-			addIntECCP = false;
+                        cbs.setElement(wrds[0]);
+                        addIntECCP = false;
 
                         if (verbosity > 2)
                         {
@@ -266,11 +266,11 @@ public class BasisSetUtils
                     {
                         if (addIntECCP && ecps.getSize()>0)
                         {
-			    if (verbosity > 2)
-			    {
-				System.out.println("Appending ECP shell '" 
-					            + ecps.getType() + "' (B)");
-			    }
+                            if (verbosity > 2)
+                            {
+                                System.out.println("Appending ECP shell '" 
+                                                    + ecps.getType() + "' (B)");
+                            }
                             cbs.addECPShell(ecps.clone());
                         }
                         String ecpt = wrds[0] + " " + wrds[1];
@@ -282,9 +282,9 @@ public class BasisSetUtils
                         //NB: we skip the line reporting the numebr of functions
                         i++;
                     }
-		    // ECP from SDD website use a single word format
+                    // ECP from SDD website use a single word format
                     else if (wrds.length==1 && 
-					     wrds[0].matches(".*[a-zA-Z._-].*"))
+                                             wrds[0].matches(".*[a-zA-Z._-].*"))
                     {
                         if (addIntECCP && ecps.getSize()>0)
                         {
@@ -311,13 +311,13 @@ public class BasisSetUtils
                         Primitive p = new Primitive();
                         p.setAngularMomentum(Integer.parseInt(wrds[0]));
                         p.setExponent(Double.parseDouble(
-				NumberUtils.formatScientificNotation(wrds[1])));
+                                NumberUtils.formatScientificNotation(wrds[1])));
                         p.setExpPrecision(NumberUtils.getPrecision(wrds[1]));
                         p.setCoefficient(Double.parseDouble(
-				NumberUtils.formatScientificNotation(wrds[2])));
-			p.setCoeffPrecision(NumberUtils.getPrecision(wrds[2]));
+                                NumberUtils.formatScientificNotation(wrds[2])));
+                        p.setCoeffPrecision(NumberUtils.getPrecision(wrds[2]));
                         ecps.add(p);
-			addIntECCP = true;
+                        addIntECCP = true;
                         if (verbosity > 2)
                         {
                             System.out.println("Adding ECP component " + p);
@@ -333,11 +333,11 @@ public class BasisSetUtils
                 }
                 if (ecps.getSize()>0)
                 {
-		    if (verbosity > 2)
-		    {
-			System.out.println("Adding ECP final shell '"
-					            + ecps.getType() + "' (C)");
-		    }
+                    if (verbosity > 2)
+                    {
+                        System.out.println("Adding ECP final shell '"
+                                                    + ecps.getType() + "' (C)");
+                    }
 
                     cbs.addECPShell(ecps.clone());
                 }
@@ -366,7 +366,7 @@ public class BasisSetUtils
 
     public static void writeFormattedBS(BasisSet bs, String format, String out)
     {
-	IOtools.writeTXTAppend(out,bs.toInputFileString(format),true);
+        IOtools.writeTXTAppend(out,bs.toInputFileString(format),true);
     }
 
 //----------------------------------------------------------------------------- 

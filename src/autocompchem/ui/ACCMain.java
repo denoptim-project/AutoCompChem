@@ -54,8 +54,8 @@ public class ACCMain
 //TODO more than one ars can be used to give params for more than one task
             printUsage();
             Terminator.withMsgAndStatus("ERROR! No input or command line "
-		+ "argument given. " + System.getProperty("line.separator")
-		+ "AutoCompChem requires one (and only one) argument.",1);
+                + "argument given. " + System.getProperty("line.separator")
+                + "AutoCompChem requires one (and only one) argument.",1);
         }
 
         // Update options and environment according to User Input
@@ -86,16 +86,16 @@ public class ACCMain
 
 //TODO            } //end of loop over tasks
         } catch (Throwable t) {
-	    t.printStackTrace();
+            t.printStackTrace();
 
             String msg = t.getMessage();
 
-	    if (msg == null)
-	    {
+            if (msg == null)
+            {
                 Terminator.withMsgAndStatus("Exception occurred! But 'null' "
-			+ "message returned. Please "
+                        + "message returned. Please "
                         + "report this to the author.", -1);
-	    }
+            }
 
             if (msg.startsWith("ERROR!"))
             {
@@ -120,7 +120,7 @@ public class ACCMain
      * passing all the necessary parameters to the tool executing the task.
      */
     private static void runTask(String task, ParameterStorage params) 
-								throws Throwable
+                                                                throws Throwable
     {
         task = task.toUpperCase();
         switch (task) {
@@ -128,7 +128,7 @@ public class ACCMain
             case "EVALUATEGAUSSIANOUTPUT":
             {
                 GaussianOutputHandler gauOEval = 
-					      new GaussianOutputHandler(params);
+                                              new GaussianOutputHandler(params);
                 gauOEval.performAnalysis();
                 break;
             }
@@ -142,9 +142,9 @@ public class ACCMain
 
             case "PREPAREINPUTGAUSSIAN":
             {
-		GaussianInputWriter gauInpWriter = new GaussianInputWriter(
-								        params);
-		gauInpWriter.writeInp();
+                GaussianInputWriter gauInpWriter = new GaussianInputWriter(
+                                                                        params);
+                gauInpWriter.writeInp();
                 break;
             }
 
@@ -186,7 +186,7 @@ public class ACCMain
             case "PREPAREINPUTNWCHEM":
             {
                 NWChemInputWriter nwcInpWriter = new NWChemInputWriter(params);
-		nwcInpWriter.writeInput();
+                nwcInpWriter.writeInput();
                 break;
             }
 
@@ -213,16 +213,16 @@ public class ACCMain
 
             case "COMPARETWOCONNECTIVITIES":
             {
-		MolecularComparator mcc = new MolecularComparator(params);
-		mcc.compareTwoConnectivities();
+                MolecularComparator mcc = new MolecularComparator(params);
+                mcc.compareTwoConnectivities();
                 break;
             }
 
-	    case "RICALCULATECONNECTIVITY":
+            case "RICALCULATECONNECTIVITY":
             {
-		//TODO: to test 
-		ConnectivityGenerator cg = new ConnectivityGenerator(params);
-		cg.ricalculateConnectivity();
+                //TODO: to test 
+                ConnectivityGenerator cg = new ConnectivityGenerator(params);
+                cg.ricalculateConnectivity();
                 break;
             }
 
@@ -235,8 +235,8 @@ public class ACCMain
 
             case "ASSIGNATOMTYPES":
             {
-	        AtomTypeMatcher atm = new AtomTypeMatcher(params);
-		atm.assignAtomTypesToAll();
+                AtomTypeMatcher atm = new AtomTypeMatcher(params);
+                atm.assignAtomTypesToAll();
                 break;
             }
 
@@ -256,14 +256,14 @@ public class ACCMain
 
             case "ANALYZEVDWCLASHES":
             {
-	        AtomClashAnalyzer avdsc = new AtomClashAnalyzer(params);
-		avdsc.runStandalone();
+                AtomClashAnalyzer avdsc = new AtomClashAnalyzer(params);
+                avdsc.runStandalone();
                 break;
             }
 
             case "SORTSDFMOLECULES":
             {
-		MolecularSorter ms = new MolecularSorter(params);
+                MolecularSorter ms = new MolecularSorter(params);
                 ms.writeSortedSDF();
                 break;
             }
@@ -271,7 +271,7 @@ public class ACCMain
             case "ANALYSISCHELATES":
             {
                 ChelateAnalyzer ca = new ChelateAnalyzer(params);
-		ca.runStandalone();
+                ca.runStandalone();
                 break;
             }
 
@@ -292,21 +292,21 @@ public class ACCMain
             case "REORDERATOMLIST":
             {
                 MolecularReorderer mReor = new MolecularReorderer(params);
-		mReor.reorderAll();
+                mReor.reorderAll();
                 break;
             }
 
-	    case "MUTATEATOMS":
+            case "MUTATEATOMS":
             {
-		MolecularMutator mMut = new MolecularMutator(params);
-		mMut.mutateAll();
-		break;
+                MolecularMutator mMut = new MolecularMutator(params);
+                mMut.mutateAll();
+                break;
             }
 
             case "EVALUATEGENERICOUTPUT":
             {
                 GenericToolOutputHandler gtOH = 
-					  new GenericToolOutputHandler(params);
+                                          new GenericToolOutputHandler(params);
                 gtOH.performAnalysis();
                 break;
             }
@@ -314,7 +314,7 @@ public class ACCMain
             case "MODIFYGEOMETRY":
             {
                 MolecularGeometryEditor mge = 
-					    new MolecularGeometryEditor(params);
+                                            new MolecularGeometryEditor(params);
                 mge.applyMove();
                 break;
             }
@@ -332,21 +332,21 @@ TODO
             case "PRUNEMOLECULES":
             {
                 MolecularPruner molPruner = new MolecularPruner(params);
-		molPruner.pruneAll();
+                molPruner.pruneAll();
                 break;
             }
 
-	    case "PREPAREINPUTSPARTAN":
+            case "PREPAREINPUTSPARTAN":
             {
-		SpartanInputWriter sprtIn = new SpartanInputWriter(params);
-		sprtIn.writeInputForEachMol();
-		break;
+                SpartanInputWriter sprtIn = new SpartanInputWriter(params);
+                sprtIn.writeInputForEachMol();
+                break;
             }
 
             case "EXTRACTGEOMETRIESFROMSPARTANTREE":
             {
                 SpartanOutputHandler sprtOut = new SpartanOutputHandler(params);
-		sprtOut.printTrajectory();
+                sprtOut.printTrajectory();
                 break;
             }
 
@@ -367,7 +367,7 @@ TODO
             case "EXTRACTVIBMODULEFORCECONSTANTS":
             {
                 VibModuleOutputHandler vmOEval = 
-					     new VibModuleOutputHandler(params);
+                                             new VibModuleOutputHandler(params);
                 vmOEval.extractForceFieldParameters();
                 break;
             }
@@ -414,7 +414,7 @@ TODO
             {
                 Terminator.withMsgAndStatus("ERROR! Task '" + task  + "'"
                                 + " not known! Check the input.",-1);
-	    }
+            }
         }
     }
 

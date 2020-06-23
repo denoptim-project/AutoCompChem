@@ -52,76 +52,76 @@ public class TinkerXYZReader
 
     public static IAtomContainer readTinkerXYZFIle(String filename)
     {
-	IAtomContainer iac = new AtomContainer();
-	ConnectivityTable cTab = new ConnectivityTable();
+        IAtomContainer iac = new AtomContainer();
+        ConnectivityTable cTab = new ConnectivityTable();
 
-	// Add title and atoms
-	int natoms = 0;
-	int i = 0;
-	for (String line : IOtools.readTXT(filename))
-	{
-	    if (line.trim().equals(""))
-	    {
-		continue;
-	    }
-	    if (i == 0)
-	    {
+        // Add title and atoms
+        int natoms = 0;
+        int i = 0;
+        for (String line : IOtools.readTXT(filename))
+        {
+            if (line.trim().equals(""))
+            {
+                continue;
+            }
+            if (i == 0)
+            {
                 String parts[] = line.trim().split("\\s+",2);
-		natoms = Integer.parseInt(parts[0]);
-		if (parts.length > 1)
-		{
-		    iac.setProperty(CDKConstants.TITLE,parts[1]);
-		}
-	    }
-	    else
-	    {
-		String parts[] = line.trim().split("\\s+");
-		if (parts.length < 6)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Not enough fields in "
-			+ "file '" + filename + "'.",-1);
-		}
-		int atmId = Integer.parseInt(parts[0]);
-		String elSym = parts[1];
-		Point3d p3d = new Point3d(Double.parseDouble(parts[2]),
-					  Double.parseDouble(parts[3]),
-					  Double.parseDouble(parts[4]));
-		int atmTyp = Integer.parseInt(parts[5]);
+                natoms = Integer.parseInt(parts[0]);
+                if (parts.length > 1)
+                {
+                    iac.setProperty(CDKConstants.TITLE,parts[1]);
+                }
+            }
+            else
+            {
+                String parts[] = line.trim().split("\\s+");
+                if (parts.length < 6)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Not enough fields in "
+                        + "file '" + filename + "'.",-1);
+                }
+                int atmId = Integer.parseInt(parts[0]);
+                String elSym = parts[1];
+                Point3d p3d = new Point3d(Double.parseDouble(parts[2]),
+                                          Double.parseDouble(parts[3]),
+                                          Double.parseDouble(parts[4]));
+                int atmTyp = Integer.parseInt(parts[5]);
 
-		IAtom atm = new Atom(elSym,p3d);
-		atm.setProperty("NUMFFTYPE",atmTyp);
-		atm.setAtomTypeName(elSym);
-		iac.addAtom(atm);
+                IAtom atm = new Atom(elSym,p3d);
+                atm.setProperty("NUMFFTYPE",atmTyp);
+                atm.setAtomTypeName(elSym);
+                iac.addAtom(atm);
 
-		if (parts.length > 6)
-		{
-		    ArrayList<Integer> nbrs = new ArrayList<Integer>();
-		    for (int j=6; j<parts.length; j++)
-		    {
-			nbrs.add(Integer.parseInt(parts[j]));
-		    }
-		    cTab.setNeighboursRelation(atmId-1,nbrs,true);
-		}
-	    }
-	    i++;
-	}
+                if (parts.length > 6)
+                {
+                    ArrayList<Integer> nbrs = new ArrayList<Integer>();
+                    for (int j=6; j<parts.length; j++)
+                    {
+                        nbrs.add(Integer.parseInt(parts[j]));
+                    }
+                    cTab.setNeighboursRelation(atmId-1,nbrs,true);
+                }
+            }
+            i++;
+        }
 
-	// Add bonds
-	for (int k=0; k<natoms; k++)
-	{
-	    IAtom atmK = iac.getAtom(k);
-	    ArrayList<Integer> nbrIds = cTab.getNbrsId(k,true);
-	    for (Integer j : nbrIds)
-	    {
-		IAtom atmJ = iac.getAtom(j);
-		if (!iac.getConnectedAtomsList(atmK).contains(atmJ))
-		{
-		    iac.addBond(k,j,IBond.Order.valueOf("SINGLE"));
-		}
-	    }
-	}
+        // Add bonds
+        for (int k=0; k<natoms; k++)
+        {
+            IAtom atmK = iac.getAtom(k);
+            ArrayList<Integer> nbrIds = cTab.getNbrsId(k,true);
+            for (Integer j : nbrIds)
+            {
+                IAtom atmJ = iac.getAtom(j);
+                if (!iac.getConnectedAtomsList(atmK).contains(atmJ))
+                {
+                    iac.addBond(k,j,IBond.Order.valueOf("SINGLE"));
+                }
+            }
+        }
 
-	return iac;	
+        return iac;        
     }
 
 //------------------------------------------------------------------------------

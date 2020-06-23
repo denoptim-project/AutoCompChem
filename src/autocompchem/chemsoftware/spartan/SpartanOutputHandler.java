@@ -178,12 +178,12 @@ public class SpartanOutputHandler
         FilesManager.foundAndPermissions(this.inFile,true,false,false);
         this.molName = FilesManager.getRootOfFileName(this.inFile);
 
-	//Get cutomized molname
+        //Get cutomized molname
         //Get and check the list of known errors
         if (params.contains("MOLNAME"))
         {
             this.molName = params.getParameter("MOLNAME").getValue().toString();
-	}
+        }
 
         //Get and check the list of known errors
         if (params.contains("SPRTERRORS"))
@@ -776,11 +776,11 @@ TODO add other tasks here
             molList.add(getIAtomContainerFromXYZblock(singleBlock));
         }
 
-	// Get number of atoms
+        // Get number of atoms
         System.out.println(" WARNING! Assuming that all geometries have the "
                                      + "same number of atoms and connectivity");
 
-	// Get connectivity block
+        // Get connectivity block
         blocks = FilesAnalyzer.extractMultiTxtBlocksWithDelimiters(sprtInpFile,
                                                        SpartanConstants.TOPOOPN,
                                                        SpartanConstants.TOPOEND,
@@ -791,25 +791,25 @@ TODO add other tasks here
         if (blocks.size() == 1)
         {
             ArrayList<int[]> cnTab = new ArrayList<int[]>();
-	    int nAtmTypesFound = 0;
+            int nAtmTypesFound = 0;
             for (String line : blocks.get(0))
             {
-		// Need to check for keyword abbreviation
-		if (line.toUpperCase().startsWith(SpartanConstants.TOPOOPN) ||
-		    line.toUpperCase().startsWith(SpartanConstants.TOPOEND))
-		{
-		    continue;
-		}
+                // Need to check for keyword abbreviation
+                if (line.toUpperCase().startsWith(SpartanConstants.TOPOOPN) ||
+                    line.toUpperCase().startsWith(SpartanConstants.TOPOEND))
+                {
+                    continue;
+                }
 
                 String[] parts = line.trim().split("\\s+");
 
-		//read (and for now ignore) the atom type section
-		if (nAtmTypesFound < nAtms)
-		{
-		   nAtmTypesFound = nAtmTypesFound +  parts.length;
-		   continue;
-		}
-	
+                //read (and for now ignore) the atom type section
+                if (nAtmTypesFound < nAtms)
+                {
+                   nAtmTypesFound = nAtmTypesFound +  parts.length;
+                   continue;
+                }
+        
                 try
                 {
                     cnTab.add(new int[] {Integer.parseInt(parts[0]), 
@@ -833,14 +833,14 @@ TODO add other tasks here
                 }
             }
         }
-	else
-	{
+        else
+        {
             Terminator.withMsgAndStatus("ERROR! Unable to deal with Spartan "
                         + SpartanConstants.INPUTFILENAME + " file that has "
-			+ "none or more than one '" + SpartanConstants.TOPOOPN 
-			+ "' block. Check file '" + sprtInpFile + "'.",-1);
-	
-	}
+                        + "none or more than one '" + SpartanConstants.TOPOOPN 
+                        + "' block. Check file '" + sprtInpFile + "'.",-1);
+        
+        }
 
         return molList;
     }
@@ -860,7 +860,7 @@ TODO add other tasks here
     {
         double b2a = 1.0 / ACCConstants.ANGSTOMTOBOHR;
         IAtomContainer mol = new AtomContainer();
-	mol.setProperty(CDKConstants.TITLE,molName);
+        mol.setProperty(CDKConstants.TITLE,molName);
         for (int i=0; i<lines.size(); i++)
         {
             String[] parts = lines.get(i).trim().split("\\s+");

@@ -73,41 +73,41 @@ public class CoordinationGeometry
     {
         this.name = name;
 
-	//Determine coordination number
-	int cnloc = atms.size();
-	if (cnloc < 2)
-	{
-	    Terminator.withMsgAndStatus("ERROR! Cannot define a coordination "
-		+ "geometry with less than two ligands!",-1);
-	}
+        //Determine coordination number
+        int cnloc = atms.size();
+        if (cnloc < 2)
+        {
+            Terminator.withMsgAndStatus("ERROR! Cannot define a coordination "
+                + "geometry with less than two ligands!",-1);
+        }
         this.cn = cnloc;
 
-	//Make ligands in space
-	ligands = new ArrayList<Point3d>();
+        //Make ligands in space
+        ligands = new ArrayList<Point3d>();
         Point3d pCnt = MolecularUtils.getCoords3d(centralAtm);
-	for (IAtom atml : atms)
-	{
-	    Point3d pLig = MolecularUtils.getCoords3d(atml);
-	    Point3d pLigNorm = new Point3d(pLig.x - pCnt.x ,
-        	                           pLig.y - pCnt.y ,
-	                                   pLig.z - pCnt.z);
-	    ligands.add(pLigNorm);
-	}
+        for (IAtom atml : atms)
+        {
+            Point3d pLig = MolecularUtils.getCoords3d(atml);
+            Point3d pLigNorm = new Point3d(pLig.x - pCnt.x ,
+                                           pLig.y - pCnt.y ,
+                                           pLig.z - pCnt.z);
+            ligands.add(pLigNorm);
+        }
 
-	//Calculate angles
-	angles = new double[cn][cn];
+        //Calculate angles
+        angles = new double[cn][cn];
         for (int i=0; i<cn; i++)
         {
-	    angles[i][i] = 0.0;
+            angles[i][i] = 0.0;
             for (int j=i+1; j<cnloc; j++)
             {
                 double ang = MolecularUtils.calculateBondAngle(atms.get(i), 
-						centralAtm, atms.get(j));
-		ang = Math.abs(ang);
-		angles[i][j] = ang;
-		angles[j][i] = ang;
-	    }
-	}
+                                                centralAtm, atms.get(j));
+                ang = Math.abs(ang);
+                angles[i][j] = ang;
+                angles[j][i] = ang;
+            }
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ public class CoordinationGeometry
 
     public List<Point3d> getLigands()
     {
-	return ligands;
+        return ligands;
     }
 
 //------------------------------------------------------------------------------
@@ -195,9 +195,9 @@ public class CoordinationGeometry
     public String toString()
     {
         String s = name + "_" + cn + "_";
-	for (int i=0; i<cn; i++)
-	    for (int j=0; j<cn; j++)
- 	       s = s + "," + angles[i][j];
+        for (int i=0; i<cn; i++)
+            for (int j=0; j<cn; j++)
+                s = s + "," + angles[i][j];
 
         return s;
     }

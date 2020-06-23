@@ -98,16 +98,16 @@ public class ThreeDimensionalSpaceUtils
      */
 
     public static Vector3d rotatedVectorWAxisAngle(Vector3d v, Vector3d axis, 
-								     double ang)
+                                                                     double ang)
     {
-	Vector3d vRot = new Vector3d(v.x, v.y, v.z);
+        Vector3d vRot = new Vector3d(v.x, v.y, v.z);
         axis.normalize();
         double rad = Math.toRadians(ang);
         AxisAngle4d aa = new AxisAngle4d(axis.x,axis.y,axis.z,rad);
         Matrix3d rotMatrix = new Matrix3d();
         rotMatrix.set(aa);
         rotMatrix.transform(vRot);
-	return vRot;
+        return vRot;
     }
 
 //------------------------------------------------------------------------------

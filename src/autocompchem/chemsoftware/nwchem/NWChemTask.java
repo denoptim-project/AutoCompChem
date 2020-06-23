@@ -219,24 +219,24 @@ public class NWChemTask
                         line  = it.next();
                         lineUp = line.toUpperCase();
                         if (lineUp.startsWith(NWChemConstants.LABDIRECTIVE))
-			{
-			    break;
-			}
-			else if (lineUp.startsWith(
-					       NWChemConstants.TASKSEPARATORJD))
+                        {
+                            break;
+                        }
+                        else if (lineUp.startsWith(
+                                               NWChemConstants.TASKSEPARATORJD))
                         {
                             Terminator.withMsgAndStatus("ERROR! Trying to feed "
-						     + "a multitask input to a "
+                                                     + "a multitask input to a "
                                                      + "single NWChemTask.",-1);
                         }
-			else if (lineUp.startsWith(NWChemConstants.LABPARAMS))
-			{
+                        else if (lineUp.startsWith(NWChemConstants.LABPARAMS))
+                        {
                             params.importParametersFromLines(
                                 "with NWChemTask-specific params", paramsLines);
-			    paramsLines.clear();
+                            paramsLines.clear();
                             paramsLines.add(line.substring(
-					   NWChemConstants.LABPARAMS.length()));
-			}
+                                           NWChemConstants.LABPARAMS.length()));
+                        }
                         else
                         {
                             paramsLines.add(line);
@@ -367,11 +367,11 @@ public class NWChemTask
         subPath.addAll(path);
         subPath.add(tmplDir.getName());
 
-	//Handle directive itself
-	if (!this.hasDirective(new ArrayList<String>(),tmplDir))
+        //Handle directive itself
+        if (!this.hasDirective(new ArrayList<String>(),tmplDir))
         {
-	    this.setDirective(new ArrayList<String>(),tmplDir,true,true,true);
-	}
+            this.setDirective(new ArrayList<String>(),tmplDir,true,true,true);
+        }
         
         //Handle keywords
         for (NWChemKeyword tmplKey : tmplDir.getAllKeywords())
@@ -534,14 +534,14 @@ public class NWChemTask
     public String getTitle()
     {
         StringBuilder sb = new StringBuilder();
-	if (this.getDirective(NWChemConstants.TITLEDIR) != null)
-	{
+        if (this.getDirective(NWChemConstants.TITLEDIR) != null)
+        {
             for (String s : getDirective(NWChemConstants.TITLEDIR).getKeyword(
                                                             "title").getValue())
             {
                 sb.append(s).append(" ");
-	    }
-	}
+            }
+        }
         return sb.toString();
     } 
 
@@ -576,7 +576,7 @@ public class NWChemTask
                 // nothing to do
                 break;
 
-	    default:
+            default:
                 NWChemKeyword k = new NWChemKeyword("read_charge",false,
                 new ArrayList<String>(Arrays.asList(Integer.toString(charge))));
                 setKeyword(new ArrayList<String>(Arrays.asList(
@@ -596,29 +596,29 @@ public class NWChemTask
      public void setSpinMultiplicity(int sm)
      {
         String smStr = "";
-	if (sm < NWChemConstants.SCFSPINMULT.size())
-	{
-	    smStr = NWChemConstants.SCFSPINMULT.get(sm-1);
-	}
-	else
-	{
-	    smStr = "NOPEN " + sm;
-	}
+        if (sm < NWChemConstants.SCFSPINMULT.size())
+        {
+            smStr = NWChemConstants.SCFSPINMULT.get(sm-1);
+        }
+        else
+        {
+            smStr = "NOPEN " + sm;
+        }
        
         String theory = getTaskTheory();
         switch (theory.toUpperCase()) 
         {
             case "SCF":
-		ArrayList<String> pathSpDir = new ArrayList<String>(
-							  Arrays.asList("SCF"));
-		for (String sp : NWChemConstants.SCFSPINMULT)
-		{
-		    NWChemDirective oldSpDir = getDirective(pathSpDir,sp,false);
-		    if (oldSpDir != null)
-		    {
-			deleteDirective(pathSpDir,oldSpDir);
-		    }
-		}
+                ArrayList<String> pathSpDir = new ArrayList<String>(
+                                                          Arrays.asList("SCF"));
+                for (String sp : NWChemConstants.SCFSPINMULT)
+                {
+                    NWChemDirective oldSpDir = getDirective(pathSpDir,sp,false);
+                    if (oldSpDir != null)
+                    {
+                        deleteDirective(pathSpDir,oldSpDir);
+                    }
+                }
 
 // NOTE: the SINGLET, DOUBLET, etc. are subdirectives of the SCF directive. 
 // In some place in the NWChem documentations they are called "keywords".
@@ -673,15 +673,15 @@ public class NWChemTask
     public void setDirective(ArrayList<String> dirPath, NWChemDirective newDir,
                               boolean owKeys, boolean owSubDirs, boolean owData)
     {
-	if (dirPath.size() == 0)
-	{
+        if (dirPath.size() == 0)
+        {
             NWChemDirective oldDir = getDirective(newDir.getName());
             if (oldDir == null)
             {
                 directives.add(newDir);
             }
-	    else
-	    {
+            else
+            {
                 if (owKeys)
                 {
                     oldDir.setAllKeywords(newDir.getAllKeywords());
@@ -709,18 +709,18 @@ public class NWChemTask
                     oldDir.setAllDirectiveDataBlocks(
                                             newDir.getAllDirectiveDataBlocks());
                 }
-		else
-		{
-		    for (NWChemDirectiveData dd : 
-					     newDir.getAllDirectiveDataBlocks())
-		    {
-			oldDir.addDirectiveData(dd);
-		    }
-		}
-	    } 
-	}
-	else
-	{
+                else
+                {
+                    for (NWChemDirectiveData dd : 
+                                             newDir.getAllDirectiveDataBlocks())
+                    {
+                        oldDir.addDirectiveData(dd);
+                    }
+                }
+            } 
+        }
+        else
+        {
             ArrayList<String> parentPath = new ArrayList<String>();
             String parentName = dirPath.get(dirPath.size()-1);
             for (int i=0; i<(dirPath.size()-1); i++)
@@ -728,9 +728,9 @@ public class NWChemTask
                 parentPath.add(dirPath.get(i));
             }
             NWChemDirective parentDir = getDirective(parentPath, parentName,
-									  true);
+                                                                          true);
             parentDir.setSubDirective(newDir,owKeys,owSubDirs,owData);
-	}
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -748,14 +748,14 @@ public class NWChemTask
 
     public void setKeyword(ArrayList<String> dirPath, NWChemKeyword kw)
     {
-	ArrayList<String> parentPath = new ArrayList<String>();
-	String dirName = dirPath.get(dirPath.size()-1); 
-	for (int i=0; i<(dirPath.size()-1); i++)
-	{
-	    parentPath.add(dirPath.get(i));
-	}
+        ArrayList<String> parentPath = new ArrayList<String>();
+        String dirName = dirPath.get(dirPath.size()-1); 
+        for (int i=0; i<(dirPath.size()-1); i++)
+        {
+            parentPath.add(dirPath.get(i));
+        }
         NWChemDirective dir = getDirective(parentPath,dirName,true);
-	dir.setKeyword(kw);
+        dir.setKeyword(kw);
     }
 
 //------------------------------------------------------------------------------
@@ -777,7 +777,7 @@ public class NWChemTask
             parentPath.add(dirPath.get(i));
         }
         NWChemDirective dir = getDirective(parentPath,dirName,true);
-	dir.setDataDirective(data);
+        dir.setDataDirective(data);
     }
 
 //------------------------------------------------------------------------------
@@ -928,7 +928,7 @@ public class NWChemTask
      */
 
     public NWChemDirective getDirective(ArrayList<String> dPath, String dName,
-								boolean canMake)
+                                                                boolean canMake)
     {
         if (dPath.size() == 0)
         {
@@ -938,14 +938,14 @@ public class NWChemTask
                 {
                     return dir;
                 }
-	    }
-	    if (canMake)
-	    {
-		NWChemDirective dir = new NWChemDirective(dName);
-		directives.add(dir);
-		return dir;
             }
-	    return null;
+            if (canMake)
+            {
+                NWChemDirective dir = new NWChemDirective(dName);
+                directives.add(dir);
+                return dir;
+            }
+            return null;
         }
 
         NWChemDirective parentDir = null;
@@ -962,30 +962,30 @@ public class NWChemTask
             }
             if (parentDir == null)
             {
-		if (canMake)
-		{
+                if (canMake)
+                {
                     parentDir = new NWChemDirective(parentDirName);
                     directives.add(parentDir);
-		}
-		else
-		{
+                }
+                else
+                {
                     break;
-		}
+                }
             }
         }
         if (parentDir != null)
         {
-	    NWChemDirective dir = parentDir.getSubDirective(dName);
-	    if (dir != null)
-	    {
-		return dir;
-	    }
+            NWChemDirective dir = parentDir.getSubDirective(dName);
+            if (dir != null)
+            {
+                return dir;
+            }
             if (canMake)
-	    {
-        	dir = new NWChemDirective(dName);
-        	parentDir.addSubDirective(dir);
-		return dir;
-	    }
+            {
+                dir = new NWChemDirective(dName);
+                parentDir.addSubDirective(dir);
+                return dir;
+            }
         }
         return null;
     }
@@ -1054,20 +1054,20 @@ public class NWChemTask
         subPath.add(tmplDir.getName());
 
         //Handle subDirectives
-	if (tmplDir.getAllSubDirectives().size()>0)
-	{
+        if (tmplDir.getAllSubDirectives().size()>0)
+        {
             for (NWChemDirective subDir : tmplDir.getAllSubDirectives())
             {
                 if (this.hasDirective(subPath,subDir))
                 {
                     errMsg = recursiveDeleteInnermost(subPath,subDir);
                 }
-	    }
+            }
         }
-	else
-	{
-	    deleteDirective(path,tmplDir.getName());
-	}
+        else
+        {
+            deleteDirective(path,tmplDir.getName());
+        }
 
         return errMsg;
     }
@@ -1088,11 +1088,11 @@ public class NWChemTask
 
     public void deleteDirective(ArrayList<String> path, String name)
     {
-	NWChemDirective dir = getDirective(path,name,false);
-	if (dir != null)
-	{
-	    deleteDirective(path,dir);
-	}
+        NWChemDirective dir = getDirective(path,name,false);
+        if (dir != null)
+        {
+            deleteDirective(path,dir);
+        }
     }
 
 //-----------------------------------------------------------------------------
@@ -1110,23 +1110,23 @@ public class NWChemTask
 
     public void deleteDirective(ArrayList<String> path, NWChemDirective dir)
     {
-	if (path.size() == 0)
-	{
-	    directives.remove(dir);
-	}
-	else
-	{
-	    //Get parent directive
-	    ArrayList<String> parentPath = new ArrayList<String>();
-	    parentPath.addAll(path);
-	    parentPath.remove(parentPath.size()-1);
-	    NWChemDirective parentDir = getDirective(parentPath,path.get(
-							  path.size()-1),false);
-	    if (parentDir != null)
-	    {
-	        parentDir.deleteSubDirective(dir);
-	    }
-	}
+        if (path.size() == 0)
+        {
+            directives.remove(dir);
+        }
+        else
+        {
+            //Get parent directive
+            ArrayList<String> parentPath = new ArrayList<String>();
+            parentPath.addAll(path);
+            parentPath.remove(parentPath.size()-1);
+            NWChemDirective parentDir = getDirective(parentPath,path.get(
+                                                          path.size()-1),false);
+            if (parentDir != null)
+            {
+                parentDir.deleteSubDirective(dir);
+            }
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -1168,7 +1168,7 @@ public class NWChemTask
      */
 
     @SuppressWarnings("unused")
-	private void testRecursiveAlterations()
+        private void testRecursiveAlterations()
     {
         System.out.println("-------------- TESTING CODE --------------");
         NWChemKeyword kp = new NWChemKeyword("key1",true,

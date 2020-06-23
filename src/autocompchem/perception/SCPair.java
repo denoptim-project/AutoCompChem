@@ -113,7 +113,7 @@ public class SCPair implements Comparable<SCPair>
         sb.append("[SituationID ");
         sb.append(Integer.toHexString(n.hashCode()));
         sb.append("]:[CircumstanceID ");
-	sb.append(Integer.toHexString(c.hashCode())).append("]]");
+        sb.append(Integer.toHexString(c.hashCode())).append("]]");
         return sb.toString();
     }
 
@@ -126,10 +126,10 @@ public class SCPair implements Comparable<SCPair>
 
     public String toString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append("[").append(super.toString());
-	sb.append(" [Situation: ").append(n.toString());
-	sb.append("]-[ICircumstance: ").append(c.toString()).append("]]");
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(super.toString());
+        sb.append(" [Situation: ").append(n.toString());
+        sb.append("]-[ICircumstance: ").append(c.toString()).append("]]");
         return sb.toString();
     }
 

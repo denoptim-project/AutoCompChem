@@ -143,7 +143,7 @@ public class BondReviser
         this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)
-	    System.out.println(" Adding parameters to BondReviser");
+            System.out.println(" Adding parameters to BondReviser");
 
 
         //Get and check the input file (which has to be an SDF file)
@@ -161,20 +161,20 @@ public class BondReviser
         {
             System.out.println(" Importing SMARTS queries ");
         }
-	String[] parts = allSamrts.split("\\s+");
-	for (int i=0; i<parts.length; i++)
-	{
-	    String singleSmarts = parts[i];
-	    if (singleSmarts.equals(""))
-		continue;
-	    this.smarts.put(Integer.toString(i),singleSmarts);
-	}
+        String[] parts = allSamrts.split("\\s+");
+        for (int i=0; i<parts.length; i++)
+        {
+            String singleSmarts = parts[i];
+            if (singleSmarts.equals(""))
+                continue;
+            this.smarts.put(Integer.toString(i),singleSmarts);
+        }
 
-	//Get New properties (optional parameters)
-	if (params.contains("NEWBO"))
-	{
-	    this.newBO = params.getParameter("NEWBO").getValue().toString();
-	}
+        //Get New properties (optional parameters)
+        if (params.contains("NEWBO"))
+        {
+            this.newBO = params.getParameter("NEWBO").getValue().toString();
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ public class BondReviser
      */
 
     public BondReviser(String filename, Map<String,String> smarts, 
-						int verbosity, String newBO)
+                                                int verbosity, String newBO)
     {
         this.inFile = filename;
         this.smarts = smarts; 
@@ -223,107 +223,107 @@ public class BondReviser
 
     public void reviseBonds()
     {
-	int n = 0;
-	try {
-	    SDFIterator sdfItr = new SDFIterator(inFile);
-	    while (sdfItr.hasNext())
-	    {
-		//Get the molecule
-		n++;
+        int n = 0;
+        try {
+            SDFIterator sdfItr = new SDFIterator(inFile);
+            while (sdfItr.hasNext())
+            {
+                //Get the molecule
+                n++;
                 IAtomContainer mol = sdfItr.next();
-		String molName = MolecularUtils.getNameOrID(mol);
+                String molName = MolecularUtils.getNameOrID(mol);
 
-		if (verbosity > 1)
-		    System.out.println(" Reading molecule (" + n + "): " 
-							     + molName);
+                if (verbosity > 1)
+                    System.out.println(" Reading molecule (" + n + "): " 
+                                                             + molName);
 
-		//Get target bonds
-		ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+                //Get target bonds
+                ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
                 if (msq.hasProblems())
                 {
                     String cause = msq.getMessage();
-		    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
                 }
 
-		ArrayList<IBond> targets = new ArrayList<IBond>();
-		for (String key : smarts.keySet())
-		{
-		    if (msq.getNumMatchesOfQuery(key) == 0)
-            	    {
-	                continue;
-        	    }
-		    
-		    List<List<Integer>> allMatches = 
-						msq.getMatchesOfSMARTS(key);
-		    for (List<Integer> innerList : allMatches)
-		    {
-			if (innerList.size() != 2)
-			{
-			    if (verbosity > 0)
-			    {
-			        System.out.println("WARNING! Query '" + key 
-				+ "' matched a number of atoms not equal to "
-				+ "two. Match " + innerList + " ignored!");
-			    }
-			    continue;
-			}
+                ArrayList<IBond> targets = new ArrayList<IBond>();
+                for (String key : smarts.keySet())
+                {
+                    if (msq.getNumMatchesOfQuery(key) == 0)
+                        {
+                        continue;
+                    }
+                    
+                    List<List<Integer>> allMatches = 
+                                                msq.getMatchesOfSMARTS(key);
+                    for (List<Integer> innerList : allMatches)
+                    {
+                        if (innerList.size() != 2)
+                        {
+                            if (verbosity > 0)
+                            {
+                                System.out.println("WARNING! Query '" + key 
+                                + "' matched a number of atoms not equal to "
+                                + "two. Match " + innerList + " ignored!");
+                            }
+                            continue;
+                        }
 
-			IBond targetBond = mol.getBond(
-						mol.getAtom(innerList.get(0)),
-						mol.getAtom(innerList.get(1)));
+                        IBond targetBond = mol.getBond(
+                                                mol.getAtom(innerList.get(0)),
+                                                mol.getAtom(innerList.get(1)));
 
-			targets.add(targetBond);
-		    }
-		}
+                        targets.add(targetBond);
+                    }
+                }
 
-		//Modify target bonds
-		for (IBond bnd : targets)
-		{
-		    if (!newBO.equals("") && newBO != null)
-		    {
-			String defBO = "SINGLE";
-			IBond.Order bo = IBond.Order.valueOf(defBO);
-			try {
-			    bo = IBond.Order.valueOf(newBO);
-			    if (verbosity > 1)
-			    {
+                //Modify target bonds
+                for (IBond bnd : targets)
+                {
+                    if (!newBO.equals("") && newBO != null)
+                    {
+                        String defBO = "SINGLE";
+                        IBond.Order bo = IBond.Order.valueOf(defBO);
+                        try {
+                            bo = IBond.Order.valueOf(newBO);
+                            if (verbosity > 1)
+                            {
                                 System.out.println("Setting bond order of bond "
                                 + MolecularUtils.getAtomRef(bnd.getAtom(0),mol)
                                  + "-" 
                                 + MolecularUtils.getAtomRef(bnd.getAtom(1),mol)
                                 + " to '"
                                 + newBO + "'.");
-			    }
-			} catch (Throwable t) {
-			    System.out.println("WARNING! Unable to "
-				+ "deal with the given bond order '" 
-				+ newBO + "'. Check CDK's API at page "
-				+ "IBond.Order to find the acceptable "
-				+ "list of Enum constants.");
+                            }
+                        } catch (Throwable t) {
+                            System.out.println("WARNING! Unable to "
+                                + "deal with the given bond order '" 
+                                + newBO + "'. Check CDK's API at page "
+                                + "IBond.Order to find the acceptable "
+                                + "list of Enum constants.");
                             System.out.println("Setting bond order of bond "
                                 + MolecularUtils.getAtomRef(bnd.getAtom(0),mol)
                                 + "-" 
                                 + MolecularUtils.getAtomRef(bnd.getAtom(1),mol)
                                 + " to '"
                                 + defBO + "'.");
-			}
-			bnd.setOrder(bo);
-		    }
+                        }
+                        bnd.setOrder(bo);
+                    }
 
 //
 //TODO: add here the modification of other bond properties
 //
-		}
+                }
 
-		//Store resulting molecule
-		IOtools.writeSDFAppend(outFile,mol,true);
+                //Store resulting molecule
+                IOtools.writeSDFAppend(outFile,mol,true);
 
-	    } //end loop over molecules
+            } //end loop over molecules
 
-	} catch (Throwable t) {
-	    Terminator.withMsgAndStatus("ERROR! Exception returned by "
-		+ "SDFIterator while reading " + inFile, -1);
-	}
+        } catch (Throwable t) {
+            Terminator.withMsgAndStatus("ERROR! Exception returned by "
+                + "SDFIterator while reading " + inFile, -1);
+        }
     }
 
 //-----------------------------------------------------------------------------

@@ -38,7 +38,7 @@ public class ManySMARTSQuery
 
     //Container
     private Map<String,List<List<Integer>>> allMatches = 
-				new HashMap<String,List<List<Integer>>>();
+                                new HashMap<String,List<List<Integer>>>();
     //Counts
     private int totNum;
     private Map<String,Integer> numMatches = new HashMap<String,Integer>();
@@ -58,7 +58,7 @@ public class ManySMARTSQuery
 
     public ManySMARTSQuery()
     {
-	super();
+        super();
     }
 
 //------------------------------------------------------------------------------
@@ -74,74 +74,74 @@ public class ManySMARTSQuery
     {
         super();
         this.verbosity = verbosity;
-	totNum = 0;
-	String blankSmarts = "[*]";
+        totNum = 0;
+        String blankSmarts = "[*]";
 
-	String err="";
+        String err="";
 
-	try {
+        try {
                 SMARTSQueryTool query = new SMARTSQueryTool(blankSmarts);
-		for (String smartsRef : smarts.keySet())
-		{
-		    //get the new query
+                for (String smartsRef : smarts.keySet())
+                {
+                    //get the new query
                     String oneSmarts = smarts.get(smartsRef);
-		    err = smartsRef;
+                    err = smartsRef;
 
                     if (verbosity >= 3)
                     {
                         System.out.println("Attempt to match query '" 
-						+ smartsRef + "'.");
+                                                + smartsRef + "'.");
                         System.out.println("SMARTS: " + oneSmarts);
                     }
 
                     //Update the query tool
-		    query.setSmarts(oneSmarts);
+                    query.setSmarts(oneSmarts);
 
-		    
-		    if (query.matches(mol))
-		    {
-			//Store matches
-			List<List<Integer>> listOfIds = 
-						 new ArrayList<List<Integer>>();
-			listOfIds = query.getUniqueMatchingAtoms();
-			allMatches.put(smartsRef,listOfIds);
-			//Store number
+                    
+                    if (query.matches(mol))
+                    {
+                        //Store matches
+                        List<List<Integer>> listOfIds = 
+                                                 new ArrayList<List<Integer>>();
+                        listOfIds = query.getUniqueMatchingAtoms();
+                        allMatches.put(smartsRef,listOfIds);
+                        //Store number
 //CDK BUG here! this number is somehow wrong
-//			int num = query.countMatches();
-			int num = listOfIds.size();
-			numMatches.put(smartsRef,num);
-			totNum = totNum + num;
-			if (verbosity >= 2)
-			{
-			    System.out.println("Matches for query '" + smartsRef
-				+ "': " + num + " => Atoms: " + listOfIds);
-			}
- 		    }
-		}
+//                        int num = query.countMatches();
+                        int num = listOfIds.size();
+                        numMatches.put(smartsRef,num);
+                        totNum = totNum + num;
+                        if (verbosity >= 2)
+                        {
+                            System.out.println("Matches for query '" + smartsRef
+                                + "': " + num + " => Atoms: " + listOfIds);
+                        }
+                     }
+                }
         } catch (CDKException cdkEx) {
-		if (verbosity > 1)
-		    cdkEx.printStackTrace();
+                if (verbosity > 1)
+                    cdkEx.printStackTrace();
                 String cause = cdkEx.getCause().getMessage();
-		err = "\nWARNING! For query " + err + " => " + cause;
-		problems = true;
-		message = err;
-	} catch (Throwable t) {
-		java.lang.StackTraceElement[] stes = t.getStackTrace();
-		String cause = "";
-		int s = stes.length;
-		if (s >= 1)
-		{
-		    java.lang.StackTraceElement ste = stes[0];
-		    cause = ste.getClassName();
-		} else {
-		    cause = "'unknown' (try to process this molecule alone to "
-							    + "get more infos)";
-		}
-                err = "\nWARNING! For query " + err + " => Exception returned "
-								+ "by " + cause;
+                err = "\nWARNING! For query " + err + " => " + cause;
                 problems = true;
                 message = err;
-	}
+        } catch (Throwable t) {
+                java.lang.StackTraceElement[] stes = t.getStackTrace();
+                String cause = "";
+                int s = stes.length;
+                if (s >= 1)
+                {
+                    java.lang.StackTraceElement ste = stes[0];
+                    cause = ste.getClassName();
+                } else {
+                    cause = "'unknown' (try to process this molecule alone to "
+                                                            + "get more infos)";
+                }
+                err = "\nWARNING! For query " + err + " => Exception returned "
+                                                                + "by " + cause;
+                problems = true;
+                message = err;
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ public class ManySMARTSQuery
 
     public String getMessage()
     {
-	return message;
+        return message;
     }
 
 //------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ public class ManySMARTSQuery
 
     public int getTotalMatches()
     {
-	return totNum;
+        return totNum;
     }
 
 //------------------------------------------------------------------------------
@@ -203,10 +203,10 @@ public class ManySMARTSQuery
 
     public int getNumMatchesOfQuery(String queryName)
     {
-	if (numMatches.keySet().contains(queryName))
-	    return numMatches.get(queryName);
-	else
-	    return 0;
+        if (numMatches.keySet().contains(queryName))
+            return numMatches.get(queryName);
+        else
+            return 0;
     }
 
 //------------------------------------------------------------------------------

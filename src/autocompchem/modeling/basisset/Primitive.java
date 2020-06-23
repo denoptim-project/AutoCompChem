@@ -82,13 +82,13 @@ public class Primitive
      */
 
     public Primitive(String type, int angMmnt, double coeff, double exp, 
-					             int precCoeff, int precExp)
+                                                     int precCoeff, int precExp)
     {
-	this.type = type;
-	this.angMmnt = angMmnt;
-	this.coefficient = coeff;
-	this.exponent = exp;
-	this.precCoeff = precCoeff;
+        this.type = type;
+        this.angMmnt = angMmnt;
+        this.coefficient = coeff;
+        this.exponent = exp;
+        this.precCoeff = precCoeff;
         this.precExp = precExp;
     }
 
@@ -127,7 +127,7 @@ public class Primitive
 
     public void setCoefficient(double c)
     {
-	this.coefficient = c;
+        this.coefficient = c;
     }
 
 //------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ public class Primitive
  
     public int getAngMmnt()
     {
-	return angMmnt;
+        return angMmnt;
     }
 
 //------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ public class Primitive
      public Primitive clone()
      {
         return new Primitive(type, angMmnt, coefficient, exponent, precCoeff,
-								       precExp);
+                                                                       precExp);
      }
 
 //------------------------------------------------------------------------------
@@ -248,14 +248,14 @@ public class Primitive
 
     public String toString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append("Primitive [type:").append(type).append(", ");
-	sb.append("L:").append(angMmnt).append(", ");
-	sb.append("coeff:").append(coefficient).append(", ");
-	sb.append("exp:").append(exponent).append(", ");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Primitive [type:").append(type).append(", ");
+        sb.append("L:").append(angMmnt).append(", ");
+        sb.append("coeff:").append(coefficient).append(", ");
+        sb.append("exp:").append(exponent).append(", ");
         sb.append("precCoeff:").append(precCoeff).append(", ");
         sb.append("precExp:").append(precExp).append("] ");
-	return sb.toString();
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

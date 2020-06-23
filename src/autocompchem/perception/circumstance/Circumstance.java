@@ -78,7 +78,7 @@ public class Circumstance implements ICircumstance
 
     public double calculateScore(Object input)
     {
-	return 0.0;
+        return 0.0;
     }
 
 //------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ public class Circumstance implements ICircumstance
 
     public boolean requiresTXTMatch()
     {
-	return hasTxtQuery;
+        return hasTxtQuery;
     }
 
 //------------------------------------------------------------------------------

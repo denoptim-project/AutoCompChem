@@ -116,7 +116,7 @@ public class MolecularPruner
         this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)
-	    System.out.println(" Adding parameters to MolecularPruner");
+            System.out.println(" Adding parameters to MolecularPruner");
 
 
         //Get and check the input file (which has to be an SDF file)
@@ -134,14 +134,14 @@ public class MolecularPruner
         {
             System.out.println(" Importing SMARTS queries ");
         }
-	String[] parts = allSamrts.split("\\s+");
-	for (int i=0; i<parts.length; i++)
-	{
-	    String singleSmarts = parts[i];
-	    if (singleSmarts.equals(""))
-		continue;
-	    this.smarts.put(Integer.toString(i),singleSmarts);
-	}
+        String[] parts = allSamrts.split("\\s+");
+        for (int i=0; i<parts.length; i++)
+        {
+            String singleSmarts = parts[i];
+            if (singleSmarts.equals(""))
+                continue;
+            this.smarts.put(Integer.toString(i),singleSmarts);
+        }
 
     }
 
@@ -156,7 +156,7 @@ public class MolecularPruner
      */
 
     public MolecularPruner(String filename, Map<String,String> smarts, 
-								int verbosity)
+                                                                int verbosity)
     {
         this.inFile = filename;
         this.smarts = smarts; 
@@ -171,55 +171,55 @@ public class MolecularPruner
 
     public void pruneAll()
     {
-	try {
-	    SDFIterator sdfItr = new SDFIterator(inFile);
-	    while (sdfItr.hasNext())
-	    {
-		//Get the molecule
-	        IAtomContainer mol = sdfItr.next();
+        try {
+            SDFIterator sdfItr = new SDFIterator(inFile);
+            while (sdfItr.hasNext())
+            {
+                //Get the molecule
+                IAtomContainer mol = sdfItr.next();
 
-		//Get target atoms		
-		ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+                //Get target atoms                
+                ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
                 if (msq.hasProblems())
                 {
                     String cause = msq.getMessage();
-		    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
                 }
 
-		ArrayList<IAtom> targets = new ArrayList<IAtom>();
-		for (String key : smarts.keySet())
-		{
-		    if (msq.getNumMatchesOfQuery(key) == 0)
-            	    {
-	                continue;
-        	    }
-		    
-		    List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(key);
-		    for (List<Integer> innerList : allMatches)
-		    {
-			for (Integer iAtm : innerList)
-			{
-			    IAtom targetAtm = mol.getAtom(iAtm);
-			    targets.add(targetAtm);
-			}
-		    }
-		}
+                ArrayList<IAtom> targets = new ArrayList<IAtom>();
+                for (String key : smarts.keySet())
+                {
+                    if (msq.getNumMatchesOfQuery(key) == 0)
+                        {
+                        continue;
+                    }
+                    
+                    List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(key);
+                    for (List<Integer> innerList : allMatches)
+                    {
+                        for (Integer iAtm : innerList)
+                        {
+                            IAtom targetAtm = mol.getAtom(iAtm);
+                            targets.add(targetAtm);
+                        }
+                    }
+                }
 
-		//Remove atoms
-		for (IAtom targetAtm : targets)
-		{
-		    mol.removeAtomAndConnectedElectronContainers(targetAtm);
-		}
+                //Remove atoms
+                for (IAtom targetAtm : targets)
+                {
+                    mol.removeAtomAndConnectedElectronContainers(targetAtm);
+                }
 
-		//Store output
-		IOtools.writeSDFAppend(outFile,mol,true);
+                //Store output
+                IOtools.writeSDFAppend(outFile,mol,true);
 
-	    } //end loop over molecules
+            } //end loop over molecules
 
-	} catch (Throwable t) {
-	    Terminator.withMsgAndStatus("ERROR! Exception returned by "
-		+ "SDFIterator while reading " + inFile, -1);
-	}
+        } catch (Throwable t) {
+            Terminator.withMsgAndStatus("ERROR! Exception returned by "
+                + "SDFIterator while reading " + inFile, -1);
+        }
         
     }
 

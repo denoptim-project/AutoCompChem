@@ -39,7 +39,7 @@ public class Action
 
     public String getType()
     {
-	return type;
+        return type;
     }
 
 //------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public class Action
     {
         StringBuilder sb = new StringBuilder();
         sb.append("Action [type:").append(type).append("]");
-	return sb.toString();
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

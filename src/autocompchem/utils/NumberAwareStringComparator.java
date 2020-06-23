@@ -36,58 +36,58 @@ public class NumberAwareStringComparator implements Comparator<String>
 
         int res = EQUAL;
 
-	String[] partsA = a.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
-	String[] partsB = b.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        String[] partsA = a.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        String[] partsB = b.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
 
-	for (int i=0; i<Math.min(partsA.length,partsB.length); i++)
-	{
-	    String pA = partsA[i];
-	    String pB = partsB[i];
+        for (int i=0; i<Math.min(partsA.length,partsB.length); i++)
+        {
+            String pA = partsA[i];
+            String pB = partsB[i];
 
-	    if (pA.equals(pB))
-	    {
-		continue;
-	    }
+            if (pA.equals(pB))
+            {
+                continue;
+            }
 
-	    boolean isnumA = NumberUtils.isNumber(pA);
-	    boolean isnumB = NumberUtils.isNumber(pB);
+            boolean isnumA = NumberUtils.isNumber(pA);
+            boolean isnumB = NumberUtils.isNumber(pB);
 
-	    if (isnumA && isnumB)
-	    {
-		double dA = Double.parseDouble(pA);
-		double dB = Double.parseDouble(pB);
-		res = Double.compare(dA,dB);
-		break;
-	    }
-	    else if (isnumA && !isnumB)
-	    {
-		res = FIRST;
-		break;
-	    }
-	    else if (!isnumA && isnumB)
-	    {
-		res = LAST;
-		break;
-	    }
-	    else
-	    {
-		res = pA.compareTo(pB);
-		break;
-	    }
-	}
-	if (res == EQUAL)
-	{
-	    if (partsA.length < partsB.length)
-	    {
-		res = FIRST;
-	    }
-	    else if (partsA.length > partsB.length)
-	    {
-		res = LAST;
-	    }
-	}
+            if (isnumA && isnumB)
+            {
+                double dA = Double.parseDouble(pA);
+                double dB = Double.parseDouble(pB);
+                res = Double.compare(dA,dB);
+                break;
+            }
+            else if (isnumA && !isnumB)
+            {
+                res = FIRST;
+                break;
+            }
+            else if (!isnumA && isnumB)
+            {
+                res = LAST;
+                break;
+            }
+            else
+            {
+                res = pA.compareTo(pB);
+                break;
+            }
+        }
+        if (res == EQUAL)
+        {
+            if (partsA.length < partsB.length)
+            {
+                res = FIRST;
+            }
+            else if (partsA.length > partsB.length)
+            {
+                res = LAST;
+            }
+        }
 
-	return res;
+        return res;
     }
 
 //------------------------------------------------------------------------------

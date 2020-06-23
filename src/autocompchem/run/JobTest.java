@@ -47,81 +47,81 @@ public class JobTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 
-	//Define paths in tmp dir
-	File script = new File(tempDir.getAbsolutePath() + SEP + "script.sh");
-	String newFile = tempDir.getAbsolutePath() + SEP + "dateFile";
+        //Define paths in tmp dir
+        File script = new File(tempDir.getAbsolutePath() + SEP + "script.sh");
+        String newFile = tempDir.getAbsolutePath() + SEP + "dateFile";
 
-	try 
-	{
+        try 
+        {
             // Make a SHELL script that is only writing the date on a given file
             FileWriter writer = new FileWriter(script);
             writer.write("date > $1");
             writer.close();
 
-	    // Choose shell flavor
-	    String shellFlvr = "/bin/sh";
+            // Choose shell flavor
+            String shellFlvr = "/bin/sh";
 /*
 //TODO: maybe one day we'll check for available interpreters... now it doesnt work.
-	    ArrayList<String> shells = new ArrayList<String>();
-	    shells.add("bash");
-	    shells.add("csh");
-	    shells.add("sh");
-	    boolean notFound = true;
-	    for (String s : shells)
-	    {
-		Process p = Runtime.getRuntime().exec(s);
-		p.destroy();
-		
-		if (p.exitValue() == 0)
-		{
-		    shellFlvr = s;
-		    notFound = false;
-		    break;
-		}
+            ArrayList<String> shells = new ArrayList<String>();
+            shells.add("bash");
+            shells.add("csh");
+            shells.add("sh");
+            boolean notFound = true;
+            for (String s : shells)
+            {
+                Process p = Runtime.getRuntime().exec(s);
+                p.destroy();
+                
+                if (p.exitValue() == 0)
+                {
+                    shellFlvr = s;
+                    notFound = false;
+                    break;
+                }
 
-	    }
-	    if (notFound)
-	    {
-		assertFalse(true, "Could not find known shell flavor.");
-	    }
+            }
+            if (notFound)
+            {
+                assertFalse(true, "Could not find known shell flavor.");
+            }
 */
 
-	    // Nest 4 shell jobs in an undefined job
+            // Nest 4 shell jobs in an undefined job
             Job job = new Job(Job.RunnableAppID.ACC);
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
-								    newFile+1));
+                                                                    newFile+1));
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
-								    newFile+2));
+                                                                    newFile+2));
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
-								    newFile+3));
+                                                                    newFile+3));
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
-								    newFile+4));
+                                                                    newFile+4));
 
-	    // Nest 2 shell jobs in the fifth shell job
-	    Job fifthJob = new ShellJob(shellFlvr,script.getAbsolutePath(),
+            // Nest 2 shell jobs in the fifth shell job
+            Job fifthJob = new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                      newFile+5);
             fifthJob.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
-								    newFile+6));
+                                                                    newFile+6));
             fifthJob.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
-								    newFile+7));
-	    job.addStep(fifthJob);
+                                                                    newFile+7));
+            job.addStep(fifthJob);
 
             //Run the job serially
             job.run();
 
 
-	    // Verify result
-	    for (int i=1; i<8; i++)
-	    {
-		File f = new File(newFile+i);
+            // Verify result
+            for (int i=1; i<8; i++)
+            {
+                File f = new File(newFile+i);
                 assertTrue(f.exists(),"ShellJob output file exists ("+i+") in "
-						   + tempDir.getAbsolutePath());
-	    }
+                                                   + tempDir.getAbsolutePath());
+            }
         }
         catch (Throwable t)
         {
-	    t.printStackTrace();
-	    assertFalse(true, "Unable to work with tmp files.");
+            t.printStackTrace();
+            assertFalse(true, "Unable to work with tmp files.");
         }
     }
 
@@ -131,13 +131,13 @@ public class JobTest
     public void testParallelizableSubJobs() throws Exception
     {
         Job job = new Job(Job.RunnableAppID.ACC);
-	job.addStep(new Job(Job.RunnableAppID.ACC,true));
-	job.addStep(new Job(Job.RunnableAppID.ACC,true));
-	job.addStep(new Job(Job.RunnableAppID.ACC,true));
-	assertTrue(job.parallelizableSubJobs());
+        job.addStep(new Job(Job.RunnableAppID.ACC,true));
+        job.addStep(new Job(Job.RunnableAppID.ACC,true));
+        job.addStep(new Job(Job.RunnableAppID.ACC,true));
+        assertTrue(job.parallelizableSubJobs());
 
-	job.addStep(new Job(Job.RunnableAppID.ACC,false));
-	assertFalse(job.parallelizableSubJobs());
+        job.addStep(new Job(Job.RunnableAppID.ACC,false));
+        assertFalse(job.parallelizableSubJobs());
     }
 
 //------------------------------------------------------------------------------

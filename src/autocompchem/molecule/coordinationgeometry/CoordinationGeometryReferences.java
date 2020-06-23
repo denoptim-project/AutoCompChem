@@ -50,70 +50,70 @@ public class CoordinationGeometryReferences
 
     public CoordinationGeometryReferences()
     {
-	if (isInitialized) return;
+        if (isInitialized) return;
 
-	allCG = new ArrayList<CoordinationGeometry>();
-	cgByName = new HashMap<String, CoordinationGeometry>();
+        allCG = new ArrayList<CoordinationGeometry>();
+        cgByName = new HashMap<String, CoordinationGeometry>();
 
-	String file = "autocompchem/molecule/coordinationgeometry/referenceCG.txt";
-	InputStream ins = CoordinationGeometryReferences.class.getClassLoader().
-			  			      getResourceAsStream(file);
-	BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
-	String line;
-	try {
+        String file = "autocompchem/molecule/coordinationgeometry/referenceCG.txt";
+        InputStream ins = CoordinationGeometryReferences.class.getClassLoader().
+                                                        getResourceAsStream(file);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+        String line;
+        try {
         while ((line = reader.readLine()) != null) 
-	{
-	    if (line.equals("") || line == null)
-		continue;
+        {
+            if (line.equals("") || line == null)
+                continue;
 
-	    if (line.startsWith("#"))
-		continue;
+            if (line.startsWith("#"))
+                continue;
 
-	    String[] parts = line.split("\\s+");
+            String[] parts = line.split("\\s+");
 
-	    //First field if the name of the standard geometry
-	    String cgName = parts[0];
-	    //Other fields atom coordinates
-	    IAtom centralAtm = new Atom();
-	    List<IAtom> ligands = new ArrayList<IAtom>();
-	    int idCnt = 1; //this defines which field represents the center
-	    for (int i=1; i<parts.length; i++)
-	    {
-		String[] partsOfAtm = parts[i].split(",");
-		if (partsOfAtm.length != 4)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Check reference "
-			+ "geometry " + cgName + " in file " + file
-			+ ". Wrong number of fields for atom " + i, -1);
-		}
-		String atmSymbol = partsOfAtm[0];
-		double xCoord = Double.parseDouble(partsOfAtm[1]);
+            //First field if the name of the standard geometry
+            String cgName = parts[0];
+            //Other fields atom coordinates
+            IAtom centralAtm = new Atom();
+            List<IAtom> ligands = new ArrayList<IAtom>();
+            int idCnt = 1; //this defines which field represents the center
+            for (int i=1; i<parts.length; i++)
+            {
+                String[] partsOfAtm = parts[i].split(",");
+                if (partsOfAtm.length != 4)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Check reference "
+                        + "geometry " + cgName + " in file " + file
+                        + ". Wrong number of fields for atom " + i, -1);
+                }
+                String atmSymbol = partsOfAtm[0];
+                double xCoord = Double.parseDouble(partsOfAtm[1]);
                 double yCoord = Double.parseDouble(partsOfAtm[2]);
                 double zCoord = Double.parseDouble(partsOfAtm[3]);
 
-		Point3d p3d = new Point3d(xCoord,yCoord,zCoord);
-		IAtom atm = new Atom(atmSymbol, p3d);
-		//First of list is the central atom
-		if (i == idCnt)
-		{
-		    centralAtm = atm;
-		} else {
-		    ligands.add(atm);
-		}
-	    }
-	    CoordinationGeometry cg = new CoordinationGeometry(cgName,
-							       centralAtm,
-							       ligands);
+                Point3d p3d = new Point3d(xCoord,yCoord,zCoord);
+                IAtom atm = new Atom(atmSymbol, p3d);
+                //First of list is the central atom
+                if (i == idCnt)
+                {
+                    centralAtm = atm;
+                } else {
+                    ligands.add(atm);
+                }
+            }
+            CoordinationGeometry cg = new CoordinationGeometry(cgName,
+                                                               centralAtm,
+                                                               ligands);
             allCG.add(cg);
-	    cgByName.put(cg.getName(), cg);
-	}
-	} catch (IOException e) {
-	    e.printStackTrace();
-	    Terminator.withMsgAndStatus("ERROR! Unable to read reference "
-		+ "coordination geometries", -1);
-	}
+            cgByName.put(cg.getName(), cg);
+        }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Terminator.withMsgAndStatus("ERROR! Unable to read reference "
+                + "coordination geometries", -1);
+        }
 
-	isInitialized = true;
+        isInitialized = true;
     }
 
 //------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ public class CoordinationGeometryReferences
 
     public static CoordinationGeometry getReferenceGeometryByName(String name)
     {
-	return cgByName.get(name);
+        return cgByName.get(name);
     }
 
 //------------------------------------------------------------------------------
@@ -140,13 +140,13 @@ public class CoordinationGeometryReferences
 
     public static List<CoordinationGeometry> getReferenceGeometryForCN(int cn)
     {
-	ArrayList<CoordinationGeometry> res = 
-					  new ArrayList<CoordinationGeometry>();
-	for (CoordinationGeometry cg : allCG)
-	{
-	    if (cg.getConnectionNumber() == cn)
-		res.add(cg);
-	}
+        ArrayList<CoordinationGeometry> res = 
+                                          new ArrayList<CoordinationGeometry>();
+        for (CoordinationGeometry cg : allCG)
+        {
+            if (cg.getConnectionNumber() == cn)
+                res.add(cg);
+        }
         return res;
     }
 

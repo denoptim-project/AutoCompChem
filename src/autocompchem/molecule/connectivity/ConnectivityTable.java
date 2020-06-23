@@ -45,7 +45,7 @@ public class ConnectivityTable
 
     public ConnectivityTable()
     {
-	cnTab = new ArrayList<ArrayList<Integer>>();
+        cnTab = new ArrayList<ArrayList<Integer>>();
     }
 
 //------------------------------------------------------------------------------
@@ -59,16 +59,16 @@ public class ConnectivityTable
 
     public ConnectivityTable(IAtomContainer mol)
     {
-	cnTab = new ArrayList<ArrayList<Integer>>();
-	for (IAtom atm : mol.atoms())
-	{
-	    ArrayList<Integer> nbrs = new ArrayList<Integer>();
-	    for (IAtom nbr : mol.getConnectedAtomsList(atm))
-	    {
-		nbrs.add(mol.getAtomNumber(nbr));
-	    }
-	    cnTab.add(nbrs);
-	}
+        cnTab = new ArrayList<ArrayList<Integer>>();
+        for (IAtom atm : mol.atoms())
+        {
+            ArrayList<Integer> nbrs = new ArrayList<Integer>();
+            for (IAtom nbr : mol.getConnectedAtomsList(atm))
+            {
+                nbrs.add(mol.getAtomNumber(nbr));
+            }
+            cnTab.add(nbrs);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -81,34 +81,34 @@ public class ConnectivityTable
      */
 
     public void setNeighboursRelation(int srcId, ArrayList<Integer> nbrs, 
-							      boolean zeroBased)
+                                                              boolean zeroBased)
     {
-	//scale to 0-based IDs
-	ArrayList<Integer> locNbrs = new ArrayList<Integer>();
-	if (!zeroBased)
-	{
-	    srcId = srcId - 1;
-	    for (Integer i : nbrs)
-	    {
-		locNbrs.add(i - 1);
-	    }
-	}
-	else
-	{
-	    locNbrs.addAll(nbrs);
-	}
+        //scale to 0-based IDs
+        ArrayList<Integer> locNbrs = new ArrayList<Integer>();
+        if (!zeroBased)
+        {
+            srcId = srcId - 1;
+            for (Integer i : nbrs)
+            {
+                locNbrs.add(i - 1);
+            }
+        }
+        else
+        {
+            locNbrs.addAll(nbrs);
+        }
 
-	// ensure size
-	if (cnTab.size() < (srcId+1))
-	{
-	    for (int i=0; i<(srcId - cnTab.size() + 1); i++)
-	    {
-		cnTab.add(new ArrayList<Integer>());
-	    }
-	}
+        // ensure size
+        if (cnTab.size() < (srcId+1))
+        {
+            for (int i=0; i<(srcId - cnTab.size() + 1); i++)
+            {
+                cnTab.add(new ArrayList<Integer>());
+            }
+        }
 
-	// add neghbours ids
-	cnTab.set(srcId,locNbrs);
+        // add neghbours ids
+        cnTab.set(srcId,locNbrs);
     }
 
 //------------------------------------------------------------------------------
@@ -124,17 +124,17 @@ public class ConnectivityTable
 
     public ArrayList<Integer> getNbrsId(int srcId, boolean zeroBased)
     {
-	ArrayList<Integer> ids = new ArrayList<Integer>();
-	for (int i=0; i<cnTab.get(srcId).size(); i++)
-	{
-	    int base = 1;
-	    if (zeroBased)
-	    {
-		base = 0;
-	    }
-	    ids.add(cnTab.get(srcId).get(i) + base);
-	}
-	return ids;
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        for (int i=0; i<cnTab.get(srcId).size(); i++)
+        {
+            int base = 1;
+            if (zeroBased)
+            {
+                base = 0;
+            }
+            ids.add(cnTab.get(srcId).get(i) + base);
+        }
+        return ids;
     }
 
 //------------------------------------------------------------------------------
@@ -152,13 +152,13 @@ public class ConnectivityTable
 
     public String getNbrsIdAsString(int srcId, boolean zeroBased, String sep) 
     {
-	String form = " %1$" + String.valueOf(cnTab.size()).length() + "s";
-	String s = "";
-	for (Integer id : getNbrsId(srcId,zeroBased))
-	{
-	    s = s + String.format(form,id) + sep;
-	}
-	return s;		
+        String form = " %1$" + String.valueOf(cnTab.size()).length() + "s";
+        String s = "";
+        for (Integer id : getNbrsId(srcId,zeroBased))
+        {
+            s = s + String.format(form,id) + sep;
+        }
+        return s;                
     }
 
 //------------------------------------------------------------------------------

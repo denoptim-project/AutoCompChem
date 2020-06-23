@@ -96,7 +96,7 @@ public class MolecularReorderer
      * Flag indicating the input is from file
      */
     @SuppressWarnings("unused")
-	private boolean inpFromFile = false;
+        private boolean inpFromFile = false;
 
     /**
      * Name of the input file
@@ -132,7 +132,7 @@ public class MolecularReorderer
      * FLag reporting that all tasks are done
      */
     @SuppressWarnings("unused")
-	private boolean allDone = false;
+        private boolean allDone = false;
 
     /**
      * Name of the atom property used to stamp a visited atom
@@ -231,7 +231,7 @@ public class MolecularReorderer
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-	    outToFile = true;
+            outToFile = true;
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
             FilesManager.mustNotExist(this.outFile);
         }
@@ -276,16 +276,16 @@ public class MolecularReorderer
     public void alignAtomList()
     {
 
-	//Get the referencem molecule
+        //Get the referencem molecule
         ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
         mols = IOtools.readSDF(refFile);
-	if (mols.size() > 1)
-	{
-	    Terminator.withMsgAndStatus("ERROR! Cannot handle multiple "
-		+ "reference structures. Please provide a reference file with "
-		+ "a single entry.",-1);
-	}
-	IAtomContainer refMol = mols.get(0);
+        if (mols.size() > 1)
+        {
+            Terminator.withMsgAndStatus("ERROR! Cannot handle multiple "
+                + "reference structures. Please provide a reference file with "
+                + "a single entry.",-1);
+        }
+        IAtomContainer refMol = mols.get(0);
 
         int i = 0;
         try
@@ -300,33 +300,33 @@ public class MolecularReorderer
                 }
                 IAtomContainer mol = sdfItr.next();
 
-		MolecularComparator mc = new MolecularComparator(verbosity-1);
-		Map<Integer,Integer> refToInAtmMap = 
-				     mc.getGeometryAwareAtomMapping(mol,refMol);
+                MolecularComparator mc = new MolecularComparator(verbosity-1);
+                Map<Integer,Integer> refToInAtmMap = 
+                                     mc.getGeometryAwareAtomMapping(mol,refMol);
 
-		if (refToInAtmMap.size() < mol.getAtomCount())
-		{
-		    System.out.println("Mapped atoms: "+refToInAtmMap.size());
-		    System.out.println("Atom List:    "+mol.getAtomCount());
-		    System.out.println("WARNING: some atoms were not matched!");
-		    Terminator.withMsgAndStatus("ERROR! Atom map is shorter "
-			+ "than atom list. Cannot align atom list.",-1);
-		}
+                if (refToInAtmMap.size() < mol.getAtomCount())
+                {
+                    System.out.println("Mapped atoms: "+refToInAtmMap.size());
+                    System.out.println("Atom List:    "+mol.getAtomCount());
+                    System.out.println("WARNING: some atoms were not matched!");
+                    Terminator.withMsgAndStatus("ERROR! Atom map is shorter "
+                        + "than atom list. Cannot align atom list.",-1);
+                }
 
                 // NB: the information about the new atom order is stored
                 // in the properties of each Atom
-		ArrayList<Integer> usedTrg = new ArrayList<Integer>();
-		for (Map.Entry<Integer, Integer> e : refToInAtmMap.entrySet())
-		{
-		    IAtom atm = mol.getAtom((Integer) e.getValue());
-		    atm.setProperty(ordCounter,(Integer) e.getKey());
-		    atm.setProperty(visitedFlag,1);
-		    usedTrg.add((Integer) e.getKey());
-		}
+                ArrayList<Integer> usedTrg = new ArrayList<Integer>();
+                for (Map.Entry<Integer, Integer> e : refToInAtmMap.entrySet())
+                {
+                    IAtom atm = mol.getAtom((Integer) e.getValue());
+                    atm.setProperty(ordCounter,(Integer) e.getKey());
+                    atm.setProperty(visitedFlag,1);
+                    usedTrg.add((Integer) e.getKey());
+                }
 
-        	// The information in the Atom properties is  now used 
-		// to create the new container.
-        	mol = makeReorderedIAtomContainer(mol);
+                // The information in the Atom properties is  now used 
+                // to create the new container.
+                mol = makeReorderedIAtomContainer(mol);
 
                 if (outToFile)
                 {
@@ -452,9 +452,9 @@ public class MolecularReorderer
                     + "one atom per molecule.",-1);
             }
   
-	    ArrayList<String> sortedKeys = new ArrayList<String>();
-	    sortedKeys.addAll(smarts.keySet());
-	    Collections.sort(sortedKeys); 
+            ArrayList<String> sortedKeys = new ArrayList<String>();
+            sortedKeys.addAll(smarts.keySet());
+            Collections.sort(sortedKeys); 
             for (String k : sortedKeys)
             {
                 if (msq.getNumMatchesOfQuery(k) == 0)
@@ -495,8 +495,8 @@ public class MolecularReorderer
     public IAtomContainer reorderContainer(IAtomContainer iac)
     {
         ArrayList<IAtom> source = new ArrayList<IAtom>();
-	source.add(iac.getAtom(0));
-	return reorderContainer(iac,source); 
+        source.add(iac.getAtom(0));
+        return reorderContainer(iac,source); 
     }
 
 //------------------------------------------------------------------------------
@@ -546,9 +546,9 @@ public class MolecularReorderer
                                                                priority);
         }
 
-	//The atom container stores the information leading to the new atom list
-	//in the Atom's properties, which are now used to create the new 
-	//container with the pre-determined atom list.
+        //The atom container stores the information leading to the new atom list
+        //in the Atom's properties, which are now used to create the new 
+        //container with the pre-determined atom list.
         return makeReorderedIAtomContainer(iac);
     }
 
@@ -660,15 +660,15 @@ public class MolecularReorderer
             int oldAtmId1 = iac.getAtomNumber(oldAtm1);
             int oldAtmId2 = iac.getAtomNumber(oldAtm2);
             int frgId = fragFromOldID.get(oldAtmId1);
-	    int baseId = 0;
+            int baseId = 0;
             for (Integer prevFrgId : sortedFrgIds)
             {
-		if (frgId == prevFrgId)
-		{
-		    break;
-		}
-		baseId = baseId + newFromOldID.get(prevFrgId).size();
-	    }
+                if (frgId == prevFrgId)
+                {
+                    break;
+                }
+                baseId = baseId + newFromOldID.get(prevFrgId).size();
+            }
             try
             {
                 int newAtmId1 = newFromOldID.get(frgId).get(oldAtmId1) + baseId;

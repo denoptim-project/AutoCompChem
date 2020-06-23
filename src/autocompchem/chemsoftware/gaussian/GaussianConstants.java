@@ -57,12 +57,12 @@ public class GaussianConstants
 
     //Set with the keywords used in job details' definition
     public final static Set<String> JOBDETAILSKEYWORDS = new HashSet<String>(
-				Arrays.asList(
-					KEYLINKSEC,
-					KEYROUTESEC,
-					KEYTITLESEC,
-					KEYMOLSEC,
-					KEYOPTSSEC));
+                                Arrays.asList(
+                                        KEYLINKSEC,
+                                        KEYROUTESEC,
+                                        KEYTITLESEC,
+                                        KEYMOLSEC,
+                                        KEYOPTSSEC));
 
     //subKeyword for print settings in Route Section
     public final static String SUBKEYPRINT = "$MTPRINT";

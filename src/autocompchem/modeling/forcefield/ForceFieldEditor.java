@@ -64,7 +64,7 @@ public class ForceFieldEditor
      * The format for output
      */
     @SuppressWarnings("unused")
-	private String outFormat;
+        private String outFormat;
 
     /**
      * Storage of SMARTS queries
@@ -374,14 +374,14 @@ public class ForceFieldEditor
                   + "Check input parameters!";
             Terminator.withMsgAndStatus("ERROR! " + msg,-1);
         }
-	else
-	{
-	    if (verbosity > 0)
-	    {
-		System.out.println("Importing force field parameters from "
-			           + vaFiles.size() + " vibrational analysis.");
-	    }
-	}
+        else
+        {
+            if (verbosity > 0)
+            {
+                System.out.println("Importing force field parameters from "
+                                   + vaFiles.size() + " vibrational analysis.");
+            }
+        }
 
         // Get new (averaged) force field parameters from vibrational analysis
         ForceFieldParameterStats ffParStats = new ForceFieldParameterStats();

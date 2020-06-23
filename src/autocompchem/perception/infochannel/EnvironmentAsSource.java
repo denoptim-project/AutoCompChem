@@ -44,8 +44,8 @@ public class EnvironmentAsSource extends InfoChannel
 
     public EnvironmentAsSource()
     {
-	super();
-	env = System.getenv();
+        super();
+        env = System.getenv();
     }
 
 //------------------------------------------------------------------------------
@@ -60,14 +60,14 @@ public class EnvironmentAsSource extends InfoChannel
 
     public Reader getSourceReader()
     {
-	StringBuilder sb = new StringBuilder();
-	for (String k : env.keySet())
-	{
-	    sb.append(k).append("=").append(env.get(k));
-	    sb.append(System.getProperty("line.separator"));
-	}
+        StringBuilder sb = new StringBuilder();
+        for (String k : env.keySet())
+        {
+            sb.append(k).append("=").append(env.get(k));
+            sb.append(System.getProperty("line.separator"));
+        }
         super.reader = new StringReader(sb.toString());
-	return super.reader;
+        return super.reader;
     }
 
 //------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ public class EnvironmentAsSource extends InfoChannel
     {
         StringBuilder sb = new StringBuilder();
         sb.append("EnvironmentAsSource [type:").append(super.getType());
-	sb.append("; text:").append(env);
+        sb.append("; text:").append(env);
         sb.append("]");
         return sb.toString();
     }

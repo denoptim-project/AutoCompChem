@@ -48,22 +48,22 @@ public class SortableMoleculeComparator implements Comparator<SortableMolecule>
         String sb = null;
         if (ca instanceof String && cb instanceof String)
         {
-	    sa = (String) ca;
-	    sb = (String) cb;
-	    res = sa.compareTo(sb);
+            sa = (String) ca;
+            sb = (String) cb;
+            res = sa.compareTo(sb);
         } else {
             if (ca instanceof Double && cb instanceof Double) 
             {
                 da = (Double) ca;
                 db = (Double) cb;
-		res = da.compareTo(db);
+                res = da.compareTo(db);
             } else if (ca instanceof Integer && cb instanceof Integer)
-	    {
-		ia = (Integer) ca;
+            {
+                ia = (Integer) ca;
                 ib = (Integer) cb;
-		res = ia.compareTo(ib);
-	    }
-	}
+                res = ia.compareTo(ib);
+            }
+        }
 
         return res;
     }

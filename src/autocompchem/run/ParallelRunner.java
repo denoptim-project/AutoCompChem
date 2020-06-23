@@ -96,21 +96,21 @@ public class ParallelRunner
     {
         this.todoJobs = todoJobs;
         this.nThreads = Math.min(poolSize,todoJobs.size());
-	
+        
         futureJobs = new ArrayList<>();
         submittedJobs = new ArrayList<Job>();
 
-	ThreadFactory threadFactory = Executors.defaultThreadFactory();
-	tpExecutor = new ThreadPoolExecutor(nThreads,
-				        nThreads,
+        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+        tpExecutor = new ThreadPoolExecutor(nThreads,
+                                        nThreads,
                                         Long.MAX_VALUE,
                                         TimeUnit.NANOSECONDS,
                                         new ArrayBlockingQueue<Runnable>(1),
-				        threadFactory,
-					new RejectedExecHandlerImpl());
+                                        threadFactory,
+                                        new RejectedExecHandlerImpl());
 
-	// Add a shutdown mechanism to kill the master thread and its subjobs
-	// incuding planned ones.
+        // Add a shutdown mechanism to kill the master thread and its subjobs
+        // incuding planned ones.
         Runtime.getRuntime().addShutdownHook(new ShutDownHook());
     }
 
@@ -137,11 +137,11 @@ public class ParallelRunner
             }
             catch (InterruptedException ie)
             {
-		// remove traces and cleanup
+                // remove traces and cleanup
                 cleanup(tpExecutor, futureJobs, submittedJobs);
                 // (Re-)Cancel if current thread also interrupted
                 tpExecutor.shutdownNow();
-		// and stop possibly alive thread
+                // and stop possibly alive thread
                 Thread.currentThread().interrupt();
             }
         }
@@ -157,18 +157,18 @@ public class ParallelRunner
 
     private class RejectedExecHandlerImpl implements RejectedExecutionHandler
     {
-	@Override
+        @Override
         public void rejectedExecution(Runnable job, ThreadPoolExecutor tpe)
         {
-	    try
-	    {
+            try
+            {
                 // Resend rejected job to the queue until they fit in
-	        tpe.getQueue().put(job);
-	    }
-	    catch (InterruptedException ie)
-	    {
-		//If we are here, then execution is brocken beyond recovery
-	    }
+                tpe.getQueue().put(job);
+            }
+            catch (InterruptedException ie)
+            {
+                //If we are here, then execution is brocken beyond recovery
+            }
         }
     }
 
@@ -181,7 +181,7 @@ public class ParallelRunner
 
     public void setWallTime(long walltimeMillis)
     {
-	this.walltimeMillis = walltimeMillis;
+        this.walltimeMillis = walltimeMillis;
     }
 
 //------------------------------------------------------------------------------
@@ -216,8 +216,8 @@ public class ParallelRunner
         }
 
         submittedJobs.clear();
-	
-	tpe.purge();
+        
+        tpe.purge();
         tpe.getQueue().clear();
     }
 
@@ -263,68 +263,68 @@ public class ParallelRunner
 
     public void start()
     {
-	boolean withinTime = true;
+        boolean withinTime = true;
 
-	// Initialize empty threads that will be used for the sb-jobs
-	tpExecutor.prestartAllCoreThreads();
+        // Initialize empty threads that will be used for the sb-jobs
+        tpExecutor.prestartAllCoreThreads();
         long startTime = System.currentTimeMillis();
 
-	// Submit all sub-jobs in once. Those that do not fit because of all
-	// thread pool is filled-up are dealt with by RejectedExecHandlerImp
-	Iterator<Job> it = todoJobs.iterator();
-	while (it.hasNext())
-	{
-	    if(checkAgainstWalltime(startTime))
-	    {
-		withinTime = false;
-		break;
-	    }
-	    Job job = it.next();
+        // Submit all sub-jobs in once. Those that do not fit because of all
+        // thread pool is filled-up are dealt with by RejectedExecHandlerImp
+        Iterator<Job> it = todoJobs.iterator();
+        while (it.hasNext())
+        {
+            if(checkAgainstWalltime(startTime))
+            {
+                withinTime = false;
+                break;
+            }
+            Job job = it.next();
 
-	    submittedJobs.add(job);
-	    Future fut = tpExecutor.submit(job);
-	    futureJobs.add(fut);
+            submittedJobs.add(job);
+            Future fut = tpExecutor.submit(job);
+            futureJobs.add(fut);
 //TODO del
 //System.out.println("HERE: submitting "+job+" future "+fut+ " " + (System.currentTimeMillis()-startTime)+" queue"+tpExecutor.getQueue());
 
-	}
+        }
 
-	//Wait for completion
+        //Wait for completion
         while (true && withinTime)
         {
-	    //Completion clause
-	    if (allSubJobsCompleted())
+            //Completion clause
+            if (allSubJobsCompleted())
             {
-		//TODO log
-		System.out.println("All "+submittedJobs.size()+" sub-jobs "
-			     + "have been completed. Parallelized jobs done.");
-		break;
-	    }
+                //TODO log
+                System.out.println("All "+submittedJobs.size()+" sub-jobs "
+                             + "have been completed. Parallelized jobs done.");
+                break;
+            }
 
-	    // Check walltime
-	    if(checkAgainstWalltime(startTime))
-	    {
-		withinTime = false;
-		break;
-	    }
+            // Check walltime
+            if(checkAgainstWalltime(startTime))
+            {
+                withinTime = false;
+                break;
+            }
 
-	    //wait
+            //wait
             try
             {
                 Thread.sleep(waitingStep);
             }
             catch (IllegalArgumentException iae)
             {
-		Terminator.withMsgAndStatus("ERROR! Negative waiting time.",-1);
+                Terminator.withMsgAndStatus("ERROR! Negative waiting time.",-1);
             }
             catch (InterruptedException ie)
-	    {
-		ie.printStackTrace();
-		Terminator.withMsgAndStatus("ERROR! Thread is interrupted.",-1);
-	    }
+            {
+                ie.printStackTrace();
+                Terminator.withMsgAndStatus("ERROR! Thread is interrupted.",-1);
+            }
         }
 
-	//All done stop and clean up
+        //All done stop and clean up
         stopRun();
     }
 
@@ -339,21 +339,21 @@ public class ParallelRunner
 
     private boolean checkAgainstWalltime(long startTime)
     {
-	boolean res = false;
+        boolean res = false;
         long endTime = System.currentTimeMillis();
         long millis = (endTime - startTime);
 
         if (millis > walltimeMillis)
         {
-	    //TODO log
-	    System.out.println("Walltime reached for parallel job execution.");
-	    System.out.println("Killing remaining sub-jobs.");
+            //TODO log
+            System.out.println("Walltime reached for parallel job execution.");
+            System.out.println("Killing remaining sub-jobs.");
 
             //Terminator.withMsgAndStatus("ERROR! Walltime reached for "
             //                                 + "parallel run. Killing all.",-1);
-	    res = true;
+            res = true;
         }
-	return res;
+        return res;
     }
 
 //------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ import org.openscience.cdk.interfaces.IAtom;
 public class AtomClash
 {
     //Atoms involved
-	private IAtom atm1;
+        private IAtom atm1;
     private String ref1;
     private IAtom atm2;
     private String ref2;
@@ -49,32 +49,32 @@ public class AtomClash
 //------------------------------------------------------------------------------
 
     public AtomClash(IAtom atm1, String ref1, IAtom atm2, String ref2, 
-		     double d, double vdwsum, double allowance)
+                     double d, double vdwsum, double allowance)
     {
-	this.atm1 = atm1;
+        this.atm1 = atm1;
         this.ref1 = ref1;
         this.atm2 = atm2;
         this.ref2 = ref2;
         this.d = d; 
         this.vdwsum = vdwsum;
         this.allowance = allowance;
-	this.overlap = vdwsum - d - allowance;
+        this.overlap = vdwsum - d - allowance;
     }
 
 //------------------------------------------------------------------------------
 
     public double getOverlap()
     {
-	return overlap;
+        return overlap;
     }
 
 //------------------------------------------------------------------------------
 
     public String toString()
     {
-	String s = "AtomClash " + ref1 + ":" + ref2 + " d: " + d + " vdwsum: "
+        String s = "AtomClash " + ref1 + ":" + ref2 + " d: " + d + " vdwsum: "
                    + vdwsum + " allowance: " + allowance + " overlap: " + 
-		   + overlap;
+                   + overlap;
         return s;
     }
 

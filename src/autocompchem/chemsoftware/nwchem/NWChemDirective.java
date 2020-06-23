@@ -436,7 +436,7 @@ public class NWChemDirective
      */
 
     public void setAllDirectiveDataBlocks(
-					 ArrayList<NWChemDirectiveData> dirData)
+                                         ArrayList<NWChemDirectiveData> dirData)
     {
         this.dirData = dirData;
     }
@@ -505,7 +505,7 @@ public class NWChemDirective
         ArrayList<String> lines = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
 
-	// deal with the name
+        // deal with the name
         String[] parts = name.split(NWChemConstants.SPACEINDIRNAME);
         sb.append(parts[0]);
         for (int i=1; i<parts.length; i++)
@@ -515,11 +515,11 @@ public class NWChemDirective
         sb.append(" ");
 
         // keywords are appended in the same line as the directive's name
-	Collections.sort(keywords, new NWChemKeywordComparator());
-	int ik = 0;
+        Collections.sort(keywords, new NWChemKeywordComparator());
+        int ik = 0;
         for (NWChemKeyword k : keywords)
         {
-	    ik++;
+            ik++;
 
             String kStr = k.toStringInput();
             int totalLength = sb.length() + kStr.length() + 1;
@@ -538,10 +538,10 @@ public class NWChemDirective
                     String[] words = kStr.split("\\s+");
                     for (int i=0; i<words.length; i++)
                     {
-			String word = words[i];
-			int expectedLength = sb.length() + word.length() + 1;
-			if (expectedLength > NWChemConstants.MAXLINELENGTH) 
-			{
+                        String word = words[i];
+                        int expectedLength = sb.length() + word.length() + 1;
+                        if (expectedLength > NWChemConstants.MAXLINELENGTH) 
+                        {
                             // store the line up to this point
                             String arcLine = sb.toString() + "\\";
                             lines.add(arcLine);
@@ -552,8 +552,8 @@ public class NWChemDirective
                             {
                                 sb.append(" ");
                             }
-			}
-			sb.append(word).append(" ");
+                        }
+                        sb.append(word).append(" ");
                     }
                 }
                 else
@@ -577,33 +577,33 @@ public class NWChemDirective
                 sb.append(kStr).append(" ");
             }
 
-	    // Deal with inconsistent syntax of SET and UNSET directives
-	    // Yes, for some reason these two directives are witten differently.
-	    if (ik<keywords.size()  &&
-		(name.toUpperCase().equals("SET") || 
-		 name.toUpperCase().equals("UNSET"))) 
-	    {
-		sb.append(System.getProperty("line.separator"));
-		sb.append(name).append(NWChemConstants.SUBDIRECTIVEINDENT);
-	    }       
+            // Deal with inconsistent syntax of SET and UNSET directives
+            // Yes, for some reason these two directives are witten differently.
+            if (ik<keywords.size()  &&
+                (name.toUpperCase().equals("SET") || 
+                 name.toUpperCase().equals("UNSET"))) 
+            {
+                sb.append(System.getProperty("line.separator"));
+                sb.append(name).append(NWChemConstants.SUBDIRECTIVEINDENT);
+            }       
         }
         lines.add(sb.toString());
 
-	//Check against maximum allowed
-	if (lines.size() > NWChemConstants.MAXCONCATLINES)
-	{
-	    //TODO: we can try to reduce length by replasing those parts of 
+        //Check against maximum allowed
+        if (lines.size() > NWChemConstants.MAXCONCATLINES)
+        {
+            //TODO: we can try to reduce length by replasing those parts of 
             // the title that are/were added by AutoCompChem with shorter
-	    // words or abbreviations
-	    Terminator.withMsgAndStatus("ERROR! Keyword section of directive "
-		+ this.getName() + " is more than " 
-		+ NWChemConstants.MAXCONCATLINES 
-		+ " lines long, but shortening protocol is not "
-		+ "implemented in this version of autocompchem. You should use a "
-		+ "directive's data block ('" + NWChemConstants.LABDATA
-		+ "' in jobDetails file) rather than a "
-		+ "keyword.",-1);
-	}
+            // words or abbreviations
+            Terminator.withMsgAndStatus("ERROR! Keyword section of directive "
+                + this.getName() + " is more than " 
+                + NWChemConstants.MAXCONCATLINES 
+                + " lines long, but shortening protocol is not "
+                + "implemented in this version of autocompchem. You should use a "
+                + "directive's data block ('" + NWChemConstants.LABDATA
+                + "' in jobDetails file) rather than a "
+                + "keyword.",-1);
+        }
 
         //Then add the data section
         for (NWChemDirectiveData data : dirData)
@@ -615,11 +615,11 @@ public class NWChemDirective
 
             // Deal with inconsistent syntax of SET and UNSET directives
             if (name.toUpperCase().equals("SET") || 
-		name.toUpperCase().equals("UNSET"))
+                name.toUpperCase().equals("UNSET"))
             {
-		Terminator.withMsgAndStatus("ERROR! Unexpected use of data "
-		    + "block inside a '" + name + "' directive. Current NWChem "
-		    + "does not support like possibility",-1);
+                Terminator.withMsgAndStatus("ERROR! Unexpected use of data "
+                    + "block inside a '" + name + "' directive. Current NWChem "
+                    + "does not support like possibility",-1);
             }
         }
 
@@ -641,18 +641,18 @@ public class NWChemDirective
         }
 
         //Finally end the directive, unless its a SET/UNSET
-	if (!name.toUpperCase().equals("SET") &&
+        if (!name.toUpperCase().equals("SET") &&
                 !name.toUpperCase().equals("UNSET"))
-	{
-	    // NWChem bugs make NWChem input module expect the END label for 
+        {
+            // NWChem bugs make NWChem input module expect the END label for 
             // DFT and GEOMETRY directives even when there are only keywords 
             if (subDirectives.size() > 0 || dirData.size() > 0
-		|| name.toUpperCase().equals("DFT")
+                || name.toUpperCase().equals("DFT")
                 || name.toUpperCase().equals(NWChemConstants.GEOMDIR))
             {
                 lines.add("END");
             }
-	}
+        }
 
         return lines;
     }
@@ -669,13 +669,13 @@ public class NWChemDirective
     {
         ArrayList<String> lines = new ArrayList<String>();
         String root = NWChemConstants.LABDIRECTIVE;
-	// Make sure directive's name contains no spaces
-	String[] parts = name.split("\\s+");
-	root = root + parts[0];
-	for (int i=1; i<parts.length; i++)
-	{
-	    root = root + NWChemConstants.SPACEINDIRNAME + parts[i];
-	}
+        // Make sure directive's name contains no spaces
+        String[] parts = name.split("\\s+");
+        root = root + parts[0];
+        for (int i=1; i<parts.length; i++)
+        {
+            root = root + NWChemConstants.SPACEINDIRNAME + parts[i];
+        }
         root = root + " ";
         // Keywords are appended in the same line as the directive's name
         for (NWChemKeyword k : keywords)

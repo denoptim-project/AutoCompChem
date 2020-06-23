@@ -29,7 +29,7 @@ public class VibModuleConstants
      * String defining normal termination in status file
      */
     public final static String NORMALCOMPLSTATUS = 
-					      " VibModule terminated normally.";
+                                              " VibModule terminated normally.";
 
     /**
      * String defining the beginning of the force field parameters section

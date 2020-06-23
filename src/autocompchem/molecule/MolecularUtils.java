@@ -1,7 +1,10 @@
 package autocompchem.molecule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -22,6 +25,7 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
@@ -33,6 +37,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
 
+import autocompchem.atom.AtomUtils;
+import autocompchem.geometry.DistanceMatrix;
+import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Terminator;
 
 /**
@@ -50,7 +57,7 @@ public class MolecularUtils
     private static String duSymbol = "Du";
     //TODO move to constants
     @SuppressWarnings("unused")
-	private static double linearBendThld = 175.0;
+        private static double linearBendThld = 175.0;
 
 
 //------------------------------------------------------------------------------
@@ -63,7 +70,7 @@ public class MolecularUtils
      */
 
     public static  Map<String,Integer> getMolecularFormulaOfAtomContainer(
-							IAtomContainer mol)
+                                                        IAtomContainer mol)
     {
         Map<String,Integer> formula = new HashMap<String,Integer>();
         for (IAtom atm : mol.atoms())
@@ -92,8 +99,8 @@ public class MolecularUtils
 
     public static String getAtomRef(IAtom atm, IAtomContainer mol)
     {
-	String ref = atm.getSymbol() + (mol.getAtomNumber(atm) +1);
-	return ref;
+        String ref = atm.getSymbol() + (mol.getAtomNumber(atm) +1);
+        return ref;
     }
 
 //------------------------------------------------------------------------------
@@ -107,7 +114,7 @@ public class MolecularUtils
      */
 
     public static int getSmallestRing(IAtom atmS, IAtom atmT, 
-							IAtomContainer mol)
+                                                        IAtomContainer mol)
     {
         if (repOnScreen >= 3)
             System.out.println("Looking for ring involving "
@@ -142,12 +149,12 @@ public class MolecularUtils
                     if (nbr.getSymbol().equals(duSymbol))
                     {
                         List<IAtom> neighboursOfDu = 
-						mol.getConnectedAtomsList(nbr);
+                                                mol.getConnectedAtomsList(nbr);
                         visited.put(nbr,-1);
                         nextLevel.remove(nbr);
-		        //remove possible duplicates
+                        //remove possible duplicates
                         nextLevel.removeAll(neighboursOfDu);
-			//add new candidates
+                        //add new candidates
                         nextLevel.addAll(neighboursOfDu);
                     }
                 }
@@ -169,8 +176,8 @@ public class MolecularUtils
                             moreTrials = false;
                             if (repOnScreen >= 3)
                                 System.out.println("\nFound target: "
-					+ getAtomRef(nbr,mol)
-					+ " - Ring size: " + size);
+                                        + getAtomRef(nbr,mol)
+                                        + " - Ring size: " + size);
                         } else {
                             first = false;
                         }
@@ -197,64 +204,64 @@ public class MolecularUtils
 
     public static String missmatchingAromaticity(IAtomContainer mol)
     {
-	String cause = "";
+        String cause = "";
         for (IAtom atm : mol.atoms())
         {
             //Check of carbons with or without aromatic flags
-	    if (atm.getSymbol().equals("C")) 
-	    {
-		if (atm.getFormalCharge() == 0)
-		{
-		    if (mol.getConnectedAtomsCount(atm) == 3)
-		    {
-			if (atm.getFlag(CDKConstants.ISAROMATIC))
-			{
-			    int n = numOfBondsWithBO(atm,mol,"DOUBLE");
-		            if (n == 0)
-		            {
-				cause = "Aromatic atom " + 
-					getAtomRef(atm,mol) + 
-					" has 3 connected atoms but " +
-					"no double bonds";
-		                return cause;
-		            }
-			} else {
-			    for (IAtom nbr : mol.getConnectedAtomsList(atm))
-			    {
-				if (nbr.getSymbol().equals("C"))
-				{
-				    if (nbr.getFormalCharge() == 0)
-				    {
-				        if (mol.getConnectedAtomsCount(nbr) ==3)
-					{
-					    int nNbr = numOfBondsWithBO(nbr,
-								mol,"SINGLE");
-					    int nAtm = numOfBondsWithBO(atm,
-								mol,"SINGLE");
-					    if ((nNbr == 3) && (nAtm == 3))
-					    {
-						cause = "Connected atoms " +
-							getAtomRef(atm,mol) +
-							" " + 
-							getAtomRef(nbr,mol) + 
-							" have 3 connected " +
-							"atoms but no double "+
-							"bond. They are " +
-							"likely to be " +
-							"aromatic but no " +
-							"aromaticity has " +
-							"been reported";
-						return cause;
-					    }
-					}
-				    }
-				}
-			    }
-			}
-		    }
-		}
-	    }
-	}
+            if (atm.getSymbol().equals("C")) 
+            {
+                if (atm.getFormalCharge() == 0)
+                {
+                    if (mol.getConnectedAtomsCount(atm) == 3)
+                    {
+                        if (atm.getFlag(CDKConstants.ISAROMATIC))
+                        {
+                            int n = numOfBondsWithBO(atm,mol,"DOUBLE");
+                            if (n == 0)
+                            {
+                                cause = "Aromatic atom " + 
+                                        getAtomRef(atm,mol) + 
+                                        " has 3 connected atoms but " +
+                                        "no double bonds";
+                                return cause;
+                            }
+                        } else {
+                            for (IAtom nbr : mol.getConnectedAtomsList(atm))
+                            {
+                                if (nbr.getSymbol().equals("C"))
+                                {
+                                    if (nbr.getFormalCharge() == 0)
+                                    {
+                                        if (mol.getConnectedAtomsCount(nbr) ==3)
+                                        {
+                                            int nNbr = numOfBondsWithBO(nbr,
+                                                                mol,"SINGLE");
+                                            int nAtm = numOfBondsWithBO(atm,
+                                                                mol,"SINGLE");
+                                            if ((nNbr == 3) && (nAtm == 3))
+                                            {
+                                                cause = "Connected atoms " +
+                                                        getAtomRef(atm,mol) +
+                                                        " " + 
+                                                        getAtomRef(nbr,mol) + 
+                                                        " have 3 connected " +
+                                                        "atoms but no double "+
+                                                        "bond. They are " +
+                                                        "likely to be " +
+                                                        "aromatic but no " +
+                                                        "aromaticity has " +
+                                                        "been reported";
+                                                return cause;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return cause;
     }
@@ -271,9 +278,9 @@ public class MolecularUtils
      */
 
     public static int numOfBondsWithBO(IAtom atm, IAtomContainer mol, 
-								     String ord)
+                                                                     String ord)
     {
-	int res = -1;
+        int res = -1;
         int n = 0;
         for (IBond bnd : mol.getConnectedBondsList(atm))
         {
@@ -281,8 +288,8 @@ public class MolecularUtils
                 n++;
         }
 
-	res = n;
-	return res;
+        res = n;
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -296,10 +303,10 @@ public class MolecularUtils
 
     public static Vector3d getVectorFromTo(IAtom srcAtom, IAtom trgAtom)
     {
-	Point3d ps = getCoords3d(srcAtom);
-	Point3d pt = getCoords3d(trgAtom);
+        Point3d ps = getCoords3d(srcAtom);
+        Point3d pt = getCoords3d(trgAtom);
         Vector3d v3d = new Vector3d(ps.x-pt.x, ps.y-pt.y, ps.z-pt.z);
-	return v3d;
+        return v3d;
     }
 
 //------------------------------------------------------------------------------
@@ -398,17 +405,17 @@ public class MolecularUtils
 
     public static boolean hasProperty(IAtomContainer mol, String propName)
     {
-	Object propValue = null;
+        Object propValue = null;
         try {
             propValue = mol.getProperty(propName);
         } catch (Throwable tsm) {
             return false;
-	}
+        }
 
-	if (propValue == null)
-	    return false;
+        if (propValue == null)
+            return false;
 
-	return true;
+        return true;
     }
 
 //-----------------------------------------------------------------------------
@@ -442,7 +449,7 @@ public class MolecularUtils
                     } catch (Throwable t) {
                         if (repOnScreen >= 3)
                             System.out.println("Molecule name not found. "
-						+ "Set to '" + name + "'.");
+                                                + "Set to '" + name + "'.");
                     }
                 }
             }
@@ -484,7 +491,7 @@ public class MolecularUtils
      */
 
     public static double calculateBondAngle(IAtom atomLeft, IAtom atomCentre, 
-								IAtom atomRight)
+                                                                IAtom atomRight)
     {
         double angle = 0.0;
         Point3d l3d = getCoords3d(atomLeft);
@@ -521,7 +528,7 @@ public class MolecularUtils
      * @return the dihedral angle
      */
     public static double calculateTorsionAngle(IAtom atmA, IAtom atmB, 
-							IAtom atmC, IAtom atmD)
+                                                        IAtom atmC, IAtom atmD)
     {
         Point3d pA = getCoords3d(atmA);
         Point3d pB = getCoords3d(atmB);
@@ -586,7 +593,7 @@ public class MolecularUtils
         else if (bndOrder == 0)
             return IBond.Order.valueOf("UNSET");
         else {
-	    Terminator.withMsgAndStatus("ERROR! Integer '" + bndOrder 
+            Terminator.withMsgAndStatus("ERROR! Integer '" + bndOrder 
                               + "' is not recognized ad a valid bond order",-1);
             return IBond.Order.valueOf("UNSET");
         }
@@ -652,18 +659,94 @@ public class MolecularUtils
 
     public static boolean containsElement(IAtomContainer mol, String elSymb)
     {
-	boolean res = false;
-	for (IAtom atm : mol.atoms())
-	{
-	    if (atm.getSymbol().toUpperCase().equals(elSymb.toUpperCase()))
-	    {
-		res = true;
-		break;
-	    }
-	}
-	return res;
+        boolean res = false;
+        for (IAtom atm : mol.atoms())
+        {
+            if (atm.getSymbol().toUpperCase().equals(elSymb.toUpperCase()))
+            {
+                res = true;
+                break;
+            }
+        }
+        return res;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * returns the interatomic distance matrix for the given atom container
+     * @param mol the atom container to analyse
+     * @return the distance matrix
+     */
+    
+    public static DistanceMatrix getInteratormicDistanceMatrix(IAtomContainer mol)
+    {
+        DistanceMatrix dm = new DistanceMatrix();
+        for (int i=0; i<mol.getAtomCount(); i++)
+        {
+        	IAtom atmI = mol.getAtom(i);
+        	for (int j=i+1; j<mol.getAtomCount(); j++)
+            {
+            	IAtom atmJ = mol.getAtom(j);
+            	double dist = calculateInteratomicDistance(atmI, atmJ);
+                dm.put(i,j,dist);
+            }
+        }
+        return dm;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Find the shortest inter-elemental distance in the given atom container.
+     * @param mol the atom container
+     * @param elA first elemental symbol
+     * @param elBsecond elemental symbol
+     * @return the shortest interatomic distance between atoms of such elements
+     */
+    
+    public static double getMinInterelementalDistance(IAtomContainer mol, 
+    		String elA, String elB)
+    {
+    	ArrayList<Double> vals = new ArrayList<Double>();
+        for (int i=0; i<mol.getAtomCount(); i++)
+        {
+        	IAtom atmI = mol.getAtom(i);
+        	if (atmI.getSymbol().equals(elA))
+        	{
+	        	for (int j=i+1; j<mol.getAtomCount(); j++)
+	            {
+	            	IAtom atmJ = mol.getAtom(j);
+	            	if (atmJ.getSymbol().equals(elB))
+	            	{
+	            		double dist = calculateInteratomicDistance(atmI, atmJ);
+	            		vals.add(dist);
+	            	}
+	            }
+        	}
+        }
+        Collections.sort(vals);
+    	return vals.get(0);
     }
 
 //------------------------------------------------------------------------------
 
+    public static Set<String> getElementalSymbols(IAtomContainer mol,
+    		boolean ingoreDummy)
+    {
+    	Set<String> list = new HashSet<String>();
+        for (int i=0; i<mol.getAtomCount(); i++)
+        {
+        	IAtom atm = mol.getAtom(i);
+        	if (ingoreDummy && !AtomUtils.isElement(atm.getSymbol()))
+        	{
+        		continue;
+        	}
+        	else
+        	{
+        		list.add(atm.getSymbol());
+        	}
+        }
+    	return list;
+    }
 }

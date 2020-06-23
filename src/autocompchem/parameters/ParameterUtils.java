@@ -41,29 +41,29 @@ public class ParameterUtils
 
     public static String removeMultilineLabels(String parValue)
     {
-	String[] parts = parValue.split(System.getProperty("line.separator"));
-	StringBuilder sb = new StringBuilder();
-	for (int i=0; i<parts.length; i++)
-	{
-	    String line = parts[i];
-	    boolean hasBegin = line.contains(ParameterConstants.STARTMULTILINE);
-	    line = line.replace(ParameterConstants.STARTMULTILINE,"");
+        String[] parts = parValue.split(System.getProperty("line.separator"));
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<parts.length; i++)
+        {
+            String line = parts[i];
+            boolean hasBegin = line.contains(ParameterConstants.STARTMULTILINE);
+            line = line.replace(ParameterConstants.STARTMULTILINE,"");
             boolean hasEnd = line.contains(ParameterConstants.ENDMULTILINE);
             line = line.replace(ParameterConstants.ENDMULTILINE,"");
-	    if ((hasBegin || hasEnd) && line.matches("\\s+"))
-	    {
-		continue;
-	    }
-	    else
-	    {
-		if (!sb.toString().equals(""))
-		{
-		    sb.append(System.getProperty("line.separator"));
-		}
-		sb.append(line);
-	    }
-	}
-	return sb.toString();
+            if ((hasBegin || hasEnd) && line.matches("\\s+"))
+            {
+                continue;
+            }
+            else
+            {
+                if (!sb.toString().equals(""))
+                {
+                    sb.append(System.getProperty("line.separator"));
+                }
+                sb.append(line);
+            }
+        }
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

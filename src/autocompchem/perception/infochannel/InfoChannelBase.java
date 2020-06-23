@@ -41,7 +41,7 @@ public class InfoChannelBase
      * Indexing of InfoChannels by type
      */
     private Map<InfoChannelType,ArrayList<InfoChannel>> mapByICType = 
-		          new HashMap<InfoChannelType,ArrayList<InfoChannel>>();
+                          new HashMap<InfoChannelType,ArrayList<InfoChannel>>();
 
 //------------------------------------------------------------------------------
 
@@ -62,21 +62,21 @@ public class InfoChannelBase
 
     public void addChannel(InfoChannel channel)
     {
-	allInfoChans.add(channel);
+        allInfoChans.add(channel);
 
 //TODO deal with UNDEFINED type as if it was a whildcard
 
-	//Indexing by InfoChannelType
-	InfoChannelType ict = channel.getType();
-	if (mapByICType.keySet().contains(ict))
-	{
-	    mapByICType.get(ict).add(channel);
-	}
-	else
-	{
-	    mapByICType.put(ict,
-			    new ArrayList<InfoChannel>(Arrays.asList(channel)));
-	}
+        //Indexing by InfoChannelType
+        InfoChannelType ict = channel.getType();
+        if (mapByICType.keySet().contains(ict))
+        {
+            mapByICType.get(ict).add(channel);
+        }
+        else
+        {
+            mapByICType.put(ict,
+                            new ArrayList<InfoChannel>(Arrays.asList(channel)));
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ public class InfoChannelBase
 
     public Set<InfoChannelType> getAllChannelType()
     {
-	return mapByICType.keySet();
+        return mapByICType.keySet();
     }
 
 //------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ public class InfoChannelBase
 
     public ArrayList<InfoChannel> getChannelsOfType(InfoChannelType ict)
     {
-	return mapByICType.get(ict);
+        return mapByICType.get(ict);
     }
 
 //------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ public class InfoChannelBase
     {
         String newline = System.getProperty("line.separator");
         StringBuilder sb = new StringBuilder();
-	sb.append(newline).append("Information Channels:").append(newline);
+        sb.append(newline).append("Information Channels:").append(newline);
         for (InfoChannel ic : allInfoChans)
         {
             sb.append(" -> ").append(ic.toString()).append(newline);
@@ -130,14 +130,14 @@ public class InfoChannelBase
 
     public String toString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append("InfoChannelBase [");
-	for (InfoChannel ic : allInfoChans)
-	{
-	    sb.append(ic.toString()).append("; ");
-	}
+        StringBuilder sb = new StringBuilder();
+        sb.append("InfoChannelBase [");
+        for (InfoChannel ic : allInfoChans)
+        {
+            sb.append(ic.toString()).append("; ");
+        }
         sb.append("]");
-	return sb.toString();
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

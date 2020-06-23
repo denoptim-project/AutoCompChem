@@ -36,11 +36,11 @@ import org.openscience.cdk.AtomType;
 public class ForceFieldParamsSet implements Serializable
 {
     /**
-	 * Version ID
-	 */
-	private static final long serialVersionUID = -5183573228916122504L;
+         * Version ID
+         */
+        private static final long serialVersionUID = -5183573228916122504L;
 
-	/**
+        /**
      * Reference name
      */
     private String name = "noname";
@@ -123,7 +123,7 @@ public class ForceFieldParamsSet implements Serializable
     
     public void setName(String name)
     {
-	this.name = name;
+        this.name = name;
     }
 
 //------------------------------------------------------------------------------
@@ -136,15 +136,15 @@ public class ForceFieldParamsSet implements Serializable
     public void addAtomType(AtomType at)
     {
         atmTyps.put(at.getAtomTypeName(),at);
-	Object atCls = at.getProperty(ForceFieldConstants.ATMCLSINT);
-	if (atCls!=null && !atmClasses.containsKey(atCls.toString()))
-	{
-	    //NB: to retain consistency with CDK the AtomType object is used
-	    //to represent atom classes.
-	    AtomType ac = new AtomType("X");
-	    ac.setProperty(ForceFieldConstants.ATMCLSSTR,atCls.toString());
-	    this.atmClasses.put(atCls.toString(),ac);
-	}
+        Object atCls = at.getProperty(ForceFieldConstants.ATMCLSINT);
+        if (atCls!=null && !atmClasses.containsKey(atCls.toString()))
+        {
+            //NB: to retain consistency with CDK the AtomType object is used
+            //to represent atom classes.
+            AtomType ac = new AtomType("X");
+            ac.setProperty(ForceFieldConstants.ATMCLSSTR,atCls.toString());
+            this.atmClasses.put(atCls.toString(),ac);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -156,10 +156,10 @@ public class ForceFieldParamsSet implements Serializable
 
     public void addAllAtomTypes(Set<AtomType> atmTyps)
     {
-	for (AtomType at : atmTyps)
-	{
-	    addAtomType(at);
-	}
+        for (AtomType at : atmTyps)
+        {
+            addAtomType(at);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -177,16 +177,16 @@ public class ForceFieldParamsSet implements Serializable
     public void addParameter(ForceFieldParameter ffPar, String type)
     {
         if (params.containsKey(type))
-	{
-	    params.get(type).add(ffPar);
-	}
-	else
-	{
-	    ArrayList<ForceFieldParameter> list = 
-					   new ArrayList<ForceFieldParameter>();
-	    list.add(ffPar);
-	    params.put(type,list);
-	}
+        {
+            params.get(type).add(ffPar);
+        }
+        else
+        {
+            ArrayList<ForceFieldParameter> list = 
+                                           new ArrayList<ForceFieldParameter>();
+            list.add(ffPar);
+            params.put(type,list);
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ public class ForceFieldParamsSet implements Serializable
 
     public void addParameter(ForceFieldParameter ffPar)
     {
-	addParameter(ffPar, ffPar.getType());
+        addParameter(ffPar, ffPar.getType());
     }
 
 //------------------------------------------------------------------------------
@@ -225,14 +225,14 @@ public class ForceFieldParamsSet implements Serializable
 
     public AtomType getAtomClass(String acRef) throws Throwable
     {
-	if (atmClasses.containsKey(acRef))
-	{
-	    return atmClasses.get(acRef);
-	}
-	else
-	{
+        if (atmClasses.containsKey(acRef))
+        {
+            return atmClasses.get(acRef);
+        }
+        else
+        {
             throw new Throwable("Atom class '" + acRef + "' not found.");
-	}
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -253,12 +253,12 @@ public class ForceFieldParamsSet implements Serializable
     {
         for (Map.Entry<String,AtomType> e : atmTyps.entrySet())
         {
-	    AtomType at = e.getValue();
-	    Object pObj = at.getProperty(ForceFieldConstants.ATMTYPINT);
-	    if (pObj == null)
-	    {
-	        continue;
-	    }
+            AtomType at = e.getValue();
+            Object pObj = at.getProperty(ForceFieldConstants.ATMTYPINT);
+            if (pObj == null)
+            {
+                continue;
+            }
             int id = Integer.parseInt(pObj.toString());
             if (id == iat)
             {
@@ -277,7 +277,7 @@ public class ForceFieldParamsSet implements Serializable
  
     public  Map<String,AtomType> getAtomTypes()
     {
-	return atmTyps;
+        return atmTyps;
     }
 
 //------------------------------------------------------------------------------
@@ -314,7 +314,7 @@ public class ForceFieldParamsSet implements Serializable
 
     public ArrayList<ForceFieldParameter> getParamsOfType(String type)
     {
-	return params.get(type);
+        return params.get(type);
     }
 
 //------------------------------------------------------------------------------
@@ -326,10 +326,10 @@ public class ForceFieldParamsSet implements Serializable
 
     public ArrayList<String> getPropertyKeys()
     {
-	ArrayList<String> sorted = new ArrayList<String>();
-	sorted.addAll(props.keySet());
-	Collections.sort(sorted);
-	return sorted;
+        ArrayList<String> sorted = new ArrayList<String>();
+        sorted.addAll(props.keySet());
+        Collections.sort(sorted);
+        return sorted;
     } 
 
 //------------------------------------------------------------------------------
@@ -343,7 +343,7 @@ public class ForceFieldParamsSet implements Serializable
 
     public boolean hasProperty(String propName)
     {
-	return props.containsKey(propName);
+        return props.containsKey(propName);
     }
 
 //------------------------------------------------------------------------------

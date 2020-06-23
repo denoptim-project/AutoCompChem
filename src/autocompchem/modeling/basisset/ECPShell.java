@@ -61,7 +61,7 @@ public class ECPShell
 
     public ECPShell(String type)
     {
-	this.type = type;
+        this.type = type;
     }
 
 //------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ public class ECPShell
 
     public void add(Primitive p)
     {
-	primitives.add(p);
+        primitives.add(p);
     }
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ public class ECPShell
 
     public String getType()
     {
-	return type;
+        return type;
     }
 
 //------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ public class ECPShell
 
     public int getSize()
     {
-	return primitives.size();
+        return primitives.size();
     }
 
 //------------------------------------------------------------------------------
@@ -130,28 +130,28 @@ public class ECPShell
 
     public String toInputFileString(String format)
     {
-	StringBuilder sb = new StringBuilder();
-	String nl = System.getProperty("line.separator");
-	switch (format.toUpperCase())
-	{
-	    case "GAUSSIAN":
-		sb.append(String.format("%-20s",type)).append(nl);
-		sb.append(String.format(" %2d",primitives.size())).append(nl);
-	        for (Primitive p : primitives)
-		{
-		    sb.append(String.format("%-1d",p.getAngMmnt()));
+        StringBuilder sb = new StringBuilder();
+        String nl = System.getProperty("line.separator");
+        switch (format.toUpperCase())
+        {
+            case "GAUSSIAN":
+                sb.append(String.format("%-20s",type)).append(nl);
+                sb.append(String.format(" %2d",primitives.size())).append(nl);
+                for (Primitive p : primitives)
+                {
+                    sb.append(String.format("%-1d",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                            + (p.getExpPrecision()-1) + "E     ";
                     String cForm = "%" + (p.getCoeffPrecision() + 6) + "."
                                               + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
                     sb.append(String.format(cForm,p.getCoeff()));
-		    sb.append(nl);
-		}
-	        break;
+                    sb.append(nl);
+                }
+                break;
 
             case "NWCHEM":
-		// The header is printed by the CenterBasisSet class.
+                // The header is printed by the CenterBasisSet class.
                 for (Primitive p : primitives)
                 {
                     sb.append(String.format("  %d ",p.getAngMmnt()));
@@ -165,12 +165,12 @@ public class ECPShell
                 }
                 break;
 
-	    default:
-		String msg = "ERROR! Format '" + format + "' is not a known "
-			  + "format for reporting ECPShells. Check your input.";
-		Terminator.withMsgAndStatus(msg,-1);
-	}
-	return sb.toString();
+            default:
+                String msg = "ERROR! Format '" + format + "' is not a known "
+                          + "format for reporting ECPShells. Check your input.";
+                Terminator.withMsgAndStatus(msg,-1);
+        }
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

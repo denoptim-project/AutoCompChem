@@ -556,7 +556,7 @@ public class MolecularComparator
         IAtomContainer refMol = refMols.get(0);
 
         ComparatorOfGeometries cog = new ComparatorOfGeometries(verbosity);
-	cog.compareGeometryBySuperposition(inMol,refMol);
+        cog.compareGeometryBySuperposition(inMol,refMol);
 
 //TODO: print ourput?
 
@@ -580,7 +580,7 @@ public class MolecularComparator
                                                             IAtomContainer molB)
     {
         ComparatorOfGeometries cog = new ComparatorOfGeometries(verbosity);
-	return cog.getAtomMapping(molA,molB);
+        return cog.getAtomMapping(molA,molB);
     }
 
 //------------------------------------------------------------------------------
@@ -616,33 +616,33 @@ public class MolecularComparator
             IAtomContainer fA = fragsA.get(i);
 //TODO del
 IOtools.writeSDFAppend("frags.sdf",fA,true);
-	}
+        }
         for (int j=0; j<fragsB.size(); j++)
         {
             IAtomContainer fB = fragsB.get(j);
 //TODO del
 IOtools.writeSDFAppend("frags.sdf",fB,true);
-	}
+        }
 
         //Compare single fragmens: all vs. all
         DistanceMatrix dmRmsds = new DistanceMatrix();
         DistanceMatrix dmSizes = new DistanceMatrix();
-	Map<Integer,Map<Integer,Map<Integer,Integer>>> allMaps =
-	               new HashMap<Integer,Map<Integer,Map<Integer,Integer>>>();
+        Map<Integer,Map<Integer,Map<Integer,Integer>>> allMaps =
+                       new HashMap<Integer,Map<Integer,Map<Integer,Integer>>>();
         for (int i=0; i<fragsA.size(); i++)
         {
-	    IAtomContainer fA = fragsA.get(i);
-	    allMaps.put(i, new HashMap<Integer,Map<Integer,Integer>>());
+            IAtomContainer fA = fragsA.get(i);
+            allMaps.put(i, new HashMap<Integer,Map<Integer,Integer>>());
             for (int j=0; j<fragsB.size(); j++)
             {
-	        IAtomContainer fB = fragsB.get(j);
+                IAtomContainer fB = fragsB.get(j);
 
                 ComparatorOfGeometries cog = new ComparatorOfGeometries(
-								   verbosity-2);
-        	allMaps.get(i).put(j,cog.getAtomMapping(fA,fB));
-		dmRmsds.put(i,j,cog.getAlignementScore());
-		dmSizes.put(i,j,cog.getSizeOfMap());
-		    
+                                                                   verbosity-2);
+                allMaps.get(i).put(j,cog.getAtomMapping(fA,fB));
+                dmRmsds.put(i,j,cog.getAlignementScore());
+                dmSizes.put(i,j,cog.getSizeOfMap());
+                    
 //TODO del
 System.out.println("Done with combination "+i+":"+j+" SIZE: "+cog.getSizeOfMap()+" SCORE: "+cog.getAlignementScore());
             }
@@ -661,13 +661,13 @@ System.out.println("min score:"+dmRmsds.getMinDistOnColumn(i));
 }
 */
 
-	// Combine the best fragment-fragment matches tu build atom mapping
-	Map<Integer,Integer> bestCombination = new HashMap<Integer,Integer>();
-	if (fragsA.size() <= fragsB.size())
-	{
-	    ArrayList<Integer> usedFragsJ = new ArrayList<Integer>();
-	    for (int i=0; i<fragsA.size(); i++)
-	    {
+        // Combine the best fragment-fragment matches tu build atom mapping
+        Map<Integer,Integer> bestCombination = new HashMap<Integer,Integer>();
+        if (fragsA.size() <= fragsB.size())
+        {
+            ArrayList<Integer> usedFragsJ = new ArrayList<Integer>();
+            for (int i=0; i<fragsA.size(); i++)
+            {
 /*
 TODO del
 for (IAtom atm : fragsA.get(i).atoms())
@@ -675,78 +675,78 @@ for (IAtom atm : fragsA.get(i).atoms())
     System.out.println(" orig: "+atm.getProperty(ACCConstants.ATMIDPROP).toString());
 }
 */
-		int cmJ = -1;
-		double min = Double.MAX_VALUE;
-		ArrayList<Double> vals = dmSizes.getAllDistsOnRow(i);
-		for (int j=0; j<vals.size(); j++)
-		{
-		    if (vals.get(j).equals(dmSizes.getMaxDistOnColumn(i)))
-		    {
-			if (dmRmsds.get(i,j) < min)
-			{
-			    //here we have the max similarity and min RMSD
-			    //but need to chekc that fragment "j" is not used
-			    if (!usedFragsJ.contains(j))
-			    { 
-			        min = dmRmsds.get(i,j);
-			        cmJ = j;
-			    }
-			}
-		    }
-		}
-		usedFragsJ.add(cmJ);
+                int cmJ = -1;
+                double min = Double.MAX_VALUE;
+                ArrayList<Double> vals = dmSizes.getAllDistsOnRow(i);
+                for (int j=0; j<vals.size(); j++)
+                {
+                    if (vals.get(j).equals(dmSizes.getMaxDistOnColumn(i)))
+                    {
+                        if (dmRmsds.get(i,j) < min)
+                        {
+                            //here we have the max similarity and min RMSD
+                            //but need to chekc that fragment "j" is not used
+                            if (!usedFragsJ.contains(j))
+                            { 
+                                min = dmRmsds.get(i,j);
+                                cmJ = j;
+                            }
+                        }
+                    }
+                }
+                usedFragsJ.add(cmJ);
 //TODO del
 System.out.println("Best j for i="+i+" is j="+cmJ);
-		for (Map.Entry e : allMaps.get(i).get(cmJ).entrySet())
-		{
+                for (Map.Entry e : allMaps.get(i).get(cmJ).entrySet())
+                {
 //TODO del
 System.out.println("-> Mapped "+e.getKey()+","+e.getValue());
-		    int atmInFrgIdJ = Integer.parseInt(e.getKey().toString());
-		    int atmInFrgIdI = Integer.parseInt(e.getValue().toString());
-		    IAtom atmInFrgA = fragsA.get(i).getAtom(atmInFrgIdI);
-		    IAtom atmInFrgB = fragsB.get(cmJ).getAtom(atmInFrgIdJ);
-		    int origIdA = Integer.parseInt(atmInFrgA.getProperty(
-				       ACCConstants.ATMIDPROP).toString());
-		    int origIdB = Integer.parseInt(atmInFrgB.getProperty(
-				       ACCConstants.ATMIDPROP).toString());
+                    int atmInFrgIdJ = Integer.parseInt(e.getKey().toString());
+                    int atmInFrgIdI = Integer.parseInt(e.getValue().toString());
+                    IAtom atmInFrgA = fragsA.get(i).getAtom(atmInFrgIdI);
+                    IAtom atmInFrgB = fragsB.get(cmJ).getAtom(atmInFrgIdJ);
+                    int origIdA = Integer.parseInt(atmInFrgA.getProperty(
+                                       ACCConstants.ATMIDPROP).toString());
+                    int origIdB = Integer.parseInt(atmInFrgB.getProperty(
+                                       ACCConstants.ATMIDPROP).toString());
 
 //TODO del
 System.out.println("   Translating to old IDs: "+origIdA+","+ origIdB);
-	            bestCombination.put(origIdA, origIdB);
-		}
-	    }
-	}
-	else
-	{
-	    System.out.println("TODO: not implemented yet");
+                    bestCombination.put(origIdA, origIdB);
+                }
+            }
+        }
+        else
+        {
+            System.out.println("TODO: not implemented yet");
 //TODO: write case in which fragsB is smaller than fragsA
 System.exit(-1);
-	}
+        }
 
-	//Now we deal with the remaining atoms
-	int szA = molA.getAtomCount();
-	int szB = molB.getAtomCount();
-	int minSz = 0;
-	boolean smallA = true;
-	if (szA<=szB)
-	{
-	    minSz = szA;
-	}
-	else
-	{
-	    minSz = szB;
-	    smallA = false;
-	}
-	if (bestCombination.size() < minSz)
-	{
-	    ArrayList<Integer> missingAtmsA = new ArrayList<Integer>();
-	    for (int i=0; i<szA; i++)
-	    {
-		if (!bestCombination.keySet().contains(i))
-		{
-		    missingAtmsA.add(i);
-		}
-	    }
+        //Now we deal with the remaining atoms
+        int szA = molA.getAtomCount();
+        int szB = molB.getAtomCount();
+        int minSz = 0;
+        boolean smallA = true;
+        if (szA<=szB)
+        {
+            minSz = szA;
+        }
+        else
+        {
+            minSz = szB;
+            smallA = false;
+        }
+        if (bestCombination.size() < minSz)
+        {
+            ArrayList<Integer> missingAtmsA = new ArrayList<Integer>();
+            for (int i=0; i<szA; i++)
+            {
+                if (!bestCombination.keySet().contains(i))
+                {
+                    missingAtmsA.add(i);
+                }
+            }
             ArrayList<Integer> missingAtmsB = new ArrayList<Integer>();
             for (int i=0; i<szB; i++)
             {
@@ -761,16 +761,16 @@ if (smallA)
 {
     for (int i=0; i<missingAtmsA.size(); i++)
     {
-	bestCombination.put(missingAtmsA.get(i),missingAtmsB.get(i));
+        bestCombination.put(missingAtmsA.get(i),missingAtmsB.get(i));
     }
 }
 //end of block to remove
 
 
-	    //TODO
+            //TODO
             System.out.println("TODO permutations of unmapped atoms");
 //System.exit(-1);
-	}
+        }
 
 
 /*
@@ -806,7 +806,7 @@ if (smallA)
         }
         catch (Throwable t)
         {
-	    t.printStackTrace();
+            t.printStackTrace();
             IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molA,false);
             IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molB,true);
             Terminator.withMsgAndStatus("ERROR! Cannot clone mols to calculate "

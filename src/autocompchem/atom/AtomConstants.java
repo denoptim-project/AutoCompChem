@@ -51,7 +51,7 @@ public class AtomConstants
      */
     public final static Set<String> ALLDUMMYELSYMBOLS = new HashSet<String>(
                                 Arrays.asList(DUMMYSYMBOL,
-					      DUMMYSYMBOLMOLDEN,
+                                              DUMMYSYMBOLMOLDEN,
                                               ATTACHMENTPOINTSYMBOL));
 
 }

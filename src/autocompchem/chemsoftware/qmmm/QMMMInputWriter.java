@@ -584,7 +584,7 @@ public class QMMMInputWriter
                 }
 
                 //Set total number of atoms
-		qmmmJob.setNatoms(mol.getAtomCount());
+                qmmmJob.setNatoms(mol.getAtomCount());
 
                 //Set charge and spin multiplicity
                 if (inFormat=="SDF")
@@ -980,16 +980,16 @@ public class QMMMInputWriter
 
     private IAtomContainer getIACWithAtomTypes()
     {
-	if (atmTypFile.equals("") || atmTypFormat.equals(""))
-	{
-	    Terminator.withMsgAndStatus("ERROR! Attempt to recover atom types "
-		 	   + "from file requires the ATOMTYPESFILE option.",-1);
-	}
+        if (atmTypFile.equals("") || atmTypFormat.equals(""))
+        {
+            Terminator.withMsgAndStatus("ERROR! Attempt to recover atom types "
+                            + "from file requires the ATOMTYPESFILE option.",-1);
+        }
         IAtomContainer iac = new AtomContainer();
         switch (atmTypFormat.toUpperCase())
         {
             case "TINKER":
-		iac = TinkerXYZReader.readTinkerXYZFIle(atmTypFile);
+                iac = TinkerXYZReader.readTinkerXYZFIle(atmTypFile);
                 break;
 
             default:

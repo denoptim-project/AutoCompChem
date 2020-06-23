@@ -58,7 +58,7 @@ public class BasisSet
 
     public void addCenterSpecBSet(CenterBasisSet cbs)
     {
-	centerBSs.add(cbs);
+        centerBSs.add(cbs);
     }
 
 //------------------------------------------------------------------------------
@@ -72,14 +72,14 @@ public class BasisSet
 
     public boolean hasCenter(String centerId)
     {
-	for (CenterBasisSet cbs : centerBSs)
-	{
-	    if (cbs.getCenterId().equals(centerId))
-	    {
-		return true;
-	    }
-	}
-	return false;
+        for (CenterBasisSet cbs : centerBSs)
+        {
+            if (cbs.getCenterId().equals(centerId))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
 //------------------------------------------------------------------------------
@@ -104,9 +104,9 @@ public class BasisSet
                 return cbs;
             }
         }
-	CenterBasisSet newCbs = new CenterBasisSet(centerId);
-	centerBSs.add(newCbs);
-	return newCbs;
+        CenterBasisSet newCbs = new CenterBasisSet(centerId);
+        centerBSs.add(newCbs);
+        return newCbs;
     }
 
 //------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ public class BasisSet
 
     public List<CenterBasisSet> getAllCenterBSs()
     {
-	return centerBSs;
+        return centerBSs;
     }
 
 //------------------------------------------------------------------------------
@@ -130,16 +130,16 @@ public class BasisSet
 
     public boolean hasECP()
     {
-	boolean res = false;
-	for (CenterBasisSet cbs : centerBSs)
-	{
-	    if (cbs.getECPShells().size() > 0)
-	    {
-		res = true;
-		break;
-	    }
-	}
-	return res;
+        boolean res = false;
+        for (CenterBasisSet cbs : centerBSs)
+        {
+            if (cbs.getECPShells().size() > 0)
+            {
+                res = true;
+                break;
+            }
+        }
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -164,22 +164,22 @@ public class BasisSet
                 {
                     sb.append(cbs.toInputFileStringBS(format));
                 }
-		sb.append(nl);
+                sb.append(nl);
                 break;
 
             case "NWCHEM":
-		sb.append("BASIS \"ao basis\" print").append(nl);
+                sb.append("BASIS \"ao basis\" print").append(nl);
                 for (CenterBasisSet cbs : centerBSs)
                 {
                     sb.append(cbs.toInputFileStringBS(format));
                 }
-		sb.append("END").append(nl);
+                sb.append("END").append(nl);
                 break;
 
             default:
                 String msg = "ERROR! Format '" + format + "' is not a known "
                              + "format for reporting basis sets (in BasisSet-BS"
-			     + "). Check your input.";
+                             + "). Check your input.";
                 Terminator.withMsgAndStatus(msg,-1);
         }
         return sb.toString();
@@ -222,7 +222,7 @@ public class BasisSet
             default:
                 String msg = "ERROR! Format '" + format + "' is not a known "
                              + "format for reporting basis sets (in BasisSet-"
-			     + "ECP). Check your input.";
+                             + "ECP). Check your input.";
                 Terminator.withMsgAndStatus(msg,-1);
         }
         return sb.toString();
@@ -242,9 +242,9 @@ public class BasisSet
     public String toInputFileString(String format)
     {
         StringBuilder sb = new StringBuilder();
-	sb.append(toInputFileStringBS(format));
+        sb.append(toInputFileStringBS(format));
 //        sb.append(System.getProperty("line.separator"));
-	sb.append(toInputFileStringECP(format));
+        sb.append(toInputFileStringECP(format));
 /*
 //KEEP: we might need this if we encounter a format that does not split the bs and ECP sections.
 
@@ -260,29 +260,29 @@ public class BasisSet
                 {
                     sb.append(cbs.toInputFileStringECP(format));
                 }
-		sb.append(nl);
+                sb.append(nl);
                 break;
 
             case "NWCHEM":
-		sb.append("BASIS \"ao basis\" print").append(nl);
+                sb.append("BASIS \"ao basis\" print").append(nl);
                 for (CenterBasisSet cbs : centerBSs)
                 {
                     sb.append(cbs.toInputFileStringBS(format));
                 }
-		sb.append("END").append(nl);
+                sb.append("END").append(nl);
                 sb.append(nl);
-		sb.append("ECP").append(nl);
+                sb.append("ECP").append(nl);
                 for (CenterBasisSet cbs : centerBSs)
                 {
                     sb.append(cbs.toInputFileStringECP(format));
                 }
-		sb.append("END").append(nl);
+                sb.append("END").append(nl);
                 break;
 
             default:
                 String msg = "ERROR! Format '" + format + "' is not a known "
                              + "format for reporting basis sets (in BasisSet). "
-			     + "Check your input.";
+                             + "Check your input.";
                 Terminator.withMsgAndStatus(msg,-1);
         }
 */

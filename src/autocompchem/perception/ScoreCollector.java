@@ -168,7 +168,7 @@ public class ScoreCollector
 
     public String printToString()
     {
-	String newline = System.getProperty("line.separator");
+        String newline = System.getProperty("line.separator");
         StringBuilder sb = new StringBuilder();
         sb.append("====================");
         sb.append(" Scores collection ====================");

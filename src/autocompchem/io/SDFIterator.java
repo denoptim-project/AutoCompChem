@@ -54,10 +54,10 @@ public class SDFIterator extends IteratingMDLReader
 
     public SDFIterator(String inFile) throws Throwable
     {
-	super(new FileInputStream(inFile), 
-					DefaultChemObjectBuilder.getInstance());
-	this.nnn = 0;
-	this.separator = "\\s+";
+        super(new FileInputStream(inFile), 
+                                        DefaultChemObjectBuilder.getInstance());
+        this.nnn = 0;
+        this.separator = "\\s+";
     }
 
 //------------------------------------------------------------------------------
@@ -72,8 +72,8 @@ public class SDFIterator extends IteratingMDLReader
 
     public SDFIterator(String inFile, String separator) throws Throwable
     {
-	super(new FileInputStream(inFile), 
-					DefaultChemObjectBuilder.getInstance());
+        super(new FileInputStream(inFile), 
+                                        DefaultChemObjectBuilder.getInstance());
         this.nnn = 0;
         this.separator = separator;
     }
@@ -87,28 +87,28 @@ public class SDFIterator extends IteratingMDLReader
 
     public IAtomContainer next()
     {
-	//Get Molecule
-	IAtomContainer mol = super.next();
+        //Get Molecule
+        IAtomContainer mol = super.next();
 
-	//Update counter
-	nnn++;
+        //Update counter
+        nnn++;
 
-	//Get existing name, if any
-	String molName = MolecularUtils.getNameOrID(mol);
+        //Get existing name, if any
+        String molName = MolecularUtils.getNameOrID(mol);
 
-	//Fix name
-	if (molName.equals("noname"))
+        //Fix name
+        if (molName.equals("noname"))
         {
             molName = "MOL_" + Integer.toString(nnn);
             mol.setProperty("cdk:Title",Integer.toString(nnn));
-	} else {
-	    String[] p = molName.split(separator);
-	    molName = p[0];
-	    mol.setProperty("cdk:Title",molName);
-	}
+        } else {
+            String[] p = molName.split(separator);
+            molName = p[0];
+            mol.setProperty("cdk:Title",molName);
+        }
 
-	//Return the pre-treated molecule
-	return mol;
+        //Return the pre-treated molecule
+        return mol;
     }
 
 //------------------------------------------------------------------------------

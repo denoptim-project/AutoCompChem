@@ -59,7 +59,7 @@ public class GaussianJob
 
     public GaussianJob()
     {
-	numSteps = 0;
+        numSteps = 0;
     }
 
 //------------------------------------------------------------------------------
@@ -95,45 +95,45 @@ public class GaussianJob
 
     public GaussianJob(ArrayList<String> lines)
     {
-	numSteps = 0;
-	ArrayList<String> linesOfAStep = new ArrayList<String>();
+        numSteps = 0;
+        ArrayList<String> linesOfAStep = new ArrayList<String>();
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);
 
-	    if (line.toUpperCase().contains(ParameterConstants.STARTMULTILINE))
-	    {
-		boolean goon = true;
-		while (goon && i<lines.size())
-		{
-		    i++;
-		    String inLine = lines.get(i);
-		    goon = !inLine.toUpperCase().contains(
-					       ParameterConstants.ENDMULTILINE);		    line = line + System.getProperty("line.separator") + inLine;
-		}
-		if (goon)
-		{
-		    String msg = "ERROR! A multiline block was opened but no "
-				 + "closed. Check the input, in particular the "
-				 + "following block of lines: " + line;
-		    Terminator.withMsgAndStatus(msg,-1);
-		}
-	    }
+            if (line.toUpperCase().contains(ParameterConstants.STARTMULTILINE))
+            {
+                boolean goon = true;
+                while (goon && i<lines.size())
+                {
+                    i++;
+                    String inLine = lines.get(i);
+                    goon = !inLine.toUpperCase().contains(
+                                               ParameterConstants.ENDMULTILINE);                    line = line + System.getProperty("line.separator") + inLine;
+                }
+                if (goon)
+                {
+                    String msg = "ERROR! A multiline block was opened but no "
+                                 + "closed. Check the input, in particular the "
+                                 + "following block of lines: " + line;
+                    Terminator.withMsgAndStatus(msg,-1);
+                }
+            }
 
             if (line.toUpperCase().equals(
-				GaussianConstants.STEPSEPARATOR.toUpperCase()))
+                                GaussianConstants.STEPSEPARATOR.toUpperCase()))
             {
-		GaussianStep step = new GaussianStep(linesOfAStep);
-		addStep(step);
-		linesOfAStep.clear();
+                GaussianStep step = new GaussianStep(linesOfAStep);
+                addStep(step);
+                linesOfAStep.clear();
             } else {
-		linesOfAStep.add(line);
-	    }
+                linesOfAStep.add(line);
+            }
         }
 
-	//Deal with the last step that doesn't have a separator at the end
-	GaussianStep step = new GaussianStep(linesOfAStep);
-	addStep(step);
+        //Deal with the last step that doesn't have a separator at the end
+        GaussianStep step = new GaussianStep(linesOfAStep);
+        addStep(step);
 
     }
 
@@ -147,8 +147,8 @@ public class GaussianJob
 
     public void addStep(GaussianStep step)
     {
-	steps.add(step);
-	numSteps++;
+        steps.add(step);
+        numSteps++;
     }
 
 //------------------------------------------------------------------------------
@@ -161,12 +161,12 @@ public class GaussianJob
 
     public GaussianStep getStep(int i)
     {
-	if (i > numSteps)
-	{
-	    Terminator.withMsgAndStatus("ERROR! Trying to get step number " + i
-	       + " in a Gaussian job that has only " + numSteps + " steps.",-1);
-	}
-	return steps.get(i);
+        if (i > numSteps)
+        {
+            Terminator.withMsgAndStatus("ERROR! Trying to get step number " + i
+               + " in a Gaussian job that has only " + numSteps + " steps.",-1);
+        }
+        return steps.get(i);
     }
 
 //------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ public class GaussianJob
     {
         for (int i=0; i<numSteps; i++)
         {
-	    getStep(i).getLinkCommand().setValue(key, value);
+            getStep(i).getLinkCommand().setValue(key, value);
         }
     }
 
@@ -208,7 +208,7 @@ public class GaussianJob
     {
         for (int i=0; i<numSteps; i++)
         {
-	    getStep(i).getMolSpec().setCharge(newCharge);
+            getStep(i).getMolSpec().setCharge(newCharge);
         }
     }
 
@@ -262,7 +262,7 @@ public class GaussianJob
                 lines.add(GaussianConstants.STEPSEPARATOR);
             }
 
-	    lines.addAll(getStep(step).toLinesInp());
+            lines.addAll(getStep(step).toLinesInp());
         }
         return lines;
     }
@@ -290,7 +290,7 @@ public class GaussianJob
                 lines.add(GaussianConstants.STEPSEPARATOR);
             }
 
-	    lines.addAll(getStep(step).toLinesJob());
+            lines.addAll(getStep(step).toLinesJob());
         }
         return lines;
     }

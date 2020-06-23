@@ -52,7 +52,7 @@ public class LigandInSpace
 
     public LigandInSpace()
     {
-	this.name = "noname";
+        this.name = "noname";
         this.atm = new Atom();
         this.cnt = new Atom();
         this.clVec = new Vector3d(0.0, 0.0, 0.0);
@@ -74,13 +74,13 @@ public class LigandInSpace
         this.atm = atm;
         this.cnt = cnt;
 
-	//calculate vector center-ligand atom
-	Point3d pLig = MolecularUtils.getCoords3d(atm);
-	Point3d pCnt = MolecularUtils.getCoords3d(cnt);
-	this.clVec = new Vector3d(pCnt.x - pLig.x, 
-				  pCnt.y - pLig.y,
+        //calculate vector center-ligand atom
+        Point3d pLig = MolecularUtils.getCoords3d(atm);
+        Point3d pCnt = MolecularUtils.getCoords3d(cnt);
+        this.clVec = new Vector3d(pCnt.x - pLig.x, 
+                                  pCnt.y - pLig.y,
                                   pCnt.z - pLig.z);
-	this.clVecNorm = new Vector3d(pCnt.x - pLig.x,
+        this.clVecNorm = new Vector3d(pCnt.x - pLig.x,
                                   pCnt.y - pLig.y,
                                   pCnt.z - pLig.z);
         this.clVecNorm.normalize();
@@ -172,14 +172,14 @@ public class LigandInSpace
 
     public double distanceFrom(LigandInSpace otherLig)
     {
-	double dist = -1.0;
-	Point3d thisPt = new Point3d(clVec.x, clVec.y, clVec.z);
-	Vector3d otherVec = otherLig.getVector();
+        double dist = -1.0;
+        Point3d thisPt = new Point3d(clVec.x, clVec.y, clVec.z);
+        Vector3d otherVec = otherLig.getVector();
         Point3d otherPt = new Point3d(otherVec.x, otherVec.y, otherVec.z);
 
-	dist = thisPt.distance(otherPt);
+        dist = thisPt.distance(otherPt);
 
-	return dist;
+        return dist;
     }
 
 //------------------------------------------------------------------------------

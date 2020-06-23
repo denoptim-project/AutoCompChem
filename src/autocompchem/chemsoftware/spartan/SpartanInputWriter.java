@@ -393,9 +393,9 @@ public class SpartanInputWriter
         }
 
         //SMARTS rules freezeng atoms
-	if (params.contains("FREEZEATOMS"))
-	{
-	    this.defFrozen = true;
+        if (params.contains("FREEZEATOMS"))
+        {
+            this.defFrozen = true;
             String all =
                        params.getParameter("FREEZEATOMS").getValue().toString();
             getNamedSmartsWithOpts(all,FREEZEROOT,false);
@@ -678,7 +678,7 @@ public class SpartanInputWriter
      */
 
     @SuppressWarnings("unused")
-	private void checkChargeSpinNotAtDefault()
+        private void checkChargeSpinNotAtDefault()
     {
         if (charge == DEFNUM)
         {
@@ -842,21 +842,21 @@ public class SpartanInputWriter
         //Properties
         lines.addAll(getCellDirective(mol));
 
-	//Fozen atoms
+        //Fozen atoms
         if (defFrozen)
-	{
+        {
             ArrayList<String> part = getFrozenAtomLines(mol,msq);
-	    if (part.size() > 0)
-	    {
-		if (!lines.get(0).toUpperCase().contains("PARTIAL"))
-		{
-		    lines.set(0,lines.get(0) + " PARTIAL");
-		}
+            if (part.size() > 0)
+            {
+                if (!lines.get(0).toUpperCase().contains("PARTIAL"))
+                {
+                    lines.set(0,lines.get(0) + " PARTIAL");
+                }
                 lines.add(SpartanConstants.FREEZEOPN);
                 lines.addAll(part);
                 lines.add(SpartanConstants.FREEZEEND);
-	    }
-	}
+            }
+        }
 
         //Conformations
         if (defRotoBnds)
@@ -867,7 +867,7 @@ public class SpartanInputWriter
                 lines.add(SpartanConstants.CONFDIROPN);
                 lines.addAll(part);
                 lines.add(SpartanConstants.CONFDIREND);
-	    }
+            }
         }
 
         //Constraints
@@ -878,12 +878,12 @@ public class SpartanInputWriter
             {
                 if (!lines.get(0).toUpperCase().contains("CONSTRAIN"))
                 {
-		    lines.set(0,lines.get(0) + " CONSTRAIN");
-		}
+                    lines.set(0,lines.get(0) + " CONSTRAIN");
+                }
                 lines.add(SpartanConstants.CSTRDIROPN);
                 lines.addAll(part);
                 lines.add(SpartanConstants.CSTRDIREND);
-	    }
+            }
         }
 
         //Dynamic Constraints
@@ -1020,8 +1020,8 @@ public class SpartanInputWriter
     private ArrayList<String> getFrozenAtomLines(IAtomContainer mol,
                                                             ManySMARTSQuery msq)
     {
-	// Get all matches
-	Set<Integer> allMatches = new HashSet<Integer>();
+        // Get all matches
+        Set<Integer> allMatches = new HashSet<Integer>();
         for (String key : smarts.keySet())
         {
             if (!key.toUpperCase().startsWith(FREEZEROOT.toUpperCase()))
@@ -1029,7 +1029,7 @@ public class SpartanInputWriter
                 continue;
             }
             
-	    if (msq.getNumMatchesOfQuery(key) == 0)
+            if (msq.getNumMatchesOfQuery(key) == 0)
             {
                 System.out.println("WARNING! No match for SMARTS query "
                            + smarts.get(key) + " in molecule "
@@ -1043,31 +1043,31 @@ public class SpartanInputWriter
             {
                 allMatches.addAll(innerLst);
             }
-	}
-	ArrayList<Integer> sortedMatches = new ArrayList<Integer>();
-	sortedMatches.addAll(allMatches);
-	Collections.sort(sortedMatches);
+        }
+        ArrayList<Integer> sortedMatches = new ArrayList<Integer>();
+        sortedMatches.addAll(allMatches);
+        Collections.sort(sortedMatches);
 
         // Build text lines
         ArrayList<String> lines = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
-	int i = 0;
+        int i = 0;
         for (Integer atmId : sortedMatches)
         {
-	    i++;
-	    //NB: change from 0-based to 1-based atom index
+            i++;
+            //NB: change from 0-based to 1-based atom index
             sb.append(String.format("%5d",atmId+1));
-	    if (i > 11)
-	    {
-		i = 0;
-		lines.add(sb.toString());
+            if (i > 11)
+            {
+                i = 0;
+                lines.add(sb.toString());
                 sb = new StringBuilder();
-	    }
+            }
         }
-	if (sb.length() > 0)
-	{
+        if (sb.length() > 0)
+        {
             lines.add(sb.toString());
-	}
+        }
 
         if (verbosity > 0)
         {
@@ -1453,11 +1453,11 @@ public class SpartanInputWriter
         }
         if (details.size() == 0)
         {
-	    switch (numIds)
+            switch (numIds)
             {
                 case 2:
                     sb.append(String.format("%10.6f",currentValue));
-		    break;
+                    break;
 
                 case 3:
                     sb.append(String.format("%10.6f",currentValue));
@@ -1466,7 +1466,7 @@ public class SpartanInputWriter
                 case 4:
                     sb.append(String.format("%10.6f",currentValue));
                     break;
-	    }
+            }
         }
         else
         {
@@ -1504,7 +1504,7 @@ public class SpartanInputWriter
             if (verbosity > 2)
             {
                 System.out.println("Matching dynamic constraint rule '"
-                											  +icRuleName+"'");
+                                                                                                          +icRuleName+"'");
             }
 
             boolean skipRule =false;
@@ -1809,16 +1809,16 @@ public class SpartanInputWriter
             //WARNING: here we change from 0-based to 1-based
             sb.append(String.format("%5d",id+1)).append(" ");
         }
-	    switch (numIds)
+            switch (numIds)
         {
             case 2:
                 sb.append("    0     0 ");
-	    		break;
+                            break;
 
             case 3:
                 sb.append("    0 ");
                 break;
-	    }
+            }
         if (details.size() < 4)
         {
             Terminator.withMsgAndStatus("ERROR! Definition of a dynamic "

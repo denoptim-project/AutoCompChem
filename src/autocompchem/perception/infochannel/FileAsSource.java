@@ -95,7 +95,7 @@ public class FileAsSource extends InfoChannel
             Terminator.withMsgAndStatus("ERROR! File "+ pathName 
                                                           + " not found!.",-1);
         }
-	return super.reader;
+        return super.reader;
     }
 
 //------------------------------------------------------------------------------

@@ -60,7 +60,7 @@ public class ConformationalSpace
 
     public String getUnqCoordName()
     {
-	return ConformationalConstants.COORDNAMEROOT + CRDID.getAndIncrement();
+        return ConformationalConstants.COORDNAMEROOT + CRDID.getAndIncrement();
     }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ public class ConformationalSpace
 
     public ArrayList<ConformationalCoordinate> coords()
     {
-	return coords;
+        return coords;
     }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ public class ConformationalSpace
 
     public void addCoord(ConformationalCoordinate coord)
     {
-	coords.add(coord);
+        coords.add(coord);
     }
 
 //------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ public class ConformationalSpace
 
     public boolean contains(ConformationalCoordinate queryCoord)
     {
-	return coords.contains(queryCoord);
+        return coords.contains(queryCoord);
     }
 
 //------------------------------------------------------------------------------
@@ -113,18 +113,18 @@ public class ConformationalSpace
 
     public int getSize()
     {
-	int sz = 1;
-	for (ConformationalCoordinate cc : coords)
-	{
-	    sz = sz * cc.getFold();
-	    int diff = Integer.MAX_VALUE - sz;
-	    if (diff < 10000)
-	    {
-		sz = -sz;
-		break;
-	    }
-	}
-	return sz;
+        int sz = 1;
+        for (ConformationalCoordinate cc : coords)
+        {
+            sz = sz * cc.getFold();
+            int diff = Integer.MAX_VALUE - sz;
+            if (diff < 10000)
+            {
+                sz = -sz;
+                break;
+            }
+        }
+        return sz;
     }
 
 //------------------------------------------------------------------------------
@@ -136,19 +136,19 @@ public class ConformationalSpace
 
     public String toString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append("[ConformationalSpace coords=[");
-	boolean fist = true;
-	for (int i=0; i<coords.size(); i++)
-	{
-	    if (i>0)
-	    {
-		sb.append(", ");
-	    }
-	    sb.append(coords.get(i).toString());
-	}
-	sb.append("]");
-	sb.append("] ");
+        StringBuilder sb = new StringBuilder();
+        sb.append("[ConformationalSpace coords=[");
+        boolean fist = true;
+        for (int i=0; i<coords.size(); i++)
+        {
+            if (i>0)
+            {
+                sb.append(", ");
+            }
+            sb.append(coords.get(i).toString());
+        }
+        sb.append("]");
+        sb.append("] ");
         return sb.toString();
     }
 

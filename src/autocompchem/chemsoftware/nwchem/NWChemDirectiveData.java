@@ -81,10 +81,10 @@ public class NWChemDirectiveData
             block = block.substring(NWChemConstants.LABOPENBLOCK.length());
         }
         if (block.toUpperCase().startsWith(System.getProperty(
-							     "line.separator")))
+                                                             "line.separator")))
         {
             block = block.substring(System.getProperty(
-						    "line.separator").length());
+                                                    "line.separator").length());
         }
         String[] dataLines = block.split(System.getProperty("line.separator"));
         lines = new ArrayList<String>(Arrays.asList(dataLines));
@@ -137,7 +137,7 @@ public class NWChemDirectiveData
 
     public void setContent(ArrayList<String> lines)
     {
-	this.lines = lines;
+        this.lines = lines;
     }
 
 //-----------------------------------------------------------------------------
@@ -168,8 +168,8 @@ public class NWChemDirectiveData
             lines.set(0,NWChemConstants.LABOPENBLOCK + lines.get(0));
             lines.add(NWChemConstants.LABCLOSEBLOCK);
         }
-	lines.set(0, NWChemConstants.LABDATA + name 
-			     + NWChemConstants.DATAVALSEPARATOR + lines.get(0));
+        lines.set(0, NWChemConstants.LABDATA + name 
+                             + NWChemConstants.DATAVALSEPARATOR + lines.get(0));
         return lines;
     }
 

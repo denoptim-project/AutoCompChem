@@ -37,48 +37,48 @@ public class SituationTest
     @Test
     public void testIsOccurring() throws Exception
     {
-	Situation sit = new Situation();
+        Situation sit = new Situation();
         sit.addCircumstance(new Circumstance());
         sit.addCircumstance(new Circumstance());
         sit.addCircumstance(new Circumstance());
         sit.addCircumstance(new Circumstance());
         sit.addCircumstance(new Circumstance());
 
-	ArrayList<Boolean> fingerprint0 = new ArrayList<Boolean>();
-	fingerprint0.add(true);
-	fingerprint0.add(true);
-	fingerprint0.add(true);
-	fingerprint0.add(true);
-	fingerprint0.add(true);
+        ArrayList<Boolean> fingerprint0 = new ArrayList<Boolean>();
+        fingerprint0.add(true);
+        fingerprint0.add(true);
+        fingerprint0.add(true);
+        fingerprint0.add(true);
+        fingerprint0.add(true);
 
-	sit.setLogicalExpression("none");
-	assertEquals(true,sit.isOccurring(fingerprint0),"lack of expression");
-	
-	ArrayList<Boolean> fingerprint = new ArrayList<Boolean>();
-	fingerprint.add(true);
-	fingerprint.add(false);
-	fingerprint.add(true);
-	fingerprint.add(true);
-	fingerprint.add(true);
+        sit.setLogicalExpression("none");
+        assertEquals(true,sit.isOccurring(fingerprint0),"lack of expression");
+        
+        ArrayList<Boolean> fingerprint = new ArrayList<Boolean>();
+        fingerprint.add(true);
+        fingerprint.add(false);
+        fingerprint.add(true);
+        fingerprint.add(true);
+        fingerprint.add(true);
 
-	sit.setLogicalExpression("${v0}");
-	assertEquals(true,sit.isOccurring(fingerprint),"single true");
+        sit.setLogicalExpression("${v0}");
+        assertEquals(true,sit.isOccurring(fingerprint),"single true");
 
-	sit.setLogicalExpression("${v1}");
-	assertEquals(false,sit.isOccurring(fingerprint),"single false");
+        sit.setLogicalExpression("${v1}");
+        assertEquals(false,sit.isOccurring(fingerprint),"single false");
 
-	sit.setLogicalExpression("${v0 && !v1}");
-	assertEquals(true,sit.isOccurring(fingerprint),".AND. and .NOT.");
+        sit.setLogicalExpression("${v0 && !v1}");
+        assertEquals(true,sit.isOccurring(fingerprint),".AND. and .NOT.");
 
-	sit.setLogicalExpression("${v0 && !v1 && v2 && v3 && v4}");
-	assertEquals(true,sit.isOccurring(fingerprint),"five .AND.");
+        sit.setLogicalExpression("${v0 && !v1 && v2 && v3 && v4}");
+        assertEquals(true,sit.isOccurring(fingerprint),"five .AND.");
 
-	sit.setLogicalExpression("${v0 || v1}");
-	assertEquals(true,sit.isOccurring(fingerprint),".OR.");
+        sit.setLogicalExpression("${v0 || v1}");
+        assertEquals(true,sit.isOccurring(fingerprint),".OR.");
 
-	sit.setLogicalExpression("${v0 && (4 > 2)}");
-	assertEquals(true,sit.isOccurring(fingerprint),
-						"mixing numerical and boolean");
+        sit.setLogicalExpression("${v0 && (4 > 2)}");
+        assertEquals(true,sit.isOccurring(fingerprint),
+                                                "mixing numerical and boolean");
 
     }
 

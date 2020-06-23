@@ -923,7 +923,7 @@ public class TinkerForceFieldHandler
         IOtools.writeTXTAppend(filename,sb.toString(),true);
         sb = new StringBuilder();
 
-	// Charge-related parameters
+        // Charge-related parameters
         if (ff.getParamTypes().contains(TinkerConstants.FFKEYMMFFBCI))
         {
             sb.append(nl);

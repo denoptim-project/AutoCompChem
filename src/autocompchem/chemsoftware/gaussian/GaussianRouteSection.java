@@ -66,17 +66,17 @@ public class GaussianRouteSection
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);
-	    line = line.toUpperCase();
+            line = line.toUpperCase();
 
-	    if (!line.startsWith(GaussianConstants.KEYROUTESEC))
-		continue;
+            if (!line.startsWith(GaussianConstants.KEYROUTESEC))
+                continue;
 
-	    //Decode the content of the line
-	    ArrayList<String> keyValue = lineToKeyValuePair(line);
-	    
-	    //Store
+            //Decode the content of the line
+            ArrayList<String> keyValue = lineToKeyValuePair(line);
+            
+            //Store
             put(keyValue.get(0),keyValue.get(1));
-	}
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -116,11 +116,11 @@ public class GaussianRouteSection
             key = GaussianConstants.LABFREE + Integer.toString(numFree);
         }
 
-	ArrayList<String> keyValuePair = new ArrayList<String>();
-	keyValuePair.add(key);
-	keyValuePair.add(value);
+        ArrayList<String> keyValuePair = new ArrayList<String>();
+        keyValuePair.add(key);
+        keyValuePair.add(value);
 
-	return keyValuePair;	
+        return keyValuePair;        
     }
 
 //------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ public class GaussianRouteSection
 
     public boolean containsKey(String key)
     {
-	return parts.keySet().contains(key);
+        return parts.keySet().contains(key);
     }
 
 //------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ public class GaussianRouteSection
 
     public Map<String,String> getKeyValueMap()
     {
-	return parts;
+        return parts;
     }
 
 //------------------------------------------------------------------------------
@@ -177,8 +177,8 @@ public class GaussianRouteSection
 
     public void addLoudKeyValue(String key, String value)
     {
-	key = GaussianConstants.LABLOUDKEY + key;
-	put(key,value);
+        key = GaussianConstants.LABLOUDKEY + key;
+        put(key,value);
     }
 
 //------------------------------------------------------------------------------
@@ -194,8 +194,8 @@ public class GaussianRouteSection
 
     public void addMuteKeyValue(String key, String value)
     {
-	key = GaussianConstants.LABMUTEKEY + key;
-	put(key,value);
+        key = GaussianConstants.LABMUTEKEY + key;
+        put(key,value);
     }
 
 //------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ public class GaussianRouteSection
 
     public void addFreeValue(String value)
     {
-	numFree++;
+        numFree++;
         String key = GaussianConstants.LABFREE + Integer.toString(numFree);
         put(key,value);
     }
@@ -232,21 +232,21 @@ public class GaussianRouteSection
 
     public void put(String key, String value)
     {
-	if (!key.startsWith(GaussianConstants.LABLOUDKEY) 
-			&& !key.startsWith(GaussianConstants.LABMUTEKEY) 
-			&& !key.startsWith(GaussianConstants.LABFREE))
-	{
-	    numFree++;
-	    key = GaussianConstants.LABFREE + Integer.toString(numFree);
-	}
+        if (!key.startsWith(GaussianConstants.LABLOUDKEY) 
+                        && !key.startsWith(GaussianConstants.LABMUTEKEY) 
+                        && !key.startsWith(GaussianConstants.LABFREE))
+        {
+            numFree++;
+            key = GaussianConstants.LABFREE + Integer.toString(numFree);
+        }
 
-	key = key.toUpperCase();
-	value = value.toUpperCase();
+        key = key.toUpperCase();
+        value = value.toUpperCase();
 
-	parts.put(key,value);
+        parts.put(key,value);
 
-	if (!order.contains(key))
-	    order.add(key);
+        if (!order.contains(key))
+            order.add(key);
     }
 
 //------------------------------------------------------------------------------
@@ -260,7 +260,7 @@ public class GaussianRouteSection
 
     public String getValue(String key)
     {
-	return parts.get(key);
+        return parts.get(key);
     }
 
 //------------------------------------------------------------------------------
@@ -274,104 +274,104 @@ public class GaussianRouteSection
     public ArrayList<String> toLinesInp()
     {
         ArrayList<String> lines = new ArrayList<String>();
-	Map<String,String> tmp = new HashMap<String,String>();
+        Map<String,String> tmp = new HashMap<String,String>();
 
-	//First of all the printing option
-	if (parts.keySet().contains(GaussianConstants.SUBKEYPRINT))
-	{
+        //First of all the printing option
+        if (parts.keySet().contains(GaussianConstants.SUBKEYPRINT))
+        {
             lines.add("#" + parts.get(GaussianConstants.SUBKEYPRINT));
-	} else {
-	    lines.add("#P");
-	}
+        } else {
+            lines.add("#P");
+        }
 
-	//Then model chemistry
-	String mod = "";
-	if (parts.keySet().contains(GaussianConstants.SUBKEYMODELMETHOD))
-	{
-	    mod = parts.get(GaussianConstants.SUBKEYMODELMETHOD);
-	} 
+        //Then model chemistry
+        String mod = "";
+        if (parts.keySet().contains(GaussianConstants.SUBKEYMODELMETHOD))
+        {
+            mod = parts.get(GaussianConstants.SUBKEYMODELMETHOD);
+        } 
         if (parts.keySet().contains(GaussianConstants.SUBKEYMODELBASISET))
         {
-	    if (!mod.equals(""))
-	         mod = mod + "/";
-	    
+            if (!mod.equals(""))
+                 mod = mod + "/";
+            
             mod = mod + parts.get(GaussianConstants.SUBKEYMODELBASISET);
         }
-	lines.add("# " + mod);
+        lines.add("# " + mod);
 
-	//Now all the rest
+        //Now all the rest
         for (int i=0; i<order.size(); i++)
         {
-	    String key = order.get(i);
+            String key = order.get(i);
 
-	    //Printing and method already done
-	    if (key.equals(GaussianConstants.SUBKEYPRINT) 
-			|| key.equals(GaussianConstants.SUBKEYMODELMETHOD) 
-			|| key.equals(GaussianConstants.SUBKEYMODELBASISET))
+            //Printing and method already done
+            if (key.equals(GaussianConstants.SUBKEYPRINT) 
+                        || key.equals(GaussianConstants.SUBKEYMODELMETHOD) 
+                        || key.equals(GaussianConstants.SUBKEYMODELBASISET))
             {
-		continue;
-	    }
+                continue;
+            }
 
-	    //Avoid double definition of job type
-	    if (key.equals(GaussianConstants.SUBKEYJOBTYPE))
-	    {
-		continue;
-	    }
+            //Avoid double definition of job type
+            if (key.equals(GaussianConstants.SUBKEYJOBTYPE))
+            {
+                continue;
+            }
 
-	    //For KeyValue report both the key and the value
-	    if (key.startsWith(GaussianConstants.LABLOUDKEY))
-	    {
-		key = key.substring(3);
-		//in case of suboption
-		if (key.contains("_$"))
-		{
+            //For KeyValue report both the key and the value
+            if (key.startsWith(GaussianConstants.LABLOUDKEY))
+            {
+                key = key.substring(3);
+                //in case of suboption
+                if (key.contains("_$"))
+                {
                     String subkey = key.substring(key.indexOf("_$") + 1);
-		    key = key.substring(0,key.indexOf("_$"));
-		    //What should I print?
-		    String toPrint ="";
-		    if (subkey.startsWith(GaussianConstants.LABLOUDKEY))
-		    {
-			toPrint = subkey.substring(3) + "=" + parts.get(
-								  order.get(i));
-		    } 
-		    else if (subkey.startsWith(GaussianConstants.LABMUTEKEY)) 
-		    {
-			toPrint = parts.get(order.get(i));
-		    }
+                    key = key.substring(0,key.indexOf("_$"));
+                    //What should I print?
+                    String toPrint ="";
+                    if (subkey.startsWith(GaussianConstants.LABLOUDKEY))
+                    {
+                        toPrint = subkey.substring(3) + "=" + parts.get(
+                                                                  order.get(i));
+                    } 
+                    else if (subkey.startsWith(GaussianConstants.LABMUTEKEY)) 
+                    {
+                        toPrint = parts.get(order.get(i));
+                    }
 
-		    //since this is a suboption store it in tmp
-		    if (tmp.keySet().contains(key))
-		    {
-			String old = tmp.get(key);
-			tmp.put(key,old + "," + toPrint);
-		    } else {
-			tmp.put(key,key + "=(" + toPrint);
-		    }
-		} else {
-		    lines.add("# " + key + "=" + parts.get(order.get(i)));
-		}
-	    } else if (key.startsWith(GaussianConstants.LABMUTEKEY)) {
-		lines.add("# " + parts.get(order.get(i)));
-	    } else if (key.startsWith(GaussianConstants.LABFREE)) {
+                    //since this is a suboption store it in tmp
+                    if (tmp.keySet().contains(key))
+                    {
+                        String old = tmp.get(key);
+                        tmp.put(key,old + "," + toPrint);
+                    } else {
+                        tmp.put(key,key + "=(" + toPrint);
+                    }
+                } else {
+                    lines.add("# " + key + "=" + parts.get(order.get(i)));
+                }
+            } else if (key.startsWith(GaussianConstants.LABMUTEKEY)) {
+                lines.add("# " + parts.get(order.get(i)));
+            } else if (key.startsWith(GaussianConstants.LABFREE)) {
                 lines.add("# " + parts.get(order.get(i)));
             }
         }
 
-	//Now add also all the options in tmp
-	for (String key : tmp.keySet())
-	{
-	    lines.add("# " + tmp.get(key) + ") ");
-	}
+        //Now add also all the options in tmp
+        for (String key : tmp.keySet())
+        {
+            lines.add("# " + tmp.get(key) + ") ");
+        }
 
-	//Add job type if not already there
-	if (parts.keySet().contains(GaussianConstants.SUBKEYJOBTYPE))
-	{
-	    String jobType = parts.get(GaussianConstants.SUBKEYJOBTYPE);
-	    if (!tmp.keySet().contains(jobType))
-	    {
-	       lines.add("# " + jobType);
-	    }
-	}
+        //Add job type if not already there
+        if (parts.keySet().contains(GaussianConstants.SUBKEYJOBTYPE))
+        {
+            String jobType = parts.get(GaussianConstants.SUBKEYJOBTYPE);
+            if (!tmp.keySet().contains(jobType))
+            {
+               lines.add("# " + jobType);
+            }
+        }
 
         //This section is black line terminated
         lines.add("");
@@ -393,7 +393,7 @@ public class GaussianRouteSection
         for (int i=0; i<order.size(); i++)
         {
             lines.add(GaussianConstants.KEYROUTESEC + order.get(i) + "=" 
-						+  parts.get(order.get(i)));
+                                                +  parts.get(order.get(i)));
         }
         return lines;
     }

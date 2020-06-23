@@ -65,8 +65,8 @@ public class TextBlock
 
     public TextBlock()
     {
-	this.lines = new ArrayList<String>();
-	this.nestedBlocks = new ArrayList<TextBlock>();
+        this.lines = new ArrayList<String>();
+        this.nestedBlocks = new ArrayList<TextBlock>();
     }
 
 //------------------------------------------------------------------------------
@@ -80,8 +80,8 @@ public class TextBlock
 
     public TextBlock(int idA, int idB, int idC)
     {
-	this.lines = new ArrayList<String>();
-	this.nestedBlocks = new ArrayList<TextBlock>();
+        this.lines = new ArrayList<String>();
+        this.nestedBlocks = new ArrayList<TextBlock>();
         this.idA = idA;
         this.idB = idB;
         this.idC = idC;
@@ -99,11 +99,11 @@ public class TextBlock
 
     public TextBlock(ArrayList<String> lines, int idA, int idB, int idC)
     {
-	this.lines = new ArrayList<String>();
-	this.nestedBlocks = new ArrayList<TextBlock>();
-	this.idA = idA;
-	this.idB = idB;
-	this.idC = idC;
+        this.lines = new ArrayList<String>();
+        this.nestedBlocks = new ArrayList<TextBlock>();
+        this.idA = idA;
+        this.idB = idB;
+        this.idC = idC;
     }
 
 //------------------------------------------------------------------------------
@@ -132,10 +132,10 @@ public class TextBlock
 
     public void appendNestedBlock(TextBlock nb)
     {
-	if (nestedBlocks == null)
-	{
-	    nestedBlocks = new ArrayList<TextBlock>();
-	}
+        if (nestedBlocks == null)
+        {
+            nestedBlocks = new ArrayList<TextBlock>();
+        }
         nestedBlocks.add(nb);
     }
 
@@ -147,7 +147,7 @@ public class TextBlock
 
     public ArrayList<String> getText()
     {
-	return lines;
+        return lines;
     }
 
 //------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ public class TextBlock
 
     public int getIndexA()
     {
-	return idA;
+        return idA;
     }
 
 //------------------------------------------------------------------------------
@@ -267,40 +267,40 @@ public class TextBlock
     public String toString()
     {
         String NL = System.getProperty("line.separator");
-	StringBuilder sb = new StringBuilder();
-	sb.append("[TextBlock "+idA+"_"+idB+"_"+idC+" [");
-	if (lines != null && lines.size()>0)
-	{
-	    boolean first = true;
-	    for (String l : lines)
-	    {
-	        if (first)
-	        {
-		    sb.append(l);
-		    first = false;
-	        }
-	        else
-	        {
-	            sb.append(NL+l);
-		}
-	    }
-	}
-	sb.append("]");
-	if (nestedBlocks == null || nestedBlocks.size() == 0)
-	{
-	    sb.append(" 0 nestedBlocks]");
-	}
-	else
-	{
-	    sb.append(" "+nestedBlocks.size()+" nested blocks:");
-	    for(TextBlock tb : nestedBlocks)
-	    {
-		sb.append(NL+" -nested-> "+tb.toShortString());
-	    }
-	    sb.append("]");
-	}
+        StringBuilder sb = new StringBuilder();
+        sb.append("[TextBlock "+idA+"_"+idB+"_"+idC+" [");
+        if (lines != null && lines.size()>0)
+        {
+            boolean first = true;
+            for (String l : lines)
+            {
+                if (first)
+                {
+                    sb.append(l);
+                    first = false;
+                }
+                else
+                {
+                    sb.append(NL+l);
+                }
+            }
+        }
+        sb.append("]");
+        if (nestedBlocks == null || nestedBlocks.size() == 0)
+        {
+            sb.append(" 0 nestedBlocks]");
+        }
+        else
+        {
+            sb.append(" "+nestedBlocks.size()+" nested blocks:");
+            for(TextBlock tb : nestedBlocks)
+            {
+                sb.append(NL+" -nested-> "+tb.toShortString());
+            }
+            sb.append("]");
+        }
 
-	return sb.toString();
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

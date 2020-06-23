@@ -52,7 +52,7 @@ public class MolecularMutator
      * Flag indicating the input is from file
      */
     @SuppressWarnings("unused")
-	private boolean inpFromFile = false;
+        private boolean inpFromFile = false;
 
     /**
      * Name of the input file
@@ -341,7 +341,7 @@ public class MolecularMutator
                                                                            mol) 
                                         + " matched by SMARTS query '"
                                         + k + "'=" + smarts.get(k) + " and '" 
-					+ k2 + "'=" + smarts.get(k2) + ". "
+                                        + k2 + "'=" + smarts.get(k2) + ". "
                                         + "Mutations are permitted only upon "
                                         + "unambiguous identification of the "
                                         + "atoms to mutate",-1);
@@ -399,12 +399,12 @@ public class MolecularMutator
             }
             if (targetsMap.containsKey(origAtm))
             {
-		if (verbosity > 1)
-		{
-		    System.out.println(" Mutating atom "  
+                if (verbosity > 1)
+                {
+                    System.out.println(" Mutating atom "  
                         + MolecularUtils.getAtomRef(origAtm,iac) + " into " 
-			+ targetsMap.get(origAtm));
-		}
+                        + targetsMap.get(origAtm));
+                }
                 IAtom newEl = new Atom(targetsMap.get(origAtm));
                 newAtm.setSymbol(newEl.getSymbol());
                 newAtm.setAtomicNumber(newEl.getAtomicNumber());

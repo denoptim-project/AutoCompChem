@@ -159,25 +159,25 @@ public class BasisSetGenerator
             System.out.println(" Adding parameters to BasisSetGenerator");
 
         // Get and check the input file (which has to be an SDF file)
-	if (params.contains("INFILE"))
-	{
+        if (params.contains("INFILE"))
+        {
             this.inFile = params.getParameter("INFILE").getValue().toString();
             FilesManager.foundAndPermissions(this.inFile,true,false,false);
-	}
+        }
 
         // Read the atom type matching rules
         setBSMatchingRules(params.getParameter(
                             BasisSetConstants.ATMSPECBS).getValue().toString());
 
-	// Allow partial matches?
+        // Allow partial matches?
         if (params.contains(BasisSetConstants.ALLOWPARTIALMATCH))
         {
             String v = params.getParameter(
-		     BasisSetConstants.ALLOWPARTIALMATCH).getValue().toString();
-	    if (v.trim().toUpperCase().equals("TRUE"))
-	    {
+                     BasisSetConstants.ALLOWPARTIALMATCH).getValue().toString();
+            if (v.trim().toUpperCase().equals("TRUE"))
+            {
                 this.allowPartial = true;
-	    }
+            }
         }
 
         // Name of output file
@@ -241,7 +241,7 @@ public class BasisSetGenerator
     public void setBSMatchingRules(String text)
     {
         String[] arr = text.split(System.getProperty("line.separator"));
-	setBSMatchingRules(new ArrayList<String>(Arrays.asList(arr)));
+        setBSMatchingRules(new ArrayList<String>(Arrays.asList(arr)));
     }
 
 //------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ public class BasisSetGenerator
         {
             BSMatchingRule bsr = new BSMatchingRule(lines.get(i),i);
             this.rules.put(bsr.getRefName(),bsr);
-	}
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -272,9 +272,9 @@ public class BasisSetGenerator
     {
         if (inFile.equals("noInFile"))
         {
-	    Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-		+ " Cannot generate basis set.",-1);
-	}
+            Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
+                + " Cannot generate basis set.",-1);
+        }
 
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
@@ -473,25 +473,25 @@ public class BasisSetGenerator
         for (int i=0; i<mol.getAtomCount(); i++)
         {
             IAtom atm = mol.getAtom(i);
-	    // Generate atom tag
+            // Generate atom tag
             String elSymb = atm.getSymbol();
             String atmId = elSymb + (i+1);
-	    if (atmIdxAsId)
-	    {
-		atmId = String.valueOf(i+1);
-	    }
-	    // Use previously set atom tag, if any
-	    if (AtomUtils.hasProperty(atm,ACCConstants.ATMTAGPROP))
-	    {
-		atmId = 
-		       atm.getProperty(ACCConstants.ATMTAGPROP).toString();
-	    }
+            if (atmIdxAsId)
+            {
+                atmId = String.valueOf(i+1);
+            }
+            // Use previously set atom tag, if any
+            if (AtomUtils.hasProperty(atm,ACCConstants.ATMTAGPROP))
+            {
+                atmId = 
+                       atm.getProperty(ACCConstants.ATMTAGPROP).toString();
+            }
 
-	    CenterBasisSet globCBS = new CenterBasisSet();
-	    if (atm.getProperty(BasisSetConstants.BSATMPROP+"0") != null)
-	    {
+            CenterBasisSet globCBS = new CenterBasisSet();
+            if (atm.getProperty(BasisSetConstants.BSATMPROP+"0") != null)
+            {
                 globCBS = globBS.getCenterBasisSetForCenter(atmId);
-	    }
+            }
 
             Map<Object,Object> allProps = atm.getProperties();
             for (Object key : allProps.keySet())
@@ -600,7 +600,7 @@ public class BasisSetGenerator
      */
 
     @SuppressWarnings("unused")
-	private void writeBSRefNamesToOut(IAtomContainer mol)
+        private void writeBSRefNamesToOut(IAtomContainer mol)
     {
         String allMolStr = "";
         for (int i=0; i<mol.getAtomCount(); i++)
@@ -649,7 +649,7 @@ public class BasisSetGenerator
 
     public Map<String,BSMatchingRule> getBSMatchingRules()
     {
-	return rules;
+        return rules;
     }
 
 //-----------------------------------------------------------------------------

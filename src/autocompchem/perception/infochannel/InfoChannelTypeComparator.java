@@ -31,14 +31,14 @@ public class InfoChannelTypeComparator implements Comparator<InfoChannelType>
 {
     public boolean checkCompatibility(InfoChannelType a, InfoChannelType b)
     {
-	boolean res = a.equals(b);
-	if (a.equals(InfoChannelType.ANY) ||
-	    b.equals(InfoChannelType.ANY))
-	{
-	    res = true;
-	}
+        boolean res = a.equals(b);
+        if (a.equals(InfoChannelType.ANY) ||
+            b.equals(InfoChannelType.ANY))
+        {
+            res = true;
+        }
 
-	return res;
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ public class InfoChannelTypeComparator implements Comparator<InfoChannelType>
     @Override
     public int compare(InfoChannelType a, InfoChannelType b)
     {
-	return a.toString().compareTo(b.toString());
+        return a.toString().compareTo(b.toString());
     }
 
 //------------------------------------------------------------------------------

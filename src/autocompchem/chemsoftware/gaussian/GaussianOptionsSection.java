@@ -88,7 +88,7 @@ public class GaussianOptionsSection
 
     public void setPart(String refName, String value)
     {
-	parts.put(refName, value);
+        parts.put(refName, value);
     }
 
 //------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ public class GaussianOptionsSection
 
     public Set<String> getRefNames()
     {
-	return parts.keySet();
+        return parts.keySet();
     }
 
 //------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ public class GaussianOptionsSection
 
     public String getValue(String refName)
     {
-	return parts.get(refName);
+        return parts.get(refName);
     }
 
 //------------------------------------------------------------------------------
@@ -138,11 +138,11 @@ public class GaussianOptionsSection
             key = actualLine.substring(0,actualLine.indexOf("="));
             value = actualLine.substring(actualLine.indexOf("=") + 1);
         } else {
-	    String msg = "ERROR! Attempt to create a GaussianOptionsSection "
-			+ "without specifying a reference name for the option "
-			+ "(i.e., '=' not found). Check the following line in "
-			+ "your input: " + line;
-	    Terminator.withMsgAndStatus(msg,-1);
+            String msg = "ERROR! Attempt to create a GaussianOptionsSection "
+                        + "without specifying a reference name for the option "
+                        + "(i.e., '=' not found). Check the following line in "
+                        + "your input: " + line;
+            Terminator.withMsgAndStatus(msg,-1);
         }
 
         ArrayList<String> keyValuePair = new ArrayList<String>();
@@ -163,25 +163,25 @@ public class GaussianOptionsSection
 
     private ArrayList<String> sortOpts(Set<String> keySet)
     {
-	ArrayList<String> sortedKeys = new ArrayList<String>();
+        ArrayList<String> sortedKeys = new ArrayList<String>();
         if (keySet.contains(GaussianConstants.BASISOPTKEY))
-	{
-	    sortedKeys.add(GaussianConstants.BASISOPTKEY);
-	}
+        {
+            sortedKeys.add(GaussianConstants.BASISOPTKEY);
+        }
         if (keySet.contains(GaussianConstants.PCMOPTKEY))
         {
             sortedKeys.add(GaussianConstants.PCMOPTKEY);
         }
-	for (String key : keySet)
-	{
-	    if (key.equals(GaussianConstants.PCMOPTKEY) 
-		|| key.equals(GaussianConstants.BASISOPTKEY))
-	    {
-		continue;
-	    }
-	    sortedKeys.add(key);
-	}
-	return sortedKeys;
+        for (String key : keySet)
+        {
+            if (key.equals(GaussianConstants.PCMOPTKEY) 
+                || key.equals(GaussianConstants.BASISOPTKEY))
+            {
+                continue;
+            }
+            sortedKeys.add(key);
+        }
+        return sortedKeys;
     }
 
 //------------------------------------------------------------------------------
@@ -194,15 +194,15 @@ public class GaussianOptionsSection
 
     public ArrayList<String> toLinesInp()
     {
-	ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<String>();
         for (String key : sortOpts(parts.keySet()))
         {
             lines.add(StringUtils.deescapeSpecialChars(
-			 ParameterUtils.removeMultilineLabels(parts.get(key))));
-	    lines.add("");
+                         ParameterUtils.removeMultilineLabels(parts.get(key))));
+            lines.add("");
         }
 
-	return lines;
+        return lines;
     }
 
 //------------------------------------------------------------------------------
@@ -218,20 +218,20 @@ public class GaussianOptionsSection
         ArrayList<String> lines = new ArrayList<String>();
         for (String key : parts.keySet())
         {
-	    String line = "";
-	    String val = parts.get(key);
-	    if (val.contains(System.getProperty("line.separator"))
-		&& !val.contains(ParameterConstants.STARTMULTILINE))
-	    {
-		line = GaussianConstants.KEYOPTSSEC + " " + key + "=" 
-		       + ParameterConstants.STARTMULTILINE + val
-		       + System.getProperty("line.separator") 
-		       + ParameterConstants.ENDMULTILINE;
-	    }
-	    else
-	    {
-		line = GaussianConstants.KEYOPTSSEC + " " + key + "=" + val;
-	    }
+            String line = "";
+            String val = parts.get(key);
+            if (val.contains(System.getProperty("line.separator"))
+                && !val.contains(ParameterConstants.STARTMULTILINE))
+            {
+                line = GaussianConstants.KEYOPTSSEC + " " + key + "=" 
+                       + ParameterConstants.STARTMULTILINE + val
+                       + System.getProperty("line.separator") 
+                       + ParameterConstants.ENDMULTILINE;
+            }
+            else
+            {
+                line = GaussianConstants.KEYOPTSSEC + " " + key + "=" + val;
+            }
             lines.add(line);
         }
 
@@ -249,11 +249,11 @@ public class GaussianOptionsSection
 
     public String toString()
     {
-	String str = "GaussianOptionsSection [";
-	for (String key : parts.keySet())
-	{
-	    str = str + key + ":" + parts.get(key) + ", ";
-	}
+        String str = "GaussianOptionsSection [";
+        for (String key : parts.keySet())
+        {
+            str = str + key + ":" + parts.get(key) + ", ";
+        }
         str = str + "] ";
         return str;
     }

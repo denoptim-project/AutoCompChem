@@ -62,31 +62,31 @@ public class ShellJob extends Job
     {
         //TODO decide what to do wrt logging
         System.out.println("Running SHELL Job: " + this.toString() + " Thread: "
-		                            + Thread.currentThread().getName());
+                                            + Thread.currentThread().getName());
 
         StringBuilder sb = new StringBuilder();
         sb.append(interpreter).append(" ");
         sb.append(script).append(" ");
         sb.append(args);
 
-	if (!sb.toString().trim().isEmpty())
-	{
+        if (!sb.toString().trim().isEmpty())
+        {
             try
             {
                 ProcessBuilder pb = new ProcessBuilder(interpreter,script,args);
                 pb.inheritIO();
                 Process p = pb.start();
-		try
-		{
+                try
+                {
                     p.waitFor();
-		}
-		catch (InterruptedException ie)
-		{
-		    if(!super.jobIsBeingKilled)
-		    {
-			throw ie;
-		    }
-		}
+                }
+                catch (InterruptedException ie)
+                {
+                    if(!super.jobIsBeingKilled)
+                    {
+                        throw ie;
+                    }
+                }
             }
             catch (Throwable t)
             {
@@ -94,7 +94,7 @@ public class ShellJob extends Job
                 Terminator.withMsgAndStatus("ERROR while running command line "
                                    + "operation '" + sb.toString() + "'.",-1);
             }
-	}
+        }
 
         //TODO decide what to do wrt logging
         //System.out.println("Done with SHELL Job " + this.toString());

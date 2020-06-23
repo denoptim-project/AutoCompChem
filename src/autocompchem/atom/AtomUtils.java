@@ -47,8 +47,8 @@ public class AtomUtils
 
     public static double getVdwRadius(IAtom atm)
     {
-	String el = atm.getSymbol();
-	return getVdwRradius(el);
+        String el = atm.getSymbol();
+        return getVdwRradius(el);
     }
 
 //------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ public class AtomUtils
 
     public static double getVdwRradius(String elSymbol)
     {
-	double r = 0.0;
+        double r = 0.0;
 
         try {
             r = PeriodicTable.getVdwRadius(elSymbol);
@@ -78,7 +78,7 @@ public class AtomUtils
                                 + r
                                 + " as van der Waals radius.");
         }
-	return r;
+        return r;
     }
 
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ public class AtomUtils
 
     public static boolean isElement(String symbol)
     {
-	boolean res = false;
+        boolean res = false;
         IsotopeFactory ifact = null;
         try {
             //Identify the element
@@ -100,16 +100,16 @@ public class AtomUtils
                                         DefaultChemObjectBuilder.getInstance());
             if (ifact.isElement(symbol))
             {
-            	@SuppressWarnings("unused")
-				IElement el = ifact.getElement(symbol);
-		res = true;
+                    @SuppressWarnings("unused")
+                                IElement el = ifact.getElement(symbol);
+                res = true;
             }
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Unable to create IsotopeFactory "
                                         + " (in AtomUtils.getAtomicNumber)",-1);
         }
 
-	return res;
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -130,24 +130,24 @@ public class AtomUtils
             //Identify the element
             ifact = IsotopeFactory.getInstance(
                                         DefaultChemObjectBuilder.getInstance());
-	    //TODO: make it use emun from Element rather than hard coded limits
-	    if (an > 0 && an < 118)
-	    {
+            //TODO: make it use emun from Element rather than hard coded limits
+            if (an > 0 && an < 118)
+            {
                 el = ifact.getElement(an);
-	    }
-	    else
-	    {
-		return AtomConstants.DUMMYSYMBOL;
-	    }
+            }
+            else
+            {
+                return AtomConstants.DUMMYSYMBOL;
+            }
         } 
-	catch (Throwable t) 
-	{
+        catch (Throwable t) 
+        {
             Terminator.withMsgAndStatus("ERROR! Unable to create "
                         + "IsotopeFactory (in AtomUtils.getElemntalSymbol) "
-			+ "from atomic number " + an ,-1);
+                        + "from atomic number " + an ,-1);
         }
 
-	return el.getSymbol();
+        return el.getSymbol();
     }
 
 //------------------------------------------------------------------------------
@@ -165,22 +165,22 @@ public class AtomUtils
         try {
             //Identify the element
             ifact = IsotopeFactory.getInstance(
-					DefaultChemObjectBuilder.getInstance());
+                                        DefaultChemObjectBuilder.getInstance());
             if (ifact.isElement(symbol))
             {
                 el = ifact.getElement(symbol);
             } else {
                 Terminator.withMsgAndStatus("ERROR! Symbol '" + symbol + "' not "
                         + "recognized as element by IsotopeFactory.",-1);
-	    }
-	} catch (Throwable t) {
+            }
+        } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Unable to create IsotopeFactory "
-					+ " (in AtomUtils.getAtomicNumber)",-1);
+                                        + " (in AtomUtils.getAtomicNumber)",-1);
         }
 
-	int atmNum = el.getAtomicNumber();
-	
-	return atmNum;
+        int atmNum = el.getAtomicNumber();
+        
+        return atmNum;
     }
 
 //------------------------------------------------------------------------------
@@ -195,18 +195,18 @@ public class AtomUtils
 
     public static boolean isMetalDblock(String symbol, int verbosity)
     {
-	boolean res = false;
-	int atmNum = -1;
-	if (isElement(symbol))
-	{
-	    atmNum = getAtomicNumber(symbol);
-	} 
+        boolean res = false;
+        int atmNum = -1;
+        if (isElement(symbol))
+        {
+            atmNum = getAtomicNumber(symbol);
+        } 
 
         //Define position in Periodic table
-	if (getTransitionSeries(atmNum) != 0)
-	{
-	    res = true;
-	}
+        if (getTransitionSeries(atmNum) != 0)
+        {
+            res = true;
+        }
         return res;
     }
 
@@ -223,8 +223,8 @@ public class AtomUtils
 
     public static int getTransitionSeries(int atmNum)
     {
-	int ts = 0;
-	if ((atmNum > 20) && (atmNum < 31))
+        int ts = 0;
+        if ((atmNum > 20) && (atmNum < 31))
         {
             ts = 1;
         } else if ((atmNum > 38) && (atmNum < 49)) {
@@ -234,7 +234,7 @@ public class AtomUtils
         } else if ((atmNum > 102) && (atmNum < 113)) {
             ts = 4;
         }
-	return ts;
+        return ts;
     }
 
 //------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ public class AtomUtils
 
     public static boolean isDummy(IAtom atm)
     {
-	return AtomConstants.DUMMYSYMBOL.equals(atm.getSymbol());
+        return AtomConstants.DUMMYSYMBOL.equals(atm.getSymbol());
     }
 
 //------------------------------------------------------------------------------

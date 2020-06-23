@@ -128,7 +128,7 @@ public class TinkerConstants
     */
    public final static Set<String> FFKEYALLFFPAR = new HashSet<>(Arrays.asList(
                                            FFKEYMMFFVDW,
-					   FFKEYMHILVDW,
+                                           FFKEYMHILVDW,
                                            FFKEYMMFFSTR,
                                            FFKEYMMFFEMPSTR,
                                            FFKEYMMFFEMPRAD,

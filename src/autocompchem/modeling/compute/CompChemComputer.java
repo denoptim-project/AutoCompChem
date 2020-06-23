@@ -50,7 +50,7 @@ public class CompChemComputer
     public static double vibrationalEntropyCorr(ArrayList<Double> freqs,
                                                                     double temp)
     {
-	return vibrationalEntropyCorr(freqs,temp,0.0,0.0,0.0,0);
+        return vibrationalEntropyCorr(freqs,temp,0.0,0.0,0.0,0);
     }
 
 //------------------------------------------------------------------------------
@@ -81,10 +81,10 @@ public class CompChemComputer
 
     public static double vibrationalEntropyCorr(ArrayList<Double> freqs, 
                                                 double temp, 
-						double qhThrsh, 
-						double imThrsh, 
-						double ignThrsh, 
-						int verbosity)
+                                                double qhThrsh, 
+                                                double imThrsh, 
+                                                double ignThrsh, 
+                                                int verbosity)
     {
         double vibS = 0.0d;
         double cR = ACCConstants.GASR 
@@ -95,30 +95,30 @@ public class CompChemComputer
                      / ACCConstants.BOLTZMANNSK; 
                      //hck units are  [J*s]*[cm/s]/[J/K]=cm/K
 
-	String w = "VibS:";
+        String w = "VibS:";
         for (Double freq : freqs)
         {
             // imaginary modes
             if (freq < 0.0d)
-	    {
-		if (Math.abs(freq) < imThrsh)
+            {
+                if (Math.abs(freq) < imThrsh)
                 {
-		    if (verbosity > 1)
-		    {
-			System.out.println(w + " changing sing to "
-					   + "imaginary mode "+freq);
-		    }
-		    freq = -freq;
-		}
-		else
-		{
+                    if (verbosity > 1)
+                    {
+                        System.out.println(w + " changing sing to "
+                                           + "imaginary mode "+freq);
+                    }
+                    freq = -freq;
+                }
+                else
+                {
                     if (verbosity > 1)
                     {
                         System.out.println(w + " ignoring imaginary mode "
-								        + freq);
-		    }
+                                                                        + freq);
+                    }
                     continue;
-		}
+                }
             }
 
             // get rid of translations and rotations
@@ -127,7 +127,7 @@ public class CompChemComputer
                 if (verbosity > 1)
                 {
                     System.out.println(w + " ignoring frequency "+freq);
-		}
+                }
                 continue;
             }
 
@@ -137,7 +137,7 @@ public class CompChemComputer
                 if (verbosity > 1)
                 {
                     System.out.println(w + " scaling frequency " + freq 
-							    + " to " + qhThrsh);
+                                                            + " to " + qhThrsh);
                 }
                 freq = qhThrsh;  
             }

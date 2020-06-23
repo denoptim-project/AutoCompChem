@@ -167,12 +167,12 @@ public class ErrorMessage
                         {
                             Terminator.withMsgAndStatus("ERROR! Empty "
                                     + " 'REFERENCENAME' while defining"
-				    + " ErrorMessage.", -1);
+                                    + " ErrorMessage.", -1);
                         }
                     } else {
                         Terminator.withMsgAndStatus("ERROR! Multiple "
-        	                    + "'REFERENCENAME' while defining" 
-	                            + " ErrorMessage.", -1);
+                                    + "'REFERENCENAME' while defining" 
+                                    + " ErrorMessage.", -1);
                     }
                     break;
                  case "ERRORMESSAGE":
@@ -195,7 +195,7 @@ public class ErrorMessage
                         }
                     } else {
                         Terminator.withMsgAndStatus("ERROR! Multiple "
-	                            + "'ACTION' while defining" 
+                                    + "'ACTION' while defining" 
                                     + " ErrorMessage.", -1);
                     }
                     break;
@@ -227,7 +227,7 @@ public class ErrorMessage
     {
         this.name = name;
         this.errMsg = errMsg;
-	this.conditions = new ArrayList<String>();
+        this.conditions = new ArrayList<String>();
         this.typeOfAction = "";
         this.actionDetails = new HashMap<String,String>();
     }
@@ -245,12 +245,12 @@ public class ErrorMessage
      */
 
     public ErrorMessage(String name, ArrayList<String> errMsg,
-				ArrayList<String> conditions, String action, 
-				Map<String,String> details)
+                                ArrayList<String> conditions, String action, 
+                                Map<String,String> details)
     {
         this.name = name;
         this.errMsg = errMsg;
-	this.conditions = conditions;
+        this.conditions = conditions;
         this.typeOfAction = action;
         this.actionDetails = details;
     }
@@ -300,7 +300,7 @@ public class ErrorMessage
 
     public ArrayList<String> getConditions()
     {
-	return conditions;
+        return conditions;
     }
 
 //------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ public class ErrorMessage
 
     public void setConditions(ArrayList<String> conditions)
     {
-	this.conditions = conditions;
+        this.conditions = conditions;
     }
 
 //------------------------------------------------------------------------------
@@ -411,15 +411,15 @@ public class ErrorMessage
                 str = str + "Condition: " + value + "\n";
         }
 
-	str = str + "Action: " + typeOfAction + "\n";
-	for (String key : actionDetails.keySet())
-	{
-	    String value = actionDetails.get(key);
-	    if (value.contains("\n"))
-		str = str + "$START" + key + ": " + value + "\n$END\n";
-	    else
-	        str = str + key + ": " + value + "\n";
-	}
+        str = str + "Action: " + typeOfAction + "\n";
+        for (String key : actionDetails.keySet())
+        {
+            String value = actionDetails.get(key);
+            if (value.contains("\n"))
+                str = str + "$START" + key + ": " + value + "\n$END\n";
+            else
+                str = str + key + ": " + value + "\n";
+        }
 
         return str;
     }

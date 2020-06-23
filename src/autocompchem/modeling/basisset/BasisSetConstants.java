@@ -68,25 +68,25 @@ public class BasisSetConstants
      * Map for converting angular momentum label to integer
      */
     @SuppressWarnings("serial")
-	public final static Map<String,Integer> ANGMOMSTRTOINT = 
-						   new HashMap<String,Integer>()
+        public final static Map<String,Integer> ANGMOMSTRTOINT = 
+                                                   new HashMap<String,Integer>()
     {
-	{
-	    put("S",0);
-	    put("P",1);
-	    put("D",2);
-	    put("F",3);
-	    put("G",4);
-	    put("H",5);
-	    put("I",6);
-	};
+        {
+            put("S",0);
+            put("P",1);
+            put("D",2);
+            put("F",3);
+            put("G",4);
+            put("H",5);
+            put("I",6);
+        };
     };
 
     /**
      * Map for converting angular momentum integer to string label
      */
     @SuppressWarnings("serial")
-	public final static Map<Integer,String> ANGMOMINTTOSTR =
+        public final static Map<Integer,String> ANGMOMINTTOSTR =
                                                    new HashMap<Integer,String>()
     {
         {
@@ -96,7 +96,7 @@ public class BasisSetConstants
             put(3,"F");
             put(4,"G");
             put(5,"H");
-	    put(6,"I");
+            put(6,"I");
         };
     };
 

@@ -36,21 +36,21 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
     @Override
     public int compare(SeedAtom a, SeedAtom b)
     {
-	final int FIRST = 1;
-	final int EQUAL = 0;
+        final int FIRST = 1;
+        final int EQUAL = 0;
         final int LAST = -1;
 
-	int res = EQUAL;
+        int res = EQUAL;
 
-	// Connection numbers
-	int cnA = a.getConnectedAtomsCount();
-	int cnB = b.getConnectedAtomsCount();
+        // Connection numbers
+        int cnA = a.getConnectedAtomsCount();
+        int cnB = b.getConnectedAtomsCount();
 
-	// Masses
+        // Masses
         int massA;
         int massB;
 
-	// Assign special values to special atoms
+        // Assign special values to special atoms
         if (AtomUtils.isDummy(a.getAtom()))
         {
             massA = 1;
@@ -63,10 +63,10 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
         {
             massA = 1;
         }
-	else
-	{
+        else
+        {
             massA = a.getAtom().getMassNumber();
-	}
+        }
 
         if (AtomUtils.isDummy(b.getAtom()))
         {
@@ -80,40 +80,40 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
         {
             massB = 1;
         }
-	else
-	{
-	    massB = b.getAtom().getMassNumber();
-	}
+        else
+        {
+            massB = b.getAtom().getMassNumber();
+        }
 
-	// Compare
-	if (cnA == cnB)
-	{
-	    if (massA == massB)
-	    {
-		res = EQUAL;
-	    }
-	    else
-	    {
-		if (massA < massB)
-		{
-		    res = FIRST;
-	        } 
-	        else 
-	        {
-		    res = LAST;
-	        }
-	    }
-	} 
+        // Compare
+        if (cnA == cnB)
+        {
+            if (massA == massB)
+            {
+                res = EQUAL;
+            }
+            else
+            {
+                if (massA < massB)
+                {
+                    res = FIRST;
+                } 
+                else 
+                {
+                    res = LAST;
+                }
+            }
+        } 
         else if (cnA > cnB) 
-	{
-	    res = FIRST;
-	} 
-	else if (cnA < cnB) 
-	{
-	    res = LAST;
-	} 
+        {
+            res = FIRST;
+        } 
+        else if (cnA < cnB) 
+        {
+            res = LAST;
+        } 
 
-	return res;
+        return res;
     }
 
 //-----------------------------------------------------------------------------

@@ -37,11 +37,11 @@ import org.openscience.cdk.AtomType;
 public class ForceFieldParameter implements Serializable
 {
     /**
-	 * Version ID
-	 */
-	private static final long serialVersionUID = -586719556948482942L;
+         * Version ID
+         */
+        private static final long serialVersionUID = -586719556948482942L;
 
-	/**
+        /**
      * Reference name
      */
     private String name = "noname";
@@ -141,8 +141,8 @@ public class ForceFieldParameter implements Serializable
 
     public void addForceConstant(double dfk)
     {
-	ForceConstant fk = new ForceConstant();
-	fk.setValue(dfk);
+        ForceConstant fk = new ForceConstant();
+        fk.setValue(dfk);
         forceKsts.add(fk);
     }
 
@@ -179,8 +179,8 @@ public class ForceFieldParameter implements Serializable
 
     public void addEquilibriumValue(double dev)
     {
-	EquilibriumValue ev = new EquilibriumValue();
-	ev.setValue(dev);
+        EquilibriumValue ev = new EquilibriumValue();
+        ev.setValue(dev);
         eqVals.add(ev);
     }
 

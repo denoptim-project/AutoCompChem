@@ -171,18 +171,18 @@ public class ForceFieldParameterStats
         Set<ForceFieldParameter> lst = new HashSet<ForceFieldParameter>();
         for (String rName : statsFFPars.keySet())
         {
-	    
+            
             ForceFieldParameter mFFPar = new ForceFieldParameter();
-	    try
-	    {
-		mFFPar = refFFPars.get(rName).deepCopy();
-	    }
-	    catch (Throwable t)
-	    {
-		t.printStackTrace();
-		Terminator.withMsgAndStatus("ERROR! Failed deep-copy of force "
-		  + "field parameter. Plese report this bug to the author.",-1);
-	    }
+            try
+            {
+                mFFPar = refFFPars.get(rName).deepCopy();
+            }
+            catch (Throwable t)
+            {
+                t.printStackTrace();
+                Terminator.withMsgAndStatus("ERROR! Failed deep-copy of force "
+                  + "field parameter. Plese report this bug to the author.",-1);
+            }
             for (int i=0; i<mFFPar.getEqValues().size(); i++)
             {
                 StatsAccumulator saK = statsFFPars.get(rName).get(FKKEY).get(i);

@@ -269,30 +269,30 @@ public class ChelateAnalyzer
     {
         ArrayList<Chelant> chelates = new ArrayList<Chelant>();
 
-	if (verbosity > 0)
-	{
-	    System.out.println(" Analysis of chelation in "
-		                         + MolecularUtils.getNameOrID(mol));
-	}
+        if (verbosity > 0)
+        {
+            System.out.println(" Analysis of chelation in "
+                                         + MolecularUtils.getNameOrID(mol));
+        }
 
-	//We modify a copy of the molecule
-	IAtomContainer wMol = new AtomContainer();
-	try {	
+        //We modify a copy of the molecule
+        IAtomContainer wMol = new AtomContainer();
+        try {        
             wMol = (IAtomContainer) mol.clone();
-	} catch (Throwable t) {
-	    Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
-		+ " clone of molecule.", -1); 
-	}
+        } catch (Throwable t) {
+            Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
+                + " clone of molecule.", -1); 
+        }
 
         //Identify target atoms
         ArrayList<IAtom> targets = new ArrayList<IAtom>();
-	ArrayList<IBond> bndsToTrg = new ArrayList<IBond>();
-	String chelCntrLabed = "CHELATEDTRGID";
+        ArrayList<IBond> bndsToTrg = new ArrayList<IBond>();
+        String chelCntrLabed = "CHELATEDTRGID";
         if (onlyTargetAtms)
         {
 //TODO
-	    Terminator.withMsgAndStatus("ERROR! Use of SMARTS in "
-			+ "ChelateAnalyzer is not implemented yet", -1);
+            Terminator.withMsgAndStatus("ERROR! Use of SMARTS in "
+                        + "ChelateAnalyzer is not implemented yet", -1);
 /*
             ManySMARTSQuery msq = new ManySMARTSQuery(mol,
                                                       targetsmarts,
@@ -335,27 +335,27 @@ public class ChelateAnalyzer
 */
 
         } else {
-	    int centerID=0;
+            int centerID=0;
             for (IAtom atm : wMol.atoms())
-	    {
-		if (AtomUtils.isMetalDblock(atm.getSymbol(),0))
-		{
+            {
+                if (AtomUtils.isMetalDblock(atm.getSymbol(),0))
+                {
                     targets.add(atm);
-		    List<IBond> bndsToAtm = wMol.getConnectedBondsList(atm);
-		    for (IBond bnd : bndsToAtm)
+                    List<IBond> bndsToAtm = wMol.getConnectedBondsList(atm);
+                    for (IBond bnd : bndsToAtm)
                     {
-			bndsToTrg.add(bnd);
-			for (IAtom atmInBnd : bnd.atoms())
+                        bndsToTrg.add(bnd);
+                        for (IAtom atmInBnd : bnd.atoms())
                         {
                             if (atmInBnd != atm)
                             {
-				atmInBnd.setProperty(chelCntrLabed,centerID);
-			    }
-			}
-		    }
-		    centerID++;
-		}
-	    }
+                                atmInBnd.setProperty(chelCntrLabed,centerID);
+                            }
+                        }
+                    }
+                    centerID++;
+                }
+            }
         }
 
         if (verbosity > 1)
@@ -365,48 +365,48 @@ public class ChelateAnalyzer
             if (verbosity > 3)
             {
                 System.out.println("List of centers: " + targets);
-	    }
+            }
         }
 
-	//Chelates are identifyed by remotion of the target atom and 
-	// evaluation of the remaining connectivity
+        //Chelates are identifyed by remotion of the target atom and 
+        // evaluation of the remaining connectivity
 
-	//Remove target atom
-	for (IAtom a : targets)
-	{
-	    wMol.removeAtomAndConnectedElectronContainers(a);
-	}
-	for (IBond bnd : bndsToTrg)
-	{
+        //Remove target atom
+        for (IAtom a : targets)
+        {
+            wMol.removeAtomAndConnectedElectronContainers(a);
+        }
+        for (IBond bnd : bndsToTrg)
+        {
             wMol.removeBond(bnd);
-	}
+        }
 
-	//Isolate ligands
-	String label = "LIGANDID";
-	ConnectivityUtils.identifyContinuoslyConnected(wMol,label);
-	Set<Object> labSet = new HashSet<Object>();
-	for (IAtom a : wMol.atoms())
-	{
-	    Object lab = a.getProperty(label);
-	    if (lab == null)
-	    {
-		Terminator.withMsgAndStatus("ERROR! Found unlabeled atom "
-			+ "where there should be none in ChelateAnalyzer. "
-			+ "Please report this bug to the author.", -1);
-	    }
-	    labSet.add(lab);
-	}
+        //Isolate ligands
+        String label = "LIGANDID";
+        ConnectivityUtils.identifyContinuoslyConnected(wMol,label);
+        Set<Object> labSet = new HashSet<Object>();
+        for (IAtom a : wMol.atoms())
+        {
+            Object lab = a.getProperty(label);
+            if (lab == null)
+            {
+                Terminator.withMsgAndStatus("ERROR! Found unlabeled atom "
+                        + "where there should be none in ChelateAnalyzer. "
+                        + "Please report this bug to the author.", -1);
+            }
+            labSet.add(lab);
+        }
 
-	for (Object lab : labSet)
-	{
-	    IAtomContainer ligand = new AtomContainer();
+        for (Object lab : labSet)
+        {
+            IAtomContainer ligand = new AtomContainer();
             try
             {
                 ligand = (IAtomContainer) wMol.clone();
             }
             catch (Throwable t)
             {
-		Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
+                Terminator.withMsgAndStatus("ERROR! ChelateAnalyzer cannot make "
                 + " clone of ligand.", -1);
             }
 
@@ -417,16 +417,16 @@ public class ChelateAnalyzer
             {
                 Object prop = atm.getProperty(label);
                 if (prop == null)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Label '" + label + "' "
-			+ "is null for " + MolecularUtils.getAtomRef(atm,wMol)
-			+ ". Please report this bug to the author.",-1);
-		}
+                {
+                    Terminator.withMsgAndStatus("ERROR! Label '" + label + "' "
+                        + "is null for " + MolecularUtils.getAtomRef(atm,wMol)
+                        + ". Please report this bug to the author.",-1);
+                }
 
-		if (!prop.equals(lab))
-		{
+                if (!prop.equals(lab))
+                {
                     atmsToDel.add(atm);
-		    List<IBond> bndsToAtm = wMol.getConnectedBondsList(atm);
+                    List<IBond> bndsToAtm = wMol.getConnectedBondsList(atm);
                     for (IBond bnd : bndsToAtm)
                     {
                         for (IAtom atmInBnd : bnd.atoms())
@@ -437,8 +437,8 @@ public class ChelateAnalyzer
                             }
                         }
                     }
-		}
-	    }
+                }
+            }
             for (IAtom atm : atmsToDel)
             {
                 ligand.removeAtomAndConnectedElectronContainers(atm);
@@ -448,43 +448,43 @@ public class ChelateAnalyzer
                 ligand.removeBond(bnd);
             }
 
-	    int denticity = 0;
-	    Set<Object> chelCntrId = new HashSet<Object>();
-	    for (IAtom atm : ligand.atoms())
-	    {
-		Object prop = atm.getProperty(chelCntrLabed);
-		if (prop == null)
-		{
-		    continue;
-		}
-		chelCntrId.add(prop);
-		denticity++;
-		if (chelCntrId.size() > 1)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Cannot yet handle ligands "
-			+ "coordinating different centers (i.e., bridges between "
-			+ "different metal centers)", -1);
-		}
-		
-	    }
+            int denticity = 0;
+            Set<Object> chelCntrId = new HashSet<Object>();
+            for (IAtom atm : ligand.atoms())
+            {
+                Object prop = atm.getProperty(chelCntrLabed);
+                if (prop == null)
+                {
+                    continue;
+                }
+                chelCntrId.add(prop);
+                denticity++;
+                if (chelCntrId.size() > 1)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Cannot yet handle ligands "
+                        + "coordinating different centers (i.e., bridges between "
+                        + "different metal centers)", -1);
+                }
+                
+            }
 
-	    //Store results
-	    String chelantRef = ligand.getAtom(0).getProperty(label).toString();
+            //Store results
+            String chelantRef = ligand.getAtom(0).getProperty(label).toString();
             Chelant c = new Chelant(chelantRef,ligand,denticity);
             chelates.add(c);
 
-	}
+        }
 
-	//Report
-	if (verbosity > 0)
-	{
-	    String record = " Ligands: " + chelates.size() + " Denticity: ";
-	    for (Chelant c : chelates)
-	    {
-		record = record + c.getDenticity() + " ";
-	    }
-	    System.out.println(record);
-	}
+        //Report
+        if (verbosity > 0)
+        {
+            String record = " Ligands: " + chelates.size() + " Denticity: ";
+            for (Chelant c : chelates)
+            {
+                record = record + c.getDenticity() + " ";
+            }
+            System.out.println(record);
+        }
 
         //store
         results.add(chelates);

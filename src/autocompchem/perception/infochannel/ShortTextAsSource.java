@@ -47,7 +47,7 @@ public class ShortTextAsSource extends InfoChannel
 
     public ShortTextAsSource()
     {
-	super();
+        super();
     }
 
 //------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ public class ShortTextAsSource extends InfoChannel
     public ShortTextAsSource(String line)
     {
         super();
-	this.txt = new ArrayList<String>(Arrays.asList(line));
+        this.txt = new ArrayList<String>(Arrays.asList(line));
     }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ public class ShortTextAsSource extends InfoChannel
     public ShortTextAsSource(ArrayList<String> txt)
     {
         super();
-	this.txt = txt;
+        this.txt = txt;
     }
 
 //------------------------------------------------------------------------------
@@ -87,14 +87,14 @@ public class ShortTextAsSource extends InfoChannel
 
     public Reader getSourceReader()
     {
-	StringBuilder sb = new StringBuilder();
-	for (String l : txt)
-	{
-	    sb.append(l);
-	    sb.append(System.getProperty("line.separator"));
-	}
+        StringBuilder sb = new StringBuilder();
+        for (String l : txt)
+        {
+            sb.append(l);
+            sb.append(System.getProperty("line.separator"));
+        }
         super.reader = new StringReader(sb.toString());
-	return super.reader;
+        return super.reader;
     }
 
 //------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ public class ShortTextAsSource extends InfoChannel
     {
         StringBuilder sb = new StringBuilder();
         sb.append("ShortTextAsSource [type:").append(super.getType());
-	sb.append("; text:").append(txt);
+        sb.append("; text:").append(txt);
         sb.append("]");
         return sb.toString();
     }

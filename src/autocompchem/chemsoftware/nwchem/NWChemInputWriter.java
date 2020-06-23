@@ -374,11 +374,11 @@ public class NWChemInputWriter
             }
         }
 
-	//Manage of tags
-	if (params.contains("USESAMETAGSFORMULTIGEOM"))
-	{
-	    this.sameTagsInMultigeom = true;
-	}
+        //Manage of tags
+        if (params.contains("USESAMETAGSFORMULTIGEOM"))
+        {
+            this.sameTagsInMultigeom = true;
+        }
 
         //Use NWChemJob; we do not accept headers in the form of plain text
         if (params.contains("JOBDETAILS"))
@@ -394,12 +394,12 @@ public class NWChemInputWriter
             FilesManager.foundAndPermissions(jdFile,true,false,false);
             this.nwcJob = new NWChemJob(jdFile);
 
-	    //Deal with job details that affect the input witier initial setup
-	    if (nwcJob.getStep(0).hasACCParams())
-	    {
-		ParameterStorage pp = nwcJob.getStep(0).getTaskSpecificParams();
-		if (pp.contains("MULTIGEOMNWCHEM"))
-		{
+            //Deal with job details that affect the input witier initial setup
+            if (nwcJob.getStep(0).hasACCParams())
+            {
+                ParameterStorage pp = nwcJob.getStep(0).getTaskSpecificParams();
+                if (pp.contains("MULTIGEOMNWCHEM"))
+                {
                     this.multiGeom = true;
                     this.geomNames.clear();
                     String line = pp.getParameter(
@@ -415,12 +415,12 @@ public class NWChemInputWriter
                         }
                         this.geomNames.add(parts[i]);
                     }
-		}
+                }
                 if (pp.contains("USESAMETAGSFORMULTIGEOM"))
                 {
-		    this.sameTagsInMultigeom = true;
+                    this.sameTagsInMultigeom = true;
                 }
-	    }
+            }
         } 
         else 
         {
@@ -471,7 +471,7 @@ public class NWChemInputWriter
         } 
         if (params.contains("NOCHARGE"))
         {
-	    this.noCharge = true;
+            this.noCharge = true;
             if (verbosity > 0)
             {
                 System.out.println(" Found 'NOCHARGE' option. No charge will "
@@ -494,7 +494,7 @@ public class NWChemInputWriter
         }
         if (params.contains("NOSPIN_MULTIPLICITY"))
         {
-	    this.noSpinMult = true;
+            this.noSpinMult = true;
             if (verbosity > 0)
             {
                 System.out.println(" Found 'NOSPIN_MULTIPLICITY' option. "
@@ -931,12 +931,12 @@ for (String k : sortedMasterNames)
                 {
                     chargeOrSpinFromIAC(mol);
                 }
-		if (!noCharge && !noSpinMult)
-		{
+                if (!noCharge && !noSpinMult)
+                {
                     checkChargeSpinNotAtDefault();
                     nwcJob.setAllCharge(charge);
                     nwcJob.setAllSpinMultiplicity(spinMult);
- 		}
+                 }
 
                 for (int i=0; i<nwcJob.getNumberOfSteps(); i++)
                 {
@@ -1259,11 +1259,11 @@ for (String k : sortedMasterNames)
             if (repetition > 0)
             {
                 //Avoid writing the basis set when atom tags are reused.
-		//Nevertheless we still match all rules to spot potential issues
-	        if (sameTagsInMultigeom)
-	        {
-		    goon = false;
-	        }
+                //Nevertheless we still match all rules to spot potential issues
+                if (sameTagsInMultigeom)
+                {
+                    goon = false;
+                }
 
                 //Ignore elemental symbol-based rules: they apply to all 
                 // geometries and must not be repeated
@@ -1426,11 +1426,11 @@ for (String k : sortedMasterNames)
 
     private NWChemDirectiveData makeCartesianCoordsData(IAtomContainer mol)
     {
-	// Reset counter when using the same atom tags for multiple geoms
-	if (sameTagsInMultigeom)
-	{
-	    iAtomTag = new AtomicInteger(1);
-	}
+        // Reset counter when using the same atom tags for multiple geoms
+        if (sameTagsInMultigeom)
+        {
+            iAtomTag = new AtomicInteger(1);
+        }
 
         // Preare the Cartesian coordinates data block
         ArrayList<String> lines = new ArrayList<String>();

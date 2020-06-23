@@ -130,7 +130,7 @@ public class Perceptron
 
     public boolean isAware()
     {
-	return iamaware;
+        return iamaware;
     }
 
 //------------------------------------------------------------------------------
@@ -143,9 +143,9 @@ public class Perceptron
 
     public ArrayList<Situation> getOccurringSituations()
     {
-	ArrayList<Situation> copy = new ArrayList<Situation>();
-	copy.addAll(occurringSituations);
- 	return copy;
+        ArrayList<Situation> copy = new ArrayList<Situation>();
+        copy.addAll(occurringSituations);
+         return copy;
     }
 
 //------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ public class Perceptron
 
     public void printScores()
     {
-	System.out.println(scoreCollector.printToString());
+        System.out.println(scoreCollector.printToString());
     }
 
 //------------------------------------------------------------------------------
@@ -219,11 +219,11 @@ public class Perceptron
                 }
                 break;
             case 1:
-		iamaware = true;
+                iamaware = true;
                 if (verbosity > 1)
                 {
                     System.out.println(init + "Known situation is " 
-						  + occurringSituations.get(0));
+                                                  + occurringSituations.get(0));
                 }
                 break;
            default:
@@ -257,17 +257,17 @@ public class Perceptron
         }
         else
         {
-	    SCPair scp = new SCPair(n,c);
+            SCPair scp = new SCPair(n,c);
 
             if (verbosity > 3)
             {
                 System.out.println("-?-> Evaluating SCPair: " 
-							    + scp.toIDString());
-		if (verbosity > 4)
-		{
+                                                            + scp.toIDString());
+                if (verbosity > 4)
+                {
                     System.out.println("     Child ICircumstance: "+c);
                     System.out.println("     Parent Situation: " + n);
-		}
+                }
             }
 
             //evaluate circumstance now
@@ -333,8 +333,8 @@ this.printScores();
         }
 */
 
-	// Utility for comparing InfoChannelTypes
-	InfoChannelTypeComparator ictComparator =
+        // Utility for comparing InfoChannelTypes
+        InfoChannelTypeComparator ictComparator =
                                                 new InfoChannelTypeComparator();
 
         // Explore all the information channels by type, so that we can take all
@@ -343,8 +343,8 @@ this.printScores();
         {
             if (verbosity > 2)
             {
-		System.out.println(newline+newline+"InfoChannelType: "+ict);
-	    }
+                System.out.println(newline+newline+"InfoChannelType: "+ict);
+            }
 
             // Here we collect all the text queries removing duplicates
             // The queries are collected ialso as objects to keep track of
@@ -391,13 +391,13 @@ this.printScores();
                 if (verbosity > 2)
                 {
                     System.out.println(newline +"Scanning InfoChannel: "+ic);
-		}
+                }
 
-		BufferedReader br = null;
-		TreeMap<String,ArrayList<String>> allMatches = null;
-	        try 
-		{
-		    br = new BufferedReader(ic.getSourceReader());
+                BufferedReader br = null;
+                TreeMap<String,ArrayList<String>> allMatches = null;
+                try 
+                {
+                    br = new BufferedReader(ic.getSourceReader());
 
                     // Extract potentially useful information from text
                     // WARNING!!! No attempt to match multiline blocks here!
@@ -408,27 +408,27 @@ this.printScores();
                                                         new ArrayList<String>(),
                                                         false,
                                                         true);
-		}
-		catch (Exception e)
-		{
-		    String msg = "ERROR reading InfoChannel "+ic;
-		    Terminator.withMsgAndStatus(msg,-1);
-		}
-		finally
-		{
-		    if (br != null)
-		    {
-			try
-			{
-			    br.close();
-	                }
+                }
+                catch (Exception e)
+                {
+                    String msg = "ERROR reading InfoChannel "+ic;
+                    Terminator.withMsgAndStatus(msg,-1);
+                }
+                finally
+                {
+                    if (br != null)
+                    {
+                        try
+                        {
+                            br.close();
+                        }
                         catch (Exception e)
                         {
                             String msg = "ERROR closing InfoChannel "+ic;
                             Terminator.withMsgAndStatus(msg,-1);
                         }
-		    }
-		}
+                    }
+                }
 
                 // Identify the queries that have matches
                 Map<Integer,ArrayList<String>> textQueriesWMatches = 
@@ -442,54 +442,54 @@ this.printScores();
                     String[] parts = strQuery.split("_");
                     //...and get the index of the query given to FileAnalyzer
                     int qID = Integer.parseInt(parts[1]); // the 'b'
-		    if (textQueriesWMatches.keySet().contains(qID))
-		    {
-			textQueriesWMatches.get(qID).add(strQuery);
-		    }
-		    else
-		    {
-			ArrayList<String> strQryKeys = new ArrayList<String>();
-			strQryKeys.add(strQuery);
+                    if (textQueriesWMatches.keySet().contains(qID))
+                    {
+                        textQueriesWMatches.get(qID).add(strQuery);
+                    }
+                    else
+                    {
+                        ArrayList<String> strQryKeys = new ArrayList<String>();
+                        strQryKeys.add(strQuery);
                         textQueriesWMatches.put(qID,strQryKeys);
-		    }
+                    }
                 }
 
                 // Process matched and unmatched queries
                 for (int qID = 0; qID < txtQueriesAsStr.size(); qID++)
                 {
                     TxtQuery tq = txtQueries.get(qID);
-		    if (verbosity > 3)
-		    {
+                    if (verbosity > 3)
+                    {
                         System.out.println("Result for text query "+tq);
-		    }
+                    }
 
                     ArrayList<String> matches = new ArrayList<String>(0);
                     if (textQueriesWMatches.keySet().contains(qID))
                     {
                         // This text query has been matched 
                         for (String strQuery : textQueriesWMatches.get(qID))
-			{
+                        {
                             matches.addAll(allMatches.get(strQuery));
-			}
+                        }
 
-			if (verbosity > 3)
-			{	
+                        if (verbosity > 3)
+                        {        
                              System.out.println("Matches for text query " 
                                                   + txtQueriesAsStr.get(qID));
                             for (String m : matches)
                             {
                                 System.out.println("  ->  " + m);
                             }
-			}
+                        }
                     }
                     else 
                     {
                         //This is a text query that does NOT have any match
-			if (verbosity > 3)
-			{	
+                        if (verbosity > 3)
+                        {        
                             System.out.println("No matches for text query ="
                                                   + txtQueriesAsStr.get(qID));
-			}
+                        }
                     }
 
                     // Add scores for all the Situation:ICircumnstance that 
@@ -583,7 +583,7 @@ TODO NOtes:
             {
                 sb.append("   -> "+nc.toString());
             }
-	    sb.append("]");
+            sb.append("]");
             return sb.toString();
         }
     }

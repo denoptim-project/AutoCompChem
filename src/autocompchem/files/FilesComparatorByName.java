@@ -42,7 +42,7 @@ public class FilesComparatorByName implements Comparator<File>
 
     public FilesComparatorByName(boolean ascending)
     {
-	this.ascending = ascending;
+        this.ascending = ascending;
     }
 
 //-----------------------------------------------------------------------------
@@ -50,12 +50,12 @@ public class FilesComparatorByName implements Comparator<File>
     @Override
     public int compare(File a, File b)
     {
-	if (ascending)
-	{
-	    return ((a.getName()).compareTo(b.getName()));
-	} else {
-	    return -1 * ((a.getName()).compareTo(b.getName()));
-	}
+        if (ascending)
+        {
+            return ((a.getName()).compareTo(b.getName()));
+        } else {
+            return -1 * ((a.getName()).compareTo(b.getName()));
+        }
     }
 
 //-----------------------------------------------------------------------------

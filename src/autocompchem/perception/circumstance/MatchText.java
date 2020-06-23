@@ -47,7 +47,7 @@ public class MatchText extends Circumstance
 
     public MatchText()
     {
-	super();
+        super();
         this.hasTxtQuery = true;
     }
 
@@ -60,9 +60,9 @@ public class MatchText extends Circumstance
 
     public MatchText(String pattern)
     {
-	super();
+        super();
         this.hasTxtQuery = true;
-	this.pattern = pattern;
+        this.pattern = pattern;
     }
 
 //------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ public class MatchText extends Circumstance
 
     public MatchText(String pattern, InfoChannelType ict)
     {
-	super(ict);
+        super(ict);
         this.hasTxtQuery = true;
         this.pattern = pattern;
     }
@@ -93,10 +93,10 @@ public class MatchText extends Circumstance
 
     public MatchText(String pattern, boolean negation)
     {
-	super();
+        super();
         this.hasTxtQuery = true;
         this.pattern = pattern;
-	this.negation = negation;
+        this.negation = negation;
     }
 
 //------------------------------------------------------------------------------
@@ -111,9 +111,9 @@ public class MatchText extends Circumstance
      */
 
     public MatchText(String pattern, boolean negation, 
-					      InfoChannelType ict)
+                                              InfoChannelType ict)
     {
-	super(ict);
+        super(ict);
         this.hasTxtQuery = true;
         this.pattern = pattern;
         this.negation = negation;
@@ -127,7 +127,7 @@ public class MatchText extends Circumstance
      */
     public String getPattern()
     {
-	return pattern;
+        return pattern;
     }
 
 //------------------------------------------------------------------------------
@@ -143,23 +143,23 @@ public class MatchText extends Circumstance
 
     public double calculateScore(ArrayList<String> matches)
     {
-	double score = 0.0;
+        double score = 0.0;
         if (negation)
-	{
-	    if (matches.size() == 0)
-	    {
-	        score = 1.0;
-	    }
-	}
-	else
-	{
-	    //TODO: here we can make the socre dependent on #matches 
+        {
+            if (matches.size() == 0)
+            {
+                score = 1.0;
+            }
+        }
+        else
+        {
+            //TODO: here we can make the socre dependent on #matches 
             if (matches.size() > 0)
             {
                 score = 1.0;
             }
-	}
-	
+        }
+        
         return score;
     }
 

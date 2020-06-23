@@ -222,7 +222,7 @@ public class QMMMJob
                 {
                     Terminator.withMsgAndStatus("ERROR! Multiline block opened "
                                        + "but never closed. Opened block is: '"
-				       + secContent + "'",-1);
+                                       + secContent + "'",-1);
                 }
             }    
 
@@ -274,17 +274,17 @@ public class QMMMJob
             {
                 lines.add(line);
                 totLen = 2 * (QMMMConstants.SUBSECTIONINDENT.length()) 
-								+ word.length();
+                                                                + word.length();
                 line = word;
             }
         }
 
-	if (lines.size() > QMMMConstants.MAXTITLELINES)
-	{
-	    Terminator.withMsgAndStatus("ERROR! Title is too long (more than "
-					+ QMMMConstants.MAXTITLELINES 
-					+ " lines); use a shorter title",-1);
-	}
+        if (lines.size() > QMMMConstants.MAXTITLELINES)
+        {
+            Terminator.withMsgAndStatus("ERROR! Title is too long (more than "
+                                        + QMMMConstants.MAXTITLELINES 
+                                        + " lines); use a shorter title",-1);
+        }
 
         QMMMList lst = new QMMMList(QMMMConstants.TITLELIST,lines);
         setList(secPath,lst);
@@ -518,9 +518,9 @@ public class QMMMJob
         if (multgen == null)
         {
             Terminator.withMsgAndStatus("ERROR! " + QMMMConstants.MULTIGENSEC 
-				     + " section not found in the QMMMJob. "
+                                     + " section not found in the QMMMJob. "
                                      + "The " + QMMMConstants.MULTIGENSEC
-				     + " section must be defined.",-1);
+                                     + " section must be defined.",-1);
         }
 
         //Default 
@@ -546,7 +546,7 @@ public class QMMMJob
         QMMMSection qmmmSec = getSection(QMMMConstants.QMMMSEC);
         if (qmmmSec == null)
         {
-	    return "NONE";
+            return "NONE";
         }
 
         //Default
@@ -558,7 +558,7 @@ public class QMMMJob
         }
 
         return type;
-	}
+        }
 
 //------------------------------------------------------------------------------
 
@@ -569,7 +569,7 @@ public class QMMMJob
      */
 
     @SuppressWarnings("unused")
-	private void testRecursiveAlterations()
+        private void testRecursiveAlterations()
     {
         System.out.println("-------------- TESTING CODE --------------");
         QMMMKeyword kp = new QMMMKeyword("key1",true,
@@ -644,7 +644,7 @@ public class QMMMJob
         for (QMMMSection qmmmDir : sections)
         {
             lines.addAll(qmmmDir.toLinesInput());
-	    lines.add(" ");
+            lines.add(" ");
         }
         return lines;
     }

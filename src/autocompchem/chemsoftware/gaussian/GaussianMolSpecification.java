@@ -75,26 +75,26 @@ public class GaussianMolSpecification
     {
         for (int i=0; i<lines.size(); i++)
         {
-	    String line = lines.get(i).trim().toUpperCase();
-	    if (!line.startsWith(GaussianConstants.KEYMOLSEC))
-	    {
+            String line = lines.get(i).trim().toUpperCase();
+            if (!line.startsWith(GaussianConstants.KEYMOLSEC))
+            {
                 continue;
-	    }
+            }
 
             line = line.substring(GaussianConstants.KEYMOLSEC.length());
-	    if (line.startsWith(GaussianConstants.CHARGEKEY))
-	    {
-		try
-		{
-		    charge = Integer.parseInt(line.substring(
-							  line.indexOf("=")+1));
-		}
-		catch (Throwable t)
-		{
-		    Terminator.withMsgAndStatus("ERROR! Unable to convert '"
-			+ line + "' into an integer charge.",-1);
-		}
-	    }
+            if (line.startsWith(GaussianConstants.CHARGEKEY))
+            {
+                try
+                {
+                    charge = Integer.parseInt(line.substring(
+                                                          line.indexOf("=")+1));
+                }
+                catch (Throwable t)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Unable to convert '"
+                        + line + "' into an integer charge.",-1);
+                }
+            }
             else if (line.startsWith(GaussianConstants.SPINMLTKEY))
             {
                 try
@@ -126,17 +126,17 @@ public class GaussianMolSpecification
      
     public GaussianMolSpecification(IAtomContainer mol, int charge, int spinMlt)
     {
-	setChargeSpin(charge, spinMlt);
+        setChargeSpin(charge, spinMlt);
 
         for (IAtom a : mol.atoms())
         {
             String line = "";
             String symbol = a.getSymbol();
             Point3d p3d = MolecularUtils.getCoords3d(a);
-	    String x = String.format("%17.12f",p3d.x);
+            String x = String.format("%17.12f",p3d.x);
             String y = String.format("%17.12f",p3d.y);
             String z = String.format("%17.12f",p3d.z);
-	    String spacer = "     ";
+            String spacer = "     ";
             line = symbol + spacer + x + spacer + y + spacer + z;
             addPart(line);
         }
@@ -151,7 +151,7 @@ public class GaussianMolSpecification
 
     public void addPart(String string)
     {
-	molSpec.add(string);
+        molSpec.add(string);
     }
 
 //------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ public class GaussianMolSpecification
 
     public String getLine(int lineNum)
     {
-	return molSpec.get(lineNum);
+        return molSpec.get(lineNum);
     }
 
 //------------------------------------------------------------------------------
@@ -215,8 +215,8 @@ public class GaussianMolSpecification
 
     public void setChargeSpin(int charge, int spin)
     {
-	this.charge = charge;
-	this.spinMlt = spin;
+        this.charge = charge;
+        this.spinMlt = spin;
     }
 
 //------------------------------------------------------------------------------
@@ -257,14 +257,14 @@ public class GaussianMolSpecification
 
         String str = "";
         str = charge + " " + spinMlt;
-	lines.add(str);	
+        lines.add(str);        
         for (int i=0; i<molSpec.size(); i++)
         {
             lines.add(molSpec.get(i));
         }
 
         //This section is black line terminated
-	lines.add("");
+        lines.add("");
 
         return lines;
     }
@@ -282,8 +282,8 @@ public class GaussianMolSpecification
     public ArrayList<String> toLinesJob()
     {
         ArrayList<String> lines = new ArrayList<String>();
-	lines.add(GaussianConstants.KEYMOLSEC + GaussianConstants.CHARGEKEY 
-		                                                + "=" + charge);
+        lines.add(GaussianConstants.KEYMOLSEC + GaussianConstants.CHARGEKEY 
+                                                                + "=" + charge);
         lines.add(GaussianConstants.KEYMOLSEC + GaussianConstants.SPINMLTKEY
                                                                + "=" + spinMlt);
         return lines;

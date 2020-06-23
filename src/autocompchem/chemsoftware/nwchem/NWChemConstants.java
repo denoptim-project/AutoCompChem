@@ -273,7 +273,7 @@ public class NWChemConstants
      * different syntax.
      */
     public final static String OUTHESSTARTXYZ = 
-			         "(.*) atom (.*) X (.*) Y (.*) Z (.*) mass(.*)";
+                                 "(.*) atom (.*) X (.*) Y (.*) Z (.*) mass(.*)";
 
     /**
      * String identifying the end of a geometry block in the output of
@@ -337,8 +337,8 @@ public class NWChemConstants
      * Spin multiplicity as string for SCF directive
      */
     public final static ArrayList<String> SCFSPINMULT = new ArrayList<String>(
-							Arrays.asList("SINGLET",
-								      "DOUBLET",
+                                                        Arrays.asList("SINGLET",
+                                                                      "DOUBLET",
                                                                       "TRIPLET",
                                                                       "QUARTET",
                                                                       "QUINTET",

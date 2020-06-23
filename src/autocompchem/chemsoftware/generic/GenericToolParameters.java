@@ -58,7 +58,7 @@ public class GenericToolParameters extends ParameterStorage
 
     public GenericToolParameters(ParameterStorage ps)
     {
-	super(ps.getAllParameters());
+        super(ps.getAllParameters());
     }
 
 //------------------------------------------------------------------------------
@@ -71,10 +71,10 @@ public class GenericToolParameters extends ParameterStorage
 
     public String getOutputInitialMsg()
     {
-	Parameter par  =  getParameterOrDefault(
-			                    GenericToolConstants.DEFINITMSGKEY, 
-			                                                   cls);
-	return par.getValue().toString();
+        Parameter par  =  getParameterOrDefault(
+                                            GenericToolConstants.DEFINITMSGKEY, 
+                                                                           cls);
+        return par.getValue().toString();
     }
 
 //------------------------------------------------------------------------------

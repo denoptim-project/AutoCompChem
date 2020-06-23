@@ -161,19 +161,19 @@ public class Shell
                                   type,primitives.size(),scaleFact)).append(nl);
                 for (Primitive p : primitives)
                 {
-		    String eForm = "%" + (p.getExpPrecision() + 6) + "." 
-				           + (p.getExpPrecision()-1) + "E     ";
+                    String eForm = "%" + (p.getExpPrecision() + 6) + "." 
+                                           + (p.getExpPrecision()-1) + "E     ";
                     String cForm = "%" + (p.getCoeffPrecision() + 6) + "."
                                               + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
                     sb.append(String.format(cForm,p.getCoeff()));
-		    sb.append(nl);
+                    sb.append(nl);
                 }
                 break;
 
-	    case "NWCHEM":
+            case "NWCHEM":
                 String atmStr = Character.toUpperCase(atomId.charAt(0)) 
-					    + atomId.toLowerCase().substring(1);
+                                            + atomId.toLowerCase().substring(1);
                 sb.append(String.format("  %s %s",atmStr,type)).append(nl);
                 for (Primitive p : primitives)
                 {
@@ -183,14 +183,14 @@ public class Shell
                                               + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
                     sb.append(String.format(cForm,p.getCoeff()));
-		    sb.append(nl);
+                    sb.append(nl);
                 }
-		break;
+                break;
 
             default:
                 String msg = "ERROR! Format '" + format + "' is not a known "
                              + "format for reporting basis sets (in Shell). "
-			     + "Check your input.";
+                             + "Check your input.";
                 Terminator.withMsgAndStatus(msg,-1);
         }
         return sb.toString();

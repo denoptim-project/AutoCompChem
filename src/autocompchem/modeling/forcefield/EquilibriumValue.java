@@ -31,11 +31,11 @@ import java.util.Map;
 public class EquilibriumValue implements Serializable
 {
     /**
-	 * Version ID
-	 */
-	private static final long serialVersionUID = 7306871947307205225L;
+         * Version ID
+         */
+        private static final long serialVersionUID = 7306871947307205225L;
 
-	/**
+        /**
      * Reference name
      */
     private String name = "noname";
@@ -77,9 +77,9 @@ public class EquilibriumValue implements Serializable
 
     public EquilibriumValue(String name, double value, String units)
     {
-	this.name = name;
-	this.value = value;
-	this.units = units;
+        this.name = name;
+        this.value = value;
+        this.units = units;
     }
 
 //------------------------------------------------------------------------------
@@ -115,12 +115,12 @@ public class EquilibriumValue implements Serializable
 
     public String toString()
     {
-	StringBuilder sb = new StringBuilder();
-	sb.append("EquilibriumValue [name:").append(name).append(", ");
-	sb.append("value:").append(value).append(", ");
-	sb.append("units:").append(units).append(", ");
-	sb.append("properties:").append(properties.toString()).append("] ");
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("EquilibriumValue [name:").append(name).append(", ");
+        sb.append("value:").append(value).append(", ");
+        sb.append("units:").append(units).append(", ");
+        sb.append("properties:").append(properties.toString()).append("] ");
+        return sb.toString();
     }
 
 //------------------------------------------------------------------------------

@@ -208,10 +208,10 @@ public class GaussianStep
 
     public GaussianStep()
     {
-	this.gLink = new GaussianLinkCommandsSection();
-	this.gRoute = new GaussianRouteSection();
-	this.gMol = new GaussianMolSpecification();
-	this.gOpts = new GaussianOptionsSection();
+        this.gLink = new GaussianLinkCommandsSection();
+        this.gRoute = new GaussianRouteSection();
+        this.gMol = new GaussianMolSpecification();
+        this.gOpts = new GaussianOptionsSection();
     }
 
 //------------------------------------------------------------------------------
@@ -226,66 +226,66 @@ public class GaussianStep
 
     public GaussianStep(ArrayList<String> lines)
     {
-	Map<String,ArrayList<String>> sections = 
-					new HashMap<String,ArrayList<String>>();
+        Map<String,ArrayList<String>> sections = 
+                                        new HashMap<String,ArrayList<String>>();
         for (int i=0; i<lines.size(); i++)
         {
-	    String line = lines.get(i);
-	    String lineUp = line.toUpperCase();
+            String line = lines.get(i);
+            String lineUp = line.toUpperCase();
 
-	    //Check thet there is no multi step array of lines
-	    if (lineUp.contains(GaussianConstants.STEPSEPARATOR.toUpperCase()))
-	    {
-		Terminator.withMsgAndStatus("ERROR! Trying to submit a "
-			+ "multistep input to a single Gaussian Step.",-1);
-	    }
+            //Check thet there is no multi step array of lines
+            if (lineUp.contains(GaussianConstants.STEPSEPARATOR.toUpperCase()))
+            {
+                Terminator.withMsgAndStatus("ERROR! Trying to submit a "
+                        + "multistep input to a single Gaussian Step.",-1);
+            }
 
-	    //Identify the section this line belongs to
-	    for (String key : GaussianConstants.JOBDETAILSKEYWORDS)
-	    {
-		if (lineUp.startsWith(key))
-		{
-		    if (sections.keySet().contains(key))
-		    {
-			sections.get(key).add(line);
-		    } else {
-			ArrayList<String> linesInSection = 
-						new ArrayList<String>();
+            //Identify the section this line belongs to
+            for (String key : GaussianConstants.JOBDETAILSKEYWORDS)
+            {
+                if (lineUp.startsWith(key))
+                {
+                    if (sections.keySet().contains(key))
+                    {
+                        sections.get(key).add(line);
+                    } else {
+                        ArrayList<String> linesInSection = 
+                                                new ArrayList<String>();
                         linesInSection.add(line);
                         sections.put(key,linesInSection);
-		    }
-		    break;
-		}
-	    } //end loop over keywords for section
-	} //end loop over lines
+                    }
+                    break;
+                }
+            } //end loop over keywords for section
+        } //end loop over lines
 
-	//Construct the objects
-	if (sections.keySet().contains(GaussianConstants.KEYLINKSEC))
-	{
+        //Construct the objects
+        if (sections.keySet().contains(GaussianConstants.KEYLINKSEC))
+        {
             gLink = new GaussianLinkCommandsSection(
-				sections.get(GaussianConstants.KEYLINKSEC));
-	} else {
-	    gLink = new GaussianLinkCommandsSection();
-	}
+                                sections.get(GaussianConstants.KEYLINKSEC));
+        } else {
+            gLink = new GaussianLinkCommandsSection();
+        }
 
-	if (sections.keySet().contains(GaussianConstants.KEYROUTESEC))
-	{
-	    gRoute = new GaussianRouteSection(
-	                        sections.get(GaussianConstants.KEYROUTESEC));
-	} else {
-	    gRoute = new GaussianRouteSection();
-	}
+        if (sections.keySet().contains(GaussianConstants.KEYROUTESEC))
+        {
+            gRoute = new GaussianRouteSection(
+                                sections.get(GaussianConstants.KEYROUTESEC));
+        } else {
+            gRoute = new GaussianRouteSection();
+        }
 
-	if (sections.keySet().contains(GaussianConstants.KEYTITLESEC))
-	{
-	    for (String part : sections.get(GaussianConstants.KEYTITLESEC))
-	    {
-		part = part.substring(GaussianConstants.KEYTITLESEC.length());
-	        comment = comment + " " + part;
-	    }
-	} else {
-	    comment = "No comment";
-	}
+        if (sections.keySet().contains(GaussianConstants.KEYTITLESEC))
+        {
+            for (String part : sections.get(GaussianConstants.KEYTITLESEC))
+            {
+                part = part.substring(GaussianConstants.KEYTITLESEC.length());
+                comment = comment + " " + part;
+            }
+        } else {
+            comment = "No comment";
+        }
 
         if (sections.keySet().contains(GaussianConstants.KEYMOLSEC))
         {
@@ -325,7 +325,7 @@ public class GaussianStep
 
     public void setLinkCommands(GaussianLinkCommandsSection newGJCS)
     {
-	gLink = newGJCS;
+        gLink = newGJCS;
     }
 
 //------------------------------------------------------------------------------
@@ -349,7 +349,7 @@ public class GaussianStep
 
     public void setRouteSection(GaussianRouteSection newGJRS)
     {
-	gRoute = newGJRS;
+        gRoute = newGJRS;
     }
 
 //------------------------------------------------------------------------------
@@ -373,7 +373,7 @@ public class GaussianStep
 
     public void setComment(String newComment)
     {
-	comment = newComment;
+        comment = newComment;
     }
 
 //------------------------------------------------------------------------------
@@ -421,7 +421,7 @@ public class GaussianStep
 
     public void setMolSpecification(GaussianMolSpecification newGJMS)
     {
-	gMol = newGJMS;
+        gMol = newGJMS;
     }  
 
 //------------------------------------------------------------------------------
@@ -435,21 +435,21 @@ public class GaussianStep
 
     public boolean needsGeometry()
     {
-	if (gRoute.containsKey(GaussianConstants.LABLOUDKEY + 
-						  GaussianConstants.GAUKEYGEOM))
-	{
-	    String opt = gRoute.getValue(GaussianConstants.LABLOUDKEY +
-				    GaussianConstants.GAUKEYGEOM).toUpperCase();
-	    if (opt.startsWith(GaussianConstants.GAUKEYGEOMCHK) ||
-		opt.startsWith(GaussianConstants.GAUKEYGEOMCHECK) ||
-		opt.startsWith(GaussianConstants.GAUKEYGEOMALLCHK) ||
-		opt.startsWith(GaussianConstants.GAUKEYGEOMSTEP) ||
-		opt.startsWith(GaussianConstants.GAUKEYGEOMNGEOM) ||
-		opt.startsWith(GaussianConstants.GAUKEYGEOMMOD))
-	    {
-	        return false;
-	    }
-	}
+        if (gRoute.containsKey(GaussianConstants.LABLOUDKEY + 
+                                                  GaussianConstants.GAUKEYGEOM))
+        {
+            String opt = gRoute.getValue(GaussianConstants.LABLOUDKEY +
+                                    GaussianConstants.GAUKEYGEOM).toUpperCase();
+            if (opt.startsWith(GaussianConstants.GAUKEYGEOMCHK) ||
+                opt.startsWith(GaussianConstants.GAUKEYGEOMCHECK) ||
+                opt.startsWith(GaussianConstants.GAUKEYGEOMALLCHK) ||
+                opt.startsWith(GaussianConstants.GAUKEYGEOMSTEP) ||
+                opt.startsWith(GaussianConstants.GAUKEYGEOMNGEOM) ||
+                opt.startsWith(GaussianConstants.GAUKEYGEOMMOD))
+            {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -464,16 +464,16 @@ public class GaussianStep
     public ArrayList<String> toLinesInp()
     {
         ArrayList<String> lines = new ArrayList<String>();
-	
-	lines.addAll(gLink.toLinesInp());
-	lines.addAll(gRoute.toLinesInp());
+        
+        lines.addAll(gLink.toLinesInp());
+        lines.addAll(gRoute.toLinesInp());
 
-	lines.add(comment);
+        lines.add(comment);
         lines.add("");  //blackline terminated section
 
         lines.addAll(gMol.toLinesInp());
 
-	lines.addAll(gOpts.toLinesInp());
+        lines.addAll(gOpts.toLinesInp());
 
         return lines;
     }
@@ -494,10 +494,10 @@ public class GaussianStep
 
         lines.addAll(gLink.toLinesJob());
         lines.addAll(gRoute.toLinesJob());
-	String commentAsJob = GaussianConstants.KEYTITLESEC + comment;
+        String commentAsJob = GaussianConstants.KEYTITLESEC + comment;
         lines.add(commentAsJob);
         lines.addAll(gMol.toLinesJob());
-	lines.addAll(gOpts.toLinesJob());
+        lines.addAll(gOpts.toLinesJob());
 
         return lines;
     }

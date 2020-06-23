@@ -74,7 +74,7 @@ public class QMMMList
             Terminator.withMsgAndStatus("ERROR! Cannot discriminate between "
                                        + "reference name and content of the "
                                        + "list in '" + line 
-				       + "'. Check jobdetails file.",-1);
+                                       + "'. Check jobdetails file.",-1);
         }
         String block = parts[1];
         if (block.toUpperCase().startsWith(QMMMConstants.LABOPENBLOCK))
@@ -132,7 +132,7 @@ public class QMMMList
 
     public void setContent(ArrayList<String> lines)
     {
-	this.lines = lines;
+        this.lines = lines;
     }
 
 //-----------------------------------------------------------------------------
@@ -145,13 +145,13 @@ public class QMMMList
 
     public ArrayList<String> toLinesInput()
     {
-	ArrayList<String> inpFileLines = new ArrayList<String>();
-	inpFileLines.add(name.toUpperCase());
-	for (String line : lines)
-	{
-	    inpFileLines.add(QMMMConstants.SUBSECTIONINDENT + line);
-	}
-	inpFileLines.add("END");
+        ArrayList<String> inpFileLines = new ArrayList<String>();
+        inpFileLines.add(name.toUpperCase());
+        for (String line : lines)
+        {
+            inpFileLines.add(QMMMConstants.SUBSECTIONINDENT + line);
+        }
+        inpFileLines.add("END");
         return inpFileLines;
     }
 
@@ -166,7 +166,7 @@ public class QMMMList
     public ArrayList<String> toLinesJobDetails()
     {
         if (lines.size() > 1 
-	    && !lines.get(0).startsWith(QMMMConstants.LABOPENBLOCK))
+            && !lines.get(0).startsWith(QMMMConstants.LABOPENBLOCK))
         {
             lines.set(0,QMMMConstants.LABOPENBLOCK + lines.get(0));
             lines.add(QMMMConstants.LABCLOSEBLOCK);

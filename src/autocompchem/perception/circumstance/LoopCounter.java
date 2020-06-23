@@ -46,7 +46,7 @@ public class LoopCounter extends MatchText
 
     public LoopCounter()
     {
-	super();
+        super();
     }
 
 //------------------------------------------------------------------------------
@@ -61,9 +61,9 @@ public class LoopCounter extends MatchText
 
     public LoopCounter(String counterId, double minCounter, double maxCounter)
     {
-	super(counterId);
-	this.minCounter = minCounter;
-	this.maxCounter = maxCounter;
+        super(counterId);
+        this.minCounter = minCounter;
+        this.maxCounter = maxCounter;
     }
 
 //------------------------------------------------------------------------------
@@ -79,9 +79,9 @@ public class LoopCounter extends MatchText
      */
 
     public LoopCounter(String counterId, double minCounter, double maxCounter,
-					              InfoChannelType ict)
+                                                      InfoChannelType ict)
     {
-	super(counterId, ict);
+        super(counterId, ict);
         this.minCounter = minCounter;
         this.maxCounter = maxCounter;
     }
@@ -95,7 +95,7 @@ public class LoopCounter extends MatchText
 
     public String getCounterID()
     {
-	return super.getPattern();
+        return super.getPattern();
     }
 
 //------------------------------------------------------------------------------

@@ -56,7 +56,7 @@ public class ConnectivityUtils
 
     public ConnectivityUtils(int verbosity)
     {
-	this.verbosity = verbosity;
+        this.verbosity = verbosity;
     }
 
 //------------------------------------------------------------------------------
@@ -78,14 +78,14 @@ public class ConnectivityUtils
      */
 
     public static void addConnectionsByVDWRadius(IAtomContainer mol, String el, 
-		      double tolerance, double extraTollSecShell, int verbosity)
+                      double tolerance, double extraTollSecShell, int verbosity)
     {
         if (verbosity > 2)
         {
             System.out.println("Evaluating Connections of '" 
-			+ el + "' atoms using van der Waals radii (Tolerance: "
-			+ (tolerance * 100) + "% (sec. shell +" 
-			+ (extraTollSecShell * 100) + "%).");
+                        + el + "' atoms using van der Waals radii (Tolerance: "
+                        + (tolerance * 100) + "% (sec. shell +" 
+                        + (extraTollSecShell * 100) + "%).");
         }
 
         for (IAtom atmA : mol.atoms())
@@ -98,20 +98,20 @@ public class ConnectivityUtils
 
             //Already connected atoms
             List<IAtom> nbrs = mol.getConnectedAtomsList(atmA);
-	    //And second shell (atoms connected to one in nbrs)
-	    List<IAtom> secShell = new ArrayList<IAtom>();
-	    for (IAtom nbr : nbrs)
-	    {
-		List<IAtom> nbrsOfNbr = mol.getConnectedAtomsList(nbr);
-		for (IAtom nbrOfNbr : nbrsOfNbr)
-		{
-		    //Skip central
-		    if (nbrOfNbr.equals(atmA))
-		        continue;
-	
-		    secShell.add(nbrOfNbr);
-		}
-	    }
+            //And second shell (atoms connected to one in nbrs)
+            List<IAtom> secShell = new ArrayList<IAtom>();
+            for (IAtom nbr : nbrs)
+            {
+                List<IAtom> nbrsOfNbr = mol.getConnectedAtomsList(nbr);
+                for (IAtom nbrOfNbr : nbrsOfNbr)
+                {
+                    //Skip central
+                    if (nbrOfNbr.equals(atmA))
+                        continue;
+        
+                    secShell.add(nbrOfNbr);
+                }
+            }
 
             for (IAtom atmB : mol.atoms())
             {
@@ -119,36 +119,36 @@ public class ConnectivityUtils
                     continue;
 
                 //get van der Waals radius
-		String sB = atmB.getSymbol();
+                String sB = atmB.getSymbol();
                 double rB = AtomUtils.getVdwRradius(sB);
 
                 //Evaluate possibility of generating a new bond
                 if (!nbrs.contains(atmB))
                 {
                     double dist = 
-			MolecularUtils.calculateInteratomicDistance(atmA,atmB);
+                        MolecularUtils.calculateInteratomicDistance(atmA,atmB);
                     double refDist = rA + rB;
 
-		    if (secShell.contains(atmB))
-		    {
-			//Apply extra tolerance for second layer of atoms
-			refDist = refDist - (refDist * 
-					(tolerance + extraTollSecShell));
-		    } else {
+                    if (secShell.contains(atmB))
+                    {
+                        //Apply extra tolerance for second layer of atoms
+                        refDist = refDist - (refDist * 
+                                        (tolerance + extraTollSecShell));
+                    } else {
                         refDist = refDist - (refDist * tolerance);
-		    }
+                    }
                     if (dist < refDist)
                     {
-			if (verbosity >= 1)
-			{
-			    System.out.println("Adding a bond between '" 
-					+ MolecularUtils.getAtomRef(atmA,mol)
-					+ "' and '" 
-					+ MolecularUtils.getAtomRef(atmB,mol)
-					+ "'.");
-			}
+                        if (verbosity >= 1)
+                        {
+                            System.out.println("Adding a bond between '" 
+                                        + MolecularUtils.getAtomRef(atmA,mol)
+                                        + "' and '" 
+                                        + MolecularUtils.getAtomRef(atmB,mol)
+                                        + "'.");
+                        }
                         IBond b = new Bond(atmA, atmB,
-						IBond.Order.valueOf("SINGLE"));
+                                                IBond.Order.valueOf("SINGLE"));
                         mol.addBond(b);
                     }
                 }
@@ -168,15 +168,15 @@ public class ConnectivityUtils
      */
 
     public static double getMinNonBondedDistance(String elA, String elB, 
-							       double tolerance)
+                                                               double tolerance)
     {
-	double rA = AtomUtils.getVdwRradius(elA);
+        double rA = AtomUtils.getVdwRradius(elA);
         double rB = AtomUtils.getVdwRradius(elB);
 
-	double refDist = rA + rB;
-	refDist = refDist - (refDist * tolerance);
+        double refDist = rA + rB;
+        refDist = refDist - (refDist * tolerance);
 
-	return refDist;
+        return refDist;
     }
 
 //------------------------------------------------------------------------------
@@ -191,22 +191,22 @@ public class ConnectivityUtils
      */
 
     static public boolean importConnectivityFromReference(IAtomContainer mol, 
-							  IAtomContainer ref)
+                                                          IAtomContainer ref)
     {
-	if (mol.getAtomCount() < ref.getAtomCount())
-	{
-	    return false;
-	}
+        if (mol.getAtomCount() < ref.getAtomCount())
+        {
+            return false;
+        }
 
-	for (IBond bndRef : ref.bonds())
-	{
-	    IBond bndMol = new Bond(
-		mol.getAtom(ref.getAtomNumber(bndRef.getAtom(0))),
-		mol.getAtom(ref.getAtomNumber(bndRef.getAtom(1))),
-		bndRef.getOrder());
-	    mol.addBond(bndMol);
-	}
-	return true;
+        for (IBond bndRef : ref.bonds())
+        {
+            IBond bndMol = new Bond(
+                mol.getAtom(ref.getAtomNumber(bndRef.getAtom(0))),
+                mol.getAtom(ref.getAtomNumber(bndRef.getAtom(1))),
+                bndRef.getOrder());
+            mol.addBond(bndMol);
+        }
+        return true;
     }
 
 //------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ public class ConnectivityUtils
                             List<IAtom> emptyDoneMol = new ArrayList<IAtom>();
                             List<IAtom> emptyDoneRef = new ArrayList<IAtom>();
                             boolean compTrees = exploreConnectivity(mol, sMol, 
-					emptyDoneMol, ref, sRef, emptyDoneRef);
+                                        emptyDoneMol, ref, sRef, emptyDoneRef);
                             if (compTrees)
                             {
 //System.out.println(" maxlengtdone = "+maxlengtdone);
@@ -249,16 +249,16 @@ public class ConnectivityUtils
                         }
                     }
                 }
-		if (verbosity > 0) 
-		    System.out.println("No compatible atom tree found!");
+                if (verbosity > 0) 
+                    System.out.println("No compatible atom tree found!");
             } else {
-		if (verbosity > 0)
-		    System.out.println("Different number of Bonds!");
-	    }
+                if (verbosity > 0)
+                    System.out.println("Different number of Bonds!");
+            }
         } else {
-	    if (verbosity > 0)
-	        System.out.println("Different number of atoms!");
-	}
+            if (verbosity > 0)
+                System.out.println("Different number of atoms!");
+        }
 //System.out.println(" maxlengtdone = "+maxlengtdone);
 //System.out.println(" maxlengtdone2= "+maxlengtdone2);
         return false;
@@ -277,7 +277,7 @@ public class ConnectivityUtils
      */
 
     private boolean compatibleAtoms(IAtomContainer molA, IAtom atmA, 
-				    IAtomContainer molB, IAtom atmB)
+                                    IAtomContainer molB, IAtom atmB)
     {
         boolean result = false;
 
@@ -335,8 +335,8 @@ IOtools.pause();
      */
 
     private boolean exploreConnectivity(
-			IAtomContainer mol, IAtom seedMol, List<IAtom> doneMol, 
-			IAtomContainer ref, IAtom seedRef, List<IAtom> doneRef)
+                        IAtomContainer mol, IAtom seedMol, List<IAtom> doneMol, 
+                        IAtomContainer ref, IAtom seedRef, List<IAtom> doneRef)
     {
 
         //set string for reporting and debugging
@@ -344,36 +344,36 @@ IOtools.pause();
         for (int ri = 0; ri < recNum; ri++)
              recFlag = recFlag+"-";
 
-	int numCompBranches = 0;
-	int numAlreadyDone = 0;
-	int numBranches = mol.getConnectedAtomsCount(seedMol);
+        int numCompBranches = 0;
+        int numAlreadyDone = 0;
+        int numBranches = mol.getConnectedAtomsCount(seedMol);
 
         List<IAtom> nbrsMol = mol.getConnectedAtomsList(seedMol);
         List<IAtom> nbrsRef = ref.getConnectedAtomsList(seedRef);
 
-	//change order or seed atoms
-	List<SeedAtom> salist = new ArrayList<SeedAtom>();
-	for (IAtom a : nbrsMol)
-	{
-	    SeedAtom sa = new SeedAtom(a,mol);
-	    salist.add(sa);
-	}
+        //change order or seed atoms
+        List<SeedAtom> salist = new ArrayList<SeedAtom>();
+        for (IAtom a : nbrsMol)
+        {
+            SeedAtom sa = new SeedAtom(a,mol);
+            salist.add(sa);
+        }
 
-	Collections.sort(salist, new SeedAtomComparator());
+        Collections.sort(salist, new SeedAtomComparator());
 
-	List<IAtom> nbrsMolOrdered = new ArrayList<IAtom>();
-	for (SeedAtom sa : salist)
-	{
-	    nbrsMolOrdered.add(sa.getAtom());
-	}
+        List<IAtom> nbrsMolOrdered = new ArrayList<IAtom>();
+        for (SeedAtom sa : salist)
+        {
+            nbrsMolOrdered.add(sa.getAtom());
+        }
 
         for (IAtom tMol : nbrsMolOrdered)
         {
             if (doneMol.contains(tMol))
-	    {
-		numAlreadyDone++;
+            {
+                numAlreadyDone++;
                 continue;
-	    }
+            }
 
             for (IAtom tRef : nbrsRef)
             {
@@ -420,7 +420,7 @@ if (doneB.length() > maxlengtdone.length())
                 {
                     recNum++;
                     boolean branchOntMolIsCompatible = exploreConnectivity(mol,
-				tMol, childDoneMol, ref, tRef, childDoneRef);
+                                tMol, childDoneMol, ref, tRef, childDoneRef);
                     recNum--;
 /*
 System.out.println(recFlag+"finished a branch on "+MolecularUtils.getAtomRef(seedRef,ref)+": "+branchOntMolIsCompatible);
@@ -433,25 +433,25 @@ System.out.println(recFlag+"DoneB2: "+doneB2);
 */
                     if (branchOntMolIsCompatible)
                     {
-			//Update list of successfully visited atoms
-			for (IAtom va : childDoneMol)
-			{
-			    if (!doneMol.contains(va))
-				doneMol.add(va);
-			}
+                        //Update list of successfully visited atoms
+                        for (IAtom va : childDoneMol)
+                        {
+                            if (!doneMol.contains(va))
+                                doneMol.add(va);
+                        }
                         for (IAtom va : childDoneRef)
                         {
                             if (!doneRef.contains(va))
                                 doneRef.add(va);
                         }
 
-			//Report good result
-			numCompBranches++;
+                        //Report good result
+                        numCompBranches++;
                         break;
                     }
-		} else {
-		    doneMol.add(tMol);
-		    doneRef.add(tRef);
+                } else {
+                    doneMol.add(tMol);
+                    doneRef.add(tRef);
 /*
 String doneB2= "";
 for (IAtom da : doneRef)
@@ -463,26 +463,26 @@ if (doneB2.length() > maxlengtdone.length())
      maxlengtdone2 = MolecularUtils.getAtomRef(tRef,ref);
 */
 
-		    numCompBranches++;
-		    break;
-		}
+                    numCompBranches++;
+                    break;
+                }
             }
 
-/*	    //exit if a compatible tree has been found
-	    Integer totAtmMol = new Integer(mol.getAtomCount());
-	    Integer totAtmRef = new Integer(ref.getAtomCount());
-	    Integer visitAtmMol = new Integer(doneMol.size());
+/*            //exit if a compatible tree has been found
+            Integer totAtmMol = new Integer(mol.getAtomCount());
+            Integer totAtmRef = new Integer(ref.getAtomCount());
+            Integer visitAtmMol = new Integer(doneMol.size());
             Integer visitAtmRef = new Integer(doneRef.size());
-	    if ((doneRef.size() == ref.getAtomCount()) && (doneMol.size() == mol.getAtomCount()))
+            if ((doneRef.size() == ref.getAtomCount()) && (doneMol.size() == mol.getAtomCount()))
 */
         }
-	
-	boolean foundCompatibleTree = false;
+        
+        boolean foundCompatibleTree = false;
 //System.out.println(recFlag+"Branches: "+numCompBranches+" + "+numAlreadyDone+" =? "+numBranches);
-	if ((numCompBranches + numAlreadyDone) == numBranches)
-	{
-	    foundCompatibleTree = true;
-	}
+        if ((numCompBranches + numAlreadyDone) == numBranches)
+        {
+            foundCompatibleTree = true;
+        }
 //System.out.println(recFlag+"returning: "+foundCompatibleTree);
         return foundCompatibleTree;
     }
@@ -510,7 +510,7 @@ if (doneB2.length() > maxlengtdone.length())
                                                        ArrayList<IAtom> sources,
                                                                String fragLabel,
                                                               String orderLabel,
-					          Comparator<SeedAtom> priority)
+                                                  Comparator<SeedAtom> priority)
     {
         int fragLabValue = 0;
         for (IAtom atm : sources)
@@ -521,7 +521,7 @@ if (doneB2.length() > maxlengtdone.length())
             }
             fragLabValue++;
             atm.setProperty(fragLabel,fragLabValue);
-	    int ordLabValue = 0;
+            int ordLabValue = 0;
             atm.setProperty(orderLabel,ordLabValue);
             ordLabValue = exploreConnectedToAtm(atm, 
                                                 mol, 
@@ -547,14 +547,14 @@ if (doneB2.length() > maxlengtdone.length())
      */
 
     public static void identifyContinuoslyConnected(IAtomContainer mol, 
-								  String label)
+                                                                  String label)
     {
-	ArrayList<IAtom> atoms = new ArrayList<IAtom>();
-	for (IAtom atm : mol.atoms())
-	{
-	    atoms.add(atm);
-	}
-	exploreContinuoslyConnectedFromSource(mol,
+        ArrayList<IAtom> atoms = new ArrayList<IAtom>();
+        for (IAtom atm : mol.atoms())
+        {
+            atoms.add(atm);
+        }
+        exploreContinuoslyConnectedFromSource(mol,
                                               atoms,
                                               label,
                                               "#",
@@ -568,17 +568,17 @@ if (doneB2.length() > maxlengtdone.length())
      */
 
     private static int exploreConnectedToAtm(IAtom atm, IAtomContainer mol, 
-		                             int frgLab, String frgLabName, 
+                                             int frgLab, String frgLabName, 
                                              int ordLab, String ordLabName, 
                                              Comparator<SeedAtom> priority)
     {
-	ArrayList<IAtom> seeds = new ArrayList<IAtom>();
-	if (priority == null)
-	{
-	    seeds.addAll(mol.getConnectedAtomsList(atm));
-	}
-	else
-	{
+        ArrayList<IAtom> seeds = new ArrayList<IAtom>();
+        if (priority == null)
+        {
+            seeds.addAll(mol.getConnectedAtomsList(atm));
+        }
+        else
+        {
             List<SeedAtom> salist = new ArrayList<SeedAtom>();
             for (IAtom a : mol.getConnectedAtomsList(atm))
             {
@@ -586,11 +586,11 @@ if (doneB2.length() > maxlengtdone.length())
                 salist.add(sa);
             }
             Collections.sort(salist, priority);
-	    for (SeedAtom sa : salist)
-	    {
-	        seeds.add(sa.getAtom());
-	    }
-	}
+            for (SeedAtom sa : salist)
+            {
+                seeds.add(sa.getAtom());
+            }
+        }
 
         for (IAtom connectedAtom : seeds)
         {
@@ -599,7 +599,7 @@ if (doneB2.length() > maxlengtdone.length())
             {
                 // extend exploration to connectedAtom
                 connectedAtom.setProperty(frgLabName,frgLab);
-		ordLab++;
+                ordLab++;
                 connectedAtom.setProperty(ordLabName,ordLab);
                 ordLab = exploreConnectedToAtm(connectedAtom, 
                                                mol, 
@@ -611,7 +611,7 @@ if (doneB2.length() > maxlengtdone.length())
             }
         }
 
-	return ordLab;
+        return ordLab;
     }
 
 //------------------------------------------------------------------------------
@@ -625,9 +625,9 @@ if (doneB2.length() > maxlengtdone.length())
      */
 
     public static ArrayList<IAtomContainer> getConnectedFrags(
-							     IAtomContainer iac)
+                                                             IAtomContainer iac)
     {
-	return getConnectedFrags(iac,1);
+        return getConnectedFrags(iac,1);
     }
 
 //------------------------------------------------------------------------------
@@ -643,51 +643,51 @@ if (doneB2.length() > maxlengtdone.length())
      */
 
     public static ArrayList<IAtomContainer> getConnectedFrags(
-						IAtomContainer iac, int minSize)
+                                                IAtomContainer iac, int minSize)
     {
-	//Label atoms with the original index in the original atom list
-	for (int i=0; i<iac.getAtomCount(); i++)
-	{
-	    IAtom atm = iac.getAtom(i);
-	    atm.setProperty(ACCConstants.ATMIDPROP,i);
-	}
+        //Label atoms with the original index in the original atom list
+        for (int i=0; i<iac.getAtomCount(); i++)
+        {
+            IAtom atm = iac.getAtom(i);
+            atm.setProperty(ACCConstants.ATMIDPROP,i);
+        }
 
-	//Identify and isolate fragments
-	ArrayList<IAtomContainer> frags = new ArrayList<IAtomContainer>();
-	Map<Integer,List<IAtom>> fragsMap = identifyConnectedFrags(iac);
-	for (Integer fragId : fragsMap.keySet())
-	{
-	    IAtomContainer newIAC = new AtomContainer();
-	    try
-	    {
-	        newIAC = (IAtomContainer) iac.clone();
-	    }
-	    catch (Throwable t)
+        //Identify and isolate fragments
+        ArrayList<IAtomContainer> frags = new ArrayList<IAtomContainer>();
+        Map<Integer,List<IAtom>> fragsMap = identifyConnectedFrags(iac);
+        for (Integer fragId : fragsMap.keySet())
+        {
+            IAtomContainer newIAC = new AtomContainer();
+            try
+            {
+                newIAC = (IAtomContainer) iac.clone();
+            }
+            catch (Throwable t)
             {
                 Terminator.withMsgAndStatus("ERROR! Cannot clone molecule to "
                     + "extract fragments.", -1);
             }
-	    ArrayList<IAtom> atmsToDel = new ArrayList<IAtom>();
-	    for (int i=0; i<iac.getAtomCount(); i++)
-	    {
-		IAtom atmToKeep = iac.getAtom(i);
-		if (!fragsMap.get(fragId).contains(atmToKeep))	
-		{
-		    atmsToDel.add(newIAC.getAtom(i));
-		}
-	    }
+            ArrayList<IAtom> atmsToDel = new ArrayList<IAtom>();
+            for (int i=0; i<iac.getAtomCount(); i++)
+            {
+                IAtom atmToKeep = iac.getAtom(i);
+                if (!fragsMap.get(fragId).contains(atmToKeep))        
+                {
+                    atmsToDel.add(newIAC.getAtom(i));
+                }
+            }
             for (IAtom atm : atmsToDel)
             {
                 newIAC.removeAtomAndConnectedElectronContainers(atm);
             }
-	    if (newIAC.getAtomCount() > minSize)
-	    {
-	        frags.add(newIAC);
-	    }
-	}
-	Collections.sort(frags, new AtomContainerComparator());
-	Collections.reverse(frags);
-	return frags;
+            if (newIAC.getAtomCount() > minSize)
+            {
+                frags.add(newIAC);
+            }
+        }
+        Collections.sort(frags, new AtomContainerComparator());
+        Collections.reverse(frags);
+        return frags;
     }
 
 //------------------------------------------------------------------------------

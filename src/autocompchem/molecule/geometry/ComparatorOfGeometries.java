@@ -129,7 +129,7 @@ public class ComparatorOfGeometries
         }
         catch (Throwable t)
         {
-	    IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molA,false);
+            IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molA,false);
             IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molB,true);
             Terminator.withMsgAndStatus("ERROR! Cannot clone mols to calculate "
                 + "best geometry-aware atom mapping.", -1);
@@ -183,8 +183,8 @@ public class ComparatorOfGeometries
         boolean removeHydrogen = false;
         boolean cleanAndConfigure = false;
 
-	compareGeometryBySuperposition(inMol,refMol,true,true,true,false,false,
-					false,false,false,false);
+        compareGeometryBySuperposition(inMol,refMol,true,true,true,false,false,
+                                        false,false,false,false);
     }
 
 //------------------------------------------------------------------------------
@@ -209,15 +209,15 @@ public class ComparatorOfGeometries
 
     public void compareGeometryBySuperposition(IAtomContainer inMol,
                                                IAtomContainer refMol,
-					       boolean bondSensitive,
-					       boolean ingnoreBondType,
-					       boolean ignoreStereType,
-					       boolean ringmatch,
-        				       boolean stereoMatch,
-        				       boolean fragmentMinimization,
-        				       boolean energyMinimization,
-        				       boolean removeHydrogen,
-        				       boolean cleanAndConfigure)
+                                               boolean bondSensitive,
+                                               boolean ingnoreBondType,
+                                               boolean ignoreStereType,
+                                               boolean ringmatch,
+                                               boolean stereoMatch,
+                                               boolean fragmentMinimization,
+                                               boolean energyMinimization,
+                                               boolean removeHydrogen,
+                                               boolean cleanAndConfigure)
     {
 
         //Clean bond order and stero descriptors
@@ -366,14 +366,14 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             System.out.println(" BEST ATOM MAPPING from Isomorphism: RMSD = "
                                 + this.rmsd + " (Map " 
                                 + bestAtomMapping + " of " 
-				+ allAtomMaps.size() + ")." );
+                                + allAtomMaps.size() + ")." );
             printAtomMap(allAtomMaps.get(bestAtomMapping),inFromIM,refFromIM);
         }
 
         //Try improving mapping and alignement up to convergence
 //TODO make this parameter user defined
         int maxCycles = 2;
-	int numMapBeforeRef = allAtomMaps.size();
+        int numMapBeforeRef = allAtomMaps.size();
         for (int c=0; c<maxCycles; c++)
         {
             //Adjust mapping on the basis of previous alignement
@@ -410,7 +410,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         //Report results
         if (verbosity > 0 && allAtomMaps.size() > numMapBeforeRef)
         {
-	    bestAtomMapping = allAtomMaps.size()-1;
+            bestAtomMapping = allAtomMaps.size()-1;
             if (useRMSDIntDist)
             {
                 System.out.println(" 3D-REFINED ATOM MAPPING (Using RMS Dev. )"
@@ -424,8 +424,8 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             printAtomMap(allAtomMaps.get(bestAtomMapping),inMolAlgn,refMolAlgn);
         }
 
-	//Record that this method has run
-	this.runConparisonBySuperposition = true;
+        //Record that this method has run
+        this.runConparisonBySuperposition = true;
     }
 
 //------------------------------------------------------------------------------
@@ -433,11 +433,11 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
     private void printAtomMap(Map<IAtom,IAtom> atomMap, IAtomContainer molA,
                               IAtomContainer molB)
     {
-	if (atomMap.size() == 0)
-	{
-	    System.out.println(" Atom map is empty! ");
-	    return;
-	}
+        if (atomMap.size() == 0)
+        {
+            System.out.println(" Atom map is empty! ");
+            return;
+        }
 
         System.out.println(" Atom map: ");
         for (IAtom key : atomMap.keySet())
@@ -460,13 +460,13 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
 
     public IAtomContainer getFirstMolAligned()
     {
-	if (!runConparisonBySuperposition)
-	{
-	    Thread.dumpStack();
-	    Terminator.withMsgAndStatus("ERROR! Cannot return aligned molecule "
-		+ "before any comparison of geometry by superpostion.",-1);
-	}
-	return inMolAlgn;
+        if (!runConparisonBySuperposition)
+        {
+            Thread.dumpStack();
+            Terminator.withMsgAndStatus("ERROR! Cannot return aligned molecule "
+                + "before any comparison of geometry by superpostion.",-1);
+        }
+        return inMolAlgn;
     }
 
 //------------------------------------------------------------------------------
@@ -499,7 +499,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
 
     public int getSizeOfMap()
     {
-	return  allAtomMapsAsIdx.get(bestAtomMapping).size();
+        return  allAtomMapsAsIdx.get(bestAtomMapping).size();
     }
 
 //------------------------------------------------------------------------------
@@ -517,8 +517,8 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             Terminator.withMsgAndStatus("ERROR! Cannot return aligned molecule "
                 + "before any comparison of geometry by superpostion.",-1);
         }
-	double score = 0.0d;
-	if (useRMSDIntDist)
+        double score = 0.0d;
+        if (useRMSDIntDist)
         {
             score = rmsDevIntAtmDist;
         } else {
@@ -585,7 +585,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         List<IAtom> nbrsA = molA.getConnectedAtomsList(sA);
         List<IAtom> nbrsB = molB.getConnectedAtomsList(sB);
         
-	boolean foundPartner = false;
+        boolean foundPartner = false;
         for (int i=0; i<nbrsA.size(); i++)
         {
             IAtom qA = nbrsA.get(i);
@@ -703,10 +703,10 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             }
             
             //Recursion on the stored atoms
-	    if (alreadyFound)
-	    {
+            if (alreadyFound)
+            {
                 explorePairOfMols(qA, qB, molA, molB, lstA, lstB);
-	    }
+            }
         }
     }
 
@@ -838,49 +838,49 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         //An atom that matched only one atom in the fitted molecule in all maps
         IAtom seedRef = new Atom();
         IAtom seedFit = new Atom();
-	boolean fountGoodPairOfSeeds = false;
+        boolean fountGoodPairOfSeeds = false;
         for (IAtom candRef : refMol.atoms())
         {
             IAtom candFit = new Atom();
             int counter = 0;
             for (int nMap=0; nMap<mappings.size(); nMap++)
             {
-		if (!mappings.get(nMap).containsKey(candRef))
-		    continue;
+                if (!mappings.get(nMap).containsKey(candRef))
+                    continue;
 
-		counter++;
+                counter++;
 
                 if (nMap==0)
                 {
-		    //So, the atom on refMol has one partner in fitMol
+                    //So, the atom on refMol has one partner in fitMol
                     candFit = mappings.get(0).get(candRef);
                 } else {
-		    if(!candFit.equals(mappings.get(nMap).get(candRef)))
-		    {
-			//but, there is another atom in fitMol that matches
-			// so the candidate on refMol is rejected by stopping
-			// the loop (later we check if the loo run all the way
+                    if(!candFit.equals(mappings.get(nMap).get(candRef)))
+                    {
+                        //but, there is another atom in fitMol that matches
+                        // so the candidate on refMol is rejected by stopping
+                        // the loop (later we check if the loo run all the way
                         break;
-		    }
+                    }
                 }
             }
 
             if (counter == mappings.size())
             {
-		fountGoodPairOfSeeds = true;
+                fountGoodPairOfSeeds = true;
                 seedRef = candRef;
-		seedFit = candFit;
+                seedFit = candFit;
                 break;
             }
         }
-	if (!fountGoodPairOfSeeds)
-	{
+        if (!fountGoodPairOfSeeds)
+        {
             System.out.println(" WARNING! Cannot improve the atom-atom map.");
             return null;
 // If we cannot improve the atom-atom map then we keep that one we already have
 //            Terminator.withMsgAndStatus("ERROR! Atom mapping in reference and "
 //                + "fitted molecule have different size!",-1);
-	}
+        }
 
         //Get the correspondence
         List<IAtom> lstRef = new ArrayList<IAtom>();
@@ -950,9 +950,9 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         catch (Throwable t)
         {
             t.printStackTrace();
-	    System.out.println(" KabschAlignment failed with atom map (size: "+
-							   mapping.size()+")");
-	    printAtomMap(mapping,molA,molB);
+            System.out.println(" KabschAlignment failed with atom map (size: "+
+                                                           mapping.size()+")");
+            printAtomMap(mapping,molA,molB);
             Terminator.withMsgAndStatus("ERROR! KabschAlignment returns "
                                                          + "an exception.",-1);
         }

@@ -38,7 +38,7 @@ public class Concept implements Cloneable
      */
     public Concept()
     {
-	type = "none";
+        type = "none";
     }
 
 //------------------------------------------------------------------------------
@@ -72,8 +72,8 @@ public class Concept implements Cloneable
 
     public String toString()
     {
-	String s = super.toString() + " " + type;
-	return s;
+        String s = super.toString() + " " + type;
+        return s;
     }
 
 //------------------------------------------------------------------------------

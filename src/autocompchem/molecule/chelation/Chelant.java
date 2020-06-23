@@ -40,8 +40,8 @@ public class Chelant
 
     public Chelant(String name, IAtomContainer mol, int denticity)
     {
-	this.name = name;
-	this.mol = mol;
+        this.name = name;
+        this.mol = mol;
         this.denticity = denticity;
     }
 
@@ -56,14 +56,14 @@ public class Chelant
 
     public int getDenticity()
     {
-	return denticity;
+        return denticity;
     }
 
 //------------------------------------------------------------------------------
 
     public String toString()
     {
-	String s = "Chelant [name: " + name + "; denticity:" + denticity + "] ";
+        String s = "Chelant [name: " + name + "; denticity:" + denticity + "] ";
         return s;
     }
 

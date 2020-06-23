@@ -58,20 +58,20 @@ public class InternalCoordTable
 
     public InternalCoordTable(IAtomContainer mol, int verbosity)
     {
-	Terminator.withMsgAndStatus("ERROR! Attempt to use InternalCoordTable "
-		+ "which is not implemented yet...",-1);
+        Terminator.withMsgAndStatus("ERROR! Attempt to use InternalCoordTable "
+                + "which is not implemented yet...",-1);
 //TODO
 /*
-	for (IAtom atm : mol.atoms())
-	{
-	    
-	}
+        for (IAtom atm : mol.atoms())
+        {
+            
+        }
 
-	if (verbosity > 2)
-	{
-	    System.out.println("Generated InternalCoordinateTable:");
-	    printOnScreen(); 
-	}
+        if (verbosity > 2)
+        {
+            System.out.println("Generated InternalCoordinateTable:");
+            printOnScreen(); 
+        }
 */
     }
 
@@ -87,16 +87,16 @@ public class InternalCoordTable
 
     public boolean containsNTuplaOfIDs(ArrayList<Integer> otherIds)
     {
-	boolean res = false;
-	for (InternalCoord ic : intCrds)
-	{
-	    if (ic.compareIDs(otherIds))
-	    {
+        boolean res = false;
+        for (InternalCoord ic : intCrds)
+        {
+            if (ic.compareIDs(otherIds))
+            {
                 res = true;
                 break;
-	    }
-	}
-	return res;
+            }
+        }
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -107,8 +107,8 @@ public class InternalCoordTable
 
     public void printOnScreen()
     {
-	for (InternalCoord ic : intCrds)
-	{
+        for (InternalCoord ic : intCrds)
+        {
             System.out.println(ic.toTableLine());
         }
     }

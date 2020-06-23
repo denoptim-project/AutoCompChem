@@ -46,7 +46,7 @@ public class VDWAllowance
 
     public VDWAllowance(String smarts1, String smarts2, Double allowance)
     {
-	this.smarts1 = smarts1;
+        this.smarts1 = smarts1;
         this.smarts2 = smarts2;
         this.allowance = allowance;
     }
@@ -60,9 +60,9 @@ public class VDWAllowance
 
     public String[] getSmarts()
     {
-	String[] smarts = new String[2];
-	smarts[0] = smarts1;
-	smarts[1] = smarts2;
+        String[] smarts = new String[2];
+        smarts[0] = smarts1;
+        smarts[1] = smarts2;
         return smarts;
     }
 
@@ -75,7 +75,7 @@ public class VDWAllowance
 
     public double getAllowance()
     {
-	return allowance;
+        return allowance;
     }
 
 //------------------------------------------------------------------------------
@@ -87,8 +87,8 @@ public class VDWAllowance
  
     public String toString()
     {
-	String s = "VDWAllowance_" + smarts1 + ":" + smarts2 + "_" + allowance;
-	return s;
+        String s = "VDWAllowance_" + smarts1 + ":" + smarts2 + "_" + allowance;
+        return s;
     }
 
 //------------------------------------------------------------------------------

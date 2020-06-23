@@ -47,46 +47,46 @@ public class ParallelRunnerTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 
-	//Define paths in tmp dir
-	File script = new File(tempDir.getAbsolutePath() + SEP + "script.sh");
-	String newFile = tempDir.getAbsolutePath() + SEP + "dateFile";
+        //Define paths in tmp dir
+        File script = new File(tempDir.getAbsolutePath() + SEP + "script.sh");
+        String newFile = tempDir.getAbsolutePath() + SEP + "dateFile";
 
-	try 
-	{
+        try 
+        {
             // Make a SHELL script that is only writing the date on a given file
             FileWriter writer = new FileWriter(script);
             writer.write("date > $1");
             writer.close();
 
-	    // Choose shell flavor
-	    String shellFlvr = "/bin/sh";
-	    //TODO: check for available interpreters.
+            // Choose shell flavor
+            String shellFlvr = "/bin/sh";
+            //TODO: check for available interpreters.
 
-	    // Nest 4 shell jobs in an undefined job
+            // Nest 4 shell jobs in an undefined job
             Job job = new Job(Job.RunnableAppID.ACC,4);
-	    for (int i=0; i<10; i++)
-	    {
-	        ShellJob sj = new ShellJob(shellFlvr,script.getAbsolutePath(),
+            for (int i=0; i<10; i++)
+            {
+                ShellJob sj = new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                     newFile+i);
-		sj.setParallelizable(true);
+                sj.setParallelizable(true);
                 job.addStep(sj);
-	    }
+            }
 
-	    // Submit all via the Job
-	    job.run();
+            // Submit all via the Job
+            job.run();
 
-	    // Verify result
-	    for (int i=0; i<10; i++)
-	    {
-		File f = new File(newFile+i);
+            // Verify result
+            for (int i=0; i<10; i++)
+            {
+                File f = new File(newFile+i);
                 assertTrue(f.exists(),"ShellJob output file exists ("+i+") in "
-						   + tempDir.getAbsolutePath());
-	    }
+                                                   + tempDir.getAbsolutePath());
+            }
         }
         catch (Throwable t)
         {
-	    t.printStackTrace();
-	    assertFalse(true, "Unable to work with tmp files.");
+            t.printStackTrace();
+            assertFalse(true, "Unable to work with tmp files.");
         }
     }
 
