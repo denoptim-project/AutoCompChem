@@ -14,6 +14,7 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
+import org.xmlcml.euclid.Point3;
 
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
@@ -469,7 +470,7 @@ public class MolecularGeometryEditor
         return outMol;
     }
 
-  //-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
   	/**
   	 * Searches for optimal scaling factors that do not generate atom clashes or 
   	 * exploded systems. Uses default values for all settings of the search 
@@ -483,7 +484,7 @@ public class MolecularGeometryEditor
   	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
       		ArrayList<Point3d> move, int numSfSteps) 
   	{
-  		return optimizeScalingFactors(mol,move,numSfSteps,0.02,0.001,0);
+  		return optimizeScalingFactors(mol,move,numSfSteps,0.02,5.0,0.001,1.0, 0);
   	}
 //-------------------------------------------------------------------------------
 
@@ -495,14 +496,18 @@ public class MolecularGeometryEditor
   	 * @param numSfSteps divide the optimised range of scaling factors in this 
   	 * number  
   	 * of steps
-  	 * @param tolerance permit down to this % of the sum of covalent radii
+  	 * @param shortshortTolerance permits down to this % of the sum of covalent 
+  	 * radii
+  	 * @param stretchLimit permits up to this displacement for a single atom.
   	 * @param convergence stop search when step falls below this value
   	 * @param verbosity amount of log to stdout
+  	 * @param maxStep maximum allowed step
   	 * @return the optimised list of scaling factors
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
-    		ArrayList<Point3d> move, int numSfSteps, double tolerance,
-    		double convergence,int verbosity) 
+    		ArrayList<Point3d> move, int numSfSteps, double shortTolerance,
+    		double stretchLimit, double convergence, double maxStep, 
+    		int verbosity) 
 	{
 		//Run optimisation twice:
 		//either maximise (+1) or minimise (-1) scaling factor.
@@ -517,28 +522,33 @@ public class MolecularGeometryEditor
 			// the initial step length
 			double step = 1.0;       
 			// initial guess for |scaling factor| (sign is given by 'sign')
-			double guessSF = 1.0;      
+			double guessSF = 1.0;
+			double oldGuessSF = guessSF;
 			// the non-OK scaling factor closest to divide
 			double smallestToNotOK = Double.MAX_VALUE;
 			// the OK scaling factor closest to divide
-			double largestToOK = -Double.MAX_VALUE;
+			double largestToOK = 0.0; //NB: we alsays have >0
 			// whether the current scaling factor produced an OK geometry
-			boolean isOK = false;      
+			boolean isOK = true;      
 			// whether the previous scaling factor produced an OK geometry
-			boolean lastWasOK = false;  
+			boolean lastWasOK = true;  
 			boolean foundFirstNonOK = false;
+			boolean foundFirstOK = false;
 			double lowestDist = Double.MAX_VALUE;
 			
 			if (verbosity > 0)
             {
 			    System.out.println(" Optimizing SF");
-			    System.out.println("Sign MinDist Guess LastDirection LastStep"
-					+ " LastOK(2ndLast) smallestToNotOK  largestToOK");
+			    System.out.println("   Sign  MinDist    MaxDispl     Guess      "
+			    		+ "Dir     LastStep  ok/old smallest!OK  largestOK");
             }
 			
 			boolean goon = true;
 			while (goon)
 			{	
+				// keep trace of old result
+				lastWasOK = isOK;
+				
 				lowestDist = Double.MAX_VALUE;
 				if (Math.abs(step) < Math.abs(convergence))
 				{
@@ -551,16 +561,45 @@ public class MolecularGeometryEditor
 					break;
 				}
 				
+				// Evaluate the use of the the new guess scaling factor:
+				// A) largest atomic movement has reached the given limit
+				// B) compare shortest interatomic distance against the sum 
+				// of the covalent radii
+				
+				//A) largest atomic movement
+				double maxDisplacement = -Double.MAX_VALUE;
+				for (Point3d p : move)
+				{
+		            Point3d newP = new Point3d(p);
+		            newP.scale(guessSF*sign);
+		            double displ = newP.distance(new Point3d());
+		            if (displ > maxDisplacement)
+		            {
+		            	maxDisplacement = displ;
+		            }
+				}
+				if (maxDisplacement > stretchLimit)
+				{
+					isOK = false;
+					goon = false;
+					if (verbosity > 0)
+		            {
+					    System.out.println(String.format(
+					    		"Attempt to use scaling factor %-11.3e stopped by "
+					    		+ "max displacement: %-11.3e (>%-11.3e)",
+					    		guessSF,maxDisplacement,stretchLimit));
+		            }
+					break;
+				}
+				
+				// B) shortest interatomic distance against sum of cov.radii
+				isOK = true;
+				
 				// Generate the geometry
 				IAtomContainer outMol = getGeomFromCartesianMove(mol,
 	            		move,guessSF*sign);
 				
-				// keep trace of old result
-				lastWasOK = isOK;
-	    		
-				// Evaluate the geometry: compare shortest interatomic 
-				// distance against the sum of the covalent radii
-				isOK = true;
+				// Measure interatomic distances
 				loopOnAtoms:
 				for (int i=0; i<outMol.getAtomCount(); i++)
 			    {
@@ -576,10 +615,11 @@ public class MolecularGeometryEditor
 			        			MolecularUtils.calculateInteratomicDistance(
 			        					atmI, atmJ);
 			            //System.out.println(" COVRAD: "+MolecularUtils.getAtomRef(atmI, outMol)+":"+MolecularUtils.getAtomRef(atmJ, outMol)
-			            //+" "+covRadI+" "+covRadJ+" "+dist+" limit: "+(covRadI+covRadJ)*(1.0-tolerance));
+			            //+" "+covRadI+" "+covRadJ+" "+dist+" limit: "+(covRadI+covRadJ)*(1.0-shortTolerance));
 			            if (dist < lowestDist)
 			            	lowestDist = dist;
-			            if (dist < (covRadI+covRadJ)*(1.0-tolerance))
+			            
+			            if (dist < (covRadI+covRadJ)*(1.0-shortTolerance))
 			            {
 			            	// Here we found a pair of atoms that are moved 
 			            	// too close to each other.
@@ -597,27 +637,45 @@ public class MolecularGeometryEditor
 			            }
 			        }
 			    }
-            	// Keep the largest |scaling factor| that led to an OK geometry
-            	if (isOK && (guessSF > largestToOK))
+				
+            	// Keep the last good scaling factor
+            	if (isOK)
+            	{
+    				oldGuessSF = guessSF;
+            	    foundFirstOK = true;
+            	    
+            		// Keep the largest |scaling factor| that led to an OK geom
+            		if(guessSF > largestToOK)
+	                {
+	            	    largestToOK = guessSF;
+	                }
+	            }
+            	
+            	// Finisched with this step
+				if (verbosity > 0)
 	            {
-	            	largestToOK = guessSF;
+				    String msg = String.format("%+7.1f %-11.3e %-11.3e %-11.3e "
+				    		+ "%-7.1f %-11.3e %1.1B(%1.1B) %-11.3e  %-11.3e",
+						sign,lowestDist,maxDisplacement,guessSF,direction,step,
+						isOK,lastWasOK,smallestToNotOK,largestToOK);
+				    System.out.println(msg);
 	            }
 				
+				// Prepare next step
 				if (!foundFirstNonOK)
 				{
 					// first we search for one extreme that is not OK, to set 
 					// an upper limit to the search
 					guessSF = guessSF + step; // this is only |scaling factor|
-					continue; 
 				}
 				else
 				{
-					// Once we have an upper limit we can do dichotomic search
+					// Once we have an upper and lower limits we can do dichotomic search
 					
 					// Step length is given by half of the unmapped range 
 					// between the two known points closest to divide
 					// NB: smallestToNotOK > largestToOK Thus 'step' > 0
-					step = (smallestToNotOK - largestToOK)*0.5;
+					step = Math.min(maxStep, (smallestToNotOK - largestToOK)*0.5);
 					
 					// The direction in which we take the step changes every 
 					// time we cross the divide
@@ -632,16 +690,8 @@ public class MolecularGeometryEditor
 					}
 					guessSF = guessSF + step*direction;
 				}
-				if (verbosity > 0)
-	            {
-				    String msg = String.format("%+7.3f %+7.3f %+7.3f %+7.3f "
-				    		+ "%+7.3f %1.1B(%1.1B) %+11.3e  %+11.3e",
-						sign,lowestDist,guessSF,direction,step,isOK,lastWasOK,
-						smallestToNotOK,largestToOK);
-				    System.out.println(msg);
-	            }
 			}
-			optimalExtremes[ig] = guessSF*sign;
+			optimalExtremes[ig] = oldGuessSF*sign;
 	    }
 		
 		// Finally generate evenly distributed scaling factors
