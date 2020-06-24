@@ -47,8 +47,20 @@ function findJava () {
         exit 1
     fi
         
-    javaVersion=$("$javaDir/javac" -version 2>&1 | awk '{print $2}')
-    if [[ "$javaVersion" < "1.7" ]]; then
+    javaVersion=$("$javaDir/javac" -version 2>&1 | awk '{print $2}' | awk -F_ '{print $1}')
+    jvNum="$javaVersion"
+    if [[ "$jvNum" == "1."* ]]; then
+        jvNum="$(echo "$jvNum" | cut -c 3- )"
+    fi
+    numDots="$(echo $jvNum | awk -F"." '{print NF-1}')"
+    if [ 0 -eq "$numDots" ]; then
+        jvNum="$(echo "$jvNum" | awk '{printf("%d0000",$1)}')"
+    elif [ 1 -eq "$numDots" ]; then
+        jvNum="$(echo "$jvNum" | awk -F. '{printf("%d%04d",$1,$2)}')"
+    else
+        jvNum="$(echo "$jvNum" | awk -F. '{printf("%d%04d",$1,$2)}')"
+    fi
+    if [ "$jvNum" -lt "70000" ]; then
         echo " "
         echo "Compiling AutoCompChem requires JDK 1.7 or above. Found $javaVersion"
         echo " "
