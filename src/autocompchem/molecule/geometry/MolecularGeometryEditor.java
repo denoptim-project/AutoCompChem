@@ -103,6 +103,18 @@ public class MolecularGeometryEditor
     private int numScalingFactors = 15;
     
     /**
+     * Percentage of the possible negative path to consider 
+     * (opt. scaling factors)
+     */
+    private double percOfNeg = 1.0;
+    
+    /**
+     * Percentage of the possible positive path to consider 
+     * (opt. scaling factors)
+     */
+    private double percOfPos = 1.0;
+    
+    /**
      * Default tolerance for interatomic distances (opt. scaling factors)
      */
     private static double defTolInteratmDist = 0.03;
@@ -187,7 +199,8 @@ public class MolecularGeometryEditor
      * scaling factors to Cartesian mode and specifies i) the kind of distribution
      *  to be produced (one string - acceptable kinds are <code>EVEN</code> and 
      *  <code>BALANCED</code>), and ii) the number of scaling factors to generate
-     *  (one integer).</li>
+     *  (one integer), iii) the percent of the possible negative path to consider, 
+     *  and iv) the percent of the possible positive path to consider.</li>
      * <li>
      * <b>CARTESIANSCALINGFACTORS</b> (optional) one or more scaling factors
      * (real numbers) to be applied to the Cartesian move. The Cartesian
@@ -310,7 +323,7 @@ public class MolecularGeometryEditor
         	optimizeScalingFactors = true;
             scaleFactors.clear();
             String[] words = line.trim().split("\\s+");
-            if (words.length != 2)
+            if (words.length != 4)
             {
             	Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
                         + line + "'. Expecting one word and one integer.",-1);
@@ -330,7 +343,23 @@ public class MolecularGeometryEditor
             	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
                         + "' as the number of scaling factor to generate. "
                         + "Expecting an integer.",-1);
-            }            
+            }
+            num = words[2];
+            try {
+            	percOfNeg = Double.parseDouble(num);
+            } catch (Throwable t) {
+            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
+                        + "' as the percentage of the possible negative path. "
+                        + "Expecting a double.",-1);
+            }
+            num = words[3];
+            try {
+            	percOfPos = Double.parseDouble(num);
+            } catch (Throwable t) {
+            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
+                        + "' as the percentage of the possible positive path. "
+                        + "Expecting a double.",-1);
+            } 
         }
 
         // Get the Cartesian move
@@ -471,7 +500,9 @@ public class MolecularGeometryEditor
         {
         	scaleFactors = optimizeScalingFactors(actualMol,actualMove,
         			numScalingFactors,
-        			scalingFactorDistribution, 
+        			scalingFactorDistribution,
+        			percOfNeg,
+        			percOfPos,
         			defTolInteratmDist, 
         			defTolCovRadSum,
         			defMaxDispl, 
@@ -603,6 +634,73 @@ public class MolecularGeometryEditor
   				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
   				defMaxStep, 0);
   	}
+  	
+//-------------------------------------------------------------------------------
+
+  	/**
+  	 * Searches for optimal scaling factors that do not generate atom clashes or 
+  	 * exploded systems.
+  	 * @param mol the atom container with the unmodified geometry
+  	 * @param move the Cartesian move
+  	 * @param numSfSteps divide the optimised range of scaling factors in this 
+  	 * number  
+  	 * of steps
+  	 * @param distributionKind specifies how to spear scaling factors between
+  	 * the optimised extremes. Possible values are:
+  	 * <ul>
+  	 * <li><code>EVEN</code>: 
+  	 * to spread factors evenly at <code>(range)/#steps</code>.</li>
+  	 * <li><code>BALANCED</code>: 
+  	 * to put half of the points on each side of the 0.0 scaling.</li>
+  	 * </ul>
+  	 * @param percentualNeg the amount of the possible path to consider 
+  	 * as valid (for negative scaling factors)
+  	 * @param percentualPos the amount of the possible path to consider 
+  	 * as valid (for positive scaling factors)
+  	 * @param verbosity amount of log to stdout
+  	 * @return the optimised list of scaling factors
+  	 */
+	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
+    		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
+    		double percentualNeg, double percentualPos, int verbosity) 
+	{
+  		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
+  				percentualNeg, percentualPos,
+  				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
+  				defMaxStep, 0);
+  	}
+
+//-------------------------------------------------------------------------------
+
+  	/**
+  	 * Searches for optimal scaling factors that do not generate atom clashes or 
+  	 * exploded systems.
+  	 * @param mol the atom container with the unmodified geometry
+  	 * @param move the Cartesian move
+  	 * @param numSfSteps divide the optimised range of scaling factors in this 
+  	 * number  
+  	 * of steps
+  	 * @param distributionKind specifies how to spear scaling factors between
+  	 * the optimised extremes. Possible values are:
+  	 * <ul>
+  	 * <li><code>EVEN</code>: 
+  	 * to spread factors evenly at <code>(range)/#steps</code>.</li>
+  	 * <li><code>BALANCED</code>: 
+  	 * to put half of the points on each side of the 0.0 scaling.</li>
+  	 * </ul>
+  	 * @param verbosity amount of log to stdout
+  	 * @return the optimised list of scaling factors
+  	 */
+	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
+    		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
+    		 int verbosity) 
+	{
+  		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
+  				1.0, 1.0,
+  				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
+  				defMaxStep, 0);
+  	}
+
 //-------------------------------------------------------------------------------
 
   	/**
@@ -633,6 +731,50 @@ public class MolecularGeometryEditor
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
     		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
+    		double tolInteractDist, double tolCovRadSum,
+    		double stretchLimit, double convergence, double maxStep, 
+    		int verbosity) 
+	{
+		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
+  				1.0, 1.0, tolInteractDist, tolCovRadSum, stretchLimit,
+  				convergence, maxStep,verbosity);
+	}
+	
+//-------------------------------------------------------------------------------
+
+  	/**
+  	 * Searches for optimal scaling factors that do not generate atom clashes or 
+  	 * exploded systems.
+  	 * @param mol the atom container with the unmodified geometry
+  	 * @param move the Cartesian move
+  	 * @param numSfSteps divide the optimised range of scaling factors in this 
+  	 * number  
+  	 * of steps
+  	 * @param distributionKind specifies how to spear scaling factors between
+  	 * the optimised extremes. Possible values are:
+  	 * <ul>
+  	 * <li><code>EVEN</code>: 
+  	 * to spread factors evenly at <code>(range)/#steps</code>.</li>
+  	 * <li><code>BALANCED</code>: 
+  	 * to put half of the points on each side of the 0.0 scaling.</li>
+  	 * </ul>
+  	 * @param percentualNeg the amount of the possible path to consider 
+  	 * as valid (for negative scaling factors)
+  	 * @param percentualPos the amount of the possible path to consider 
+  	 * as valid (for positive scaling factors)
+  	 * @param tolInteractDist permits down to this % of the initial 
+  	 * interatomic distance
+  	 * @param tolCovRadSum permits down to this % of the sum of covalent 
+  	 * radii
+  	 * @param stretchLimit permits up to this displacement for a single atom.
+  	 * @param convergence stop search when step falls below this value
+  	 * @param maxStep maximum allowed step
+  	 * @param verbosity amount of log to stdout
+  	 * @return the optimised list of scaling factors
+  	 */
+	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
+    		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
+    		double percentualNeg, double percentualPos,
     		double tolInteractDist, double tolCovRadSum,
     		double stretchLimit, double convergence, double maxStep, 
     		int verbosity) 
@@ -848,7 +990,13 @@ public class MolecularGeometryEditor
 			optimalExtremes[ig] = oldGuessSF*sign;
 	    }
 		
-		// Finally generate evenly distributed scaling factors
+		// Apply the percentage of neg/pos possible path
+		double newNegExtreme = optimalExtremes[0]*percentualNeg;
+		double newPosExtreme = optimalExtremes[1]*percentualPos;
+		optimalExtremes[0] = newNegExtreme;
+		optimalExtremes[1] = newPosExtreme;
+		
+		// Finally generate distribution of scaling factors
 		ArrayList<Double> chosenScalingFactors = new ArrayList<Double>();
 		switch (distributionKind.toUpperCase())
 		{
