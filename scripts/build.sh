@@ -11,13 +11,51 @@
 #
 ###############################################################################
 
-
-
-
-
-
-#TODO dearch for JAVA
-javaDir="/usr/bin"
+#
+# Function to find java toolbox and set javaDir path accordingly
+#
+function findJava () {
+    if [ -z "$javaDir" ]; then
+        if type -p javac; then
+            echo "Found javac in PATH."
+            javaDir=$(dirname $(which javac))
+        elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+            echo "Found javac executable in JAVA_HOME."
+            javaDir="$JAVA_HOME/bin"
+        else
+            echo " "
+            echo "Compiling AutoCompChem requires JDK 1.7 or above. None found."
+            echo "Please, do any of the following:"
+            echo " - add Java executables to the PATH, or "
+            echo " - define the JAVA_HOME environmental variable, or "
+            echo " - run this script with option -j <path_to_java_bin_folder> "
+            echo "    In this case, you'll remember to run AutoCompChem using the same"
+            echo "    executables in <path_to_java_bin_folder>."
+            echo " "
+            exit 1
+        fi
+    fi
+    echo "Java tools from '$javaDir'."
+    if [ ! -f "$javaDir/java" ]; then
+        echo "Java executable not found at '$javaDir/java'!"
+        exit 1
+    elif [ ! -f "$javaDir/javac" ]; then
+        echo "Javac executable not found at '$javaDir/javac'!"
+        exit 1
+    elif [ ! -f "$javaDir/jar" ]; then
+        echo "Jar executable not found at '$javaDir/jar'!"
+        exit 1
+    fi
+        
+    javaVersion=$("$javaDir/javac" -version 2>&1 | awk '{print $2}')
+    if [[ "$javaVersion" < "1.7" ]]; then
+        echo " "
+        echo "Compiling AutoCompChem requires JDK 1.7 or above. Found $javaVersion"
+        echo " "
+        exit 1
+    fi
+    echo "Using JAVAC version $javaVersion"  
+}
 
 #
 # Function printing the usage instructions
@@ -44,6 +82,8 @@ cat <<EOF
   -l      prints the log of any functionality test that is run
 
   -n      excludes building step. Use it to run only tests.
+
+  -j <path_to_bin_folder> specifies the pathname of a specific Java bin folder. 
 
 EOF
 }
@@ -99,16 +139,6 @@ function build() {
 
     # Clean traces of old jar
     rm -f AutoCompChem.jar
-    
-    # Check version of Java compiler
-    javaVersion=$("$javaDir/javac" -version 2>&1 | awk '{print $2}')
-    if [[ "$javaVersion" < "1.7" ]]; then
-        echo " "
-        echo "UiBKvant requires JAVAC 1.7 or above. Found $javaVersion"
-        echo " "
-        exit 1
-    fi
-    echo "Using JAVAC version $javaVersion"
     
     # Compile
     find "$ACCHome/src" -name "*.java" > sourcefiles.txt
@@ -172,11 +202,11 @@ function unitTesting() {
     then
         for class in ${chosenUnitTests[@]}
         do
-            java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" -c "$class"
+            $javaDir/java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" -c "$class"
         done
     else
         #Run all JUnit tests
-        java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:AutoCompChem.jar --details=tree
+        $javaDir/java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:AutoCompChem.jar --details=tree
     fi
     
     echo " "
@@ -275,6 +305,8 @@ do
               fi;;
 	"-l") printFuncTestLog=true;;
         "-n") runBuild=false;;
+        "-j") getArg "$i" "$#"
+              javaDir="$argument";;
         -[a-z,A-Z,0-9]) echo "ERROR! Unrecognized option '$arg'";
               printUsage; exit 1;;
         *);;
@@ -296,6 +328,9 @@ getMyAbsoluteDirname
 # i.e., this script is under a subfolder of the ACCHome
 ACCHome="$(cd "$myDir/.." ; pwd -P)"
 cd "$ACCHome"
+
+# Here we make sure that java tools are available
+findJava
 
 if $runBuild
 then
