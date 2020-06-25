@@ -57,7 +57,7 @@ public class MolecularGeometryEditorTest
     	
 
 		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors(mol, 
-				move,15,"EVEN",0.01,0.01,5.0,0.001,1.0,1);
+				move,15,"EVEN",0.01,0.01,5.0,0.001,1.0,0);
 		
 		assertEquals(16,sf.size(), "Size of scaling factors list");
     }
@@ -103,7 +103,7 @@ public class MolecularGeometryEditorTest
     	
 
 		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors( 
-				mol,move,15,"BalANced",0.01,0.01,5.0,0.0001,1.0,1);
+				mol,move,15,"BalANced",0.01,0.01,5.0,0.0001,1.0,0);
 		
 		double trsh = 0.001;
 		assertEquals(15,sf.size(), "Size of scaling factors list");
