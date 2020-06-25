@@ -75,7 +75,7 @@ cat <<EOF
 
   --help  prints this help message.
 
-  -u      runs unit tests after building AutoCompChem.. If followed by one or more strings (i.e., class names), then runs only the unit testing found in the given classes.
+  -u      runs unit tests after building AutoCompChem. If followed by one or more strings (i.e., class names), then runs only the unit testing found in the given classes.
 
   -f      runs functionality tests after building AutoCompChem. If followed by one or more integer numbers, then runs only the corresponding functionality tests.
 

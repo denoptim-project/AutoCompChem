@@ -27,6 +27,8 @@ import java.io.FileWriter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.io.IOtools;
+
 
 /**
  * Unit Test for the Job. 
@@ -58,10 +60,13 @@ public class JobTest
             writer.write("date > $1");
             writer.close();
 
+            //FIXME: this makes unit testing platform dependent!!!
+            
             // Choose shell flavor
             String shellFlvr = "/bin/sh";
 /*
-//TODO: maybe one day we'll check for available interpreters... now it doesnt work.
+//TODO: maybe one day we'll check for available interpreters, and run the test only if we find a good one. 
+// Now it doesnt work.
             ArrayList<String> shells = new ArrayList<String>();
             shells.add("bash");
             shells.add("csh");
@@ -88,6 +93,7 @@ public class JobTest
 
             // Nest 4 shell jobs in an undefined job
             Job job = new Job(Job.RunnableAppID.ACC);
+            job.setVerbosity(0);
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                     newFile+1));
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
@@ -140,6 +146,76 @@ public class JobTest
         assertFalse(job.parallelizableSubJobs());
     }
 
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testParallelizedJob() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+
+        //Define paths in tmp dir
+        File script = new File(tempDir.getAbsolutePath() + SEP + "script.sh");
+        String newFile = tempDir.getAbsolutePath() + SEP + "dataPal";
+
+        try 
+        {
+            // Make a SHELL script that is only writing the date on a given file
+            FileWriter writer = new FileWriter(script);
+            writer.write("date > $1; sleep 1s; date >> $1");
+            writer.close();
+
+            //FIXME: this makes unit testing platform dependent!!!
+            
+            // Choose shell flavour
+            String shellFlvr = "/bin/sh";
+            
+            // Nest 4 shell jobs in an undefined job
+            int nThreads = 2; //NB: do no change
+            Job job = new Job(Job.RunnableAppID.ACC,nThreads);
+            job.setVerbosity(0);
+            Job subJob1 = new ShellJob(shellFlvr,script.getAbsolutePath(),
+                    newFile+1);
+            subJob1.setParallelizable(true);
+            job.addStep(subJob1);
+            Job subJob2 = new ShellJob(shellFlvr,script.getAbsolutePath(),
+                    newFile+2);
+            subJob2.setParallelizable(true);
+            job.addStep(subJob2);
+            Job subJob3 = new ShellJob(shellFlvr,script.getAbsolutePath(),
+                    newFile+3);
+            subJob3.setParallelizable(true);
+            job.addStep(subJob3);
+            Job subJob4 = new ShellJob(shellFlvr,script.getAbsolutePath(),
+                    newFile+4);
+            subJob4.setParallelizable(true);
+            job.addStep(subJob4);
+            
+            //Run the job with parallel sub-jobs
+            job.run();
+            
+            //NB: this is only to allow looking in the tmp files to see that
+            //    two threads are started simultaneously, while the next two
+            //    are started again simultaneously, but only when the first
+            //    two are finished.
+            //System.out.println("TMP: "+tempDir.getAbsolutePath());
+            //IOtools.pause();
+
+
+            // Verify result
+            for (int i=1; i<5; i++)
+            {
+                File f = new File(newFile+i);
+                assertTrue(f.exists(),"ShellJob output file exists ("+i+") in "
+                                                   + tempDir.getAbsolutePath());
+            }
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertFalse(true, "Unable to work with tmp files.");
+        } 
+    }
+    
 //------------------------------------------------------------------------------
 
 }

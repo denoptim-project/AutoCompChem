@@ -72,21 +72,27 @@ public class ParallelRunner
      * Time step for waiting for completion (milliseconds)
      */
     private long waitingStep = 1000L; //Default 1 sec
+    
     /**
      * Placeholder for exception throws by a subjob
      */
     private Throwable thrownBySubJob;
+    
+    /**
+     * Verbosity level: amount of logging from this jobs
+     */
+    private int verbosity = 0;
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor. The sizes of pool of threads and queue controll the 
+     * Constructor. The sizes of pool of threads and queue control the 
      * efficiency in the usage of resources.
      * @param todoJob the list of jobs to be done. We assume these can be run
      * in parallel. No validity checking!
      * @param poolSize number of parallel threads. We assume the number is 
      * sensible. No validity checking! If less jobs are available, then this 
-     * number is ignored and we'll run as many threads as ajobs.
+     * number is ignored and we'll run as many threads as jobs.
      * @param queueSize the size of the queue. When the queue is full, the 
      * executor gets blocked until any thread becomes available and take is a 
      * job from the queue.
@@ -110,14 +116,14 @@ public class ParallelRunner
                                         new RejectedExecHandlerImpl());
 
         // Add a shutdown mechanism to kill the master thread and its subjobs
-        // incuding planned ones.
+        // including planned ones.
         Runtime.getRuntime().addShutdownHook(new ShutDownHook());
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * JavaVM shutdown hook that stopps all sub processes including processes
+     * JavaVM shutdown hook that stops all sub processes including processes
      * outside the JavaVM (e.g., bash processes).
      */
 
@@ -152,7 +158,7 @@ public class ParallelRunner
     /**
      * Implementation of handler of rejected/blocked jobs.
      * Rejected/blocked jobs are those that cannot fit into any thread of 
-     * the pool becasue all threads are busy.
+     * the pool because all threads are busy.
      */
 
     private class RejectedExecHandlerImpl implements RejectedExecutionHandler
@@ -194,6 +200,16 @@ public class ParallelRunner
     public void setWaitingStep(long waitingStep)
     {
         this.waitingStep = waitingStep;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Set the level of detail for logging
+     */
+    public void setVerbosity(int level)
+    {
+    	this.verbosity = level;
     }
 
 //------------------------------------------------------------------------------
@@ -295,9 +311,11 @@ public class ParallelRunner
             //Completion clause
             if (allSubJobsCompleted())
             {
-                //TODO log
-                System.out.println("All "+submittedJobs.size()+" sub-jobs "
+            	if (verbosity > 0)
+                {
+                    System.out.println("All "+submittedJobs.size()+" sub-jobs "
                              + "have been completed. Parallelized jobs done.");
+                }
                 break;
             }
 
@@ -332,7 +350,7 @@ public class ParallelRunner
 
    /**
     * Stop all if walltime is reached
-    * @param startTime the initial time in milliseconds singe EPOCH
+    * @param startTime the initial time in milliseconds single EPOCH
     * @return <code>true</code> if the walltime has been reached and we are 
     * killing sub-jobs
     */
@@ -345,12 +363,14 @@ public class ParallelRunner
 
         if (millis > walltimeMillis)
         {
-            //TODO log
-            System.out.println("Walltime reached for parallel job execution.");
-            System.out.println("Killing remaining sub-jobs.");
+        	if (verbosity > 0)
+            {
+	            System.out.println("Walltime reached for parallel job execution.");
+	            System.out.println("Killing remaining sub-jobs.");
+            }
 
-            //Terminator.withMsgAndStatus("ERROR! Walltime reached for "
-            //                                 + "parallel run. Killing all.",-1);
+            Terminator.withMsgAndStatus("ERROR! Walltime reached for "
+                                             + "parallel run. Killing all.",-1);
             res = true;
         }
         return res;

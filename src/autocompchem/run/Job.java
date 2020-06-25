@@ -3,6 +3,7 @@ package autocompchem.run;
 import java.util.ArrayList;
 
 import autocompchem.parameters.Parameter;
+import autocompchem.parameters.ParameterConstants;
 import autocompchem.parameters.ParameterStorage;
 
 
@@ -53,7 +54,7 @@ public class Job implements Runnable
     private int nThreads = 1; 
 
     /**
-     * Flag signaling that this job has thrown an exception
+     * Flag signalling that this job has thrown an exception
      */
     private boolean hasException = false;
 
@@ -63,24 +64,24 @@ public class Job implements Runnable
     private Throwable thrownExc;
 
     /**
-     * Flag signaling the completion of this job
+     * Flag signalling the completion of this job
      */
     private boolean completed = false;
 
     /**
-     * Flag signaling the an intended action to kill this job
+     * Flag signalling an action intended to kill this job
      */
     protected boolean jobIsBeingKilled = false;
 
     /**
-     * Separaton of steps in input text file. TODO conseder removing
-     */
-    protected String stepSeparatorInp = System.getProperty("line.separator");
-
-    /**
-     * Separaton of steps in job details text file. TODO conseder removing
+     * Separator of steps in job details text file. TODO consider removing
      */
     protected String stepSeparatorJd = System.getProperty("line.separator");
+    
+    /**
+     * Verbosity level: amount of logging from this jobs
+     */
+    private int verbosity = 0;
     
 //------------------------------------------------------------------------------
 
@@ -205,6 +206,26 @@ public class Job implements Runnable
         this.nThreads = n;
     }
 
+//------------------------------------------------------------------------------   
+
+    /**
+     * Set the level of detail for logging
+     */
+    public void setVerbosity(int level)
+    {
+    	this.verbosity = level;
+    }
+
+//------------------------------------------------------------------------------   
+
+    /**
+     * Get the level of detail for logging
+     */
+    public int getVerbosity()
+    {
+    	return verbosity;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -342,8 +363,11 @@ public class Job implements Runnable
     {
         if (appID.equals(Job.RunnableAppID.ACC))
         {
-            //TODO del: only for tesing
-            System.out.println("Running ACCJob " + this.toString());
+            //This is only for testing
+        	if (getVerbosity() > 0)
+            {
+                System.out.println("Running ACCJob " + this.toString());
+            }
         }
         else
         {
@@ -373,13 +397,14 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Runs all the sub-jobs in an embarassingly parallel fashon.
+     * Runs all the sub-jobs in an embarrassingly parallel fashion.
      * This method is overwritten by subclasses.
      */
 
     public void runSubJobsPararelly()
     {
         ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
+        parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
 
@@ -387,7 +412,7 @@ public class Job implements Runnable
 
     /**
      * Reports is an exception was thrown by the run methods.
-     * This is part of the mechanism to catch exceptions from tun.
+     * This is part of the mechanism to catch exceptions.
      * @return <code>true</code> if running this job has returned an exception
      */
 
@@ -400,7 +425,7 @@ public class Job implements Runnable
 
     /**
      * Get the exception that was thrown by the run methods.
-     * This is part of the mechanism to catch exceptions from tun.
+     * This is part of the mechanism to catch exceptions.
      * @return the exception thrown within the run method.
      */
 
@@ -461,16 +486,13 @@ public class Job implements Runnable
     public ArrayList<String> toLinesJobDetails()
     {
         ArrayList<String> lines= new ArrayList<String>();
+        lines.add(ParameterConstants.STARTJOB);
+        lines.addAll(params.toLinesJobDetails());
         for (int step = 0; step<steps.size(); step++)
         {
-            //Write job-separator
-            if (step != 0)
-            {
-                lines.add(stepSeparatorJd);
-            }
-
             lines.addAll(getStep(step).toLinesJobDetails());
         }
+        lines.add(ParameterConstants.ENDJOB);
         return lines;
     }
 

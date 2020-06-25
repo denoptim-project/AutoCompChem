@@ -76,8 +76,8 @@ public class JobFactory
 
     /**
      * Create a job from the text block of the job's parameters. Handles
-     * nested text blocks creating nested jobs of any deeplness.
-     * @param tb the outernmost text block that may incude nested blocks
+     * nested text blocks creating nested jobs of any deepness.
+     * @param tb the outernmost text block that may include nested blocks
      * @return the job, possibly including nested sub-jobs
      */ 
 
