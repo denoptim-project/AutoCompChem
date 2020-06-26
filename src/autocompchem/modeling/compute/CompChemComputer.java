@@ -65,7 +65,7 @@ public class CompChemComputer
      * rotations of the center of mass) in cm<sup>-1</sup>
      * @param temp the temperature in Kelvin
      * @param qhThrsh threshold for quasi-harmonic approximation in 
-     * cm<sup>-1</sup> (see J. Phys. Chem. B, 2011, 115 (49), pp 14556–14562).
+     * cm<sup>-1</sup> (see J. Phys. Chem. B, 2011, 115 (49), pp 14556-14562).
      *  Use 0.0 to
      * exclude application of quasi-harmonic approximation.
      * @param imThrsh threshold for converting imaginary modes  

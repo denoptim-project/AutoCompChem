@@ -193,7 +193,7 @@ public class ZMatrixHandler
      * second chemical entity to work with (SDF or ACC's ZMatrix)
      * </li>
      * <li>
-     * (optional) <b>TEMPLATEZMAT</b>: ACC´s ZMatrix used as template when
+     * (optional) <b>TEMPLATEZMAT</b>: ACCs ZMatrix used as template when
      * generating ZMAtrix for other, consistent molecular systems.
      * </li>
      * <li>
