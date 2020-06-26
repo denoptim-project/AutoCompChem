@@ -26,7 +26,7 @@ package autocompchem.parameters;
 public class ParameterConstants
 {
     /**
-     * Label defining a commente out line
+     * Label defining a commented-out line
      */
     public final static String COMMENTLINE = "#";
 

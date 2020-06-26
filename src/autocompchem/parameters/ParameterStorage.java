@@ -2,9 +2,13 @@ package autocompchem.parameters;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import autocompchem.chemsoftware.nwchem.NWChemDirective;
+import autocompchem.chemsoftware.nwchem.NWChemDirectiveComparator;
 import autocompchem.constants.ACCConstants;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
@@ -222,7 +226,7 @@ public class ParameterStorage
 
     /**
      * Read a formatted text file and import all parameters.
-     * Meant only for single-job paramter files. Cannot handle parameter files
+     * Meant only for single-job parameter files. Cannot handle parameter files
      * including more than one job nor nested jobs.
      * @param paramFile name of the text file to read
      */
@@ -301,6 +305,26 @@ public class ParameterStorage
             Parameter prm = new Parameter(key,"string",value);
             setParameter(key,prm);
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns a block of lines with the parameters stored in here formatted for
+     * a jobdetails file.
+     * @return the list of lines.
+     */
+    public ArrayList<String> toLinesJobDetails()
+    {
+    	//Collections.sort(directives, new JobDirectiveComparator());
+        ArrayList<String> lines = new ArrayList<String>();
+        for (Entry<String, Parameter> par : allParams.entrySet())
+        {
+        	String parStr = par.getKey() + ParameterConstants.SEPARATOR 
+        			+ par.getValue();
+            lines.add(parStr);
+        }
+        return lines;
     }
 
 //------------------------------------------------------------------------------

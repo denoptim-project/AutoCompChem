@@ -39,8 +39,12 @@ public class ShellJob extends Job
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor from formatted text collectd in lines
-     * @param lines the lines of formatted text
+     * Constructor for a ShellJob with a defined interpreter, script and 
+     * arguments/options.
+     * @param interpreter the interpreter to call for the script
+     * @param script the executable script
+     * @param args command line arguments and options all collected in a single
+     * string
      */
 
     public ShellJob(String interpreter, String script, String args)
@@ -49,6 +53,29 @@ public class ShellJob extends Job
         this.interpreter = interpreter;
         this.script = script;
         this.args = args;
+        this.setVerbosity(0);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a ShellJob with a defined interpreter, script and 
+     * arguments/options.
+     * @param interpreter the interpreter to call for the script
+     * @param script the executable script
+     * @param args command line arguments and options all collected in a single
+     * string
+     * @param verbosity the verbosity level
+     */
+
+    public ShellJob(String interpreter, String script, String args, 
+    		int verbosity)
+    {
+        super(RunnableAppID.SHELL);
+        this.interpreter = interpreter;
+        this.script = script;
+        this.args = args;
+        this.setVerbosity(verbosity);
     }
 
 //------------------------------------------------------------------------------
@@ -60,10 +87,12 @@ public class ShellJob extends Job
     @Override
     public void runThisJobSubClassSpecific()
     {
-        //TODO decide what to do wrt logging
-        System.out.println("Running SHELL Job: " + this.toString() + " Thread: "
+        if (getVerbosity() > 0)
+        {
+            System.out.println("Running SHELL Job: " + this.toString() + " Thread: "
                                             + Thread.currentThread().getName());
-
+        }
+        
         StringBuilder sb = new StringBuilder();
         sb.append(interpreter).append(" ");
         sb.append(script).append(" ");
@@ -96,9 +125,10 @@ public class ShellJob extends Job
             }
         }
 
-        //TODO decide what to do wrt logging
-        //System.out.println("Done with SHELL Job " + this.toString());
-
+        if (getVerbosity() > 0)
+        {
+            System.out.println("Done with SHELL Job " + this.toString());
+        }
     }
 
 //------------------------------------------------------------------------------

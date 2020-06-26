@@ -60,7 +60,7 @@ public class ParallelRunnerTest
 
             // Choose shell flavor
             String shellFlvr = "/bin/sh";
-            //TODO: check for available interpreters.
+            //FIXME: check for available interpreters.
 
             // Nest 4 shell jobs in an undefined job
             Job job = new Job(Job.RunnableAppID.ACC,4);
