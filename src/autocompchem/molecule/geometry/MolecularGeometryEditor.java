@@ -459,7 +459,7 @@ public class MolecularGeometryEditor
         // Identify the actual Cartesian move, possibly using reference 
         // substructure to identify the atom to be moved
         ArrayList<Point3d> actualMove = new ArrayList<Point3d>();
-                IAtomContainer actualMol = inMol;
+        IAtomContainer actualMol = inMol;
         for (int i=0; i<actualMol.getAtomCount(); i++)
         {
             actualMove.add(new Point3d());

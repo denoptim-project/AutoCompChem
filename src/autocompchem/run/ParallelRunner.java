@@ -168,12 +168,12 @@ public class ParallelRunner
         {
             try
             {
-                // Resend rejected job to the queue until they fit in
+                // Re-send rejected job to the queue until they fit in
                 tpe.getQueue().put(job);
             }
             catch (InterruptedException ie)
             {
-                //If we are here, then execution is brocken beyond recovery
+                //If we are here, then execution is broken beyond recovery
             }
         }
     }
@@ -281,7 +281,7 @@ public class ParallelRunner
     {
         boolean withinTime = true;
 
-        // Initialize empty threads that will be used for the sb-jobs
+        // Initialise empty threads that will be used for the sub-jobs
         tpExecutor.prestartAllCoreThreads();
         long startTime = System.currentTimeMillis();
 

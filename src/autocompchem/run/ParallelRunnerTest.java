@@ -29,7 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 
 /**
- * Unit Test for the runner of embarassingly parallel sets of jobs. 
+ * Unit Test for the runner of embarrassingly parallel sets of jobs. 
  * 
  * @author Marco Foscato
  */
@@ -58,12 +58,12 @@ public class ParallelRunnerTest
             writer.write("date > $1");
             writer.close();
 
-            // Choose shell flavor
+            // Choose shell flavour
             String shellFlvr = "/bin/sh";
             //FIXME: check for available interpreters.
 
             // Nest 4 shell jobs in an undefined job
-            Job job = new Job(Job.RunnableAppID.ACC,4);
+            Job job = JobFactory.createJob(Job.RunnableAppID.ACC,4);
             for (int i=0; i<10; i++)
             {
                 ShellJob sj = new ShellJob(shellFlvr,script.getAbsolutePath(),

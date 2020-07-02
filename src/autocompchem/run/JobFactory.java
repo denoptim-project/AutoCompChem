@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import autocompchem.files.FilesAnalyzer;
 import autocompchem.parameters.ParameterConstants;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextBlock;
 
 
@@ -54,7 +55,7 @@ public class JobFactory
                                         false,  //don't take only first
                                         false); //don't include delimiters
 
-        // Unless there is only one set of parameters the outernmost job serves
+        // Unless there is only one set of parameters the outermost job serves
         // as a container of the possibly nested structure of sub-jobs.
         Job job = new Job();
         if (blocks.size() == 1)
@@ -75,20 +76,104 @@ public class JobFactory
 //------------------------------------------------------------------------------
 
     /**
+     * Create a new job calling the appropriate subclass.
+     * @param appID the application to be used to do the job
+     * @param nThreads max parallel threads for independent sub-jobs
+     * @return the job, possibly including nested sub-jobs
+     */ 
+
+    public static Job createJob(RunnableAppID appID)
+    {
+    	return createJob(appID, 1, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Create a new job calling the appropriate subclass.
+     * @param appID the application to be used to do the job
+     * @param nThreads max parallel threads for independent sub-jobs
+     * @return the job, possibly including nested sub-jobs
+     */ 
+
+    public static Job createJob(RunnableAppID appID, int nThreads)
+    {
+    	return createJob(appID, nThreads, false);
+    }
+
+  //------------------------------------------------------------------------------
+
+    /**
+     * Create a new job calling the appropriate subclass.
+     * @param appID the application to be used to do the job
+     * @param parallelizable set <code>true</code> if this job if independent 
+     * @return the job, possibly including nested sub-jobs
+     */ 
+
+    public static Job createJob(RunnableAppID appID, boolean parallelizable)
+    {
+    	return createJob(appID, 1, parallelizable);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Create a new job calling the appropriate subclass
+     * @param appID the application to be used to do the job
+     * @param nThreads max parallel threads for independent sub-jobs
+     * @param parallelizable set <code>true</code> if this job if independent 
+     * @return the job, possibly including nested sub-jobs
+     */ 
+
+    public static Job createJob(RunnableAppID appID, int nThreads, boolean parallelizable)
+    {
+    	Job job;
+    	switch (appID) 
+    	{
+			case ACC: {
+				job = new ACCJob();
+				break;
+			}
+			case SHELL: {
+				job = new ShellJob();
+				System.out.println("OUT:::  "+job);
+				break;
+			}
+			default: {
+				job = new Job();
+				break;
+			}
+    	}
+    	job.setParallelizable(parallelizable);
+    	job.setNumberOfThreads(nThreads);
+    	return job;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Create a job from the text block of the job's parameters. Handles
      * nested text blocks creating nested jobs of any deepness.
-     * @param tb the outernmost text block that may include nested blocks
+     * @param tb the outermost text block that may include nested blocks
      * @return the job, possibly including nested sub-jobs
      */ 
 
     public static Job createJob(TextBlock tb)
     {
-        ParameterStorage oneJobParams = new ParameterStorage();
-        oneJobParams.importParameters(tb);
+        ParameterStorage locPar = new ParameterStorage();
+        locPar.importParameters(tb);
 
         Job job = new Job();
-        //TODO: choose job class based on parameters
-        job.setParameters(oneJobParams);
+        
+        String appKey = ParameterConstants.RUNNABLEAPPIDKEY;
+        if (locPar.contains(appKey))
+        {
+        	String app = locPar.getParameter(appKey).getValue().toString();
+        	RunnableAppID appId = RunnableAppID.valueOf(app);
+        	job = createJob(appId);
+        }
+        
+        job.setParameters(locPar);
         if (tb.getNestedBlocks().size() > 0)
         {
             for (TextBlock intTb : tb.getNestedBlocks())

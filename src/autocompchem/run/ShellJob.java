@@ -1,6 +1,7 @@
 package autocompchem.run;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A shell job is work to be done by the shell
@@ -33,7 +34,8 @@ public class ShellJob extends Job
 
     public ShellJob()
     {
-        super(RunnableAppID.SHELL);
+        super();
+        this.appID = RunnableAppID.SHELL;
     }
 
 //------------------------------------------------------------------------------
@@ -49,7 +51,8 @@ public class ShellJob extends Job
 
     public ShellJob(String interpreter, String script, String args)
     {
-        super(RunnableAppID.SHELL);
+        super();
+        this.appID = RunnableAppID.SHELL;
         this.interpreter = interpreter;
         this.script = script;
         this.args = args;
@@ -71,7 +74,8 @@ public class ShellJob extends Job
     public ShellJob(String interpreter, String script, String args, 
     		int verbosity)
     {
-        super(RunnableAppID.SHELL);
+        super();
+        this.appID = RunnableAppID.SHELL;
         this.interpreter = interpreter;
         this.script = script;
         this.args = args;
@@ -87,8 +91,10 @@ public class ShellJob extends Job
     @Override
     public void runThisJobSubClassSpecific()
     {
+        Date date = new Date();
         if (getVerbosity() > 0)
         {
+            System.out.println(" " + date.toString());
             System.out.println("Running SHELL Job: " + this.toString() + " Thread: "
                                             + Thread.currentThread().getName());
         }
@@ -134,41 +140,18 @@ public class ShellJob extends Job
 //------------------------------------------------------------------------------
 
     /**
-     * Produced the text input. The text input is meant for a text file
+     * Produces the text input. The text input is meant for a text file
      * that a specific application can read and use to run the job. If the 
      * application is the autocompchem, then the jobDetails format is used
      * @return the list of lines ready to print a text input file
      */
 
+    @Override
     public ArrayList<String> toLinesInput()
     {
         ArrayList<String> a = new ArrayList<String>();
         a.add(interpreter + " " + script + " " + args);
         return a;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Produced a text representation of this job following the format of
-     * autocompchem's JobDetail text file.
-     * @return the list of lines ready to print a jobDetails file
-     */
-
-    public ArrayList<String> toLinesJobDetails()
-    {
-        ArrayList<String> lines= new ArrayList<String>();
-        for (int step = 0; step<steps.size(); step++)
-        {
-            //Write job-separator
-            if (step != 0)
-            {
-                lines.add(stepSeparatorJd);
-            }
-
-            lines.addAll(getStep(step).toLinesJobDetails());
-        }
-        return lines;
     }
 
 //------------------------------------------------------------------------------

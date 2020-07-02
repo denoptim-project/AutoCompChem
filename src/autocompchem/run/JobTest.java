@@ -43,6 +43,8 @@ public class JobTest
 
     @TempDir 
     File tempDir;
+    
+//------------------------------------------------------------------------------
 
     @Test
     public void testSequentialShellJobs() throws Exception
@@ -62,7 +64,7 @@ public class JobTest
 
             //FIXME: this makes unit testing platform dependent!!!
             
-            // Choose shell flavor
+            // Choose shell flavour
             String shellFlvr = "/bin/sh";
 /*
 //TODO: maybe one day we'll check for available interpreters, and run the test only if we find a good one. 
@@ -92,7 +94,7 @@ public class JobTest
 */
 
             // Nest 4 shell jobs in an undefined job
-            Job job = new Job(Job.RunnableAppID.ACC);
+            Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
             job.setVerbosity(0);
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                     newFile+1));
@@ -136,13 +138,13 @@ public class JobTest
     @Test
     public void testParallelizableSubJobs() throws Exception
     {
-        Job job = new Job(Job.RunnableAppID.ACC);
-        job.addStep(new Job(Job.RunnableAppID.ACC,true));
-        job.addStep(new Job(Job.RunnableAppID.ACC,true));
-        job.addStep(new Job(Job.RunnableAppID.ACC,true));
+        Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
+        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
+        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
         assertTrue(job.parallelizableSubJobs());
 
-        job.addStep(new Job(Job.RunnableAppID.ACC,false));
+        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,false));
         assertFalse(job.parallelizableSubJobs());
     }
 
@@ -171,7 +173,7 @@ public class JobTest
             
             // Nest 4 shell jobs in an undefined job
             int nThreads = 2; //NB: do no change
-            Job job = new Job(Job.RunnableAppID.ACC,nThreads);
+            Job job = JobFactory.createJob(Job.RunnableAppID.ACC,nThreads);
             job.setVerbosity(0);
             Job subJob1 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+1);

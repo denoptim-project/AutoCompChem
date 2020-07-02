@@ -28,7 +28,7 @@ public class Job implements Runnable
     /**
      * Application meant to do the job
      */
-    private RunnableAppID appID;
+    protected RunnableAppID appID;
 
     /**
      * Known apps for performing jobs
@@ -36,9 +36,24 @@ public class Job implements Runnable
     public enum RunnableAppID {
         UNDEFINED,
         SHELL,
-        ACC,
-        NWCHEM,
-        GAUSSIAN};
+        ACC;
+    
+    	public String toString() {
+    		switch (this) {
+			case UNDEFINED: {
+				return "UNDEFINED";
+			}
+			case SHELL: {
+				return "SHELL";
+			}	
+			case ACC: {
+				return "ACC";
+			}
+			default: {
+				return "UNDEFINED";
+			}}
+    	}
+    };
 
     /**
      * Flag defining this job as a parallelizable job, i.e., independent from
@@ -56,12 +71,12 @@ public class Job implements Runnable
     /**
      * Flag signalling that this job has thrown an exception
      */
-    private boolean hasException = false;
+    protected boolean hasException = false;
 
     /**
      * Exception thrown by this job.
      */
-    private Throwable thrownExc;
+    protected Throwable thrownExc;
 
     /**
      * Flag signalling the completion of this job
@@ -86,7 +101,7 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor
+     * Constructor for an undefined job
      */
 
     public Job()
@@ -98,52 +113,41 @@ public class Job implements Runnable
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor
-     * @param appID the application to be used to do the job
-     */
-
-    public Job(RunnableAppID appID)
-    {
-        this.params = new ParameterStorage();
-        this.steps = new ArrayList<Job>();
-        this.appID = appID;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for a potentially parallelizable job. 
-     * @param appID the application to be used to do the job
-     * @param parallelizable set <code>true</code> if this job if independent 
-     * from its parent and sibling jobs, so that it can run on a separate thread
-     */
-
-    public Job(RunnableAppID appID, boolean parallelizable)
-    {
-        this.params = new ParameterStorage();
-        this.steps = new ArrayList<Job>();
-        this.appID = appID;
-        this.parallelizable = parallelizable;
-    }
+//    /**
+//     * Constructor meant for subclasses. 
+//     * @param appID the application to be used to do the job
+//     */
+//
+//    public Job(RunnableAppID appID)
+//    {
+//        this.params = new ParameterStorage();
+//        this.steps = new ArrayList<Job>();
+//        this.appID = appID;
+//    }
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor for a master job. A master job has the possibility of 
-     * distributiong its subjobs on multiple threads, if the subjobs are
-     * parallelizable.
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     */
+//	/**
+//	 * Set the kind of app meant to perform this job
+//	 * @param appID the enum representing the app
+//	 */
+//	
+//	public void setAppID(RunnableAppID appID)
+//	{
+//		this.appID = appID;
+//	}
 
-    public Job(RunnableAppID appID, int nThreads)
-    {
-        this.params = new ParameterStorage();
-        this.steps = new ArrayList<Job>();
-        this.appID = appID;
-        this.nThreads = nThreads;
-    }
+//------------------------------------------------------------------------------
+
+      /**
+       * Get the kind of app meant to perform this job
+       * @return the enum representing the application.
+       */
+
+      public RunnableAppID getAppID()
+      {
+          return appID;
+      }
 
 //------------------------------------------------------------------------------
 
@@ -211,6 +215,7 @@ public class Job implements Runnable
     /**
      * Set the level of detail for logging
      */
+    
     public void setVerbosity(int level)
     {
     	this.verbosity = level;
@@ -221,6 +226,7 @@ public class Job implements Runnable
     /**
      * Get the level of detail for logging
      */
+    
     public int getVerbosity()
     {
     	return verbosity;
@@ -333,12 +339,12 @@ public class Job implements Runnable
      * {@Link #runSubJobsPararelly} and {@Link runSubJobsSequentially}.
      */
 
-    @Override
     public void run()
     {
         // First do the work of this very Job
         runThisJobSubClassSpecific();
-        // Then, finally run the sub-jobs
+        
+        // Then, run the sub-jobs
         if (nThreads > 1 && parallelizableSubJobs())
         {
             //Parallel execution of sub-jobs
@@ -349,34 +355,25 @@ public class Job implements Runnable
             //Serial execution
             runSubJobsSequentially();
         }
+        
         completed = true;
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Tries to do the wor of this job. Does not consider the subjobs
+     * Tries to do the work of this very Job. Does not consider the subjobs
      * This method is overwritten by subclasses.
      */
 
     public void runThisJobSubClassSpecific()
     {
-        if (appID.equals(Job.RunnableAppID.ACC))
-        {
-            //This is only for testing
-        	if (getVerbosity() > 0)
-            {
-                System.out.println("Running ACCJob " + this.toString());
-            }
-        }
-        else
-        {
-            // External app's jobs overwrites this method, so if we are here
-            // it is because we tried to run a job of an app for which there is
-            // no implementation of app-specific Job yet.
-            Terminator.withMsgAndStatus("ERROR! Cannot (yet) run Jobs for App " 
-                                                              + this.appID, -1);
-        }
+        // Subclasses overwrites this method, so if we are here
+        // it is because we tried to run a job of an app for which there is
+        // no implementation of app-specific Job yet.
+        Terminator.withMsgAndStatus("ERROR! Cannot (yet) run Jobs for App '" 
+                    + this.appID + "'. No subclass implementation of method "
+                    + "running this job.", -1);
     }
 
 //------------------------------------------------------------------------------
@@ -465,9 +462,10 @@ public class Job implements Runnable
 
     /**
      * Produced the text input. The text input is meant for a text file
-     * that a specific application can read and use to run the job. If the 
-     * application is the autocompchem, then the jobDetails format is used
-     * @return the list of lines ready to print a text input file
+     * that a specific application can read and use to run the job. 
+     * This method is overwritten by subclasses, or, if this native method
+     * is called, then the jobDetails format is used.
+     * @return the list of lines ready to print a text input file.
      */
 
     public ArrayList<String> toLinesInput()
@@ -480,7 +478,7 @@ public class Job implements Runnable
     /**
      * Produced a text representation of this job following the format of
      * autocompchem's JobDetail text file.
-     * @return the list of lines ready to print a jobDetails file
+     * @return the list of lines ready to print a jobDetails file.
      */
 
     public ArrayList<String> toLinesJobDetails()

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.parameters.ParameterConstants;
+import autocompchem.run.Job.RunnableAppID;
 
 
 /**
@@ -44,6 +45,31 @@ public class JobFactoryTest
 
     @TempDir 
     File tempDir;
+    
+//-----------------------------------------------------------------------------
+    
+    @Test
+    public void testCreateJob() throws Exception
+    {
+    	Job job = JobFactory.createJob(Job.RunnableAppID.UNDEFINED);
+    	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
+    			"Creation of Undefined job");
+    	
+    	job = JobFactory.createJob(Job.RunnableAppID.SHELL);
+    	assertTrue(job.getAppID() == Job.RunnableAppID.SHELL, 
+    			"Creation of SHELL job");
+
+    	job = JobFactory.createJob(Job.RunnableAppID.ACC);
+    	assertTrue(job.getAppID() == Job.RunnableAppID.ACC, 
+    			"Creation of ACC job");
+    	
+    	job = new Job();
+    	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
+    			"Creation of Undefined job");
+    	
+    }
+
+//-----------------------------------------------------------------------------
 
     @Test
     public void testMultiStepJobFromJDFile() throws Exception

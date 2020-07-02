@@ -54,5 +54,10 @@ public class ParameterConstants
      * String defining the end of a job.
      */
     public final static String ENDJOB = "JOBEND";
+    
+	/**
+	 * Keyword defining the application meant to do a job 
+	 */
+	public final static String RUNNABLEAPPIDKEY = "APP";
 
 }
