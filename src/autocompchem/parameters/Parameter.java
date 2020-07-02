@@ -1,5 +1,7 @@
 package autocompchem.parameters;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -27,15 +29,32 @@ package autocompchem.parameters;
 
 public class Parameter
 {
-    //Reference
+    /**
+     * A string used to identify the parameter. Typically the keyword in a
+     * keyword:value pair.
+     */
     private String reference;
 
-    //Value
+    /**
+     * The actual parameter. Typically the value in a keyword:value pair.
+     */
     private Object value;
+      
+    /**
+     * The kind of object used to represent the value
+     */
+    private ParameterValueType type;
 
-    //Type of object
-    private String type;
-
+    /**
+     * Allowed kinds of parameter values
+     */
+    public enum ParameterValueType {
+    	UNDEFINED,
+        STRING,
+        DOUBLE,
+        INTEGER,
+        BOOLEAN,
+        IATOMCONTAINER};
 
 //------------------------------------------------------------------------------
 
@@ -56,7 +75,7 @@ public class Parameter
      * @param value the content of this <code>Parameter</code>
      */
 
-    public Parameter(String reference, String type, Object value)
+    public Parameter(String reference, ParameterValueType type, Object value)
     {
         this.reference = reference;
         this.type = type; 
@@ -90,6 +109,45 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
+     * Return the value of this parameter as
+     * Corresponds to getValue().toString()
+     * @return the value of this parameter
+     */
+
+    public Object getValueAsObjectSubclass()
+    {
+    	Object valueObj;
+        switch (type) {
+			case DOUBLE:
+				valueObj = Double.parseDouble(value.toString());
+				break;
+	
+			case INTEGER: 
+				valueObj = Integer.parseInt(value.toString());
+				break;
+			
+			case STRING:
+				valueObj = value.toString();
+				break;
+				
+			case BOOLEAN:
+				valueObj = (Boolean) value;
+				break;
+				
+			case IATOMCONTAINER:
+				valueObj = (IAtomContainer) value;
+				break;
+					
+			default:
+				valueObj = value.toString();
+				break;
+		}
+        return valueObj;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Return the string representation of the value of this parameter.
      * Corresponds to getValue().toString()
      * @return the value of this parameter
@@ -107,7 +165,7 @@ public class Parameter
      * @return the type of this parameter
      */
 
-    public String getType()
+    public ParameterValueType getType()
     {
         return type;
     }

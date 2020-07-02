@@ -7,14 +7,15 @@ import java.util.Map.Entry;
 
 import autocompchem.constants.ACCConstants;
 import autocompchem.io.IOtools;
+import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
 
 /**
- * Storage and management of {@link Parameter}s. 
- * This class can also import string-based parameters directly from a formatted
- * text file.
+ * Storage of {@link Parameter}s. 
+ * This class has also the capability of importing string-based parameters 
+ * directly from a formatted text file.
  * The recognised format is as follows:
  * <ul>
  * <li> lines beginning with 
@@ -124,12 +125,14 @@ public class ParameterStorage
     /**
      * Return the parameter required or the given alternative.
      * @param refName the reference name of the parameter
+     * @param defKind the parameter type to use for the default parameter
      * @param defValue the fully qualified name of the class from which
      * the default value is to be taken
      * @return the user defined value or the default
      */
 
-    public Parameter getParameterOrDefault(String refName, String pType, 
+    public Parameter getParameterOrDefault(String refName, 
+    		Parameter.ParameterValueType defKind, 
     		Object defValue)
     {
         Parameter p = new Parameter();
@@ -139,7 +142,7 @@ public class ParameterStorage
         }
         else
         {
-        	p = new Parameter(refName, pType, defValue);
+        	p = new Parameter(refName, defKind, defValue);
         }
         return p;
     }
@@ -196,8 +199,8 @@ public class ParameterStorage
     public void setDefault()
     {
         //Set default parameter
-        Parameter vl = new Parameter(ACCConstants.VERBOSITYPAR, "integer",
-                                                                           "0");
+        Parameter vl = new Parameter(ACCConstants.VERBOSITYPAR,
+        		Parameter.ParameterValueType.INTEGER,"0");
         allParams.put(ACCConstants.VERBOSITYPAR,vl);
     }
 
@@ -281,7 +284,7 @@ public class ParameterStorage
             String value = signleBlock.get(1);
 
             //All params are seen as Strings for now
-            Parameter prm = new Parameter(key,"string",value);
+            Parameter prm = new Parameter(key,ParameterValueType.STRING,value);
             setParameter(key,prm);
         }
     }

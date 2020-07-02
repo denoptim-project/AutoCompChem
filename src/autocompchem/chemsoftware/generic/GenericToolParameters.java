@@ -18,6 +18,7 @@ package autocompchem.chemsoftware.generic;
  */
 
 import autocompchem.parameters.Parameter;
+import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.parameters.ParameterStorage;
 
 /**
@@ -67,7 +68,7 @@ public class GenericToolParameters extends ParameterStorage
     {
         Parameter par  =  getParameterOrDefault(
                                             GenericToolConstants.DEFINITMSGKEY,
-                                            "string",
+                                            ParameterValueType.STRING,
                                             GenericToolConstants.DEFINITMSG);
         return par.getValue().toString();
     }
@@ -85,7 +86,7 @@ public class GenericToolParameters extends ParameterStorage
     {
         Parameter par  =  getParameterOrDefault(
                                           GenericToolConstants.DEFNORMENDMSGKEY,
-                                          "string",
+                                          ParameterValueType.STRING,
                                           GenericToolConstants.DEFNORMENDMSG);
         return par.getValue().toString();
     }

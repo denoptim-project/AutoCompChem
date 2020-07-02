@@ -35,6 +35,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.io.IOtools;
 import autocompchem.parameters.Parameter;
+import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.parameters.ParameterConstants;
 import autocompchem.parameters.ParameterStorage;
 
@@ -72,16 +73,16 @@ public class ACCJobTest
         	// Prepare the parameters for task
         	ParameterStorage params = new ParameterStorage();
         	params.setParameter(ParameterConstants.RUNNABLEAPPIDKEY, 
-        			new Parameter(ParameterConstants.RUNNABLEAPPIDKEY, 
-        					"string", Job.RunnableAppID.ACC));
-        	params.setParameter("TASK", new Parameter("TASK", "string", 
-        			"MeasureGeomDescriptors"));
+        			new Parameter(ParameterConstants.RUNNABLEAPPIDKEY,
+        					ParameterValueType.STRING, Job.RunnableAppID.ACC));
+        	params.setParameter("TASK", new Parameter("TASK", 
+        			ParameterValueType.STRING, "MeasureGeomDescriptors"));
         	params.setParameter("VERBOSITY", new Parameter("VERBOSITY",
-        			"string",1));
-        	params.setParameter("INFILE", new Parameter("INFILE","string",
-        			sdfFile));
+        			ParameterValueType.INTEGER,1));
+        	params.setParameter("INFILE", new Parameter("INFILE",
+        			ParameterValueType.STRING,sdfFile));
         	params.setParameter("ATOMINDEXES",  new Parameter("ATOMINDEXES",
-        			"string", label+" 1 2"));
+        			ParameterValueType.STRING, label+" 1 2"));
         	
         	// Prepare structure
         	IAtomContainer mol = new AtomContainer();

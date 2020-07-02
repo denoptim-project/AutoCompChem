@@ -26,6 +26,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.parameters.Parameter;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
@@ -1290,11 +1291,12 @@ for (String k : sortedMasterNames)
                 // Allow some partial assigniation
                 locPars.setParameter(BasisSetConstants.ALLOWPARTIALMATCH, 
                              new Parameter(BasisSetConstants.ALLOWPARTIALMATCH,
-                                                            "boolean", "true"));
+                            		 ParameterValueType.BOOLEAN, "true"));
             }
             locPars.setParameter(BasisSetConstants.ATMSPECBS,atmSpecBSParam);
             locPars.setParameter(ACCConstants.VERBOSITYPAR, new Parameter(
-                          ACCConstants.VERBOSITYPAR,"integer", verbosity));
+                          ACCConstants.VERBOSITYPAR,
+                          ParameterValueType.INTEGER, verbosity));
             
             // Do it only if there is something to do...
             if (goon)

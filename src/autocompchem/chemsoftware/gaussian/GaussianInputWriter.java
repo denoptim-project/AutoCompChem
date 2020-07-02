@@ -19,6 +19,7 @@ import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.parameters.Parameter;
 import autocompchem.parameters.ParameterStorage;
+import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.run.Terminator;
 
 /**
@@ -643,8 +644,8 @@ public class GaussianInputWriter
                 case BasisSetConstants.ATMSPECBS:
                     ParameterStorage locPars = new ParameterStorage();
                     locPars.setParameter(action,params.getParameter(action));
-                    locPars.setParameter(verbKey, 
-                                   new Parameter(verbKey,"integer", verbosity));
+                    locPars.setParameter(verbKey, new Parameter(verbKey,
+                    		ParameterValueType.INTEGER, verbosity));
                     BasisSetGenerator bsg = new BasisSetGenerator(locPars);
                     bsg.setAtmIdxAsId(true);
                     BasisSet bs = bsg.assignBasisSet(mol);
