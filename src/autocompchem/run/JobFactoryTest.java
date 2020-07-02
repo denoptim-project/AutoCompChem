@@ -25,10 +25,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileWriter;
 
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.io.IOtools;
+import autocompchem.parameters.Parameter;
 import autocompchem.parameters.ParameterConstants;
+import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Job.RunnableAppID;
 
 
@@ -68,7 +76,80 @@ public class JobFactoryTest
     			"Creation of Undefined job");
     	
     }
+    
+//-----------------------------------------------------------------------------
+    
+    @Test
+    public void testJobCreationFromJDFile() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 
+        //Define pathnames
+        File jdFile = new File(tempDir.getAbsolutePath() + SEP + "acc.par");
+
+        try 
+        {
+            FileWriter writer = new FileWriter(jdFile);
+
+            //This will be ignores as it is outside on a jobstart-jobend block
+            writer.write("keyZero" + ParameterConstants.SEPARATOR 
+            		+ "valueZero" + NL);
+            
+            writer.write(ParameterConstants.STARTJOB + NL);
+            writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
+            		+ ParameterConstants.SEPARATOR 
+            		+ Job.RunnableAppID.ACC + NL);
+            writer.write("keyOne" + ParameterConstants.SEPARATOR 
+            		+ "valueOne" + NL);
+            writer.write(ParameterConstants.ENDJOB + NL);
+
+            writer.write(ParameterConstants.STARTJOB + NL);
+            writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
+            		+ ParameterConstants.SEPARATOR 
+            		+ Job.RunnableAppID.SHELL + NL);
+            writer.write("keyTwo" + ParameterConstants.SEPARATOR 
+            		+ "valueTwo" + NL);
+            writer.write(ParameterConstants.ENDJOB + NL);
+            
+            //This will be ignores as it is outside on a jobstart-jobend block
+            writer.write("keyEnd" + ParameterConstants.SEPARATOR 
+            		+ "valueEnd" + NL);
+
+            writer.write(ParameterConstants.STARTJOB + NL);
+            writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
+            		+ ParameterConstants.SEPARATOR 
+            		+ Job.RunnableAppID.UNDEFINED + NL);
+            writer.write("keyThree" + ParameterConstants.SEPARATOR 
+            		+ "valueThree" + NL);
+            writer.write(ParameterConstants.ENDJOB + NL);
+            writer.close();
+
+            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            
+//            System.out.println("JOB CREATED");        	
+//            System.out.println("#steps: "+job.getNumberOfSteps());
+//            for (Job sj : job.getSteps())
+//            {
+//            	System.out.println("  -> "+sj.getAppID());
+//            	System.out.println("     "+sj.params.toLinesJobDetails());
+//            	System.out.println("  ");
+//            }
+            
+            assertEquals(3, job.getNumberOfSteps(), "Number of steps");
+            assertEquals(job.getStep(0).getAppID(), Job.RunnableAppID.ACC,
+            		"Add for first step");
+            assertEquals(job.getStep(1).getAppID(), Job.RunnableAppID.SHELL,
+            		"Add for second step");
+            assertEquals(job.getStep(2).getAppID(), Job.RunnableAppID.UNDEFINED,
+            		"Add for third step");
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertFalse(true, "Unable to work with tmp files.");
+        }    
+    }
+        
 //-----------------------------------------------------------------------------
 
     @Test

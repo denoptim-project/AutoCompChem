@@ -136,7 +136,6 @@ public class JobFactory
 			}
 			case SHELL: {
 				job = new ShellJob();
-				System.out.println("OUT:::  "+job);
 				break;
 			}
 			default: {

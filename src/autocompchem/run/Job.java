@@ -87,11 +87,6 @@ public class Job implements Runnable
      * Flag signalling an action intended to kill this job
      */
     protected boolean jobIsBeingKilled = false;
-
-    /**
-     * Separator of steps in job details text file. TODO consider removing
-     */
-    protected String stepSeparatorJd = System.getProperty("line.separator");
     
     /**
      * Verbosity level: amount of logging from this jobs
@@ -110,32 +105,6 @@ public class Job implements Runnable
         this.steps = new ArrayList<Job>();
         this.appID = RunnableAppID.UNDEFINED;
     }
-
-//------------------------------------------------------------------------------
-
-//    /**
-//     * Constructor meant for subclasses. 
-//     * @param appID the application to be used to do the job
-//     */
-//
-//    public Job(RunnableAppID appID)
-//    {
-//        this.params = new ParameterStorage();
-//        this.steps = new ArrayList<Job>();
-//        this.appID = appID;
-//    }
-
-//------------------------------------------------------------------------------
-
-//	/**
-//	 * Set the kind of app meant to perform this job
-//	 * @param appID the enum representing the app
-//	 */
-//	
-//	public void setAppID(RunnableAppID appID)
-//	{
-//		this.appID = appID;
-//	}
 
 //------------------------------------------------------------------------------
 

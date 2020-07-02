@@ -1,6 +1,5 @@
 package autocompchem.run;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;

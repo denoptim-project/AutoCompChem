@@ -301,7 +301,7 @@ public class ParameterStorage
             String key = signleBlock.get(0);
             String value = signleBlock.get(1);
 
-            //All params are seen as Strings
+            //All params are seen as Strings for now
             Parameter prm = new Parameter(key,"string",value);
             setParameter(key,prm);
         }
@@ -314,6 +314,7 @@ public class ParameterStorage
      * a jobdetails file.
      * @return the list of lines.
      */
+    
     public ArrayList<String> toLinesJobDetails()
     {
     	//Collections.sort(directives, new JobDirectiveComparator());
@@ -321,7 +322,7 @@ public class ParameterStorage
         for (Entry<String, Parameter> par : allParams.entrySet())
         {
         	String parStr = par.getKey() + ParameterConstants.SEPARATOR 
-        			+ par.getValue();
+        			+ par.getValue().getValueAsString();
             lines.add(parStr);
         }
         return lines;
