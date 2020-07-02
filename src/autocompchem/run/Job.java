@@ -42,19 +42,21 @@ public class Job implements Runnable
         ACC;
     
     	public String toString() {
-    		switch (this) {
-			case UNDEFINED: {
-				return "UNDEFINED";
+    		switch (this) 
+    		{
+				case UNDEFINED: {
+					return "UNDEFINED";
+				}
+				case SHELL: {
+					return "SHELL";
+				}	
+				case ACC: {
+					return "ACC";
+				}
+				default: {
+					return "UNDEFINED";
+				}
 			}
-			case SHELL: {
-				return "SHELL";
-			}	
-			case ACC: {
-				return "ACC";
-			}
-			default: {
-				return "UNDEFINED";
-			}}
     	}
     };
 

@@ -47,9 +47,6 @@ public class ManySMARTSQuery
     private boolean problems = false;
     private String message = "";
 
-    //Level of information printed on screen
-    private int verbosity = 0;
-
 //------------------------------------------------------------------------------
 
     /**
@@ -73,7 +70,6 @@ public class ManySMARTSQuery
     public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, int verbosity)
     {
         super();
-        this.verbosity = verbosity;
         totNum = 0;
         String blankSmarts = "[*]";
 

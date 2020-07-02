@@ -37,7 +37,6 @@ import org.junit.jupiter.api.io.TempDir;
 public class ParallelRunnerTest 
 {
     private final String SEP = System.getProperty("file.separator");
-    private final String NL = System.getProperty("line.separator");
 
     @TempDir 
     File tempDir;

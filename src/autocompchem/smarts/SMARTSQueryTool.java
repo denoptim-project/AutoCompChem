@@ -71,8 +71,11 @@ public class SMARTSQueryTool {
 
     // a simplistic cache to store parsed SMARTS queries
     private int MAX_ENTRIES = 20;
-    Map<String, QueryAtomContainer> cache = new LinkedHashMap<String, QueryAtomContainer>(MAX_ENTRIES + 1, .75F, true) {
-        public boolean removeEldestEntry(Map.Entry eldest) {
+    @SuppressWarnings("serial")
+	Map<String, QueryAtomContainer> cache = new LinkedHashMap<
+    		String, QueryAtomContainer>(MAX_ENTRIES + 1, .75F, true) {
+        public boolean removeEldestEntry(Map.Entry<
+        		String, QueryAtomContainer> eldest) {
             return size() > MAX_ENTRIES;
         }
     };
@@ -154,7 +157,8 @@ public class SMARTSQueryTool {
      * @see #matches(org.openscience.cdk.interfaces.IAtomContainer)
      */
     @TestMethod("testQueryTool, testQueryToolSingleAtomCase, testQuery")
-    public boolean matches(IAtomContainer atomContainer, boolean forceInitialization) throws CDKException {
+    public boolean matches(IAtomContainer atomContainer, 
+    		boolean forceInitialization) throws CDKException {
 
         if (this.atomContainer == atomContainer) {
             if (forceInitialization) initializeMolecule();
@@ -180,7 +184,9 @@ public class SMARTSQueryTool {
                 }
             }
         } else {
-            List bondMapping = UniversalIsomorphismTester.getSubgraphMaps(this.atomContainer, query);
+            List<List<RMap>> bondMapping = 
+            		UniversalIsomorphismTester.getSubgraphMaps(
+            				this.atomContainer, query);
             matchingAtoms = getAtomMappings(bondMapping, this.atomContainer);
         }
 
@@ -420,7 +426,7 @@ public class SMARTSQueryTool {
     }
 
     /**
-     * Recursively initializes recursive smarts atoms
+     * Recursively initialises recursive smarts atoms
      *
      * @param atom
      * @param atomContainer
@@ -449,12 +455,14 @@ public class SMARTSQueryTool {
     }
 
 
-    private List<List<Integer>> getAtomMappings(List bondMapping, IAtomContainer atomContainer) {
+    private List<List<Integer>> getAtomMappings(List<List<RMap>> bondMapping, 
+    		IAtomContainer atomContainer) {
         List<List<Integer>> atomMapping = new ArrayList<List<Integer>>();
 
         // loop over each mapping
         for (Object aBondMapping : bondMapping) {
-            List list = (List) aBondMapping;
+        	@SuppressWarnings("unchecked")
+			List<RMap> list = (List<RMap>) aBondMapping;
 
             List<Integer> tmp = new ArrayList<Integer>();
             IAtom atom1 = null;

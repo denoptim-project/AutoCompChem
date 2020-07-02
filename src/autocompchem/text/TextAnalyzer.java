@@ -79,8 +79,6 @@ public class TextAnalyzer
         boolean[] startMidEnd = getMatchingMethod(query);
 
         int num = 0;
-        boolean badTermination = false;
-        String msg = "";
         try {
             String line = null;
             while ((line = buffRead.readLine()) != null)
@@ -89,8 +87,7 @@ public class TextAnalyzer
                     num++;
             }
         } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();            
+        	//none
         } 
 
         return num;
@@ -134,8 +131,6 @@ public class TextAnalyzer
         
         //Read file and count
         int ln = 0;
-        boolean badTermination = false;
-        String msg = "";
         try {
             String line = null;
             while ((line = buffRead.readLine()) != null)
@@ -153,8 +148,7 @@ public class TextAnalyzer
                 }
             }
         } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();
+            //none
         } 
 
         //Make a unique object for returning
@@ -622,10 +616,6 @@ public class TextAnalyzer
                                 tb.appendText(line);
                             }
 
-                            String key = countMatches + "_"
-                                         + (pattIdx+slPattrns.size())
-                                         + "_" + countsML.get(pattIdx);
-
                             Integer unqOpnBlkKey = opnBlkKey.getAndIncrement();
                             justOpenBlocks.add(unqOpnBlkKey);
                             openBlocks.put(unqOpnBlkKey,tb);
@@ -745,7 +735,8 @@ for (Integer k : sortedOpnBlkKeys)
 //TODO
 //System.out.println("Searching open blocks of pattIds: "+pattIdx);
                             Integer youngestKey = -1;
-                            for (Map.Entry e : oBKey2PId.entrySet())
+                            for (Map.Entry<Integer,Integer> e 
+                            		: oBKey2PId.entrySet())
                             {
                                 if (pattIdx != 
                                             ((Integer) e.getValue()).intValue())
@@ -1100,7 +1091,6 @@ for (Integer k : sortedOpnBlkKeys)
             {
                 if (line.matches(pattern1))
                 {
-                    int n = 0;
                     ArrayList<String> block = new ArrayList<String>();
                     if (inclPatt)
                     {
@@ -1229,8 +1219,6 @@ finally {
                                                            Set<String> patterns)
     {
         ArrayList<String> matches = new ArrayList<String>();
-        boolean badTermination = false;
-        String msg = "";
         try {
             String line = null;
             while ((line = buffRead.readLine()) != null)
@@ -1246,8 +1234,7 @@ finally {
                 }
             }
         } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();
+            //none
         } 
 
         return matches;

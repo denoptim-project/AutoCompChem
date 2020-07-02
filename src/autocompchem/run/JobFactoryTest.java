@@ -1,8 +1,5 @@
 package autocompchem.run;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -20,24 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
 
-import javax.vecmath.Point3d;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.io.IOtools;
-import autocompchem.parameters.Parameter;
 import autocompchem.parameters.ParameterConstants;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.run.Job.RunnableAppID;
 
 
 /**

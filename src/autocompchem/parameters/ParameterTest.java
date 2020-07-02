@@ -21,11 +21,7 @@ package autocompchem.parameters;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
-import java.io.FileWriter;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
@@ -33,7 +29,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.silent.AtomContainer;
 
-import autocompchem.io.IOtools;
 import autocompchem.parameters.Parameter.ParameterValueType;
 
 

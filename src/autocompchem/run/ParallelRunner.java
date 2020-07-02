@@ -76,7 +76,8 @@ public class ParallelRunner
     /**
      * Placeholder for exception throws by a subjob
      */
-    private Throwable thrownBySubJob;
+    @SuppressWarnings("unused")
+	private Throwable thrownBySubJob;
     
     /**
      * Verbosity level: amount of logging from this jobs
