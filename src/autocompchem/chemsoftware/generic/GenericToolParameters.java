@@ -32,16 +32,10 @@ import autocompchem.parameters.ParameterStorage;
 public class GenericToolParameters extends ParameterStorage
 {
 
-    /**
-     * Default class hosding constant values
-     */
-    private String cls = "autocompchem.chemsoftware.generic.GenericToolConstants";
-
-
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor from ParameterStorage
+     * Constructor
      */
 
     public GenericToolParameters()
@@ -72,8 +66,9 @@ public class GenericToolParameters extends ParameterStorage
     public String getOutputInitialMsg()
     {
         Parameter par  =  getParameterOrDefault(
-                                            GenericToolConstants.DEFINITMSGKEY, 
-                                                                           cls);
+                                            GenericToolConstants.DEFINITMSGKEY,
+                                            "string",
+                                            GenericToolConstants.DEFINITMSG);
         return par.getValue().toString();
     }
 
@@ -90,7 +85,8 @@ public class GenericToolParameters extends ParameterStorage
     {
         Parameter par  =  getParameterOrDefault(
                                           GenericToolConstants.DEFNORMENDMSGKEY,
-                                                                           cls);
+                                          "string",
+                                          GenericToolConstants.DEFNORMENDMSG);
         return par.getValue().toString();
     }
 

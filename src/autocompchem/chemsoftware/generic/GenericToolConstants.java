@@ -41,7 +41,7 @@ public class GenericToolConstants
    public final static String ERRORTREEROOTKEY = "GENERICERRORSROOT";
 
     /**
-     * Keyword for customizing the string used to identify the beginning of 
+     * Keyword for customising the string used to identify the beginning of 
      * a single task
      */
     public final static String DEFINITMSGKEY = "DEFINITMSG";
@@ -52,7 +52,7 @@ public class GenericToolConstants
     public final static String DEFINITMSG = "BEGINNING OF TASK";
 
     /**
-     * Keyword for customizing the string used to identify the normal completion
+     * Keyword for customising the string used to identify the normal completion
      * of a single task
      */
     public final static String DEFNORMENDMSGKEY = "DEFNORMENDMSG";

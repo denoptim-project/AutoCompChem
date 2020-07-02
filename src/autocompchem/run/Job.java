@@ -16,12 +16,15 @@ import autocompchem.parameters.ParameterStorage;
 public class Job implements Runnable
 {
     /**
-     * Parameters for this job
+     * Container for parameters fed to this job. 
+     * Typically contains initial settings, pathnames 
+     * and configurations that are not default for a job.
      */
     protected ParameterStorage params;
 
     /**
-     * List of steps. Steps are nested jobs
+     * List of steps. Steps are jobs nested in this very job. Each step can,
+     * therefore, have further nesting levels.
      */
     protected ArrayList<Job> steps;
 
@@ -87,6 +90,12 @@ public class Job implements Runnable
      * Flag signalling an action intended to kill this job
      */
     protected boolean jobIsBeingKilled = false;
+    
+    /**
+     * Container for any kind of output that is exposed to the outside of this
+     * job. Exposing output allows reuse of the data produced by this job.
+     */
+    protected ParameterStorage exposedOutput;
     
     /**
      * Verbosity level: amount of logging from this jobs

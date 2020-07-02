@@ -1,14 +1,10 @@
 package autocompchem.parameters;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import autocompchem.chemsoftware.nwchem.NWChemDirective;
-import autocompchem.chemsoftware.nwchem.NWChemDirectiveComparator;
 import autocompchem.constants.ACCConstants;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
@@ -17,8 +13,9 @@ import autocompchem.text.TextBlock;
 
 /**
  * Storage and management of {@link Parameter}s. 
- * This class can also import parameters directly from a formatted text file
- * The recognized format is as follows:
+ * This class can also import string-based parameters directly from a formatted
+ * text file.
+ * The recognised format is as follows:
  * <ul>
  * <li> lines beginning with 
  * {@value  autocompchem.parameters.ParameterConstants#COMMENTLINE} 
@@ -125,19 +122,15 @@ public class ParameterStorage
 //------------------------------------------------------------------------------
 
     /**
-     * Return the parameter required or the default.
-     * If a specific parameter is defined in this
-     * ParameterStorage, returns such parameter, otherwise returns its default
-     * as defined in a specific class. For this to work the reference name
-     * of the parameter must be the same of the field used to define the
-     * default.
+     * Return the parameter required or the given alternative.
      * @param refName the reference name of the parameter
-     * @param constClsName the fully qualified name of the class from which
+     * @param defValue the fully qualified name of the class from which
      * the default value is to be taken
      * @return the user defined value or the default
      */
 
-    public Parameter getParameterOrDefault(String refName, String constClsName)
+    public Parameter getParameterOrDefault(String refName, String pType, 
+    		Object defValue)
     {
         Parameter p = new Parameter();
         if (this.contains(refName))
@@ -146,21 +139,7 @@ public class ParameterStorage
         }
         else
         {
-            try
-            {
-                Class constCls = Class.forName(constClsName);
-                Object constClsObj = (Object) constCls.newInstance();
-                Field constField = constCls.getField(refName.toUpperCase());
-                Class constType = constField.getType();
-                p = new Parameter(refName,constField.getType().getName(),
-                                                   constField.get(constClsObj));
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR! No costant value for "
-                    + refName + "' in '" + constClsName + "'.",-1);
-            }
+        	p = new Parameter(refName, pType, defValue);
         }
         return p;
     }
