@@ -5,7 +5,8 @@ import autocompchem.datacollections.NamedDataCollector;
 
 /**
  * The contract to be implemented by any class that intends to make data
- * reachable from outside the specific job that that initiates that class. 
+ * reachable from outside itself, i.e., typically from outside the specific 
+ * job which initiated that class. 
  * 
  * @author Marco Foscato
  */
@@ -23,5 +24,5 @@ public interface IOutputExposer
 	 * @param data the data to expose
 	 */
 	public void exposeData(NamedData data);
-
+	
 }

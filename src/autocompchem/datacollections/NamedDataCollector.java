@@ -135,11 +135,24 @@ public class NamedDataCollector
     /**
      * Store a NamedData with the given reference name. If the NamedData already
      * exists, it will be overwritten
-     * @param ref the reference name of the NamedData
-     * @param par the new NamedData to be stores
+     * @param data the new NamedData to be stored
      */
 
-    public void setNamedData(String ref, NamedData par)
+    public void putNamedData(NamedData data)
+    {
+        allData.put(data.getReference(),data); 
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Store a NamedData with the given reference name. If the NamedData already
+     * exists, it will be overwritten
+     * @param ref the reference name of the NamedData
+     * @param par the new NamedData to be stored
+     */
+
+    public void putNamedData(String ref, NamedData par)
     {
         allData.put(ref,par); 
     }

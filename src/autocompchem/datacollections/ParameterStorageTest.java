@@ -62,8 +62,8 @@ public class ParameterStorageTest
     	NamedData nd1 = new NamedData("ND1", NamedDataType.STRING, "val1");
     	NamedData nd2 = new NamedData("ND2", NamedDataType.INTEGER, "int1");
     	NamedDataCollector dc = (NamedDataCollector) ps;
-    	dc.setNamedData("N1", nd1);
-    	dc.setNamedData("N2", nd2);
+    	dc.putNamedData("N1", nd1);
+    	dc.putNamedData("N2", nd2);
     	
     	assertEquals(5, dc.getAllNamedData().size(), 
     			"Number of items from getAllNamedData");

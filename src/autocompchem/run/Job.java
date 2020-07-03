@@ -1,7 +1,11 @@
 package autocompchem.run;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -98,7 +102,7 @@ public class Job implements Runnable
      * world /w.r.t. this job) via the {@Link #getOutput} method. 
      * We say these data is "exposed".
      */
-    protected ParameterStorage exposedOutput = new ParameterStorage();
+    protected NamedDataCollector exposedOutput = new NamedDataCollector();
     
     /**
      * Verbosity level: amount of logging from this jobs
@@ -389,15 +393,40 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
+     * Returns the collection of all exposed output data.
+     * @return the collection of all exposed output data.
+     */
+    public Collection<NamedData> getOutputDataSet()
+    {
+    	return exposedOutput.getAllNamedData().values();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the set of reference names used to identify any exposed output 
+     * data.
+     * @return the the set of reference names used to identify any exposed 
+     * data.
+     */
+    
+    public Set<String> getOutputRefSet()
+    {
+    	return exposedOutput.getAllNamedData().keySet();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Returns the exposed output data identified by the given reference name.
      * @param refName the reference name identifying the data to fetch.
      * @return the exposed output data structure or null if no such data is
      * available.
      */
     
-    public Parameter getOutput(String refName)
+    public NamedData getOutput(String refName)
     {
-    	return exposedOutput.getParameter(refName);
+    	return exposedOutput.getNamedData(refName);
     }
 
 //------------------------------------------------------------------------------

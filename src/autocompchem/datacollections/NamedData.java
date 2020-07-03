@@ -1,5 +1,7 @@
 package autocompchem.datacollections;
 
+import java.io.File;
+
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 /*
@@ -53,7 +55,8 @@ public class NamedData
         DOUBLE,
         INTEGER,
         BOOLEAN,
-        IATOMCONTAINER};
+        IATOMCONTAINER,
+        FILE};
 
 //------------------------------------------------------------------------------
 
@@ -134,6 +137,10 @@ public class NamedData
 				
 			case IATOMCONTAINER:
 				valueObj = (IAtomContainer) value;
+				break;
+				
+			case FILE:
+				valueObj = (File) value;
 				break;
 					
 			default:

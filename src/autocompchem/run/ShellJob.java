@@ -1,7 +1,11 @@
 package autocompchem.run;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 
 /**
  * A shell job is work to be done by the shell
@@ -9,7 +13,7 @@ import java.util.Date;
  * @author Marco Foscato
  */
 
-public class ShellJob extends Job 
+public class ShellJob extends Job
 {
     /**
      * Interpreter
@@ -25,6 +29,17 @@ public class ShellJob extends Job
      * Arguments
      */
     private String args = "";
+    
+    
+    /**
+     * Custom working directory
+     */
+    private File customUserDir;
+    
+    /**
+     * File separator on this OS
+     */
+    private final String SEP = System.getProperty("file.separator");
  
 //------------------------------------------------------------------------------
 
@@ -45,8 +60,27 @@ public class ShellJob extends Job
      * arguments/options.
      * @param interpreter the interpreter to call for the script
      * @param script the executable script
+     */
+
+    public ShellJob(String interpreter, String script)
+    {
+        super();
+        this.appID = RunnableAppID.SHELL;
+        this.interpreter = interpreter;
+        this.script = script;
+        this.args = "";
+        this.setVerbosity(0);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a ShellJob with a defined interpreter, script and 
+     * arguments/options.
+     * @param interpreter the interpreter to call for the script.
+     * @param script the executable script.
      * @param args command line arguments and options all collected in a single
-     * string
+     * string.
      */
 
     public ShellJob(String interpreter, String script, String args)
@@ -64,21 +98,45 @@ public class ShellJob extends Job
     /**
      * Constructor for a ShellJob with a defined interpreter, script and 
      * arguments/options.
-     * @param interpreter the interpreter to call for the script
-     * @param script the executable script
+     * @param interpreter the interpreter to call for the script.
+     * @param script the executable script.
      * @param args command line arguments and options all collected in a single
-     * string
-     * @param verbosity the verbosity level
+     * string.
+     * @param verbosity the verbosity level.
      */
 
-    public ShellJob(String interpreter, String script, String args, 
-    		int verbosity)
+    public ShellJob(String interpreter, String script, String args, int verbosity)
     {
         super();
         this.appID = RunnableAppID.SHELL;
         this.interpreter = interpreter;
         this.script = script;
         this.args = args;
+        this.setVerbosity(verbosity);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a ShellJob with a defined interpreter, script and 
+     * arguments/options.
+     * @param interpreter the interpreter to call for the script.
+     * @param script the executable script.
+     * @param args command line arguments and options all collected in a single
+     * string.
+     * @param workdir the (existing) directory from which to run the script.
+     * @param verbosity the verbosity level.
+     */
+
+    public ShellJob(String interpreter, String script, String args, 
+    		File customUserDir, int verbosity)
+    {
+        super();
+        this.appID = RunnableAppID.SHELL;
+        this.interpreter = interpreter;
+        this.script = script;
+        this.args = args;
+        this.customUserDir = customUserDir;
         this.setVerbosity(verbosity);
     }
 
@@ -95,10 +153,11 @@ public class ShellJob extends Job
         if (getVerbosity() > 0)
         {
             System.out.println(" " + date.toString());
-            System.out.println("Running SHELL Job: " + this.toString() + " Thread: "
-                                            + Thread.currentThread().getName());
+            System.out.println("Running SHELL Job: " + this.toString() 
+                            + " Thread: " + Thread.currentThread().getName());
         }
         
+        // Build the actual command
         StringBuilder sb = new StringBuilder();
         sb.append(interpreter).append(" ");
         sb.append(script).append(" ");
@@ -109,11 +168,52 @@ public class ShellJob extends Job
             try
             {
                 ProcessBuilder pb = new ProcessBuilder(interpreter,script,args);
-                pb.inheritIO();
+                if (customUserDir != null)
+                {
+                	pb.directory(customUserDir);
+                }
+                
+                // Recover environmental variables to be exposed as output data
+                // NB: this is the INITIAL environment! 
+                // There is no way (yet) the get the environment after running 
+                // the process... sadly.
+                
+                NamedData nd = new NamedData("INITIALENV", 
+            			NamedDataType.STRING, pb.environment().toString());
+                exposedOutput.putNamedData(nd);
+                
+                String dir = "";
+                if (pb.directory() != null)
+                {
+                	dir = pb.directory().getAbsolutePath();
+                }
+                else
+                {
+                	dir = System.getProperty("user.dir");
+                }
+                
+                //TODO: replace with unique ID: atomInteger for all jobs
+                
+                int hc = this.hashCode();
+                
+                //Redirect stdout and stderr
+                File stdout = new File(dir + SEP + "shellJob" + hc + ".log");
+                File stderr = new File(dir + SEP + "shellJob" + hc + ".err");
+                exposedOutput.putNamedData( 
+                		new NamedData("LOG", NamedDataType.FILE,stdout));
+                exposedOutput.putNamedData( 
+                		new NamedData("ERR", NamedDataType.FILE,stderr));
+                pb.redirectOutput(stdout);
+                pb.redirectError(stderr);
+                // Use this to inherit the I/O streams from this java process
+                //pb.inheritIO();
+                
                 Process p = pb.start();
                 try
                 {
-                    p.waitFor();
+                    int exitCode = p.waitFor();
+                    exposedOutput.putNamedData(new NamedData("EXITCODE",
+                    		NamedDataType.INTEGER, exitCode));
                 }
                 catch (InterruptedException ie)
                 {
