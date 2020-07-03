@@ -1,4 +1,4 @@
-package autocompchem.parameters;
+package autocompchem.datacollections;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 
 import autocompchem.constants.ACCConstants;
 import autocompchem.io.IOtools;
-import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
@@ -19,24 +18,24 @@ import autocompchem.text.TextBlock;
  * The recognised format is as follows:
  * <ul>
  * <li> lines beginning with 
- * {@value  autocompchem.parameters.ParameterConstants#COMMENTLINE} 
+ * {@value  autocompchem.datacollections.ParameterConstants#COMMENTLINE} 
  * are ignored as comments</li>
  * <li> lines beginning with 
- * {@value autocompchem.parameters.ParameterConstants#STARTMULTILINE} are
+ * {@value autocompchem.datacollections.ParameterConstants#STARTMULTILINE} are
  * considered part of a multi line block, together with all the lines that
  * follow until a line beginning with 
- * {@value autocompchem.parameters.ParameterConstants#ENDMULTILINE}
+ * {@value autocompchem.datacollections.ParameterConstants#ENDMULTILINE}
  * is found. All lines of a multi line block are interpreted as pertaining to a 
  * single {@link Parameter}. The text in between 
- * {@value autocompchem.parameters.ParameterConstants#STARTMULTILINE} and 
+ * {@value autocompchem.datacollections.ParameterConstants#STARTMULTILINE} and 
  * the 
- * {@value autocompchem.parameters.ParameterConstants#ENDMULTILINE}, 
+ * {@value autocompchem.datacollections.ParameterConstants#ENDMULTILINE}, 
  * apart from containing one or more
  * new line characters, follows the same syntax defined below for the single
  * line definition of a {@link Parameter}.</li>
  * <li> all other lines define each one a single {@link Parameter}.
  * All text before the separator (i.e., the first 
- * {@value autocompchem.parameters.ParameterConstants#SEPARATOR} 
+ * {@value autocompchem.datacollections.ParameterConstants#SEPARATOR} 
  * character) is interpreted as the reference name of the {@link Parameter},
  * while the rest as its value/content.</li>
  * </ul>
@@ -44,12 +43,14 @@ import autocompchem.text.TextBlock;
  * @author Marco Foscato
  */
 
-public class ParameterStorage 
+public class ParameterStorage extends NamedDataCollector
 {
 
-    //Map of parameters
-    private Map<String,Parameter> allParams;
-
+	/**
+	 * Container of parameters
+	 */
+	private Map<String,Parameter> allPars = new HashMap<String,Parameter>();
+	
 //------------------------------------------------------------------------------
 
     /**
@@ -58,38 +59,27 @@ public class ParameterStorage
 
     public ParameterStorage()
     {
-        allParams = new HashMap<String,Parameter>();
+        super();
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Constructor from a filled map of parameters
-     * @param allParams the map of parameters
+     * @param allData the map of parameters
      */
     
-    public ParameterStorage(Map<String,Parameter> allParams)
+    public ParameterStorage(Map<String,Parameter> allData)
     {
-        this.allParams = allParams;
+        this.allData.putAll(allData);
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * @return <code>false</code> if this ParameterStorage contains parameters
-     */
-
-    public boolean isEmpty()
-    {
-        return allParams.isEmpty();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return the parameter required or null
-     * @param ref reference name of the parameter
-     * @return the parameter with the given reference string
+     * Return the parameter corresponding to the given reference name.
+     * @param ref reference name of the parameter.
+     * @return the parameter with the given reference string.
      */
 
     public Parameter getParameterOrNull(String ref)
@@ -98,16 +88,17 @@ public class ParameterStorage
         {
             return null;
         }
-        return allParams.get(ref);
+        return (Parameter) allData.get(ref);
     }
 
 
 //------------------------------------------------------------------------------
 
     /**
-     * Return the parameter required
-     * @param ref reference name of the parameter
-     * @return the parameter with the given reference string
+     * Return the parameter required, which is expected to exist. Kills process
+     * with an error if the parameter does not exist.
+     * @param ref reference name of the parameter.
+     * @return the parameter with the given reference string.
      */
 
     public Parameter getParameter(String ref)
@@ -117,7 +108,7 @@ public class ParameterStorage
             Terminator.withMsgAndStatus("ERROR! Key '" + ref + "' not found in "
                         + "ParameterStorage!",-1);
         }
-        return allParams.get(ref);
+        return (Parameter) allData.get(ref);
     }
 
 //------------------------------------------------------------------------------
@@ -132,13 +123,13 @@ public class ParameterStorage
      */
 
     public Parameter getParameterOrDefault(String refName, 
-    		Parameter.ParameterValueType defKind, 
+    		Parameter.NamedDataType defKind, 
     		Object defValue)
     {
         Parameter p = new Parameter();
         if (this.contains(refName))
         {
-             p = allParams.get(refName);
+             p = (Parameter) allData.get(refName);
         }
         else
         {
@@ -146,62 +137,65 @@ public class ParameterStorage
         }
         return p;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Updates the subset of NamedData as to contain only those that are
+     * instances of the Parameter class.
+     */
+    
+    private void updateParamMap()
+    {
+    	allPars.clear();
+    	for (Entry<String,NamedData> e : allData.entrySet())
+    	{    		
+    		if (e.getValue() instanceof Parameter)
+    		{
+    			allPars.put(e.getKey(),(Parameter) e.getValue());
+    		}
+    	}
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Return all the parameters stored
-     * @return the map with all parameters
+     * Return all the parameters stored here.
+     * @return the map with all parameters.
      */
 
     public Map<String,Parameter> getAllParameters()
     {
-        return allParams;
+    	updateParamMap();
+        return allPars;
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Store a parameter with the given reference name. If the parameter already
-     * exists, it will be overwritten
-     * @param ref the reference name of the parameter
-     * @param par the new parameter to be stores
+     * exists, it will be overwritten.
+     * @param ref the reference name of the parameter.
+     * @param par the new parameter to be stores.
      */
 
     public void setParameter(String ref, Parameter par)
     {
-        allParams.put(ref,par); 
+        allData.put(ref,par); 
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Search for a reference name
-     * @param ref the reference name to be searched
-     * @return <code>true</code> if this ParameterStorage contains a parameter
-     * with the given reference name 
-     */
-
-    public boolean contains(String ref)
-    {
-        if (allParams.keySet().contains(ref))
-            return true;
-        else
-            return false;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the default parameters
+     * Set the default parameters.
      */
 
     public void setDefault()
     {
         //Set default parameter
         Parameter vl = new Parameter(ACCConstants.VERBOSITYPAR,
-        		Parameter.ParameterValueType.INTEGER,"0");
-        allParams.put(ACCConstants.VERBOSITYPAR,vl);
+        		Parameter.NamedDataType.INTEGER,"0");
+        allData.put(ACCConstants.VERBOSITYPAR,vl);
     }
 
 //------------------------------------------------------------------------------
@@ -210,7 +204,7 @@ public class ParameterStorage
      * Read a formatted text file and import all parameters.
      * Meant only for single-job parameter files. Cannot handle parameter files
      * including more than one job nor nested jobs.
-     * @param paramFile name of the text file to read
+     * @param paramFile name of the text file to read.
      */
 
     public void importParameters(String paramFile) 
@@ -264,7 +258,7 @@ public class ParameterStorage
                                                ParameterConstants.ENDMULTILINE);
 
         //Make the ParameterStorage object
-        importParameterBlocks(form);        
+        importParameterBlocks(form);   
     }
 
 //------------------------------------------------------------------------------
@@ -276,15 +270,15 @@ public class ParameterStorage
 
     public void importParameterBlocks(ArrayList<ArrayList<String>> blocks)
     {
-        //Make the ParameterStorage object
         for (int i=0; i<blocks.size(); i++)
         {
             ArrayList<String> signleBlock = blocks.get(i);
             String key = signleBlock.get(0);
             String value = signleBlock.get(1);
 
-            //All params are seen as Strings for now
-            Parameter prm = new Parameter(key,ParameterValueType.STRING,value);
+            //All params read from text file are seen as Strings for now
+            Parameter prm = new Parameter(key,NamedData.NamedDataType.STRING,
+            		value);
             setParameter(key,prm);
         }
     }
@@ -301,7 +295,7 @@ public class ParameterStorage
     {
     	//Collections.sort(directives, new JobDirectiveComparator());
         ArrayList<String> lines = new ArrayList<String>();
-        for (Entry<String, Parameter> par : allParams.entrySet())
+        for (Entry<String, Parameter> par : getAllParameters().entrySet())
         {
         	String parStr = par.getKey() + ParameterConstants.SEPARATOR 
         			+ par.getValue().getValueAsString();
@@ -320,9 +314,9 @@ public class ParameterStorage
     {
         StringBuilder sb = new StringBuilder();
         sb.append("[ParameterStorage [");
-        for (String k : allParams.keySet())
+        for (String k : allData.keySet())
         {
-            sb.append(k).append("=").append(allParams.get(k)).append(", ");
+            sb.append(k).append("=").append(allData.get(k)).append(", ");
         }
         sb.append("]]");
         return sb.toString();

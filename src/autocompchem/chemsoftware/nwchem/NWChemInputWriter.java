@@ -14,6 +14,9 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BSMatchingRule;
@@ -24,9 +27,6 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
-import autocompchem.parameters.Parameter;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
@@ -186,9 +186,9 @@ public class NWChemInputWriter
 
     /**
      * Construct a new NWChemInputWriter using the 
-     * {@link autocompchem.parameters.Parameter}s 
+     * {@link autocompchem.datacollections.Parameter}s 
      * taken from a
-     * {@link autocompchem.parameters.ParameterStorage}.
+     * {@link autocompchem.datacollections.ParameterStorage}.
      * <br>
      * <ul>
      * <li>
@@ -253,7 +253,7 @@ public class NWChemInputWriter
      * (optional) <b>FREEZEIC</b> define frozen internal coordinates 
      * (i.e., constants).
      * To identify the IC to freeze, SMARTS queries are used.
-     * A multi line block (see {@link autocompchem.parameters.Parameter}) 
+     * A multi line block (see {@link autocompchem.datacollections.Parameter}) 
      * can be used defining one 
      * SMARTS query per line.
      * </li>
@@ -281,7 +281,7 @@ public class NWChemInputWriter
      * the user can add one numerical value and/or the <code>constant</code>
      * keyword that will apply to all ICs matched by the combination of
      * single-atom SMARTS.
-     * A multi line block (see {@link autocompchem.parameters.Parameter}) is used to
+     * A multi line block (see {@link autocompchem.datacollections.Parameter}) is used to
      * define one set of SMARTS queries (plus additional keywords-
      * related to that
      * class of IC) per each line.
@@ -1291,12 +1291,12 @@ for (String k : sortedMasterNames)
                 // Allow some partial assigniation
                 locPars.setParameter(BasisSetConstants.ALLOWPARTIALMATCH, 
                              new Parameter(BasisSetConstants.ALLOWPARTIALMATCH,
-                            		 ParameterValueType.BOOLEAN, "true"));
+                            		 NamedDataType.BOOLEAN, "true"));
             }
             locPars.setParameter(BasisSetConstants.ATMSPECBS,atmSpecBSParam);
             locPars.setParameter(ACCConstants.VERBOSITYPAR, new Parameter(
                           ACCConstants.VERBOSITYPAR,
-                          ParameterValueType.INTEGER, verbosity));
+                          NamedDataType.INTEGER, verbosity));
             
             // Do it only if there is something to do...
             if (goon)

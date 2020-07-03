@@ -33,6 +33,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
@@ -40,7 +41,6 @@ import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.molecule.conformation.ConformationalMovesDefinition;
 import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.conformation.ConformationalSpaceBuilder;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
@@ -184,7 +184,7 @@ public class SpartanInputWriter
 
     /**
      * Construct a new SpartanInputWriter using the 
-     * {@link autocompchem.parameters.Parameter}s 
+     * {@link autocompchem.datacollections.Parameter}s 
      * taken from a
      * {@link ParameterStorage}.
      * <br>
@@ -213,7 +213,7 @@ public class SpartanInputWriter
      * <li>
      * (optional) <b>ROTATABLEBONDS</b> the definition of the rotatable bonds.
      * can be a pathname or a single/multi line block
-     * (see {@link autocompchem.parameters.Parameter}) in which each line
+     * (see {@link autocompchem.datacollections.Parameter}) in which each line
      * contains a bond-matching SMARTS query and additional options/keywords
      * (for instance, the fold number to use for the bonds matched by the SMARTS
      * query). For Example:

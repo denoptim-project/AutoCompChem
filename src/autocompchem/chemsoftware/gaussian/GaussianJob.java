@@ -2,8 +2,8 @@ package autocompchem.chemsoftware.gaussian;
 
 import java.util.ArrayList;
 
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
-import autocompchem.parameters.ParameterConstants;
 import autocompchem.run.Terminator;
 
 /**

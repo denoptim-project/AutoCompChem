@@ -15,6 +15,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.common.math.StatsAccumulator;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesAnalyzer;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
@@ -24,7 +25,6 @@ import autocompchem.modeling.forcefield.ForceFieldConstants;
 import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
@@ -140,7 +140,7 @@ public class VibModuleOutputHandler
      * <li>
      * (optional) <b>INTCOORDBYSMARTS</b>: definition of internal coordinates 
      * (IC) by SMARTS.
-     * A multi line block (see {@link autocompchem.parameters.Parameter})
+     * A multi line block (see {@link autocompchem.datacollections.Parameter})
      * can be used defining one IC-defining rule per line. Each such lines
      * must contain first the <i>N</i>-tupla of 
      * single atom SMARTS queries (where <i>N</i> is 2, 3, or 4), and next the

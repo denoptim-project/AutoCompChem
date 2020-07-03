@@ -12,11 +12,11 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.tinker.TinkerXYZReader;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityTable;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 
@@ -144,7 +144,7 @@ public class QMMMInputWriter
 
     /**
      * Construct a new QMMMInputWriter using the parameters taken from a
-     * {@link autocompchem.parameters.ParameterStorage}.<br>
+     * {@link autocompchem.datacollections.ParameterStorage}.<br>
      * The parameters for preparing the input for QMMM
      * have to be defines in the form of
      * a jobdetails formatted text file (see {@link QMMMJob}).<br>
@@ -171,7 +171,7 @@ public class QMMMInputWriter
      * Optional parameters not needed if JOBDETAILS option is in use, but
      * that will overwrite JOBDETAILS specifications if both JOBDETAILS and
      * these options are specified in the
-     * {@link autocompchem.parameters.ParameterStorage}.
+     * {@link autocompchem.datacollections.ParameterStorage}.
      * <ul>
      * <li>
      * (optional) <b>TITLE</b> title line for the output file
@@ -202,14 +202,14 @@ public class QMMMInputWriter
      * (optional) <b>QMATOMS_SMARTS</b> define atoms belonging to QM region
      * using MARTS queries.
      * A multi line block (see
-     * {@link autocompchem.parameters.Parameter}) can be used defining one SMARTS
+     * {@link autocompchem.datacollections.Parameter}) can be used defining one SMARTS
      * query per line.
      * </li>
      * <li>
      * (optional) <b>CAPATOMS_SMARTS</b> define cap atoms using SMARTS queries
      * and cap atom specification.
      * A multi line block (see
-     * {@link autocompchem.parameters.Parameter}) can be used defining each line
+     * {@link autocompchem.datacollections.Parameter}) can be used defining each line
      * one SMARTS and the cap atom properties (name, atom type, scale factor) 
      * used to define the cap atom that replaces the atom matched by the SMARTS 
      * query.
@@ -219,7 +219,7 @@ public class QMMMInputWriter
      * (optional) <b>FREEZEATM</b> define frozen atoms.
      * SMARTS queries are used to identify atoms to freeze.
      * A multi line block (see
-     * {@link autocompchem.parameters.Parameter}) can be used defining one SMARTS
+     * {@link autocompchem.datacollections.Parameter}) can be used defining one SMARTS
      * query per line.
      * </li>
      * <li>
@@ -231,7 +231,7 @@ public class QMMMInputWriter
      * </ul>
      *          
      * @param params object 
-     * {@link autocompchem.parameters.ParameterStorage} containing all the
+     * {@link autocompchem.datacollections.ParameterStorage} containing all the
      * parameters needed
      */
 

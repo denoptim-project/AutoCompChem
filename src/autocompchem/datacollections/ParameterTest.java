@@ -1,4 +1,4 @@
-package autocompchem.parameters;
+package autocompchem.datacollections;
 
 
 /*   
@@ -29,7 +29,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.silent.AtomContainer;
 
-import autocompchem.parameters.Parameter.ParameterValueType;
+import autocompchem.datacollections.NamedData.NamedDataType;
 
 
 /**
@@ -46,19 +46,19 @@ public class ParameterTest
     @Test
     public void testParameterType() throws Exception
     {
-        Parameter p = new Parameter("KEY", ParameterValueType.STRING,1.123);
+        Parameter p = new Parameter("KEY", NamedDataType.STRING,1.123);
         Object o = p.getValueAsObjectSubclass();
         assertTrue(o instanceof String, "Verify String type");
        
-        p = new Parameter("KEY", ParameterValueType.DOUBLE,1.123);
+        p = new Parameter("KEY", NamedDataType.DOUBLE,1.123);
         o = p.getValueAsObjectSubclass();
         assertTrue(o instanceof Double, "Verify Double type");
         
-        p = new Parameter("KEY", ParameterValueType.INTEGER,206);
+        p = new Parameter("KEY", NamedDataType.INTEGER,206);
         o = p.getValueAsObjectSubclass();
         assertTrue(o instanceof Integer, "Verify Integer type");
         
-        p = new Parameter("KEY", ParameterValueType.BOOLEAN,true);
+        p = new Parameter("KEY", NamedDataType.BOOLEAN,true);
         o = p.getValueAsObjectSubclass();
         assertTrue(o instanceof Boolean, "Verify Boolean type");
         
@@ -74,7 +74,7 @@ public class ParameterTest
         mol.addBond(bnd1);
         mol.addBond(bnd2);
         
-        p = new Parameter("KEY", ParameterValueType.IATOMCONTAINER,mol);
+        p = new Parameter("KEY", NamedDataType.IATOMCONTAINER,mol);
         o = p.getValueAsObjectSubclass();
         
         assertTrue(o instanceof IAtomContainer, "Verify IAC type");

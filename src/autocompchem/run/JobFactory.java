@@ -19,9 +19,9 @@ package autocompchem.run;
 
 import java.util.ArrayList;
 
+import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesAnalyzer;
-import autocompchem.parameters.ParameterConstants;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextBlock;
 

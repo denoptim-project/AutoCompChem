@@ -10,8 +10,8 @@ import org.openscience.cdk.AtomType;
 
 import autocompchem.chemsoftware.tinker.TinkerForceFieldHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
@@ -148,7 +148,7 @@ public class ForceFieldEditor
      * define of the internal 
      * coordinates (IC), and the corresponding force field energy terms, for 
      * which force field parameters are to be extracted from the VibModule file.
-     * A multi line block (see {@link autocompchem.parameters.Parameter})
+     * A multi line block (see {@link autocompchem.datacollections.Parameter})
      * can be used defining one IC-defining rule per line. Each such lines
      * must contain first the <i>N</i>-tupla of
      * single atom SMARTS queries (where <i>N</i> is 2, 3, or 4), and next the
@@ -169,7 +169,7 @@ public class ForceFieldEditor
      * and <code>[TID]</code> the atom type ID, or
      * <pre>[SMARTSquery] type=[TTT] class=[CID]</pre>
      * where <code>[CID]</code> is the atom class IID.
-     * A multi line block (see {@link autocompchem.parameters.Parameter}) can be
+     * A multi line block (see {@link autocompchem.datacollections.Parameter}) can be
      * used with one rule per line.</li>
      * <li>(optional) <b>VERBOSITY</b>: set the verbosity level.</li>
      * </ul>

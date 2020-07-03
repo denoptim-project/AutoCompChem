@@ -95,19 +95,19 @@ import autocompchem.run.Terminator;
  * <ul>
  * <li>a string, which can contain spaces,</li>
  * <li>a multi line block (opened by the
- * {@value autocompchem.parameters.ParameterConstants#STARTMULTILINE}, and closed by
- * {@value autocompchem.parameters.ParameterConstants#ENDMULTILINE}, see also
- * {@link autocompchem.parameters.ParameterStorage})</li>
+ * {@value autocompchem.datacollections.ParameterConstants#STARTMULTILINE}, and closed by
+ * {@value autocompchem.datacollections.ParameterConstants#ENDMULTILINE}, see also
+ * {@link autocompchem.datacollections.ParameterStorage})</li>
  * <li> or a block of information to be interpreted
- * by AutoCompChem (i.e.,{@link autocompchem.parameters.Parameter}), 
+ * by AutoCompChem (i.e.,{@link autocompchem.datacollections.Parameter}), 
  * for instance, a customized, chemical context-specific definition of the 
  * basis set.
  * Values that are to be interpreted as AutoCompChem 
- * {@link autocompchem.parameters.Parameter} 
+ * {@link autocompchem.datacollections.Parameter} 
  * must begin with the 
  * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#LABPARAMS} label; 
  * all the text following such label is interpreted ad a 
- * {@link autocompchem.parameters.Parameter} until one othe patterns is recognized:
+ * {@link autocompchem.datacollections.Parameter} until one othe patterns is recognized:
  * a first-level key (
  * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#KEYLINKSEC},
  * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#KEYROUTESEC},

@@ -25,9 +25,9 @@ import java.util.Map;
 
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 
 /**

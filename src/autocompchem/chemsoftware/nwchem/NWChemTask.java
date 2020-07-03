@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import autocompchem.parameters.ParameterStorage;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Terminator;
 
 /**

@@ -19,7 +19,7 @@ package autocompchem.workflow;
 
 import java.util.ArrayList;
 
-import autocompchem.parameters.Parameter;
+import autocompchem.datacollections.Parameter;
 
 /**
  * Interface for a job's step characterized by a set of parameters, a status.

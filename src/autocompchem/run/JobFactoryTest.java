@@ -27,7 +27,7 @@ import java.io.FileWriter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.parameters.ParameterConstants;
+import autocompchem.datacollections.ParameterConstants;
 
 
 /**

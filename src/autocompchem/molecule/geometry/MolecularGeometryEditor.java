@@ -12,13 +12,13 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 
 

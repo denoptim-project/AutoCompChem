@@ -2,9 +2,9 @@ package autocompchem.run;
 
 import java.util.ArrayList;
 
-import autocompchem.parameters.Parameter;
-import autocompchem.parameters.ParameterConstants;
-import autocompchem.parameters.ParameterStorage;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 
 
 /**
@@ -94,10 +94,11 @@ public class Job implements Runnable
     protected boolean jobIsBeingKilled = false;
     
     /**
-     * Container for any kind of output that is exposed to the outside of this
-     * job. Exposing output allows reuse of the data produced by this job.
+     * Container for any kind of output that is made available to the outside
+     * world /w.r.t. this job) via the {@Link #getOutput} method. 
+     * We say these data is "exposed".
      */
-    protected ParameterStorage exposedOutput;
+    protected ParameterStorage exposedOutput = new ParameterStorage();
     
     /**
      * Verbosity level: amount of logging from this jobs
@@ -119,15 +120,15 @@ public class Job implements Runnable
 
 //------------------------------------------------------------------------------
 
-      /**
-       * Get the kind of app meant to perform this job
-       * @return the enum representing the application.
-       */
+    /**
+     * Get the kind of app meant to perform this job
+     * @return the enum representing the application.
+     */
 
-      public RunnableAppID getAppID()
-      {
-          return appID;
-      }
+    public RunnableAppID getAppID()
+    {
+        return appID;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -383,6 +384,20 @@ public class Job implements Runnable
         ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
         parallRun.setVerbosity(verbosity);
         parallRun.start();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the exposed output data identified by the given reference name.
+     * @param refName the reference name identifying the data to fetch.
+     * @return the exposed output data structure or null if no such data is
+     * available.
+     */
+    
+    public Parameter getOutput(String refName)
+    {
+    	return exposedOutput.getParameter(refName);
     }
 
 //------------------------------------------------------------------------------

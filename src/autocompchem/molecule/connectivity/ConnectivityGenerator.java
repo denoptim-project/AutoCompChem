@@ -7,11 +7,11 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 
 /** 

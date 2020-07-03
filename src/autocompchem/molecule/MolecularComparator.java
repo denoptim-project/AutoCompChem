@@ -27,6 +27,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
@@ -35,7 +36,6 @@ import autocompchem.molecule.coordinationgeometry.CoordinationGeometry;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometryReferences;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
 import autocompchem.molecule.geometry.ComparatorOfGeometries;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 

@@ -36,11 +36,11 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.ThreeDimensionalSpaceUtils;

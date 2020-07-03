@@ -1,4 +1,4 @@
-package autocompchem.parameters;
+package autocompchem.datacollections;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -20,35 +20,34 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  */
 
 /**
- * General purpose parameter defining an information to be passed unchanged 
- * to some routine or software. A parameter is defined by the reference name,
- * the value type, and the value.
+ * General purpose data structure that can be named with a string.
+ * The data is defined by its reference name,
+ * its value type, and its actual value (i.e., the data itself).
  * 
  * @author Marco Foscato
  */
 
-public class Parameter
+public class NamedData
 {
     /**
-     * A string used to identify the parameter. Typically the keyword in a
-     * keyword:value pair.
+     * A string used to identify the data.
      */
     private String reference;
 
     /**
-     * The actual parameter. Typically the value in a keyword:value pair.
+     * The actual data.
      */
     private Object value;
       
     /**
-     * The kind of object used to represent the value
+     * The kind of data structure
      */
-    private ParameterValueType type;
+    private NamedDataType type;
 
     /**
-     * Allowed kinds of parameter values
+     * Allowed kinds of data values
      */
-    public enum ParameterValueType {
+    public enum NamedDataType {
     	UNDEFINED,
         STRING,
         DOUBLE,
@@ -59,23 +58,23 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor of an empty parameter
+     * Constructor of an empty (un)named data.
      */
 
-    public Parameter()
+    public NamedData()
     {
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a parameter with a given reference and value
-     * @param reference the name identifying this parameter
-     * @param type the type of object
-     * @param value the content of this <code>Parameter</code>
+     * Constructor for a named data with a given content.
+     * @param reference the name of the data.
+     * @param type the type of object.
+     * @param value the actual data.
      */
 
-    public Parameter(String reference, ParameterValueType type, Object value)
+    public NamedData(String reference, NamedDataType type, Object value)
     {
         this.reference = reference;
         this.type = type; 
@@ -85,8 +84,8 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Return the reference name (i.e., key/label string) of this parameter
-     * @return the reference name of this parameter
+     * Return the reference name of this data.
+     * @return the reference name.
      */
 
     public String getReference()
@@ -97,8 +96,8 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Return the value of this parameter
-     * @return the value of this parameter
+     * Return the value of this data
+     * @return the value of this data
      */
 
     public Object getValue()
@@ -109,9 +108,8 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Return the value of this parameter as
-     * Corresponds to getValue().toString()
-     * @return the value of this parameter
+     * Return the value of this data casted into its declared type.
+     * @return the value of this data.
      */
 
     public Object getValueAsObjectSubclass()
@@ -148,9 +146,9 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Return the string representation of the value of this parameter.
-     * Corresponds to getValue().toString()
-     * @return the value of this parameter
+     * Return the string representation of the value of this data.
+     * Corresponds to getValue().toString().
+     * @return the value of this data.
      */
 
     public String getValueAsString()
@@ -161,11 +159,11 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Return the type of this parameter
-     * @return the type of this parameter
+     * Return the type of this data.
+     * @return the type of this data.
      */
 
-    public ParameterValueType getType()
+    public NamedDataType getType()
     {
         return type;
     }
@@ -173,8 +171,8 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * Set the value of this parameter
-     * @param value the value to be set to this parameter
+     * Set the value of this data.
+     * @param value the value to be set to this data.
      */
 
     public void setValue(Object value)
@@ -185,8 +183,8 @@ public class Parameter
 //------------------------------------------------------------------------------
 
     /**
-     * String representation
-     * @return the string representation
+     * String representation.
+     * @return the string representation.
      */
 
     public String toString()

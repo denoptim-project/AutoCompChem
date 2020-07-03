@@ -1,4 +1,4 @@
-package autocompchem.parameters;
+package autocompchem.datacollections;
 
 /*
  *   Copyright (C) 2014  Marco Foscato

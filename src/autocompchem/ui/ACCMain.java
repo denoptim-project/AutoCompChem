@@ -13,6 +13,7 @@ import autocompchem.chemsoftware.qmmm.QMMMInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
 import autocompchem.modeling.forcefield.ForceFieldEditor;
@@ -28,7 +29,6 @@ import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 
 /**

@@ -36,12 +36,12 @@ import org.openscience.cdk.interfaces.IAtomContainerSet;
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesAnalyzer;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
-import autocompchem.parameters.ParameterStorage;
 import autocompchem.run.Terminator;
 
 /**

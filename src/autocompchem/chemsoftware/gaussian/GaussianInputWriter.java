@@ -11,15 +11,16 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.parameters.Parameter;
-import autocompchem.parameters.ParameterStorage;
-import autocompchem.parameters.Parameter.ParameterValueType;
 import autocompchem.run.Terminator;
 
 /**
@@ -40,9 +41,9 @@ import autocompchem.run.Terminator;
  * Gaussian. The definition of the format of jobdetails files can be found in
  * {@link GaussianJob} documentation. In alternative, use
  * keyword
- * <b>HEADER</b> with a labeled block of lines (i.e., a bunch of text 
+ * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
  * starting with the $START label and finishing with the $END label).
- * The text in the labeled block is used as header of 
+ * The text in the labelled block is used as header of 
  * the Gaussian input file. 
  * In this header only Gaussian's 'Link0' and 'Route' sections
  * should be included. For comments, charge and spin 
@@ -151,9 +152,9 @@ public class GaussianInputWriter
      * Gaussian (see {@link GaussianJob} for the format of jobdetails files).
      * In alternative, use
      * keyword 
-     * <b>HEADER</b> with a labeled block of lines (i.e., a bunch of text 
+     * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
      * starting with the $START label and finishing with the $END label).
-     * The text in the labeled block is used as header of 
+     * The text in the labelled block is used as header of 
      * the Gaussian input file.
      * In this header only Gaussian's 'Link0' and 'Route' sections
      * should be included. For comments, charge and spin 
@@ -506,7 +507,6 @@ public class GaussianInputWriter
                                                             Arrays.asList(aLs));
                                 ParameterStorage aPs = new ParameterStorage();
                                 aPs.importParametersFromLines("jobDetails",aAl);
-                                
                                 String updatedOpt = getMoleculeSpecificOpts(mol,
                                                                      aPs,gStep);
                                 gOpts.setPart(oName,updatedOpt);
@@ -627,7 +627,7 @@ public class GaussianInputWriter
      * @param params the details of the work to do. This object should contain
      * only one parameter.
      * @param gStep the step to which the options apply
-     * @return a single string (likely containing newline charactes) with the
+     * @return a single string (likely containing newline character) with the
      * atom/molecule-specific options
      */
 
@@ -637,15 +637,16 @@ public class GaussianInputWriter
         String result = "";
         String verbKey = ACCConstants.VERBOSITYPAR;
         GaussianRouteSection stepRoute = gStep.getRouteSection();
+
         for (String action : params.getAllParameters().keySet())
         {
             switch (action.toUpperCase()) 
             {
-                case BasisSetConstants.ATMSPECBS:
+                case BasisSetConstants.ATMSPECBS:                	
                     ParameterStorage locPars = new ParameterStorage();
                     locPars.setParameter(action,params.getParameter(action));
                     locPars.setParameter(verbKey, new Parameter(verbKey,
-                    		ParameterValueType.INTEGER, verbosity));
+                    		NamedDataType.INTEGER, verbosity));
                     BasisSetGenerator bsg = new BasisSetGenerator(locPars);
                     bsg.setAtmIdxAsId(true);
                     BasisSet bs = bsg.assignBasisSet(mol);
