@@ -78,8 +78,9 @@ only if we find a good one.
 See {@Link JobTest} for a possible solution.
 */
 
-            Job job = new ShellJob(shellFlvr,script.getAbsolutePath(),"",
-            		tempDir,0);
+            Job job = new ShellJob(shellFlvr,script.getAbsolutePath(),"");
+            job.setUserDir(tempDir);
+            job.setRedirectOutErr(true);
             job.run();
             
             File outFile = (File) job.getOutput("LOG").getValueAsObjectSubclass();

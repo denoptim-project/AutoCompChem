@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -9,6 +10,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 
 
 /**
@@ -96,6 +98,31 @@ public class Job implements Runnable
      * Flag signalling an action intended to kill this job
      */
     protected boolean jobIsBeingKilled = false;
+    
+    /**
+     * Custom working directory
+     */
+    protected File customUserDir;
+    
+    /**
+     * Flag controlling redirect of STDOUT and STDERR
+     */
+    protected Boolean redirectOutErr = false;
+    
+    /**
+     * File where STDOUT is redirected
+     */
+    protected File stdout;
+    
+    /**
+     * File where STDERR is redirected
+     */
+    protected File stderr;
+    
+    /**
+     * File separator on this OS
+     */
+    private final String SEP = System.getProperty("file.separator");
     
     /**
      * Container for any kind of output that is made available to the outside
@@ -193,6 +220,67 @@ public class Job implements Runnable
     public void setNumberOfThreads(int n)
     {
         this.nThreads = n;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the directory from which the job should be executed.
+     * @param customUserDir the new directory
+     */
+    public void setUserDir(File customUserDir)
+    {
+    	this.customUserDir = customUserDir;
+    	updateStdoutStdErr();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Set redirection of STDOUT and STDERR to job specific files. The pathnames
+     * are collected among the exposed output of the job.
+     * @param redirectOutErr if <code>True</code> the nSTDOUT and STDERR will
+     * be redirected to job specific files.
+     */
+    
+    public void setRedirectOutErr(Boolean redirectOutErr)
+    {
+    	this.redirectOutErr = redirectOutErr;
+    	if (redirectOutErr)
+    	{
+    		updateStdoutStdErr();
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Updates the pathnames of the files where this job redirects the stdout
+     * and stderr.
+     */
+    
+    private void updateStdoutStdErr()
+    {
+        //TODO: replace with unique ID: atomInteger for all jobs
+        
+        int hc = this.hashCode();
+        
+        String dir;
+        if (customUserDir != null)
+        {
+        	dir = customUserDir.getAbsolutePath();
+        }
+        else
+        {
+        	dir = System.getProperty("user.dir");
+        }
+        
+        stdout = new File(dir + SEP + "Job" +hc+".log");
+        stderr = new File(dir + SEP + "Job" +hc+".err");
+        exposedOutput.putNamedData( 
+        		new NamedData("LOG", NamedDataType.FILE,stdout));
+        exposedOutput.putNamedData( 
+        		new NamedData("ERR", NamedDataType.FILE,stderr));
     }
 
 //------------------------------------------------------------------------------   

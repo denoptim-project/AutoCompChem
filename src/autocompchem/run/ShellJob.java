@@ -29,17 +29,6 @@ public class ShellJob extends Job
      * Arguments
      */
     private String args = "";
-    
-    
-    /**
-     * Custom working directory
-     */
-    private File customUserDir;
-    
-    /**
-     * File separator on this OS
-     */
-    private final String SEP = System.getProperty("file.separator");
  
 //------------------------------------------------------------------------------
 
@@ -182,31 +171,21 @@ public class ShellJob extends Job
             			NamedDataType.STRING, pb.environment().toString());
                 exposedOutput.putNamedData(nd);
                 
-                String dir = "";
                 if (pb.directory() != null)
                 {
-                	dir = pb.directory().getAbsolutePath();
+                	customUserDir = pb.directory();
                 }
+                
+                if (redirectOutErr)
+                {
+	                //Redirect stdout and stderr
+	                pb.redirectOutput(stdout);
+	                pb.redirectError(stderr);
+                } 
                 else
                 {
-                	dir = System.getProperty("user.dir");
+	                pb.inheritIO();
                 }
-                
-                //TODO: replace with unique ID: atomInteger for all jobs
-                
-                int hc = this.hashCode();
-                
-                //Redirect stdout and stderr
-                File stdout = new File(dir + SEP + "shellJob" + hc + ".log");
-                File stderr = new File(dir + SEP + "shellJob" + hc + ".err");
-                exposedOutput.putNamedData( 
-                		new NamedData("LOG", NamedDataType.FILE,stdout));
-                exposedOutput.putNamedData( 
-                		new NamedData("ERR", NamedDataType.FILE,stderr));
-                pb.redirectOutput(stdout);
-                pb.redirectError(stderr);
-                // Use this to inherit the I/O streams from this java process
-                //pb.inheritIO();
                 
                 Process p = pb.start();
                 try
