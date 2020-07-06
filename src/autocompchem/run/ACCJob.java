@@ -28,6 +28,8 @@ import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * A job class that represents work to be done by AutoCompChem itself
@@ -81,8 +83,14 @@ public class ACCJob extends Job
                             + task + "'. ");
         }
         
+        Worker worker = WorkerFactory.createWorker(task,this);
+        worker.performTask();
+        
+        
+        //OLD WAY
+        /*
         task = task.toUpperCase();
-        switch (task) 
+        switch (task)
         {
             case "EVALUATEGAUSSIANOUTPUT":
             {
@@ -355,6 +363,8 @@ public class ACCJob extends Job
                                 + " not known! Check the input.",-1);
             }
         }
+        */
+        
 
         date = new Date();
         if (getVerbosity() > 0)

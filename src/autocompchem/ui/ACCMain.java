@@ -30,6 +30,8 @@ import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.Terminator;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * Main for AtomCompChem (Automated Computational Chemist). The entry point
@@ -115,13 +117,21 @@ public class ACCMain
 
     /**
      * Run a specific task
-     * @param task the string indentifying the type of task
+     * @param task the string identifying the type of task
      * @param params a <code>autocompchem.parameters.ParameterStorage</code> 
      * passing all the necessary parameters to the tool executing the task.
      */
     private static void runTask(String task, ParameterStorage params) 
                                                                 throws Throwable
     {
+    	
+        Worker worker = WorkerFactory.createWorker(task);
+        worker.setParameters(params);
+        worker.initialize();
+        worker.performTask();
+        
+        //OLD WAY
+        //TODO: get rid of this
         task = task.toUpperCase();
         switch (task) {
 
@@ -244,13 +254,6 @@ public class ACCMain
             {
                 ForceFieldEditor ffEdit = new ForceFieldEditor(params);
                 ffEdit.includeFFParamsFromVibModule();
-                break;
-            }
-
-            case "MEASUREGEOMDESCRIPTORS":
-            {
-                MolecularMeter mtr = new MolecularMeter(params);
-                mtr.measureAllQuantities();
                 break;
             }
 
@@ -409,12 +412,13 @@ TODO
                 break;
             }
 */
-
+/*
             default:
             {
                 Terminator.withMsgAndStatus("ERROR! Task '" + task  + "'"
-                                + " not known! Check the input.",-1);
+                                + " not known in ACCMain! Check the input.",-1);
             }
+*/
         }
     }
 

@@ -19,10 +19,4 @@ public interface IOutputExposer
 	 */
 	public void setDataCollector(NamedDataCollector collector);
 	
-	/**
-	 * Adds some data the the collection of exposed data.
-	 * @param data the data to expose
-	 */
-	public void exposeData(NamedData data);
-	
 }

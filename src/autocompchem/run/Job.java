@@ -477,6 +477,18 @@ public class Job implements Runnable
         parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
+
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the collector of output data
+     * @return the collector of output data
+     */
+    public NamedDataCollector getOutputCollector()
+    {
+    	return exposedOutput;
+    }
     
 //------------------------------------------------------------------------------
     

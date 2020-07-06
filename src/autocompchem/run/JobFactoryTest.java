@@ -31,7 +31,7 @@ import autocompchem.datacollections.ParameterConstants;
 
 
 /**
- * Unit Test for the factory of the job factory.
+ * Unit Test for the factory of the jobs.
  * 
  * @author Marco Foscato
  */
