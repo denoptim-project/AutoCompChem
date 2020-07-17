@@ -1,7 +1,10 @@
 package autocompchem.molecule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -22,9 +25,12 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+
+import com.hp.hpl.jena.graph.query.PatternStageBase.Work;
 
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -38,6 +44,8 @@ import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
 import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 
 /**
@@ -47,9 +55,17 @@ import autocompchem.smarts.ManySMARTSQuery;
  */
 
 
-public class MolecularComparator
+public class MolecularComparator extends Worker
 {
-
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.COMPARETWOMOLECULES,
+                    		TaskID.COMPARETWOGEOMETRIES,
+                    		TaskID.COMPARETWOCONNECTIVITIES)));
+    
     //Filenames
     private String inFile;
     private String refFile;
@@ -67,25 +83,26 @@ public class MolecularComparator
     /**
      * Constructor for an empty MolecularComparator
      */
-
+/*
     public MolecularComparator() 
     {
     }
-
+*7
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for an empty MolecularComparator and specify verbosity
      * @param verbosity the verbosity level
      */
-
+/*
     public MolecularComparator(int verbosity)
     {
         this.verbosity = verbosity;
     }
-
+*/
 //------------------------------------------------------------------------------
 
+    //TODO move to class doc
     /**
      * Constructs a <code>MolecularComparator</code> specifying the parameters 
      * taken from 
@@ -124,8 +141,17 @@ public class MolecularComparator
      * @param params object <code>ParameterStorage</code> containing all the
      * parameters needed
      */
-
+/*
     public MolecularComparator(ParameterStorage params) 
+    {
+	*/
+    
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValue().toString();
@@ -166,77 +192,39 @@ public class MolecularComparator
 
     }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
     /**
-     * Constructs a new MolecularComparator specifying the name 
-     * (or path) of the input/output files
-     * @param inFile path or name of SDF file with the structure to analyse
-     * @param refFile path or name of SDF file with the reference structure
-     * @param rotatedFile path or name of output SDF file with the rotated 
-     *        input structure (the one from inFile) fitting the reference
-     * @param outFile path or name of TXT file where the report is to be written
-     * @param verbosity verbosity level
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
      */
 
-    public MolecularComparator(String inFile, String refFile, 
-                        String rotatedFile, String outFile, int verbosity)
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
     {
-        this.inFile = inFile;
-        this.refFile = refFile;
-        this.rotatedFile = rotatedFile;
-        this.outFile = outFile;
-        this.verbosity = verbosity;
-    }
+        switch (task)
+          {
+          case COMPARETWOMOLECULES:
+        	  runComparisonOfMoleculesBySuperposition();
+              break;
+          case COMPARETWOGEOMETRIES:
+        	  compareTwoGeometries();
+              break;
+          case COMPARETWOCONNECTIVITIES:
+        	  compareTwoConnectivities();
+              break;
+          }
 
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new MolecularComparator specifying the name 
-     * (or path) of the input/output files
-     * identify the target atom for a specific analysis.
-     * @param inFile path or name of SDF file with the structure to analyse
-     * @param refFile path or name of SDF file with the reference structure
-     * @param rotatedFile path or name of output SDF file with the rotated 
-     *        input structure (the one from inFile) fitting the reference
-     * @param outFile path or name of TXT file where the report is to be written
-     * @param verbosity verbosity level
-     * @param smarts SMARTS identifying target atoms
-     */
-
-    public MolecularComparator(String inFile, String refFile,
-                        String rotatedFile, String outFile, int verbosity,
-                        String smarts)
-    {
-        this.inFile = inFile;
-        this.refFile = refFile;
-        this.rotatedFile = rotatedFile;
-        this.outFile = outFile;
-        this.verbosity = verbosity;
-        this.targetAtoms = smarts;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new MolecularComparator specifying the name 
-     * (or path) of the input/output files
-     * identify the target atom for a specific analysis.
-     * @param inFile path or name of SDF file with the structure to analyse
-     * @param refFile path or name of SDF file with the reference structure
-     * @param outFile path or name of TXT file where the report is to be written
-     * @param verbosity verbosity level
-     * @param smarts SMARTS identifying target atoms
-     */
-
-    public MolecularComparator(String inFile, String refFile,
-                                String outFile, int verbosity, String smarts)
-    {
-        this.inFile = inFile;
-        this.refFile = refFile;
-        this.outFile = outFile;
-        this.verbosity = verbosity;
-        this.targetAtoms = smarts;
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
     }
 
 //------------------------------------------------------------------------------

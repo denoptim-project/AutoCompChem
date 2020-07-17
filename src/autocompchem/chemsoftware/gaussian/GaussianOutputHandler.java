@@ -20,8 +20,11 @@ import java.util.ArrayList;
  */
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.vecmath.Point3d;
@@ -36,6 +39,8 @@ import org.openscience.cdk.interfaces.IAtomContainerSet;
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FilesAnalyzer;
 import autocompchem.files.FilesManager;
@@ -43,6 +48,8 @@ import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * Reader and analyser of Gaussian Output files. 
@@ -50,8 +57,15 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class GaussianOutputHandler
+public class GaussianOutputHandler extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+                    Collections.unmodifiableSet(new HashSet<TaskID>(
+                                    Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT)));
+    
     /**
      * Name of the .out file from Gaussian (the input of this class)
      */
@@ -172,17 +186,6 @@ public class GaussianOutputHandler
      */
     private boolean useTemplateConnectivity = false;
 
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs an empty evaluator
-     */
-
-    public GaussianOutputHandler() 
-    {
-    }
-
 //------------------------------------------------------------------------------
 
     /**
@@ -244,8 +247,19 @@ public class GaussianOutputHandler
      * @param params object <code>ParameterStorage</code> containing all the
      * parameters needed
      */
-
+/*
     public GaussianOutputHandler(ParameterStorage params) 
+    {
+    	*/
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * Initialise the worker according to the parameters loaded by constructor.
+	 */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValue().toString();
@@ -373,26 +387,32 @@ public class GaussianOutputHandler
 
     }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
     /**
-     * Constructs a new GaussianOutputHandler specifying the name 
-     * (or path) of the
-     * .out file and the array of errors
-     * @param filename path or name of the output from Gaussian (i.e. name.out)
-     * @param gaussErr array of {@link ErrorMessage} defining the list of
-     * known errors
-     * @param verbosity verbosity level
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
      */
 
-    public GaussianOutputHandler(String filename, 
-              ArrayList<ErrorMessage> gaussErr, int verbosity)
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
     {
-        this.inFile = filename;
-        this.errorDef = gaussErr; 
-        this.verbosity = verbosity;
-    }
+        switch (task)
+        {
+        case EVALUATEGAUSSIANOUTPUT:
+        	evaluateGaussianOutput();
+                break;
+        }
 
+        if (exposedOutputCollector != null)
+        {
+            String refName = "AnalysisOfGaussianOutput";
+            exposeOutputData(new NamedData(refName,
+                        NamedDataType.STRING, analysisResult));
+        }
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -401,7 +421,7 @@ public class GaussianOutputHandler
      * steps, type of error, and so on.
      */
 
-    public void performAnalysis()
+    public void evaluateGaussianOutput()
     {
         //Read the outfile and collect counts and line numbers
         ArrayList<String> patterns = new ArrayList<String>();

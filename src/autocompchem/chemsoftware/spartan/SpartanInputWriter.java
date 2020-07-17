@@ -45,6 +45,8 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * Writes input files for Spartan. 
@@ -55,8 +57,14 @@ import autocompchem.utils.NumberAwareStringComparator;
  * @author Marco Foscato
  */
 
-public class SpartanInputWriter
+public class SpartanInputWriter extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.PREPAREINPUTSPARTAN)));
 
     /**
      * Input filename (a structure file)
@@ -169,19 +177,10 @@ public class SpartanInputWriter
      */
     private int verbosity = 1;
 
-
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor for an empty SpartanInputWriter
-     */
-
-    public SpartanInputWriter()
-    {
-    }
-
-//------------------------------------------------------------------------------
-
+    //TODO move to class doc
+    
     /**
      * Construct a new SpartanInputWriter using the 
      * {@link autocompchem.datacollections.Parameter}s 
@@ -284,7 +283,14 @@ public class SpartanInputWriter
      * parameters needed
      */
 
-    public SpartanInputWriter(ParameterStorage params)
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity 
         if (params.contains("VERBOSITY"))
@@ -392,13 +398,42 @@ public class SpartanInputWriter
             getNamedSmartsWithOpts(all,ATMKEYROOT,false);
         }
 
-        //SMARTS rules freezeng atoms
+        //SMARTS rules freezing atoms
         if (params.contains("FREEZEATOMS"))
         {
             this.defFrozen = true;
             String all =
                        params.getParameter("FREEZEATOMS").getValue().toString();
             getNamedSmartsWithOpts(all,FREEZEROOT,false);
+        }
+    }
+   
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case PREPAREINPUTSPARTAN:
+        	  writeInputForEachMol();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
         }
     }
 

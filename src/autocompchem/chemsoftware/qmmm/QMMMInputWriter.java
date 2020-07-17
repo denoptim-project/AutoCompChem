@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
@@ -19,6 +21,8 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityTable;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * Writes input files for QMMM.
@@ -26,8 +30,14 @@ import autocompchem.smarts.ManySMARTSQuery;
  * @author Marco Foscato
  */
 
-public class QMMMInputWriter
+public class QMMMInputWriter extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.PREPAREINPUTQMMM)));
 
     /**
      * Input filename
@@ -142,6 +152,7 @@ public class QMMMInputWriter
 
 //------------------------------------------------------------------------------
 
+    //TODO: move to class doc
     /**
      * Construct a new QMMMInputWriter using the parameters taken from a
      * {@link autocompchem.datacollections.ParameterStorage}.<br>
@@ -234,8 +245,17 @@ public class QMMMInputWriter
      * {@link autocompchem.datacollections.ParameterStorage} containing all the
      * parameters needed
      */
-
+/*
     public QMMMInputWriter(ParameterStorage params)
+    {
+    
+    */
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity 
         if (params.contains("VERBOSITY"))
@@ -473,6 +493,35 @@ public class QMMMInputWriter
                     System.out.println(" Atom types will be taken from file '"
                                                            + atmTypFile + "'.");
             }
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case PREPAREINPUTQMMM:
+        	  writeInputForEachMol();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
         }
     }
 

@@ -1,8 +1,10 @@
 package autocompchem.molecule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2016  Marco Foscato 
@@ -23,6 +25,7 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
@@ -35,8 +38,11 @@ import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
+import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * Reorderer for atom lists. This tool allows to reorganize list atoms 
@@ -77,7 +83,7 @@ import autocompchem.smarts.ManySMARTSQuery;
  * If the matched atoms belong to different networks, then they are use each for
  * reorganizing the network (i.e., molecule) they belong to.
  * In case multiple SMARTS queries match atoms of the same molecule,
- * the priority is given according to the order of SMARTS queriest specified
+ * the priority is given according to the order of SMARTS queries specified
  * by the used in this option
  * (i.e., decreasing priority is assumed).
  * </li>
@@ -90,8 +96,16 @@ import autocompchem.smarts.ManySMARTSQuery;
  */
 
 
-public class MolecularReorderer
+public class MolecularReorderer extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.REORDERATOMLIST,
+                    		TaskID.ALIGNATOMLISTS)));
+    
     /**
      * Flag indicating the input is from file
      */
@@ -152,16 +166,7 @@ public class MolecularReorderer
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor for a MolecularReorderer with default settings.
-     */
-
-    public MolecularReorderer() 
-    {
-    }
-
-//------------------------------------------------------------------------------
-
+    //TODO move to class doc
     /**
      * Constructs a MolecularReorderer specifying the parameters with a
      * {@link ParameterStorage}. 
@@ -208,7 +213,14 @@ public class MolecularReorderer
      * parameters needed
      */
 
-    public MolecularReorderer(ParameterStorage params) 
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity
         if (params.contains("VERBOSITY"))
@@ -263,11 +275,43 @@ public class MolecularReorderer
             }
         }
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case REORDERATOMLIST:
+        	  reorderAll();
+              break;
+          case ALIGNATOMLISTS:
+        	  alignAtomList();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * DO NOT USE. Work in progress on this method.
+     * DO NOT USE!!! Work in progress on this method.
      *
      * Reorder all atom lists in the input file trying to match the reference
      * atom list, all according to the current settings.
@@ -276,7 +320,7 @@ public class MolecularReorderer
     public void alignAtomList()
     {
 
-        //Get the referencem molecule
+        //Get the reference molecule
         ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
         mols = IOtools.readSDF(refFile);
         if (mols.size() > 1)
@@ -299,10 +343,11 @@ public class MolecularReorderer
                     System.out.println("Aligning atom container #" + i);
                 }
                 IAtomContainer mol = sdfItr.next();
-
-                MolecularComparator mc = new MolecularComparator(verbosity-1);
-                Map<Integer,Integer> refToInAtmMap = 
-                                     mc.getGeometryAwareAtomMapping(mol,refMol);
+                
+                ComparatorOfGeometries cog = new ComparatorOfGeometries(
+                		verbosity-1);
+                Map<Integer,Integer> refToInAtmMap = cog.getAtomMapping(mol,
+                		refMol);
 
                 if (refToInAtmMap.size() < mol.getAtomCount())
                 {

@@ -1,22 +1,14 @@
 package autocompchem.worker;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.Parameter;
-import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.IOutputExposer;
-import autocompchem.run.Terminator;
-import autocompchem.run.Job.RunnableAppID;
 
 
 /**
@@ -41,6 +33,13 @@ import autocompchem.run.Job.RunnableAppID;
 
 public abstract class Worker implements IOutputExposer
 {
+    /**
+     * Declaration of the capabilities of this class of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList()));
+	
     /**
      * Container for parameters fed to this worker. 
      * Typically contains initial settings, pathnames 

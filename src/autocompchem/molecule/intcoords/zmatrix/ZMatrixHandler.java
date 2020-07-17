@@ -23,8 +23,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.vecmath.Point3d;
@@ -45,6 +47,9 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -54,8 +59,17 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */ 
 
-public class ZMatrixHandler
+public class ZMatrixHandler extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.PRINTZMATRIX,
+                    		TaskID.CONVERTZMATRIXTOSDF,
+                    		TaskID.SUBTRACTZMATRICES)));
+
     /**
      * The CDK representation of the chemical entity
      */
@@ -141,42 +155,9 @@ public class ZMatrixHandler
      */
     private int verbosity = 0;
 
-
 //------------------------------------------------------------------------------
 
-    /**
-     * Construct a ZMatrixHandler specifying the chemical entity this object 
-     * deals with.
-     * @param iac the CDK representation of the chemical entity
-     * @param verbosity the verbosity level
-     */
-
-    public ZMatrixHandler(IAtomContainer iac, int verbosity)
-    {
-        this.iac = iac;        
-        this.verbosity = verbosity;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Construct a ZMatrixHandler specifying the chemical entity this object
-     * deals with.
-     * @param iac the CDK representation of the chemical entity
-     * @param verbosity the verbosity level
-     * @param tmplZMat the template ZMatrix 
-     */
-
-    public ZMatrixHandler(IAtomContainer iac, int verbosity, ZMatrix tmplZMat)
-    {
-        this.iac = iac;
-        this.verbosity = verbosity;
-        this.useTmpl = true;
-        this.tmplZMat = tmplZMat;
-    }
-
-//------------------------------------------------------------------------------
-
+    //TODO move to class doc
     /**
      * Constructs a ZMatrixHandler from parameter storage.
      * Parameters controlling the handler
@@ -203,7 +184,14 @@ public class ZMatrixHandler
      * @param params the parameters collected in an parameter storage object
      */
 
-    public ZMatrixHandler(ParameterStorage params)
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValue().toString();
@@ -213,9 +201,19 @@ public class ZMatrixHandler
             System.out.println(" Adding parameters to ZMatrixHandler");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        if (params.contains("INFILE"))
+        {
+	        this.inFile = params.getParameter("INFILE").getValue().toString();
+	        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        }
 
+        //Get the input molecule as an object
+        if (params.contains("MOL"))
+        {
+            this.iac = (IAtomContainer) 
+            		params.getParameter("MOL").getValueAsObjectSubclass();
+        }
+        
         //Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE2"))
         {
@@ -249,6 +247,41 @@ public class ZMatrixHandler
         {
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
             FilesManager.mustNotExist(this.outFile);
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case PRINTZMATRIX:
+        	  printZMatrix();
+              break;
+          case CONVERTZMATRIXTOSDF:
+        	  convertZMatrixToSDF();
+        	  break;
+          case SUBTRACTZMATRICES:
+        	  subtractZMatrices();
+        	  break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
         }
     }
 

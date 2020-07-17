@@ -18,16 +18,25 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * Restarts a Gaussian job that returned an error. The tool evaluates
@@ -72,9 +81,15 @@ import autocompchem.run.Terminator;
  */
 
 
-public class GaussianReStarter
+public class GaussianReStarter extends Worker
 {
-
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+                    Collections.unmodifiableSet(new HashSet<TaskID>(
+                                    Arrays.asList(TaskID.FIXANDRESTARTGAUSSIAN)));
+	
     /**
      * Name of the Gaussian output file (the input for this class)
      */
@@ -116,11 +131,11 @@ public class GaussianReStarter
     /**
      * Constructor for an empty restarter
      */
-
+/*
     public GaussianReStarter() 
     {
     }
-
+*/
 //------------------------------------------------------------------------------
 
     /**
@@ -155,8 +170,18 @@ public class GaussianReStarter
      * @param params object <code>ParameterStorage</code> containing all the
      * parameters needed
      */
-
+/*
     public GaussianReStarter(ParameterStorage params) 
+    {
+    	*/
+//-----------------------------------------------------------------------------
+
+	/**
+	 * Initialise the worker according to the parameters loaded by constructor.
+	 */
+
+    @Override
+    public void initialize()
     {
         //Keep track of the parameter's object
         paramsLoc = params;
@@ -188,35 +213,34 @@ public class GaussianReStarter
         FilesManager.foundAndPermissions(jdFile,true,false,false);
         this.gaussJob = new GaussianJob(jdFile);
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Constructs a new GaussianReStarter specifying the name (or path) of the
-     * .out file, the corresponding GaussianJob and an array of errors.
-     * <br>
-     * <b>WARNING!</b> The parameter <code>newinp</code> also determines the 
-     * name 
-     * of the checkpoint file that will have the
-     * very same root name (i.e. name.chk). This
-     * means that a copy of the old checkpoint file has to be made
-     * and placed properly before the new inp is submitted to Gaussian.
-     * @param filename path or name of the output from Gaussian (i.e. name.out)
-     * @param newinp path or name of the new .inp file for Gaussian 
-     * (i.e. name.inp)
-     * @param gJob {@link GaussianJob} defining all the details of the job
-     * @param gaussErr array of {@link ErrorMessage} defining the list of
-     * known errors
-     * @param verbosity verbosity level
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
      */
 
-    public GaussianReStarter(String filename, String newinp, GaussianJob gJob,
-                    int verbosity)
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
     {
-        this.inFile = filename;
-        this.inpFile = newinp;
-        this.gaussJob = gJob;
-        this.verbosity = verbosity;
+        switch (task)
+        {
+        case FIXANDRESTARTGAUSSIAN:
+        	restartJobWithErrorFix();
+                break;
+        }
+
+        if (exposedOutputCollector != null)
+        {
+        	/*
+        	 //TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                        NamedDataType.DOUBLE, ));
+                        */
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -314,10 +338,16 @@ public class GaussianReStarter
 
     public void restartJobWithErrorFix()
     {
+    	// We take most of the parameters of the present worker
+    	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
+    	paramsForOutputHandler.setParameter("TASK", new Parameter("TASK",
+    		NamedDataType.STRING, "EVALUATEGAUSSIANOUTPUT"));
+    	
         //Gather information on the error job
-        GaussianOutputHandler oEval = new GaussianOutputHandler(paramsLoc);
+    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);
+        GaussianOutputHandler oEval = (GaussianOutputHandler) w;
                                                   
-        oEval.performAnalysis();
+        oEval.evaluateGaussianOutput();
         if (!oEval.isErrorUnderstood())
         {
             Terminator.withMsgAndStatus("ERROR! Gaussian Error Message not "
@@ -345,7 +375,7 @@ public class GaussianReStarter
 
         if (verbosity > 0)
             System.out.println(" Action to fix the problem: "+typeOfAction);        
-        //Ifentify the failing step
+        //Identify the failing step
         //WARNING! Use failedStepID -1 because oEval.getNumberOfSteps()
         //works as a size() method and returns the number of steps as
         // from 1 to n (not from 0 to n-1)

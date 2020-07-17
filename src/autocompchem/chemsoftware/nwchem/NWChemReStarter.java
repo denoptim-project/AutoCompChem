@@ -20,15 +20,24 @@ import java.util.ArrayList;
  */
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
+import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FilesManager;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * Restarts a NWChem job that returned an error. The tool evaluates
@@ -87,8 +96,14 @@ import autocompchem.run.Terminator;
  */
 
 
-public class NWChemReStarter
+public class NWChemReStarter extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.FIXANDRESTARTNWCHEM)));
 
     /**
      * Name of the .out file from NWChem (i.e., the input for this class)
@@ -131,21 +146,11 @@ public class NWChemReStarter
      */
     private int verbosity = 1;
 
-    //Storage for parameters used to contruct this object
+    //Storage for parameters used to construct this object
     private ParameterStorage paramsLoc;
 
 //------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty restarter
-     */
-
-    public NWChemReStarter() 
-    {
-    }
-
-//------------------------------------------------------------------------------
-
+//TODO move to class doc
     /**
      * Constructor specifying the all parameters in a single 
      * <code>ParameterStorage</code>. The following parameters
@@ -192,8 +197,18 @@ public class NWChemReStarter
      * @param params object <code>ParameterStorage</code> containing all the
      * parameters needed
      */
-
+/*
     public NWChemReStarter(ParameterStorage params) 
+    {
+    */
+    
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Keep track of the parameter's object
         paramsLoc = params;
@@ -256,40 +271,39 @@ public class NWChemReStarter
             }
         }
     }
-
-//------------------------------------------------------------------------------
+    
+//-----------------------------------------------------------------------------
 
     /**
-     * Constructs a new NWChemReStarter specifying the name (or path) of the
-     * .out file, the corresponding NWChemJob and an array of errors.
-     * <br>
-     * <b>WARNING!</b> The parameter <code>newnw</code> also determines the 
-     * name 
-     * of the database file that will have the
-     * very same root name (i.e. name.db). This
-     * means that a copy of the old database file has to be made
-     * and placed properly before the new inp is submitted to NWChem.
-     * @param filename path or name of the output from NWChem (i.e. name.out)
-     * @param newnw path or name of the new .nw file for NWChem (i.e. name.nw)
-     * @param nwcJob {@link NWChemJob} defining all the details of the job
-     * @param nwcErr array of {@link ErrorMessage} defining the list of
-     * known errors
-     * @param verbosity verbosity level
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
      */
-//TODO
 
-    public NWChemReStarter(String filename, String newnw, NWChemJob nwcJob, 
-              ArrayList<ErrorMessage> nwcErr, int verbosity)
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
     {
-        this.inFile = filename;
-        this.nwFile = newnw;
-        this.nwcJob = nwcJob;
-        this.errorDef = nwcErr; 
-        this.verbosity = verbosity;
+        switch (task)
+          {
+          case FIXANDRESTARTNWCHEM:
+        	  restartJobWithErrorFix();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
     }
 
 //------------------------------------------------------------------------------
 
+    //TODO move to class doc
     /**
      * Creates a new input file for NWChem. The new input is generated 
      * according to the error-solving protocol defined in the 
@@ -382,10 +396,17 @@ public class NWChemReStarter
 
     public void restartJobWithErrorFix()
     {
-        //Gather information on the error
-        NWChemOutputHandler oEval = new NWChemOutputHandler(paramsLoc);
+    	// We take most of the parameters of the present worker
+    	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
+    	paramsForOutputHandler.setParameter("TASK", new Parameter("TASK",
+    		NamedDataType.STRING, "EVALUATENWCHEMOUTPUT"));
+    	
+        //Gather information on the error job
+    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);
+    	NWChemOutputHandler oEval = (NWChemOutputHandler) w;
+    	
                                                   
-        oEval.performAnalysis();
+        oEval.evaluateOutputNWChem();
         if (!oEval.isErrorUnderstood() && !justRestartLastTask)
         {
             Terminator.withMsgAndStatus("ERROR! NWChem Error Message not "

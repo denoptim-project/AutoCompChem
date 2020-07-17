@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
@@ -281,6 +282,26 @@ public class ParameterStorage extends NamedDataCollector
             		value);
             setParameter(key,prm);
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Return a deep clone
+     * @returns a deep clone
+     */
+    public ParameterStorage clone()
+    {
+    	ParameterStorage newPar = new ParameterStorage();
+    	for (Entry<String, Parameter> e : this.getAllParameters().entrySet())
+    	{
+    		Parameter p = e.getValue();
+    		String reference = p.getReference();
+    		NamedDataType type = p.getType();
+    		Object value = p.getValueAsObjectSubclass();
+    		newPar.setParameter(e.getKey(), new Parameter(reference, type, value));
+    	}
+    	return newPar;
     }
     
 //------------------------------------------------------------------------------

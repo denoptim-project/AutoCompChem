@@ -2,8 +2,12 @@ package autocompchem.molecule.geometry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import javax.print.DocFlavor.STRING;
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.AtomContainer;
@@ -13,6 +17,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.datacollections.Parameter;
 import autocompchem.files.FilesManager;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
@@ -20,6 +26,9 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -29,8 +38,15 @@ import autocompchem.run.Terminator;
  */
 
 
-public class MolecularGeometryEditor
+public class MolecularGeometryEditor extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.MODIFYGEOMETRY)));
+    
     /**
      * Flag indicating the input is from file
      */
@@ -149,24 +165,10 @@ public class MolecularGeometryEditor
      */
     private int verbosity = 0;
 
-    /**
-     * Parameters given to Constructor
-     */
-    private ParameterStorage params;
-
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor for a MolecularGeometryEditor with default settings.
-     */
-
-    public MolecularGeometryEditor() 
-    {
-    }
-
-//------------------------------------------------------------------------------
-
+    //TODO move to class doc
     /**
      * Constructs a MolecularGeometryEditor specifying the parameters with a
      * {@link ParameterStorage}. 
@@ -221,7 +223,14 @@ public class MolecularGeometryEditor
      * parameters needed
      */
 
-    public MolecularGeometryEditor(ParameterStorage params) 
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity
         if (params.contains("VERBOSITY"))
@@ -390,6 +399,35 @@ public class MolecularGeometryEditor
                         + "Check file " + refFile, -1);
             }
             this.refMol = refMols.get(0);
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case MODIFYGEOMETRY:
+        	  applyMove();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
         }
     }
 
@@ -1040,7 +1078,7 @@ public class MolecularGeometryEditor
 //------------------------------------------------------------------------------
 
     /**
-     * Apply the geometrical modification as defined by the constructor.
+     * Apply the geometric modification as defined by the constructor.
      * @throws Throwable when there are issues converting the ZMatrix and it 
      * is preferable to redefine the ZMatrix, possibly adding dummy atoms
      */
@@ -1061,9 +1099,11 @@ public class MolecularGeometryEditor
         }
 
         // Get the ZMatrix of the molecule to work with
-        //TODO del
-        // ZMatrixHandler zmh = new ZMatrixHandler(inMol,verbosity);
-        ZMatrixHandler zmh = new ZMatrixHandler(params);
+        ParameterStorage locPar = params.clone();
+        locPar.setParameter("TASK", new Parameter("TASK",NamedDataType.STRING,
+        		"PRINTZMATRIX"));
+        Worker w = WorkerFactory.createWorker(locPar);
+        ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix();
         if (verbosity > 1)
         {

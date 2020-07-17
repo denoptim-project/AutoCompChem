@@ -4,6 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.vecmath.Point3d;
 
@@ -22,6 +25,9 @@ import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * Writes input files for Gaussian. Accepts both the direct definition of the
@@ -89,8 +95,14 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class GaussianInputWriter
+public class GaussianInputWriter extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.PREPAREINPUTGAUSSIAN)));
 
     //Input filename
     private String inFile;
@@ -129,11 +141,11 @@ public class GaussianInputWriter
     /**
      * Constructor for an empty GaussianInputWriter
      */
-
+/*
     public GaussianInputWriter()
     {
     }
-
+*/
 //------------------------------------------------------------------------------
 
     /**
@@ -200,8 +212,19 @@ public class GaussianInputWriter
      * @param params object {@link ParameterStorage} containing all the
      * parameters needed
      */
-
+/*
     public GaussianInputWriter(ParameterStorage params)
+    {
+ */
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity 
         if (params.contains("VERBOSITY"))
@@ -393,6 +416,34 @@ public class GaussianInputWriter
         this.verbosity = verbosity;
     }
 */
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case PREPAREINPUTGAUSSIAN:
+              writeInp();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
+    }
 //------------------------------------------------------------------------------
 
     /**
@@ -647,7 +698,13 @@ public class GaussianInputWriter
                     locPars.setParameter(action,params.getParameter(action));
                     locPars.setParameter(verbKey, new Parameter(verbKey,
                     		NamedDataType.INTEGER, verbosity));
-                    BasisSetGenerator bsg = new BasisSetGenerator(locPars);
+                    
+                	// Get a worker to deal with the basis set generation task
+                    locPars.setParameter("TASK", new Parameter("TASK",
+                		NamedDataType.STRING, "GENERATEBASISSET"));
+                	Worker w = WorkerFactory.createWorker(locPars);
+                    BasisSetGenerator bsg = (BasisSetGenerator) w;
+                    
                     bsg.setAtmIdxAsId(true);
                     BasisSet bs = bsg.assignBasisSet(mol);
                     String genBsKey = "GEN";

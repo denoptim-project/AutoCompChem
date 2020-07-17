@@ -65,7 +65,8 @@ public class DummyWorker extends Worker
 	@Override
 	public void performTask() 
 	{
-		exposeOutputData(inputCollector.getNamedData("duDataB"));
+		// The only task here is reporting something in the output collector
+		exposeOutputData(inputCollector.getNamedData(DATAREF));
 	}
 	
 //-----------------------------------------------------------------------------	

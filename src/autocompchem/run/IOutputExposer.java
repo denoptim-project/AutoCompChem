@@ -1,6 +1,5 @@
 package autocompchem.run;
 
-import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 
 /**

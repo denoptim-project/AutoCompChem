@@ -1,6 +1,8 @@
 package autocompchem.molecule.chelation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -37,6 +39,8 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * ChelateAnalyzer is a tool for the characterization of chelating systems.
@@ -67,8 +71,15 @@ import autocompchem.run.Terminator;
  */
 
 
-public class ChelateAnalyzer
+public class ChelateAnalyzer extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.ANALYSISCHELATES)));
+    
     /**
      * Name of the input file
      */
@@ -115,17 +126,6 @@ public class ChelateAnalyzer
      */
     private int verbosity = 1;
 
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty ChelateAnalyzer
-     */
-
-    public ChelateAnalyzer() 
-    {
-    }
-
 //------------------------------------------------------------------------------
 
     /**
@@ -157,8 +157,17 @@ public class ChelateAnalyzer
      * @param params object <code>ParameterStorage</code> containing all the
      * parameters needed
      */
+    
+    //TODO move doc to class 
 
-    public ChelateAnalyzer(ParameterStorage params) 
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         standalone = true;
 
@@ -209,16 +218,45 @@ public class ChelateAnalyzer
             }
         }
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case ANALYSISCHELATES:
+        	  analyzeChelates();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Performs the analysis of the atom clashes according to the parameters
-     * provided to the contructor: it assumes that the ChelateAnalyzer is
+     * Performs the analysis of the chelation motif according to the parameters
+     * provided to the constructor: it assumes that the ChelateAnalyzer is
      * used in a standalone fashion (reading structures from files).
      */
 
-    public void runStandalone()
+    public void analyzeChelates()
     {
         int i = -1;
         try {
@@ -500,7 +538,7 @@ public class ChelateAnalyzer
     public ArrayList<ArrayList<Chelant>> getAllResults()
     {
         if (!alreadyRun && standalone)
-            this.runStandalone();
+            this.analyzeChelates();
 
         return results;
     }
@@ -517,7 +555,7 @@ public class ChelateAnalyzer
     public ArrayList<Chelant> getSingleResults(int molID)
     {
         if (!alreadyRun && standalone)
-            this.runStandalone();
+            this.analyzeChelates();
 
         ArrayList<Chelant> ac = results.get(molID);
         return ac;

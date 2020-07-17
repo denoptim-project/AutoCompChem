@@ -83,10 +83,10 @@ public class ACCJob extends Job
                             + task + "'. ");
         }
         
-        Worker worker = WorkerFactory.createWorker(task,this);
+        Worker worker = WorkerFactory.createWorker(params,this);
         worker.performTask();
         
-        
+        //TODO del
         //OLD WAY
         /*
         task = task.toUpperCase();

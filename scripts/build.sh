@@ -111,11 +111,11 @@ function getArg() {
     then
         argument="none"
     else
-        if [[ "${args[$i+1]}" == "-"* ]]
+        if [[ "${args[$ii]}" == "-"* ]]
         then
             argument="none"
         else
-            argument=${args[$i+1]}
+            argument=${args[$ii]}
         fi
     fi
 }
@@ -310,11 +310,16 @@ do
                 chosenUnitTests+=($argument)
               fi;;
         "-f") runFunctionalityTests=true
-	      getArg "$i" "$#" 
-	      if [[ "none" != "$argument" ]]
-	      then
-	        chosenTests+=($argument)
-              fi;;
+              for ((j=$i; j<$#; j++))
+              do
+                  getArg "$j" "$#"
+                  if [[ "none" != "$argument" ]]
+                  then
+                      chosenTests+=($argument)
+                  else
+                      break
+                  fi
+              done;;
 	"-l") printFuncTestLog=true;;
         "-n") runBuild=false;;
         "-j") getArg "$i" "$#"

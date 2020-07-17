@@ -1,7 +1,10 @@
 package autocompchem.molecule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2016  Marco Foscato 
@@ -22,6 +25,7 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
@@ -36,6 +40,8 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * Mutates the identity of specific atoms. 
@@ -46,8 +52,15 @@ import autocompchem.smarts.ManySMARTSQuery;
  */
 
 
-public class MolecularMutator
+public class MolecularMutator extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.MUTATEATOMS)));
+    
     /**
      * Flag indicating the input is from file
      */
@@ -92,16 +105,7 @@ public class MolecularMutator
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor for a MolecularMutator with default settings.
-     */
-
-    public MolecularMutator() 
-    {
-    }
-
-//------------------------------------------------------------------------------
-
+   //TODO move to class doc
     /**
      * Constructs a MolecularMutator specifying the parameters with a
      * {@link ParameterStorage}.
@@ -135,8 +139,16 @@ public class MolecularMutator
      * parameters needed
      */
 
-    public MolecularMutator(ParameterStorage params) 
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
+
         //Define verbosity
         if (params.contains("VERBOSITY"))
         {
@@ -184,6 +196,36 @@ public class MolecularMutator
             this.newElms.put(refName,words[1]);
         }
     }
+    
+
+//-----------------------------------------------------------------------------
+
+      /**
+       * Performs any of the registered tasks according to how this worker
+       * has been initialised.
+       */
+
+      @SuppressWarnings("incomplete-switch")
+      @Override
+      public void performTask()
+      {
+          switch (task)
+            {
+            case MUTATEATOMS:
+            	mutateAll();
+                break;
+            }
+
+          if (exposedOutputCollector != null)
+          {
+  /*
+  //TODO
+              String refName = "";
+              exposeOutputData(new NamedData(refName,
+                    NamedDataType.DOUBLE, ));
+  */
+          }
+      }
 
 //------------------------------------------------------------------------------
 

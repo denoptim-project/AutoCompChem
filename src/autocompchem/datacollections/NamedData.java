@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.run.Terminator;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -117,35 +119,43 @@ public class NamedData
 
     public Object getValueAsObjectSubclass()
     {
-    	Object valueObj;
-        switch (type) {
-			case DOUBLE:
-				valueObj = Double.parseDouble(value.toString());
-				break;
-	
-			case INTEGER: 
-				valueObj = Integer.parseInt(value.toString());
-				break;
-			
-			case STRING:
-				valueObj = value.toString();
-				break;
+    	Object valueObj = null;
+        try {
+			switch (type) {
+				case DOUBLE:
+					valueObj = Double.parseDouble(value.toString());
+					break;
+
+				case INTEGER: 
+					valueObj = Integer.parseInt(value.toString());
+					break;
 				
-			case BOOLEAN:
-				valueObj = (Boolean) value;
-				break;
-				
-			case IATOMCONTAINER:
-				valueObj = (IAtomContainer) value;
-				break;
-				
-			case FILE:
-				valueObj = (File) value;
-				break;
+				case STRING:
+					valueObj = value.toString();
+					break;
 					
-			default:
-				valueObj = value.toString();
-				break;
+				case BOOLEAN:
+					valueObj = Boolean.parseBoolean(value.toString());
+					break;
+					
+				case IATOMCONTAINER:
+					valueObj = (IAtomContainer) value;
+					break;
+					
+				case FILE:
+					valueObj = (File) value;
+					break;
+						
+				default:
+					valueObj = value.toString();
+					break;
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			Terminator.withMsgAndStatus("ERROR! Failed cast of value '" + value 
+					+ "' to " + type + ". Unexpected named data requires "
+							+ "extension of implemented cases. Please, report "
+							+ "this to the authors.", -1);
 		}
         return valueObj;
     }

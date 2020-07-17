@@ -1,7 +1,5 @@
 package autocompchem.worker;
 
-import java.lang.reflect.Constructor;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -23,7 +21,33 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import autocompchem.run.Terminator;
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
+import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
+import autocompchem.chemsoftware.gaussian.GaussianReStarter;
+import autocompchem.chemsoftware.generic.GenericToolOutputHandler;
+import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
+import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
+import autocompchem.chemsoftware.nwchem.NWChemReStarter;
+import autocompchem.chemsoftware.qmmm.QMMMInputWriter;
+import autocompchem.chemsoftware.spartan.SpartanInputWriter;
+import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
+import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.modeling.forcefield.AtomTypeMatcher;
+import autocompchem.modeling.forcefield.ForceFieldEditor;
+import autocompchem.molecule.MolecularComparator;
 import autocompchem.molecule.MolecularMeter;
+import autocompchem.molecule.MolecularMutator;
+import autocompchem.molecule.MolecularPruner;
+import autocompchem.molecule.MolecularReorderer;
+import autocompchem.molecule.atomclashes.AtomClashAnalyzer;
+import autocompchem.molecule.chelation.ChelateAnalyzer;
+import autocompchem.molecule.connectivity.ConnectivityGenerator;
+import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
+import autocompchem.molecule.geometry.MolecularGeometryEditor;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
+import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.Job;
 
 
@@ -81,6 +105,49 @@ public class WorkerFactory
     	
     	return createWorker(taskID, masterJob);
     }
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Create a new worker capable of performing the task given in the 
+     * parameters storage unit. This method initialised the worker, i.e., 
+     * it make the worker read the parameters and load the corresponding input
+     * and configurations.
+     * @param params the parameters that define the task and all related 
+     * settings and input data.
+     * @return a suitable worker for the task.
+     */ 
+
+    public static Worker createWorker(ParameterStorage params)
+    {    	
+    	return createWorker(params,null);
+    }
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Create a new worker capable of performing the task given in the 
+     * parameters storage unit. This method initialised the worker, i.e., 
+     * it make the worker read the parameters and load the corresponding input
+     * and configurations.
+     * @param params the parameters that define the task and all related 
+     * settings and input data.
+     * @param masterJob the job that is creating a worker to perform a task.
+     * @return a suitable worker for the task.
+     */ 
+
+    public static Worker createWorker(ParameterStorage params, Job masterJob)
+    {
+    	String taskStr = params.getParameter("TASK").getValue().toString();
+    	TaskID taskID = TaskID.getFromString(taskStr);
+    	
+    	Worker worker = createWorker(taskID, masterJob);
+    	worker.setParameters(params);
+    	worker.initialize();
+    	
+    	return worker;
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -104,8 +171,9 @@ public class WorkerFactory
 			{
 				Terminator.withMsgAndStatus("ERROR! Worker '" + wid + "' "
 	    		 		+ "did not return capabilities. This is most "
-						+ "likely a bug in '" + wid + "'. Please, report this "
-						+ "to the authors",-1);
+						+ "likely a bug in '" + wid + "' or in "
+						+ "the WorkerFactory. Please, report this "
+						+ "to the authors.",-1);
 			}
     		if (workerCapabilities.contains(task))
     		{
@@ -149,7 +217,6 @@ public class WorkerFactory
 		{
 		case DummyWorker:
 			return DummyWorker.capabilities;
-/*
         case AtomClashAnalyzer:
             return AtomClashAnalyzer.capabilities;
         case AtomTypeMatcher:
@@ -164,22 +231,20 @@ public class WorkerFactory
             return DummyObjectsHandler.capabilities;
         case ForceFieldEditor:
             return ForceFieldEditor.capabilities;
+		case GaussianInputWriter:
+			return GaussianInputWriter.capabilities;
         case GaussianOutputHandler:
             return GaussianOutputHandler.capabilities;
         case GaussianReStarter:
-            return GaussianReStarter.capabilities;
-        case GenericReStarter:
-            return GenericReStarter.capabilities;
+            return GaussianReStarter.capabilities; 
         case GenericToolOutputHandler:
             return GenericToolOutputHandler.capabilities;
         case MolecularComparator:
             return MolecularComparator.capabilities;
         case MolecularGeometryEditor:
             return MolecularGeometryEditor.capabilities;
-            */
         case MolecularMeter:
             return MolecularMeter.capabilities;
-            /*
         case MolecularMutator:
             return MolecularMutator.capabilities;
         case MolecularPruner:
@@ -204,8 +269,9 @@ public class WorkerFactory
             return VibModuleOutputHandler.capabilities;
         case ZMatrixHandler:
             return ZMatrixHandler.capabilities;
- */
-		//NB: add cases of new workers here
+
+		//NB: add cases of new workers according to alphabetic order, please
+            
 		}
 		return null;
 	}
@@ -223,8 +289,7 @@ public class WorkerFactory
 		switch (wid)
 		{
 		case DummyWorker:
-			return new DummyWorker();
-/*
+			return new DummyWorker(); 
         case AtomClashAnalyzer:
             return new AtomClashAnalyzer();
         case AtomTypeMatcher:
@@ -239,22 +304,20 @@ public class WorkerFactory
             return new DummyObjectsHandler();
         case ForceFieldEditor:
             return new ForceFieldEditor();
+		case GaussianInputWriter:
+			return new GaussianInputWriter();
         case GaussianOutputHandler:
             return new GaussianOutputHandler();
         case GaussianReStarter:
             return new GaussianReStarter();
-        case GenericReStarter:
-            return new GenericReStarter();
         case GenericToolOutputHandler:
             return new GenericToolOutputHandler();
         case MolecularComparator:
             return new MolecularComparator();
         case MolecularGeometryEditor:
             return new MolecularGeometryEditor();
-            */
         case MolecularMeter:
             return new MolecularMeter();
-            /*
         case MolecularMutator:
             return new MolecularMutator();
         case MolecularPruner:
@@ -279,8 +342,9 @@ public class WorkerFactory
             return new VibModuleOutputHandler();
         case ZMatrixHandler:
             return new ZMatrixHandler();
- */
-		//NB: add cases of new workers here
+            
+		//NB: add cases of new workers according to alphabetic order, please
+            
 		}
 		return null;
     }

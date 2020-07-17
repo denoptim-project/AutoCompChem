@@ -1,6 +1,10 @@
 package autocompchem.molecule.connectivity;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
@@ -13,6 +17,8 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /** 
  * Tool generating molecular connectivity from Cartesian coordinates by
@@ -56,8 +62,16 @@ import autocompchem.run.Terminator;
  */
 
 
-public class ConnectivityGenerator
+public class ConnectivityGenerator extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.RICALCULATECONNECTIVITY,
+                    		TaskID.ADDBONDSFORSINGLEELEMENT)));
+	
     //Filenames
     private String inFile;
     private String outFile;
@@ -77,28 +91,6 @@ public class ConnectivityGenerator
 
     //Target elements on which bonds are to be added
     private String targetEl = "";
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for empty ConnectivityGenerator object
-     */
-
-    public ConnectivityGenerator()
-    {
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor declaring only the verbosity level
-     * @param verbosity verbosity level
-     */
-
-    public ConnectivityGenerator(int verbosity)
-    {
-        this.verbosity = verbosity;
-    }
 
 //------------------------------------------------------------------------------
 
@@ -137,9 +129,17 @@ public class ConnectivityGenerator
      *
      * @param params the ensemble of parameters
      */
+    
+//TODO move to class doc? or where?
+    
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
 
-    public ConnectivityGenerator(ParameterStorage params)
+    @Override
+    public void initialize()
     {
+
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValue().toString();
         this.verbosity = Integer.parseInt(vStr);
@@ -179,60 +179,40 @@ public class ConnectivityGenerator
         this.outFile = params.getParameter("OUTFILE").getValue().toString();
         FilesManager.mustNotExist(this.outFile);
     }
+    
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-    /**
-     * Constructor providing parameters explicitly
-     * @param inFile path or name of SDF file with the structure to analyse
-     * @param outFile path or name of SDF file where the result is to be written
-     * @param tolerance a new bond is added only when the distance between 
-     * two atoms is below the sum of their v.d.W. radii
-     * minus the tolerance (as percentage). Values between 0.0 and 1.0 should 
-     * be used.
-     * @param verbosity verbosity level
-     */
+      /**
+       * Performs any of the registered tasks according to how this worker
+       * has been initialised.
+       */
 
-    public ConnectivityGenerator(String inFile, String outFile, 
-                                        double tolerance, int verbosity)
-    {
-        this.inFile = inFile;
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
-        this.tolerance = tolerance;
-        this.outFile = outFile;
-        FilesManager.mustNotExist(outFile);
-        this.verbosity = verbosity;
-    }
+      @SuppressWarnings("incomplete-switch")
+      @Override
+      public void performTask()
+      {
+          switch (task)
+            {
+            case RICALCULATECONNECTIVITY:
+            	ricalculateConnectivity();
+                break;
+            case ADDBONDSFORSINGLEELEMENT:
+            	addBondsOnSingleElement();
+                break;
+            }
 
-//------------------------------------------------------------------------------
+          if (exposedOutputCollector != null)
+          {
+  /*
+  //TODO
+              String refName = "";
+              exposeOutputData(new NamedData(refName,
+                    NamedDataType.DOUBLE, ));
+  */
+          }
+      }
 
-    /**
-     * Constructor providing all the parameters explicitly
-     * @param inFile path or name of SDF file with the structure to analyse
-     * @param outFile path or name of SDF file where the result is to be written
-     * @param tolerance a new bond is added only when the distance between 
-     * two atoms is below the sum of their v.d.W. radii
-     * minus the tolerance (as percentage). Values between 0.0 and 1.0 should 
-     * be used.
-     * @param tolerance2ndShell additional tolerance for atoms connected to
-     * atoms already directly connected to the central one
-     * @param verbosity verbosity level
-     * @param targetEl element symbol of atoms for which bonds are to be added
-     */
-
-    public ConnectivityGenerator(String inFile, String outFile,
-                                     double tolerance, double tolerance2ndShell, 
-                                 int verbosity, String targetEl)
-    {
-        this.inFile = inFile;
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
-        this.tolerance = tolerance;
-        this.tolerance2ndShell = tolerance2ndShell;
-        this.outFile = outFile;
-        FilesManager.mustNotExist(outFile);
-        this.verbosity = verbosity;
-        this.targetEl = targetEl;
-    }
 
 //------------------------------------------------------------------------------
 

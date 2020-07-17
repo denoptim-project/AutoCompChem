@@ -1,7 +1,10 @@
 package autocompchem.molecule.atomclashes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -22,6 +25,7 @@ import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -34,6 +38,8 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * AtomClashAnalyzer is a tool that analyzes interatomic distances and report
@@ -101,8 +107,15 @@ import autocompchem.smarts.ManySMARTSQuery;
  */
 
 
-public class AtomClashAnalyzer
+public class AtomClashAnalyzer extends Worker
 {
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.ANALYZEVDWCLASHES)));
+    
     //Filenames
     private String inFile;
     private String outFile;
@@ -137,17 +150,6 @@ public class AtomClashAnalyzer
 
     //Verbosity level
     private int verbosity = 1;
-
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty AtomClashAnalyzer
-     */
-
-    public AtomClashAnalyzer() 
-    {
-    }
 
 //------------------------------------------------------------------------------
 
@@ -205,9 +207,19 @@ public class AtomClashAnalyzer
      * @param params object <code>ParameterStorage</code> containing all the
      * parameters needed
      */
+    
+    //TODO move doc to class
 
-    public AtomClashAnalyzer(ParameterStorage params) 
-    {
+
+//-----------------------------------------------------------------------------
+
+      /**
+       * Initialise the worker according to the parameters loaded by constructor.
+       */
+
+      @Override
+      public void initialize()
+      {
         standalone = true;
 
         //Define verbosity
@@ -313,6 +325,35 @@ public class AtomClashAnalyzer
             }
         }
     }
+      
+//-----------------------------------------------------------------------------
+
+      /**
+       * Performs any of the registered tasks according to how this worker
+       * has been initialised.
+       */
+
+      @SuppressWarnings("incomplete-switch")
+      @Override
+      public void performTask()
+      {
+          switch (task)
+            {
+            case ANALYZEVDWCLASHES:
+            	analyzeVDWContacts();
+                break;
+            }
+
+          if (exposedOutputCollector != null)
+          {
+  /*
+  //TODO
+              String refName = "";
+              exposeOutputData(new NamedData(refName,
+                    NamedDataType.DOUBLE, ));
+  */
+          }
+      }
 
 //------------------------------------------------------------------------------
 
@@ -322,7 +363,7 @@ public class AtomClashAnalyzer
      * used in a standalone fashion (reading structures from files).
      */
 
-    public void runStandalone()
+    public void analyzeVDWContacts()
     {
         int i = -1;
         int nacmols = 0;
@@ -656,7 +697,7 @@ public class AtomClashAnalyzer
     public ArrayList<ArrayList<AtomClash>> getAllResults()
     {
         if (!alreadyRun && standalone)
-            this.runStandalone();
+            this.analyzeVDWContacts();
 
         return results;
     }
@@ -673,7 +714,7 @@ public class AtomClashAnalyzer
     public ArrayList<AtomClash> getSingleResults(int molID)
     {
         if (!alreadyRun && standalone)
-            this.runStandalone();
+            this.analyzeVDWContacts();
 
         ArrayList<AtomClash> ac = results.get(molID);
         return ac;

@@ -1,7 +1,5 @@
 package autocompchem.worker;
 
-import java.util.Set;
-
 /**
  * Collection of all registered workers. Only class names registered here
  * can be used to make new instances of workers.
@@ -11,21 +9,21 @@ import java.util.Set;
 public enum WorkerID 
 {
 	DummyWorker,
-/*    AtomClashAnalyzer,
+    AtomClashAnalyzer,
     AtomTypeMatcher,
     BasisSetGenerator,
     ChelateAnalyzer,
     ConnectivityGenerator,
     DummyObjectsHandler,
     ForceFieldEditor,
+	GaussianInputWriter,
     GaussianOutputHandler,
     GaussianReStarter,
-    GenericReStarter,
     GenericToolOutputHandler,
     MolecularComparator,
-    MolecularGeometryEditor,*/
+    MolecularGeometryEditor,
     MolecularMeter,
-/*    MolecularMutator,
+    MolecularMutator,
     MolecularPruner,
     MolecularReorderer,
     MolecularSorter,
@@ -36,7 +34,7 @@ public enum WorkerID
     SpartanInputWriter,
     SpartanOutputHandler,
     VibModuleOutputHandler,
-    ZMatrixHandler;*/
+    ZMatrixHandler;
     
 //-----------------------------------------------------------------------------
 

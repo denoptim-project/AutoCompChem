@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
@@ -31,6 +32,9 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * Writes input files for NWChem. Allows to define the directives for
@@ -41,9 +45,15 @@ import autocompchem.utils.NumberAwareStringComparator;
  * @author Marco Foscato
  */
 
-public class NWChemInputWriter
+public class NWChemInputWriter extends Worker
 {
-
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+            Collections.unmodifiableSet(new HashSet<TaskID>(
+                    Arrays.asList(TaskID.PREPAREINPUTNWCHEM)));
+    
     /**
      * Input filename (a structure file)
      */
@@ -177,13 +187,14 @@ public class NWChemInputWriter
     /**
      * Constructor for an empty NWChemInputWriter
      */
-
+/*
     public NWChemInputWriter()
     {
     }
-
+*/
 //------------------------------------------------------------------------------
 
+    //TODO: move to class doc
     /**
      * Construct a new NWChemInputWriter using the 
      * {@link autocompchem.datacollections.Parameter}s 
@@ -321,8 +332,19 @@ public class NWChemInputWriter
      *  @param params object {@link ParameterStorage} containing all the
      * parameters needed
      */
-
+/*
     public NWChemInputWriter(ParameterStorage params)
+    {
+    */
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
+
+    @Override
+    public void initialize()
     {
         //Define verbosity 
         if (params.contains("VERBOSITY"))
@@ -543,6 +565,35 @@ public class NWChemInputWriter
             this.smarts.putAll(getNamedAtomSMARTS(all));
         }
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
+
+    @SuppressWarnings("incomplete-switch")
+    @Override
+    public void performTask()
+    {
+        switch (task)
+          {
+          case PREPAREINPUTNWCHEM:
+        	  writeInput();
+              break;
+          }
+
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
+    }
 
 //------------------------------------------------------------------------------
 
@@ -701,7 +752,7 @@ for (String k : sortedMasterNames)
             {
                 continue;
             }
-            // This allows to retrace the exact orded in which lines are
+            // This allows to retrace the exact order in which lines are
             // given, yet without using the line number as index and allowing
             // to store multiple blocks of SMARTS queries in the same map
             ii = iNameSmarts.getAndIncrement();
@@ -772,31 +823,6 @@ for (String k : sortedMasterNames)
         }
         return map;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new NWChemInputWriter specifying the name (or path) of the
-     * input SDF file, the corresponding {@link NWChemJob}, which defines
-     * the details of the job, the name of the output, and verbosity.<br>
-     * <br>
-     * <b>WARNING! TO BE TESTED!</b><br>
-     * <br>
-     * @param inname name of the input file (i.e. mol.sdf)
-     * @param nwJob {@link NWChemJob} defining all the details of the job
-     * @param outname name of the file to be generated
-     * @param verbosity verbosity level
-     */
-/*
-    public NWChemInputWriter(String inname, NWChemJob nwJob,
-              String outname, int verbosity)
-    {
-        this.inFile = inname;
-        this.nwcJob = nwJob;
-        this.outNWFile = outname;
-        this.verbosity = verbosity;
-    }
-*/
 
 //------------------------------------------------------------------------------
 
@@ -1301,8 +1327,13 @@ for (String k : sortedMasterNames)
             // Do it only if there is something to do...
             if (goon)
             {
-                //Create the machinery for building the basis set
-                BasisSetGenerator bsg = new BasisSetGenerator(locPars);
+            	// Get a worker to deal with the basis set generation task
+            	ParameterStorage paramsForBasisSetGen = locPars.clone();
+            	paramsForBasisSetGen.setParameter("TASK", new Parameter("TASK",
+            		NamedDataType.STRING, "GENERATEBASISSET"));
+            	Worker w = WorkerFactory.createWorker(paramsForBasisSetGen);
+                BasisSetGenerator bsg = (BasisSetGenerator) w;
+                
                 //...and build the basis set
                 BasisSet bs = bsg.assignBasisSet(mol);
     
@@ -1879,7 +1910,15 @@ for (String k : sortedMasterNames)
         }
 
         //Build the Z-Matrix from cartesian coordinates and connectivity
-        ZMatrixHandler zmh = new ZMatrixHandler(mol,verbosity);
+        ParameterStorage locPar = new ParameterStorage();
+        locPar.setParameter("TASK", new Parameter("TASK",NamedDataType.STRING,
+        		"PRINTZMATRIX"));
+        locPar.setParameter("VERBOSITY", params.getParameter("VERBOSITY"));
+        locPar.setParameter("MOL", new Parameter("MOL",
+        		NamedDataType.IATOMCONTAINER,mol));
+        Worker w = WorkerFactory.createWorker(locPar);
+        ZMatrixHandler zmh = (ZMatrixHandler) w;
+        
         ZMatrix zmat = zmh.makeZMatrix();        
         
         NWChemDirective zmatDir = new NWChemDirective(NWChemConstants.ZMATDIR);
