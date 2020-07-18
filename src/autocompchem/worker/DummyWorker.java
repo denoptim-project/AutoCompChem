@@ -67,6 +67,15 @@ public class DummyWorker extends Worker
 	{
 		// The only task here is reporting something in the output collector
 		exposeOutputData(inputCollector.getNamedData(DATAREF));
+		
+		if (params.contains("VERBOSITY")) 
+		{
+			if (Integer.parseInt(params.getParameter("VERBOSITY").getValue().toString()) > 2) {
+				// In some tests we might want to check that the input has been read
+				// properly, so we echo the content of the param. storage
+				System.out.println(params.toLinesJobDetails());
+			} 
+		}
 	}
 	
 //-----------------------------------------------------------------------------	

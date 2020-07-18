@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ ! -f cli1.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=0;n=$(grep -c " o:opt-o" cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c " o:opt-o" cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c " l:many words in one opt," cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' cli1.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 4
+exit -1
+fi

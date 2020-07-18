@@ -1,7 +1,7 @@
 package autocompchem.worker;
 
 /*
- *   Copyright (C) 2014  Marco Foscato
+ *   Copyright (C) 2020  Marco Foscato
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.Job;
 
-
 /**
  * Factory building AutoCompChem workers. In this factory we chose the worker
  * type based on the tasks that each worker type declares in its implementation.
@@ -82,7 +81,7 @@ public class WorkerFactory
 
     public static Worker createWorker(String task)
     {
-    	// Convert string-based task in to enum
+    	// Convert string-based task into enum
     	TaskID taskID = TaskID.getFromString(task);
     	
     	return createWorker(taskID, null);
@@ -162,24 +161,7 @@ public class WorkerFactory
     {
     	// We first find out which worker is meant to take care of a the given 
     	// task
-    	ArrayList<WorkerID> suitableWorkerIDs = new ArrayList<WorkerID>();
-    	for (WorkerID wid : WorkerID.values())
-    	{	
-    		Set<TaskID> workerCapabilities = getWorkerCapabilities(wid);
-    		
-			if (workerCapabilities == null)
-			{
-				Terminator.withMsgAndStatus("ERROR! Worker '" + wid + "' "
-	    		 		+ "did not return capabilities. This is most "
-						+ "likely a bug in '" + wid + "' or in "
-						+ "the WorkerFactory. Please, report this "
-						+ "to the authors.",-1);
-			}
-    		if (workerCapabilities.contains(task))
-    		{
-    			suitableWorkerIDs.add(wid);
-    		}
-    	}
+    	ArrayList<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
     	if (suitableWorkerIDs.size() > 1)
     	{
     		Terminator.withMsgAndStatus("ERROR! Multiple workers are "
@@ -201,6 +183,38 @@ public class WorkerFactory
     	}
     	
     	return worker;
+    }
+    
+//----------------------------------------------------------------------------
+    
+    /**
+     * Finds workers that have declared the capability to perform the given 
+     * task.
+     * @param task what suitable workers should be capable of.
+     * @return the list of suitable workers (which can be empty!).
+     */
+    
+    public static ArrayList<WorkerID> getWorkersCapableOfTask(TaskID task)
+    {
+    	ArrayList<WorkerID> suitableWorkerIDs = new ArrayList<WorkerID>();
+    	for (WorkerID wid : WorkerID.values())
+    	{	
+    		Set<TaskID> workerCapabilities = getWorkerCapabilities(wid);
+    		
+			if (workerCapabilities == null)
+			{
+				Terminator.withMsgAndStatus("ERROR! Worker '" + wid + "' "
+	    		 		+ "did not return capabilities. This is most "
+						+ "likely a bug in '" + wid + "' or in "
+						+ "the WorkerFactory. Please, report this "
+						+ "to the authors.",-1);
+			}
+    		if (workerCapabilities.contains(task))
+    		{
+    			suitableWorkerIDs.add(wid);
+    		}
+    	}
+    	return suitableWorkerIDs;
     }
 
 //----------------------------------------------------------------------------
@@ -270,7 +284,7 @@ public class WorkerFactory
         case ZMatrixHandler:
             return ZMatrixHandler.capabilities;
 
-		//NB: add cases of new workers according to alphabetic order, please
+		//NB: add cases of new workers according to alphabetic order, please.
             
 		}
 		return null;

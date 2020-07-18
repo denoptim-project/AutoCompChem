@@ -89,6 +89,8 @@ cat <<EOF
 
   -u      runs unit tests after building AutoCompChem. If followed by one or more strings (i.e., class names), then runs only the unit testing found in the given classes.
 
+  -c      runs command line interface testing. If followed by one or more integer numbers, then runs only the corresponding CLI tests.
+
   -f      runs functionality tests after building AutoCompChem. If followed by one or more integer numbers, then runs only the corresponding functionality tests.
 
   -l      prints the log of any functionality test that is run
@@ -239,7 +241,7 @@ function functionalityTesting() {
     cd $tst/results
     rm -rf $tst/results/*
 
-    # We run all tests aunless a specific list of test IDs was given in  cli args
+    # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenTests[@]} -eq 0 ]
     then 
         for i in $(seq 1 $(ls ../*.params | wc -l | awk '{print $1}'))
@@ -258,12 +260,12 @@ function functionalityTesting() {
         echo " "
         echo "Running test $i/${#chosenTests[@]}"
         log=t$i.log
-        $javaDir/java -jar $ACCHome/AutoCompChem.jar  ../t$i.params > $log 2>&1
+        "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  "../t$i.params" > "$log" 2>&1
 
         if $printFuncTestLog
         then
             echo "Echoing test log:"
-            cat t$i.log
+            cat "$log"
         fi
     
         ../t$i.check
@@ -271,7 +273,7 @@ function functionalityTesting() {
         if [ $? != 0 ]
         then
             echo " "
-            echo "Output of test $i differ from expected output!"
+            echo "Output of test $i differs from expected output!"
             echo " "
             exit 1
         fi
@@ -280,6 +282,65 @@ function functionalityTesting() {
     echo " "
     echo "FUNCTIONALITY TESTING DONE! "
     echo " "
+}
+
+#
+# Function running functionality tests with command line arguments
+#
+function cliTesting() {
+    echo "Starting tests of command line interface."
+    tst=$ACCHome/test
+    if [ ! -d $tst/results ]
+    then
+      mkdir $tst/results
+    fi
+    cd $tst/results
+    rm -rf $tst/results/cli*
+
+    # We run all tests unless a specific list of test IDs was given
+    if [ ${#chosenCliTests[@]} -eq 0 ]
+    then
+        for i in $(seq 1 $(ls ../cli*.args | wc -l | awk '{print $1}'))
+        do
+            chosenCliTests+=($i)
+        done
+    fi
+    for i in ${chosenCliTests[@]}
+    do
+        argsFile="../cli$i.args"
+        argsToACC="$(cat "$argsFile")"
+        if [ ! -f "$argsFile" ]
+        then
+            echo "Test CLI t$i not found. Jumping to next test ID."
+            continue
+        fi
+        echo " "
+        echo "Running test CLI $i/${#chosenCliTests[@]}"
+        log=cli$i.log
+
+#TODO: une running script rather than calling java directly
+        "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  $argsToACC > "$log" 2>&1
+
+        if $printFuncTestLog
+        then
+            echo "Echoing test log:"
+            cat "$log"
+        fi
+
+        ../cli$i.check
+
+        if [ $? != 0 ]
+        then
+            echo " "
+            echo "Output of CLI test $i differs from expected output!"
+            echo " "
+            exit 1
+        fi
+    done
+    
+    echo " "
+    echo "CLI TESTING DONE! "
+    echo " "   
 }
 
 ###############################################################################
@@ -293,9 +354,11 @@ args=($@)
 runBuild=true
 buildingDone=false
 runUnitTests=false
+runCliTesting=false
 runFunctionalityTests=false
 printFuncTestLog=false
 chosenUnitTests=()
+chosenCliTests=()
 chosenTests=()
 for ((i=0; i<$#; i++))
 do
@@ -320,6 +383,17 @@ do
                       break
                   fi
               done;;
+        "-c") runCliTesting=true
+              for ((j=$i; j<$#; j++))
+              do
+                  getArg "$j" "$#"
+                  if [[ "none" != "$argument" ]]
+                  then
+                      chosenCliTests+=($argument)
+                  else
+                      break
+                  fi
+              done;;
 	"-l") printFuncTestLog=true;;
         "-n") runBuild=false;;
         "-j") getArg "$i" "$#"
@@ -330,9 +404,9 @@ do
     esac
 done
 
-if ! $runBuild && ! $runUnitTests && ! $runFunctionalityTests
+if ! $runBuild && ! $runUnitTests && ! $runCliTesting && ! $runFunctionalityTests 
 then
-    echo "Nothing to do. '-n' requires no building, but neither '-u' nor '-f' was given. So there is nothing I can do and I exit."
+    echo "Nothing to do. '-n' requires no building, but none among the '-u', '-c', and '-f' options was given. So there is nothing I can do and I exit."
     exit 0
 fi
 
@@ -361,6 +435,11 @@ fi
 if $runUnitTests
 then
     unitTesting
+fi
+
+if $runCliTesting
+then
+    cliTesting
 fi
 
 if $runFunctionalityTests
