@@ -33,7 +33,7 @@ import autocompchem.worker.WorkerFactory;
  * Writes input files for Gaussian. Accepts both the direct definition of the
  * header (Link0 and Route sections of Gaussian input) and the use of 
  * a jobdetails formatted text file (see {@link GaussianJob}).<br>
- * Parameters required:
+ * Parameters:
  * <ul>
  * <li>
  * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
@@ -44,13 +44,13 @@ import autocompchem.worker.WorkerFactory;
  * file is the file used to generate the input file (name
  * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
  * ) for 
- * Gaussian. The definition of the format of jobdetails files can be found in
- * {@link GaussianJob} documentation. In alternative, use
- * keyword
+ * Gaussian (see {@link GaussianJob} for the format of jobdetails files).
+ * In alternative, use
+ * keyword 
  * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
  * starting with the $START label and finishing with the $END label).
  * The text in the labelled block is used as header of 
- * the Gaussian input file. 
+ * the Gaussian input file.
  * In this header only Gaussian's 'Link0' and 'Route' sections
  * should be included. For comments, charge and spin 
  * multiplicity, see below.<br>
@@ -71,7 +71,7 @@ import autocompchem.worker.WorkerFactory;
  * </li>
  * <li>
  * (optional) <b>OUTNAME</b> name of the output file (
- * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION} 
+ * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
  * for Gaussian)
  * </li>
  * </ul>
@@ -91,6 +91,7 @@ import autocompchem.worker.WorkerFactory;
  * chemical system
  * </li>
  * </ul>
+ *            
  * 
  * @author Marco Foscato
  */
@@ -135,87 +136,6 @@ public class GaussianInputWriter extends Worker
     private int verbosity = 1;
 
 
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty GaussianInputWriter
-     */
-/*
-    public GaussianInputWriter()
-    {
-    }
-*/
-//------------------------------------------------------------------------------
-
-    /**
-     * Construct a new GaussianInputWriter using the parameters taken from a
-     * {@link ParameterStorage}.<br>
-     * <ul>
-     * <li>
-     * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
-     * </li>
-     * <li>
-     * <b>JOBDETAILS</b>: formatted text file defining all 
-     * the details of a {@link GaussianJob}. Usually the jobdetails txt 
-     * file is the file used to generate the input file (name
-     * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
-     * ) for 
-     * Gaussian (see {@link GaussianJob} for the format of jobdetails files).
-     * In alternative, use
-     * keyword 
-     * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
-     * starting with the $START label and finishing with the $END label).
-     * The text in the labelled block is used as header of 
-     * the Gaussian input file.
-     * In this header only Gaussian's 'Link0' and 'Route' sections
-     * should be included. For comments, charge and spin 
-     * multiplicity, see below.<br>
-     * <br>
-     * <b>WARNING!</b> This header is treated as a pure string and 
-     * no check
-     * of its format will be performed. Thus if the header has wrong
-     * format, so will have the output file.
-     * Moreover, by using a fixed header no modification of such 
-     * header can be performed by the GaussianInputWriter or by any
-     * other tool (i.e. {@link GaussianReStarter}). For instance,
-     * name of checkpoint file, memory, nodes, processors, and 
-     * everything that is specified in the header CANNOT BE EDITED!<br>
-     * <br>
-     * </li>
-     * <li>
-     * (optional) <b>VERBOSITY</b> verbosity level.
-     * </li>
-     * <li>
-     * (optional) <b>OUTNAME</b> name of the output file (
-     * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
-     * for Gaussian)
-     * </li>
-     * </ul>
-     * 
-     * Optional parameters not needed if JOBDETAILS option is in use, but
-     * that will overwrite JOBDETAILS specifications if both JOBDETAILS and
-     * these options are specified in the {@link ParameterStorage}.
-     * <ul>
-     * <li>
-     * (optional) <b>COMMENT</b> comment line for the output file
-     * </li>
-     * <li>
-     * (optional) <b>CHARGE</b> the charge of the chemical system
-     * </li>
-     * <li>
-     * (optional) <b>SPIN_MULTIPLICITY</b>  the spin multiplicity of the 
-     * chemical system
-     * </li>
-     * </ul>
-     *            
-     * @param params object {@link ParameterStorage} containing all the
-     * parameters needed
-     */
-/*
-    public GaussianInputWriter(ParameterStorage params)
-    {
- */
 
 //-----------------------------------------------------------------------------
 
@@ -360,62 +280,6 @@ public class GaussianInputWriter extends Worker
             }
         }
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new GaussianInputWriter specifying the name (or path) of the
-     * input SDF file, the corresponding {@link GaussianJob} for
-     * defining the details of the job, the name of the output, and verbosity.<br>
-     * <br>
-     * <b>WARNING! TO BE TESTED!</b><br>
-     * <br>
-     * @param inname name of the input file (i.e. mol.sdf)
-     * @param gJob {@link GaussianJob} defining all the details of the job
-     * @param outname name of the file to be generated
-     * @param verbosity verbosity level
-     */
-/*
-    public GaussianInputWriter(String inname, GaussianJob gJob,
-              String outname, int verbosity)
-    {
-        this.inFile = inname;
-        useHeader = false;
-        this.gaussJob = gJob;
-        this.outFile = outname;
-        this.verbosity = verbosity;
-    }
-*/
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new GaussianInputWriter specifying the name (or path) of the
-     * input SDF file, the rest of the parameters one by one.<br>
-     * <br>
-     * <b>WARNING! TO BE TESTED!</b><br>
-     * <br>
-     * @param inname name of the input file (i.e. mol.sdf)
-     * @param header multiline string to be used as header in the output
-     * @param comment the comment in inp file
-     * @param charge the charge of the chemical system
-     * @param spinMult the spin multiplicity of the chemical system
-     * @param outname name of the file to be generated
-     * @param verbosity verbosity level
-     */
-/*
-    public GaussianInputWriter(String inname, String header, String comment,
-              int charge, int spinMult, String outname, int verbosity)
-    {
-        this.inFile = inname;
-        useHeader = true;
-        this.header = header;
-        this.comment = comment;
-        this.charge = charge;
-        this.spinMult = spinMult;
-        this.outFile = outname;
-        this.verbosity = verbosity;
-    }
-*/
     
 //-----------------------------------------------------------------------------
 
@@ -572,30 +436,6 @@ public class GaussianInputWriter extends Worker
                     writeGaussianInput();
                 }
             }
-            
-/*
-//
-// It is not likely that we need to handle huge SDF file in this method, so
-// this approach is maybe too much
-//
-            SDFIterator iterator = new SDFIterator(inFile);
-            while (iterator.hasNext())
-            {
-                n++;
-                //Get this molecule
-                IAtomContainer mol = iterator.next();
-                String molName = mol.getProperty("cdk:Title").toString();
-
-// ...
-// ... here goes the single molecule task
-// ...
-
-                }
-            }
-
-            iterator.close();
-*/
-
         } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned while "
@@ -752,7 +592,7 @@ public class GaussianInputWriter extends Worker
      * properties are not defined the execution will stop with an error.
      * @param mol molecule
      * @param kw keywords section including both 'link 0' and Route' sections
-     * blanck line termination is already included in the form.
+     * blank line termination is already included in the form.
      * @param comm text comment
      * @param outName name of the output file
      */
@@ -782,9 +622,9 @@ public class GaussianInputWriter extends Worker
      * Write Gaussian input file. Only a single step, no compound job.
      * @param mol molecule
      * @param kw Keywords section including both 'link 0' and Route' sections
-     * blanck line termination is already included in the form.
+     * blank line termination is already included in the form.
      * @param comm text comment
-     * blanck line termination is already included in the form.
+     * blank line termination is already included in the form.
      * @param ch charge
      * @param sm spin multiplicity
      * @param outName name of the output file
@@ -803,11 +643,11 @@ public class GaussianInputWriter extends Worker
 
             //write KEYWORDS - Link0 and Route sections
             writer.write(kw + "\n");
-            writer.write("\n"); // blanck line terminated section
+            writer.write("\n"); // Black line terminated section
 
             //write COMMENT - Title section
             writer.write(comm + "\n");
-            writer.write("\n"); // blanck line terminated section
+            writer.write("\n"); // Black line terminated section
 
             //write CHARGE and SPIM MULTIPLICITY - Molecule specification 1
             writer.write(ch + " " + sm + "\n");
@@ -821,7 +661,7 @@ public class GaussianInputWriter extends Worker
                               p3d.y + "     " +
                               p3d.z + "     \n");
             }
-            writer.write("\n"); // blanck line terminated section
+            writer.write("\n"); // Black line terminated section
 
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Failure in writing Gaussian "
@@ -840,7 +680,7 @@ public class GaussianInputWriter extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Write multi step Gaussian input file, either Single- or multi-step job, 
+     * Write multistep Gaussian input file, either Single- or multi-step job, 
      * using only the setting provided in constructing this GaussianInputWriter
      */
 

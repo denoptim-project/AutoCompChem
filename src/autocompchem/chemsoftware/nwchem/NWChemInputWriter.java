@@ -41,7 +41,135 @@ import autocompchem.worker.WorkerFactory;
  * NWChem in the form of 
  * a formatted text file that is referred to as the "jobDetails" file 
  * (see {@link NWChemJob} and {@link NWChemTask}).
- * 
+ * Parameters used by this worker:
+ * <ul>
+ * <li>
+ * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
+ * </li>
+ * <li>
+ * (optional) <b>MULTIGEOMNWCHEM</b>: use this parameter to provide names 
+ * for the geometry/ies (all space-free names listed in one single line, 
+ * space-separated). When this parameter is used all the geometries in the 
+ * input molecular structure file (i.e., SDF or XYZ) are written into the 
+ * first task of the NWChem job with unique atom tags. Basis set and 
+ * constrains are also generated for all the geometries. 
+ * This parameter
+ * can also be specified in the first task of the job details file 
+ * by prepending (i.e., add at the beginning) the
+ * {@value autocompchem.chemsoftware.nwchem.NWChemConstants#LABPARAMS}
+ * label. 
+ * </li>
+ * <li>(optional) <b>USESAMETAGSFORMULTIGEOM</b>: imposes to use the same
+ * atom tag through all geometries. We assume that all the 
+ * geometries are consistent (i.e., same atom list).
+ * This parameter
+ * can also be specified in the first task of the job details file
+ * by prepending (i.e., add at the beginning) the
+ * {@value autocompchem.chemsoftware.nwchem.NWChemConstants#LABPARAMS}
+ * label.
+ * </li>
+ * <li>
+ * <b>JOBDETAILS</b>: formatted text file defining all
+ * the details of a {@link NWChemJob}.
+ * The definition of the format of jobdetails files can be found in
+ * {@link NWChemJob} documentation.
+ * </li>
+ * <li>
+ * (optional) <b>VERBOSITY</b> verbosity level.
+ * </li>
+ * <li>
+ * (optional) <b>OUTFILE</b> name of the output file (the input for NWChem).
+ * If this option is omitted the default name of the output is build from 
+ * the root of the structure file name given in the INFILE parameter.
+ * </li>
+ * </ul>
+ * Optional parameters not needed if JOBDETAILS option is in use, but
+ * that will overwrite JOBDETAILS specifications if both JOBDETAILS and
+ * these options are specified in the {@link ParameterStorage}.
+ * <ul>
+ * <li>
+ * (optional) <b>TITLE</b> title line for the output file
+ * </li>
+ * <li>
+ * (optional) <b>CHARGE</b> the charge of the chemical system
+ * </li>
+ * <li>
+ * (optional) <b>SPIN_MULTIPLICITY</b> the spin multiplicity of the
+ * chemical system
+ * </li>
+ * <li>
+ * (optional) <b>COORDINATESTYPE</b> the type of coordinates (Cartesian or
+ * internal) to be used for the input file of NWChem (Default: Cartesian).
+ * </li>
+ * <li>
+ * (optional) <b>FREEZEIC</b> define frozen internal coordinates 
+ * (i.e., constants).
+ * To identify the IC to freeze, SMARTS queries are used.
+ * A multi line block (see {@link autocompchem.datacollections.Parameter}) 
+ * can be used defining one 
+ * SMARTS query per line.
+ * </li>
+ * <li>
+ * (optional) <b>FREEZEATM</b> define frozen atoms when using Cartesian
+ * coordinates.
+ * SMARTS queries are used to identify atoms to freeze; one SMARTS per line.
+ * </li>
+ * <li>
+ * (optional) <b>ZCOORD</b> can also be used to freeze redundant internal
+ * coordinates and eventually release such constraints.
+ * This only works if
+ * the geometry is written with Cartesian coordinates and NWChem
+ * uses the "autoz" module to generate the redundant
+ * internal coordinated (NB: the "autoz" keyword is active by default)
+ * SMARTS queries are used to identify the specific classes of internal
+ * coordinates (IC) that will be listed in the ZCOORD directive.
+ * Single-atom SMARTS (i.e., must be enclosed in square brackets, eg. [C])
+ * are used to define a single atom type. Combinations of 2, 3, or 4
+ * whitespace-separated single-atom SMARTS are used to refer to stretching,
+ * bending, or torsion types of ICs.
+ * All n-tuple (n=2,3,4) of matching atoms that are also properly connected
+ * are considered.
+ * After the 2/3/4 single-atom SMARTS
+ * the user can add one numerical value and/or the <code>constant</code>
+ * keyword that will apply to all ICs matched by the combination of
+ * single-atom SMARTS.
+ * A multi line block (see {@link autocompchem.datacollections.Parameter}) is used to
+ * define one set of SMARTS queries (plus additional keywords-
+ * related to that
+ * class of IC) per each line.
+ * <pre>
+ * $STARTZCOORD:
+ * [C] [$(C(~[N])~C)] 1.5 constant
+ * [*] [$(C(~[N])~C)] [*] 120.000 constant
+ * [*] [$(C(~[N])~C)] [C] [*]
+ * $END
+ * </pre>
+ * </li>
+ * </ul>
+ * <p>
+ * Note that parameters specified in the contructor by means of the 
+ * {@link ParameterStorage} will take effect from
+ * the first {@link NWChemTask} of the generated {@link NWChemJob} 
+ * and will be effective until new instructions (i.e., keyword, directive) 
+ * are given into the {@link NWChemJob}.
+ * To specify task-specific parameters, i.e., parameters that are meant 
+ * for a specific {@link NWChemTask} in the {@link NWChemJob}, use the
+ * jobDetails file (see the use of label
+ * {@value autocompchem.chemsoftware.nwchem.NWChemConstants#LABPARAMS} 
+ * in {@link NWChemTask}).
+ * </p>
+ * The
+ * parameters are red and interpreted so to alter the features of single
+ * NWChemTask (or step) in the NWChemJob. Currently supported task-
+ * specific parameters are:
+ * <ul>
+ * <li>FREEZEIC</li>
+ * <li>FREEZEATM</li>
+ * <li>CHARGE</li>
+ * <li>SPIN_MULTIPLICITY</li>
+ * <li>ZCOORD</li>
+ * </ul> 
+ *
  * @author Marco Foscato
  */
 
@@ -180,162 +308,6 @@ public class NWChemInputWriter extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
-
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty NWChemInputWriter
-     */
-/*
-    public NWChemInputWriter()
-    {
-    }
-*/
-//------------------------------------------------------------------------------
-
-    //TODO: move to class doc
-    /**
-     * Construct a new NWChemInputWriter using the 
-     * {@link autocompchem.datacollections.Parameter}s 
-     * taken from a
-     * {@link autocompchem.datacollections.ParameterStorage}.
-     * <br>
-     * <ul>
-     * <li>
-     * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
-     * </li>
-     * <li>
-     * (optional) <b>MULTIGEOMNWCHEM</b>: use this parameter to provide names 
-     * for the geometry/ies (all space-free names listed in one single line, 
-     * space-separated). When this parameter is used all the geometries in the 
-     * input molecular structure file (i.e., SDF or XYZ) are written into the 
-     * first task of the NWChem job with unique atom tags. Basis set and 
-     * constrains are also generated for all the geometries. 
-     * This parameter
-     * can also be specified in the first task of the job details file 
-     * by prepending (i.e., add at the beginning) the
-     * {@value autocompchem.chemsoftware.nwchem.NWChemConstants#LABPARAMS}
-     * label. 
-     * </li>
-     * <li>(optional) <b>USESAMETAGSFORMULTIGEOM</b>: imposes to use the same
-     * atom tag through all geometries. We assume that all the 
-     * geometries are consistent (i.e., same atom list).
-     * This parameter
-     * can also be specified in the first task of the job details file
-     * by prepending (i.e., add at the beginning) the
-     * {@value autocompchem.chemsoftware.nwchem.NWChemConstants#LABPARAMS}
-     * label.
-     * </li>
-     * <li>
-     * <b>JOBDETAILS</b>: formatted text file defining all
-     * the details of a {@link NWChemJob}.
-     * The definition of the format of jobdetails files can be found in
-     * {@link NWChemJob} documentation.
-     * </li>
-     * <li>
-     * (optional) <b>VERBOSITY</b> verbosity level.
-     * </li>
-     * <li>
-     * (optional) <b>OUTFILE</b> name of the output file (the input for NWChem).
-     * If this option is omitted the default name of the output is build from 
-     * the root of the structure file name given in the INFILE parameter.
-     * </li>
-     * </ul>
-     * Optional parameters not needed if JOBDETAILS option is in use, but
-     * that will overwrite JOBDETAILS specifications if both JOBDETAILS and
-     * these options are specified in the {@link ParameterStorage}.
-     * <ul>
-     * <li>
-     * (optional) <b>TITLE</b> title line for the output file
-     * </li>
-     * <li>
-     * (optional) <b>CHARGE</b> the charge of the chemical system
-     * </li>
-     * <li>
-     * (optional) <b>SPIN_MULTIPLICITY</b> the spin multiplicity of the
-     * chemical system
-     * </li>
-     * <li>
-     * (optional) <b>COORDINATESTYPE</b> the type of coordinates (Cartesian or
-     * internal) to be used for the input file of NWChem (Default: Cartesian).
-     * </li>
-     * <li>
-     * (optional) <b>FREEZEIC</b> define frozen internal coordinates 
-     * (i.e., constants).
-     * To identify the IC to freeze, SMARTS queries are used.
-     * A multi line block (see {@link autocompchem.datacollections.Parameter}) 
-     * can be used defining one 
-     * SMARTS query per line.
-     * </li>
-     * <li>
-     * (optional) <b>FREEZEATM</b> define frozen atoms when using Cartesian
-     * coordinates.
-     * SMARTS queries are used to identify atoms to freeze; one SMARTS per line.
-     * </li>
-     * <li>
-     * (optional) <b>ZCOORD</b> can also be used to freeze redundant internal
-     * coordinates and eventually release such constraints.
-     * This only works if
-     * the geometry is written with Cartesian coordinates and NWChem
-     * uses the "autoz" module to generate the redundant
-     * internal coordinated (NB: the "autoz" keyword is active by default)
-     * SMARTS queries are used to identify the specific classes of internal
-     * coordinates (IC) that will be listed in the ZCOORD directive.
-     * Single-atom SMARTS (i.e., must be enclosed in square brackets, eg. [C])
-     * are used to define a single atom type. Combinations of 2, 3, or 4
-     * whitespace-separated single-atom SMARTS are used to refer to stretching,
-     * bending, or torsion types of ICs.
-     * All n-tuple (n=2,3,4) of matching atoms that are also properly connected
-     * are considered.
-     * After the 2/3/4 single-atom SMARTS
-     * the user can add one numerical value and/or the <code>constant</code>
-     * keyword that will apply to all ICs matched by the combination of
-     * single-atom SMARTS.
-     * A multi line block (see {@link autocompchem.datacollections.Parameter}) is used to
-     * define one set of SMARTS queries (plus additional keywords-
-     * related to that
-     * class of IC) per each line.
-     * <pre>
-     * $STARTZCOORD:
-     * [C] [$(C(~[N])~C)] 1.5 constant
-     * [*] [$(C(~[N])~C)] [*] 120.000 constant
-     * [*] [$(C(~[N])~C)] [C] [*]
-     * $END
-     * </pre>
-     * </li>
-     * </ul>
-     * <p>
-     * Note that parameters specified in the contructor by means of the 
-     * {@link ParameterStorage} will take effect from
-     * the first {@link NWChemTask} of the generated {@link NWChemJob} 
-     * and will be effective until new instructions (i.e., keyword, directive) 
-     * are given into the {@link NWChemJob}.
-     * To specify task-specific parameters, i.e., parameters that are meant 
-     * for a specific {@link NWChemTask} in the {@link NWChemJob}, use the
-     * jobDetails file (see the use of label
-     * {@value autocompchem.chemsoftware.nwchem.NWChemConstants#LABPARAMS} 
-     * in {@link NWChemTask}).
-     * </p>
-     * The
-     * parameters are red and interpreted so to alter the features of single
-     * NWChemTask (or step) in the NWChemJob. Currently supported task-
-     * specific parameters are:
-     * <ul>
-     * <li>FREEZEIC</li>
-     * <li>FREEZEATM</li>
-     * <li>CHARGE</li>
-     * <li>SPIN_MULTIPLICITY</li>
-     * <li>ZCOORD</li>
-     * </ul> 
-     *
-     *  @param params object {@link ParameterStorage} containing all the
-     * parameters needed
-     */
-/*
-    public NWChemInputWriter(ParameterStorage params)
-    {
-    */
 
 //-----------------------------------------------------------------------------
 
@@ -702,22 +674,6 @@ public class NWChemInputWriter extends Worker
             map.put(sortedMasterNames.get(ii),lstDetails);
         }
 
-//TODO del
-/*
-System.out.println("----");
-for (String k : sortedMasterNames)
-{
-    String l = "";
-    for (String s : smarts.keySet())
-    {
-        if (s.startsWith(k))
-        {
-            l = l + s + ":" + smarts.get(s);
-        }
-    }
-    System.out.println(" " + k + " " + l + " " + map.get(k));
-}
-*/
         return map;
     }
 
@@ -797,7 +753,7 @@ for (String k : sortedMasterNames)
 //------------------------------------------------------------------------------
 
     /**
-     * Imports the SMARTS for freezeng atoms in Cartesian coords
+     * Imports the SMARTS for freezing atoms in Cartesian coords
      * @param allLines the string collecting all lines and including newline 
      * characters; this is the format the SMARTS strings are stored in a
      * ParametersStorage object
@@ -903,8 +859,8 @@ for (String k : sortedMasterNames)
 
                 //
                 // WARNING! The directive name becomes "GEOMETRY geomName".
-                // This is because GEOMETRY directive can appear more than ia
-                // a single NWChem task. To male it unique we coulde the
+                // This is because GEOMETRY directive can appear more than is
+                // a single NWChem task. To male it unique we could the
                 // geometry name (i.e., the default is "geometry" to the the 
                 // name of the directive (i.e., "GEOMETRY").
                 //
@@ -1009,7 +965,7 @@ for (String k : sortedMasterNames)
                 }
             }
 
-            //Remove unspecific geometry directives
+            //Remove aspecific geometry directives
             for (int i=0; i<nwcJob.getNumberOfSteps(); i++)
             {
                 nwcJob.getStep(i).deleteDirective(new ArrayList<String>(),
@@ -1197,8 +1153,8 @@ for (String k : sortedMasterNames)
      * name of the geometry (i.e., by default "geometry") to the name of the 
      * directive (i.e., "GEOMETRY" in the current versions on NWChem).
      * @param reprtition an integer indicating if this is a repetition due
-     * to molti-geometry input. Use zero to remove any effect of this 
-     * parameter. Non-zero values make the method avoid to add redudant infos.
+     * to multi-geometry input. Use zero to remove any effect of this 
+     * parameter. Non-zero values make the method avoid to add redundant info.
      */ 
 
     private void processTaskSpecificACCParams(NWChemTask task, 
@@ -1314,7 +1270,7 @@ for (String k : sortedMasterNames)
                 }
                 atmSpecBSParam.setValue(sb.toString());
 
-                // Allow some partial assigniation
+                // Allow some partial assignation
                 locPars.setParameter(BasisSetConstants.ALLOWPARTIALMATCH, 
                              new Parameter(BasisSetConstants.ALLOWPARTIALMATCH,
                             		 NamedDataType.BOOLEAN, "true"));

@@ -14,7 +14,7 @@ import autocompchem.worker.WorkerFactory;
  * Main for AtomCompChem (Automated Computational Chemist). The entry point
  * for both CLI and GUI based runs.
  *
- * @version 25 Nov 2013
+ * @version 3 Aug 2020
  * @author Marco Foscato
  */
 
