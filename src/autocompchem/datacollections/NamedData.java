@@ -58,6 +58,7 @@ public class NamedData
         INTEGER,
         BOOLEAN,
         IATOMCONTAINER,
+        SITUATION,
         FILE};
 
 //------------------------------------------------------------------------------

@@ -22,8 +22,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import autocompchem.files.FilesComparatorByName;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileComparatorByName;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 
 /**
@@ -56,10 +56,10 @@ public class ErrorManager
     public static ArrayList<ErrorMessage> getAll(String path)
     {
         ArrayList<ErrorMessage> listErrors = new ArrayList<ErrorMessage>();
-        ArrayList<File> listFiles = FilesManager.find(path,"*.err");
+        ArrayList<File> listFiles = FileUtils.find(path,"*.err");
 
         //sort ascending=true
-        Collections.sort(listFiles, new FilesComparatorByName(true));
+        Collections.sort(listFiles, new FileComparatorByName(true));
 
         for (File f : listFiles)
         {

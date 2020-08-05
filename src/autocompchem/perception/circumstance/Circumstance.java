@@ -29,7 +29,7 @@ import autocompchem.perception.infochannel.InfoChannelType;
 public class Circumstance implements ICircumstance
 {
     /**
-     * Information channel where this circumstnce occurs
+     * Information channel where this circumstance occurs
      */
     private InfoChannelType ict = InfoChannelType.NOTDEFINED;
 
@@ -51,8 +51,7 @@ public class Circumstance implements ICircumstance
      */
 
     public Circumstance()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -68,11 +67,11 @@ public class Circumstance implements ICircumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Calculate the satisfation score. A real value between 0.0 and 1.0
+     * Calculate the satisfaction score. A real value between 0.0 and 1.0
      * where 0.0 means "conditions not satisfied" and 1.0 means
      * "condition fully satisfied".
-     * @param input an object thst contains all information
-     * needed to calculate the satisfaation score. Can be null if not needed.
+     * @param input an object that contains all information
+     * needed to calculate the satisfaction score. Can be null if not needed.
      * @return numerical score 
      */
 
@@ -110,7 +109,7 @@ public class Circumstance implements ICircumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Identifyies the circumstance as one that requires to match strings
+     * Identifies the circumstance as one that requires to match strings
      * @return <code>true</code> if there is a string query to be matched
      */
 
@@ -121,16 +120,17 @@ public class Circumstance implements ICircumstance
 
 //------------------------------------------------------------------------------
 
+    //TODO
     /**
-     * Convert a score from numeric to boolean. Usea a threshold that can be set
-     * by method ___.
+     * Convert a score from numeric to boolean. Uses a threshold that can be set
+     * by method ___TODO: write method__.
      * @param dScore the score in numeric double
      * @return a true/false value
      */
 
     public boolean scoreToDecision(double dScore)
     {
-        Boolean res = new Boolean(false);
+        Boolean res = false;
         if (dScore >= scoreThreshold)
         {
             res = true;

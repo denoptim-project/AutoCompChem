@@ -41,7 +41,7 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
@@ -204,7 +204,7 @@ public class ZMatrixHandler extends Worker
         if (params.contains("INFILE"))
         {
 	        this.inFile = params.getParameter("INFILE").getValue().toString();
-	        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+	        FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
         //Get the input molecule as an object
@@ -218,7 +218,7 @@ public class ZMatrixHandler extends Worker
         if (params.contains("INFILE2"))
         {
             this.inFile2 = params.getParameter("INFILE2").getValue().toString();
-            FilesManager.foundAndPermissions(this.inFile2,true,false,false);
+            FileUtils.foundAndPermissions(this.inFile2,true,false,false);
         }
        
         //Get the template ZMatrix
@@ -246,7 +246,7 @@ public class ZMatrixHandler extends Worker
         if (params.contains("OUTFILE"))
         {
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
     }
     

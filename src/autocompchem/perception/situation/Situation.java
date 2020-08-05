@@ -1,8 +1,10 @@
 package autocompchem.perception.situation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /*
  *   Copyright (C) 2018  Marco Foscato
@@ -28,28 +30,37 @@ import javax.servlet.jsp.el.VariableResolver;
 
 import org.apache.commons.el.ExpressionEvaluatorImpl;
 
+import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
+import autocompchem.perception.circumstance.Circumstance;
+import autocompchem.perception.circumstance.CircumstanceFactory;
 import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.LoopCounter;
+import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.run.Terminator;
+import autocompchem.workflow.task.Action;
 import autocompchem.workflow.task.IAction;
 
 
 /**
- * A situation is a concept in a context, which is defined by a satisfied set 
- * of circumstances, and may trigger a response/impusle.
+ * A situation is a concept in a context. 
+ * The context is defined by a satisfied set of circumstances. 
+ * A situation, once verified, can trigger a response/impulse.
  *
  * @author Marco Foscato
  */
 
 public class Situation extends Concept
-{
-    /**
+{   
+	/**
      * Details describing this situation
      */
     private String description = "no detail";
 
     /**
-     * The context that characterize this situation is defined by a set 
+     * The context that characterise this situation is defined by a set 
      * of circumstances
      */
      private ArrayList<ICircumstance> context = new ArrayList<ICircumstance>();
@@ -79,7 +90,7 @@ public class Situation extends Concept
     {
         super();
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -104,6 +115,127 @@ public class Situation extends Concept
     {
         super(conceptType);
         this.context = context;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructs a new situation from a file.
+     * @param file the file we read to make this object
+     * @throws exception if the file cannot be properly converted or read
+     */
+
+    public Situation(File file) throws Exception
+    {
+        super();
+        
+    	String format = FileUtils.getFileExtension(file).toUpperCase();
+    	
+    	// TODO: detect format from file content
+    	
+		switch (format)
+		{
+			case SituationConstants.SITUATIONTXTFILEEXT:
+				makeFromTxtFile(file);
+				break;
+				
+			default:
+				makeFromTxtFile(file);
+				break;
+		}
+	}
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Creates a situation from a file
+     * @param pathname of file to read
+     * @return the object
+     * @throws exception if the file cannot be properly converted or read
+     */
+    
+    private void makeFromTxtFile(File f) throws Exception
+    {
+    	    
+	    //Read file
+	    String fname = f.toString();
+	    ArrayList<ArrayList<String>> form = IOtools.readFormattedText(
+	    		fname,
+	    		SituationConstants.SEPARATOR, //key-value separator
+	    		SituationConstants.COMMENTLINE,
+	    		SituationConstants.STARTMULTILINE,
+	    		SituationConstants.ENDMULTILINE);
+	
+        boolean refNameFound = false;
+        boolean actionFound = false;
+        for (int i=0; i<form.size(); i++)
+        {
+            ArrayList<String> signleBlock = form.get(i);
+            String key = signleBlock.get(0);
+            String value = signleBlock.get(1);
+            value = value.trim();
+            switch (key)
+            {
+            	case SituationConstants.SITUATIONTYPE:
+            		this.setType(value);
+            		break;
+            		
+                case SituationConstants.REFERENCENAMELINE:
+                    if (!refNameFound)
+                    {
+                        refNameFound = true;
+                        this.setRefName(value);
+                        if (this.getRefName().equals(""))
+                        {
+                            Terminator.withMsgAndStatus("Empty '"
+                                    + SituationConstants.REFERENCENAMELINE
+                                    + "' while defining a Situation from text" 
+                                    + " file. Check file '" + fname + "'.",-1);
+                        }
+                    } else {
+                        throw new Exception("Multiple '"
+                                    + SituationConstants.REFERENCENAMELINE 
+                                    + "' while defining a Situation from text"
+                                    + " file. Check file '" + fname + "'.");
+                    }
+                    break;
+                    
+                case SituationConstants.CIRCUMSTANCE:
+                	Circumstance circ = CircumstanceFactory.createFromString(
+                			value);
+                	this.addCircumstance(circ);
+                	break;
+                	
+                case SituationConstants.ACTION:
+                    if (!actionFound)
+                    {
+                        actionFound = true;
+                        
+                        //TODO: decode text to make impulse
+                        
+                        if (impulse.isEmpty())
+                        {
+                        	throw new Exception("Coul not read impulse "
+                                    + " while defining a Situation from text"
+                                    + " file. Check file '" + fname + "'.");
+                        }
+                    } else {
+                        throw new Exception("Multiple '"
+                                    + SituationConstants.ACTION 
+                                    + "' while defining a Situation from text"
+                                    + " file. Check file '" + fname + "'.");
+                    }
+                	break;
+            } //end of switch
+        } //end of loop on array of pairs key:value
+        
+        
+        //Checking requirements
+        if (refNameFound)
+        {
+        	throw new Exception("No reference name found for situation defined "
+        			+ "in file '" + f.getAbsolutePath()+ "'");
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -132,7 +264,7 @@ public class Situation extends Concept
 //------------------------------------------------------------------------------
 
     /**
-     * Return the list of circumstances that identify the context surrouding 
+     * Return the list of circumstances that identify the context surrounding 
      * the concept of this situation
      * @return the circumstances
      */
@@ -145,7 +277,7 @@ public class Situation extends Concept
 //------------------------------------------------------------------------------
 
     /**
-     * Sets the logical expression for drawing conclusions from the satisfation
+     * Sets the logical expression for drawing conclusions from the satisfaction
      * of the circumstances.
      */
  
@@ -157,7 +289,7 @@ public class Situation extends Concept
 //------------------------------------------------------------------------------
 
     /**
-     * Extract all the information channel types involved in the cefinition of
+     * Extract all the information channel types involved in the definition of
      * this situation's context
      * @return all relevant information channel types
      */
@@ -176,7 +308,7 @@ public class Situation extends Concept
 
     /**
      * Map of variables that links (i.e., resolves) the name of a variable 
-     * with its value, whathever that might be.
+     * with its value, whatever that might be.
      */
 
     private class MyVariableResolver implements VariableResolver 
@@ -188,7 +320,7 @@ public class Situation extends Concept
         }
 
         /**
-         * @return the value of a given variable, whayever that might be
+         * @return the value of a given variable, whatever that might be
          */
 
         public Object resolveVariable(String pName)
@@ -203,7 +335,7 @@ public class Situation extends Concept
      * Checks if all circumstances are satisfied. This method evaluates 
      * the logical expression that puts in relation all the 
      * circumstances and returns the boolean result.
-     * @param fingerprint is the list of satisfation flags one for each 
+     * @param fingerprint is the list of satisfaction flags one for each 
      * circumstance in the same order of the circumstances.
      * @return the result of the logical expression.
      */
@@ -214,7 +346,7 @@ public class Situation extends Concept
         if (fingerprint.size() != context.size())
         {
             //TODO move to ERROR
-            throw new Exception("ERROR! Number of satisfation flags ("
+            throw new Exception("ERROR! Number of satisfaction flags ("
                                  + fingerprint.size() + ") "
                                  + "differs from the number of "
                                  + "circumstances (" + context.size() + ")");

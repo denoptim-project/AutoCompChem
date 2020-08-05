@@ -30,8 +30,8 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 
 
@@ -87,7 +87,7 @@ See {@Link JobTest} for a possible solution.
             assertTrue(outFile.exists(), "Log file should exist");
             
 
-            ArrayList<String> resLines = FilesAnalyzer.grep(outFile.getAbsolutePath(), 
+            ArrayList<String> resLines = FileAnalyzer.grep(outFile.getAbsolutePath(), 
             		new HashSet<String>(Arrays.asList("RESULT")));
             
             assertEquals(2,resLines.size(),"Number of matches in log file");

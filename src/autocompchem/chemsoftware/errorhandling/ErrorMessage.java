@@ -76,7 +76,7 @@ public class ErrorMessage
      * Construct an <code>ErrorMessage</code> from formatted text given as an
      * <code>ArrayList</code> in which each item is a line of formatted text to
      * be interpreted. The lines are expected to be ordered only for 
-     * labeled blocks (see below), that is, the beginning of the block must
+     * Labelled blocks (see below), that is, the beginning of the block must
      * come before the end.
      * The format of the text is divided into three categories:
      * <ol>
@@ -89,7 +89,7 @@ public class ErrorMessage
      * (label <code>$END</code>). Labeled blocks are used to provide complex 
      * information, such as the details for error fixing actions.</li>
      * <li><b>Comments</b>: each line starting with <code>#</code> is ignored
-     * unless is part of a labeled block.</li>
+     * unless is part of a labelled block.</li>
      * </ol>
      * According to this scheme the following keywords are required to define
      *  <code>ErrorMessage</code> from a text file:
@@ -103,9 +103,9 @@ public class ErrorMessage
      * Optionally, error fixing actions may be defined as follows:
      * <ul>
      * <li><b>Action</b>: a single word defining the type of action to be 
-     * undertaken in case the error is found and recognized.</li>
+     * undertaken in case the error is found and recognised.</li>
      * <li>detailed information needed to perform the error fixing action
-     *  is provided in the form of labeled blocks according to the needs
+     *  is provided in the form of labelled blocks according to the needs
      *  of the specific case.</li>
      * </ul>
      * <br>
@@ -122,11 +122,11 @@ public class ErrorMessage
      * <b>Condition</b>: type_of_action  argument_for_the_action<br>
      * <b>Condition</b>: 2nd_type_of_action  argument_for_the_2nd_action<br>
      * <b>Action</b>: type_of_error_fixing_action
-     * #Note where id the keyword for the following labeled block: right 
+     * #Note where id the keyword for the following labelled block: right 
      * after the $START label.<br>
      * <b>$STARTthis_is_the_keyword</b><br>
      * ... bla bla, details for error fixing action...<br>
-     * # By the way, this is NOT a comment as it belong to a labeled block
+     * # By the way, this is NOT a comment as it belong to a labelled block
      *  of text. Thus it will be transmitted to the routines performing the
      *  error fixing action.<br>
      * ... bla bla, some other details for error fixing action...<br>
@@ -258,7 +258,7 @@ public class ErrorMessage
 //------------------------------------------------------------------------------
 
     /**
-     * Add a line in the error message characterizing this error
+     * Add a line in the error message characterising this error
      * @param errLine the line to add
      */
 
@@ -282,8 +282,8 @@ public class ErrorMessage
 //------------------------------------------------------------------------------
 
     /**
-     * Get the whole list of lines characterizing the error message
-     * @return the list of lines of text characterizing this error message
+     * Get the whole list of lines characterising the error message
+     * @return the list of lines of text characterising this error message
      */
 
     public ArrayList<String> getErrorMessage()
@@ -342,7 +342,7 @@ public class ErrorMessage
 //------------------------------------------------------------------------------
 
     /**
-     * Set the whole list of error messages characterizing that are used to 
+     * Set the whole list of error messages characterising that are used to 
      * identify this <code>ErrorMessage</code>
      * @param errMsg the list of lines of text identifying this error message
      */

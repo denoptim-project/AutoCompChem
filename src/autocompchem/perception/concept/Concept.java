@@ -30,6 +30,11 @@ public class Concept implements Cloneable
      * Type of concept
      */
     private String type;
+    
+    /**
+     * Reference name of this concept
+     */
+    private String refName;
 
 //------------------------------------------------------------------------------
 
@@ -55,12 +60,59 @@ public class Concept implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * Constructor for an given type of concept
+     * @param type of the concept to be constructed
+     */
+    public Concept(String type, String refName)
+    {
+        this.type = type;
+        this.refName = refName;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the type of this concept
+     * @param type
+     */
+    
+    public void setType(String type)
+    {
+    	this.type = type;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the type of this concept
+     * @param type
+     */
+    
+    public void setRefName(String refName)
+    {
+    	this.refName = refName;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the type of this concept
      * @return the type
      */
     public String getType()
     {
         return type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the reference name of this concept
+     * @return the name
+     */
+    public String getRefName()
+    {
+        return refName;
     }
 
 //------------------------------------------------------------------------------
@@ -72,7 +124,7 @@ public class Concept implements Cloneable
 
     public String toString()
     {
-        String s = super.toString() + " " + type;
+        String s = super.toString() + " " + type + " " + refName;
         return s;
     }
 

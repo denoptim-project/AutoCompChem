@@ -19,7 +19,7 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
@@ -251,7 +251,7 @@ public class MolecularGeometryEditor extends Worker
         {
             inpFromFile = true;
             this.inFile = params.getParameter("INFILE").getValue().toString();
-            FilesManager.foundAndPermissions(this.inFile,true,false,false);
+            FileUtils.foundAndPermissions(this.inFile,true,false,false);
             ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
             if (inMols.size() != 1)
             {
@@ -267,7 +267,7 @@ public class MolecularGeometryEditor extends Worker
         {
             outToFile = true;
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
 
         // Get the Cartesian move
@@ -275,7 +275,7 @@ public class MolecularGeometryEditor extends Worker
         {
             String crtFile = 
                      params.getParameter("CARTESIANMOVE").getValue().toString();
-            FilesManager.foundAndPermissions(crtFile,true,false,false);
+            FileUtils.foundAndPermissions(crtFile,true,false,false);
             ArrayList<String> all = IOtools.readTXT(crtFile);
             for (String line : all)
             {
@@ -376,7 +376,7 @@ public class MolecularGeometryEditor extends Worker
         {
             String zmtFile =
                        params.getParameter("ZMATRIXMOVE").getValue().toString();
-            FilesManager.foundAndPermissions(zmtFile,true,false,false);
+            FileUtils.foundAndPermissions(zmtFile,true,false,false);
             if (IOtools.readZMatrixFile(zmtFile).size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! Found multiple ZMatrices "
@@ -390,7 +390,7 @@ public class MolecularGeometryEditor extends Worker
         {
             this.refFile = params.getParameter("REFERENCESUBSTRUCTUREFILE")
                                                          .getValue().toString();
-            FilesManager.foundAndPermissions(this.refFile,true,false,false);
+            FileUtils.foundAndPermissions(this.refFile,true,false,false);
             ArrayList<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
             if (refMols.size() != 1)
             {

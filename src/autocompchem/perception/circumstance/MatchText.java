@@ -88,7 +88,7 @@ public class MatchText extends Circumstance
      * Constructs a MatchText defining the pattern to match
      * @param pattern the pattern to be matches
      * @param negation if true the condition is satisfied if the pattern is 
-     * not mathed.
+     * not matched.
      */
 
     public MatchText(String pattern, boolean negation)
@@ -105,7 +105,7 @@ public class MatchText extends Circumstance
      * Constructs a MatchText defining the pattern to match
      * @param pattern the pattern to be matches
      * @param negation if true the condition is satisfied if the pattern is
-     * not mathed.
+     * not matched.
      * @param channel the information channel where to search for this loop
      * counter.
      */
@@ -133,11 +133,11 @@ public class MatchText extends Circumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Calculate the satisfation score. A real value between 0.0 and 1.0
+     * Calculate the satisfaction score. A real value between 0.0 and 1.0
      * where 0.0 means "conditions not satisfied" and 1.0 means
      * "condition fully satisfied".
      * @param input an object that contains all information
-     * needed to calculate the satisfation score. Can be null if not needed.
+     * needed to calculate the satisfaction score. Can be null if not needed.
      * @return numerical score
      */
 
@@ -153,7 +153,7 @@ public class MatchText extends Circumstance
         }
         else
         {
-            //TODO: here we can make the socre dependent on #matches 
+            //TODO: here we can make the score dependent on #matches 
             if (matches.size() > 0)
             {
                 score = 1.0;

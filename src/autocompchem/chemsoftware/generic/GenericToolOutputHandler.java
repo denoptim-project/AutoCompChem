@@ -28,8 +28,8 @@ import java.util.Set;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -136,7 +136,7 @@ public class GenericToolOutputHandler extends Worker
         //Get and check the input file (which is an output from GenericTool)
         this.inFile = params.getParameter(
                    GenericToolConstants.INPUTFILENAMEKEY).getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the list of known errors
         String errDefPath = params.getParameter(
@@ -145,7 +145,7 @@ public class GenericToolOutputHandler extends Worker
         {
             System.out.println(" Importing known errors from " + errDefPath);
         }
-        FilesManager.foundAndPermissions(errDefPath,true,false,false);
+        FileUtils.foundAndPermissions(errDefPath,true,false,false);
         this.errorDef = ErrorManager.getAll(errDefPath);
     }
 
@@ -195,7 +195,7 @@ public class GenericToolOutputHandler extends Worker
         patterns.add(gtParams.getOutputInitialMsg());
         patterns.add(gtParams.getOutputNormalEndMsg());
         ArrayList<ArrayList<Integer>> countsAndLineNum = 
-                                           FilesAnalyzer.count(inFile,patterns);
+                                           FileAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
         ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
         ArrayList<ArrayList<Integer>> lineNums = 

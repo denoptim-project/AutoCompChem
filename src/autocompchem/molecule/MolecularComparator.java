@@ -34,7 +34,7 @@ import com.hp.hpl.jena.graph.query.PatternStageBase.Work;
 
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
@@ -162,17 +162,17 @@ public class MolecularComparator extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the reference file (which has to be an SDF file)
         this.refFile = params.getParameter("REFERENCE").getValue().toString();
-        FilesManager.foundAndPermissions(this.refFile,true,false,false);
+        FileUtils.foundAndPermissions(this.refFile,true,false,false);
 
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
 
         //Get and check optional file for rotated output
@@ -180,7 +180,7 @@ public class MolecularComparator extends Worker
         {
             this.rotatedFile = 
                         params.getParameter("ROTATEDOUT").getValue().toString();
-            FilesManager.mustNotExist(this.rotatedFile);
+            FileUtils.mustNotExist(this.rotatedFile);
         }
 
         //Get the SMARTS query identifying target atoms

@@ -13,7 +13,7 @@ import autocompchem.io.IOtools;
  * @author Marco Foscato
  */
 
-public class FilesAnalyzerTest 
+public class FileAnalyzerTest 
 {
     @Test
     public void testCountMatches() throws Exception
@@ -23,7 +23,7 @@ public class FilesAnalyzerTest
         IOtools.writeTXTAppend(tmpPathName,"Second line",true);
         IOtools.writeTXTAppend(tmpPathName,"Third line",true);
         
-        assertEquals(3,FilesAnalyzer.count(tmpPathName,"line"),"Total matches");
+        assertEquals(3,FileAnalyzer.count(tmpPathName,"line"),"Total matches");
     }
 
 }

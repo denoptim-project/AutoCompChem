@@ -32,7 +32,7 @@ public interface ICircumstance
 
     /**
      * Return the data channel, or feed, this circumstance relates to
-     * @return the data chennel
+     * @return the data channel
      */
 
     public InfoChannelType getChannelType();
@@ -40,7 +40,7 @@ public interface ICircumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Identifyies the circumstance as one that requires to match strings
+     * Identifies the circumstance as one that requires to match strings
      * @return <code>true</code> if there is a string query to be matched
      */
 
@@ -48,9 +48,10 @@ public interface ICircumstance
 
 //------------------------------------------------------------------------------
 
+    //TODO
     /**
-     * Convert a score from numeric to boolean. Usea a threshold that can be set
-     * by method ___.
+     * Convert a score from numeric to boolean. Uses a threshold that can be set
+     * by method ___TODO:write name___.
      * @param dScore the score in numeric double
      * @return a true/false value
      */

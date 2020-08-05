@@ -21,7 +21,7 @@ import java.io.FileReader;
 
 import java.io.Reader;
 
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.run.Terminator;
 
 /**
@@ -85,7 +85,7 @@ public class FileAsSource extends InfoChannel
 
     public Reader getSourceReader()
     {
-        FilesManager.foundAndPermissions(pathName,true,false,false);
+        FileUtils.foundAndPermissions(pathName,true,false,false);
         try
         {
             super.reader = new FileReader(pathName);

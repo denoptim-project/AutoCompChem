@@ -32,7 +32,7 @@ import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -222,14 +222,14 @@ public class NWChemReStarter extends Worker
 
         //Get and check the input file (which is an output from NWChem)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the output file (which is an input for NWChem)
         this.nwFile = params.getParameter("NEWNWFILE").getValue().toString();
-        FilesManager.mustNotExist(this.nwFile);
-        this.nwcDataBaseName = FilesManager.getRootOfFileName(this.nwFile) 
+        FileUtils.mustNotExist(this.nwFile);
+        this.nwcDataBaseName = FileUtils.getRootOfFileName(this.nwFile) 
                                                                         + ".db";
-        this.newJDFile = FilesManager.getRootOfFileName(this.nwFile) + ".jd";
+        this.newJDFile = FileUtils.getRootOfFileName(this.nwFile) + ".jd";
 
         //Get and check the output file (which is an input for NWChem)
         if (params.contains("NWCDATABASE"))
@@ -245,7 +245,7 @@ public class NWChemReStarter extends Worker
         {
             System.out.println(" Taking NWChem job details from " + jdFile);
         }
-        FilesManager.foundAndPermissions(jdFile,true,false,false);
+        FileUtils.foundAndPermissions(jdFile,true,false,false);
         this.nwcJob = new NWChemJob(jdFile);
         
         //Get and check the list of known errors
@@ -258,7 +258,7 @@ public class NWChemReStarter extends Worker
                 System.out.println(" Importing known errors from " 
                                                                   + errDefPath);
             }
-            FilesManager.foundAndPermissions(errDefPath,true,false,false);
+            FileUtils.foundAndPermissions(errDefPath,true,false,false);
             this.errorDef = ErrorManager.getAll(errDefPath);
         }
         else

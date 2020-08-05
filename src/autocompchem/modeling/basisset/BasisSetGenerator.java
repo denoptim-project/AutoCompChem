@@ -33,7 +33,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
@@ -160,7 +160,7 @@ public class BasisSetGenerator extends Worker
         if (params.contains("INFILE"))
         {
             this.inFile = params.getParameter("INFILE").getValue().toString();
-            FilesManager.foundAndPermissions(this.inFile,true,false,false);
+            FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
         // Read the atom type matching rules
@@ -184,7 +184,7 @@ public class BasisSetGenerator extends Worker
             //Get and check output file
             this.outFile = 
                         params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
 
         // Format with which to report basis sets

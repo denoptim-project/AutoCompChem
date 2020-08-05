@@ -30,7 +30,7 @@ import autocompchem.run.Terminator;
  */
 
 
-public class FilesManager
+public class FileUtils
 {
 
 //------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ public class FilesManager
      * Construct an empty FilesManager
      */
 
-    public FilesManager()
+    public FileUtils()
     {
     }
 
@@ -64,14 +64,14 @@ public class FilesManager
         }
         return root;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
      * Find all files in a folder tree and keep only those with a filename 
      * containing the given string. It assumes an existing folder if given
      * as argument.
-     * @param path root folded from where the search should start
+     * @param path root folder from where the search should start
      * @param str string to be contained in the target file's name. '*' is used
      * as usual to specify the continuation of the string with any number of 
      * any character. Use it only at the beginning (*blabla), at the end 
@@ -81,6 +81,26 @@ public class FilesManager
      */
 
     public static ArrayList<File> find(String path, String str)
+    {
+    	return find(new File(path),str);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Find all files in a folder tree and keep only those with a filename 
+     * containing the given string. It assumes an existing folder if given
+     * as argument.
+     * @param root folder from where the search should start
+     * @param str string to be contained in the target file's name. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
+     * case is chosen by default: filename must contain the query string.
+     * @return the list of files
+     */
+
+    public static ArrayList<File> find(File root, String str)
     {
         String originalStr = str;
         boolean starts = false;
@@ -109,9 +129,6 @@ public class FilesManager
             mid = true;
         }
 
-        //Get the root for this search
-        File root = new File(path);
-
         //Get the list of files in it
         ArrayList<File> ls = new ArrayList<File>(Arrays.asList(
                                                              root.listFiles()));
@@ -122,8 +139,8 @@ public class FilesManager
         {
             if (f.isDirectory())
             {
-                //recursion for forlders
-                ArrayList<File> fromInnerLevel = find(f.toString(),originalStr);
+                //recursion for folders
+                ArrayList<File> fromInnerLevel = find(f,originalStr);
                 targets.addAll(fromInnerLevel);
             } else {
                 if (starts)
@@ -142,6 +159,26 @@ public class FilesManager
             }
         }
         return targets;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Extracts the extension from the file name
+     * @param f the file.
+     * @return the extension or null is the filename does not contain any dot.
+     */
+    
+    public static String getFileExtension(File f)
+    {
+    	String ext = null;
+    	String fname = f.getName();
+    	if (fname.contains("."))
+    	{
+    		ext = fname.substring(fname.lastIndexOf("."));
+    	}
+    	
+    	return ext;
     }
 
 //------------------------------------------------------------------------------

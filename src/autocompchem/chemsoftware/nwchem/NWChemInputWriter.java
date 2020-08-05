@@ -18,7 +18,7 @@ import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BSMatchingRule;
 import autocompchem.modeling.basisset.BasisSet;
@@ -347,7 +347,7 @@ public class NWChemInputWriter extends Worker
             Terminator.withMsgAndStatus("ERROR! This version of "
                      + "NWChemInputWriter can handle only SDF or XYZ input",-1);
         }
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Deal with multiple geometries
         if (params.contains("MULTIGEOMNWCHEM"))
@@ -386,7 +386,7 @@ public class NWChemInputWriter extends Worker
                 System.out.println(" Compound NWChem job: details from "  
                          + jdFile);
             }
-            FilesManager.foundAndPermissions(jdFile,true,false,false);
+            FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.nwcJob = new NWChemJob(jdFile);
 
             //Deal with job details that affect the input witier initial setup
@@ -427,10 +427,10 @@ public class NWChemInputWriter extends Worker
         if (params.contains("OUTFILE"))
         {
             outNWFile = params.getParameter("OUTFILE").getValue().toString();
-            outJDFile = FilesManager.getRootOfFileName(outNWFile) 
+            outJDFile = FileUtils.getRootOfFileName(outNWFile) 
                                                   + NWChemConstants.JDEXTENSION;
         } else {
-            String inputRoot = FilesManager.getRootOfFileName(inFile);
+            String inputRoot = FileUtils.getRootOfFileName(inFile);
             outNWFile = inputRoot + NWChemConstants.NWCINPEXTENSION;
             outJDFile = inputRoot + NWChemConstants.JDEXTENSION;
             if (verbosity > 0)
@@ -838,7 +838,7 @@ public class NWChemInputWriter extends Worker
                         + "consistent list of geometries and names.",-1);
             }
 
-            FilesManager.mustNotExist(outNWFile);
+            FileUtils.mustNotExist(outNWFile);
 
             //Get custom charges
             if (customCharge)
@@ -1038,7 +1038,7 @@ public class NWChemInputWriter extends Worker
                     nwcJob.setAllPrefix(molName);
                 }
 
-                FilesManager.mustNotExist(outNWFile);
+                FileUtils.mustNotExist(outNWFile);
 
                 //Get custom charges
                 if (customCharge)

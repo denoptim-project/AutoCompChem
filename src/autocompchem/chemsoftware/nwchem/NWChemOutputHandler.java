@@ -22,8 +22,8 @@ import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
@@ -294,7 +294,7 @@ public class NWChemOutputHandler extends Worker
 
         //Get and check the input file (which is an output from NWChem)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the list of known errors
         if (params.contains("NWCHEMERRORS"))
@@ -305,7 +305,7 @@ public class NWChemOutputHandler extends Worker
             {
                 System.out.println(" Importing known errors from "+ errDefPath);
             }
-            FilesManager.foundAndPermissions(errDefPath,true,false,false);
+            FileUtils.foundAndPermissions(errDefPath,true,false,false);
             this.errorDef = ErrorManager.getAll(errDefPath);
             if (verbosity > 0)
             {
@@ -319,11 +319,11 @@ public class NWChemOutputHandler extends Worker
         {
             this.outFile = 
                          params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         } 
         else
         {
-            this.outFile = FilesManager.getRootOfFileName(this.inFile);
+            this.outFile = FileUtils.getRootOfFileName(this.inFile);
         }
 
         if (params.contains("OUTFORMAT"))
@@ -366,7 +366,7 @@ public class NWChemOutputHandler extends Worker
                 this.selectedVibModes.add(val);
             }
             this.outFileVibModes = p[p.length-1];
-            FilesManager.mustNotExist(this.outFileVibModes);
+            FileUtils.mustNotExist(this.outFileVibModes);
         }
 
         if (params.contains("TEMPLATECONNECTIVITY"))
@@ -374,7 +374,7 @@ public class NWChemOutputHandler extends Worker
             this.useTemplateConnectivity = true;
             String fileWithTplt =
               params.getParameter("TEMPLATECONNECTIVITY").getValue().toString();
-            FilesManager.foundAndPermissions(fileWithTplt,true,false,false);
+            FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
                 this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
         }
 
@@ -477,7 +477,7 @@ public class NWChemOutputHandler extends Worker
         patterns.add(NWChemConstants.OUTINITSTR);
         patterns.add(NWChemConstants.OUTNORMALENDSTR);
         ArrayList<ArrayList<Integer>> countsAndLineNum = 
-                                           FilesAnalyzer.count(inFile,patterns);
+                                           FileAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
         ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
         ArrayList<ArrayList<Integer>> lineNums = 
@@ -1439,7 +1439,7 @@ TODO add other tasks here
     {
         IAtomContainer mol = new AtomContainer();
 
-        ArrayList<String> lines = FilesAnalyzer.extractTxtWithDelimiters(inFile,
+        ArrayList<String> lines = FileAnalyzer.extractTxtWithDelimiters(inFile,
                                                 NWChemConstants.OUTSTARTINITXYZ,
                                                 NWChemConstants.OUTENDINITXYZ,
                                                                         false);
@@ -1470,7 +1470,7 @@ TODO add other tasks here
     public ArrayList<IAtomContainer> getAllOptGeometries()
     {
         TreeMap<String,ArrayList<String>> mapBlocks =
-                      FilesAnalyzer.extractMapOfTxtBlocksWithDelimiters(inFile,
+                      FileAnalyzer.extractMapOfTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                    NWChemConstants.OUTSTARTXYZ,
                    NWChemConstants.OUTENDCONVGEOMOPTSTEP)),
@@ -1511,7 +1511,7 @@ TODO add other tasks here
     public ArrayList<IAtomContainer> getAllGeometries()
     {
         ArrayList<ArrayList<String>> blocks = 
-                       FilesAnalyzer.extractMultiTxtBlocksWithDelimiters(inFile,
+                       FileAnalyzer.extractMultiTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                    NWChemConstants.OUTSTARTXYZ,NWChemConstants.OUTHESSTARTXYZ)),
                                           new ArrayList<String>(Arrays.asList(

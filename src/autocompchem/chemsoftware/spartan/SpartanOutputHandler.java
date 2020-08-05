@@ -41,8 +41,8 @@ import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
@@ -185,8 +185,8 @@ public class SpartanOutputHandler extends Worker
 
         //Get and check the input file (which is an output from Spartan)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
-        this.molName = FilesManager.getRootOfFileName(this.inFile);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        this.molName = FileUtils.getRootOfFileName(this.inFile);
 
         //Get customized molname
         //Get and check the list of known errors
@@ -204,7 +204,7 @@ public class SpartanOutputHandler extends Worker
             {
                 System.out.println(" Importing known errors from "+ errDefPath);
             }
-            FilesManager.foundAndPermissions(errDefPath,true,false,false);
+            FileUtils.foundAndPermissions(errDefPath,true,false,false);
             this.errorDef = ErrorManager.getAll(errDefPath);
             if (verbosity > 0)
             {
@@ -218,11 +218,11 @@ public class SpartanOutputHandler extends Worker
         {
             this.outFile = 
                          params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         } 
         else
         {
-            this.outFile = FilesManager.getRootOfFileName(this.inFile);
+            this.outFile = FileUtils.getRootOfFileName(this.inFile);
         }
 
         //Get and check the output file
@@ -281,8 +281,8 @@ public class SpartanOutputHandler extends Worker
         // Check for notmal termination
         String slash = System.getProperty("file.separator");
         String sprtStatus = inFile + slash + SpartanConstants.STATUSFILENAME;
-        FilesManager.foundAndPermissions(sprtStatus,true,false,false);
-        if (FilesAnalyzer.count(sprtStatus, 
+        FileUtils.foundAndPermissions(sprtStatus,true,false,false);
+        if (FileAnalyzer.count(sprtStatus, 
                                           SpartanConstants.NORMALCOMPLSTATUS)>0)
         {
             normalTermiated = true;
@@ -785,12 +785,12 @@ TODO add other tasks here
                                              + SpartanConstants.ARCHIVEFILENAME;
         String sprtInpFile = inFile + slash + molName + slash
                                                + SpartanConstants.INPUTFILENAME;
-        FilesManager.foundAndPermissions(sprtArchFile,true,false,false);
-        FilesManager.foundAndPermissions(sprtInpFile,true,false,false);
+        FileUtils.foundAndPermissions(sprtArchFile,true,false,false);
+        FileUtils.foundAndPermissions(sprtInpFile,true,false,false);
 
         //Get number of lines of each block (i.e., number of atoms)
         ArrayList<ArrayList<String>> firstGeom =
-                      FilesAnalyzer.extractMultiTxtBlocksWithDelimiters(
+                      FileAnalyzer.extractMultiTxtBlocksWithDelimiters(
                                                                    sprtArchFile,
                                                   SpartanConstants.ARCHSTARTXYZ,
                SpartanConstants.ARCHENERGYLAB+"|"+SpartanConstants.ARCHBASISLAB,
@@ -806,7 +806,7 @@ TODO add other tasks here
 
         // Read in molecular befinition blocks
         ArrayList<ArrayList<String>> blocks = 
-                      FilesAnalyzer.extractMultiTxtBlocksWithDelimiterAndSize(
+                      FileAnalyzer.extractMultiTxtBlocksWithDelimiterAndSize(
                                                                    sprtArchFile,
                                                   SpartanConstants.ARCHSTARTXYZ,
                                                                           nAtms,
@@ -823,7 +823,7 @@ TODO add other tasks here
                                      + "same number of atoms and connectivity");
 
         // Get connectivity block
-        blocks = FilesAnalyzer.extractMultiTxtBlocksWithDelimiters(sprtInpFile,
+        blocks = FileAnalyzer.extractMultiTxtBlocksWithDelimiters(sprtInpFile,
                                                        SpartanConstants.TOPOOPN,
                                                        SpartanConstants.TOPOEND,
                                                                            true,

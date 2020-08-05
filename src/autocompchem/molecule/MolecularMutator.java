@@ -35,7 +35,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.run.Terminator;
@@ -166,7 +166,7 @@ public class MolecularMutator extends Worker
         {
             inpFromFile = true;
             this.inFile = params.getParameter("INFILE").getValue().toString();
-            FilesManager.foundAndPermissions(this.inFile,true,false,false);
+            FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
         //Get and check output file
@@ -174,7 +174,7 @@ public class MolecularMutator extends Worker
         {
             outToFile = true;
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
 
         //Get the list of SMARTS to be matched

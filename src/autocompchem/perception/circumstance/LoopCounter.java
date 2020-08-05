@@ -20,8 +20,9 @@ package autocompchem.perception.circumstance;
 import autocompchem.perception.infochannel.InfoChannelType;
 
 /**
- * Circumstance verified if a loop counter is matched ans is found
- * still within a given range.
+ * Circumstance verified if a loop counter is matched and is found
+ * still within a given range. The range can also be defined with an open
+ * limit, meaning that the Integer.MAX_VALUE or Integer.MIN_VALUE are used.
  *
  * @author Marco Foscato
  */
@@ -96,6 +97,30 @@ public class LoopCounter extends MatchText
     public String getCounterID()
     {
         return super.getPattern();
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the maximum limit
+     * @return the maximum
+     */
+
+    public double getMax()
+    {
+        return maxCounter;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the minimum limit
+     * @return the minimum
+     */
+
+    public double getMin()
+    {
+        return minCounter;
     }
 
 //------------------------------------------------------------------------------

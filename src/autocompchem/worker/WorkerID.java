@@ -20,6 +20,7 @@ public enum WorkerID
     GaussianOutputHandler,
     GaussianReStarter,
     GenericToolOutputHandler,
+    JobEvaluator,
     MolecularComparator,
     MolecularGeometryEditor,
     MolecularMeter,

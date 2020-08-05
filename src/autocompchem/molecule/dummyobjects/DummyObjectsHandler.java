@@ -39,7 +39,7 @@ import org.openscience.cdk.interfaces.IBond;
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
@@ -183,7 +183,7 @@ public class DummyObjectsHandler extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         // Get options
         if (params.contains("LINEARITIES"))
@@ -225,7 +225,7 @@ public class DummyObjectsHandler extends Worker
         {
             this.tmplFile = 
                           params.getParameter("TEMPLATE").getValue().toString();
-            FilesManager.foundAndPermissions(this.inFile,true,false,false);
+            FileUtils.foundAndPermissions(this.inFile,true,false,false);
             ArrayList<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);
             if (inTmpls.size() != 1)
             {
@@ -238,7 +238,7 @@ public class DummyObjectsHandler extends Worker
 
         //Get and check the output file name
         this.outFile = params.getParameter("OUTFILE").getValue().toString();
-        FilesManager.mustNotExist(this.outFile);
+        FileUtils.mustNotExist(this.outFile);
 
     }
 

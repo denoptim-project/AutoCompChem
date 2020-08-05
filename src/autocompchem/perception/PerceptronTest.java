@@ -39,7 +39,7 @@ import autocompchem.perception.situation.SituationBase;
 
 
 /**
- * Unit Test for the perceptron package. 
+ * Unit Test for the perceptron. 
  * 
  * @author Marco Foscato
  */

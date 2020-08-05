@@ -42,8 +42,8 @@ import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
@@ -278,7 +278,7 @@ public class GaussianOutputHandler extends Worker
                 System.out.println(" Taking Gaussian job details from "
                                                                       + jdFile);
             }
-            FilesManager.foundAndPermissions(jdFile,true,false,false);
+            FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
         }
         else
@@ -295,7 +295,7 @@ public class GaussianOutputHandler extends Worker
 
         //Get and check the input file (which is an output from Gaussian)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the list of known errors
         if (params.contains("GAUSSIANERRORS"))
@@ -306,7 +306,7 @@ public class GaussianOutputHandler extends Worker
             {
                 System.out.println(" Importing known errors from " + errDefPath);
             }
-            FilesManager.foundAndPermissions(errDefPath,true,false,false);
+            FileUtils.foundAndPermissions(errDefPath,true,false,false);
             this.errorDef = ErrorManager.getAll(errDefPath);
             if (verbosity > 0)
             {
@@ -320,11 +320,11 @@ public class GaussianOutputHandler extends Worker
         {
             this.outFile =
                          params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
         else
         {
-            this.outFile = FilesManager.getRootOfFileName(this.inFile);
+            this.outFile = FileUtils.getRootOfFileName(this.inFile);
         }
 
         if (params.contains("OUTFORMAT"))
@@ -343,7 +343,7 @@ public class GaussianOutputHandler extends Worker
             this.useTemplateConnectivity = true;
             String fileWithTplt =
               params.getParameter("TEMPLATECONNECTIVITY").getValue().toString();
-            FilesManager.foundAndPermissions(fileWithTplt,true,false,false);
+            FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
             this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
         }
 
@@ -428,7 +428,7 @@ public class GaussianOutputHandler extends Worker
         patterns.add("Initial command:");
         patterns.add("Normal termination");
         ArrayList<ArrayList<Integer>> countsAndLineNum = 
-                                           FilesAnalyzer.count(inFile,patterns);
+                                           FileAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
         ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
         ArrayList<ArrayList<Integer>> lineNums = 
@@ -1311,7 +1311,7 @@ TODO add other tasks here
     {
         IAtomContainer mol = new AtomContainer();
 
-        ArrayList<String> lines = FilesAnalyzer.extractTxtWithDelimiters(
+        ArrayList<String> lines = FileAnalyzer.extractTxtWithDelimiters(
                                                         inFile,
                                                         "^ Symbolic Z-matrix:",
                                                         "^\\s*$",
@@ -1343,7 +1343,7 @@ TODO add other tasks here
     public ArrayList<IAtomContainer> getAllOptGeometries()
     {
         TreeMap<String,ArrayList<String>> mapBlocks =
-                      FilesAnalyzer.extractMapOfTxtBlocksWithDelimiters(inFile,
+                      FileAnalyzer.extractMapOfTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                    GaussianConstants.OUTSTARTXYZ,
                    GaussianConstants.OUTENDCONVGEOMOPTSTEP)),
@@ -1386,7 +1386,7 @@ TODO add other tasks here
     public ArrayList<IAtomContainer> getAllGeometries()
     {
         ArrayList<ArrayList<String>> blocks = 
-                       FilesAnalyzer.extractMultiTxtBlocksWithDelimiters(inFile,
+                       FileAnalyzer.extractMultiTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                GaussianConstants.OUTSTARTXYZ)),
                                           new ArrayList<String>(Arrays.asList(

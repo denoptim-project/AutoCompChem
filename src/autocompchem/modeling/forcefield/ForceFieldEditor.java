@@ -16,7 +16,7 @@ import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
@@ -205,7 +205,7 @@ public class ForceFieldEditor extends Worker
 
         //Get and check initial force field file
         this.iFFFile = params.getParameter("INPFFFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.iFFFile,true,false,false);
+        FileUtils.foundAndPermissions(this.iFFFile,true,false,false);
 
         //Get force field format
         if (params.contains("INFFFORMAT"))
@@ -225,7 +225,7 @@ public class ForceFieldEditor extends Worker
             String[] files = lst.split(System.getProperty("line.separator"));
             for (int i=0; i<files.length; i++)
             {
-                FilesManager.foundAndPermissions(files[i],true,false,false);
+                FileUtils.foundAndPermissions(files[i],true,false,false);
                 this.molFiles.add(files[i]);
             }
         }
@@ -237,7 +237,7 @@ public class ForceFieldEditor extends Worker
             String[] files = lst.split(System.getProperty("line.separator"));
             for (int i=0; i<files.length; i++)
             {
-                FilesManager.foundAndPermissions(files[i],true,false,false);
+                FileUtils.foundAndPermissions(files[i],true,false,false);
                 this.vaFiles.add(files[i]);
             }
         }
@@ -257,7 +257,7 @@ public class ForceFieldEditor extends Worker
             //Get and check output file
             this.oFFFile = 
                          params.getParameter("OUTFFFILE").getValue().toString();
-            FilesManager.mustNotExist(this.oFFFile);
+            FileUtils.mustNotExist(this.oFFFile);
         } else {
             noOutput=true;
         }

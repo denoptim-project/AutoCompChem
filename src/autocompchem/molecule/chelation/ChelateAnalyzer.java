@@ -34,7 +34,7 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
@@ -180,14 +180,14 @@ public class ChelateAnalyzer extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get optional parameter
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
             this.makeout = true;
         }
 

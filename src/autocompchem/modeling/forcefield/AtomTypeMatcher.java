@@ -31,7 +31,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
@@ -155,12 +155,12 @@ public class AtomTypeMatcher extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //File with atom types map
         this.atMapFile = params.getParameter(
                                           "ATOMTYPESMAP").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Optional parameters
         if (params.contains("OUTFILE"))
@@ -168,7 +168,7 @@ public class AtomTypeMatcher extends Worker
             //Get and check output file
             this.outFile = 
                         params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         } else {
             noOutput=true;
         }

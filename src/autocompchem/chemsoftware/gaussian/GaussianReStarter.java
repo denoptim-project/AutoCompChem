@@ -31,7 +31,7 @@ import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -195,13 +195,13 @@ public class GaussianReStarter extends Worker
 
         //Get and check the input file (which is an output from G03/09)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the output file (which is an input from G03/09)
         this.inpFile = params.getParameter("NEWINPFILE").getValue().toString();
-        FilesManager.mustNotExist(this.inpFile);
-        checkPointName = FilesManager.getRootOfFileName(this.inpFile);
-        newJDFile = FilesManager.getRootOfFileName(this.inpFile) + ".jd";
+        FileUtils.mustNotExist(this.inpFile);
+        checkPointName = FileUtils.getRootOfFileName(this.inpFile);
+        newJDFile = FileUtils.getRootOfFileName(this.inpFile) + ".jd";
 
         //Get and check the job details file
         String jdFile = 
@@ -210,7 +210,7 @@ public class GaussianReStarter extends Worker
         {
             System.out.println(" Taking Gaussian job details from " + jdFile);
         }
-        FilesManager.foundAndPermissions(jdFile,true,false,false);
+        FileUtils.foundAndPermissions(jdFile,true,false,false);
         this.gaussJob = new GaussianJob(jdFile);
     }
     

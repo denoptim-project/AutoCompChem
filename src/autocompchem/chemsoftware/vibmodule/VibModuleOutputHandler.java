@@ -18,8 +18,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import com.google.common.math.StatsAccumulator;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesAnalyzer;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.forcefield.EquilibriumValue;
 import autocompchem.modeling.forcefield.ForceConstant;
@@ -183,11 +183,11 @@ public class VibModuleOutputHandler extends Worker
 
         //Get and check the input file (which is an output from VibModule)
         this.vmFile = params.getParameter("VMFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.vmFile,true,false,false);
+        FileUtils.foundAndPermissions(this.vmFile,true,false,false);
 
         //Get and check the input SDF file (which is the chemical system)
         this.molFile = params.getParameter("MOLFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.molFile,true,false,false);
+        FileUtils.foundAndPermissions(this.molFile,true,false,false);
         //this.molName = FilesManager.getRootOfFileName(this.molFile);
 
         //Get and check the output file
@@ -195,11 +195,11 @@ public class VibModuleOutputHandler extends Worker
         {
             this.outFile = 
                          params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         } 
         else
         {
-            this.outFile = FilesManager.getRootOfFileName(this.vmFile);
+            this.outFile = FileUtils.getRootOfFileName(this.vmFile);
         }
 
         //Import smarts
@@ -398,7 +398,7 @@ public class VibModuleOutputHandler extends Worker
         patterns.add(VibModuleConstants.TITFFPARAMS);       // 5
         patterns.add(VibModuleConstants.TITFREQSEC);        // 6
         ArrayList<ArrayList<Integer>> countsAndLineNum =
-                                           FilesAnalyzer.count(vmFile,patterns);
+                                           FileAnalyzer.count(vmFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
         ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
 

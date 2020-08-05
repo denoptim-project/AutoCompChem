@@ -23,8 +23,8 @@ import autocompchem.perception.infochannel.InfoChannelType;
 
 
 /**
- * Condition satisfied if a string is matched a number of lines in a single 
- * source. The number of mathces can be a constrained with minium or maximum
+ * Condition satisfied if a string is matched in a number of lines of a single 
+ * source. The number of matches can be a constrained with minimum or maximum
  * or within/outside a range, or exactly equal to a number. Different
  * constructors are used to specify each of these constraints.
  *
@@ -135,10 +135,10 @@ public class CountTextMatches extends MatchText
 
     /**
      * Constructs a CountTextMatches defining the pattern to match and
-     * the range (min and max, included) within wich number of matches 
+     * the range (min and max, included) within which number of matches 
      * required to satisfy this circumstance.
      * @param pattern the pattern to be matches
-     * @param min the mininum number of matches (acceptable range is &ge; this)
+     * @param min the minimum number of matches (acceptable range is &ge; this)
      * @param max the maximum number of matches (acceptable range is &le; this)
      */
 
@@ -155,10 +155,10 @@ public class CountTextMatches extends MatchText
 
     /**
      * Constructs a CountTextMatches defining the pattern to match and
-     * the range (min and max, included) within wich number of matches
+     * the range (min and max, included) within which number of matches
      * required to satisfy this circumstance.
      * @param pattern the pattern to be matches
-     * @param min the mininum number of matches (acceptable range is &ge; this)
+     * @param min the minimum number of matches (acceptable range is &ge; this)
      * @param max the maximum number of matches (acceptable range is &le; this)
      * @param channel the information channel where to search for this loop
      * counter.
@@ -179,7 +179,7 @@ public class CountTextMatches extends MatchText
 //------------------------------------------------------------------------------
 
     /**
-     * Calculate the satisfation score. A real value 
+     * Calculate the satisfaction score. A real value 
      * where 0.0 means "conditions not satisfied" and 1.0 means
      * "condition fully satisfied".
      * @param matches the list of matches
@@ -263,6 +263,7 @@ public class CountTextMatches extends MatchText
         sb.append("; min: ").append(min);
         sb.append("; max: ").append(max);
         sb.append("; num: ").append(num);
+        sb.append("; cnstrType: ").append(cnstrType);
         sb.append("; channel:").append(super.getChannelType());
         sb.append("; negation:").append(super.negation);
         sb.append("]]");

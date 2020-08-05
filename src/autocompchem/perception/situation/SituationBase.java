@@ -1,5 +1,6 @@
 package autocompchem.perception.situation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 
 import java.util.Map;
 
+import autocompchem.files.FileUtils;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 
@@ -55,6 +57,36 @@ public class SituationBase
     public SituationBase() 
     {
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Creates a database of known situations from a collection of files.
+     * Searches the given root folder and in its sub folders.
+     * @param rootFolder root of the folder tree to be searched.
+     */
+
+    public SituationBase(File rootFolder)
+    {
+    	// WARNING: we only look for files with the expected formats
+        ArrayList<File> listFiles = FileUtils.find(rootFolder,
+        		SituationConstants.SITUATIONTXTFILEEXT);
+        //listFiles.addAll(FilesManager.find(pathNameRoot,
+        //		SituationConstants.SITUATIONXMLFILEEXT));
+
+        for (File f : listFiles)
+        {   
+        	try {
+				Situation s = new Situation(f);
+				this.addSituation(s);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("WARNING! Unable to make a known Situation "
+						+ "from file '" + f.getAbsolutePath() + "'. I ignore "
+						+ "such file, but I keep going on.");
+			}
+        }
+    }
 
 //------------------------------------------------------------------------------
 
@@ -67,7 +99,7 @@ public class SituationBase
     {
         allSituations.add(situation);        
 
-    //Indexing by InfoChannelType
+        //Indexing by InfoChannelType
         for (InfoChannelType ict : situation.getInfoChannelTypes())
         {
             if (situationsByICType.keySet().contains(ict))

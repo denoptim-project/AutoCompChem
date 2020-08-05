@@ -36,8 +36,10 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 
 /**
- * Perceptron is a neuron that uses  
- * a given situation base to perceive from a set of information channels.
+ * Perceptron is a neuron that collects information from a given list of 
+ * information channels and compares it against
+ * a given collection of possible situations, thus becoming aware of the 
+ * presently occurring situation.
  * 
  * @author Marco Foscato
  */
@@ -55,7 +57,7 @@ public class Perceptron
     private InfoChannelBase icb;
 
     /**
-     * Data structure collecting actual satisfation scores
+     * Data structure collecting actual satisfaction scores
      */
     private ScoreCollector scoreCollector;
 
@@ -65,7 +67,7 @@ public class Perceptron
     private ArrayList<Situation> occurringSituations;
 
     /**
-     * Flag remembering the statur of awareness
+     * Flag remembering the status of awareness
      */
     private boolean iamaware = false;
 
@@ -76,7 +78,7 @@ public class Perceptron
 
 
     /**
-     * Utilitynew line character (for logging)
+     * New line character (for logging)
      */
     private final String newline = System.getProperty("line.separator");
 
@@ -138,14 +140,14 @@ public class Perceptron
     /**
      * Returns a clone of the list of matched situations.
      * This method cannot be used to alter the results of the perception.
-     * @return the list ofmatched situations 
+     * @return the list of matched situations 
      */
 
     public ArrayList<Situation> getOccurringSituations()
     {
         ArrayList<Situation> copy = new ArrayList<Situation>();
         copy.addAll(occurringSituations);
-         return copy;
+        return copy;
     }
 
 //------------------------------------------------------------------------------
@@ -185,13 +187,13 @@ public class Perceptron
         //Do actual perception
         for (Situation s : sitsBase.getRelevantSituations(icb))
         {
-            // Check if each circumstnce is verified.
+            // Check if each circumstance is verified.
             for (ICircumstance c : s.getCircumstances())
             {
                 evaluateOneCircumstance(s,c);
             }
 
-            // Collect all the satisfation scores
+            // Collect all the satisfaction scores
             ArrayList<Boolean> fp = scoreCollector.getSatisfationFingerprint(s);
 
             // Calculate logical result from all the circumstances
@@ -240,7 +242,7 @@ public class Perceptron
 //------------------------------------------------------------------------------
 
     /**
-     * Evaluates if a circumnstance is satisfied. This recalls previous 
+     * Evaluates if a circumstance is satisfied. This recalls previous 
      * evaluations, or runs the evaluation if the result is not already
      * available.
      * @param n the Situation owning the ICircumstance this evaluation
@@ -289,11 +291,11 @@ this.printScores();
 //------------------------------------------------------------------------------
 
     /**
-     * Perform all text matching in once. Thie method encapsulates all the 
+     * Perform all text matching in once. This method encapsulates all the 
      * handling of text-matching queries. Different Situations may require 
-     * to analyze the text of the same text-based source of information. Thus,
+     * to analyse the text of the same text-based source of information. Thus,
      * to avoid reading the same source multiple times, we collect all the
-     * text queries and analyze meant for a single source and read the source 
+     * text queries and analyse meant for a single source and read the source 
      * only one time. 
      * <b>WARNING: currently supporting only file-based InfoChannels.</b>
      * <b>WARNING: assuming all text-queries are single line. No new-line!</b>
@@ -347,7 +349,7 @@ this.printScores();
             }
 
             // Here we collect all the text queries removing duplicates
-            // The queries are collected ialso as objects to keep track of
+            // The queries are collected also as objects to keep track of
             // the combination of Situation and ICircumstance they belong to.
             ArrayList<TxtQuery> txtQueries = new ArrayList<TxtQuery>();
             // and in as plain strings to be send to text parser
@@ -505,7 +507,7 @@ this.printScores();
                         // been matched. For instance, when we don't want to 
                         // find a string in a log feed, but, instead, we find 
                         // it (i.e., negation of of a MatchText circumstance)
-                        // Therefore wi store also zer oscores
+                        // Therefore wi store also zero scores
 
                         // Finally store the score
                         scoreCollector.addScore(s,c,score);
@@ -526,7 +528,7 @@ TODO NOtes:
 //------------------------------------------------------------------------------
 
     /**
-     * Utility class representing a text query that is associatied with one or
+     * Utility class representing a text query that is associated with one or
      * more pairs of situation:circumstance/s
      */
 
@@ -551,7 +553,7 @@ TODO NOtes:
          * @param query the actual text query 
          * @param n the source situation that includes the circumstance 
          * that include the query.
-         * @param c the circumstance that requires the quety
+         * @param c the circumstance that requires the query
          */
 
         public TxtQuery(String query, Situation n, ICircumstance c)
@@ -566,7 +568,7 @@ TODO NOtes:
          * Add a pair of references
          * @param n the source situation that includes the circumstance
          * that include the query.
-         * @param c the circumstance that requires the quety
+         * @param c the circumstance that requires the query
          */
 
         public void addReference(Situation n, ICircumstance c)

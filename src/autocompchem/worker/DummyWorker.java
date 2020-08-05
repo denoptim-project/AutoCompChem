@@ -30,8 +30,6 @@ public class DummyWorker extends Worker
 	public static final String DATAREF = "duDataB";
 	public static final String DATAVALUE = "Output data B";
 	
-//-----------------------------------------------------------------------------
-	
 	public static final Set<TaskID> capabilities = 
 			Collections.unmodifiableSet(new HashSet<TaskID>(
 					Arrays.asList(TaskID.DummyTask)));

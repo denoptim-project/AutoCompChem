@@ -34,6 +34,7 @@ import autocompchem.perception.circumstance.Circumstance;
 public class SituationTest 
 {
 
+	
     @Test
     public void testIsOccurring() throws Exception
     {

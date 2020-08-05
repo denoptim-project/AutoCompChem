@@ -9,7 +9,7 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
@@ -79,11 +79,11 @@ public class MolecularSorter extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the output file name 
         this.outFile = params.getParameter("OUTFILE").getValue().toString();
-        FilesManager.mustNotExist(this.outFile);
+        FileUtils.mustNotExist(this.outFile);
 
         //Get SDF Property
         this.prop = params.getParameter("SDFPROPERTY").getValue().toString();

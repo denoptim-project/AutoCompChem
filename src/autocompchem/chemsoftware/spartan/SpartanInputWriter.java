@@ -34,7 +34,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.conformation.ConformationalCoordinate;
@@ -317,7 +317,7 @@ public class SpartanInputWriter extends Worker
             Terminator.withMsgAndStatus("ERROR! This version of "
                     + "SpartanInputWriter can handle only SDF or XYZ input",-1);
         }
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Spartan Keywords
         this.keywords = params.getParameter("KEYWORDS").getValue().toString();
@@ -350,16 +350,16 @@ public class SpartanInputWriter extends Worker
         if (params.contains("OUTFILE"))
         {
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
-            FilesManager.mustNotExist(outFile);
+            FileUtils.mustNotExist(outFile);
         } else {
-            String inputRoot = FilesManager.getRootOfFileName(this.inFile);
+            String inputRoot = FileUtils.getRootOfFileName(this.inFile);
             this.outFile = inputRoot + SpartanConstants.SPRTINPEXTENSION;
             if (verbosity > 0)
             {
                 System.out.println(" No 'OUTFILE' option found. "
                                 + "Output name set to '" + this.outFile + "'.");
             }
-            FilesManager.mustNotExist(this.outFile);
+            FileUtils.mustNotExist(this.outFile);
         }
 
         //SMARTS rules to identify rotatable bonds
@@ -597,7 +597,7 @@ public class SpartanInputWriter extends Worker
                 {
                     outFile = molName + SpartanConstants.SPRTINPEXTENSION;
                 }
-                FilesManager.mustNotExist(outFile);
+                FileUtils.mustNotExist(outFile);
 
                 //Write input for Spartan
                 writeSpartanInputFile(mol);

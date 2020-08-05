@@ -28,7 +28,7 @@ import java.util.Map;
 import org.openscience.cdk.AtomType;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.forcefield.ForceConstant;
 import autocompchem.modeling.forcefield.ForceFieldConstants;
@@ -403,7 +403,7 @@ public class TinkerForceFieldHandler
         // divided into blocks, each one is created, writted to file and cleared
         // Search for the IOtools.write... statements
         
-        FilesManager.mustNotExist(filename);
+        FileUtils.mustNotExist(filename);
 
         // get utilities used below
         ArrayList<String> lines = new ArrayList<String>();

@@ -18,7 +18,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
@@ -171,7 +171,7 @@ public class GaussianInputWriter extends Worker
             Terminator.withMsgAndStatus("ERROR! This version of "
                   + "GaussianInputWriter can handle only SDF or XYZ input",-1);
         }
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Use GaussianJob or header specified by hand?
         useHeader = false;
@@ -185,7 +185,7 @@ public class GaussianInputWriter extends Worker
                 System.out.println(" Compound Gaussian job: details from "  
                          + jdFile);
             }
-            FilesManager.foundAndPermissions(jdFile,true,false,false);
+            FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
         } else if (params.contains("HEADER")) {
             //Use header (only for single step jobs)
@@ -205,10 +205,10 @@ public class GaussianInputWriter extends Worker
         if (params.contains("OUTNAME"))
         {
             outFile = params.getParameter("OUTNAME").getValue().toString();
-            outJDFile = FilesManager.getRootOfFileName(outFile)
+            outJDFile = FileUtils.getRootOfFileName(outFile)
                                                 + GaussianConstants.JDEXTENSION;
         } else {
-            String inputRoot = FilesManager.getRootOfFileName(inFile);
+            String inputRoot = FileUtils.getRootOfFileName(inFile);
             outFile = inputRoot + GaussianConstants.GAUINPEXTENSION;
             outJDFile = inputRoot + GaussianConstants.JDEXTENSION;
             if (verbosity > 0)
@@ -360,9 +360,9 @@ public class GaussianInputWriter extends Worker
                     outJDFile = molName + GaussianConstants.JDEXTENSION;
                 }
 
-                FilesManager.mustNotExist(outFile);
-                FilesManager.mustNotExist(outJDFile);
-                String checkPointName = FilesManager.getRootOfFileName(outFile);
+                FileUtils.mustNotExist(outFile);
+                FileUtils.mustNotExist(outJDFile);
+                String checkPointName = FileUtils.getRootOfFileName(outFile);
 
                 //write INP using fixed header or JobDetails
                 if (useHeader)
@@ -634,7 +634,7 @@ public class GaussianInputWriter extends Worker
                                         int ch, int sm, String outName)
     {
         //check file
-        FilesManager.mustNotExist(outName);
+        FileUtils.mustNotExist(outName);
 
         FileWriter writer = null;
         try

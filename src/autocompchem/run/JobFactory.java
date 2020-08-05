@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesAnalyzer;
+import autocompchem.files.FileAnalyzer;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextBlock;
 
@@ -49,7 +49,7 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName)
     {
-        ArrayList<TextBlock> blocks = FilesAnalyzer.extractTextBlocks(pathName,
+        ArrayList<TextBlock> blocks = FileAnalyzer.extractTextBlocks(pathName,
                                         ParameterConstants.STARTJOB, //delimiter
                                         ParameterConstants.ENDJOB, //delimiter
                                         false,  //don't take only first

@@ -15,7 +15,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.tinker.TinkerXYZReader;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityTable;
@@ -282,7 +282,7 @@ public class QMMMInputWriter extends Worker
             Terminator.withMsgAndStatus("ERROR! This version of "
                      + "QMMMInputWriter can handle only SDF or XYZ input",-1);
         }
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Use QMMMJob; we do not accept headers in the form of plain text
         if (params.contains("JOBDETAILS"))
@@ -295,7 +295,7 @@ public class QMMMInputWriter extends Worker
                 System.out.println(" Compound QMMM job: details from "  
                          + jdFile);
             }
-            FilesManager.foundAndPermissions(jdFile,true,false,false);
+            FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.qmmmJob = new QMMMJob(jdFile);
         } 
         else 
@@ -308,10 +308,10 @@ public class QMMMInputWriter extends Worker
         if (params.contains("OUTFILE"))
         {
             outFile = params.getParameter("OUTFILE").getValue().toString();
-            crdFile = FilesManager.getRootOfFileName(outFile) 
+            crdFile = FileUtils.getRootOfFileName(outFile) 
                                                + QMMMConstants.QMMMCRDEXTENSION;
         } else {
-            String inputRoot = FilesManager.getRootOfFileName(inFile);
+            String inputRoot = FileUtils.getRootOfFileName(inFile);
             outFile = inputRoot + QMMMConstants.QMMMINPEXTENSION;
             crdFile = inputRoot + QMMMConstants.QMMMCRDEXTENSION;
             if (verbosity > 0)
@@ -574,8 +574,8 @@ public class QMMMInputWriter extends Worker
                     crdFile = molName + QMMMConstants.QMMMCRDEXTENSION;
                 }
 
-                FilesManager.mustNotExist(outFile);
-                FilesManager.mustNotExist(crdFile);
+                FileUtils.mustNotExist(outFile);
+                FileUtils.mustNotExist(crdFile);
 
                 //Define Cartesian coords according to the molecular model.
                 if (qmmmJob.getModel().equals("QM"))
@@ -949,7 +949,7 @@ public class QMMMInputWriter extends Worker
                                              String software, String forcefield)
     {
         // Check
-        FilesManager.mustNotExist(crdFile);
+        FileUtils.mustNotExist(crdFile);
 
         // Get connectivity table
         ConnectivityTable ct = new ConnectivityTable(mol);

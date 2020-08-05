@@ -49,6 +49,7 @@ import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.Job;
+import autocompchem.run.JobEvaluator;
 
 /**
  * Factory building AutoCompChem workers. In this factory we chose the worker
@@ -253,6 +254,8 @@ public class WorkerFactory
             return GaussianReStarter.capabilities; 
         case GenericToolOutputHandler:
             return GenericToolOutputHandler.capabilities;
+        case JobEvaluator:
+        	return JobEvaluator.capabilities;
         case MolecularComparator:
             return MolecularComparator.capabilities;
         case MolecularGeometryEditor:
@@ -326,6 +329,8 @@ public class WorkerFactory
             return new GaussianReStarter();
         case GenericToolOutputHandler:
             return new GenericToolOutputHandler();
+        case JobEvaluator:
+        	return new JobEvaluator();
         case MolecularComparator:
             return new MolecularComparator();
         case MolecularGeometryEditor:

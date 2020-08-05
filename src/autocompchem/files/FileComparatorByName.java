@@ -27,7 +27,7 @@ import java.util.Comparator;
  */
 
 
-public class FilesComparatorByName implements Comparator<File>
+public class FileComparatorByName implements Comparator<File>
 {
 
     //Flag for ascending/descending ordering
@@ -40,7 +40,7 @@ public class FilesComparatorByName implements Comparator<File>
      * @param ascending set <code>true</code> to sort ascending 
      */
 
-    public FilesComparatorByName(boolean ascending)
+    public FileComparatorByName(boolean ascending)
     {
         this.ascending = ascending;
     }

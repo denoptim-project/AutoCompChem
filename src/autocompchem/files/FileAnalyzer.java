@@ -18,7 +18,7 @@ import autocompchem.text.TextBlock;
  * @author Marco Foscato
  */
 
-public class FilesAnalyzer
+public class FileAnalyzer
 {
 
 //------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ public class FilesAnalyzer
      * Construct an empty FilesAnalyzer
      */
 
-    public FilesAnalyzer()
+    public FileAnalyzer()
     {
     }
 
@@ -275,7 +275,7 @@ public class FilesAnalyzer
         startPattrns.add(startPattrn);
         endPattrns.add(endPattrn);
         
-        FilesManager.foundAndPermissions(pathName,true,false,false);
+        FileUtils.foundAndPermissions(pathName,true,false,false);
         BufferedReader br = null;
         try
         {

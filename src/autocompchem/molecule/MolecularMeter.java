@@ -34,7 +34,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FilesManager;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
@@ -204,7 +204,7 @@ public class MolecularMeter extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         this.inFile = params.getParameter("INFILE").getValue().toString();
-        FilesManager.foundAndPermissions(this.inFile,true,false,false);
+        FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get SMARTS based definition of quantities
         if (params.contains("SMARTS"))
