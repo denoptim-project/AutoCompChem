@@ -1293,10 +1293,18 @@ public class TextAnalyzer
             String line = lines.get(i);
             line = StringUtils.escapeSpecialChars(line);
 
-            //Check if its a multiple line block
+            //Check if it is a multiple line block
             if (line.startsWith(start))
             {
             	nestingLevel++;
+            	
+            	// More nesting on this line?
+            	String subStr = line.substring(0,line.lastIndexOf(start));
+            	while (subStr.contains(start))
+            	{
+            		nestingLevel++;
+            		subStr = subStr.substring(0,subStr.lastIndexOf(start));
+            	}
                 
                 //Check the value of the index
                 int indexKVSep = line.indexOf(separator);
@@ -1325,11 +1333,17 @@ public class TextAnalyzer
                     i++;
                     String otherLine = lines.get(i);
                     
-                    // Nested blocks are ignored, but we keep track of them
-                    // as to identify where exactly the master block ends
+                    // deal with further nesting
                     if (otherLine.startsWith(start))
                     {
                     	nestingLevel++;
+                    	// More nesting on this line?
+                    	String subStr2 = otherLine.substring(0,otherLine.lastIndexOf(start));
+                    	while (subStr2.contains(start))
+                    	{
+                    		nestingLevel++;
+                    		subStr2 = subStr2.substring(0,subStr2.lastIndexOf(start));
+                    	}
                     }
                     
                     if (otherLine.contains(end))
