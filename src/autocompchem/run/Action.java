@@ -1,7 +1,10 @@
-package autocompchem.workflow.task;
+package autocompchem.run;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import autocompchem.text.TextAnalyzer;
@@ -62,6 +65,11 @@ public class Action
      */
     public enum ActionObject {FOCUSJOB,
     	MASTERJOB, PREVIUSJOB, PARALLELJOB, SUBSEQUENTJOB};
+    	
+    /**
+     * Details pertaining this action
+     */
+    private Map<String,Object> details = new HashMap<String,Object>();
     
     
 //------------------------------------------------------------------------------
@@ -142,9 +150,25 @@ public class Action
     		case (ActionConstants.OBJECTKEY):
     			object = ActionObject.valueOf(form.get(key));
     			break;
+    		case (ActionConstants.DETAILSKEY):
+    			String detStr = form.get(key);
+    		    ArrayList<ArrayList<String>> inFrm = TextAnalyzer.readKeyValue(
+    		    	new ArrayList<String>(Arrays.asList(
+    		    	form.get(key).split(System.getProperty("line.separator")))),
+    	                ActionConstants.SEPARATOR,
+    	                ActionConstants.COMMENTLINE,
+    	                ActionConstants.STARTMULTILINE,
+    	                ActionConstants.ENDMULTILINE);
+    		    for (ArrayList<String> arr : inFrm)
+    		    {
+    		    	details.put(arr.get(0), arr.get(1));
+    		    }
+    			break;
+    		default:
+    			throw new Exception("Unable to understand keyword '" + key 
+    					+ "' while creation an Action.");
     		}
     	}
-        
     }
     
 //------------------------------------------------------------------------------
@@ -157,6 +181,43 @@ public class Action
     public ActionType getType()
     {
         return type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the object of this action. I.e., the thing on which the action is 
+     * performed.
+     * @return the object of the action.
+     */
+
+    public ActionObject getObject()
+    {
+        return object;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the details attached to this action.
+     * @return the details.
+     */
+
+    public Map<String, Object> getDetails()
+    {
+        return details;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return a specific detail attached to this action.
+     * @return the detail or null
+     */
+
+    public  Object getDetail(String ref)
+    {
+        return details.get(ref);
     }
 
 //------------------------------------------------------------------------------

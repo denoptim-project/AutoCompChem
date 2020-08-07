@@ -1,4 +1,4 @@
-package autocompchem.workflow.task;
+package autocompchem.run;
 
 /*   
  *   Copyright (C) 2020  Marco Foscato 
@@ -54,5 +54,10 @@ public class ActionConstants
      * Label of line containing the object of the action
      */
     public final static String OBJECTKEY = "ACTIONOBJ";
+    
+    /**
+     * Label of line containing the action details
+     */
+    public final static String DETAILSKEY = "ACTIONDETAILS";
 
 }

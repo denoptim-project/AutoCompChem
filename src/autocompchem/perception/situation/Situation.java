@@ -36,8 +36,8 @@ import autocompchem.perception.circumstance.CircumstanceFactory;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.run.Action;
 import autocompchem.run.Terminator;
-import autocompchem.workflow.task.Action;
 
 
 /**
