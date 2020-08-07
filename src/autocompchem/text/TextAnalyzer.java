@@ -1157,8 +1157,6 @@ public class TextAnalyzer
      * @return a list of the matches: each entry is a line matching any of the 
      * queries.
      */
-  
-//TODO throw exception
  
     public static ArrayList<String> grep(BufferedReader buffRead, 
                                      Set<String> patterns) throws Exception
@@ -1170,14 +1168,6 @@ public class TextAnalyzer
             for (String pattern : patterns)
             {
                 boolean[] startMidEnd = getMatchingMethod(pattern);
-                
-                //TODO del
-                System.out.println(" ");
-                System.out.println("HERE on line: "+line);
-                System.out.println("pattern:_"+pattern+"_");
-                System.out.println("startMidEnd: "+startMidEnd[0]+startMidEnd[1]+startMidEnd[2]);
-                System.out.println("Matches? "+match(line,pattern,startMidEnd));
-                
                 if (match(line,pattern,startMidEnd))
                 {
                     matches.add(line);
@@ -1297,6 +1287,7 @@ public class TextAnalyzer
         //Start interpretation of the formatted text
         ArrayList<ArrayList<String>> filledForm =
                                 new ArrayList<ArrayList<String>>();
+        int nestingLevel = 0;
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);
@@ -1305,9 +1296,10 @@ public class TextAnalyzer
             //Check if its a multiple line block
             if (line.startsWith(start))
             {
-                //Read multiline block
-                int indexKVSep = line.indexOf(separator);
+            	nestingLevel++;
+                
                 //Check the value of the index
+                int indexKVSep = line.indexOf(separator);
                 if (indexKVSep <= 0)
                 {
                     Terminator.withMsgAndStatus("ERROR ReadFormattedText-1! "
@@ -1332,25 +1324,32 @@ public class TextAnalyzer
                     }
                     i++;
                     String otherLine = lines.get(i);
+                    
+                    // Nested blocks are ignored, but we keep track of them
+                    // as to identify where exactly the master block ends
+                    if (otherLine.startsWith(start))
+                    {
+                    	nestingLevel++;
+                    }
+                    
                     if (otherLine.contains(end))
                     {
-                        int indexOfEnd = otherLine.indexOf(end);
-                        //Check the value of the index
-                        if (indexOfEnd < 0)
-                        {
-                            Terminator.withMsgAndStatus("ERROR"
-                            + " ReadFormattedText-2! Check file " 
-                            + "Check line " + lines.get(i),-1);
-                        }
-
-                        //append the initial portion of the line
-                        String partialLine =
-                                        otherLine.substring(0,indexOfEnd);
-                        value = value + newline + partialLine;
-                        goon = false;
-                    } else {
-                        value = value + newline + otherLine;
-                    }
+                    	// Here we deal with the possibility that multiple 'end' 
+                    	// labels are on the same line
+                    	String sub = otherLine;
+                    	while (sub.contains(end) && nestingLevel>0)
+                    	{
+                    		nestingLevel--;
+                    		sub = sub.substring(0,sub.lastIndexOf(end));
+                    	}
+                    	
+                    	if (nestingLevel==0)
+                    	{
+                    		otherLine = otherLine.substring(0,otherLine.lastIndexOf(end));
+	                        goon = false;
+                    	}
+                    } 
+                    value = value + newline + otherLine;
                 }
 
                 //Prepare key and value

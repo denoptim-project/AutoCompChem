@@ -307,13 +307,14 @@ public class TextAnalyzerTest
     		"$STARTkey3: first line of val3",
     		"second line of val3",
     		"$END",
-    		"$STARTkey4: first line of val4",
-    		"second line of val4",
-    		/* Comment-out if one day we can deal with nested muliline blocks
+    		"$STARTkey4: #first line of val4",
+    		"second: line of val4",
     		"$STARTnestedKey: first line of nested",
     		"second line of nested",
-    		"$END",*/
-    		"last$END",
+    		"$STARTdeeplyNestedKey: first line of deeplynested",
+    		"second line of deeplynested",
+    		"$END$END",
+    		"lastkey: lastval$END",
     		"key5:    value5",
     		"#",
     		"# comment2"));
@@ -323,18 +324,106 @@ public class TextAnalyzerTest
     @Test
     public void testReadKeyValue() throws Exception
     {
-
+    	// Here we test equivalent notations for nesting multiline blocks
+       	ArrayList<String> linesA = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1: v1: vv1",
+        		"v1b: vv1b",
+        		"$STARTn2: v2: vv2",
+        		"v2b: vv2",
+        		"$STARTn3: v3",
+        		"v3b$END$END$END"));
+       	
+       	ArrayList<String> linesB = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1: v1: vv1",
+        		"v1b: vv1b",
+        		"$STARTn2: v2: vv2",
+        		"v2b: vv2",
+        		"$STARTn3: v3",
+        		"v3b",
+        		"$END",
+        		"$END",
+        		"$END"));
+       	
+       	ArrayList<String> linesC = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1: v1: vv1",
+        		"v1b: vv1b",
+        		"$STARTn2: v2: vv2",
+        		"v2b: vv2",
+        		"$STARTn3: v3",
+        		"v3b",
+        		"$END$END",
+        		"$END"));
+       	
+       	ArrayList<String> linesD = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1: v1: vv1",
+        		"v1b: vv1b",
+        		"$STARTn2: v2: vv2",
+        		"v2b: vv2",
+        		"$STARTn3: v3",
+        		"v3b",
+        		"$END",
+        		"$END$END"));
+       	
+       	ArrayList<ArrayList<String>> equivalentForms = 
+       			new ArrayList<ArrayList<String>>();
+       	equivalentForms.add(linesA);
+       	equivalentForms.add(linesB);
+       	equivalentForms.add(linesC);
+       	equivalentForms.add(linesD);
+       	
+    	for (int iList=0; iList<equivalentForms.size(); iList++)
+    	{
+    		ArrayList<String> lines = equivalentForms.get(iList);
+    	
+    		ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
+    			lines,":","#","$START","$END");
+	    	
+	    	assertEquals(1,form.size(),"Number of key:value pairs (Nest 1-List"
+	    	+ iList + ")");
+	    	assertEquals("N1",form.get(0).get(0),
+	    			"Key 1 (Nest 1-List"+iList+")");
+	    	
+	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
+	    			Arrays.asList(form.get(0).get(1).split(
+	    			System.getProperty("line.separator")))),
+	    			":","#","$START","$END");
+	    	
+	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 2-List"
+	    	    	+ iList + ")");
+	    	assertEquals("V1",form.get(0).get(0),
+	    			"Key 1 (Nest 2-List"+iList+")");
+	    	assertEquals("V1B",form.get(1).get(0),
+	    			"Key 2 (Nest 2-List"+iList+")");
+	    	assertEquals("N2",form.get(2).get(0),
+	    			"Key 3 (Nest 2-List"+iList+")");
+	    	
+	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
+	    			Arrays.asList(form.get(2).get(1).split(
+	    			System.getProperty("line.separator")))),
+	    			":","#","$START","$END");
+	    	
+	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 3-List"
+	    	    	+ iList + ")");
+	    	assertEquals("V2",form.get(0).get(0),
+	    			"Key 1 (Nest 3-List"+iList+")");
+	    	assertEquals("V2B",form.get(1).get(0),
+	    			"Key 2 (Nest 3-List"+iList+")");
+	    	assertEquals("N3",form.get(2).get(0),
+	    			"Key 3 (Nest 3-List"+iList+")");
+    	}
+    
+    	// Here we mix all together
     	ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
     			KEYVALKUELINES,":","#","$START","$END");
     	
     	assertEquals(5,form.size(),"Number of key:value pairs.");
-    	assertEquals("KEY1",form.get(0).get(0),"First key extracted");
-    	assertEquals("KEY5",form.get(4).get(0),"Last key extracted");
-    	assertEquals("value1",form.get(0).get(1),"Value of first pair");
+    	assertEquals("KEY1",form.get(0).get(0),"Key1 extracted");
+    	assertEquals("KEY5",form.get(4).get(0),"Key5 extracted");
+    	assertEquals("value1",form.get(0).get(1),"Value of KEY1");
     	assertEquals(2,form.get(2).get(1).split(
     			System.getProperty("line.separator")).length,
     			"Size of multiline block (A)");
-    	assertEquals(3,form.get(3).get(1).split(
+    	assertEquals(8,form.get(3).get(1).split(
     			System.getProperty("line.separator")).length,
     			"Size of multiline block (B)");
     }
@@ -347,11 +436,22 @@ public class TextAnalyzerTest
 
     	TreeMap<String, String> pairs = TextAnalyzer.readKeyValuePairs(
     			KEYVALKUELINES,":","#","$START","$END");
+    	
     	assertTrue(pairs.containsKey("KEY1"),"First key");
     	assertTrue(pairs.containsKey("KEY5"),"Last key");
     	assertEquals(2,pairs.get("KEY3").split(
     			System.getProperty("line.separator")).length,
     			"Size of multiline block (A)");
+    	
+    	String nestedBLock = pairs.get("KEY4");
+    	TreeMap<String, String> nestedPairs = TextAnalyzer.readKeyValuePairs(
+    			new ArrayList<String>(Arrays.asList(nestedBLock.split(
+    					System.getProperty("line.separator")))),
+    			":","#","$START","$END");
+    	assertEquals(3,nestedPairs.size(),"Number of key:value pairs in nested.");
+    	assertTrue(nestedPairs.containsKey("SECOND"),"Nested key");
+    	assertTrue(nestedPairs.containsKey("NESTEDKEY"),"Nested multiline block");
+    	
     }
     
 //------------------------------------------------------------------------------
