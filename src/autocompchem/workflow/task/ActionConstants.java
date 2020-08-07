@@ -1,4 +1,4 @@
-package autocompchem.perception.situation;
+package autocompchem.workflow.task;
 
 /*   
  *   Copyright (C) 2020  Marco Foscato 
@@ -18,23 +18,13 @@ package autocompchem.perception.situation;
  */
 
 /**
- * Storage of predefined constants related to situations.
+ * Storage of predefined constants related to Actions.
  *
  * @author Marco Foscato
  */
 
-public class SituationConstants
+public class ActionConstants
 {
-	/**
-	 * File extension of text-based situation files
-	 */
-	public final static String SITUATIONTXTFILEEXT = ".txt";
-	
-	/**
-	 * File extension of XML situation files
-	 */
-	public final static String SITUATIONXMLFILEEXT = ".xml";
-	
     /**
      * Label defining a commented-out line
      */
@@ -56,24 +46,13 @@ public class SituationConstants
     public final static String ENDMULTILINE = "$END";
 
     /**
-     * Label of line containing the type of situation
+     * Label of line containing the type of action
      */
-    public final static String SITUATIONTYPE = "SITUATIONTYPE";
+    public final static String TYPEKEY = "ACTIONTYPE";
     
     /**
-     * Label of line containing the reference name of the situation
+     * Label of line containing the object of the action
      */
-    public final static String REFERENCENAMELINE = "REFERENCENAME";
- 
-    /**
-     * Label of line defining a circumstance
-     */
-    public final static String CIRCUMSTANCE = "CIRCUMSTANCE";
-    
-    /**
-     * Label of line defining an action/impulse triggered by the occurrence of 
-     * a situation
-     */
-    public final static String ACTION = "ACTION";
+    public final static String OBJECTKEY = "ACTIONOBJ";
 
 }

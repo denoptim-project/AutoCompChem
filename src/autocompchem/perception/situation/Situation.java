@@ -1,10 +1,5 @@
 package autocompchem.perception.situation;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /*
  *   Copyright (C) 2018  Marco Foscato
@@ -23,6 +18,10 @@ import java.util.Map;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.jsp.el.ExpressionEvaluator;
@@ -35,13 +34,10 @@ import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.Circumstance;
 import autocompchem.perception.circumstance.CircumstanceFactory;
 import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.circumstance.LoopCounter;
-import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.run.Terminator;
 import autocompchem.workflow.task.Action;
-import autocompchem.workflow.task.IAction;
 
 
 /**
@@ -76,9 +72,9 @@ public class Situation extends Concept
     private String logicalExpression = DEFLOGICAL;
 
     /**
-     * The impulse or response triggered by this situation
+     * The impulse or reaction triggered by this situation.
      */
-    private ArrayList<IAction> impulse = new ArrayList<IAction>();
+    private Action reaction;
 
 //------------------------------------------------------------------------------
 
@@ -120,7 +116,9 @@ public class Situation extends Concept
 //------------------------------------------------------------------------------
 
     /**
-     * Constructs a new situation from a file.
+     * Constructs a new situation from a file. The file is expected to contain
+     * a definition of the Situation object we are constructing. 
+     * The format of the definition is detected on the fly by this constructor.
      * @param file the file we read to make this object
      * @throws exception if the file cannot be properly converted or read
      */
@@ -140,8 +138,9 @@ public class Situation extends Concept
 				break;
 				
 			default:
-				makeFromTxtFile(file);
-				break;
+				throw new Exception("Unknown format for file '" 
+						+ file.getAbsolutePath() + "', which was expected to "
+						+ "contain a the definition of a Known situation.");
 		}
 	}
     
@@ -210,10 +209,9 @@ public class Situation extends Concept
                     if (!actionFound)
                     {
                         actionFound = true;
+                        reaction = new Action(value);
                         
-                        //TODO: decode text to make impulse
-                        
-                        if (impulse.isEmpty())
+                        if (reaction == null)
                         {
                         	throw new Exception("Coul not read impulse "
                                     + " while defining a Situation from text"
@@ -313,8 +311,8 @@ public class Situation extends Concept
 
     private class MyVariableResolver implements VariableResolver 
     {
-        private HashMap vars;
-        public MyVariableResolver(HashMap vars)
+        private HashMap<String, Object> vars;
+        public MyVariableResolver(HashMap<String, Object> vars)
         {
             this.vars = vars;
         }
@@ -459,19 +457,12 @@ public class Situation extends Concept
             }
         }
         sb.append("]; Impusle [");
-        first = true;
-        for (IAction a : impulse)
+        if (reaction != null)
         {
-            if (first)
-            {
-                sb.append(a.toString());
-                first = false;
-            }
-            else
-            {
-                sb.append(";").append(a.toString());
-            }
-
+        	sb.append(reaction.toString());
+        } else
+        {
+        	sb.append("none");
         }
         sb.append("]]");
         return sb.toString();

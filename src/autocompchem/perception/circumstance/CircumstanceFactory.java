@@ -21,7 +21,7 @@ import autocompchem.perception.infochannel.InfoChannelType;
 
 
 /**
- * Factory building Circumstances.
+ * Factory building Circumstances. 
  * 
  * @author Marco Foscato
  */
