@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -27,13 +28,14 @@ import java.util.HashMap;
  */
 
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
 
 /**
- * Unit Test for text analyzer
+ * Unit Test for text analysis.
  * 
  * @author Marco Foscato
  */
@@ -263,14 +265,6 @@ public class TextAnalyzerTest
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
-
-//TODO del
-/*System.out.println(NL+NL+"Total first level blocks: "+blocks.size()+NL);
-for(TextBlock tb : blocks)
-    System.out.println("Final Block: "+tb.toString()+NL);
-//System.exit(0);
-*/
-
         assertEquals(3,blocks.size(),"Tutal number of 1st level blocks");
         for (TextBlock tb : blocks)
         {
@@ -304,7 +298,75 @@ for(TextBlock tb : blocks)
         }
     }
 
-//TODO test grep
+//------------------------------------------------------------------------------
+
+    private final ArrayList<String> KEYVALKUELINES = new ArrayList<String>(Arrays.asList(
+    		"#comment",
+    		"key1: value1",
+    		"key2:value2",
+    		"$STARTkey3: first line of val3",
+    		"second line of val3",
+    		"$END",
+    		"$STARTkey4: first line of val4",
+    		"second line of val4",
+    		/* Comment-out if one day we can deal with nested muliline blocks
+    		"$STARTnestedKey: first line of nested",
+    		"second line of nested",
+    		"$END",*/
+    		"last$END",
+    		"key5:    value5",
+    		"#",
+    		"# comment2"));
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testReadKeyValue() throws Exception
+    {
+
+    	ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
+    			KEYVALKUELINES,":","#","$START","$END");
+    	
+    	assertEquals(5,form.size(),"Number of key:value pairs.");
+    	assertEquals("KEY1",form.get(0).get(0),"First key extracted");
+    	assertEquals("KEY5",form.get(4).get(0),"Last key extracted");
+    	assertEquals("value1",form.get(0).get(1),"Value of first pair");
+    	assertEquals(2,form.get(2).get(1).split(
+    			System.getProperty("line.separator")).length,
+    			"Size of multiline block (A)");
+    	assertEquals(3,form.get(3).get(1).split(
+    			System.getProperty("line.separator")).length,
+    			"Size of multiline block (B)");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testReadKeyValuePairs() throws Exception
+    {
+
+    	TreeMap<String, String> pairs = TextAnalyzer.readKeyValuePairs(
+    			KEYVALKUELINES,":","#","$START","$END");
+    	assertTrue(pairs.containsKey("KEY1"),"First key");
+    	assertTrue(pairs.containsKey("KEY5"),"Last key");
+    	assertEquals(2,pairs.get("KEY3").split(
+    			System.getProperty("line.separator")).length,
+    			"Size of multiline block (A)");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGrep() throws Exception
+    {
+    	BufferedReader br = new BufferedReader(new StringReader(TEXT));
+    	Set<String> p = new HashSet<String>(Arrays.asList("bla","here"));
+    	ArrayList<String> m = TextAnalyzer.grep(br, p);
+    	
+    	assertEquals(3,m.size(),"Size of matches list");
+    	assertTrue(m.contains("Second line bla bla"),"First match");
+    	assertTrue(m.contains("5th line here"),"Last match");
+    }
 
 //------------------------------------------------------------------------------
 

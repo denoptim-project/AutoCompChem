@@ -42,8 +42,8 @@ public class TextAnalyzer
 //------------------------------------------------------------------------------
 
     /**
-     * Count non-overlapping matches in a single line. Carefull about the 
-     * non-overlapping property: whild cards can easily be messing with you!
+     * Count non-overlapping matches in a single line. Careful about the 
+     * non-overlapping property: wild cards can easily be messing with you!
      * @param pattern the regex to find
      * @param line the string to analyse
      * @return the number of non-overlapping matches
@@ -83,7 +83,8 @@ public class TextAnalyzer
             String line = null;
             while ((line = buffRead.readLine()) != null)
             {
-                if (match(line,query,startMidEnd))
+            	String pattern = preparePattern(query,startMidEnd);
+                if (match(line,pattern,startMidEnd))
                     num++;
             }
         } catch (Throwable t) {
@@ -99,7 +100,7 @@ public class TextAnalyzer
      * Count lines containing patterns. This method correspond to run the Linux 
      * command 
      * <code> ... | grep -c "some pattern" AND grep -n "some pattern" </code>
-     * The returned array contains both the linenumber of the matches
+     * The returned array contains both the line number of the matches
      * and the counts. The last ArrayList in the returned
      * ArrayList of ArrayLists is the one that contains the counts, 
      * while all the other
@@ -140,6 +141,7 @@ public class TextAnalyzer
                 {
                     String pattern = lsStr.get(i);
                     boolean[] startMidEnd = getMatchingMethod(pattern);
+                    pattern = preparePattern(pattern,startMidEnd);
                     if (match(line,pattern,startMidEnd))
                     {
                         counts.set(i,counts.get(i) + 1);
@@ -196,7 +198,7 @@ public class TextAnalyzer
      * @param pattern1 identifies the beginning of the target section.
      * @param pattern2 identifies the end of the target section
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing <code>pattern1</code> and <code>pattern2</code> into the
      * target section.
@@ -230,7 +232,7 @@ public class TextAnalyzer
      * @param endPattrns list of patterns that identify the end of a 
      * target section. Each entry must have a corresponding one in startPattrns
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the
      * target section.
@@ -326,14 +328,14 @@ public class TextAnalyzer
      * @param endPattrns list of patterns that identify the end of a
      * target section. Each entry must have a corresponding one in startPattrns
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the
      * target section.
      * @return a map with all the target sections, each as an array of lines,
-     * and each identified by a key wich corresponds to the following format:
+     * and each identified by a key which corresponds to the following format:
      * a_b_c where "a" is the position of the block in the overall sequence of
-     * block (sorted according to their appearence in the file) [i.e., a
+     * block (sorted according to their appearance in the file) [i.e., a
      * number 0-n],
      * "b" is the index of the pair of patterns in the
      * startPattrns/endPattrns lists [i.e., an integer 0-n],
@@ -374,7 +376,7 @@ public class TextAnalyzer
      * @param endPattrn REGEXs that identify the end of a
      * target section. 
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match.
+     * end of the first match.
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the target section.
      * @return a list of matched text blocks that may include nested blocks.
@@ -417,7 +419,7 @@ public class TextAnalyzer
      * @param endPattrns list of REGEXs that identify the end of a
      * target section. Each entry must have a corresponding one in startPattrns.
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match.
+     * end of the first match.
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the target section.
      * @return a list of matched text blocks that may include nested blocks.
@@ -457,7 +459,7 @@ public class TextAnalyzer
      * @param endPattrns list of REGEXs that identify the end of a
      * target section. Each entry must have a corresponding one in startPattrns.
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match.
+     * end of the first match.
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the target section.
      * @return a list of matched text blocks that may include nested blocks.
@@ -496,7 +498,7 @@ public class TextAnalyzer
      * @param endPattrns list of REGEXs that identify the end of a
      * target section. Each entry must have a corresponding one in startPattrns.
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match.
+     * end of the first match.
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the target section.
      * @param expandBeyondNests set to <code>true</code> to ignore the nest
@@ -514,10 +516,10 @@ public class TextAnalyzer
                                                              boolean inclPatts,
                                                       boolean expandBeyondNests)
     {
-        // This is what we weill return
+        // This is what we well return
         ArrayList<TextBlock> blocks = new ArrayList<TextBlock>();
 
-        // Initialize counters
+        // Initialise counters
         ArrayList<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
         for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
         {
@@ -540,28 +542,26 @@ public class TextAnalyzer
                 //A unique identified for each match: becomes the key in maps
                 AtomicInteger opnBlkKey = new AtomicInteger(0);
 
-                //Indexed list of open blocks that await closire
+                //Indexed list of open blocks that await closure
                 Map<Integer,TextBlock> openBlocks =
                                                new HashMap<Integer,TextBlock>();
 
                 //Map of open block key to pattern ID
                 Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
 
-                //Map of patter ID to activile expanding open block
+                //Map of patter ID to actively expanding open block
                 // (there might be nested blocks, in which case we add lines         
-                // only to the actively growing block, which is the yungest)
+                // only to the actively growing block, which is the youngest)
                 Map<Integer,Integer> pId2AOBK = new HashMap<Integer,Integer>();
 
-                //Blocks that have been opened in the latest readline
+                //Blocks that have been opened in the latest read line
                 Set<Integer> justOpenBlocks = new HashSet<Integer>();
 
-                //Blocks that have been closed in the latest readline
+                //Blocks that have been closed in the latest read line
                 Set<Integer> closedBlocks = new HashSet<Integer>();
 
                 while ((line = buffRead.readLine()) != null)
                 {
-//TODO del
-//System.out.println("Reading line "+line);
                     //
                     // Handling of lines that match any of the queries
                     //
@@ -584,7 +584,7 @@ public class TextAnalyzer
                             block.add(line);
 
                             //
-                            // WARNING: Single line mathces cannot be nested
+                            // WARNING: Single line matches cannot be nested
                             // 
 
                             TextBlock tb = new TextBlock(block,countMatches,
@@ -633,7 +633,7 @@ public class TextAnalyzer
                         if (line.matches(pattern2))
                         {
                             // We close the newest open block of this specific
-                            // pattIdx. Find it by sorting list of open blcks
+                            // pattIdx. Find it by sorting list of open blocks
                             ArrayList<Integer> sortedOpnBlkKeys =
                                                        new ArrayList<Integer>();
                             for (Integer k : oBKey2PId.keySet())
@@ -649,12 +649,6 @@ public class TextAnalyzer
                             Collections.sort(sortedOpnBlkKeys); //small -> big
                             Collections.reverse(sortedOpnBlkKeys);//big -> small
 
-//TODO del
-/*
-System.out.println("Sorted list of open blocks:"+sortedOpnBlkKeys);
-for (Integer k : sortedOpnBlkKeys)
-   System.out.println(" -o-> "+openBlocks.get(k).toShortString());
-*/
                             //Get the block that we are closing now
                             Integer newstOBlk = sortedOpnBlkKeys.get(0);
                             TextBlock thisBlock = openBlocks.get(newstOBlk);
@@ -664,7 +658,7 @@ for (Integer k : sortedOpnBlkKeys)
                                 thisBlock.appendText(line);
                             }
                             
-                            //Nested blocks ara handled in a different way
+                            //Nested blocks are handled in a different way
                             if (sortedOpnBlkKeys.size() > 1)
                             {
                                 //This is a nested block
@@ -679,18 +673,15 @@ for (Integer k : sortedOpnBlkKeys)
                             else
                             {
                                 //This block is not nested thus we ass it to the
-                                //list of outernmost, first-level blocks
+                                //list of outermost, first-level blocks
                                 blocks.add(thisBlock);
                             }
-
-//TODO del
-//System.out.println("ML closing added block: "+thisBlock.toShortString());
 
                             closedBlocks.add(newstOBlk);
                         }
                     }
 
-                    // Clear placeholders of closed blocks
+                    // Clear placeholder of closed blocks
                     if (closedBlocks.size() > 0)
                     {
                         for (Integer unqOpnBlkKey : closedBlocks)
@@ -732,8 +723,6 @@ for (Integer k : sortedOpnBlkKeys)
                             {
                                 continue;
                             }
-//TODO
-//System.out.println("Searching open blocks of pattIds: "+pattIdx);
                             Integer youngestKey = -1;
                             for (Map.Entry<Integer,Integer> e 
                             		: oBKey2PId.entrySet())
@@ -747,21 +736,15 @@ for (Integer k : sortedOpnBlkKeys)
                                 //Ignore those just opened
                                 if (justOpenBlocks.contains(candKey))
                                 {
-//TODO
-//System.out.println("   it's just opened "+candKey);
                                     continue;
                                 }
                                 if (candKey > youngestKey)
                                 {
                                     youngestKey = candKey;
                                 }
-//TODO
-//System.out.println("   candKey , youngestKey: "+candKey +" "+ youngestKey);
                             }
                             if (youngestKey>-1)
                             {
-//TODO
-//System.out.println("   adding line to "+openBlocks.get(youngestKey).toShortString());
                                 openBlocks.get(youngestKey).appendText(line);
                             }
                         }
@@ -799,17 +782,17 @@ for (Integer k : sortedOpnBlkKeys)
      * @param endPattrns list of patterns that identify the end of a
      * target section. Each entry must have a corresponding one in startPattrns
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the target section.
      * @return a map with all the target sections, each as an array of lines,
-     * and each identified by a key wich corresponds to the following format:
+     * and each identified by a key which corresponds to the following format:
      * a_b_c where "a" is the position of the line or block in the overall 
      * sequence of matches lines of blocks of lines
-     * (sorted according to their appearence in the file) [i.e., a 
+     * (sorted according to their appearance in the file) [i.e., a 
      * number 0-n], 
      * "b" is the index of the pattern, for single line matches, or, for multi 
-     * line bloks, of the pair of patterns in the slPattrns or
+     * line blocks, of the pair of patterns in the slPattrns or
      * startPattrns/endPattrns lists [i.e., an integer 0-n],
      * and "c" is the index of the block among blocks of same type 
      * [i.e., an integer 0-n].
@@ -936,7 +919,7 @@ for (Integer k : sortedOpnBlkKeys)
                         }
                     }
 
-                    // Clear placeholders of closed blocks
+                    // Clear placeholder of closed blocks
                     if (closedBlocks.size() > 0)
                     {
                         for (Integer unqOpnBlkKey : closedBlocks)
@@ -958,48 +941,6 @@ for (Integer k : sortedOpnBlkKeys)
                     }
                     justOpenBlocks.clear();
 
-//TODO delete old implementation not capable of hangling nested blocks
-/*
-                    //Check for a multiline block
-                    for (int pattIdx=0; pattIdx<startPattrns.size(); pattIdx++)
-                    {
-                        String pattern1 = startPattrns.get(pattIdx);
-                        String pattern2 = endPattrns.get(pattIdx);
-                        if (line.matches(pattern1))
-                        {
-                            
-                            ArrayList<String> block = new ArrayList<String>();
-                            if (inclPatts)
-                            {
-                                block.add(line);
-                            }
-                            while ((line = buffRead.readLine()) != null)
-                            {
-                                if (line.matches(pattern2))
-                                {
-                                    if (inclPatts)
-                                    {
-                                        block.add(line);
-                                    }
-                                    break;
-                                }
-                                else
-                                {
-                                    block.add(line);
-                                }
-                            }
-                            countMatches++;
-                            countsML.set(pattIdx,1 + countsML.get(pattIdx));
-                            String key = countMatches + "_" + pattIdx + "_"
-                                                        + countsML.get(pattIdx);
-                            blocks.put(key,block);
-                            if (onlyFirst)
-                            {
-                                break outerLoopOnLines;
-                            }
-                        }
-                    }
-*/
                     if (onlyFirst && countMatches>1)
                     {
                         break outerLoopOnLines;
@@ -1113,19 +1054,7 @@ for (Integer k : sortedOpnBlkKeys)
             Terminator.withMsgAndStatus("ERROR! Unable to read bufferedReader. "
                 + msg,-1);
         } 
-/*
-DONE OUTSIDE
-finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                msg = t2.getMessage();
-                Terminator.withMsgAndStatus("ERROR! Unable to read file "
-                    + ". " + msg,-1);
-            }
-        }
-*/
+
         return blocks;
     }
 
@@ -1138,7 +1067,7 @@ finally {
      * the asterisk corresponds to 
      * i) a substring to match at the beginning of a longer string, 
      * ii) a substring to match in the middle of a larger string,
-     * iii) a sustring to match at the end of a longer string. 
+     * iii) a substring to match at the end of a longer string. 
      */
 
     private static boolean[] getMatchingMethod(String str)
@@ -1169,15 +1098,33 @@ finally {
 
         return startMidEnd;
     }
+    
+//------------------------------------------------------------------------------
+    
+    private static String preparePattern(String pattern, boolean[] relation)
+    {
+    	String newPattern = pattern;
+        if (relation[0])
+        {
+        	newPattern = pattern.substring(1);
+        } else if (relation[1])
+        {
+        	newPattern = pattern.substring(1,pattern.length() - 1);
+        } else if (relation[2])
+        {
+        	newPattern = pattern.substring(0,pattern.length() - 1);
+        }
+    	return newPattern;
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Compare a line with a pattern specifying the relation between the two
-     * @param line string that is searches for the pattern
-     * @param pattern string to be searched in the line
+     * Compare a line with a pattern specifying the relation between the two.
+     * @param line string that is searches for the pattern.
+     * @param pattern string to be searched in the line.
      * @param relation array of 3 booleans defining if the pattern has to be
-     * in the beginning of the line (T,F,F), in the middel (F,T,F,), or 
+     * in the beginning of the line (T,F,F), in the middle (F,T,F), or 
      * at the end (F,F,T).
      * @return <code>true</code> in case of match
      */
@@ -1187,18 +1134,15 @@ finally {
         boolean answ = false;
         if (relation[0])
         {
-            String str = pattern.substring(1);
-            if (line.startsWith(str))
+            if (line.startsWith(pattern))
                 answ = true;
         } else if (relation[1])
         {
-            String str = pattern.substring(1,pattern.length() - 1);
-            if (line.contains(str))
+            if (line.contains(pattern))
                 answ = true;
         } else if (relation[2])
         {
-            String str = pattern.substring(0,pattern.length() - 1);
-            if (line.endsWith(str))
+            if (line.endsWith(pattern))
                 answ = true;
         }
         return answ;
@@ -1207,43 +1151,45 @@ finally {
 //------------------------------------------------------------------------------
 
     /**
-     * Find matches line by line
-     * @param buffRead the source of text
+     * Find matches line by line.
+     * @param buffRead the source of text.
+     * @param patterns the set of patterns to try to match in each line.
      * @return a list of the matches: each entry is a line matching any of the 
-     * queries
+     * queries.
      */
   
-//TODO thorw esception
+//TODO throw exception
  
     public static ArrayList<String> grep(BufferedReader buffRead, 
-                                                           Set<String> patterns)
+                                     Set<String> patterns) throws Exception
     {
         ArrayList<String> matches = new ArrayList<String>();
-        try {
-            String line = null;
-            while ((line = buffRead.readLine()) != null)
+        String line = null;
+        while ((line = buffRead.readLine()) != null)
+        {
+            for (String pattern : patterns)
             {
-                for (String pattern : patterns)
+                boolean[] startMidEnd = getMatchingMethod(pattern);
+                
+                //TODO del
+                System.out.println(" ");
+                System.out.println("HERE on line: "+line);
+                System.out.println("pattern:_"+pattern+"_");
+                System.out.println("startMidEnd: "+startMidEnd[0]+startMidEnd[1]+startMidEnd[2]);
+                System.out.println("Matches? "+match(line,pattern,startMidEnd));
+                
+                if (match(line,pattern,startMidEnd))
                 {
-                    boolean[] startMidEnd = getMatchingMethod(pattern);
-                    if (match(line,pattern,startMidEnd))
-                    {
-                        matches.add(line);
-                        break;
-                    }
+                    matches.add(line);
+                    break;
                 }
             }
-        } catch (Throwable t) {
-            //none
-        } 
-
+        }
         return matches;
     }    
-
+    
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-
+    
     /**
      * Extract '<code>key|separator|value</code>' field in a properly formatted
      * text block. 
@@ -1251,7 +1197,7 @@ finally {
      * records. For multiline records, two special labels are use:
      * <code>start</code> to identify the beginning of a multiline record
      * '<code>key|separator|value</code>', and <code>end</code> for the end.
-     * Text in between these two labels will be d as belonging to a
+     * Text in between these two labels will be seen as belonging to a
      * single '<code>key|separator|value</code>' where the 'key' must be
      * following <code>start</code> label in the same line.
      * <br>
@@ -1269,9 +1215,71 @@ finally {
      * <br><br>
      * In addition, a label is defined for the commented out lines.
      * All the labels must be in the very beginning of the line!
-     * This method cannot handle nested blocks.
+     * <b>WARNING:</b> This method cannot handle nested blocks.
      *
-     * @param lines content of the file
+     * @param lines the text to analyse already divided into lines 
+     * @param separator string defining the separator in
+     * '<code>key|separator|value</code>'
+     * @param commentLab string identifying the comments
+     * @param start string identifying the beginning of a multiline block
+     * @param end string identifying the end of a multiline block
+     * @return the set of key values pairs.
+     * @throws exception when the same key is found more than once.
+     */
+
+    public static TreeMap<String,String> readKeyValuePairs(
+                        ArrayList<String> lines,
+                        String separator, String commentLab,
+                        String start, String end) throws Exception
+    {
+    	TreeMap<String,String> kvMap = new TreeMap<String,String>();
+    	
+    	ArrayList<ArrayList<String>> form = readKeyValue(lines,separator,
+    			commentLab,start,end);
+    	for (ArrayList<String> pair : form)
+    	{
+    		String key = pair.get(0);
+    		String value = pair.get(1);
+    		if (kvMap.containsKey(key))
+    		{
+    			throw new Exception("Duplicate key '" + key + "' found! "
+    					+ "Cannot continue reading key:value pairs.");
+    		}
+    		kvMap.put(key, value);
+    	}
+    	return kvMap;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Extract '<code>key|separator|value</code>' field in a properly formatted
+     * text block. 
+     * This method is capable of handling single- and multi-line
+     * records. For multiline records, two special labels are use:
+     * <code>start</code> to identify the beginning of a multiline record
+     * '<code>key|separator|value</code>', and <code>end</code> for the end.
+     * Text in between these two labels will be seen as belonging to a
+     * single '<code>key|separator|value</code>' where the 'key' must be
+     * following <code>start</code> label in the same line.
+     * <br>
+     * For example, A single line '<code>key|separator|value</code>' is:
+     * <\br><\br>
+     * <code>thisIsAKey: this is the value</code>
+     * <\br><\br>
+     * For example, a multiline '<code>key|separator|value</code>' is:
+     * (Using $START and $END as labels)
+     * <br><br>
+     * <code>$STARTthisIsAKey: this is part of the value<br>
+     * this is still part of the value<br>
+     * and also this<br>
+     * $END</code>
+     * <br><br>
+     * In addition, a label is defined for the commented out lines.
+     * All the labels must be in the very beginning of the line!
+     * <b>WARNING:</b> This method cannot handle nested blocks.
+     *
+     * @param lines the text to analyse already divided into lines 
      * @param separator string defining the separator in
      * '<code>key|separator|value</code>'
      * @param commentLab string identifying the comments
