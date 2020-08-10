@@ -1294,7 +1294,7 @@ public class TextAnalyzer
             line = StringUtils.escapeSpecialChars(line);
 
             //Check if it is a multiple line block
-            if (line.startsWith(start))
+            if (line.contains(start))
             {
             	nestingLevel++;
             	
@@ -1305,17 +1305,21 @@ public class TextAnalyzer
             		nestingLevel++;
             		subStr = subStr.substring(0,subStr.lastIndexOf(start));
             	}
-                
-                //Check the value of the index
+            	
+            	// remove the left-most $start
+                int idFirstStart = line.indexOf(start);
+            	line = line.substring(0,idFirstStart) + line.subSequence(idFirstStart+start.length(), line.length());
+            	
+                //Check the value of the index of the separator
                 int indexKVSep = line.indexOf(separator);
                 if (indexKVSep <= 0)
                 {
                     Terminator.withMsgAndStatus("ERROR ReadFormattedText-1! "
                         + "Check line " + lines.get(i),-1);
                 }
-
+                
                 //define parameter's key and possibly value
-                String key = line.substring(start.length(),indexKVSep);
+                String key = line.substring(0,indexKVSep);
                 String value = "";
                 if (indexKVSep < line.length())
                     value = line.substring(indexKVSep + 1);
@@ -1327,14 +1331,14 @@ public class TextAnalyzer
                     if ((i+1) >= lines.size())
                     {
                         Terminator.withMsgAndStatus("ERROR"
-                            + " ReadFormattedText-2a! "
-                            + "Check line " + lines.get(i),-1);
+                            + " ReadFormattedText-2a! NL: "+nestingLevel+" "
+                            + " Cannot go beyond last line '" + lines.get(i) + "'.",-1);
                     }
                     i++;
                     String otherLine = lines.get(i);
-                    
+
                     // deal with further nesting
-                    if (otherLine.startsWith(start))
+                    if (otherLine.contains(start))
                     {
                     	nestingLevel++;
                     	// More nesting on this line?
@@ -1356,7 +1360,7 @@ public class TextAnalyzer
                     		nestingLevel--;
                     		sub = sub.substring(0,sub.lastIndexOf(end));
                     	}
-                    	
+
                     	if (nestingLevel==0)
                     	{
                     		otherLine = otherLine.substring(0,otherLine.lastIndexOf(end));

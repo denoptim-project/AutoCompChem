@@ -1,6 +1,7 @@
 package autocompchem.text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
@@ -322,6 +323,65 @@ public class TextAnalyzerTest
 //------------------------------------------------------------------------------
 
     @Test
+    public void testReadKeyValueEmbeddedStartOfMultiline() throws Exception
+    {
+       	ArrayList<String> linesA = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1: v1: vv1",
+        		"v1b: vv1b",
+        		"$END"));
+       	
+       	ArrayList<String> linesB = new ArrayList<String>(Arrays.asList(
+        		"n1: $STARTv1: vv1",
+        		"v1b: vv1b",
+        		"$END"));
+       	
+       	ArrayList<ArrayList<String>> equivalentForms = 
+       			new ArrayList<ArrayList<String>>();
+       	equivalentForms.add(linesA);
+       	equivalentForms.add(linesB);
+       	
+    	for (int i=0; i<equivalentForms.size(); i++)
+    	{
+    		ArrayList<String> lines = equivalentForms.get(i);
+       	
+    		ArrayList<ArrayList<String>>form = TextAnalyzer.readKeyValue(lines,
+    			":","#","$START","$END");
+    		
+	       	assertEquals(1,form.size(), "Number of key:val pairs");
+	       	assertEquals("N1",form.get(0).get(0), "Number of key:val pairs");
+	    	assertFalse(form.get(0).get(1).contains("$START"), "No leftover $START "+i);
+	    	assertFalse(form.get(0).get(1).contains("$END"), "No leftover $END "+i);
+    	}
+       	
+    	ArrayList<String> linesC = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1:$STARTn2: v2 vv2",
+        		"v2b: vv2",
+        		"$END$END"));
+    	ArrayList<String> linesD = new ArrayList<String>(Arrays.asList(
+        		"n1:$STARTn2:$STARTv2 vv2",
+        		"v2b: vv2",
+        		"$END$END"));
+    	
+       	equivalentForms = new ArrayList<ArrayList<String>>();
+       	equivalentForms.add(linesC);
+       	equivalentForms.add(linesD);
+       	
+    	for (int i=0; i<equivalentForms.size(); i++)
+    	{
+    		ArrayList<String> lines = equivalentForms.get(i);
+       	
+    		ArrayList<ArrayList<String>>form = TextAnalyzer.readKeyValue(lines,
+    			":","#","$START","$END");
+	       	assertEquals(1,form.size(), "Number of key:val pairs (B) "+i);
+	       	assertEquals("N1",form.get(0).get(0), "Number of key:val pairs (B) "+i);
+	    	assertTrue(form.get(0).get(1).contains("$START"), "Surviving $START (B) "+i);
+	    	assertTrue(form.get(0).get(1).contains("$END"), "Surviving $END (B)"+i);
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
     public void testReadKeyValue() throws Exception
     {
     	// Here we test equivalent notations for ending nested multiline blocks
@@ -387,9 +447,9 @@ public class TextAnalyzerTest
 	    			Arrays.asList(form.get(0).get(1).split(
 	    			System.getProperty("line.separator")))),
 	    			":","#","$START","$END");
-	    	
+
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 2-List"
-	    	    	+ iList + ")");
+	    	    	+ iList + ")");	    	
 	    	assertEquals("V1",form.get(0).get(0),
 	    			"Key 1 (Nest 2-List"+iList+")");
 	    	assertEquals("V1B",form.get(1).get(0),
@@ -437,12 +497,20 @@ public class TextAnalyzerTest
         		"v1: vv1",
         		"v1b: vv1b",
         		"$END"));
+    	ArrayList<String> linesAD = new ArrayList<String>(Arrays.asList(
+        		"$STARTn1: v1: vv1",
+        		"v1b: vv1b",
+        		"n2: $STARTv2: vv2",
+        		"v2b: vv2",
+        		"$STARTn3: v3",
+        		"v3b$END$END$END"));
     	
     	equivalentForms = new ArrayList<ArrayList<String>>();
        	equivalentForms.add(linesAA);
        	equivalentForms.add(linesAB);
        	equivalentForms.add(linesAC);
-       	
+       	equivalentForms.add(linesAD);
+       
     	for (int iList=0; iList<equivalentForms.size(); iList++)
     	{
     		ArrayList<String> lines = equivalentForms.get(iList);
