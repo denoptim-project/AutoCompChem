@@ -26,7 +26,6 @@ package autocompchem.chemsoftware.orca;
 public class OrcaConstants
 {
  
-	
 //	/**
 //	 * Key for parameter defining which computational chemistry software to use
 //	 */

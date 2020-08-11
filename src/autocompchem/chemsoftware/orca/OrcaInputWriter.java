@@ -232,7 +232,6 @@ public class OrcaInputWriter extends Worker
             }
         }
 
-
         if (params.contains(ChemSoftConstants.PARCHARGE))
         {
             charge = Integer.parseInt(params.getParameter(

@@ -2,8 +2,10 @@ package autocompchem.chemsoftware.orca;
 
 import java.util.ArrayList;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.Directive;
 import autocompchem.io.IOtools;
-import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 
@@ -14,12 +16,12 @@ import autocompchem.text.TextAnalyzer;
  * @author Marco Foscato
  */
 
-public class OrcaJob
+public class OrcaJob extends Job
 {
-    /**
-     * List of sub jobs/tasks/steps
-     */
-    private ArrayList<OrcaJob> steps = new ArrayList<OrcaJob>();
+	/**
+	 * List of settings, data, and keywords for Orca
+	 */
+	private ArrayList<Directive> directives = new ArrayList<Directive>();
 
 //------------------------------------------------------------------------------
 
@@ -29,6 +31,7 @@ public class OrcaJob
 
     public OrcaJob()
     {
+    	super();
     }
 
 //------------------------------------------------------------------------------
@@ -36,7 +39,7 @@ public class OrcaJob
     /**
      * Construct a Orca job from a formatted file (JobDetails) with
      * instructions and parameters that define the whore calculation.
-     * @param inFile formatted JobDetails' file to be read
+     * @param inFile formatted job details file to be read.
      */
 
     public OrcaJob(String inFile)
@@ -47,82 +50,45 @@ public class OrcaJob
 //------------------------------------------------------------------------------
 
     /**
-     * Construct a Orca Job object from a formatted text divided
+     * Construct a OrcaJob object from a formatted text divided
      * in lines. The format of these lines is expected to adhere to that of
-     * JobDetails files.
-     * @param lines array of lines to be read
+     * job details files.
+     * @param lines array of lines to be read.
      */
 
     public OrcaJob(ArrayList<String> lines)
     {
-    	//TODO
-    	//TextAnalyzer.readKeyValue(lines, ChemSoftConstants.KEYVALSEPARATOR, ChemSoftConstants.CcommentLab, start, end)
-        /*
-    	ArrayList<String> linesOfAStep = new ArrayList<String>();
-        for (int i=0; i<lines.size(); i++)
-        {
-            String line = lines.get(i).trim();
-
-            // Split and interprete each step/Task
-            if (line.toUpperCase().equals(ChemSoftConstants.TASKSEPARATORJD))
-            {
-                OrcaJob step = new OrcaJob(linesOfAStep);
-                addStep(step);
-                linesOfAStep.clear();
-            } else {
-                linesOfAStep.add(line);
-            }
-        }
-
-        //Deal with the last step that doesn't have a separator at the end
-        OrcaJob step = new OrcaJob(linesOfAStep);
-        addStep(step);
-        */
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Add a single step (i.e., task) to this Orca job. 
-     * The new step is appended after
-     * all previously existing steps.
-     * @param step the new step (i.e., task) to be added
-     */
-
-    public void addStep(OrcaJob step)
-    {
-        steps.add(step);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Get a specific step (i.e., task) from this Orca Job
-     * @param i the index of the step (0 to n-1)
-     * @return the given step
-     */
-
-    public OrcaJob getStep(int i)
-    {
-        if (i > steps.size())
-        {
-            Terminator.withMsgAndStatus("ERROR! Trying to get step number " + i
-                           + " in a Orca job that has only " + steps.size()
-                                                                + " steps.",-1);
-        }
-        return steps.get(i);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return the number of steps (i.e., tasks) of this Orca Job
-     * @return the number of steps
-     */
-
-    public int getNumberOfSteps()
-    {
-        return steps.size();
+    	super();
+    	
+    	if (lines.toString().contains(ChemSoftConstants.JDLABSTEPSEPARATOR))
+    	{
+	    	ArrayList<String> newLines = 
+	    			TextAnalyzer.readTextWithMultilineBlocks(lines, 
+	    			ChemSoftConstants.JDCOMMENT, 
+	    			ChemSoftConstants.JDOPENBLOCK, 
+	    			ChemSoftConstants.JDCLOSEBLOCK);
+	
+	    	ArrayList<String> linesOfAStep = new ArrayList<String>();
+	        for (int i=0; i<newLines.size(); i++)
+	        {
+	            String line = lines.get(i).trim();
+	
+	            if (line.toUpperCase().equals(
+	            		ChemSoftConstants.JDLABSTEPSEPARATOR))
+	            {
+	                OrcaJob step = new OrcaJob(linesOfAStep);
+	                addStep(step);
+	                linesOfAStep.clear();
+	            } else {
+	                linesOfAStep.add(line);
+	            }
+	        }
+	        //Deal with the last step that doesn't have a separator at the end
+	        OrcaJob step = new OrcaJob(linesOfAStep);
+	        addStep(step);
+    	} else {
+    		//TODO directives from text
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -174,21 +140,6 @@ public class OrcaJob
 //------------------------------------------------------------------------------
 
     /**
-     * Change the prefix in all steps
-     * @param prefix string to be used as file prefix in all steps
-     */
-
-    public void setAllPrefix(String prefix)
-    {
-        for (int i=0; i<steps.size(); i++)
-        {
-           //TODO getStep(i).setPrefix(prefix);
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Produced the text representation of this object as Orca input file.
      * The text is returned as a list of strings, which are the
      * lines of the Orca input file.
@@ -227,14 +178,10 @@ public class OrcaJob
         ArrayList<String> lines= new ArrayList<String>();
         for (int step = 0; step<steps.size(); step++)
         {
-            //Write job-separator
             if (step != 0)
             {
-            	//TODO
-            	//FIXME OrcaConstants.TASKSEPARATORJD or start end
-                lines.add("_____");
+                lines.add(ChemSoftConstants.JDLABSTEPSEPARATOR);
             }
-
             lines.addAll(getStep(step).toLinesJobDetails());
         }
         return lines;

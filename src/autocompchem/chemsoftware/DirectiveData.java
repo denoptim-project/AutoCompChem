@@ -75,9 +75,9 @@ public class DirectiveData
                                        + line + "'. Check jobdetails file.",-1);
         }
         String block = parts[1];
-        if (block.toUpperCase().startsWith(ChemSoftConstants.JDLABOPENBLOCK))
+        if (block.toUpperCase().startsWith(ChemSoftConstants.JDOPENBLOCK))
         {
-            block = block.substring(ChemSoftConstants.JDLABOPENBLOCK.length());
+            block = block.substring(ChemSoftConstants.JDOPENBLOCK.length());
         }
         if (block.toUpperCase().startsWith(System.getProperty(
                                                              "line.separator")))
@@ -155,12 +155,12 @@ public class DirectiveData
         {
         	toJD.add(ChemSoftConstants.JDLABDATA + name 
             		+ ChemSoftConstants.JDDATAVALSEPARATOR
-            		+ ChemSoftConstants.JDLABOPENBLOCK + lines.get(0));
+            		+ ChemSoftConstants.JDOPENBLOCK + lines.get(0));
         	for (int i=1; i<lines.size(); i++)
         	{
         		toJD.add(lines.get(i));
         	}
-            toJD.add(ChemSoftConstants.JDLABCLOSEBLOCK);
+            toJD.add(ChemSoftConstants.JDCLOSEBLOCK);
         } else
         {
         	toJD.add(ChemSoftConstants.JDLABDATA + name 

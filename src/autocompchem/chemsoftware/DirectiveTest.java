@@ -48,97 +48,6 @@ import autocompchem.run.Action.ActionType;
 
 public class DirectiveTest 
 {
-
-//------------------------------------------------------------------------------
-
-    @Test
-    public void testConstructorFromText() throws Exception
-    {
-    	ArrayList<String> lines = new ArrayList<String>();
-    	lines.add(ChemSoftConstants.JDLABLOUDKEY + "key1"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val1");
-    	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD1 "
-    	    	+ ChemSoftConstants.JDLABLOUDKEY + "key1b "
-    	    	+ ChemSoftConstants.JDKEYVALSEPARATOR + "val 1b");
-    	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD2 "
-    	    	+ ChemSoftConstants.JDLABLOUDKEY + "key1c"
-    	    	+ ChemSoftConstants.JDKEYVALSEPARATOR + "val1c");
-    	lines.add(ChemSoftConstants.JDLABLOUDKEY + "key2"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val2");
-    	lines.add(ChemSoftConstants.JDLABMUTEKEY + "key3"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val3");
-    	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD1 "
-    	    	+ ChemSoftConstants.JDLABLOUDKEY + "key2b "
-    	    	+ ChemSoftConstants.JDKEYVALSEPARATOR + "val 2b");
-    	lines.add(ChemSoftConstants.JDLABDATA + "data1 "
-    	    	+ ChemSoftConstants.JDDATAVALSEPARATOR + "data 1st bla");
-    	lines.add(ChemSoftConstants.JDLABDATA + "data2 "
-    	    	+ ChemSoftConstants.JDDATAVALSEPARATOR + "data 2nd bla");
-    	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD2 "
-    			+ ChemSoftConstants.JDLABDATA + "data2 "
-    	    	+ ChemSoftConstants.JDDATAVALSEPARATOR + "data 2nd bla");
-    	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD3 ");  
-
-    	Directive d = new Directive("testDirective",lines);
-    	
-    	assertEquals(3,d.getAllKeywords().size(),"Number of keywords (A)");
-    	assertEquals("key1",d.getAllKeywords().get(0).getName(),
-    			"First keyword (A)");
-    	assertEquals("key3",d.getAllKeywords().get(2).getName(),
-    			"Last keyword (A)");
-    	
-    	assertEquals(3,d.getAllSubDirectives().size(),"Number of subdirs (A)");
-    	assertEquals("subD1",d.getAllSubDirectives().get(0).getName(),
-    			"Name of subdir (A)");
-    	assertEquals(2,d.getAllSubDirectives().get(0).getAllKeywords().size(),
-    			"Number of keywords in subdir (A)");
-    	assertEquals(new ArrayList<String>(Arrays.asList("val","1b")),
-    			d.getSubDirective("subD1").getKeyword("key1b").getValue(),
-    			"Value of key in subdir (A)");
-    	assertEquals(new ArrayList<String>(Arrays.asList("val","2b")),
-    			d.getSubDirective("subD1").getKeyword("key2b").getValue(),
-    			"Value of key in subdir (B)");
-    	
-    	assertEquals(2,d.getAllDirectiveDataBlocks().size(),
-    			"Number of data blocks (A)");
-    	assertEquals(0,
-    			d.getSubDirective("subD1").getAllDirectiveDataBlocks().size(),
-    			"Number of data blocks (B)");
-    	assertEquals(1,
-    			d.getSubDirective("subD2").getAllDirectiveDataBlocks().size(),
-    			"Number of data blocks (C)");
-    }
-    
-  //------------------------------------------------------------------------------
-
-    @Test
-    public void testConstructorFromTextWithMultiline() throws Exception
-    {
-    	ArrayList<String> lines = new ArrayList<String>();
-    	lines.add(ChemSoftConstants.JDLABLOUDKEY + "key1"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val1");
-    	lines.add(ChemSoftConstants.JDLABDATA + "dat1 "
-    			+ ChemSoftConstants.JDDATAVALSEPARATOR 
-    			+ ChemSoftConstants.JDLABOPENBLOCK + "line 1");
-    	lines.add("Line 2");
-    	lines.add("Line 3");
-    	lines.add(ChemSoftConstants.JDLABCLOSEBLOCK);
-    	
-    	ArrayList<String> linesB = new ArrayList<String>();
-    	linesB.add(ChemSoftConstants.JDLABLOUDKEY + "key1"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val1");
-    	linesB.add(ChemSoftConstants.JDLABOPENBLOCK 
-    			+ ChemSoftConstants.JDLABDATA + "dat1 "
-    			+ ChemSoftConstants.JDDATAVALSEPARATOR + "line 1");
-    	linesB.add("Line 2");
-    	linesB.add("Line 3");
-    	linesB.add(ChemSoftConstants.JDLABCLOSEBLOCK);
-    	
-    	Directive d = new Directive("test",lines);
-    	Directive dB = new Directive("test",linesB);
-    	
-    	assertTrue(d.equals(dB));
-    }
     
 //------------------------------------------------------------------------------
 
@@ -169,10 +78,10 @@ public class DirectiveTest
     	linesB.add(ChemSoftConstants.JDLABDATA + "dat1b"
     			+ ChemSoftConstants.JDDATAVALSEPARATOR + "blabla");    	
     	
-    	Directive dA = new Directive("testDirective",lines);
-    	Directive dB = new Directive("testDirective",linesB);
+    	Directive dA = DirectiveFactory.buildFromJDText("test",lines);
+    	Directive dB = DirectiveFactory.buildFromJDText("test",linesB);
     	
-    	assertTrue(dA.equals(dB));
+    	assertTrue(dA.equals(dB),"Custom Equality");
     }
     
 //------------------------------------------------------------------------------
@@ -206,15 +115,15 @@ public class DirectiveTest
     			d,ChemSoftConstants.JDLABDIRECTIVE),
     			"Number of lines in JD(D).");
     	assertEquals(1,countLinesWithString(
-    			d,ChemSoftConstants.JDLABOPENBLOCK),
+    			d,ChemSoftConstants.JDOPENBLOCK),
     			"Number of lines in JD(E).");
     	assertEquals(1,countLinesWithString(
-    			d,ChemSoftConstants.JDLABCLOSEBLOCK),
+    			d,ChemSoftConstants.JDCLOSEBLOCK),
     			"Number of lines in JD(F).");
     	
-    	Directive d2 = new Directive(d.toLinesJobDetails());
+    	Directive d2 = DirectiveFactory.buildFromJDText(d.toLinesJobDetails());
     	
-    	assertTrue(d.equals(d2),"Equality");
+    	assertTrue(d.equals(d2),"Equality of regenerated from JD string.");
     }
     
 //------------------------------------------------------------------------------

@@ -86,7 +86,7 @@ public class JobTest
             }
             if (notFound)
             {
-                assertFalse(true, "Could not find known shell flavor.");
+                assertFalse(true, "Could not find known shell flavour.");
             }
 */
 

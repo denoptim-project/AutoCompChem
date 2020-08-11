@@ -76,13 +76,20 @@ public class ChemSoftConstants
      * Label identifying the beginning of a multiline block
      * in job details files
      */
-    public final static String JDLABOPENBLOCK = "$START";
+    public final static String JDOPENBLOCK = "$START";
 
     /**
      * Label identifying the end of a multiline block
      * in job details files
      */
-    public final static String JDLABCLOSEBLOCK = "$END";
+    public final static String JDCLOSEBLOCK = "$END";
+
+	/**
+	 * Label identifying the separation end of a comp.chem. software step
+	 * and the beginning of another. Note that these steps are meant to be
+	 * taken within the comp.chem. software.
+	 */
+	public static final String JDLABSTEPSEPARATOR = "----NEW-STEP----";
     
     /**
      * Lowest non-zero frequency (absolute value)
