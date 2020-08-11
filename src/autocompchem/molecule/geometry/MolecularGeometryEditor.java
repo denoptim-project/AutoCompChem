@@ -1100,7 +1100,7 @@ public class MolecularGeometryEditor extends Worker
 
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
-        locPar.setParameter("TASK", new Parameter("TASK",NamedDataType.STRING,
+        locPar.setParameter(new Parameter("TASK",NamedDataType.STRING,
         		"PRINTZMATRIX"));
         Worker w = WorkerFactory.createWorker(locPar);
         ZMatrixHandler zmh = (ZMatrixHandler) w;

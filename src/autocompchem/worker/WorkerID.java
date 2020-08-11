@@ -31,6 +31,8 @@ public enum WorkerID
     NWChemInputWriter,
     NWChemOutputHandler,
     NWChemReStarter,
+    OrcaInputWriter,
+    OrcaOutputHandler,
     QMMMInputWriter,
     SpartanInputWriter,
     SpartanOutputHandler,

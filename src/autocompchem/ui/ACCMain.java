@@ -144,7 +144,7 @@ public class ACCMain
 
     			Parameter par = new Parameter("TASK", NamedDataType.STRING, 
     					task);
-    			params.setParameter("TASK", par);
+    			params.setParameter(par);
     			
     			break;
     		}
@@ -175,7 +175,7 @@ public class ACCMain
     			// A value-less parameter
     			Parameter par = new Parameter(arg, NamedDataType.STRING, 
     					"none");
-    			params.setParameter(arg, par);
+    			params.setParameter(par);
 			}
     		else
     		{
@@ -203,7 +203,7 @@ public class ACCMain
     			}
     			Parameter par = new Parameter(arg, NamedDataType.STRING, 
     					value);
-    			params.setParameter(arg, par);
+    			params.setParameter(par);
     		}
     	}
     	return task;

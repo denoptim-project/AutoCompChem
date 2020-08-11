@@ -72,16 +72,16 @@ public class ACCJobTest
         	
         	// Prepare the parameters for task
         	ParameterStorage params = new ParameterStorage();
-        	params.setParameter(ParameterConstants.RUNNABLEAPPIDKEY, 
+        	params.setParameter(
         			new Parameter(ParameterConstants.RUNNABLEAPPIDKEY,
         					NamedDataType.STRING, Job.RunnableAppID.ACC));
-        	params.setParameter("TASK", new Parameter("TASK", 
+        	params.setParameter(new Parameter("TASK", 
         			NamedDataType.STRING, "MeasureGeomDescriptors"));
-        	params.setParameter("VERBOSITY", new Parameter("VERBOSITY",
+        	params.setParameter(new Parameter("VERBOSITY",
         			NamedDataType.INTEGER,1));
-        	params.setParameter("INFILE", new Parameter("INFILE",
+        	params.setParameter(new Parameter("INFILE",
         			NamedDataType.STRING,sdfFile));
-        	params.setParameter("ATOMINDEXES",  new Parameter("ATOMINDEXES",
+        	params.setParameter(new Parameter("ATOMINDEXES",
         			NamedDataType.STRING, label+" 1 2"));
         	
         	// Prepare structure

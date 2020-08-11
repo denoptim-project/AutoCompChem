@@ -20,7 +20,8 @@ package autocompchem.datacollections;
 /**
  * General purpose parameter defining an information to be passed unchanged 
  * to some routine or software. A parameter is defined by the reference name,
- * the value type, and the value.
+ * the value type, and the value. Reference name is case insensitive and is 
+ * stored as uppercase.
  * 
  * @author Marco Foscato
  */
@@ -50,7 +51,7 @@ public class Parameter extends NamedData
 
     public Parameter(String reference, NamedDataType type, Object value)
     {
-    	super(reference,type,value);
+    	super(reference.toUpperCase(),type,value);
     }
     
 //------------------------------------------------------------------------------

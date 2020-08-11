@@ -1244,20 +1244,21 @@ public class TextAnalyzer
 
     /**
      * Extract '<code>key|separator|value</code>' field in a properly formatted
-     * text block. 
+     * text block. The separator is optional, and, when not present the, a line 
+     * line will be interpreted as a keyword without value.
      * This method is capable of handling single- and multi-line
      * records. For multiline records, two special labels are use:
-     * <code>start</code> to identify the beginning of a multiline record
-     * '<code>key|separator|value</code>', and <code>end</code> for the end.
-     * Text in between these two labels will be seen as belonging to a
-     * single '<code>key|separator|value</code>' where the 'key' must be
-     * following <code>start</code> label in the same line.
+     * <code>start</code> to identify the beginning of a multiline block,
+     * and <code>end</code> for the end of it.
+     * Text in the lined including and between these two labels will be seen as 
+     * belonging to a single line, and thus to a single 
+     * '<code>key|separator|value</code>'.
      * <br>
-     * For example, A single line '<code>key|separator|value</code>' is:
+     * For example, a single line '<code>key|separator|value</code>' is:
      * <\br><\br>
      * <code>thisIsAKey: this is the value</code>
      * <\br><\br>
-     * For example, a multiline '<code>key|separator|value</code>' is:
+     * While a multiline '<code>key|separator|value</code>' is:
      * (Using $START and $END as labels)
      * <br><br>
      * <code>$STARTthisIsAKey: this is part of the value<br>
@@ -1283,17 +1284,119 @@ public class TextAnalyzer
                         ArrayList<String> lines,
                         String separator, String commentLab,
                         String start, String end)
+    {   
+        ArrayList<String> condencedLines = readTextWithMultilineBlocks(lines, 
+        		commentLab, start, end);
+        
+        return readKeyValue(condencedLines, separator, commentLab);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Extract '<code>key|separator|value</code>' field in a properly formatted
+     * text block. The separator is optional, and, when not present the, a line 
+     * line will be interpreted as a keyword without value.
+     * In addition, a label is defined for the commented out lines.
+     *
+     * @param lines the text to analyse already divided into lines 
+     * @param separator string defining the separator in
+     * '<code>key|separator|value</code>'
+     * @param commentLab string identifying the comments
+     * @return a table with all strings extracted according to the formatting
+     * labels.
+     */
+
+    public static ArrayList<ArrayList<String>> readKeyValue(
+    		ArrayList<String> lines, String separator, String commentLab)
+    {
+        ArrayList<ArrayList<String>> keysValues =
+                                new ArrayList<ArrayList<String>>();
+        
+        for (int i=0; i<lines.size(); i++)
+        {
+            String line = lines.get(i);
+            line = StringUtils.escapeSpecialChars(line);
+            
+            //Skip commented out
+            if (line.startsWith(commentLab))
+                continue;
+            	
+            String key = "";
+            String value = "";
+            
+            int indexKVSep = line.indexOf(separator);
+            if (indexKVSep <= 0)
+            {
+            	key = line;
+            } else {
+            	key = line.substring(0,indexKVSep);
+            }
+
+            if (indexKVSep < line.length())
+                value = line.substring(indexKVSep + 1);
+            
+
+            value = StringUtils.deescapeSpecialChars(value).trim();
+
+            //Check parameter
+            if (key.equals(""))
+            {
+                Terminator.withMsgAndStatus("ERROR: no key found in line '" 
+                		+ lines.get(i) + "'. Cannot import key:value pair.",-1);
+            }
+
+            //Store
+            ArrayList<String> singleBlock = new ArrayList<String>();
+            singleBlock.add(key);
+            singleBlock.add(value);
+            keysValues.add(singleBlock);
+
+        } 
+
+        return keysValues;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Converts multilines blocks into single strings that includes newline 
+     * characters (i.e., line separators), and collects them together with
+     * single lines in a list of lines.
+     * A multiline block is a group of lines of text that is identified
+     * by a start and an end label. For instance, 
+     * using $START and $END as labels:
+     * <br><br>
+     * <code>$STARTthisIsAKey: this is part of the value<br>
+     * this is still part of the value<br>
+     * and also this<br>
+     * $END</code>
+     * <br><br>
+     * Nested blocks are also possible. In case of nesting, the outermost block
+     * is the one what will be transformed into a single string, while inner 
+     * blocks will remain labelled with the start/end labels.
+     *
+     * @param lines the text to analyse 
+     * @param commentLab string identifying the comments
+     * @param start string identifying the beginning of a multiline block
+     * @param end string identifying the end of a multiline block
+     * @return a list with all strings extracted 
+     */
+
+    public static ArrayList<String> readTextWithMultilineBlocks(
+                        ArrayList<String> lines, String commentLab,
+                        String start, String end)
     {
         //Start interpretation of the formatted text
-        ArrayList<ArrayList<String>> filledForm =
-                                new ArrayList<ArrayList<String>>();
+        ArrayList<String> newLines = new ArrayList<String>();
+        
         int nestingLevel = 0;
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);
             line = StringUtils.escapeSpecialChars(line);
 
-            //Check if it is a multiple line block
+            //Check if this line is the beginning of aa multiple line block
             if (line.contains(start))
             {
             	nestingLevel++;
@@ -1306,23 +1409,12 @@ public class TextAnalyzer
             		subStr = subStr.substring(0,subStr.lastIndexOf(start));
             	}
             	
-            	// remove the left-most $start
+            	// remove the left-most start label
                 int idFirstStart = line.indexOf(start);
-            	line = line.substring(0,idFirstStart) + line.subSequence(idFirstStart+start.length(), line.length());
+            	line = line.substring(0,idFirstStart) + line.subSequence(
+            			idFirstStart+start.length(), line.length());
+            	//NB: string.replace cannot be used: it takes away all matches
             	
-                //Check the value of the index of the separator
-                int indexKVSep = line.indexOf(separator);
-                if (indexKVSep <= 0)
-                {
-                    Terminator.withMsgAndStatus("ERROR ReadFormattedText-1! "
-                        + "Check line " + lines.get(i),-1);
-                }
-                
-                //define parameter's key and possibly value
-                String key = line.substring(0,indexKVSep);
-                String value = "";
-                if (indexKVSep < line.length())
-                    value = line.substring(indexKVSep + 1);
 
                 //Read other lines
                 boolean goon = true;
@@ -1367,68 +1459,23 @@ public class TextAnalyzer
 	                        goon = false;
                     	}
                     } 
-                    value = value + newline + otherLine;
+                    line = line + newline + otherLine;
                 }
 
-                //Prepare key and value
-                key = key.toUpperCase();
-                value = value.trim();
-                value = StringUtils.deescapeSpecialChars(value);
+                line = StringUtils.deescapeSpecialChars(line);
 
-                //Check parameter
-                if ((key.equals("")) || (value.equals("")))
-                {
-                    Terminator.withMsgAndStatus("ERROR ReadFormattedText-3! "
-                            + "Check line " + lines.get(i),-1);
-                }
-
-                //Store
-                ArrayList<String> singleBlock = new ArrayList<String>();
-                singleBlock.add(key);
-                singleBlock.add(value);
-                filledForm.add(singleBlock);
+                newLines.add(line);
 
             } else {
                 //Skip commented out
                 if (line.startsWith(commentLab))
                     continue;
-
-                //Read Single line parameter
-                int indexKVSep = line.indexOf(separator);
-                //Check the value of the index
-                if (indexKVSep <= 0)
-                {
-                    Terminator.withMsgAndStatus("ERROR ReadFormattedText-4! "
-                        + "There seem to be no key in line " + lines.get(i),-1);
-                }
-                if (indexKVSep == line.length())
-                {
-                    Terminator.withMsgAndStatus("ERROR ReadFormattedText-5! "
-                      + "There seem to be no value in line " + lines.get(i),-1);
-                }
-
-                String key = line.substring(0,indexKVSep);
-                String value = line.substring(indexKVSep + 1);
-
-                key = key.toUpperCase();
-                value = value.trim();
-
-                //Check
-                if ((key.equals("")) || (value.equals("")))
-                {
-                    Terminator.withMsgAndStatus("ERROR ReadFormattedText-6! "
-                      + "Blank key and blank value in line " + lines.get(i),-1);
-                }
-
-                //Store
-                ArrayList<String> singleBlock = new ArrayList<String>();
-                singleBlock.add(key);
-                singleBlock.add(value);
-                filledForm.add(singleBlock);
+                
+                newLines.add(line);
            }
-        } //End of loop over lines
+        } 
 
-        return filledForm;
+        return newLines;
     }
 
 //------------------------------------------------------------------------------

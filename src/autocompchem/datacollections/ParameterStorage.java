@@ -2,8 +2,10 @@ package autocompchem.datacollections;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -38,7 +40,8 @@ import autocompchem.text.TextBlock;
  * All text before the separator (i.e., the first 
  * {@value autocompchem.datacollections.ParameterConstants#SEPARATOR} 
  * character) is interpreted as the reference name of the {@link Parameter},
- * while the rest as its value/content.</li>
+ * while the rest as its value/content. Reference name is case insensitive,
+ * and is stored as upper case.</li>
  * </ul>
  *
  * @author Marco Foscato
@@ -55,7 +58,7 @@ public class ParameterStorage extends NamedDataCollector
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty ParameterStorage
+     * Constructor for an empty ParameterStorage.
      */
 
     public ParameterStorage()
@@ -66,20 +69,36 @@ public class ParameterStorage extends NamedDataCollector
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor from a filled map of parameters
-     * @param allData the map of parameters
+     * Constructor from a filled map of parameters.
+     * @param allData the map of parameters.
      */
     
     public ParameterStorage(Map<String,Parameter> allData)
     {
-        this.allData.putAll(allData);
+    	for (Entry<String,Parameter> e : allData.entrySet())
+    	{
+    		this.allData.put(e.getKey().toUpperCase(),e.getValue());
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Case insensitive evaluation.
+     * @param ref the reference name to search form (case insensitive).
+     * @return <code>true</code> is the upper case reference name is found
+     */
+    
+    public boolean contains(String ref)
+    {
+    	return super.contains(ref.toUpperCase());
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Return the parameter corresponding to the given reference name.
-     * @param ref reference name of the parameter.
+     * @param ref reference name of the parameter (case insensitive).
      * @return the parameter with the given reference string.
      */
 
@@ -89,7 +108,7 @@ public class ParameterStorage extends NamedDataCollector
         {
             return null;
         }
-        return (Parameter) allData.get(ref);
+        return (Parameter) allData.get(ref.toUpperCase());
     }
 
 
@@ -98,7 +117,7 @@ public class ParameterStorage extends NamedDataCollector
     /**
      * Return the parameter required, which is expected to exist. Kills process
      * with an error if the parameter does not exist.
-     * @param ref reference name of the parameter.
+     * @param ref reference name of the parameter (case insensitive).
      * @return the parameter with the given reference string.
      */
 
@@ -109,7 +128,7 @@ public class ParameterStorage extends NamedDataCollector
             Terminator.withMsgAndStatus("ERROR! Key '" + ref + "' not found in "
                         + "ParameterStorage!",-1);
         }
-        return (Parameter) allData.get(ref);
+        return (Parameter) allData.get(ref.toUpperCase());
     }
 
 //------------------------------------------------------------------------------
@@ -127,6 +146,7 @@ public class ParameterStorage extends NamedDataCollector
     		Parameter.NamedDataType defKind, 
     		Object defValue)
     {
+    	refName = refName.toUpperCase();
         Parameter p = new Parameter();
         if (this.contains(refName))
         {
@@ -143,7 +163,8 @@ public class ParameterStorage extends NamedDataCollector
     
     /**
      * Updates the subset of NamedData as to contain only those that are
-     * instances of the Parameter class.
+     * instances of the Parameter class, and makes sure the reference names are
+     * upper case.
      */
     
     private void updateParamMap()
@@ -153,7 +174,7 @@ public class ParameterStorage extends NamedDataCollector
     	{    		
     		if (e.getValue() instanceof Parameter)
     		{
-    			allPars.put(e.getKey(),(Parameter) e.getValue());
+    			allPars.put(e.getKey().toUpperCase(),(Parameter) e.getValue());
     		}
     	}
     }
@@ -162,15 +183,40 @@ public class ParameterStorage extends NamedDataCollector
 
     /**
      * Return all the parameters stored here.
+     * <b>WARNING:</b> since the parameter's reference name is case insensitive,
+     * you must avoid <code>m.getAllParameters.get("myRef")</code> and use the
+     * {@link ParameterStorage#getParameter(String)}, or
+     * {@link ParameterStorage#getParameterOrDefault(String, NamedDataType, Object)}
+     * or {@link ParameterStorage#getParameterOrNull(String)}, or
+     * 
      * @return the map with all parameters.
      */
 
+    @Deprecated
     public Map<String,Parameter> getAllParameters()
     {
     	updateParamMap();
         return allPars;
     }
 
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the set of reference names. This method is meant to be the case
+     * insensitive analogue of <code>map.keySet()</code>.
+     * @return the set of reference names for the parameters included in this 
+     * collection.
+     */
+    
+    public Set<String> getRefNamesSet()
+    {
+    	updateParamMap();
+    	Set<String> s = new HashSet<String>();
+    	for (String k : allPars.keySet())
+    		s.add(k.toUpperCase());
+    	return s;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -180,9 +226,9 @@ public class ParameterStorage extends NamedDataCollector
      * @param par the new parameter to be stores.
      */
 
-    public void setParameter(String ref, Parameter par)
+    public void setParameter(Parameter par)
     {
-        allData.put(ref,par); 
+        allData.put(par.getReference(),par); 
     }
 
 //------------------------------------------------------------------------------
@@ -274,13 +320,13 @@ public class ParameterStorage extends NamedDataCollector
         for (int i=0; i<blocks.size(); i++)
         {
             ArrayList<String> signleBlock = blocks.get(i);
-            String key = signleBlock.get(0);
+            String key = signleBlock.get(0).toUpperCase();
             String value = signleBlock.get(1);
 
             //All params read from text file are seen as Strings for now
             Parameter prm = new Parameter(key,NamedData.NamedDataType.STRING,
             		value);
-            setParameter(key,prm);
+            setParameter(prm);
         }
     }
     
@@ -293,13 +339,13 @@ public class ParameterStorage extends NamedDataCollector
     public ParameterStorage clone()
     {
     	ParameterStorage newPar = new ParameterStorage();
-    	for (Entry<String, Parameter> e : this.getAllParameters().entrySet())
+    	for (String ref : this.getRefNamesSet())
     	{
-    		Parameter p = e.getValue();
+    		Parameter p = this.getParameter(ref);
     		String reference = p.getReference();
     		NamedDataType type = p.getType();
     		Object value = p.getValueAsObjectSubclass();
-    		newPar.setParameter(e.getKey(), new Parameter(reference, type, value));
+    		newPar.setParameter(new Parameter(reference, type, value));
     	}
     	return newPar;
     }
@@ -308,7 +354,7 @@ public class ParameterStorage extends NamedDataCollector
     
     /**
      * Returns a block of lines with the parameters stored in here formatted for
-     * a jobdetails file.
+     * a job details file.
      * @return the list of lines.
      */
     
@@ -316,10 +362,11 @@ public class ParameterStorage extends NamedDataCollector
     {
     	//Collections.sort(directives, new JobDirectiveComparator());
         ArrayList<String> lines = new ArrayList<String>();
-        for (Entry<String, Parameter> par : getAllParameters().entrySet())
+        for (String ref : getRefNamesSet())
         {
-        	String parStr = par.getKey() + ParameterConstants.SEPARATOR 
-        			+ par.getValue().getValueAsString();
+        	Parameter par = getParameter(ref);
+        	String parStr = par.getReference() + ParameterConstants.SEPARATOR 
+        			+ par.getValueAsString();
             lines.add(parStr);
         }
         return lines;

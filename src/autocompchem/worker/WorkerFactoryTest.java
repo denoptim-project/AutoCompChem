@@ -59,7 +59,7 @@ public class WorkerFactoryTest
     {
     	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	ParameterStorage params = new ParameterStorage();
-    	params.setParameter("TASK", new Parameter("TASK", NamedDataType.STRING, 
+    	params.setParameter(new Parameter("TASK", NamedDataType.STRING, 
     			TaskID.DummyTask.toString()));
     	job.setParameters(params);
     	job.run();

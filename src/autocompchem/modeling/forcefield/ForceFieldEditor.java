@@ -433,13 +433,13 @@ public class ForceFieldEditor extends Worker
                 for (int imol=0; imol<molFiles.size(); imol++)
                 {
                 	ParameterStorage ps = new ParameterStorage();
-                	ps.setParameter("MOLFILE", new Parameter("MOLFILE", 
+                	ps.setParameter(new Parameter("MOLFILE", 
                 			NamedDataType.STRING, molFiles.get(imol)));
-                	ps.setParameter("VMFILE", new Parameter("VMFILE", 
+                	ps.setParameter(new Parameter("VMFILE", 
                 			NamedDataType.STRING, vaFiles.get(imol)));
-                	ps.setParameter("INTCOORDBYSMARTS", 
+                	ps.setParameter( 
                 			params.getParameter("INTCOORDBYSMARTS"));
-                	ps.setParameter("VERBOSITY", 
+                	ps.setParameter( 
                 			params.getParameter("VERBOSITY"));
                 	
                 	Worker w = WorkerFactory.createWorker(ps);

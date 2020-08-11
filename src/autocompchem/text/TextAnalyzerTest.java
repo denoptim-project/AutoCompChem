@@ -348,7 +348,7 @@ public class TextAnalyzerTest
     			":","#","$START","$END");
     		
 	       	assertEquals(1,form.size(), "Number of key:val pairs");
-	       	assertEquals("N1",form.get(0).get(0), "Number of key:val pairs");
+	       	assertEquals("n1",form.get(0).get(0), "First key");
 	    	assertFalse(form.get(0).get(1).contains("$START"), "No leftover $START "+i);
 	    	assertFalse(form.get(0).get(1).contains("$END"), "No leftover $END "+i);
     	}
@@ -373,7 +373,7 @@ public class TextAnalyzerTest
     		ArrayList<ArrayList<String>>form = TextAnalyzer.readKeyValue(lines,
     			":","#","$START","$END");
 	       	assertEquals(1,form.size(), "Number of key:val pairs (B) "+i);
-	       	assertEquals("N1",form.get(0).get(0), "Number of key:val pairs (B) "+i);
+	       	assertEquals("n1",form.get(0).get(0), "First key (B) "+i);
 	    	assertTrue(form.get(0).get(1).contains("$START"), "Surviving $START (B) "+i);
 	    	assertTrue(form.get(0).get(1).contains("$END"), "Surviving $END (B)"+i);
     	}
@@ -440,7 +440,7 @@ public class TextAnalyzerTest
 	    	
 	    	assertEquals(1,form.size(),"Number of key:value pairs (Nest 1-List"
 	    	+ iList + ")");
-	    	assertEquals("N1",form.get(0).get(0),
+	    	assertEquals("n1",form.get(0).get(0),
 	    			"Key 1 (Nest 1-List"+iList+")");
 	    	
 	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
@@ -450,11 +450,11 @@ public class TextAnalyzerTest
 
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 2-List"
 	    	    	+ iList + ")");	    	
-	    	assertEquals("V1",form.get(0).get(0),
+	    	assertEquals("v1",form.get(0).get(0),
 	    			"Key 1 (Nest 2-List"+iList+")");
-	    	assertEquals("V1B",form.get(1).get(0),
+	    	assertEquals("v1b",form.get(1).get(0),
 	    			"Key 2 (Nest 2-List"+iList+")");
-	    	assertEquals("N2",form.get(2).get(0),
+	    	assertEquals("n2",form.get(2).get(0),
 	    			"Key 3 (Nest 2-List"+iList+")");
 	    	
 	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
@@ -464,11 +464,11 @@ public class TextAnalyzerTest
 	    	
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 3-List"
 	    	    	+ iList + ")");
-	    	assertEquals("V2",form.get(0).get(0),
+	    	assertEquals("v2",form.get(0).get(0),
 	    			"Key 1 (Nest 3-List"+iList+")");
-	    	assertEquals("V2B",form.get(1).get(0),
+	    	assertEquals("v2b",form.get(1).get(0),
 	    			"Key 2 (Nest 3-List"+iList+")");
-	    	assertEquals("N3",form.get(2).get(0),
+	    	assertEquals("n3",form.get(2).get(0),
 	    			"Key 3 (Nest 3-List"+iList+")");
     	}
     
@@ -525,7 +525,7 @@ public class TextAnalyzerTest
 	    	for (int iAr=0; iAr<form.size(); iAr++)
 	    	{
 	    		ArrayList<String> a = form.get(iAr);
-	    		if (a.get(0).equals("N1"))
+	    		if (a.get(0).equals("n1"))
 	    			iN1 = iAr;
 	    	}
 	    	assertTrue(iN1>-1,"Locating nest N1");
@@ -542,7 +542,7 @@ public class TextAnalyzerTest
 	    	for (int iAr=0; iAr<form.size(); iAr++)
 	    	{
 	    		ArrayList<String> a = form.get(iAr);
-	    		if (a.get(0).equals("N2"))
+	    		if (a.get(0).equals("n2"))
 	    			iN2 = iAr;
 	    	}
 	    	assertTrue(iN2>-1,"Locating nest N2");
@@ -559,7 +559,7 @@ public class TextAnalyzerTest
 	    	for (int iAr=0; iAr<form.size(); iAr++)
 	    	{
 	    		ArrayList<String> a = form.get(iAr);
-	    		if (a.get(0).equals("N3"))
+	    		if (a.get(0).equals("n3"))
 	    			iN3 = iAr;
 	    	}
 	    	assertTrue(iN3>-1,"Locating nest N3");
@@ -573,8 +573,8 @@ public class TextAnalyzerTest
     			KEYVALKUELINES,":","#","$START","$END");
     	
     	assertEquals(5,form.size(),"Number of key:value pairs.");
-    	assertEquals("KEY1",form.get(0).get(0),"Key1 extracted");
-    	assertEquals("KEY5",form.get(4).get(0),"Key5 extracted");
+    	assertEquals("key1",form.get(0).get(0),"Key1 extracted");
+    	assertEquals("key5",form.get(4).get(0),"Key5 extracted");
     	assertEquals("value1",form.get(0).get(1),"Value of KEY1");
     	assertEquals(2,form.get(2).get(1).split(
     			System.getProperty("line.separator")).length,
@@ -593,21 +593,98 @@ public class TextAnalyzerTest
     	TreeMap<String, String> pairs = TextAnalyzer.readKeyValuePairs(
     			KEYVALKUELINES,":","#","$START","$END");
     	
-    	assertTrue(pairs.containsKey("KEY1"),"First key");
-    	assertTrue(pairs.containsKey("KEY5"),"Last key");
-    	assertEquals(2,pairs.get("KEY3").split(
+    	assertTrue(pairs.containsKey("key1"),"First key");
+    	assertTrue(pairs.containsKey("key5"),"Last key");
+    	assertEquals(2,pairs.get("key3").split(
     			System.getProperty("line.separator")).length,
     			"Size of multiline block (A)");
     	
-    	String nestedBLock = pairs.get("KEY4");
+    	String nestedBLock = pairs.get("key4");
     	TreeMap<String, String> nestedPairs = TextAnalyzer.readKeyValuePairs(
     			new ArrayList<String>(Arrays.asList(nestedBLock.split(
     					System.getProperty("line.separator")))),
     			":","#","$START","$END");
     	assertEquals(3,nestedPairs.size(),"Number of key:value pairs in nested.");
-    	assertTrue(nestedPairs.containsKey("SECOND"),"Nested key");
-    	assertTrue(nestedPairs.containsKey("NESTEDKEY"),"Nested multiline block");
+    	assertTrue(nestedPairs.containsKey("second"),"Nested key");
+    	assertTrue(nestedPairs.containsKey("nestedKey"),"Nested multiline block");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testReadTextWithMultilineBlocks() throws Exception
+    {
+    	ArrayList<String> lines = new ArrayList<String>();
+    	lines.add("A B C");
+    	lines.add("#commented");
+    	lines.add("$STARTMLB_1.1");
+    	lines.add("MLB_1.2");
+    	lines.add("MLB_1.3");
+    	lines.add("$END");
+    	lines.add("MLB_2.1$START");
+    	lines.add("MLB_2.2");
+    	lines.add("MLB_2.3");
+    	lines.add("$END");
+       	lines.add("MLB_3.1$START");
+    	lines.add("MLB_3.2");
+    	lines.add("MLB_3.3$END");
+       	lines.add("$STARTMLB_4.1");
+    	lines.add("MLB_4.2");
+    	lines.add("MLB_4.3$END");
+    	lines.add("$STARTMLB_5.1");
+    	lines.add("$STARTMLB_N1.1");
+    	lines.add("MLB_N1.2");
+    	lines.add("MLB_N1.3");
+    	lines.add("$END");
+    	lines.add("MLB_5.2");
+    	lines.add("MLB_5.3");
+    	lines.add("$END");
+    	lines.add("$STARTMLB_6.1$STARTMLB_N2.1");
+    	lines.add("MLB_N2.2");
+    	lines.add("");
+    	lines.add("MLB_N2.3");
+    	lines.add("$ENDMLB_6.2");
+    	lines.add("MLB_6.3$END");
+    	lines.add("$STARTMLB_7.1$STARTMLB_N3.1");
+    	lines.add("MLB_N3.2");
+    	lines.add("MLB_N3.3");
+    	lines.add("$ENDMLB_6.2$END");
     	
+    	//TODO reactivate
+    	/*
+    	ArrayList<String> form = TextAnalyzer.readTextWithMultilineBlocks(lines,
+    			"#","$START","$END");
+    	
+    	assertEquals(8,form.size());
+    	assertTrue(form.contains("A B C"),"ERR-1");
+    	assertEquals(3,
+    			form.get(1).split(System.getProperty("line.separator")).length,
+    			"ERR-2"); //MLB_1.1
+    	assertEquals(3,
+    			form.get(2).split(System.getProperty("line.separator")).length,
+    			"ERR-3"); //MLB_2.1
+    	assertEquals(3,
+    			form.get(3).split(System.getProperty("line.separator")).length,
+    			"ERR-4"); //MLB_3.1
+    	assertEquals(3,
+    			form.get(4).split(System.getProperty("line.separator")).length,
+    			"ERR-5"); //MLB_4.1
+    	assertEquals(7,
+    			form.get(5).split(System.getProperty("line.separator")).length,
+    			"ERR-6"); //MLB_5.1
+    	assertTrue(form.get(5).contains("$START"),"ERR-7"); //MLB_5.1
+    	assertTrue(form.get(5).contains("$END"),"ERR-8"); //MLB_5.1
+    	assertEquals(6,
+    			form.get(6).split(System.getProperty("line.separator")).length,
+    			"ERR-9"); //MLB_6.1
+    	assertTrue(form.get(6).contains("$START"),"ERR-10"); //MLB_6.1
+    	assertTrue(form.get(6).contains("$END"),"ERR-11"); //MLB_6.1
+    	assertEquals(4,
+    			form.get(7).split(System.getProperty("line.separator")).length,
+    			"ERR-12"); //MLB_7.1
+    	assertTrue(form.get(7).contains("$START"),"ERR-13"); //MLB_7.1
+    	assertTrue(form.get(7).contains("$END"),"ERR-14"); //MLB_7.1
+    	*/
     }
     
 //------------------------------------------------------------------------------

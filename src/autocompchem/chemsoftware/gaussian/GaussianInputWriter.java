@@ -529,18 +529,18 @@ public class GaussianInputWriter extends Worker
         String verbKey = ACCConstants.VERBOSITYPAR;
         GaussianRouteSection stepRoute = gStep.getRouteSection();
 
-        for (String action : params.getAllParameters().keySet())
+        for (String action : params.getRefNamesSet())
         {
             switch (action.toUpperCase()) 
             {
                 case BasisSetConstants.ATMSPECBS:                	
                     ParameterStorage locPars = new ParameterStorage();
-                    locPars.setParameter(action,params.getParameter(action));
-                    locPars.setParameter(verbKey, new Parameter(verbKey,
+                    locPars.setParameter(params.getParameter(action));
+                    locPars.setParameter(new Parameter(verbKey,
                     		NamedDataType.INTEGER, verbosity));
                     
                 	// Get a worker to deal with the basis set generation task
-                    locPars.setParameter("TASK", new Parameter("TASK",
+                    locPars.setParameter(new Parameter("TASK",
                 		NamedDataType.STRING, "GENERATEBASISSET"));
                 	Worker w = WorkerFactory.createWorker(locPars);
                     BasisSetGenerator bsg = (BasisSetGenerator) w;

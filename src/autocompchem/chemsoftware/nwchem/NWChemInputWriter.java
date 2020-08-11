@@ -1271,13 +1271,12 @@ public class NWChemInputWriter extends Worker
                 atmSpecBSParam.setValue(sb.toString());
 
                 // Allow some partial assignation
-                locPars.setParameter(BasisSetConstants.ALLOWPARTIALMATCH, 
-                             new Parameter(BasisSetConstants.ALLOWPARTIALMATCH,
+                locPars.setParameter(new Parameter(
+                		BasisSetConstants.ALLOWPARTIALMATCH,
                             		 NamedDataType.BOOLEAN, "true"));
             }
-            locPars.setParameter(BasisSetConstants.ATMSPECBS,atmSpecBSParam);
-            locPars.setParameter(ACCConstants.VERBOSITYPAR, new Parameter(
-                          ACCConstants.VERBOSITYPAR,
+            locPars.setParameter(atmSpecBSParam);
+            locPars.setParameter(new Parameter(ACCConstants.VERBOSITYPAR,
                           NamedDataType.INTEGER, verbosity));
             
             // Do it only if there is something to do...
@@ -1285,7 +1284,7 @@ public class NWChemInputWriter extends Worker
             {
             	// Get a worker to deal with the basis set generation task
             	ParameterStorage paramsForBasisSetGen = locPars.clone();
-            	paramsForBasisSetGen.setParameter("TASK", new Parameter("TASK",
+            	paramsForBasisSetGen.setParameter(new Parameter("TASK",
             		NamedDataType.STRING, "GENERATEBASISSET"));
             	Worker w = WorkerFactory.createWorker(paramsForBasisSetGen);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
@@ -1867,10 +1866,10 @@ public class NWChemInputWriter extends Worker
 
         //Build the Z-Matrix from cartesian coordinates and connectivity
         ParameterStorage locPar = new ParameterStorage();
-        locPar.setParameter("TASK", new Parameter("TASK",NamedDataType.STRING,
+        locPar.setParameter(new Parameter("TASK",NamedDataType.STRING,
         		"PRINTZMATRIX"));
-        locPar.setParameter("VERBOSITY", params.getParameter("VERBOSITY"));
-        locPar.setParameter("MOL", new Parameter("MOL",
+        locPar.setParameter(params.getParameter("VERBOSITY"));
+        locPar.setParameter(new Parameter("MOL",
         		NamedDataType.IATOMCONTAINER,mol));
         Worker w = WorkerFactory.createWorker(locPar);
         ZMatrixHandler zmh = (ZMatrixHandler) w;

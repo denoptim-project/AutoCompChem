@@ -398,7 +398,7 @@ public class NWChemReStarter extends Worker
     {
     	// We take most of the parameters of the present worker
     	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
-    	paramsForOutputHandler.setParameter("TASK", new Parameter("TASK",
+    	paramsForOutputHandler.setParameter(new Parameter("TASK",
     		NamedDataType.STRING, "EVALUATENWCHEMOUTPUT"));
     	
         //Gather information on the error job

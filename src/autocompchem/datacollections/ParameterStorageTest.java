@@ -43,11 +43,26 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 
 public class ParameterStorageTest 
 {
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCaseInsensitivity() throws Exception
+    {
+        Parameter p1 = new Parameter("Key1", NamedDataType.STRING,1.123);
+        
+        assertEquals("KEY1",p1.getReference(),"Upper case ref name");
+        
+    	ParameterStorage ps = new ParameterStorage();
+    	ps.setParameter(p1);
+    	
+    	assertTrue(ps.contains("KEY1"),"Case insensitive contains method (A)");
+    	assertTrue(ps.contains("key1"),"Case insensitive contains method (B)");
+    }
     
 //------------------------------------------------------------------------------
 
     @Test
-    public void testGetAllParameters() throws Exception
+    public void testGetRefNamesSet() throws Exception
     {
 
         Parameter p1 = new Parameter("KEY1", NamedDataType.STRING,1.123);      
@@ -55,9 +70,9 @@ public class ParameterStorageTest
         Parameter p3 = new Parameter("KEY3", NamedDataType.INTEGER,206);
         
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter("k1", p1);
-    	ps.setParameter("k2", p2);
-    	ps.setParameter("k3", p3);
+    	ps.setParameter(p1);
+    	ps.setParameter(p2);
+    	ps.setParameter(p3);
     	
     	NamedData nd1 = new NamedData("ND1", NamedDataType.STRING, "val1");
     	NamedData nd2 = new NamedData("ND2", NamedDataType.INTEGER, "int1");
@@ -67,12 +82,12 @@ public class ParameterStorageTest
     	
     	assertEquals(5, dc.getAllNamedData().size(), 
     			"Number of items from getAllNamedData");
-    	assertEquals(3, ps.getAllParameters().size(), 
+    	assertEquals(3, ps.getRefNamesSet().size(), 
     			"Number of items from getAllParameters");
     	
-    	Parameter rp1 = ps.getAllParameters().get("k1");
-    	Parameter rp2 = ps.getAllParameters().get("k2");
-    	Parameter rp3 = ps.getAllParameters().get("k3");
+    	Parameter rp1 = ps.getParameterOrNull("key1");
+    	Parameter rp2 = ps.getParameterOrNull("key2");
+    	Parameter rp3 = ps.getParameterOrNull("key3");
     	
     	assertTrue(rp1.getValueAsObjectSubclass() instanceof String, 
     			"Verify type p1"); 

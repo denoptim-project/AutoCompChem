@@ -97,7 +97,7 @@ cat <<EOF
 
   -n      excludes building step. Use it to run only tests.
 
-  -j <path_to_bin_folder> specifies the pathname of a specific Java bin folder. 
+  -j <path/binr>     specifies the pathname of a specific Java bin folder. 
 
 EOF
 }

@@ -177,11 +177,11 @@ public class JobFactoryTest
 
             assertEquals(3,job.getNumberOfSteps(),"Number of 1st level jobs");
             assertEquals("value2",
-                        job.getStep(0).getParameter("KEY2").getValueAsString());
+                        job.getStep(0).getParameter("key2").getValueAsString());
             assertEquals("value4",
-                        job.getStep(1).getParameter("KEY4").getValueAsString());
+                        job.getStep(1).getParameter("key4").getValueAsString());
             assertEquals("value5",
-                        job.getStep(2).getParameter("KEY5").getValueAsString());
+                        job.getStep(2).getParameter("key5").getValueAsString());
         }
         catch (Throwable t)
         {
@@ -241,29 +241,29 @@ public class JobFactoryTest
             Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
 
             assertEquals("value1",
-                        job.getParameter("KEY1").getValueAsString());
+                        job.getParameter("key1").getValueAsString());
             assertEquals("value6",
-                        job.getParameter("KEY6").getValueAsString());
+                        job.getParameter("key6").getValueAsString());
             assertEquals(1,job.getNumberOfSteps(),"Number of 1st level jobs");
 
             assertEquals("v1A",
-                        job.getStep(0).getParameter("K1A").getValueAsString());
+                        job.getStep(0).getParameter("k1A").getValueAsString());
             assertEquals("v1B",
-                        job.getStep(0).getParameter("K1B").getValueAsString());
+                        job.getStep(0).getParameter("k1B").getValueAsString());
             assertEquals(1,job.getStep(0).getNumberOfSteps(),
                                                     "Number of 2nd level jobs");
 
             assertEquals("v2A",job.getStep(0).getStep(0)
-                                      .getParameter("K2A").getValueAsString());
+                                      .getParameter("k2A").getValueAsString());
             assertEquals("v2B",job.getStep(0).getStep(0)
-                                      .getParameter("K2B").getValueAsString());
+                                      .getParameter("k2B").getValueAsString());
             assertEquals(1,job.getStep(0).getStep(0).getNumberOfSteps(),
                                                     "Number of 3rd level jobs");
 
             assertEquals("v3A",job.getStep(0).getStep(0).getStep(0)
-                                      .getParameter("K3A").getValueAsString());
+                                      .getParameter("k3A").getValueAsString());
             assertEquals("v3B",job.getStep(0).getStep(0).getStep(0)
-                                      .getParameter("K3B").getValueAsString());
+                                      .getParameter("k3B").getValueAsString());
             assertEquals(0,
                        job.getStep(0).getStep(0).getStep(0).getNumberOfSteps(),
                                                     "Number of 4th level jobs");
@@ -297,52 +297,52 @@ public class JobFactoryTest
 
             // First branch is as above but shifted down one level
             assertEquals("value1",job.getStep(0)
-                                      .getParameter("KEY1").getValueAsString());
+                                      .getParameter("key1").getValueAsString());
             assertEquals("value6",job.getStep(0)
-                                      .getParameter("KEY6").getValueAsString());
+                                      .getParameter("key6").getValueAsString());
             assertEquals(1,job.getStep(0)
                                 .getNumberOfSteps(),"B-Num. of 1st level jobs");
 
             assertEquals("v1A",job.getStep(0)
-                           .getStep(0).getParameter("K1A").getValueAsString());
+                           .getStep(0).getParameter("k1A").getValueAsString());
             assertEquals("v1B",job.getStep(0)
-                           .getStep(0).getParameter("K1B").getValueAsString());
+                           .getStep(0).getParameter("k1B").getValueAsString());
             assertEquals(1,job.getStep(0).getStep(0).getNumberOfSteps(),
                                                     "B-Num. of 2nd level jobs");
 
             assertEquals("v2A",job.getStep(0).getStep(0).getStep(0)
-                                      .getParameter("K2A").getValueAsString());
+                                      .getParameter("k2A").getValueAsString());
             assertEquals("v2B",job.getStep(0).getStep(0).getStep(0)
-                                      .getParameter("K2B").getValueAsString());
+                                      .getParameter("k2B").getValueAsString());
             assertEquals(1,job.getStep(0).getStep(0).getStep(0)
                                 .getNumberOfSteps(),"B-Num. of 3rd level jobs");
 
             assertEquals("v3A",job.getStep(0).getStep(0).getStep(0).getStep(0)
-                                      .getParameter("K3A").getValueAsString());
+                                      .getParameter("k3A").getValueAsString());
             assertEquals("v3B",job.getStep(0).getStep(0).getStep(0).getStep(0)
-                                      .getParameter("K3B").getValueAsString());
+                                      .getParameter("k3B").getValueAsString());
             assertEquals(0,
              job.getStep(0).getStep(0).getStep(0).getStep(0).getNumberOfSteps(),
                                                     "B-Num. of 4th level jobs");
             // Second branch
             assertEquals("v4A",job.getStep(1)
-                                      .getParameter("K4A").getValueAsString());
+                                      .getParameter("k4A").getValueAsString());
             assertEquals("v4B",job.getStep(1)
-                                      .getParameter("K4B").getValueAsString());
+                                      .getParameter("k4B").getValueAsString());
             assertEquals(1,job.getStep(1)
                                 .getNumberOfSteps(),"C-Num. of 1st level jobs");
 
             assertEquals("v5A",job.getStep(1)
-                           .getStep(0).getParameter("K5A").getValueAsString());
+                           .getStep(0).getParameter("k5A").getValueAsString());
             assertEquals("v5B",job.getStep(1)
-                           .getStep(0).getParameter("K5B").getValueAsString());
+                           .getStep(0).getParameter("k5B").getValueAsString());
             assertEquals(1,job.getStep(1).getStep(0).getNumberOfSteps(),
                                                     "C-Num. of 2nd level jobs");
 
             assertEquals("v6A",job.getStep(1).getStep(0).getStep(0)
-                                      .getParameter("K6A").getValueAsString());
+                                      .getParameter("k6A").getValueAsString());
             assertEquals("v6B",job.getStep(1).getStep(0).getStep(0)
-                                      .getParameter("K6B").getValueAsString());
+                                      .getParameter("k6B").getValueAsString());
             assertEquals(0,job.getStep(1).getStep(0).getStep(0)
                                 .getNumberOfSteps(),"C-Num. of 3rd level jobs");
         }

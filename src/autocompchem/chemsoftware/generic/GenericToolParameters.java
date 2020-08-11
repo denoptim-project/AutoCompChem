@@ -36,7 +36,11 @@ public class GenericToolParameters extends ParameterStorage
 
     public GenericToolParameters(ParameterStorage ps)
     {
-        super(ps.getAllParameters());
+        super();
+        for (String k : ps.getRefNamesSet())
+        {
+        	this.setParameter(ps.getParameter(k));
+        }
     }
 
 //------------------------------------------------------------------------------

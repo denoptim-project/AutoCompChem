@@ -153,7 +153,7 @@ public class ErrorMessage
         for (int i=0; i<form.size(); i++)
         {
             ArrayList<String> signleBlock = form.get(i);
-            String key = signleBlock.get(0);
+            String key = signleBlock.get(0).toUpperCase();
             String value = signleBlock.get(1);
             switch (key)
             {
