@@ -34,6 +34,8 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+
 
 /**
  * Unit Test for text analysis.
@@ -379,7 +381,18 @@ public class TextAnalyzerTest
     	}
     }
     
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+    
+    @Test
+    public void testCountStringInLine() throws Exception
+    {
+    	String line = "$END dsdf $END asdas$ ENDdfg $END";
+    	assertEquals(3,TextAnalyzer.countStringInLine("$END", line),"Case-1");
+    	line = "dsdf $END asdas$ ENDdfg $ENDfafdbv";
+    	assertEquals(2,TextAnalyzer.countStringInLine("$END", line),"Case-2");
+    }
+    
+//-----------------------------------------------------------------------------
 
     @Test
     public void testReadKeyValue() throws Exception
@@ -612,7 +625,7 @@ public class TextAnalyzerTest
 //------------------------------------------------------------------------------
 
     @Test
-    public void testReadTextWithMultilineBlocks() throws Exception
+    public void testReadTextWithMultilineBlocksBis() throws Exception
     {
     	ArrayList<String> lines = new ArrayList<String>();
     	lines.add("A B C");
@@ -650,8 +663,6 @@ public class TextAnalyzerTest
     	lines.add("MLB_N3.3");
     	lines.add("$ENDMLB_6.2$END");
     	
-    	//TODO reactivate
-    	/*
     	ArrayList<String> form = TextAnalyzer.readTextWithMultilineBlocks(lines,
     			"#","$START","$END");
     	
@@ -684,7 +695,81 @@ public class TextAnalyzerTest
     			"ERR-12"); //MLB_7.1
     	assertTrue(form.get(7).contains("$START"),"ERR-13"); //MLB_7.1
     	assertTrue(form.get(7).contains("$END"),"ERR-14"); //MLB_7.1
-    	*/
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testReadTextWithMultilineBlocks() throws Exception
+    {
+    	ArrayList<String> lines = new ArrayList<String>();
+    	lines.add(ChemSoftConstants.JDCOMMENT+ " ot-comment one");
+    	lines.add(ChemSoftConstants.JDOPENBLOCK + "first");
+    	lines.add(ChemSoftConstants.JDCOMMENT+ " in-comment one");
+    	lines.add("firstB");
+    	lines.add(ChemSoftConstants.JDCOMMENT+ " dp-comment one");
+    	lines.add(ChemSoftConstants.JDOPENBLOCK + "second");
+    	lines.add("secondB");
+    	lines.add(ChemSoftConstants.JDOPENBLOCK + "third");
+    	lines.add("thirdB");
+    	lines.add(ChemSoftConstants.JDOPENBLOCK + "forth");
+    	lines.add("forthB");
+    	lines.add(ChemSoftConstants.JDCLOSEBLOCK);
+    	lines.add(ChemSoftConstants.JDCLOSEBLOCK);
+    	lines.add(ChemSoftConstants.JDCOMMENT+ " dp-comment two");
+    	lines.add(ChemSoftConstants.JDCLOSEBLOCK);
+    	lines.add(ChemSoftConstants.JDCOMMENT+ " in-comment two");
+    	lines.add(ChemSoftConstants.JDCLOSEBLOCK);
+    	lines.add(ChemSoftConstants.JDCOMMENT+ " ot-comment two");
+    	
+    	for (int i=0; i<3; i++)
+    	{
+            lines = TextAnalyzer.readTextWithMultilineBlocks(lines,
+            		ChemSoftConstants.JDCOMMENT, 
+            		ChemSoftConstants.JDOPENBLOCK, 
+            		ChemSoftConstants.JDCLOSEBLOCK);
+        	
+        	assertEquals(1,lines.size(),"Size ("+i+")");
+
+        	assertEquals(3,TextAnalyzer.countStringInLine(
+        			ChemSoftConstants.JDOPENBLOCK, lines.get(0)),
+        			"Number of directive labels");
+        	assertEquals(3,TextAnalyzer.countStringInLine(
+        			ChemSoftConstants.JDCLOSEBLOCK, lines.get(0)),
+        			"Number of directive labels");
+
+        	assertEquals(0,TextAnalyzer.countStringInLine("ot-comment", 
+        			lines.get(0)),"Number of outside comments");
+        	assertEquals(2,TextAnalyzer.countStringInLine("in-comment", 
+        			lines.get(0)),"Number of nested comments");
+        	assertEquals(2,TextAnalyzer.countStringInLine("dp-comment", 
+        			lines.get(0)),"Number of deep comments");
+    	}
+    	
+    	lines.clear();
+    	lines.add(ChemSoftConstants.JDOPENBLOCK +  "third_"
+    			+ ChemSoftConstants.JDOPENBLOCK + "second_"
+    			+ ChemSoftConstants.JDOPENBLOCK + "first_"
+    			+ "first" +ChemSoftConstants.JDCLOSEBLOCK
+    			+ "second" +ChemSoftConstants.JDCLOSEBLOCK
+    			+ "third" +ChemSoftConstants.JDCLOSEBLOCK);
+    	
+    	for (int i=0; i<3; i++)
+    	{
+    		lines = TextAnalyzer.readTextWithMultilineBlocks(lines,
+            		ChemSoftConstants.JDCOMMENT, 
+            		ChemSoftConstants.JDOPENBLOCK, 
+            		ChemSoftConstants.JDCLOSEBLOCK);
+
+        	assertEquals(1,lines.size(),"Size (B) ("+i+")");
+
+        	assertEquals(3,TextAnalyzer.countStringInLine(
+        			ChemSoftConstants.JDOPENBLOCK, lines.get(0)),
+        			"Number of directive labels (B)");
+        	assertEquals(3,TextAnalyzer.countStringInLine(
+        			ChemSoftConstants.JDCLOSEBLOCK, lines.get(0)),
+        			"Number of directive labels (B)");
+    	}    
     }
     
 //------------------------------------------------------------------------------

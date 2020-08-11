@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 
@@ -58,6 +59,28 @@ public class TextAnalyzer
         while (m.find())
             count++;
 
+        return count;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Count non-overlapping occurrences of a string (not a regex!) in a single
+     * line. 
+     * @param str the string (NB, this is NOT a regex!) to match
+     * @param line the string to analyse
+     * @return the number of non-overlapping matches
+     */
+
+    public static int countStringInLine(String str, String line)
+    {
+    	int count = 0;
+    	while (line.contains(str))
+    	{
+    		count++;
+    		line = line.substring(line.indexOf(str) + str.length());
+    	}
+    	
         return count;
     }
 
@@ -1391,90 +1414,87 @@ public class TextAnalyzer
         ArrayList<String> newLines = new ArrayList<String>();
         
         int nestingLevel = 0;
+        String growingLine = "";
+        boolean isGrowing = false;
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);
             line = StringUtils.escapeSpecialChars(line);
-
-            //Check if this line is the beginning of aa multiple line block
-            if (line.contains(start))
+            
+            if (!isGrowing && line.startsWith(commentLab))
             {
-            	nestingLevel++;
-            	
-            	// More nesting on this line?
-            	String subStr = line.substring(0,line.lastIndexOf(start));
-            	while (subStr.contains(start))
-            	{
-            		nestingLevel++;
-            		subStr = subStr.substring(0,subStr.lastIndexOf(start));
-            	}
-            	
-            	// remove the left-most start label
-                int idFirstStart = line.indexOf(start);
-            	line = line.substring(0,idFirstStart) + line.subSequence(
-            			idFirstStart+start.length(), line.length());
-            	//NB: string.replace cannot be used: it takes away all matches
-            	
+            	continue;
+            }
+            
+        	String subStr = line;
+        	while (subStr.contains(start))
+        	{
+        		nestingLevel++;
+        		subStr = subStr.substring(0,subStr.lastIndexOf(start));
+        	}
+        	subStr = line;
+        	while (subStr.contains(end))
+        	{
+        		nestingLevel--;
+                subStr = subStr.substring(0,subStr.lastIndexOf(end));
+        	}
 
-                //Read other lines
-                boolean goon = true;
-                while (goon)
-                {
-                    if ((i+1) >= lines.size())
-                    {
-                        Terminator.withMsgAndStatus("ERROR"
-                            + " ReadFormattedText-2a! NL: "+nestingLevel+" "
-                            + " Cannot go beyond last line '" + lines.get(i) + "'.",-1);
-                    }
-                    i++;
-                    String otherLine = lines.get(i);
-
-                    // deal with further nesting
-                    if (otherLine.contains(start))
-                    {
-                    	nestingLevel++;
-                    	// More nesting on this line?
-                    	String subStr2 = otherLine.substring(0,otherLine.lastIndexOf(start));
-                    	while (subStr2.contains(start))
-                    	{
-                    		nestingLevel++;
-                    		subStr2 = subStr2.substring(0,subStr2.lastIndexOf(start));
-                    	}
-                    }
-                    
-                    if (otherLine.contains(end))
-                    {
-                    	// Here we deal with the possibility that multiple 'end' 
-                    	// labels are on the same line
-                    	String sub = otherLine;
-                    	while (sub.contains(end) && nestingLevel>0)
-                    	{
-                    		nestingLevel--;
-                    		sub = sub.substring(0,sub.lastIndexOf(end));
-                    	}
-
-                    	if (nestingLevel==0)
-                    	{
-                    		otherLine = otherLine.substring(0,otherLine.lastIndexOf(end));
-	                        goon = false;
-                    	}
-                    } 
-                    line = line + newline + otherLine;
-                }
-
-                line = StringUtils.deescapeSpecialChars(line);
-
+        	if (nestingLevel == 0)
+        	{
+        		// Nested structure is all contained in one line (if it exists)
+        		line = StringUtils.deescapeSpecialChars(line);
+        		if (isGrowing)
+        		{
+        			// the line is the end of a previously opened nest, so
+        			// we take away the rightmost 'end' label
+        			line = line.substring(0,line.lastIndexOf(end))
+        					+ line.substring(line.lastIndexOf(end) 
+        							+ end.length());
+        			// and append it to the previously collected parts of the line
+        			line = growingLine + newline + line;
+        			// As we have finished appending, we reset the pointer
+        			isGrowing = false;
+        		}
+        		// The line is now ready to be archived.
                 newLines.add(line);
-
-            } else {
-                //Skip commented out
-                if (line.startsWith(commentLab))
-                    continue;
-                
-                newLines.add(line);
-           }
-        } 
-
+        	} 
+        	else if (nestingLevel > 0) 
+        	{
+        		// We are inside the nested system, so we append lines
+        		if (!isGrowing)
+        		{
+        			// We just entered the outermost nest. Take note of the level
+        			isGrowing = true;
+        			// Take away the leftmost 'start' label, and start growing 
+        			// the new collective line (which will contain newLine chars
+        			
+        			growingLine = line.substring(0,line.indexOf(start))
+        					+ line.substring(line.indexOf(start)+start.length());
+        			// To keep growing we jump to the next iteration of the loop
+        			continue;
+        		}
+        		else
+        		{
+        			growingLine = growingLine + newline + line;
+        			continue;
+        		}
+        	} 
+        	else if (nestingLevel < 0) 
+        	{
+        		StringBuilder sb = new StringBuilder();
+        		for (String l : lines)
+        		{
+        			sb.append(l + newline);
+        		}
+        		Terminator.withMsgAndStatus("ERROR! There is an label '" 
+        				+ ChemSoftConstants.JDCLOSEBLOCK+ "' indicating the "
+        				+ "end of a multiline block of text, but no opening "
+        				+ "label '" + ChemSoftConstants.JDOPENBLOCK + "'was "
+        				+ "found before this point. Check this input: "
+        				+ newline + sb.toString(), -1);
+        	}
+        }
+        
         return newLines;
     }
 
