@@ -49,7 +49,7 @@ import autocompchem.text.TextAnalyzer;
 
 public class DirectiveFactoryTest 
 {
-	private final String NL = System.getProperty("line.separator");
+
 //------------------------------------------------------------------------------
 
     @Test

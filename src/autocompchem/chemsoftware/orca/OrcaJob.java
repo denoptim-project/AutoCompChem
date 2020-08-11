@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveFactory;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 
 /**
@@ -87,55 +87,104 @@ public class OrcaJob extends Job
 	        OrcaJob step = new OrcaJob(linesOfAStep);
 	        addStep(step);
     	} else {
-    		//TODO directives from text
+    		directives = DirectiveFactory.buildAllFromJDText(lines);
     	}
     }
 
-//------------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
+    
     /**
-     * Change the charge in all steps
-     * @param newCharge new value of the charge for all steps
+     * @param name of the directive to return (case insensitive).
+     * @return the directive or null if none is found with that name.
      */
-
-    public void setAllCharge(int newCharge)
+    
+    public Directive getDirective(String name)
     {
-        for (int i=0; i<steps.size(); i++)
-        {
-        	//TODO
-//            getStep(i).setCharge(newCharge);
-        }
+    	for (Directive d : directives)
+    	{
+    		if (d.getName().toUpperCase().equals(name.toUpperCase()))
+    		{
+    			return d;
+    		}
+    	}
+    	return null;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * @param i the index of the directive
+     * @return the directive    
+     */
+    
+    public Directive getDirective(int i)
+    {
+    	return directives.get(i);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Adds directive or changes an existing one with the given one.
+     * @param d the given directive
+     */
+    
+    public void setDirective(Directive d)
+    {
+    	if (directives.contains(d))
+    	{
+    		int id = directives.indexOf(d);
+    		directives.set(id, d);
+    	} else {
+    	    directives.add(d);
+    	}
     }
 
-//------------------------------------------------------------------------------
-
-    /**
-     * Change spin multiplicity in all steps
-     * @param newSpinMult new value of the spin multiplicity for all steps
-     */
-
-    public void setAllSpinMultiplicity(int newSpinMult)
-    {
-        for (int i=0; i<steps.size(); i++)
-        {
-           //TODO getStep(i).setSpinMultiplicity(newSpinMult);
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Change the title in all steps
-     * @param title string to be used as title in all steps
-     */
-
-    public void setAllTitle(String title)
-    {
-        for (int i=0; i<steps.size(); i++)
-        {
-           //TODO getStep(i).setTitle(title);
-        }
-    }
+////------------------------------------------------------------------------------
+//
+//    /**
+//     * Change the charge in all steps
+//     * @param newCharge new value of the charge for all steps
+//     */
+//
+//    public void setAllCharge(int newCharge)
+//    {
+//        for (int i=0; i<steps.size(); i++)
+//        {
+//        	//TODO
+////            getStep(i).setCharge(newCharge);
+//        }
+//    }
+//
+////------------------------------------------------------------------------------
+//
+//    /**
+//     * Change spin multiplicity in all steps
+//     * @param newSpinMult new value of the spin multiplicity for all steps
+//     */
+//
+//    public void setAllSpinMultiplicity(int newSpinMult)
+//    {
+//        for (int i=0; i<steps.size(); i++)
+//        {
+//           //TODO getStep(i).setSpinMultiplicity(newSpinMult);
+//        }
+//    }
+//
+////------------------------------------------------------------------------------
+//
+//    /**
+//     * Change the title in all steps
+//     * @param title string to be used as title in all steps
+//     */
+//
+//    public void setAllTitle(String title)
+//    {
+//        for (int i=0; i<steps.size(); i++)
+//        {
+//           //TODO getStep(i).setTitle(title);
+//        }
+//    }
 
 //------------------------------------------------------------------------------
 
