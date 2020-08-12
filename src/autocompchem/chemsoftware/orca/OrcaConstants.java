@@ -25,15 +25,11 @@ package autocompchem.chemsoftware.orca;
 
 public class OrcaConstants
 {
- 
-//	/**
-//	 * Key for parameter defining which computational chemistry software to use
-//	 */
-//	public static final String PARCCTOOL = "COMPCHEMTOOL";
-//	
-//	/**
-//	 * Key for parameter defining 
-//	 */
-//	public static final String PAR = "";
+
+	/**
+	 * The separator used in Orca input files to identify the end of the input
+	 * of a single job, and the beginning of the input of the next job.
+	 */
+	public static final String JOBSEPARATOR = "$new_job";
 	
 }

@@ -213,10 +213,9 @@ public class Keyword implements IDirectiveComponent
 //-----------------------------------------------------------------------------
 
     /**
-     * Produces a formatted line according to autocompchem's JobDetails format for
-     * the keyword of an NWChem directive.
+     * Produces a formatted line according to autocompchem's job details format.
      * @return the formatted string ready to print the line setting this
-     * keyword in a jobDetails file
+     * keyword in a job details file
      */
 
     public String toStringJobDetails()

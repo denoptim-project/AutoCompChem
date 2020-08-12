@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -141,16 +142,16 @@ public class OrcaJobTest
     			+ "  O   0.000 0.000 1.130" 
     			+ ChemSoftConstants.JDCLOSEBLOCK);
     	
-    	OrcaJob oj = new OrcaJob(lines);
+    	CompChemJob oj = new CompChemJob(lines);
     	
     	assertEquals(3,oj.getNumberOfSteps(),"Number of Orca steps");
-    	assertEquals("NumFreq",((OrcaJob)oj.getStep(0)).getDirective("!")
+    	assertEquals("NumFreq",((CompChemJob)oj.getStep(0)).getDirective("!")
     			.getKeyword("jobType").getValue().get(0),
     			"Check imported dir (A)");
-    	assertEquals("0",((OrcaJob)oj.getStep(1)).getDirective("*")
+    	assertEquals("0",((CompChemJob)oj.getStep(1)).getDirective("*")
     			.getKeyword("charge").getValue().get(0),
     			"Check imported dir (B)");
-    	assertEquals("Opt",((OrcaJob)oj.getStep(2)).getDirective("!")
+    	assertEquals("Opt",((CompChemJob)oj.getStep(2)).getDirective("!")
     	    			.getKeyword("jobType").getValue().get(0),
     	    			"Check imported dir (C)");
     }

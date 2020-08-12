@@ -165,8 +165,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 
     /**
      * Produces a formatted block of text (i.e., list of lines)
-     * according to the syntax of NWChem input directives.
-     * @return the list of lines for a NWChem input file
+     * according to the syntax of ACC's job details files.
+     * @return the list of lines for a job details file
      */
 
     public ArrayList<String> toLinesJobDetails()

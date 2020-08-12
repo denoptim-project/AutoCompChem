@@ -20,26 +20,18 @@ package autocompchem.chemsoftware;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.chemsoftware.gaussian.GaussianConstants;
-import autocompchem.chemsoftware.nwchem.NWChemConstants;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
-import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
-import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
-import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
 
@@ -633,8 +625,8 @@ public class Directive implements IDirectiveComponent
 
     /**
      * Produces a formatted block of text (i.e., list of lines)
-     * according to the syntax of NWChem input directives.
-     * @return the list of lines for a NWChem job-details file
+     * according to the syntax ACC's job details file.
+     * @return the list of lines for a job details file
      */
 
     public ArrayList<String> toLinesJobDetails()

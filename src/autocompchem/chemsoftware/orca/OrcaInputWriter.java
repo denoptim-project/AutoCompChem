@@ -14,6 +14,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.Parameter;
@@ -133,7 +134,7 @@ public class OrcaInputWriter extends Worker
     /**
      * Object containing the details on the NWChem job
      */
-    private OrcaJob oJob;
+    private CompChemJob oJob;
 
     /** 
      * Verbosity level
@@ -206,7 +207,7 @@ public class OrcaInputWriter extends Worker
                 System.out.println(" Job details from file '" + jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
-            this.oJob = new OrcaJob(jdFile);
+            this.oJob = new CompChemJob(jdFile);
         } 
         else 
         {
