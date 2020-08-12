@@ -183,12 +183,12 @@ public class TextAnalyzerTest
                 + "outside 1" + NL
                 + "#end ";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
-        ArrayList<TextBlock> blocks = TextAnalyzer.extractTextBlocks(br,
+        ArrayList<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
         assertEquals(4,blocks.size(),"Tutal number of blocks");
-        for (TextBlock tb : blocks)
+        for (TextBlockIndexed tb : blocks)
         {
             String key = tb.getIndexA() + "_" 
                        + tb.getIndexB() + "_" 
@@ -264,12 +264,12 @@ public class TextAnalyzerTest
                  + "after nested block 3" + NL
                 + "CLB1";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
-        ArrayList<TextBlock> blocks = TextAnalyzer.extractTextBlocks(br,
+        ArrayList<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
         assertEquals(3,blocks.size(),"Tutal number of 1st level blocks");
-        for (TextBlock tb : blocks)
+        for (TextBlockIndexed tb : blocks)
         {
             String key = tb.getIndexA() + "_"
                        + tb.getIndexB() + "_"

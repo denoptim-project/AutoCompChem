@@ -147,7 +147,7 @@ import autocompchem.worker.WorkerFactory;
  * </li>
  * </ul>
  * <p>
- * Note that parameters specified in the contructor by means of the 
+ * Note that parameters specified in the constructor by means of the 
  * {@link ParameterStorage} will take effect from
  * the first {@link NWChemTask} of the generated {@link NWChemJob} 
  * and will be effective until new instructions (i.e., keyword, directive) 
@@ -1228,13 +1228,14 @@ public class NWChemInputWriter extends Worker
             }
         }
 
-        //Atom specific or customized basis set
+        //Atom specific or customised basis set
         if (params.contains(BasisSetConstants.ATMSPECBS))
         {
             boolean goon = true;
 
-            //Extract the parameter about this task-specific operation
+            //The locPars are the params that we'll use to create the basis set
             ParameterStorage locPars = new ParameterStorage();
+            
             Parameter atmSpecBSParam = new Parameter(
                 params.getParameter(BasisSetConstants.ATMSPECBS).getReference(),
                 params.getParameter(BasisSetConstants.ATMSPECBS).getType(),
@@ -1243,6 +1244,8 @@ public class NWChemInputWriter extends Worker
             {
                 //Avoid writing the basis set when atom tags are reused.
                 //Nevertheless we still match all rules to spot potential issues
+            	//So, here we modify the basis set matching rules as to keep only
+            	//those that are needed also in repetitions>0
                 if (sameTagsInMultigeom)
                 {
                     goon = false;
@@ -1270,7 +1273,9 @@ public class NWChemInputWriter extends Worker
                 }
                 atmSpecBSParam.setValue(sb.toString());
 
-                // Allow some partial assignation
+                // Allow some partial assignation of basis set
+                // this because we might have removed some redundant rule 
+                // and this can lead to a partial match
                 locPars.setParameter(new Parameter(
                 		BasisSetConstants.ALLOWPARTIALMATCH,
                             		 NamedDataType.BOOLEAN, "true"));

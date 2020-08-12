@@ -23,7 +23,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.run.Job.RunnableAppID;
-import autocompchem.text.TextBlock;
+import autocompchem.text.TextBlockIndexed;
 
 
 /**
@@ -49,7 +49,7 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName)
     {
-        ArrayList<TextBlock> blocks = FileAnalyzer.extractTextBlocks(pathName,
+        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(pathName,
                                         ParameterConstants.STARTJOB, //delimiter
                                         ParameterConstants.ENDJOB, //delimiter
                                         false,  //don't take only first
@@ -64,7 +64,7 @@ public class JobFactory
         }
         else
         {
-            for (TextBlock tb : blocks)
+            for (TextBlockIndexed tb : blocks)
             {
                 Job subJob = createJob(tb);
                 job.addStep(subJob);
@@ -157,7 +157,7 @@ public class JobFactory
      * @return the job, possibly including nested sub-jobs
      */ 
 
-    public static Job createJob(TextBlock tb)
+    public static Job createJob(TextBlockIndexed tb)
     {
         ParameterStorage locPar = new ParameterStorage();
         locPar.importParameters(tb);
@@ -175,7 +175,7 @@ public class JobFactory
         job.setParameters(locPar);
         if (tb.getNestedBlocks().size() > 0)
         {
-            for (TextBlock intTb : tb.getNestedBlocks())
+            for (TextBlockIndexed intTb : tb.getNestedBlocks())
             {
                 // Recursive exploration of nested structure of TextBlocks
                 Job subJob = createJob(intTb);

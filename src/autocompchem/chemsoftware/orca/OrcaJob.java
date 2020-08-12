@@ -2,6 +2,8 @@ package autocompchem.chemsoftware.orca;
 
 import java.util.ArrayList;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveFactory;
@@ -37,8 +39,8 @@ public class OrcaJob extends Job
 //------------------------------------------------------------------------------
 
     /**
-     * Construct a Orca job from a formatted file (JobDetails) with
-     * instructions and parameters that define the whore calculation.
+     * Construct a Orca job from a formatted file (i.e., ACC's job details file)
+     * containing instructions and parameters that define the calculation.
      * @param inFile formatted job details file to be read.
      */
 
@@ -90,6 +92,27 @@ public class OrcaJob extends Job
     		directives = DirectiveFactory.buildAllFromJDText(lines);
     	}
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Looks into the existing directives for ACC tasks, and performs them.
+     * Depending on the task, some directives may be changed as a result of the
+     * ACC tasks. 
+     * @param mol the molecular representation given to mol-dependent tasks.
+     */
+    
+    public void processDirectives(IAtomContainer mol)
+    {
+    	for (Directive d : directives)
+    	{
+    		if (!d.hasACCTask())
+    		{
+    			continue;
+    		}
+    		d.performACCTasks(mol,this);
+    	}
+    }
 
 //-----------------------------------------------------------------------------
     
@@ -113,6 +136,7 @@ public class OrcaJob extends Job
 //-----------------------------------------------------------------------------
     
     /**
+     * Retrieves the wanted step.
      * @param i the index of the directive
      * @return the directive    
      */
@@ -125,7 +149,8 @@ public class OrcaJob extends Job
 //-----------------------------------------------------------------------------
     
     /**
-     * Adds directive or changes an existing one with the given one.
+     * Adds directive to this job or, if the a directive with such name already
+     * exists, replaces the existing one with the given one.
      * @param d the given directive
      */
     

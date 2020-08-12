@@ -24,9 +24,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.chemsoftware.nwchem.NWChemConstants;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.run.ACCJob;
+import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.text.TextBlockIndexed;
+import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * This object represents a single directive that consists of
@@ -38,7 +53,7 @@ import autocompchem.text.TextAnalyzer;
  * @author Marco Foscato
  */
 
-public class Directive
+public class Directive implements IDirectiveComponent
 {
     /**
      * Directive name.
@@ -119,6 +134,17 @@ public class Directive
     {
         return name;
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * @return the kind of directive component this is.
+     */
+    
+	public DirectiveComponent getComponentType() 
+	{
+		return DirectiveComponent.DIRECTIVE;
+	}
 
 //-----------------------------------------------------------------------------
 
@@ -382,10 +408,198 @@ public class Directive
         }
         else
         {
-             oldDd.setContent(dd.getContent());
+             oldDd.setValue(dd.getValue());
         }
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks if there is any ACC task definition within this directive.
+     * @return <code>true</code> if there is at least one ACC task definition.
+     */
+    
+    public boolean hasACCTask()
+    {
+    	for (Keyword k : keywords)
+    	{
+    		if (k.hasACCTask())
+    		{
+    			return true;
+    		}
+    	}
+    	for (DirectiveData dd : dirData)
+    	{
+    		if (dd.hasACCTask())
+    		{
+    			return true;
+    		}
+    	}
+    	for (Directive d : subDirectives)
+    	{
+    		if (d.hasACCTask())
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Performs and ACC tasks that are defined within this directive. Such
+     * tasks are typically dependent on a specific atom container, and, by
+     * running this method, this job becomes molecule-specific. Moreover,
+     * ACC may 
+     * modify the content of this directive (or any of its components: 
+     * keywords, directive data, and sub directives) accordingly to the  
+     * needs of the given tasks.
+     * Tasks are performed serially, one after the other, according to this
+     * ordering scheme:
+     * <ol>
+     * <li>tasks found in Keywords,</li>
+     * <li>tasks found in DirectiveData,</li>
+     * <li>tasks found in sub Directives,</li>
+     * </ol>
+     * In each case, when multiple components are present, the ordering of 
+     * components is respected when searching and performing tasks.
+     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param job the job that called this method.
+     */
+    
+    public void performACCTasks(IAtomContainer mol, Job job)
+    {
+    	for (Keyword k : keywords)
+    	{
+    		ArrayList<ParameterStorage> psLst = 
+    				getACCTaskParams(k.getValue(), k);
+    		for (ParameterStorage ps : psLst)
+    		{
+        		performACCTask(mol,ps,k);
+    		}
+    	}
+    	for (DirectiveData dd : dirData)
+    	{
+    		ArrayList<ParameterStorage> psLst = 
+    				getACCTaskParams(dd.getLines(), dd);
+    		for (ParameterStorage ps : psLst)
+    		{
+        		performACCTask(mol,ps,dd);
+    		}
+    	}
+    	for (Directive d : subDirectives)
+    	{
+    		// This is effectively a recursion into nested directives
+    		// Also note that ACC tasks are effectively defined only in 
+    		// Keywords and DirectiveData.
+    		d.performACCTasks(mol, job);
+    	}
+    }
 
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Parses the block of lines as to find parameters defining the ACC tasks.
+     * @param lines to parse.
+     * @return the list of parameter storage units.
+     */
+    
+    private ArrayList<ParameterStorage> getACCTaskParams(
+    		ArrayList<String> lines, IDirectiveComponent dirComp)
+    {
+    	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
+    			lines, ChemSoftConstants.JDCOMMENT, 
+    			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
+    	
+    	ArrayList<ParameterStorage> psList = new ArrayList<ParameterStorage>();
+    	for (String line : linesPack)
+    	{
+    		if (line.startsWith(ChemSoftConstants.JDLABACCTASK))
+    		{
+    			line = line.replace(ChemSoftConstants.JDLABACCTASK, "");
+    			ParameterStorage ps = new ParameterStorage();
+    			ps.importParametersFromLines("Directive " 
+		    			+ dirComp.getComponentType() + " " + dirComp.getName(),
+		    			new ArrayList<String>(Arrays.asList(line)));
+    			psList.add(ps);
+    		}
+    	}
+		return psList;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * performs the task that is specified in the given set of parameters.
+     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param ps the parameters defining the task.
+     * @param dirComp the component that contained the definition of the task.
+     */
+    
+    private void performACCTask(IAtomContainer mol, ParameterStorage params, 
+    		IDirectiveComponent dirComp)
+    {
+        for (String task : params.getRefNamesSet())
+        {
+            switch (task) 
+            {
+                case ChemSoftConstants.TESTONLY_ACCTASK:
+                {
+                	DirectiveData dd = new DirectiveData();
+                    dd.setReference(dirComp.getName());
+                    dd.setValue(ChemSoftConstants.TESTONLY_NEWTEXT);
+                    setDataDirective(dd);
+                    break;
+                }
+                	
+                case BasisSetConstants.ATMSPECBS:
+                {
+                	//We require the component to be a DirectiveData
+                	if (!dirComp.getComponentType().equals(
+                			DirectiveComponent.DIRECTIVEDATA))
+                	{
+                		Terminator.withMsgAndStatus("ERROR! Atom-specific "
+                				+ "basis set can only be defined with a "
+                				+ DirectiveData.class.getName() 
+                				+ " object", -1);
+                	}
+                	
+                    ParameterStorage bsGenParams = new ParameterStorage();
+                    bsGenParams.setParameter(params.getParameter(task));
+                    
+                    bsGenParams.setParameter(new Parameter("TASK",
+                		NamedDataType.STRING, "GENERATEBASISSET"));
+                	Worker w = WorkerFactory.createWorker(bsGenParams);
+                    BasisSetGenerator bsg = (BasisSetGenerator) w;
+                    
+                    bsg.setAtmIdxAsId(true);
+                    BasisSet bs = bsg.assignBasisSet(mol);
+                    
+                    //Replace DirectiveData with one with the BS object
+                    DirectiveData dd = new DirectiveData();
+                    dd.setReference(dirComp.getName());
+                    dd.setValue(bs);
+                    setDataDirective(dd);
+                    break;
+                }
+                	
+                    
+                //TODO: add here other atom/molecule specific option
+
+                    
+                default:
+                    String msg = "WARNING! Task '" + task + "' is not a "
+                           + "known task when updating atom/molecule-specific "
+                           + "directives in a comp.chem. job.";
+                    
+                    //TODO verbosity/logging
+                    System.out.println(msg);
+                    break;
+            }
+        }
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

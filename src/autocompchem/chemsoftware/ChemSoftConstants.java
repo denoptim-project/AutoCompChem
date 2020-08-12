@@ -90,6 +90,11 @@ public class ChemSoftConstants
 	 * taken within the comp.chem. software.
 	 */
 	public static final String JDLABSTEPSEPARATOR = "----NEW-STEP----";
+	
+	/**
+	 * Label identifying a definition of a task for ACC in job details files
+	 */
+	public static final String JDLABACCTASK = "$ACCPAR_";
     
     /**
      * Lowest non-zero frequency (absolute value)
@@ -152,5 +157,20 @@ public class ChemSoftConstants
 	 * Key for parameter defining the spin multiplicity of the system
 	 */
 	public static final String PARSPINMULT = "SPIN_MULTIPLICITY";
+
+	/**
+	 * Only for testing! This is used to test embedding of ACC task in 
+	 * directives.
+	 */
+	public static final String TESTONLY_ACCTASK = "REPLACE_DIRDATA";
+
+	/**
+	 * Only for testing! This is used to test embedding of ACC task in 
+	 * directives.
+	 */
+	public static final String TESTONLY_NEWTEXT = "REPLACE_DIRDATA";
+
+	
+	
 	
 }

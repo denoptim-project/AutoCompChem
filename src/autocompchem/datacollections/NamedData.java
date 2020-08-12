@@ -1,10 +1,18 @@
 package autocompchem.datacollections;
 
 import java.io.File;
+import java.util.ArrayList;
 
+import org.junit.jupiter.api.Test;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.run.Terminator;
+import autocompchem.text.TextBlock;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /*
  *   Copyright (C) 2014  Marco Foscato
@@ -54,12 +62,14 @@ public class NamedData
     public enum NamedDataType {
     	UNDEFINED,
         STRING,
+        TEXTBLOCK,
         DOUBLE,
         INTEGER,
         BOOLEAN,
         IATOMCONTAINER,
         SITUATION,
-        FILE};
+        FILE,
+        BASISSET};
 
 //------------------------------------------------------------------------------
 
@@ -98,6 +108,31 @@ public class NamedData
     {
         return reference;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the reference name of this data
+     * @param reference the new name
+     */
+    
+    public void setReference(String reference)
+    {
+    	this.reference = reference;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Set the value of this data.
+     * @param value the value to be set to this data.
+     */
+
+    public void setValue(Object value)
+    {
+    	this.type = detectType(value);
+        this.value = value;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -133,6 +168,12 @@ public class NamedData
 				
 				case STRING:
 					valueObj = value.toString();
+					break;
+					
+				case TEXTBLOCK:
+					@SuppressWarnings("unchecked") ArrayList<String> lines =
+					(ArrayList<String>) value;
+					valueObj = new TextBlock(lines);
 					break;
 					
 				case BOOLEAN:
@@ -185,17 +226,68 @@ public class NamedData
     {
         return type;
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Set the value of this data.
-     * @param value the value to be set to this data.
+     * Looks at the object and find out what class it is an instance of.
+     * @param o the object to evaluate
+     * @return the class
      */
-
-    public void setValue(Object value)
+    
+    private static NamedDataType detectType(Object o)
     {
-        this.value = value;
+    	NamedDataType tp = NamedDataType.UNDEFINED;
+       	String className = o.getClass().getName();
+    	className = className.substring(className.lastIndexOf(".")+1);
+    	switch (className)
+    	{
+    		case ("Boolean"):
+    			tp = NamedDataType.BOOLEAN;
+    			break;
+
+    		case ("Double"):
+    			tp = NamedDataType.DOUBLE;
+    			break;
+
+    		case ("File"):
+    			tp = NamedDataType.FILE;
+    			break;
+
+    		case ("AtomContainer"):
+    			tp = NamedDataType.IATOMCONTAINER;
+    			break;
+
+    		case ("Integer"):
+    			tp = NamedDataType.INTEGER;
+    			break;
+
+    		case ("ArrayList"):
+    			tp = NamedDataType.TEXTBLOCK;
+    			break;
+
+    		case ("TextBlock"):
+    			tp = NamedDataType.TEXTBLOCK;
+    			break;
+
+    		case ("Situation"):
+    			tp = NamedDataType.SITUATION;
+    			break;
+
+    		case ("String"):
+    			tp = NamedDataType.STRING;
+    			break;
+    			
+    		case ("BasisSet"):
+    			tp = NamedDataType.BASISSET;
+    			break;
+    		
+    		default:
+    			tp = NamedDataType.UNDEFINED;
+    			break;
+    	}
+    	
+    	return tp;
     }
 
 //------------------------------------------------------------------------------
@@ -207,7 +299,7 @@ public class NamedData
 
     public String toString()
     {
-        String str = reference + ":" + value.toString();
+        String str = reference + ":" + value;
         return str;
     }
 

@@ -21,7 +21,9 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 
+import autocompchem.datacollections.NamedData;
 import autocompchem.run.Terminator;
+import autocompchem.text.TextBlock;
 
 /**
  * This object represents a block of text-based data.
@@ -29,18 +31,8 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class DirectiveData
+public class DirectiveData extends NamedData implements IDirectiveComponent
 {
-
-    /**
-     * Name of this block of data
-     */
-    private String name = "#noname";
-
-    /**
-     * Data collected as an ordered list of lines of text
-     */
-    private ArrayList<String> lines;
 
 //-----------------------------------------------------------------------------
 
@@ -50,29 +42,32 @@ public class DirectiveData
 
     public DirectiveData()
     {
-        lines = new ArrayList<String>();
+    	super();
     }
 
 //-----------------------------------------------------------------------------
 
     /**
      * Constructor from formatted text (i.e., job details line)
-     * @param line the text to parse
+     * @param jdLine the text to parse
      */
 
-    public DirectiveData(String line)
+    public DirectiveData(String jdLine)
     {
-        if (line.toUpperCase().startsWith(ChemSoftConstants.JDLABDATA))
+    	super();
+    	
+        if (jdLine.toUpperCase().startsWith(ChemSoftConstants.JDLABDATA))
         {
-            line = line.substring(ChemSoftConstants.JDLABDATA.length());
+            jdLine = jdLine.substring(ChemSoftConstants.JDLABDATA.length());
         }
-        String[] parts = line.split(ChemSoftConstants.JDDATAVALSEPARATOR,2);
-        name = parts[0];
+        String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR,2);
+        super.setReference(parts[0]);
+        
         if (parts.length < 2)
         {
             Terminator.withMsgAndStatus("ERROR! Cannot discriminate between "
-                                       + "reference name and block of data in '"
-                                       + line + "'. Check jobdetails file.",-1);
+            		+ "reference name and block of data in '"
+            		+  jdLine + "'. Check jobdetails file.",-1);
         }
         String block = parts[1];
         if (block.toUpperCase().startsWith(ChemSoftConstants.JDOPENBLOCK))
@@ -86,7 +81,8 @@ public class DirectiveData
                                                     "line.separator").length());
         }
         String[] dataLines = block.split(System.getProperty("line.separator"));
-        lines = new ArrayList<String>(Arrays.asList(dataLines));
+        
+        super.setValue(new TextBlock(Arrays.asList(dataLines)));
     }
 
 //-----------------------------------------------------------------------------
@@ -99,8 +95,9 @@ public class DirectiveData
 
     public DirectiveData(String name, ArrayList<String> lines)
     {
-        this.name = name;
-        this.lines = lines;        
+    	super();
+    	super.setReference(name);
+    	super.setValue(lines);        
     }
 
 //-----------------------------------------------------------------------------
@@ -112,9 +109,20 @@ public class DirectiveData
 
     public String getName()
     {
-        return name;
+        return super.getReference();
     }
 
+//-----------------------------------------------------------------------------
+ 
+    /**
+     * @return the kind of directive component this is.
+     */
+    
+	public DirectiveComponent getComponentType() 
+	{
+		return DirectiveComponent.DIRECTIVEDATA;
+	}
+	
 //-----------------------------------------------------------------------------
 
     /**
@@ -122,23 +130,37 @@ public class DirectiveData
      * @return the content of this block of data
      */
 
-    public ArrayList<String> getContent()
+    @SuppressWarnings("unchecked")
+	public ArrayList<String> getLines()
     {
-        return lines;
+    	// TODO: improve. This is done to retain compatibility with legacy code
+    	if (this.getType().equals(NamedDataType.TEXTBLOCK))
+    	{
+    		return (ArrayList<String>) super.getValueAsObjectSubclass();
+    	}
+        return null;
     }
 
 //-----------------------------------------------------------------------------
-
-    /** 
-     * Set the content of this data clock
-     * @param lines the content to impose
+    
+    /**
+     * Checks if there is any ACC task definition within this directive.
+     * @return <code>true</code> if there is at least one ACC task definition.
      */
-
-    public void setContent(ArrayList<String> lines)
-    {
-        this.lines = lines;
-    }
-
+    
+	public boolean hasACCTask() 
+	{
+		if (this.getType().equals(NamedDataType.TEXTBLOCK))
+		{
+			for (String l : (TextBlock) this.getValueAsObjectSubclass())
+			{
+				if (l.contains(ChemSoftConstants.JDLABACCTASK))
+					return true;
+			}
+		}
+		return false;
+	}
+	
 //-----------------------------------------------------------------------------
 
     /**
@@ -150,22 +172,30 @@ public class DirectiveData
     public ArrayList<String> toLinesJobDetails()
     {
       	ArrayList<String> toJD = new ArrayList<String>();
-    	
-        if (lines.size() > 1)
-        {
-        	toJD.add(ChemSoftConstants.JDLABDATA + name 
-            		+ ChemSoftConstants.JDDATAVALSEPARATOR
-            		+ ChemSoftConstants.JDOPENBLOCK + lines.get(0));
-        	for (int i=1; i<lines.size(); i++)
-        	{
-        		toJD.add(lines.get(i));
-        	}
-            toJD.add(ChemSoftConstants.JDCLOSEBLOCK);
-        } else
-        {
-        	toJD.add(ChemSoftConstants.JDLABDATA + name 
-            		+ ChemSoftConstants.JDDATAVALSEPARATOR + lines.get(0));
-        }
+      	
+      	if (this.getType().equals(NamedDataType.TEXTBLOCK))
+		{
+      		TextBlock lines = (TextBlock) this.getValueAsObjectSubclass();
+	        if (lines.size() > 1)
+	        {
+	        	toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
+	            		+ ChemSoftConstants.JDDATAVALSEPARATOR
+	            		+ ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+	        	for (int i=1; i<lines.size(); i++)
+	        	{
+	        		toJD.add(lines.get(i));
+	        	}
+	            toJD.add(ChemSoftConstants.JDCLOSEBLOCK);
+	        } else
+	        {
+	        	toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
+	            		+ ChemSoftConstants.JDDATAVALSEPARATOR + lines.get(0));
+	        }
+		} else {
+			toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
+				+ ChemSoftConstants.JDDATAVALSEPARATOR 
+				+ this.getValueAsObjectSubclass());
+		}
         
         return toJD;
     }

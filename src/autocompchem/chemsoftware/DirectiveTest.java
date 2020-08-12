@@ -19,25 +19,15 @@ package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-
-import javax.sound.sampled.Line;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.openscience.cdk.silent.AtomContainer;
 
-import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
+import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 
 
 /**
@@ -124,6 +114,28 @@ public class DirectiveTest
     	Directive d2 = DirectiveFactory.buildFromJDText(d.toLinesJobDetails());
     	
     	assertTrue(d.equals(d2),"Equality of regenerated from JD string.");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testPerformACCTask() throws Exception
+    {    
+    	Directive d = new Directive("testDirective");
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key2", true, 
+    			new ArrayList<String>(Arrays.asList("c","d"))));
+    	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
+    			Arrays.asList(ChemSoftConstants.JDLABACCTASK
+    					+ ChemSoftConstants.TESTONLY_ACCTASK 
+    					+ ParameterConstants.SEPARATOR + " initial text"))));
+    	
+    	d.performACCTasks(null, null);
+    	
+    	assertTrue(d.getDirectiveData("data").getValue().toString().equals(
+    			ChemSoftConstants.TESTONLY_NEWTEXT),
+    			"Task changing DirectiveData");
     }
     
 //------------------------------------------------------------------------------

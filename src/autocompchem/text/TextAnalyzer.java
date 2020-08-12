@@ -405,7 +405,7 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlock> extractTextBlocks(
+    public static ArrayList<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
                                                             String startPattrn,
                                                               String endPattrn,
@@ -448,7 +448,7 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlock> extractTextBlocks(
+    public static ArrayList<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
                                                 ArrayList<String> startPattrns,
                                                   ArrayList<String> endPattrns,
@@ -488,7 +488,7 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlock> extractTextBlocks(
+    public static ArrayList<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
                                                    ArrayList<String> slPattrns,
                                                 ArrayList<String> startPattrns,
@@ -530,7 +530,7 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlock> extractTextBlocks(
+    public static ArrayList<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
                                                    ArrayList<String> slPattrns,
                                                 ArrayList<String> startPattrns,
@@ -540,7 +540,7 @@ public class TextAnalyzer
                                                       boolean expandBeyondNests)
     {
         // This is what we well return
-        ArrayList<TextBlock> blocks = new ArrayList<TextBlock>();
+        ArrayList<TextBlockIndexed> blocks = new ArrayList<TextBlockIndexed>();
 
         // Initialise counters
         ArrayList<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
@@ -566,8 +566,8 @@ public class TextAnalyzer
                 AtomicInteger opnBlkKey = new AtomicInteger(0);
 
                 //Indexed list of open blocks that await closure
-                Map<Integer,TextBlock> openBlocks =
-                                               new HashMap<Integer,TextBlock>();
+                Map<Integer,TextBlockIndexed> openBlocks =
+                                               new HashMap<Integer,TextBlockIndexed>();
 
                 //Map of open block key to pattern ID
                 Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
@@ -610,7 +610,7 @@ public class TextAnalyzer
                             // WARNING: Single line matches cannot be nested
                             // 
 
-                            TextBlock tb = new TextBlock(block,countMatches,
+                            TextBlockIndexed tb = new TextBlockIndexed(block,countMatches,
                                                  pattIdx,countsSL.get(pattIdx));
                             blocks.add(tb);
                         }
@@ -631,7 +631,7 @@ public class TextAnalyzer
                             }
                             countsML.set(pattIdx,1 + countsML.get(pattIdx));
 
-                            TextBlock tb = new TextBlock(countMatches,
+                            TextBlockIndexed tb = new TextBlockIndexed(countMatches,
                                                       pattIdx+slPattrns.size(),
                                                          countsML.get(pattIdx));
                             if (inclPatts)
@@ -674,7 +674,7 @@ public class TextAnalyzer
 
                             //Get the block that we are closing now
                             Integer newstOBlk = sortedOpnBlkKeys.get(0);
-                            TextBlock thisBlock = openBlocks.get(newstOBlk);
+                            TextBlockIndexed thisBlock = openBlocks.get(newstOBlk);
 
                             if (inclPatts)
                             {

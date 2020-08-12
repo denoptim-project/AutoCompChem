@@ -28,7 +28,8 @@ import java.util.Date;
 
 public class Terminator
 {
-
+	private static final String NL = System.getProperty("line.separator");
+	
 //------------------------------------------------------------------------------
 
     /**
@@ -41,16 +42,18 @@ public class Terminator
     public static void withMsgAndStatus(String message, int exitStatus)
     {
         Date date = new Date();
-        String line = "\n\n**********************************************"
+        String line = NL + NL + "**********************************************"
                 + "*****************************"
-                + "\n " + date.toString()
-                + "\n\n Termination status: " + exitStatus
-                + "\n Final message: " + message 
-                + "\n\n Thanks for using Foscato's scripts and software."
-                + "\n Mandi! ;) \n";
+                + NL + " " + date.toString() + NL + NL
+                + " Termination status: " + exitStatus + NL
+                + " Final message: " + message + NL + NL
+                + " Thanks for using AutoCompChem." + NL
+                + " Mandi! ;) " + NL;
 
         System.out.println(line);
-
+        Exception e = new Exception();
+        e.printStackTrace();
+        
 //TODO add check if stdout and stderr are not the same
         if (exitStatus != 0)
         {

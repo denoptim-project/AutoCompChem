@@ -12,7 +12,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
-import autocompchem.text.TextBlock;
+import autocompchem.text.TextBlockIndexed;
 
 /**
  * Storage of {@link Parameter}s. 
@@ -275,7 +275,7 @@ public class ParameterStorage extends NamedDataCollector
      * @param tb the block of lines to read
      */
 
-    public void importParameters(TextBlock tb)
+    public void importParameters(TextBlockIndexed tb)
     {
         importParameterBlocks(TextAnalyzer.readKeyValue(tb.getText(),
                                                   ParameterConstants.SEPARATOR,

@@ -27,7 +27,7 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.run.Terminator;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextAnalyzer;
-import autocompchem.text.TextBlock;
+import autocompchem.text.TextBlockIndexed;
 
 
 /**

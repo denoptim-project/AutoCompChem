@@ -1,9 +1,7 @@
 package autocompchem.chemsoftware;
 
-import java.util.ArrayList;
-
 /*
- *   Copyright (C) 2016  Marco Foscato
+ *   Copyright (C) 2020  Marco Foscato
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +17,7 @@ import java.util.ArrayList;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import autocompchem.run.Terminator;
@@ -37,7 +36,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class Keyword
+public class Keyword implements IDirectiveComponent
 {
     /**
      * Keyword name.
@@ -125,6 +124,17 @@ public class Keyword
     }
 
 //-----------------------------------------------------------------------------
+    
+    /**
+     * @return the kind of directive component this is.
+     */
+    
+	public DirectiveComponent getComponentType() 
+	{
+		return DirectiveComponent.KEYWORD;
+	}
+	
+//-----------------------------------------------------------------------------
 
     /**
      * Returns the value associated to  this keyword.
@@ -179,6 +189,25 @@ public class Keyword
         {
             value = new ArrayList<String>(0);
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks if there is any ACC task definition within this directive.
+     * @return <code>true</code> if there is at least one ACC task definition.
+     */
+    
+    public boolean hasACCTask()
+    {
+    	for (String l : value)
+    	{
+    		if (l.contains(ChemSoftConstants.JDLABACCTASK))
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
 //-----------------------------------------------------------------------------

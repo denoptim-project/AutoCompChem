@@ -10,7 +10,7 @@ import java.util.TreeMap;
 
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
-import autocompchem.text.TextBlock;
+import autocompchem.text.TextBlockIndexed;
 
 /**
  * Tool for analysing txt files
@@ -264,7 +264,7 @@ public class FileAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlock> extractTextBlocks(String pathName,
+    public static ArrayList<TextBlockIndexed> extractTextBlocks(String pathName,
                                                             String startPattrn,
                                                               String endPattrn,
                                                              boolean onlyFirst,
@@ -287,7 +287,7 @@ public class FileAnalyzer
             Terminator.withMsgAndStatus("ERROR! File "+ pathName
                                                           + " not found!.",-1);
         }
-        ArrayList<TextBlock> blocks = 
+        ArrayList<TextBlockIndexed> blocks = 
               TextAnalyzer.extractTextBlocks(br, new ArrayList<String>(),
                                                                   startPattrns,
                                                                     endPattrns,
