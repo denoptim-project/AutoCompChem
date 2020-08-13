@@ -1,5 +1,6 @@
 package autocompchem.utils;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 /*   
@@ -67,10 +68,10 @@ public class StringUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Converts a string with previously escaped charaters into a string 
+     * Converts a string with previously escaped charters into a string 
      * containing the originally intended special
      * character
-     * @param str the sctring
+     * @param str the string
      * @return the string with the escapable special characters
      */
 
@@ -97,6 +98,26 @@ public class StringUtils
         return result;
     }
 
+//------------------------------------------------------------------------------
+
+    /**
+     * Appends all entries of a list to obtain a single string.
+     * @param list the entries to append.
+     * @param sep separator to use between entries.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     */
+    
+    public static String mergeListToString(ArrayList<String> list, String sep)
+    {
+    	StringBuilder sb = new StringBuilder();
+    	for (int i=0; i<list.size(); i++)
+    	{
+    		sb.append(list.get(i));
+    		if (i<list.size())
+    			sb.append(sep);
+    	}
+    	return sb.toString();
+    }
 //------------------------------------------------------------------------------
 
 }

@@ -20,15 +20,20 @@ package autocompchem.chemsoftware;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
@@ -133,9 +138,9 @@ public class Directive implements IDirectiveComponent
      * @return the kind of directive component this is.
      */
     
-	public DirectiveComponent getComponentType() 
+	public DirectiveComponentType getComponentType() 
 	{
-		return DirectiveComponent.DIRECTIVE;
+		return DirectiveComponentType.DIRECTIVE;
 	}
 
 //-----------------------------------------------------------------------------
@@ -194,6 +199,22 @@ public class Directive implements IDirectiveComponent
     {
         return keywords;
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Reorder the keywords according to the given comparator.
+     * @param c the comparator defining the criteria for sorting keywords.
+     */
+    
+    public void sortKeywordsBy(Comparator<Keyword> c)
+    {
+    	Collections.sort(keywords, c);
+    	for (Directive d : getAllSubDirectives())
+    	{
+    		d.sortKeywordsBy(c);
+    	}
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -249,6 +270,86 @@ public class Directive implements IDirectiveComponent
             }
         }
         return null;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    public boolean hasComponent(String name, DirectiveComponentType type)
+    {
+    	IDirectiveComponent comp = getComponent(name, type);
+    	if (comp != null)
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Deletes the component with the given reference name and type. Also all
+     * sub components of that component will be removed.
+     * @param comp the component to remove
+     */
+    
+    public void deleteComponent(IDirectiveComponent comp)
+    {
+    	switch (comp.getComponentType())
+    	{
+	    	case KEYWORD:
+	    	{
+	    		keywords.remove(comp);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVEDATA:
+	    	{
+	    		dirData.remove(comp);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVE:
+	    	{
+	    		subDirectives.remove(comp);
+	    		break;
+	    	}
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Looks for the component with the given reference name and type.
+     * @param name the reference name of the component to find.
+     * @param type the type of component to find.
+     * @return the desired component.
+     */
+    
+    public IDirectiveComponent getComponent(String name, 
+    		DirectiveComponentType type)
+    {
+    	IDirectiveComponent comp = null;
+    	switch (type)
+    	{
+	    	case KEYWORD:
+	    	{
+	    		comp = getKeyword(name);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVEDATA:
+	    	{
+	    		comp = getDirectiveData(name);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVE:
+	    	{
+	    		comp = getSubDirective(name);
+	    		break;
+	    	}
+    	}
+    	return comp;
     }
 
 //-----------------------------------------------------------------------------
@@ -468,7 +569,7 @@ public class Directive implements IDirectiveComponent
     				getACCTaskParams(k.getValue(), k);
     		for (ParameterStorage ps : psLst)
     		{
-        		performACCTask(mol,ps,k);
+        		performACCTask(mol,ps,k,job);
     		}
     	}
     	for (DirectiveData dd : dirData)
@@ -477,7 +578,7 @@ public class Directive implements IDirectiveComponent
     				getACCTaskParams(dd.getLines(), dd);
     		for (ParameterStorage ps : psLst)
     		{
-        		performACCTask(mol,ps,dd);
+        		performACCTask(mol,ps,dd,job);
     		}
     	}
     	for (Directive d : subDirectives)
@@ -530,11 +631,11 @@ public class Directive implements IDirectiveComponent
      */
     
     private void performACCTask(IAtomContainer mol, ParameterStorage params, 
-    		IDirectiveComponent dirComp)
+    		IDirectiveComponent dirComp, Job job)
     {
         for (String task : params.getRefNamesSet())
         {
-            switch (task) 
+            switch (task.toUpperCase()) 
             {
                 case ChemSoftConstants.TESTONLY_ACCTASK:
                 {
@@ -544,12 +645,109 @@ public class Directive implements IDirectiveComponent
                     setDataDirective(dd);
                     break;
                 }
+                
+                case ChemSoftConstants.PARGETFILENAMEROOT:
+                {
+                	String pathname = job.getParameter(
+                			ChemSoftConstants.PAROUTFILEROOT)
+                			.getValueAsString();
+                	
+                	String suffix = params.getParameter(
+                			ChemSoftConstants.PARGETFILENAMEROOT)
+                			.getValueAsString();
+                	
+                	pathname = pathname + suffix;
+                	switch (dirComp.getComponentType())
+                	{
+	                	case DIRECTIVEDATA:
+	                	{
+	                		((DirectiveData) dirComp).setValue(pathname);
+	                		break;
+	                	}
+	                	case KEYWORD:
+	                	{
+	                		((Keyword) dirComp).setValue(pathname);
+	                		break;
+	                	}
+						case DIRECTIVE:
+							break;
+                	}
+                	break;
+                }
+                
+                case ChemSoftConstants.PARGEOMETRY:
+                {
+                	DirectiveData dirDataWithGeom = new DirectiveData();
+                	dirDataWithGeom.setReference(ChemSoftConstants.DIRDATAGEOMETRY);
+                	
+                	String value = params.getParameter(
+                			ChemSoftConstants.PARGEOMETRY).getValueAsString();
+                	
+                	CoordsType coordsType = CoordsType.valueOf(
+                			value.trim().toUpperCase());
+                	switch (coordsType)
+                	{	
+	                	case ZMAT:
+	                	{
+	                		//TODO
+	                		Terminator.withMsgAndStatus("ERROR! handling of "
+	                				+ "internal coordinates not implemented "
+	                				+ "yet... sorry!",-1);
+	                		
+	                		ZMatrix zmat = new ZMatrix();
+	                		
+	                		//TODO: get the actual zmat for mol
+	                		
+	                        dirDataWithGeom.setValue(zmat);
+	                		break;
+	                	}
+	                	
+	                	case INTERNAL:
+	                	{
+	                		//TODO
+	                		Terminator.withMsgAndStatus("ERROR! handling of "
+	                				+ "internal coordinates not implemented "
+	                				+ "yet... sorry!",-1);
+	                		break;
+	                	}
+	                	
+	                	case XYZ:
+	                	default:
+	                	{
+	                		dirDataWithGeom.setValue(mol);
+	                        if (MolecularUtils.hasProperty(mol, 
+	                        		ChemSoftConstants.PARCHARGE))
+	                        {
+	                            String charge = mol.getProperty(
+	                            		ChemSoftConstants.PARCHARGE)
+	                            		.toString();
+	                            setKeyword(new Keyword(
+	                            		ChemSoftConstants.PARCHARGE,
+	                            		false, charge));
+	                        }
+	                        if (MolecularUtils.hasProperty(mol, 
+	                        		ChemSoftConstants.PARSPINMULT))
+	                        {
+	                            String spinMult = mol.getProperty(
+	                            		ChemSoftConstants.PARSPINMULT)
+	                            		.toString();
+	                            setKeyword(new Keyword(
+	                            		ChemSoftConstants.PARSPINMULT,
+	                            		false, spinMult));
+	                        }
+	                		break;
+	                	}
+                	}
+                	setDataDirective(dirDataWithGeom);
+                	deleteComponent(dirComp);
+                	break;
+                }
                 	
                 case BasisSetConstants.ATMSPECBS:
                 {
                 	//We require the component to be a DirectiveData
                 	if (!dirComp.getComponentType().equals(
-                			DirectiveComponent.DIRECTIVEDATA))
+                			DirectiveComponentType.DIRECTIVEDATA))
                 	{
                 		Terminator.withMsgAndStatus("ERROR! Atom-specific "
                 				+ "basis set can only be defined with a "

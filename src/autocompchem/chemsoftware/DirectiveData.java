@@ -118,9 +118,9 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
      * @return the kind of directive component this is.
      */
     
-	public DirectiveComponent getComponentType() 
+	public DirectiveComponentType getComponentType() 
 	{
-		return DirectiveComponent.DIRECTIVEDATA;
+		return DirectiveComponentType.DIRECTIVEDATA;
 	}
 	
 //-----------------------------------------------------------------------------
@@ -133,12 +133,19 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     @SuppressWarnings("unchecked")
 	public ArrayList<String> getLines()
     {
+    	ArrayList<String> list = new ArrayList<String>();
     	// TODO: improve. This is done to retain compatibility with legacy code
     	if (this.getType().equals(NamedDataType.TEXTBLOCK))
     	{
     		return (ArrayList<String>) super.getValueAsObjectSubclass();
+    	} 
+    	else if ((this.getType().equals(NamedDataType.STRING)))
+    	{
+    		list.add(this.getValueAsString());
+    		return list;
     	}
-        return null;
+    	list.add("Could not get lines out of " + this.getType().toString());
+        return list;
     }
 
 //-----------------------------------------------------------------------------

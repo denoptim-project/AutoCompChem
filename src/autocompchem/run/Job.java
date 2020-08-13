@@ -197,6 +197,18 @@ public class Job implements Runnable
     {
         return params.getParameterOrNull(paramId);
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameters.
+     * @param par the parameter to add/set.
+     */
+
+    public void setParameter(Parameter par)
+    {
+        params.setParameter(par);
+    }
 
 //------------------------------------------------------------------------------
 
@@ -580,21 +592,6 @@ public class Job implements Runnable
         }
         this.jobIsBeingKilled = true;
         Thread.currentThread().interrupt();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Produced the text input. The text input is meant for a text file
-     * that a specific application can read and use to run the job. 
-     * This method is overwritten by subclasses, or, if this native method
-     * is called, then the jobDetails format is used.
-     * @return the list of lines ready to print a text input file.
-     */
-
-    public ArrayList<String> toLinesInput()
-    {
-        return toLinesJobDetails();
     }
 
 //------------------------------------------------------------------------------

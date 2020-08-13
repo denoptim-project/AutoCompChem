@@ -51,12 +51,12 @@ public class Terminator
                 + " Mandi! ;) " + NL;
 
         System.out.println(line);
-        Exception e = new Exception();
-        e.printStackTrace();
         
 //TODO add check if stdout and stderr are not the same
         if (exitStatus != 0)
         {
+            Exception e = new Exception();
+            e.printStackTrace();
             System.err.println(line);
         }
 

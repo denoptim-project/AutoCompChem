@@ -32,4 +32,14 @@ public class OrcaConstants
 	 */
 	public static final String JOBSEPARATOR = "$new_job";
 	
+	/**
+	 * Indentation used for nested input blocks
+	 */
+	public static final String INDENT = "  ";
+
+	/**
+	 * Extension for Orca input files
+	 */
+	public static final String INPEXTENSION = ".inp";
+	
 }

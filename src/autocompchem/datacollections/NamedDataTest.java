@@ -31,6 +31,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.perception.situation.Situation;
 import autocompchem.text.TextBlock;
 
@@ -94,6 +95,11 @@ public class NamedDataTest
     	nd.setValue(bs);
     	assertTrue(NamedDataType.BASISSET.equals(nd.getType()),
     			"Detecting TextBlock");
+    	
+    	ZMatrix zm = new ZMatrix();
+    	nd.setValue(zm);
+    	assertTrue(NamedDataType.ZMATRIX.equals(nd.getType()),
+    			"Detecting ZMatrix");
     	
     	Object o = new Object();
     	nd.setValue(o);

@@ -38,7 +38,7 @@ public interface IDirectiveComponent {
      * @return the kind of directive component this is.
      */
 
-	public DirectiveComponent getComponentType();
+	public DirectiveComponentType getComponentType();
 	
 //-----------------------------------------------------------------------------
 	

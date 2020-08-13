@@ -1,11 +1,15 @@
 package autocompchem.chemsoftware;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
+import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 
 /**
@@ -28,7 +32,7 @@ import autocompchem.text.TextAnalyzer;
  * @author Marco Foscato
  */
 
-public class CompChemJob extends Job
+public class CompChemJob extends Job implements Cloneable
 {
 	/**
 	 * List of settings, data, and keywords for the comp.chem. tool
@@ -62,8 +66,8 @@ public class CompChemJob extends Job
 //------------------------------------------------------------------------------
 
     /**
-     * Construct a job from a formatted text divided
-     * in lines. The format of these lines is expected to adhere to that of
+     * Construct a job from a formatted text divided in lines. 
+     * The format of these lines is expected to adhere to that of
      * job details files.
      * @param lines array of lines to be read.
      */
@@ -71,6 +75,9 @@ public class CompChemJob extends Job
     public CompChemJob(ArrayList<String> lines)
     {
     	super();
+
+    	// WARNING: for now we are not considering the possibility of having
+    	// both directives AND sub jobs.
     	
     	if (lines.toString().contains(ChemSoftConstants.JDLABSTEPSEPARATOR))
     	{
@@ -83,7 +90,7 @@ public class CompChemJob extends Job
 	    	ArrayList<String> linesOfAStep = new ArrayList<String>();
 	        for (int i=0; i<newLines.size(); i++)
 	        {
-	            String line = lines.get(i).trim();
+	            String line = newLines.get(i).trim();
 	
 	            if (line.toUpperCase().equals(
 	            		ChemSoftConstants.JDLABSTEPSEPARATOR))
@@ -112,6 +119,8 @@ public class CompChemJob extends Job
      * @param mol the molecular representation given to mol-dependent tasks.
      */
     
+    //TODO rename so that it is clear that this makes the job mol-dependent
+    
     public void processDirectives(IAtomContainer mol)
     {
     	for (Directive d : directives)
@@ -122,11 +131,32 @@ public class CompChemJob extends Job
     		}
     		d.performACCTasks(mol,this);
     	}
+    	for (Job step : steps)
+    	{
+    		((CompChemJob) step).processDirectives(mol);
+    	}
     }
 
 //-----------------------------------------------------------------------------
     
     /**
+     * Reorder the directives according to the given comparator
+     * @param c the comparator defining the criteria for sorting directives.
+     */
+    
+    public void sortDirectivesBy(Comparator<Directive> c)
+    {
+    	Collections.sort(directives, c);
+    	for (Job step : steps)
+    	{
+    		((CompChemJob) step).sortDirectivesBy(c);
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return a specified directive.
      * @param name of the directive to return (case insensitive).
      * @return the directive or null if none is found with that name.
      */
@@ -154,6 +184,18 @@ public class CompChemJob extends Job
     public Directive getDirective(int i)
     {
     	return directives.get(i);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Returns the iterator over directives
+     * @return the iterator.   
+     */
+    
+    public Iterator<Directive> directiveIterator()
+    {
+    	return directives.iterator();
     }
     
 //-----------------------------------------------------------------------------
@@ -224,6 +266,21 @@ public class CompChemJob extends Job
 //------------------------------------------------------------------------------
 
     /**
+     * Clones all information as to produce an independent deep copy of this
+     * object. This is achieved by exporting the object to string and 
+     * constructing a brand new object from that string.
+     * @return a deep copy.
+     */
+    
+    public CompChemJob clone()
+    {
+    	CompChemJob clone = new CompChemJob(this.toLinesJobDetails());
+    	return clone;
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
      * Produced a text representation of this object following the format of
      * autocompchem's job detail text file.
      * @return the list of lines ready to print a jobDetails file
@@ -231,14 +288,33 @@ public class CompChemJob extends Job
 
     public ArrayList<String> toLinesJobDetails()
     {
+    	
+    	// WARNING: for now we are not considering the possibility of having
+    	// both directives AND sub jobs.
+    	
         ArrayList<String> lines= new ArrayList<String>();
-        for (int step = 0; step<steps.size(); step++)
+        if (getNumberOfSteps()>0 && directives.size()==0)
         {
-            if (step != 0)
-            {
-                lines.add(ChemSoftConstants.JDLABSTEPSEPARATOR);
-            }
-            lines.addAll(getStep(step).toLinesJobDetails());
+	        for (int step = 0; step<steps.size(); step++)
+	        {
+	            if (step != 0)
+	            {
+	                lines.add(ChemSoftConstants.JDLABSTEPSEPARATOR);
+	            }
+	            lines.addAll(getStep(step).toLinesJobDetails());
+	        }
+        } else if (getNumberOfSteps()==0 && directives.size()>0) 
+        {
+        	for (Directive d : directives)
+        	{
+        		lines.addAll(d.toLinesJobDetails());
+        	}
+        } else {
+        	Terminator.withMsgAndStatus("ERROR! Unable to convert CompChemJob "
+        			+ "to JobDetails lines when it has " + directives.size() 
+        			+ " directives and " + getNumberOfSteps() + " sub-jobs. "
+        			+ "This functionality is not implemented yet. Please, "
+        			+ "contact the authors.", -1);
         }
         return lines;
     }

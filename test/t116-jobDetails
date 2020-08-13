@@ -1,0 +1,24 @@
+$DIR_# $MT_comment=just a comment
+$DIR_! $MT_functional=BP86
+$DIR_! $KV_key=value
+$DIR_# $KV_commentKey=this is a dummy input file
+$DIR_geom $DIR_constraints $DATA_constraints={A 102 C}
+$DIR_geom $DIR_InHess $MT_hessSource=Read
+$DIR_geom $DIR_InHessName $MT_filename=/path/to/my file/file.hess
+$DIR_coords $DATA_tmp=$ACCPAR_ADD_GEOMETRY: XYZ
+----NEW-STEP----
+$DIR_dummy $DIR_nestOne $DIR_nestTwo $KV_key2=value2
+$DIR_dummy $DIR_nestOne $DIR_nestTwo $DATA_data=$STARTfirst 2345
+second 2355i
+third 03940 
+$END
+$DIR_geom $DIR_InHessName $MT_filename=$ACCPAR_GET_FILENAME:.hess
+$DIR_dummy $DIR_nestOne $KV_key1=value1
+$DIR_dummy $DIR_nestOne $DIR_nestTwo $DATA_task=$ACCPAR_REPLACE_DIRDATA
+$DIR_dummy $DIR_nestOne $DATA_data1=$STARTfff
+1 AAA
+2 BBB
+3 CCC
+$END
+$DIR_coords $MT_CHARGE=-2
+$DIR_coords $MT_SPIN_MULTIPLICITY=5

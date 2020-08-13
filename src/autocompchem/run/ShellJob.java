@@ -218,21 +218,4 @@ public class ShellJob extends Job
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Produces the text input. The text input is meant for a text file
-     * that a specific application can read and use to run the job. If the 
-     * application is the autocompchem, then the jobDetails format is used
-     * @return the list of lines ready to print a text input file
-     */
-
-    @Override
-    public ArrayList<String> toLinesInput()
-    {
-        ArrayList<String> a = new ArrayList<String>();
-        a.add(interpreter + " " + script + " " + args);
-        return a;
-    }
-
-//------------------------------------------------------------------------------
-
 }

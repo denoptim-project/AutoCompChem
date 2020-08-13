@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Creation of simple input file for Orca
+VERBOSITY: 1
+TASK: PrepareInputORCA
+InputGeometriesFile: ../t116-mol.sdf
+JOBDETAILS: ../t116-jobDetails

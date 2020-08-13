@@ -24,7 +24,7 @@ import autocompchem.run.Terminator;
  * 
  * @author Marco Foscato
  */
-public enum DirectiveComponent 
+public enum DirectiveComponentType 
 {
 	KEYWORD,
 	DIRECTIVEDATA,

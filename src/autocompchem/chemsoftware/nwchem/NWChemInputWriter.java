@@ -389,7 +389,7 @@ public class NWChemInputWriter extends Worker
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.nwcJob = new NWChemJob(jdFile);
 
-            //Deal with job details that affect the input witier initial setup
+            //Deal with job details that affect the input writer initial setup
             if (nwcJob.getStep(0).hasACCParams())
             {
                 ParameterStorage pp = nwcJob.getStep(0).getTaskSpecificParams();

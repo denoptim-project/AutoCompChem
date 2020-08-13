@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.orca;
+package autocompchem.chemsoftware;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -31,8 +31,6 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -46,7 +44,7 @@ import autocompchem.run.Action.ActionType;
  * @author Marco Foscato
  */
 
-public class OrcaJobTest 
+public class CompChemJobTest 
 {
 	private final String NL = System.getProperty("line.separator");
 	
@@ -73,7 +71,7 @@ public class OrcaJobTest
     			+ ChemSoftConstants.JDLABMUTEKEY + "spinMultiplicity"
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "1");
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "* "
-    			+ ChemSoftConstants.JDLABDATA + "geometry"
+    			+ ChemSoftConstants.JDLABDATA + "geom-0"
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
     			+ ChemSoftConstants.JDOPENBLOCK
     			+ "  C   0.000 0.000 0.000" + NL
@@ -110,7 +108,7 @@ public class OrcaJobTest
     			+ ChemSoftConstants.JDLABMUTEKEY + "spinMultiplicity"
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "1");
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "* "
-    			+ ChemSoftConstants.JDLABDATA + "geometry"
+    			+ ChemSoftConstants.JDLABDATA + "geom-1"
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
     			+ ChemSoftConstants.JDOPENBLOCK
     			+ "  C   0.000 0.000 0.000" + NL
@@ -135,25 +133,34 @@ public class OrcaJobTest
     			+ ChemSoftConstants.JDLABMUTEKEY + "spinMultiplicity"
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "1");
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "* "
-    			+ ChemSoftConstants.JDLABDATA + "geometry"
+    			+ ChemSoftConstants.JDLABDATA + "geom-2"
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
     			+ ChemSoftConstants.JDOPENBLOCK
     			+ "  C   0.000 0.000 0.000" + NL
     			+ "  O   0.000 0.000 1.130" 
     			+ ChemSoftConstants.JDCLOSEBLOCK);
     	
-    	CompChemJob oj = new CompChemJob(lines);
+    	CompChemJob job = new CompChemJob(lines);
     	
-    	assertEquals(3,oj.getNumberOfSteps(),"Number of Orca steps");
-    	assertEquals("NumFreq",((CompChemJob)oj.getStep(0)).getDirective("!")
+    	assertEquals(3,job.getNumberOfSteps(),"Number of Orca steps");
+    	assertEquals("NumFreq",((CompChemJob)job.getStep(0)).getDirective("!")
     			.getKeyword("jobType").getValue().get(0),
     			"Check imported dir (A)");
-    	assertEquals("0",((CompChemJob)oj.getStep(1)).getDirective("*")
+    	assertEquals("0",((CompChemJob)job.getStep(1)).getDirective("*")
     			.getKeyword("charge").getValue().get(0),
     			"Check imported dir (B)");
-    	assertEquals("Opt",((CompChemJob)oj.getStep(2)).getDirective("!")
+    	assertEquals("Opt",((CompChemJob)job.getStep(2)).getDirective("!")
     	    			.getKeyword("jobType").getValue().get(0),
     	    			"Check imported dir (C)");
+    	assertTrue(((CompChemJob)job.getStep(0)).getDirective("*")
+    			.hasComponent("geom-0",DirectiveComponentType.DIRECTIVEDATA),
+    			"Existence of data block (0)");
+    	assertTrue(((CompChemJob)job.getStep(1)).getDirective("*")
+    			.hasComponent("geom-1",DirectiveComponentType.DIRECTIVEDATA),
+    			"Existence of data block (1)");
+    	assertTrue(((CompChemJob)job.getStep(2)).getDirective("*")
+    			.hasComponent("geom-2",DirectiveComponentType.DIRECTIVEDATA),
+    			"Existence of data block (2)");
     }
     
 //------------------------------------------------------------------------------

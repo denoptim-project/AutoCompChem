@@ -187,7 +187,8 @@ public class ParameterStorage extends NamedDataCollector
      * you must avoid <code>m.getAllParameters.get("myRef")</code> and use the
      * {@link ParameterStorage#getParameter(String)}, or
      * {@link ParameterStorage#getParameterOrDefault(String, NamedDataType, Object)}
-     * or {@link ParameterStorage#getParameterOrNull(String)}, or
+     * or {@link ParameterStorage#getParameterOrNull(String)}, or 
+     * {@link ParameterStorage#getRefNamesSet()}. 
      * 
      * @return the map with all parameters.
      */
@@ -305,7 +306,7 @@ public class ParameterStorage extends NamedDataCollector
                                                ParameterConstants.ENDMULTILINE);
 
         //Make the ParameterStorage object
-        importParameterBlocks(form);   
+        importParameterBlocks(form);
     }
 
 //------------------------------------------------------------------------------

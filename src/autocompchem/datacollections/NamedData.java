@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -69,7 +70,8 @@ public class NamedData
         IATOMCONTAINER,
         SITUATION,
         FILE,
-        BASISSET};
+        BASISSET, 
+        ZMATRIX};
 
 //------------------------------------------------------------------------------
 
@@ -187,6 +189,10 @@ public class NamedData
 				case FILE:
 					valueObj = (File) value;
 					break;
+					
+				case ZMATRIX:
+					valueObj = (ZMatrix) value;
+					break;
 						
 				default:
 					valueObj = value.toString();
@@ -254,6 +260,10 @@ public class NamedData
     			tp = NamedDataType.FILE;
     			break;
 
+    		case ("Molecule"):
+    			tp = NamedDataType.IATOMCONTAINER;
+    			break;
+    			
     		case ("AtomContainer"):
     			tp = NamedDataType.IATOMCONTAINER;
     			break;
@@ -281,6 +291,10 @@ public class NamedData
     		case ("BasisSet"):
     			tp = NamedDataType.BASISSET;
     			break;
+    			
+    		case ("ZMatrix"):
+    			tp = NamedDataType.ZMATRIX;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -299,7 +313,7 @@ public class NamedData
 
     public String toString()
     {
-        String str = reference + ":" + value;
+        String str = reference + ParameterConstants.SEPARATOR + value;
         return str;
     }
 

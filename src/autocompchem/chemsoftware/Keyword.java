@@ -81,6 +81,23 @@ public class Keyword implements IDirectiveComponent
         this.isLoud = isLoud;
         this.value = value;
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Constructor for a keyword from name, type, and value.
+     * @param name the name of the keyword (i.e., the actual keyword).
+     * @param isLoud use <code>false</code> to specify a mute-type of keyword
+     * or <code>true</code> for loud type.
+     * @param value the value of the keyword.
+     */
+
+    public Keyword(String name, boolean isLoud, String value)
+    {
+        this.name = name;
+        this.isLoud = isLoud;
+        this.value = new ArrayList<String>(Arrays.asList(value));
+    } 
 
 //-----------------------------------------------------------------------------
 
@@ -129,9 +146,9 @@ public class Keyword implements IDirectiveComponent
      * @return the kind of directive component this is.
      */
     
-	public DirectiveComponent getComponentType() 
+	public DirectiveComponentType getComponentType() 
 	{
-		return DirectiveComponent.KEYWORD;
+		return DirectiveComponentType.KEYWORD;
 	}
 	
 //-----------------------------------------------------------------------------
@@ -155,6 +172,18 @@ public class Keyword implements IDirectiveComponent
     public boolean isLoud()
     {
     	return isLoud;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Overwrites the value corresponding to this keyword.
+     * @param value the value of the keywords.
+     */
+
+    public void setValue(String value)
+    {
+        this.value = new ArrayList<String>(Arrays.asList(value));
     }
 
 //-----------------------------------------------------------------------------

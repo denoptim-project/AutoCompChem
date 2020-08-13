@@ -157,6 +157,39 @@ public class ChemSoftConstants
 	 * Key for parameter defining the spin multiplicity of the system
 	 */
 	public static final String PARSPINMULT = "SPIN_MULTIPLICITY";
+	
+	/**
+	 * Key for the parameter defining where and how and what geometry to add  
+	 * (i.e., what actual chemical system to consider). This is used inside
+	 * the DirectiveData object that will later contain the actual coordinates.
+	 * This string can be followed (space separated a specification of the
+	 * {@link CoordsType}.
+	 */
+	public static final String PARGEOMETRY = "ADD_GEOMETRY";
+	
+	/**
+	 * Possible values for how a molecular geometry can be reported
+	 */
+	public static enum CoordsType {XYZ, ZMAT, INTERNAL};
+	
+	/**
+	 * Key for the parameter defining where to add filename that is dependent 
+	 * on the specifics of the molecular system calculated. This string can be 
+	 * followed (space separated by a string to be appended to the pathname 
+	 * root.
+	 */
+	public static final String PARGETFILENAMEROOT = "GET_FILENAME";
+	
+	/**
+	 * Key for parameter defining the type of coordinates used to define the
+	 * chemical system.
+	 */
+	public static final String PARCOORDTYPE = "COORDTYPE";
+	
+	/**
+	 * Key for directive data containing the geometry
+	 */
+	public static final String DIRDATAGEOMETRY = "DIRDATAGEOMETRY";
 
 	/**
 	 * Only for testing! This is used to test embedding of ACC task in 
@@ -168,9 +201,6 @@ public class ChemSoftConstants
 	 * Only for testing! This is used to test embedding of ACC task in 
 	 * directives.
 	 */
-	public static final String TESTONLY_NEWTEXT = "REPLACE_DIRDATA";
+	public static final String TESTONLY_NEWTEXT = "NEW_DIRDATA";
 
-	
-	
-	
 }

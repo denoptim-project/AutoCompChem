@@ -19,6 +19,7 @@ package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +27,11 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.silent.AtomContainer;
 
+import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.Job;
+import autocompchem.text.TextBlock;
 
 
 /**
@@ -118,6 +122,7 @@ public class DirectiveTest
     
 //------------------------------------------------------------------------------
 
+    //TODO reactivate all @Test
     @Test
     public void testPerformACCTask() throws Exception
     {    
@@ -136,6 +141,24 @@ public class DirectiveTest
     	assertTrue(d.getDirectiveData("data").getValue().toString().equals(
     			ChemSoftConstants.TESTONLY_NEWTEXT),
     			"Task changing DirectiveData");
+    	
+    	Directive d2 = new Directive("testDirective");
+    	d2.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList(
+    					ChemSoftConstants.JDLABACCTASK
+    					+ ChemSoftConstants.PARGETFILENAMEROOT 
+    					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
+    	
+    	Job j = new Job();
+    	j.setParameter(new Parameter(ChemSoftConstants.PAROUTFILEROOT, "/path "
+    			+ "/to/filenameRoot"));
+
+    	d2.performACCTasks(null, j);
+    	
+    	assertTrue(d2.getKeyword("key1").getValue().toString().contains(
+    			"filenameRoot_job2.xyz"),
+    			"Task changing DirectiveData");
+    	
     }
     
 //------------------------------------------------------------------------------
@@ -149,6 +172,72 @@ public class DirectiveTest
 				n++;
 		}
     	return n;
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetComponent() throws Exception
+    {
+    	Directive d = new Directive("testDirective");
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key2", true, 
+    			new ArrayList<String>(Arrays.asList("c","d"))));
+    	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
+    			Arrays.asList("A","B","C"))));
+    	
+    	IDirectiveComponent c = d.getComponent("key2", 
+    			DirectiveComponentType.KEYWORD);
+    	assertEquals("c",((Keyword) c).getValue().get(0),"Retrieve Keyword");
+    	
+
+    	IDirectiveComponent dd = d.getComponent("data", 
+    			DirectiveComponentType.DIRECTIVEDATA);
+    	assertEquals("A",((TextBlock) 
+    			((DirectiveData) dd).getValueAsObjectSubclass()).get(0),
+    			"Retrieve DirectiveData");
+    	
+    	IDirectiveComponent x = d.getComponent("notThere", 
+    			DirectiveComponentType.DIRECTIVEDATA);
+    	
+    	assertNull(x,"Retriving missing object");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testDeleteComponent() throws Exception
+    {
+    	Directive d = new Directive("testDirective");
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key2", true, 
+    			new ArrayList<String>(Arrays.asList("c","d"))));
+    	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
+    			Arrays.asList("A","B","C"))));
+    	
+    	assertEquals(1,d.getAllDirectiveDataBlocks().size(),
+    			"Number of DirectiveData blocks (A)");
+    	assertEquals(2,d.getAllKeywords().size(),
+    			"Number of Keywords (A)");
+    	
+    	IDirectiveComponent comp = d.getKeyword("key2");
+    	d.deleteComponent(comp);
+    	
+    	assertEquals(1,d.getAllDirectiveDataBlocks().size(),
+    			"Number of DirectiveData blocks (B)");
+    	assertEquals(1,d.getAllKeywords().size(),
+    			"Number of Keywords (B)");
+    	
+    	IDirectiveComponent comp2 = d.getDirectiveData("data");
+    	d.deleteComponent(comp2);
+    	
+    	assertEquals(0,d.getAllDirectiveDataBlocks().size(),
+    			"Number of DirectiveData blocks (A)");
+    	assertEquals(1,d.getAllKeywords().size(),
+    			"Number of Keywords (A)");
+    	
     }
     
 //------------------------------------------------------------------------------

@@ -39,13 +39,26 @@ public class Parameter extends NamedData
     {
     	super();
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a parameter with a given reference and value.
+     * @param reference the name identifying this parameter.
+     * @param value the content of this <code>Parameter</code>.
+     */
+
+    public Parameter(String reference, String value)
+    {
+    	super(reference.toUpperCase(),NamedDataType.STRING,value);
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a parameter with a given reference and value
-     * @param reference the name identifying this parameter
-     * @param type the type of object
+     * Constructor for a parameter with a given reference and value.
+     * @param reference the name identifying this parameter.
+     * @param type the type of object.
      * @param value the content of this <code>Parameter</code>
      */
 
