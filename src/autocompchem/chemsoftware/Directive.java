@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -565,20 +566,26 @@ public class Directive implements IDirectiveComponent
     {
     	for (Keyword k : keywords)
     	{
-    		ArrayList<ParameterStorage> psLst = 
-    				getACCTaskParams(k.getValue(), k);
-    		for (ParameterStorage ps : psLst)
+    		if (k.hasACCTask())
     		{
-        		performACCTask(mol,ps,k,job);
+	    		ArrayList<ParameterStorage> psLst = 
+	    				getACCTaskParams(k.getValue(), k);
+	    		for (ParameterStorage ps : psLst)
+	    		{
+	        		performACCTask(mol,ps,k,job);
+	    		}
     		}
     	}
     	for (DirectiveData dd : dirData)
     	{
-    		ArrayList<ParameterStorage> psLst = 
-    				getACCTaskParams(dd.getLines(), dd);
-    		for (ParameterStorage ps : psLst)
+    		if (dd.hasACCTask())
     		{
-        		performACCTask(mol,ps,dd,job);
+	    		ArrayList<ParameterStorage> psLst = 
+	    				getACCTaskParams(dd.getLines(), dd);
+	    		for (ParameterStorage ps : psLst)
+	    		{
+	        		performACCTask(mol,ps,dd,job);
+	    		}
     		}
     	}
     	for (Directive d : subDirectives)
@@ -600,23 +607,57 @@ public class Directive implements IDirectiveComponent
     
     private ArrayList<ParameterStorage> getACCTaskParams(
     		ArrayList<String> lines, IDirectiveComponent dirComp)
-    {
+    {	
+    	// This takes case of any $START/$END label needed to make all JD lines
+    	// fit into a single line for the purpose of making the 
+    	// directive component line.
     	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
     			lines, ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	
-    	ArrayList<ParameterStorage> psList = new ArrayList<ParameterStorage>();
+    	// Then we take away any line that does not contain ACC tasks
+    	ArrayList<String> linesWithACCTasks = new ArrayList<String>();
     	for (String line : linesPack)
     	{
-    		if (line.startsWith(ChemSoftConstants.JDLABACCTASK))
+    		if (line.contains(ChemSoftConstants.JDLABACCTASK))
     		{
-    			line = line.replace(ChemSoftConstants.JDLABACCTASK, "");
-    			ParameterStorage ps = new ParameterStorage();
-    			ps.importParametersFromLines("Directive " 
-		    			+ dirComp.getComponentType() + " " + dirComp.getName(),
-		    			new ArrayList<String>(Arrays.asList(line)));
-    			psList.add(ps);
+    			linesWithACCTasks.add(line);
     		}
+    	}
+    	if (linesWithACCTasks.size()==0)
+		{
+    		// Nothing to do
+			return new ArrayList<ParameterStorage>();
+		} 
+    	else if (linesWithACCTasks.size()>1)
+    	{
+    		Terminator.withMsgAndStatus("ERROR! Unexpected format of "
+    				+ "the directive component containing this value: '" 
+    				+ lines + "'", -1);
+    	}
+    	
+    	if (linesWithACCTasks.get(0).contains(ChemSoftConstants.JDOPENBLOCK))
+    	{
+	    	// Split and re-pack multilines blocks to account for the
+	    	// presence of more than one ACC task in this IDirectiveComponent
+	    	linesPack = new ArrayList<String>(Arrays.asList(linesPack.get(0).split(
+	    			System.getProperty("line.separator"))));
+	    	linesPack = TextAnalyzer.readTextWithMultilineBlocks(
+	    			linesPack, ChemSoftConstants.JDCOMMENT, 
+	    			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
+    	}
+
+    	ArrayList<ParameterStorage> psList = new ArrayList<ParameterStorage>();
+    	for (String lineForOneTask : linesPack)
+    	{    		
+    		ArrayList<String> taskSpecificLines = new ArrayList<String>(
+    				Arrays.asList(lineForOneTask.split(
+    						System.getProperty("line.separator"))));
+			ParameterStorage ps = new ParameterStorage();
+			ps.importParametersFromLines("Directive " 
+	    			+ dirComp.getComponentType() + " " + dirComp.getName(),
+	    			taskSpecificLines);
+			psList.add(ps);
     	}
 		return psList;
     }
@@ -624,169 +665,195 @@ public class Directive implements IDirectiveComponent
 //-----------------------------------------------------------------------------
 
     /**
-     * performs the task that is specified in the given set of parameters.
+     * Performs the task that is specified in the given set of parameters. Note
+     * the given parameters are all meant of a single task that is defined by 
+     * the {@link ChemSoftConstants.JDLABACCTASK} parameter. Other
+     * parameters are given to complement the information the task might need.
      * @param mol the molecular representation given to mol-dependent tasks.
-     * @param ps the parameters defining the task.
+     * @param ps the collection of parameters defining one single task (though 
+     * this can certainly require more than one parameter).
      * @param dirComp the component that contained the definition of the task.
      */
     
     private void performACCTask(IAtomContainer mol, ParameterStorage params, 
     		IDirectiveComponent dirComp, Job job)
-    {
-        for (String task : params.getRefNamesSet())
+    {	
+        if (!params.contains(ChemSoftConstants.JDLABACCTASK))
         {
-            switch (task.toUpperCase()) 
+        	return;
+        }
+        
+        String task = params.getParameter(
+        		ChemSoftConstants.JDLABACCTASK).getValueAsString();
+        
+        switch (task.toUpperCase()) 
+        {   
+            case ChemSoftConstants.PARGETFILENAMEROOT:
             {
-                case ChemSoftConstants.TESTONLY_ACCTASK:
-                {
-                	DirectiveData dd = new DirectiveData();
-                    dd.setReference(dirComp.getName());
-                    dd.setValue(ChemSoftConstants.TESTONLY_NEWTEXT);
-                    setDataDirective(dd);
-                    break;
-                }
+            	//TODO verbosity/logging
+                System.out.println(" ACC replaces placeholder with file pathname");
                 
-                case ChemSoftConstants.PARGETFILENAMEROOT:
-                {
-                	String pathname = job.getParameter(
-                			ChemSoftConstants.PAROUTFILEROOT)
+            	String pathname = job.getParameter(
+            			ChemSoftConstants.PAROUTFILEROOT)
+            			.getValueAsString();
+            	
+            	if (params.contains(ChemSoftConstants.PARGETFILENAMEROOTSUFFIX))
+            	{
+            		String suffix = params.getParameter(
+            			ChemSoftConstants.PARGETFILENAMEROOTSUFFIX)
+            			.getValueAsString();
+            		pathname = pathname + suffix;
+            	}
+            	if (params.contains(ChemSoftConstants.PARGETFILENAMEROOTQUOTE))
+            	{
+            		String q = params.getParameter(
+                			ChemSoftConstants.PARGETFILENAMEROOTQUOTE)
                 			.getValueAsString();
-                	
-                	String suffix = params.getParameter(
-                			ChemSoftConstants.PARGETFILENAMEROOT)
-                			.getValueAsString();
-                	
-                	pathname = pathname + suffix;
-                	switch (dirComp.getComponentType())
+            		pathname = q + pathname + q;
+            	}
+            	
+            	switch (dirComp.getComponentType())
+            	{
+                	case DIRECTIVEDATA:
                 	{
-	                	case DIRECTIVEDATA:
-	                	{
-	                		((DirectiveData) dirComp).setValue(pathname);
-	                		break;
-	                	}
-	                	case KEYWORD:
-	                	{
-	                		((Keyword) dirComp).setValue(pathname);
-	                		break;
-	                	}
-						case DIRECTIVE:
-							break;
+                		((DirectiveData) dirComp).setValue(pathname);
+                		break;
                 	}
-                	break;
-                }
-                
-                case ChemSoftConstants.PARGEOMETRY:
-                {
-                	DirectiveData dirDataWithGeom = new DirectiveData();
-                	dirDataWithGeom.setReference(ChemSoftConstants.DIRDATAGEOMETRY);
-                	
-                	String value = params.getParameter(
-                			ChemSoftConstants.PARGEOMETRY).getValueAsString();
-                	
-                	CoordsType coordsType = CoordsType.valueOf(
-                			value.trim().toUpperCase());
-                	switch (coordsType)
-                	{	
-	                	case ZMAT:
-	                	{
-	                		//TODO
-	                		Terminator.withMsgAndStatus("ERROR! handling of "
-	                				+ "internal coordinates not implemented "
-	                				+ "yet... sorry!",-1);
-	                		
-	                		ZMatrix zmat = new ZMatrix();
-	                		
-	                		//TODO: get the actual zmat for mol
-	                		
-	                        dirDataWithGeom.setValue(zmat);
-	                		break;
-	                	}
-	                	
-	                	case INTERNAL:
-	                	{
-	                		//TODO
-	                		Terminator.withMsgAndStatus("ERROR! handling of "
-	                				+ "internal coordinates not implemented "
-	                				+ "yet... sorry!",-1);
-	                		break;
-	                	}
-	                	
-	                	case XYZ:
-	                	default:
-	                	{
-	                		dirDataWithGeom.setValue(mol);
-	                        if (MolecularUtils.hasProperty(mol, 
-	                        		ChemSoftConstants.PARCHARGE))
-	                        {
-	                            String charge = mol.getProperty(
-	                            		ChemSoftConstants.PARCHARGE)
-	                            		.toString();
-	                            setKeyword(new Keyword(
-	                            		ChemSoftConstants.PARCHARGE,
-	                            		false, charge));
-	                        }
-	                        if (MolecularUtils.hasProperty(mol, 
-	                        		ChemSoftConstants.PARSPINMULT))
-	                        {
-	                            String spinMult = mol.getProperty(
-	                            		ChemSoftConstants.PARSPINMULT)
-	                            		.toString();
-	                            setKeyword(new Keyword(
-	                            		ChemSoftConstants.PARSPINMULT,
-	                            		false, spinMult));
-	                        }
-	                		break;
-	                	}
-                	}
-                	setDataDirective(dirDataWithGeom);
-                	deleteComponent(dirComp);
-                	break;
-                }
-                	
-                case BasisSetConstants.ATMSPECBS:
-                {
-                	//We require the component to be a DirectiveData
-                	if (!dirComp.getComponentType().equals(
-                			DirectiveComponentType.DIRECTIVEDATA))
+                	case KEYWORD:
                 	{
-                		Terminator.withMsgAndStatus("ERROR! Atom-specific "
-                				+ "basis set can only be defined with a "
-                				+ DirectiveData.class.getName() 
-                				+ " object", -1);
+                		((Keyword) dirComp).setValue(pathname);
+                		break;
                 	}
-                	
-                    ParameterStorage bsGenParams = new ParameterStorage();
-                    bsGenParams.setParameter(params.getParameter(task));
-                    
-                    bsGenParams.setParameter(new Parameter("TASK",
-                		NamedDataType.STRING, "GENERATEBASISSET"));
-                	Worker w = WorkerFactory.createWorker(bsGenParams);
-                    BasisSetGenerator bsg = (BasisSetGenerator) w;
-                    
-                    bsg.setAtmIdxAsId(true);
-                    BasisSet bs = bsg.assignBasisSet(mol);
-                    
-                    //Replace DirectiveData with one with the BS object
-                    DirectiveData dd = new DirectiveData();
-                    dd.setReference(dirComp.getName());
-                    dd.setValue(bs);
-                    setDataDirective(dd);
-                    break;
-                }
-                	
-                    
-                //TODO: add here other atom/molecule specific option
-
-                    
-                default:
-                    String msg = "WARNING! Task '" + task + "' is not a "
-                           + "known task when updating atom/molecule-specific "
-                           + "directives in a comp.chem. job.";
-                    
-                    //TODO verbosity/logging
-                    System.out.println(msg);
-                    break;
+					case DIRECTIVE:
+						break;
+            	}
+            	break;
             }
+            
+            case ChemSoftConstants.PARGEOMETRY:
+            {
+            	//TODO verbosity/logging
+                System.out.println(" ACC adds geometry to job");
+                
+            	DirectiveData dirDataWithGeom = new DirectiveData();
+            	dirDataWithGeom.setReference(ChemSoftConstants.DIRDATAGEOMETRY);
+            	
+            	CoordsType coordsType = CoordsType.XYZ;
+            	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
+            	{
+            		String value = params.getParameter(
+            				ChemSoftConstants.PARCOORDTYPE)
+            				.getValueAsString();
+            	
+            		coordsType = CoordsType.valueOf(
+            			value.trim().toUpperCase());
+            	}
+            	
+            	switch (coordsType)
+            	{    
+                	case ZMAT:
+                	{
+                		//TODO
+                		Terminator.withMsgAndStatus("ERROR! handling of "
+                				+ "internal coordinates not implemented "
+                				+ "yet... sorry!",-1);
+                		
+                		ZMatrix zmat = new ZMatrix();
+                		
+                		//TODO: get the actual zmat for mol
+                		
+                        dirDataWithGeom.setValue(zmat);
+                		break;
+                	}
+                	
+                	case INTERNAL:
+                	{
+                		//TODO
+                		Terminator.withMsgAndStatus("ERROR! handling of "
+                				+ "internal coordinates not implemented "
+                				+ "yet... sorry!",-1);
+                		break;
+                	}
+                	
+                	case XYZ:
+                	default:
+                	{
+                		dirDataWithGeom.setValue(mol);
+                        if (MolecularUtils.hasProperty(mol, 
+                        		ChemSoftConstants.PARCHARGE))
+                        {
+                            String charge = mol.getProperty(
+                            		ChemSoftConstants.PARCHARGE)
+                            		.toString();
+                            setKeyword(new Keyword(
+                            		ChemSoftConstants.PARCHARGE,
+                            		false, charge));
+                        }
+                        if (MolecularUtils.hasProperty(mol, 
+                        		ChemSoftConstants.PARSPINMULT))
+                        {
+                            String spinMult = mol.getProperty(
+                            		ChemSoftConstants.PARSPINMULT)
+                            		.toString();
+                            setKeyword(new Keyword(
+                            		ChemSoftConstants.PARSPINMULT,
+                            		false, spinMult));
+                        }
+                		break;
+                	}
+            	}
+            	setDataDirective(dirDataWithGeom);
+            	deleteComponent(dirComp);
+            	break;
+            }
+            	
+            case BasisSetConstants.ATMSPECBS:
+            {
+            	//TODO verbosity/logging
+                System.out.println(" ACC starts creating atom-specific "
+                		+ "Basis Set");
+                
+            	//We require the component to be a DirectiveData
+            	if (!dirComp.getComponentType().equals(
+            			DirectiveComponentType.DIRECTIVEDATA))
+            	{
+            		Terminator.withMsgAndStatus("ERROR! Atom-specific "
+            				+ "basis set can only be defined with a "
+            				+ DirectiveData.class.getName() 
+            				+ " object", -1);
+            	}
+            	
+                ParameterStorage bsGenParams = new ParameterStorage();
+                bsGenParams.setParameter(params.getParameter(task));
+                
+                bsGenParams.setParameter(new Parameter("TASK",
+            		NamedDataType.STRING, "GENERATEBASISSET"));
+            	Worker w = WorkerFactory.createWorker(bsGenParams);
+                BasisSetGenerator bsg = (BasisSetGenerator) w;
+                
+                bsg.setAtmIdxAsId(true);
+                BasisSet bs = bsg.assignBasisSet(mol);
+                
+                //Replace DirectiveData with one with the BS object
+                DirectiveData dd = new DirectiveData();
+                dd.setReference(dirComp.getName());
+                dd.setValue(bs);
+                setDataDirective(dd);
+                break;
+            }
+            	
+                
+            //TODO: add here other atom/molecule specific option
+
+                
+            default:
+                String msg = "WARNING! Task '" + task + "' is not a "
+                       + "known task when updating atom/molecule-specific "
+                       + "directives in a comp.chem. job.";
+                
+                //TODO verbosity/logging
+                System.out.println(msg);
+                break;
         }
     }
     

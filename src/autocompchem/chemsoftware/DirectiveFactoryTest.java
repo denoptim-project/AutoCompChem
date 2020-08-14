@@ -93,10 +93,10 @@ public class DirectiveFactoryTest
     			"Name of subdir (A)");
     	assertEquals(2,d.getAllSubDirectives().get(0).getAllKeywords().size(),
     			"Number of keywords in subdir (A)");
-    	assertEquals(new ArrayList<String>(Arrays.asList("val","1b")),
+    	assertEquals(new ArrayList<String>(Arrays.asList("val 1b")),
     			d.getSubDirective("subD1").getKeyword("key1b").getValue(),
     			"Value of key in subdir (A)");
-    	assertEquals(new ArrayList<String>(Arrays.asList("val","2b")),
+    	assertEquals(new ArrayList<String>(Arrays.asList("val 2b")),
     			d.getSubDirective("subD1").getKeyword("key2b").getValue(),
     			"Value of key in subdir (B)");
     	

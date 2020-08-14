@@ -38,7 +38,10 @@ import autocompchem.run.Terminator;
 
 public class Keyword implements IDirectiveComponent
 {
-    /**
+    private static final String newLineSep = 
+    		System.getProperty("line.separator");
+
+	/**
      * Keyword name.
      */
     private String name = "#nokeyword";
@@ -107,7 +110,7 @@ public class Keyword implements IDirectiveComponent
      */
 
     public Keyword(String line)
-    {
+    {    	
         String upLine = line.toUpperCase();
         if (upLine.startsWith(ChemSoftConstants.JDLABLOUDKEY))
         {
@@ -207,12 +210,13 @@ public class Keyword implements IDirectiveComponent
      */
 
     private void parseLine(String line, String label)
-    {
+    {   
         String[] p = line.split(ChemSoftConstants.JDKEYVALSEPARATOR,2);
         name = p[0].substring(label.length()).trim();
         if (p.length > 1)
         {
-            value = new ArrayList<String>(Arrays.asList(p[1].split("\\s+")));
+            value = new ArrayList<String>(Arrays.asList(p[1].split(
+            		newLineSep)));
         }
         else
         {
@@ -259,9 +263,21 @@ public class Keyword implements IDirectiveComponent
             sb.append(ChemSoftConstants.JDLABMUTEKEY);
         }
         sb.append(name).append(ChemSoftConstants.JDKEYVALSEPARATOR);
-        for (String v : value)
+        if (value.size()>1)
         {
-            sb.append(v).append(" ");
+        	sb.append(ChemSoftConstants.JDOPENBLOCK);
+        }
+        
+        for (int i=0;i<value.size(); i++)
+        {
+        	String v = value.get(i);
+            sb.append(v);
+            if (i<(value.size()-1))
+            	sb.append(newLineSep);
+        }
+        if (value.size()>1)
+        {
+        	sb.append(ChemSoftConstants.JDCLOSEBLOCK);
         }
         return sb.toString();
     }

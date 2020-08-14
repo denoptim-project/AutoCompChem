@@ -94,7 +94,7 @@ public class ChemSoftConstants
 	/**
 	 * Label identifying a definition of a task for ACC in job details files
 	 */
-	public static final String JDLABACCTASK = "$ACCPAR_";
+	public static final String JDLABACCTASK = "$ACCTASK";
     
     /**
      * Lowest non-zero frequency (absolute value)
@@ -146,7 +146,7 @@ public class ChemSoftConstants
 	 * Key for parameter defining the pathname's root for any output file (i.e.,
 	 * the input for the computational chemistry software).
 	 */
-	public static final String PAROUTFILEROOT = "ROOTPATHNAME";
+	public static final String PAROUTFILEROOT = "ROOTPATHNAMEOUTPUT";
 	
 	/**
 	 * Key for parameter defining the charge of the system.
@@ -179,6 +179,18 @@ public class ChemSoftConstants
 	 * root.
 	 */
 	public static final String PARGETFILENAMEROOT = "GET_FILENAME";
+
+	/**
+	 * Key for parameter defining if and what suffix append when
+	 * reporting the complete pathname in tasks {@link .PARGETFILENAMEROOT}
+	 */
+	public static final String PARGETFILENAMEROOTSUFFIX = "SUFFIX";
+	
+	/**
+	 * Key for parameter defining if and what quotation mark to use for
+	 * reporting the complete pathname in tasks {@link .PARGETFILENAMEROOT}
+	 */
+	public static final String PARGETFILENAMEROOTQUOTE = "QUOTATION";
 	
 	/**
 	 * Key for parameter defining the type of coordinates used to define the
@@ -190,17 +202,5 @@ public class ChemSoftConstants
 	 * Key for directive data containing the geometry
 	 */
 	public static final String DIRDATAGEOMETRY = "DIRDATAGEOMETRY";
-
-	/**
-	 * Only for testing! This is used to test embedding of ACC task in 
-	 * directives.
-	 */
-	public static final String TESTONLY_ACCTASK = "REPLACE_DIRDATA";
-
-	/**
-	 * Only for testing! This is used to test embedding of ACC task in 
-	 * directives.
-	 */
-	public static final String TESTONLY_NEWTEXT = "NEW_DIRDATA";
 
 }

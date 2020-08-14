@@ -10,16 +10,23 @@ echo NOT Passed ERROR 2
 exit -1
 fi
 
-n=0;n=$(grep -c "InHessName *t116-mol.hess" t116-mol.inp)
+n=0;n=$(grep -c "^\* *xyzfile *-10 *5 *t116-mol.xyz.*$" t116-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
-n=0;n=$(grep -c "InHessName *t116-mol-1.hess" t116-mol-1.inp)
+
+n=0;n=$(grep -c " InHessName  \"t116-mol.hess\"" t116-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^%coords XYZ  0  1" t116-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^ *H *3.479.* *1.59.* *0.817.*$" t116-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' t116.log
 if [ $? == 0 ] ; then 
 echo Passed
 exit 0
 else
-echo NOT Passed ERROR 5
+echo NOT Passed ERROR 7
 exit -1
 fi

@@ -54,15 +54,18 @@ public class KeywordTest
     {
     	
     	String str = ChemSoftConstants.JDLABLOUDKEY + "LoudKey "
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "my value has 5 bits";
+    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "my value has 3 lines"
+    			+ System.getProperty("line.separator") + "second line"
+    			+ System.getProperty("line.separator") + "third line";
     	
     	Keyword k = new Keyword(str);
     	
     	assertEquals("LoudKey",k.getName(),"Keyword name(A)");
     	assertTrue(k.isLoud(),"Kind of keyword (A)");
-    	assertEquals(5,k.getValue().size(),"Keyword value size(A)");
-    	assertEquals("my",k.getValue().get(0),"Keyword value(1A)");
-    	assertEquals("bits",k.getValue().get(4),"Keyword value(5A)");
+    	assertEquals(3,k.getValue().size(),"Keyword value size(A)");
+    	assertEquals("my value has 3 lines",k.getValue().get(0),
+    			"Keyword value(1A)");
+    	assertEquals("third line",k.getValue().get(2),"Keyword value(5A)");
     	
     	str = ChemSoftConstants.JDLABMUTEKEY + "MuteKey "
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "value";

@@ -3,7 +3,6 @@ package autocompchem.chemsoftware.orca;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -145,6 +144,8 @@ public class OrcaInputWriter extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
+    
+    private final String NL = System.getProperty("line.separator");
 
 //-----------------------------------------------------------------------------
 
@@ -242,8 +243,9 @@ public class OrcaInputWriter extends Worker
 
         if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
         {
-            outFileName = params.getParameter(
+            outFileNameRoot = params.getParameter(
             		ChemSoftConstants.PAROUTFILEROOT).getValue().toString();
+            outFileName = outFileNameRoot + OrcaConstants.INPEXTENSION;
             outJDFile = outFileName + ChemSoftConstants.JDEXTENSION;
         } else {
             outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
@@ -252,7 +254,7 @@ public class OrcaInputWriter extends Worker
             if (verbosity > 0)
             {
                 System.out.println(" No '" + ChemSoftConstants.PAROUTFILEROOT
-                		+ "' parameter found. "
+                		+ "' parameter found. " + NL
                         + "Root of any output file name set to '" 
                 		+ outFileNameRoot + "'.");
             }
@@ -336,6 +338,7 @@ public class OrcaInputWriter extends Worker
         }
         else
         {
+        	//TODO
         	printInputWithMultipleGeometry();
         }
     }
@@ -353,7 +356,11 @@ public class OrcaInputWriter extends Worker
     		
     		CompChemJob molSpecJob = ccJob.clone();
     		
-    		//TODO logging msg
+    		if (verbosity > 0)
+    		{
+    			System.out.println(" Writing Orca input file for molecule #" 
+    					+ (molId+1) + ": " + MolecularUtils.getNameOrID(mol));
+    		}
     		
     		Parameter pathnamePar = new Parameter(
     				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
@@ -415,6 +422,15 @@ public class OrcaInputWriter extends Worker
     
 //------------------------------------------------------------------------------
     
+    /**
+     * This is the method the encodes the syntax of the Orca input file for a 
+     * single job directive.
+     * @param d
+     * @param outmost set <code>true</code> if the directive is the outermost and
+     * thus, must be decorated with the '%' character.
+     * @return the list of lines for the input file
+     */
+    
     private ArrayList<String> getTextForInput(Directive d, boolean outmost)
     {	
     	ArrayList<String> lines = new ArrayList<String>();
@@ -461,7 +477,7 @@ public class OrcaInputWriter extends Worker
     	{
     		//OK, I see what you want to do, but for further processing 
     		// we get rid of the '%'. We put it back anyway for all standard
-    		// directives
+    		// directives that are at the outermost level.
     		dirName = dirName.substring(1).trim();
     	} 
     	
@@ -607,7 +623,7 @@ public class OrcaInputWriter extends Worker
 			}
 		}
 		
-		d.sortKeywordsBy(new ComparatorKeysCoordDirective());
+		d.sortKeywordsBy(new CoordsKeywordsComparator());
 		for (Keyword k : d.getAllKeywords())
 		{
 			if (k.isLoud())
@@ -679,61 +695,14 @@ public class OrcaInputWriter extends Worker
 
 		if (useStar)
 		{
-			lines.add("*");
+			if (lines.size()>1)
+			{
+				lines.add("*");
+			}
 		} else {
 			lines.add("end");
 		}
     	return lines;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Sorts keywords consistently with the expectations of the %coords input
-     * block: first type of coordinates, then charge, then spin multiplicity.
-     */
-    private class ComparatorKeysCoordDirective implements Comparator<Keyword>
-    {
-        @Override
-        public int compare(Keyword a, Keyword b)
-        {           
-            String aName = a.getName();
-            String bName = b.getName();
-            int intA = 0;
-            int intB = 0;
-            
-            if (aName.toUpperCase().equals(ChemSoftConstants.PARCOORDTYPE))
-            {
-            	intA = -3;
-            }
-            if (bName.toUpperCase().equals(ChemSoftConstants.PARCOORDTYPE))
-            {
-            	intB = -3;
-            }
-            
-            if (aName.toUpperCase().equals(ChemSoftConstants.PARCHARGE))
-            {
-            	intA = -2;
-            }
-            if (bName.toUpperCase().equals(ChemSoftConstants.PARCHARGE))
-            {
-            	intB = -2;
-            }
-            
-            if (aName.toUpperCase().equals(ChemSoftConstants.PARSPINMULT))
-            {
-            	intA = -1;
-            }
-            if (bName.toUpperCase().equals(ChemSoftConstants.PARSPINMULT))
-            {
-            	intB = -1;
-            }
-            
-            //add any other priority rules go here... 
-            //but now there seems to be no more.
-            
-            return Integer.compare(intA,intB);
-        }
     }
     
 //------------------------------------------------------------------------------
@@ -743,46 +712,6 @@ public class OrcaInputWriter extends Worker
     	Terminator.withMsgAndStatus(" ERROR! Running "
     			+ "printInputWithMultipleGeometry, which should have been"
     			+ " overwritten by devellpers.",-1);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return true if the charge or the spin are overwritten according to the
-     * IAtomContainer properties "CHARGE" and "SPIN_MULTIPLICITY"
-     * @param mol the molecule from which we get charge and spin
-     */
-
-    private void chargeOrSpinFromMol(IAtomContainer mol)
-    {
-        boolean res = false;
-
-        String str = " Using molecular structure file to set charge and "
-        		+ "spin multiplicity." + System.getProperty("line.separator")
-        		+ " From c = " + charge + " and s.m. = " + spinMult;
-
-        if (MolecularUtils.hasProperty(mol, ChemSoftConstants.PARCHARGE))
-        {
-            res = true;
-            charge = Integer.parseInt(mol.getProperty(
-            		ChemSoftConstants.PARCHARGE).toString());
-        }
-
-        if (MolecularUtils.hasProperty(mol, ChemSoftConstants.PARSPINMULT))
-        {
-            res = true;
-            spinMult = Integer.parseInt(mol.getProperty(
-            		ChemSoftConstants.PARSPINMULT).toString());
-        }
-
-        if (verbosity > 0)
-        {
-            if (res)
-            {
-                System.out.println(str + " to c = " + charge + " and s.m. = "
-                                + spinMult);
-            }
-        }
     }
 
 //------------------------------------------------------------------------------

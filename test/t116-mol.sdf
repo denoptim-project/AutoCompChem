@@ -1,4 +1,4 @@
-Mol1
+MyFirstMol
  OpenBabel08132016093D
 
  16 16  0  0  0  0  0  0  0  0999 V2000
@@ -42,7 +42,7 @@ M  END
 1
 
 $$$$
-Mol2
+SecondMol
  OpenBabel08132016093D
 
  14 13  0  0  0  0  0  0  0  0999 V2000

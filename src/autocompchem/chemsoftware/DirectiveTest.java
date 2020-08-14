@@ -42,7 +42,8 @@ import autocompchem.text.TextBlock;
 
 public class DirectiveTest 
 {
-    
+	private final String NL = System.getProperty("line.separator");
+	
 //------------------------------------------------------------------------------
 
     @Test
@@ -84,10 +85,8 @@ public class DirectiveTest
     public void testToLinesJD() throws Exception
     {    	
     	Directive d = new Directive("testDirective");
-    	d.addKeyword(new Keyword("key1", true, 
-    			new ArrayList<String>(Arrays.asList("a","b"))));
-    	d.addKeyword(new Keyword("key2", true, 
-    			new ArrayList<String>(Arrays.asList("c","d"))));
+    	d.addKeyword(new Keyword("key1", true, "a b"));
+    	d.addKeyword(new Keyword("key2", true, "c d"));
     	d.addDirectiveData(new DirectiveData("data",  
     			new ArrayList<String>(Arrays.asList("A1","A2","A3"))));
     	Directive sa = new Directive("subA");
@@ -108,10 +107,10 @@ public class DirectiveTest
     	assertEquals(4,countLinesWithString(
     			d,ChemSoftConstants.JDLABDIRECTIVE),
     			"Number of lines in JD(D).");
-    	assertEquals(1,countLinesWithString(
+    	assertEquals(2,countLinesWithString(
     			d,ChemSoftConstants.JDOPENBLOCK),
     			"Number of lines in JD(E).");
-    	assertEquals(1,countLinesWithString(
+    	assertEquals(2,countLinesWithString(
     			d,ChemSoftConstants.JDCLOSEBLOCK),
     			"Number of lines in JD(F).");
     	
@@ -122,7 +121,6 @@ public class DirectiveTest
     
 //------------------------------------------------------------------------------
 
-    //TODO reactivate all @Test
     @Test
     public void testPerformACCTask() throws Exception
     {    
@@ -132,26 +130,34 @@ public class DirectiveTest
     	d.addKeyword(new Keyword("key2", true, 
     			new ArrayList<String>(Arrays.asList("c","d"))));
     	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
-    			Arrays.asList(ChemSoftConstants.JDLABACCTASK
-    					+ ChemSoftConstants.TESTONLY_ACCTASK 
-    					+ ParameterConstants.SEPARATOR + " initial text"))));
+    			Arrays.asList(ChemSoftConstants.JDOPENBLOCK
+    					+ ChemSoftConstants.JDLABACCTASK
+    					+ ParameterConstants.SEPARATOR
+    					+ ChemSoftConstants.PARGETFILENAMEROOT + NL
+    					+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
+    					+ ParameterConstants.SEPARATOR + ".sfx" 
+    					+ ChemSoftConstants.JDCLOSEBLOCK))));
     	
-    	d.performACCTasks(null, null);
+    	Job j = new Job();
+    	j.setParameter(new Parameter(ChemSoftConstants.PAROUTFILEROOT, "/path "
+    			+ "/to/filenameRoot"));
     	
-    	assertTrue(d.getDirectiveData("data").getValue().toString().equals(
-    			ChemSoftConstants.TESTONLY_NEWTEXT),
+    	d.performACCTasks(null, j);
+    	
+    	assertTrue(d.getDirectiveData("data").getValue().toString()
+    			.contains(".sfx"),
     			"Task changing DirectiveData");
     	
     	Directive d2 = new Directive("testDirective");
     	d2.addKeyword(new Keyword("key1", true, 
     			new ArrayList<String>(Arrays.asList(
-    					ChemSoftConstants.JDLABACCTASK
-    					+ ChemSoftConstants.PARGETFILENAMEROOT 
-    					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
-    	
-    	Job j = new Job();
-    	j.setParameter(new Parameter(ChemSoftConstants.PAROUTFILEROOT, "/path "
-    			+ "/to/filenameRoot"));
+    					ChemSoftConstants.JDOPENBLOCK
+    					+ ChemSoftConstants.JDLABACCTASK
+    					+ ParameterConstants.SEPARATOR
+    					+ ChemSoftConstants.PARGETFILENAMEROOT,
+    					ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
+    					+ ParameterConstants.SEPARATOR + "_job2.xyz"
+    					+ ChemSoftConstants.JDCLOSEBLOCK))));
 
     	d2.performACCTasks(null, j);
     	
