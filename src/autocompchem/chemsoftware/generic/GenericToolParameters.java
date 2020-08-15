@@ -1,8 +1,8 @@
 package autocompchem.chemsoftware.generic;
 
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 
 /**
  * Storage of user-defined parameters for GenericTool related tools.

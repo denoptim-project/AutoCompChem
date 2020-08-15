@@ -1,6 +1,8 @@
 package autocompchem.datacollections;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -20,17 +22,7 @@ package autocompchem.datacollections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Map.Entry;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.Bond;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.silent.AtomContainer;
 
 import autocompchem.datacollections.NamedData.NamedDataType;
 

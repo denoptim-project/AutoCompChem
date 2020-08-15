@@ -16,14 +16,13 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
-import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
@@ -650,6 +649,13 @@ public class OrcaInputWriter extends Worker
 			if (dd.getName().equals(ChemSoftConstants.DIRDATAGEOMETRY))
 			{
 				Object o = dd.getValueAsObjectSubclass();
+				
+				//TODO del
+
+        		System.out.println(" ");
+        		System.out.println(" IN ORCA WRITER");
+        		System.out.println(dd);
+				
 				switch (dd.getType())
 				{
 					case IATOMCONTAINER:

@@ -32,11 +32,9 @@ import java.util.List;
 
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
-import org.openscience.cdk.Molecule;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
-import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.io.XYZReader;
@@ -641,14 +639,11 @@ public class IOtools
     public static void writeXYZAppend(String filename, IAtomContainer iac,
                                                                  boolean append)
     {
-        //Need to get Molecule for backwards compatibility with CDK classes
-        IMolecule mol = new Molecule(iac);
-
         XYZWriter xyzWriter = null;
         try {
             xyzWriter = new XYZWriter(new FileWriter(new File(filename),
                                                                        append));
-            xyzWriter.write(mol);
+            xyzWriter.write(iac);
         }
         catch (CDKException e)
         {
@@ -724,12 +719,12 @@ public class IOtools
                                                                  boolean append)
     {
         //There is currently no way to write a set to XYZ files so we force it
+    	//First, we write one molecule. Then we append the rest.
         XYZWriter xyzWriter = null;
         try {
             xyzWriter = new XYZWriter(new FileWriter(new File(filename),
                                                                        append));
-            IMolecule mol = new Molecule(acs.getAtomContainer(0));
-            xyzWriter.write(mol);
+            xyzWriter.write(acs.getAtomContainer(0));
         }
         catch (CDKException e)
         {
@@ -739,7 +734,7 @@ public class IOtools
         catch (Throwable t2)
         {
             t2.printStackTrace();
-            System.err.println("Failure in writing XYZ: " + t2);
+            System.err.println("Failure while writing XYZ: " + t2);
             System.exit(-1);
         }
         finally
@@ -761,8 +756,7 @@ public class IOtools
                                                                          true));
             for (int i=1; i<acs.getAtomContainerCount(); i++)
             {
-                IMolecule mol2 = new Molecule(acs.getAtomContainer(i));
-                xyzWriterAppend.write(mol2);
+                xyzWriterAppend.write(acs.getAtomContainer(i));
             }
         }
         catch (CDKException e)

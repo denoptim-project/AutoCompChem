@@ -17,7 +17,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.common.math.StatsAccumulator;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;

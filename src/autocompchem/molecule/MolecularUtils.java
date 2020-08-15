@@ -1,7 +1,6 @@
 package autocompchem.molecule;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +31,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.aromaticity.Kekulization;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -39,7 +40,6 @@ import org.openscience.cdk.interfaces.IBond.Order;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.geometry.DistanceMatrix;
-import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Terminator;
 
 /**
@@ -99,7 +99,7 @@ public class MolecularUtils
 
     public static String getAtomRef(IAtom atm, IAtomContainer mol)
     {
-        String ref = atm.getSymbol() + (mol.getAtomNumber(atm) +1);
+        String ref = atm.getSymbol() + (mol.indexOf(atm) +1);
         return ref;
     }
 
@@ -749,4 +749,59 @@ public class MolecularUtils
         }
     	return list;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets all implicit atom count to zero.
+     * @param mol
+     */
+    public static void setZeroImplicitHydrogensToAllAtoms(IAtomContainer mol) 
+    {
+    	for (IAtom atm : mol.atoms()) {
+    		atm.setImplicitHydrogenCount(0);
+    	}
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Makes sure each bond order is NOT {@link IBond.Order#UNSET}.
+     * @param mol
+     */
+	public static void ensureNoUnsetBondOrders(IAtomContainer mol) 
+	{
+		try {
+			Kekulization.kekulize(mol);
+		} catch (CDKException e) {
+			e.printStackTrace();
+			Terminator.withMsgAndStatus("ERROR! Kekulization failes. "
+					+ "To by-pass "
+					+ "this problem, generate input structures with "
+					+ "connectivity tables that do NOT use aromatic bond "
+					+ "type.",-1);
+		}
+		
+		for (IBond bnd : mol.bonds())
+		{
+			if (bnd.getOrder().equals(IBond.Order.UNSET)) 
+			{
+				String msg = "ERROR! Kekulization could not "
+						+ "assign all bond orders. In particular, the bond "
+						+ "order of bond involving ";
+				for (IAtom atm : bnd.atoms())
+				{
+					msg = msg + " " + MolecularUtils.getAtomRef(atm, mol);
+				}
+				msg = msg + " is still UNSET. To by-pass "
+						+ "this problem, generate input structures with "
+						+ "connectivity tables that do NOT use aromatic bond "
+						+ "type.";
+				Terminator.withMsgAndStatus(msg, -1);
+			}
+		}
+	}
+    
+//------------------------------------------------------------------------------
+
 }

@@ -1,18 +1,18 @@
 #!/bin/bash
 
-grep -q 'Found 2 dummy atoms' t46.log
+grep -q '#Candidate dummy atoms.*: 2' t46.log
 if [ $? != 0 ] ; then
   echo NOT Passed 1
   exit -1
 fi
 
-grep -q 'Dummy atoms list: 2' t46.log
+grep -q '> Atom .*2' t46.log
 if [ $? != 0 ] ; then
   echo NOT Passed 2
   exit -1
 fi
 
-grep -q 'Dummy atoms list: 41' t46.log
+grep -q '> Atom.*41' t46.log
 if [ $? != 0 ] ; then
   echo NOT Passed 3
   exit -1

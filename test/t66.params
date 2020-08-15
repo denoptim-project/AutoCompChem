@@ -7,7 +7,7 @@ VERBOSITY: 0
 TASK: MutateAtoms
 INFILE: ../t66-mol.sdf
 OUTFILE:  t66-mol_mutated.sdf
-$STARTSMARTSMAP: [Pb] Zan
+$STARTSMARTSMAP: [Pb] U
 [N] He
 [He] Cl
 $END

@@ -31,7 +31,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -349,7 +348,7 @@ public class AtomClashAnalyzer extends Worker
                 }
 
             } //end loop over molecules
-
+            sdfItr.close();
         } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned by "

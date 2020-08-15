@@ -22,14 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.datacollections.Parameter;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -690,9 +689,6 @@ public class Directive implements IDirectiveComponent
         {   
             case ChemSoftConstants.PARGETFILENAMEROOT:
             {
-            	//TODO verbosity/logging
-                System.out.println(" ACC replaces placeholder with file pathname");
-                
             	String pathname = job.getParameter(
             			ChemSoftConstants.PAROUTFILEROOT)
             			.getValueAsString();

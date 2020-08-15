@@ -30,10 +30,7 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import com.hp.hpl.jena.graph.query.PatternStageBase.Work;
-
 import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
@@ -685,7 +682,8 @@ for (IAtom atm : fragsA.get(i).atoms())
                 usedFragsJ.add(cmJ);
 //TODO del
 System.out.println("Best j for i="+i+" is j="+cmJ);
-                for (Map.Entry e : allMaps.get(i).get(cmJ).entrySet())
+                for (Map.Entry<Integer,Integer> e : 
+                	allMaps.get(i).get(cmJ).entrySet())
                 {
 //TODO del
 System.out.println("-> Mapped "+e.getKey()+","+e.getValue());

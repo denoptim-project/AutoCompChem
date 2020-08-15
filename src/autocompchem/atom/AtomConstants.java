@@ -31,27 +31,27 @@ import java.util.Set;
 public class AtomConstants
 {
     /**
-     * Elemental symbols for general purpuse dummy atoms
+     * Property identifying an atom-like object as a general purpose dummy atom
      */
-    public final static String DUMMYSYMBOL = "Du";
+    public final static String DUMMYATMLABEL = "Du";
 
     /**
      * Elemental symbols for dummy atoms in Molden
      */
-    public final static String DUMMYSYMBOLMOLDEN = "X";
+    //TODO: rename and edit code that uses this
+    public final static String DUMMYATMLABELMOLDEN = "X";
 
     /**
-     * Elemental symbols for attachment points
+     * Property identifying an atom-like object as an attachment point
      */
-    public final static String ATTACHMENTPOINTSYMBOL = "AP";
-
+    public final static String ATTACHMENTPOINTLABEL = "AP";
 
     /**
-     * All known elemental symbols not refering to actual atoms (i.e., dummies)
+     * All known elemental symbols not referring to actual atoms (i.e., dummies)
      */
-    public final static Set<String> ALLDUMMYELSYMBOLS = new HashSet<String>(
-                                Arrays.asList(DUMMYSYMBOL,
-                                              DUMMYSYMBOLMOLDEN,
-                                              ATTACHMENTPOINTSYMBOL));
+    public final static Set<String> ALLDUMMYLABELS = new HashSet<String>(
+                                Arrays.asList(DUMMYATMLABEL,
+                                              DUMMYATMLABELMOLDEN,
+                                              ATTACHMENTPOINTLABEL));
 
 }

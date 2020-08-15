@@ -34,7 +34,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -269,9 +268,8 @@ public class MolecularMutator extends Worker
                     IOtools.writeSDFAppend(outFile,mol,true);
                 }
             } 
-        } 
-        catch (Throwable t) 
-        {
+            sdfItr.close();
+        } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
@@ -321,7 +319,7 @@ public class MolecularMutator extends Worker
      * MolecularMutator.
      * @param mol the molecule to work with
      * @return the map or atoms to mutate grouped by the reference name of the
-     * loased map of SMARTS queries
+     * loaded map of SMARTS queries
      */
 
     public  Map<String,ArrayList<IAtom>> identifyMutatingCenters(

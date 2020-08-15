@@ -2,6 +2,7 @@ package autocompchem.smarts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /*
  *   Copyright (C) 2014  Marco Foscato
@@ -23,8 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.isomorphism.Mappings;
+import org.openscience.cdk.isomorphism.Pattern;
+import org.openscience.cdk.smarts.SmartsPattern;
+
+import autocompchem.molecule.MolecularUtils;
 
 /**
  * SMARTS query tool capable of handling many SMARTS queries in once. 
@@ -37,8 +42,8 @@ public class ManySMARTSQuery
 {
 
     //Container
-    private Map<String,List<List<Integer>>> allMatches = 
-                                new HashMap<String,List<List<Integer>>>();
+    private Map<String,Mappings> allMatches = new HashMap<String,Mappings>();
+    
     //Counts
     private int totNum;
     private Map<String,Integer> numMatches = new HashMap<String,Integer>();
@@ -46,17 +51,6 @@ public class ManySMARTSQuery
     //Problems
     private boolean problems = false;
     private String message = "";
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty ManySMARTSQuery tool
-     */
-
-    public ManySMARTSQuery()
-    {
-        super();
-    }
 
 //------------------------------------------------------------------------------
 
@@ -69,75 +63,69 @@ public class ManySMARTSQuery
 
     public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, int verbosity)
     {
-        super();
         totNum = 0;
-        String blankSmarts = "[*]";
+    	for (String smartsRef : smarts.keySet()) {
+            String oneSmarts = smarts.get(smartsRef);
 
-        String err="";
+            if (verbosity >= 3)
+            {
+                System.out.println("Attempt to match query '" 
+                                        + smartsRef + "'.");
+                System.out.println("SMARTS: " + oneSmarts);
+            }
 
-        try {
-                SMARTSQueryTool query = new SMARTSQueryTool(blankSmarts);
-                for (String smartsRef : smarts.keySet())
-                {
-                    //get the new query
-                    String oneSmarts = smarts.get(smartsRef);
-                    err = smartsRef;
+            Pattern sp = SmartsPattern.create(oneSmarts);
+            
+            // This is required as from CDK-2.3 (or lower, anyway > 1.4.14)
+            MolecularUtils.setZeroImplicitHydrogensToAllAtoms(mol);
+            MolecularUtils.ensureNoUnsetBondOrders(mol);
+            
+            if (sp.matches(mol))
+            {
+                Mappings listOfIds = sp.matchAll(mol);
+                allMatches.put(smartsRef,listOfIds);
 
-                    if (verbosity >= 3)
-                    {
-                        System.out.println("Attempt to match query '" 
-                                                + smartsRef + "'.");
-                        System.out.println("SMARTS: " + oneSmarts);
-                    }
-
-                    //Update the query tool
-                    query.setSmarts(oneSmarts);
-
-                    
-                    if (query.matches(mol))
-                    {
-                        //Store matches
-                        List<List<Integer>> listOfIds = 
-                                                 new ArrayList<List<Integer>>();
-                        listOfIds = query.getUniqueMatchingAtoms();
-                        allMatches.put(smartsRef,listOfIds);
-                        //Store number
 //CDK BUG here! this number is somehow wrong
 //                        int num = query.countMatches();
-                        int num = listOfIds.size();
-                        numMatches.put(smartsRef,num);
-                        totNum = totNum + num;
-                        if (verbosity >= 2)
-                        {
-                            System.out.println("Matches for query '" + smartsRef
-                                + "': " + num + " => Atoms: " + listOfIds);
-                        }
-                     }
+                int num = 0;
+                Iterator<int[]> iter = listOfIds.iterator();
+                while (iter.hasNext()) {
+                	iter.next();
+                	num++;
                 }
-        } catch (CDKException cdkEx) {
-                if (verbosity > 1)
-                    cdkEx.printStackTrace();
-                String cause = cdkEx.getCause().getMessage();
-                err = "\nWARNING! For query " + err + " => " + cause;
-                problems = true;
-                message = err;
-        } catch (Throwable t) {
-                java.lang.StackTraceElement[] stes = t.getStackTrace();
-                String cause = "";
-                int s = stes.length;
-                if (s >= 1)
+                
+                numMatches.put(smartsRef,num);
+                totNum = totNum + num;
+                if (verbosity >= 2)
                 {
-                    java.lang.StackTraceElement ste = stes[0];
-                    cause = ste.getClassName();
-                } else {
-                    cause = "'unknown' (try to process this molecule alone to "
-                                                            + "get more infos)";
+                    System.out.println("Matches for query '" + smartsRef
+                        + "': " + num + " => Atoms: " + getStringFor(listOfIds));
                 }
-                err = "\nWARNING! For query " + err + " => Exception returned "
-                                                                + "by " + cause;
-                problems = true;
-                message = err;
+            }
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private String getStringFor(Mappings listOfIds)
+    {
+    	String matchesString = "";
+    	Iterator<int[]> it = listOfIds.iterator();
+    	while (it.hasNext())
+    	{
+    		int[] list = it.next();
+    		for (int i=0; i<list.length; i++)
+    		{
+    			if (i==0)
+    			{
+    				matchesString = matchesString + "[" + list[i];
+    			} else {
+    				matchesString = matchesString + ", " + list[i];
+    			}
+    		}
+    		matchesString = matchesString + "]";
+    	}
+    	return matchesString;
     }
 
 //------------------------------------------------------------------------------
@@ -194,7 +182,7 @@ public class ManySMARTSQuery
     /**
      * Return the number of matches for the specified SMARTS query 
      * @param queryName the reference name of the SMARTS query
-     * @return the number of mathces for the specified query
+     * @return the number of matches for the specified query
      */
 
     public int getNumMatchesOfQuery(String queryName)
@@ -220,18 +208,42 @@ public class ManySMARTSQuery
         else
             return false;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return all the matches for the specified SMARTS query
+     * @param ref the reference name of the SMARTS query
+     * @return the list of matches for the specified query
+     */
+
+    public Mappings getMappingOfSMARTS(String ref)
+    {
+    	return allMatches.get(ref);
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Returnn all the matches for the specified SMARTS query
+     * Return all the matches for the specified SMARTS query
      * @param ref the reference name of the SMARTS query
-     * @return the list of mathced for the specified query
+     * @return the list of matches for the specified query
+     * @deprecated use {@link getMappingOfSMARTS}
      */
 
+    @Deprecated
     public List<List<Integer>> getMatchesOfSMARTS(String ref)
     {
-        return allMatches.get(ref);
+    	List<List<Integer>> idsAsNestedList = new ArrayList<List<Integer>>();
+    	Iterator<int[]> iter = allMatches.get(ref).iterator();
+    	while (iter.hasNext()) {
+    		int[] m = iter.next();
+    		List<Integer> l = new ArrayList<Integer>();
+    		for (int i=0; i<m.length; i++)
+    			l.add(m[i]);
+    		idsAsNestedList.add(l);
+    	}
+        return idsAsNestedList;
     }
 
 //------------------------------------------------------------------------------

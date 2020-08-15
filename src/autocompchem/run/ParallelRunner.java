@@ -222,7 +222,7 @@ public class ParallelRunner
     private void cleanup(ThreadPoolExecutor tpe, List<Future<?>> futureJobs,
                             ArrayList<Job> submittedJobs)
     {
-        for (Future f : futureJobs)
+        for (Future<?> f : futureJobs)
         {
             f.cancel(true);
         }
@@ -299,7 +299,7 @@ public class ParallelRunner
             Job job = it.next();
 
             submittedJobs.add(job);
-            Future fut = tpExecutor.submit(job);
+            Future<?> fut = tpExecutor.submit(job);
             futureJobs.add(fut);
 //TODO del
 //System.out.println("HERE: submitting "+job+" future "+fut+ " " + (System.currentTimeMillis()-startTime)+" queue"+tpExecutor.getQueue());

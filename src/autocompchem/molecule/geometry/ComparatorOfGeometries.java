@@ -727,13 +727,13 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
     public static double getRMSDevIntramolecularDistances(Map<IAtom,IAtom> map)
     {
         //Get Lists of atoms in non-map format
-        Atom[] lstA = new Atom[map.size()];
-        Atom[] lstB = new Atom[map.size()];
+        IAtom[] lstA = new IAtom[map.size()];
+        IAtom[] lstB = new IAtom[map.size()];
         int k = 0;
-        for (Map.Entry pair : map.entrySet())
+        for (Map.Entry<IAtom,IAtom> pair : map.entrySet())
         {
-            lstA[k] = (Atom) pair.getKey();
-            lstB[k] = (Atom) pair.getValue();
+            lstA[k] = pair.getKey();
+            lstB[k] = pair.getValue();
             k++;
         }
 
@@ -749,18 +749,18 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
      * We compare two vectors of atoms calculating all 
      * inter atomic distances (IAD) within each vector and considering the Root
      * Mean Square of the Distance IAD(a) - IAD(b).
-     * @param a first vector of atoms 
-     * @param b second vector of atoms
+     * @param lstA first vector of atoms 
+     * @param lstB second vector of atoms
      * @return the value of Root Mean Square Deviation of Intramolecular 
      *         Distances (RMSDIAD)
      */
 
-    public static double getRMSDevIntramolecularDistances(Atom[] a, Atom[] b)
+    public static double getRMSDevIntramolecularDistances(IAtom[] lstA, IAtom[] lstB)
     {
         double result = 0.0d;
 
         //Check if conditions for running this calculation are satisfied
-        if (a.length != b.length)
+        if (lstA.length != lstB.length)
         {
             Terminator.withMsgAndStatus("ERROR! Attempt to calculate RMSD "
                         + " of structures with different number of atoms",-1);
@@ -771,17 +771,17 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
 //      all in once.
 //
 
-        for (int i=0; i<a.length; i++)
+        for (int i=0; i<lstA.length; i++)
         {
             //Get first point for both structures
-            Point3d pAi = MolecularUtils.getCoords3d(a[i]);
-            Point3d pBi = MolecularUtils.getCoords3d(b[i]);
+            Point3d pAi = MolecularUtils.getCoords3d(lstA[i]);
+            Point3d pBi = MolecularUtils.getCoords3d(lstB[i]);
 
-            for (int j=i+1; j<a.length; j++)
+            for (int j=i+1; j<lstA.length; j++)
             {
                 //Get second point for both structures
-                Point3d pAj = MolecularUtils.getCoords3d(a[j]);
-                Point3d pBj = MolecularUtils.getCoords3d(b[j]);
+                Point3d pAj = MolecularUtils.getCoords3d(lstA[j]);
+                Point3d pBj = MolecularUtils.getCoords3d(lstB[j]);
 
                 //Get distances
                 double dAij = pAi.distance(pAj);
@@ -797,7 +797,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         }
 
         //Calculate prefactor
-        int n = a.length;
+        int n = lstA.length;
         double denominator = n * (n - 1);
         double preFactor = 2.0 / denominator;
         result = preFactor * result;
@@ -926,13 +926,13 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
                                         Map<IAtom,IAtom> mapping)
     {
         //Get Lists of atoms in format suitable for KabschAlignment
-        Atom[] lstA = new Atom[mapping.size()];
-        Atom[] lstB = new Atom[mapping.size()];
+        IAtom[] lstA = new IAtom[mapping.size()];
+        IAtom[] lstB = new IAtom[mapping.size()];
         int k = 0;
-        for (Map.Entry pair : mapping.entrySet())
+        for (Map.Entry<IAtom,IAtom> pair : mapping.entrySet())
         {
-            lstA[k] = (Atom) pair.getKey();
-            lstB[k] = (Atom) pair.getValue();
+            lstA[k] = pair.getKey();
+            lstB[k] = pair.getValue();
             k++;
         }
 
@@ -961,7 +961,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         Point3d cm = sa.getCenterOfMass();
         for (int ia = 0; ia < molA.getAtomCount(); ia++)
         {
-            Atom a = (Atom) molA.getAtom(ia);
+            IAtom a = molA.getAtom(ia);
             Point3d oldPlace = MolecularUtils.getCoords3d(a);
             Point3d newPlace = new Point3d(oldPlace.x - cm.x,
                                                oldPlace.y - cm.y,

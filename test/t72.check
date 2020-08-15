@@ -19,8 +19,8 @@ exit -1
 fi
 
 n=$(wc -l t72_last.sdf | awk '{print $1}')
-if [ $n != 238 ] ; then
-echo NOT Passes ERROR 4
+if [ $n != 235 ] ; then
+echo "NOT Passes ERROR 4 ($n)"
 exit -1
 fi
 

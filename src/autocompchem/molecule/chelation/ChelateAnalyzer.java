@@ -33,7 +33,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
@@ -43,8 +42,8 @@ import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**
- * ChelateAnalyzer is a tool for the characterization of chelating systems.
- * Chelates are identifyed by remotion of the target atom and 
+ * ChelateAnalyzer is a tool for the characterisation of chelating systems.
+ * Chelates are identified by remotion of the target atom and 
  * evaluation of the remaining connectivity.
  * Parameters needed by the ChelateAnalyzer:
  * <ul>
@@ -280,7 +279,7 @@ public class ChelateAnalyzer extends Worker
                 }
 */
             } //end loop over molecules
-
+            sdfItr.close();
         } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
@@ -458,13 +457,13 @@ public class ChelateAnalyzer extends Worker
                 {
                     Terminator.withMsgAndStatus("ERROR! Label '" + label + "' "
                         + "is null for " + MolecularUtils.getAtomRef(atm,wMol)
-                        + ". Please report this bug to the author.",-1);
+                        + ". Please report this bug to the authors.",-1);
                 }
 
                 if (!prop.equals(lab))
                 {
                     atmsToDel.add(atm);
-                    List<IBond> bndsToAtm = wMol.getConnectedBondsList(atm);
+                    List<IBond> bndsToAtm = ligand.getConnectedBondsList(atm);
                     for (IBond bnd : bndsToAtm)
                     {
                         for (IAtom atmInBnd : bnd.atoms())

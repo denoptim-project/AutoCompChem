@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.Atom;
+import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
 
 import autocompchem.run.Terminator;
@@ -74,7 +74,7 @@ public class CoordinationGeometryReferences
             //First field if the name of the standard geometry
             String cgName = parts[0];
             //Other fields atom coordinates
-            IAtom centralAtm = new Atom();
+            IAtom centralAtm = new PseudoAtom();
             List<IAtom> ligands = new ArrayList<IAtom>();
             int idCnt = 1; //this defines which field represents the center
             for (int i=1; i<parts.length; i++)
@@ -86,13 +86,13 @@ public class CoordinationGeometryReferences
                         + "geometry " + cgName + " in file " + file
                         + ". Wrong number of fields for atom " + i, -1);
                 }
-                String atmSymbol = partsOfAtm[0];
+                String centerLabel = partsOfAtm[0];
                 double xCoord = Double.parseDouble(partsOfAtm[1]);
                 double yCoord = Double.parseDouble(partsOfAtm[2]);
                 double zCoord = Double.parseDouble(partsOfAtm[3]);
 
                 Point3d p3d = new Point3d(xCoord,yCoord,zCoord);
-                IAtom atm = new Atom(atmSymbol, p3d);
+                IAtom atm = new PseudoAtom(centerLabel, p3d);
                 //First of list is the central atom
                 if (i == idCnt)
                 {
@@ -124,7 +124,7 @@ public class CoordinationGeometryReferences
      * @return the geometry corresponding to the given name
      */
 
-    public static CoordinationGeometry getReferenceGeometryByName(String name)
+    public CoordinationGeometry getReferenceGeometryByName(String name)
     {
         return cgByName.get(name);
     }
@@ -138,7 +138,7 @@ public class CoordinationGeometryReferences
      * @return the list of geometries available for the given coordinatio number
      */
 
-    public static List<CoordinationGeometry> getReferenceGeometryForCN(int cn)
+    public List<CoordinationGeometry> getReferenceGeometryForCN(int cn)
     {
         ArrayList<CoordinationGeometry> res = 
                                           new ArrayList<CoordinationGeometry>();
@@ -157,7 +157,7 @@ public class CoordinationGeometryReferences
      * @return the list with all reference geometries
      */ 
             
-    public static List<CoordinationGeometry> getAllReferenceGeometries()
+    public List<CoordinationGeometry> getAllReferenceGeometries()
     {
         return allCG;
     }

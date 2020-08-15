@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.print.DocFlavor.STRING;
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.AtomContainer;
@@ -16,9 +15,9 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
@@ -238,7 +237,6 @@ public class MolecularGeometryEditor extends Worker
             String v = params.getParameter("VERBOSITY").getValue().toString();
             this.verbosity = Integer.parseInt(v);
         }
-        this.params = params;
 
         if (verbosity > 0)
         {

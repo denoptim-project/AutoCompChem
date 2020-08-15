@@ -11,7 +11,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -244,6 +243,7 @@ public class ConnectivityGenerator extends Worker
                 //Store output
                 IOtools.writeSDFAppend(outFile,mol,true);
             }
+            sdfItr.close();
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
@@ -277,6 +277,7 @@ public class ConnectivityGenerator extends Worker
                 //Store output
                 IOtools.writeSDFAppend(outFile,mol,true);
             }
+            sdfItr.close();
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);

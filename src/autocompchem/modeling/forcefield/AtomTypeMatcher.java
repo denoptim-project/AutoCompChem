@@ -30,7 +30,6 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -241,7 +240,7 @@ public class AtomTypeMatcher extends Worker
                 writeOut(mol);
 
             } //end loop over molecules
-
+            sdfItr.close();
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);

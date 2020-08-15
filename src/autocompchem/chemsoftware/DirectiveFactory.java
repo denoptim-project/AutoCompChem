@@ -21,13 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-import autocompchem.datacollections.ParameterConstants;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FileAnalyzer;
 import autocompchem.run.Terminator;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextAnalyzer;
-import autocompchem.text.TextBlockIndexed;
 
 
 /**

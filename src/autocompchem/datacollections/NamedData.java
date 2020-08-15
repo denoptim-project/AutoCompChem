@@ -3,17 +3,11 @@ package autocompchem.datacollections;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.junit.jupiter.api.Test;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
-
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /*
  *   Copyright (C) 2014  Marco Foscato
@@ -246,6 +240,7 @@ public class NamedData
     	NamedDataType tp = NamedDataType.UNDEFINED;
        	String className = o.getClass().getName();
     	className = className.substring(className.lastIndexOf(".")+1);
+    	
     	switch (className)
     	{
     		case ("Boolean"):
@@ -265,6 +260,10 @@ public class NamedData
     			break;
     			
     		case ("AtomContainer"):
+    			tp = NamedDataType.IATOMCONTAINER;
+    			break;
+    			
+    		case ("AtomContainer2"):
     			tp = NamedDataType.IATOMCONTAINER;
     			break;
 
@@ -300,7 +299,6 @@ public class NamedData
     			tp = NamedDataType.UNDEFINED;
     			break;
     	}
-    	
     	return tp;
     }
 

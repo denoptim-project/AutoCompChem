@@ -35,12 +35,13 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IIsotope;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -49,7 +50,6 @@ import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -324,6 +324,7 @@ public class ZMatrixHandler extends Worker
                 {
                     System.out.println("No molecule found in "+inFile);
                 }
+                sdfItr.close();
             } catch (Throwable t) {
                 t.printStackTrace();
                 Terminator.withMsgAndStatus("ERROR! Exception returned by "
@@ -376,6 +377,7 @@ public class ZMatrixHandler extends Worker
                         ZMatrix zmat = makeZMatrix();
                         firstZMats.add(zmat);
                     }
+                    sdfItr.close();
                 } catch (Throwable t) {
                     t.printStackTrace();
                     Terminator.withMsgAndStatus("ERROR! Exception returned by "
@@ -409,6 +411,7 @@ public class ZMatrixHandler extends Worker
                         ZMatrix zmat = makeZMatrix();
                         secondZMats.add(zmat);
                     }
+                    sdfItr.close();
                 } catch (Throwable t) {
                     t.printStackTrace();
                     Terminator.withMsgAndStatus("ERROR! Exception returned by "
@@ -473,6 +476,7 @@ public class ZMatrixHandler extends Worker
         ZMatrix zmat = new ZMatrix();
 
 //TODO: May need to reorder atoms OR change connectivity according to atm list
+        
         if (iac.getAtomCount() == 0)
         {
             if (null != inFile)
@@ -494,6 +498,7 @@ public class ZMatrixHandler extends Worker
                         Terminator.withMsgAndStatus("ERROR! No molecule found "
                                                              + "in "+inFile,-1);
                     }
+                    sdfItr.close();
                 } catch (Throwable t) {
                     t.printStackTrace();
                     Terminator.withMsgAndStatus("ERROR! Exception returned by "
@@ -614,8 +619,14 @@ public class ZMatrixHandler extends Worker
                 intCoords.add(icK);
             }
 
+            String zatmName = AtomUtils.getSymbolOrLabel(atmC);
+            
+            //TODO del
+            System.out.println("ATOM: "+atmC);
+            System.out.println("HERE: "+zatmName);
+            
             // build object and store it
-            ZMatrixAtom zatm = new ZMatrixAtom(atmC.getSymbol(), idI, idJ, idK,
+            ZMatrixAtom zatm = new ZMatrixAtom(zatmName, idI, idJ, idK,
                                                                  icI, icJ, icK);
             zmat.addZMatrixAtom(zatm);
         }
@@ -625,8 +636,8 @@ public class ZMatrixHandler extends Worker
         {
             if (b.getProperty(DONEFLAG) == null)
             {
-                zmat.addPointerToBonded(mol.getAtomNumber(b.getAtom(0)),
-                                        mol.getAtomNumber(b.getAtom(1)));
+                zmat.addPointerToBonded(mol.indexOf(b.getAtom(0)),
+                                        mol.indexOf(b.getAtom(1)));
             }
         }
 
@@ -1506,6 +1517,8 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
      * Private class used to collect and manage the reference to an object IAtom
      * and the number of connected neighbors.
      */
+    
+    //TODO: consider replacing with SeedAtom. The difference is minimal!
 
     private class ZAtomCandidate
     {
@@ -1524,16 +1537,31 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
         {
             this.iatm = iatm;
             this.numConnections = numConnections;
-            if (AtomUtils.isElement(iatm.getSymbol()))
-            {
-                this.isDummy = false;
-            }
-            else
-            {
-                this.isDummy = true;
-            }
+            this.isDummy = !AtomUtils.isElement(iatm.getSymbol());
         }
+        
+    //--------------------------------------------------------------------------
 
+        /**
+         * Returns the mass number
+         */
+        public Integer getMassNumber()
+        {
+        	Integer a = null;
+
+    		try {
+    			if (Isotopes.getInstance().isElement(iatm.getSymbol()))
+    	        {
+    				IIsotope i = Isotopes.getInstance().getMajorIsotope(
+    						iatm.getSymbol());
+    	            a = i.getMassNumber();
+    	        }
+    		} catch (Throwable e) {
+    			// nothing really
+    		}
+    		
+        	return a;
+        }
     //--------------------------------------------------------------------------
 
         public int getConnections()
@@ -1584,8 +1612,8 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
             int massB;
             if (!a.isDummy() && !b.isDummy())
             {
-                massA = a.getAtom().getMassNumber();
-                massB = b.getAtom().getMassNumber();
+                massA = a.getMassNumber();
+                massB = b.getMassNumber();
             }
             else
             {
@@ -1617,7 +1645,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 }
                 else
                 {
-                    massA = a.getAtom().getMassNumber();
+                    massA = a.getMassNumber();
                 }
                 if (b.isDummy())
                 {
@@ -1625,7 +1653,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 }
                 else
                 {
-                    massB = b.getAtom().getMassNumber();
+                    massB = b.getMassNumber();
                 }
     
                 if (massA == massB)

@@ -51,7 +51,7 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
         int massB;
 
         // Assign special values to special atoms
-        if (AtomUtils.isDummy(a.getAtom()))
+        if (AtomUtils.isAccDummy(a.getAtom()))
         {
             massA = 1;
             if (cnA == 1)
@@ -65,10 +65,10 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
         }
         else
         {
-            massA = a.getAtom().getMassNumber();
+            massA = a.getMassNumber();
         }
 
-        if (AtomUtils.isDummy(b.getAtom()))
+        if (AtomUtils.isAccDummy(b.getAtom()))
         {
             massB = 1;
             if (cnB == 1)
@@ -82,7 +82,7 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
         }
         else
         {
-            massB = b.getAtom().getMassNumber();
+            massB = b.getMassNumber();
         }
 
         // Compare

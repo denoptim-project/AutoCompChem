@@ -1,7 +1,9 @@
 package autocompchem.molecule;
 
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IIsotope;
 
 /**
  * The concept of an atom and the number of connected neighbours collected in a
@@ -46,6 +48,28 @@ public class SeedAtom
     {
         String s = seed.getSymbol();
         return s;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the mass number
+     */
+    public Integer getMassNumber()
+    {
+    	Integer a = null;
+
+		try {
+			if (Isotopes.getInstance().isElement(seed.getSymbol()))
+	        {
+				IIsotope i = Isotopes.getInstance().getMajorIsotope(seed.getSymbol());
+	            a = i.getMassNumber();
+	        }
+		} catch (Throwable e) {
+			// nothing really
+		}
+		
+    	return a;
     }
 
 //------------------------------------------------------------------------------

@@ -13,11 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BSMatchingRule;

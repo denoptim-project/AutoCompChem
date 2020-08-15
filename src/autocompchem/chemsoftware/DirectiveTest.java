@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,18 +21,14 @@ package autocompchem.chemsoftware;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.openscience.cdk.silent.AtomContainer;
 
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
 import autocompchem.text.TextBlock;
 

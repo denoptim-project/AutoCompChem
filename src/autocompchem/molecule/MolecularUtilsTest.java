@@ -26,6 +26,7 @@ import javax.vecmath.Point3d;
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.geometry.DistanceMatrix;
@@ -49,15 +50,22 @@ public class MolecularUtilsTest
     	mol.addAtom(new Atom("C"));
     	mol.addAtom(new Atom("O"));
     	mol.addAtom(new Atom("Ru"));
-    	mol.addAtom(new Atom("Du"));
-    	mol.addAtom(new Atom("Xx"));
+    	//NB: with cdk version > 1.5(?) it is not possible to have custom 
+    	// elemental symbols like "Xx" of "Du"
+    	mol.addAtom(new PseudoAtom());
+    	mol.addAtom(new PseudoAtom("Du"));
+    	mol.addAtom(new PseudoAtom("Xx"));    	
     	
-        assertTrue(MolecularUtils.getElementalSymbols(mol, false).contains("H"),"Does not have H");
-        assertTrue(MolecularUtils.getElementalSymbols(mol, false).contains("C"),"Does not have C");
-        assertTrue(MolecularUtils.getElementalSymbols(mol, false).contains("Ru"),"Does not have Ru");
-        assertTrue(MolecularUtils.getElementalSymbols(mol, false).contains("Du"),"Does not have Du");
-        assertFalse(MolecularUtils.getElementalSymbols(mol, true).contains("Du"),"Includes Du");
-        assertFalse(MolecularUtils.getElementalSymbols(mol, true).contains("Xx"),"Includes Xx");
+        assertTrue(MolecularUtils.getElementalSymbols(mol, 
+        		false).contains("H"),"Does have H");
+        assertTrue(MolecularUtils.getElementalSymbols(mol, 
+        		false).contains("C"),"Does have C");
+        assertTrue(MolecularUtils.getElementalSymbols(mol, 
+        		false).contains("Ru"),"Does have Ru");
+        assertTrue(MolecularUtils.getElementalSymbols(mol, 
+        		false).contains("R"),"Does have R");
+        assertFalse(MolecularUtils.getElementalSymbols(mol, 
+        		true).contains("R"),"Does not have R");
     }
 //------------------------------------------------------------------------------
 

@@ -21,7 +21,7 @@ import java.io.FileInputStream;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.io.iterator.IteratingMDLReader;
+import org.openscience.cdk.io.iterator.IteratingSDFReader;
 
 import autocompchem.molecule.MolecularUtils;
 
@@ -36,7 +36,7 @@ import autocompchem.molecule.MolecularUtils;
  */
 
 
-public class SDFIterator extends IteratingMDLReader
+public class SDFIterator extends IteratingSDFReader
 {
     //Counter for molecules
     private int nnn;

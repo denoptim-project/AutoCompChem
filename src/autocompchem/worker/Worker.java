@@ -9,6 +9,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.IOutputExposer;
+import autocompchem.run.Job;
 
 
 /**

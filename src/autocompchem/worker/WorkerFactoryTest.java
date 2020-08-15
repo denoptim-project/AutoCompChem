@@ -1,5 +1,7 @@
 package autocompchem.worker;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -19,7 +21,6 @@ package autocompchem.worker;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 

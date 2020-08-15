@@ -319,7 +319,7 @@ public class BondReviser
                 IOtools.writeSDFAppend(outFile,mol,true);
 
             } //end loop over molecules
-
+            sdfItr.close();
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);

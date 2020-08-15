@@ -1,7 +1,10 @@
 package autocompchem.atom;
 
-import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomRef;
+import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.config.IsotopeFactory;
+import org.openscience.cdk.config.Isotopes;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -21,6 +24,7 @@ import org.openscience.cdk.config.IsotopeFactory;
  */
 
 import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IElement;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
@@ -28,7 +32,7 @@ import autocompchem.run.Terminator;
 
 
 /**
- * Toolbox for atom-like objects. 
+ * Tool box for atom-like objects. 
  *
  * @author Marco Foscato
  */
@@ -87,7 +91,7 @@ public class AtomUtils
      * Check element symbol corresponds to real element of Periodic Table
      * @param symbol of the element to check
      * @return <code>true</code> if the element symbol correspond to an atom
-     * in the periodic table
+     * in the periodic table.
      */
 
     public static boolean isElement(String symbol)
@@ -95,20 +99,17 @@ public class AtomUtils
         boolean res = false;
         IsotopeFactory ifact = null;
         try {
-            //Identify the element
-            ifact = IsotopeFactory.getInstance(
-                                        DefaultChemObjectBuilder.getInstance());
+            ifact = Isotopes.getInstance();
             if (ifact.isElement(symbol))
             {
-                    @SuppressWarnings("unused")
-                                IElement el = ifact.getElement(symbol);
+                @SuppressWarnings("unused")
+                IElement el = ifact.getElement(symbol);
                 res = true;
             }
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Unable to create IsotopeFactory "
                                         + " (in AtomUtils.getAtomicNumber)",-1);
         }
-
         return res;
     }
 
@@ -116,7 +117,7 @@ public class AtomUtils
 
     /**
      * Get the elemental symbol from the atomic number.
-     * Unrecognized atomic numbers will result in dummy atoms
+     * Unrecognised atomic numbers will result in empty strings.
      * @param an the atomic number
      * @return the elemental symbol of a dummy if the atomic number is out of 
      * known range
@@ -128,8 +129,7 @@ public class AtomUtils
         IElement el = null;
         try {
             //Identify the element
-            ifact = IsotopeFactory.getInstance(
-                                        DefaultChemObjectBuilder.getInstance());
+            ifact = Isotopes.getInstance();
             //TODO: make it use emun from Element rather than hard coded limits
             if (an > 0 && an < 118)
             {
@@ -137,7 +137,7 @@ public class AtomUtils
             }
             else
             {
-                return AtomConstants.DUMMYSYMBOL;
+                return "";
             }
         } 
         catch (Throwable t) 
@@ -164,8 +164,7 @@ public class AtomUtils
         IElement el = null;
         try {
             //Identify the element
-            ifact = IsotopeFactory.getInstance(
-                                        DefaultChemObjectBuilder.getInstance());
+            ifact = Isotopes.getInstance();
             if (ifact.isElement(symbol))
             {
                 el = ifact.getElement(symbol);
@@ -264,14 +263,107 @@ public class AtomUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Check the atom is a dummy atom
+     * Check if the atom-like object is a dummy atom
      * @param atm the atom
      * @return <code>true</code> if the atom is dummy
      */
 
-    public static boolean isDummy(IAtom atm)
+    public static boolean isAccDummy(IAtom atm)
     {
-        return AtomConstants.DUMMYSYMBOL.equals(atm.getSymbol());
+    	return isPsaudoAtmWithLabel(atm,AtomConstants.DUMMYATMLABEL);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks if the input is an instance of {@link PseudoAtom} and has the 
+     * given label
+     * @param atm the reference to the atom
+     * @param lab the requested label.
+     * @return <code>true</code> if the underlying type is {@link PseudoAtom}
+     * and it has the given label.
+     */
+    
+    public static boolean isPsaudoAtmWithLabel(IAtom atm, String lab)
+    {
+    	if (atm instanceof AtomRef)
+    	{
+    		IAtom baseAtm = ((AtomRef) atm).deref();
+	    	if (baseAtm instanceof PseudoAtom)
+	    	{
+	    		return ((PseudoAtom)baseAtm).getLabel().equals(lab);
+	    	} else {
+	    		return false;
+	    	}
+    	} 
+    	else if (atm instanceof PseudoAtom) 
+    	{
+    		return ((PseudoAtom)atm).getLabel().equals(lab);
+    	}
+    	else if (atm instanceof Atom)
+    	{
+    		// WARNING: must check this AFTER having checked for PseudoAtom
+    		return false;
+    	} 
+    	else 
+    	{
+    		Terminator.withMsgAndStatus("ERROR! Unexpected class in "
+    				+ "AtomUtils.isDummy() method. The IAtom which has "
+    				+ "triggered this is: " + atm.toString(), -1);
+    	}
+    	
+        return false;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Chooses if reporting the elemental symbol of the PseudoAtom label.
+     * Since CDK-2.3 (or before? Anyways, later than 1.4.15 ) elemental symbols
+     * cannot be any string anymore. They must be valid elemental symbols. So, 
+     * dummy atoms are given the default PseudoAtom symbol "R". This method
+     * identifies such atoms and returns {@link AtomConstants.DUMMYATMLABEL},
+     * i.e., the PseudoAtom label, instead of "R", i.e., the string returned by
+     * PseudoAtom.getSymbol().
+     * 
+     * Note we still return null for if <code>atm = new Atom()</code>.
+     * 
+     * @param atm the atom to analyse
+     * @return either the elemental symbol or the PseudoAtom label.
+     */
+    
+    public static String getSymbolOrLabel(IAtom atm)
+    {
+    	String res = "";
+    	if (atm instanceof AtomRef)
+    	{
+    		IAtom baseAtm = ((AtomRef) atm).deref();
+    		return getSymbolOrLabel(baseAtm);
+    	} 
+    	else if (atm instanceof PseudoAtom) 
+    	{
+	    	if (isPsaudoAtmWithLabel(atm,AtomConstants.DUMMYATMLABEL))
+	    	{
+	    		res = AtomConstants.DUMMYATMLABEL;
+	    	}
+	    	else if (isPsaudoAtmWithLabel(atm,
+	    			AtomConstants.ATTACHMENTPOINTLABEL))
+	    	{
+	    		res = AtomConstants.ATTACHMENTPOINTLABEL;
+	    	}
+    	}
+    	else if (atm instanceof Atom)
+    	{
+    		res = atm.getSymbol();
+    	} 
+    	else 
+    	{
+    		Terminator.withMsgAndStatus("ERROR! Unexpected class in "
+    				+ "AtomUtils.isDummy() method. The IAtom which has "
+    				+ "triggered this is: " + atm.toString(), -1);
+    	}
+    	
+        return res;
     }
 
 //------------------------------------------------------------------------------
@@ -284,8 +376,33 @@ public class AtomUtils
 
     public static boolean isAttachmentPoint(IAtom atm)
     {
-        return AtomConstants.ATTACHMENTPOINTSYMBOL.equals(atm.getSymbol());
+        return isPsaudoAtmWithLabel(atm, AtomConstants.ATTACHMENTPOINTLABEL);
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Counts the H explicitly connected to the atom
+     * @param atm
+     * @param mol
+     * @return the number of Hydrogen atoms
+     */
+
+	public static Integer countExplicitHydrogens(IAtom atm, IAtomContainer mol) 
+	{
+		int nH = 0;
+		for (IAtom ngbr : mol.getConnectedAtomsList(atm)) 
+		{
+			if (AtomUtils.isElement(ngbr.getSymbol()))
+			{
+				if (ngbr.getAtomicNumber() == 1) 
+				{
+					nH++;
+				}
+			}
+		}
+		return nH;
+	}
 
 //------------------------------------------------------------------------------
 }

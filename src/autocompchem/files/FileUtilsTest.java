@@ -6,8 +6,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.io.IOtools;
-
 
 /**
  * Unit Test for file utils.

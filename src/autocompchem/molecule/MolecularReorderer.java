@@ -33,7 +33,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -378,9 +377,8 @@ public class MolecularReorderer extends Worker
                     IOtools.writeSDFAppend(outFile,mol,true);
                 }
             } //end loop over molecules
-        }
-        catch (Throwable t)
-        {
+            sdfItr.close();
+        } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
@@ -419,9 +417,8 @@ public class MolecularReorderer extends Worker
                     IOtools.writeSDFAppend(outFile,mol,true);
                 }
             } //end loop over molecules
-        } 
-        catch (Throwable t) 
-        {
+            sdfItr.close();
+        } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
@@ -433,8 +430,8 @@ public class MolecularReorderer extends Worker
 
     /**
      * Look for the source atoms according to the criteria given to the 
-     * constructire, but
-     * imposes a customized list of SMARTS queries to be used only within this
+     * constructor, but
+     * imposes a customised list of SMARTS queries to be used only within this
      * method.
      * The priority of SMARTS queries
      * is given by the alphabetic order of the reference names.

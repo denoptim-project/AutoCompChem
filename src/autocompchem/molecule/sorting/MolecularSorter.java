@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;

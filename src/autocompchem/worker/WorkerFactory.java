@@ -20,7 +20,6 @@ package autocompchem.worker;
 import java.util.ArrayList;
 import java.util.Set;
 
-import autocompchem.run.Terminator;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
@@ -52,6 +51,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
+import autocompchem.run.Terminator;
 
 /**
  * Factory building AutoCompChem workers. In this factory we chose the worker

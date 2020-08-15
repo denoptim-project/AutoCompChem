@@ -32,7 +32,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -298,7 +297,7 @@ public class BasisSetGenerator extends Worker
                 //writeBSRefNamesToOut(mol);
 
             } //end loop over molecules
-
+            sdfItr.close();
         } catch (Throwable t) {
             t.printStackTrace();
             Terminator.withMsgAndStatus("ERROR! Exception returned by "

@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
-import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 

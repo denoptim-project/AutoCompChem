@@ -101,7 +101,7 @@ public class Circumstance implements ICircumstance
      * @param ict the type of channel
      */
 
-    public void setChannelType()
+    public void setChannelType(InfoChannelType ict)
     {
         this.ict = ict;
     }

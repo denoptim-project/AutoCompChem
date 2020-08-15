@@ -3,30 +3,19 @@ package autocompchem.chemsoftware.orca;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.errorhandling.ErrorManager;
-import autocompchem.chemsoftware.errorhandling.ErrorMessage;
-import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FileAnalyzer;
+import autocompchem.chemsoftware.nwchem.NWChemTask;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -282,7 +271,7 @@ public class OrcaOutputHandler extends Worker
 
     }
 
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
     /**
      * Performs any of the registered tasks according to how this worker
@@ -790,7 +779,7 @@ public class OrcaOutputHandler extends Worker
             default:
                 Terminator.withMsgAndStatus("ERROR! Format '" + outFormat
                     + "' cannot be use for output in this context. Try SDF,"
-                    + " XYZ, or SDFXYZ (will print both).",-1);
+                    + " XYZ, or SDFXYZ (i.e., print both).",-1);
         }
     }
 
@@ -1020,7 +1009,7 @@ public class OrcaOutputHandler extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Returns a string summarizing the results of the evaluation 
+     * Returns a string summarising the results of the evaluation 
      * @return the summary as a string
      */
 

@@ -2,7 +2,7 @@
 
 grep -q "Properties <SPIN_MULTIPLICITY> and <CHARGE> cannot" t3.log
 if [ $? != 0 ] ; then
-echo NOT Passed
+echo ERROR 1
 exit -1
 fi
 

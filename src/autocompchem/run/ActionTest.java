@@ -1,5 +1,8 @@
 package autocompchem.run;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,22 +21,9 @@ package autocompchem.run;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.run.Action.ActionObject;
 import autocompchem.run.Action.ActionType;
 
