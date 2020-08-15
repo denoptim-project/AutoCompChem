@@ -43,8 +43,8 @@ public class SeedAtomComparator implements Comparator<SeedAtom>
         int res = EQUAL;
 
         // Connection numbers
-        int cnA = a.getConnectedAtomsCount();
-        int cnB = b.getConnectedAtomsCount();
+        int cnA = a.getConnectedBondsCount();
+        int cnB = b.getConnectedBondsCount();
 
         // Masses
         int massA;

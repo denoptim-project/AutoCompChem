@@ -411,7 +411,7 @@ public class ChelateAnalyzer extends Worker
         //Remove target atom
         for (IAtom a : targets)
         {
-            wMol.removeAtomAndConnectedElectronContainers(a);
+            wMol.removeAtom(a);
         }
         for (IBond bnd : bndsToTrg)
         {
@@ -478,7 +478,7 @@ public class ChelateAnalyzer extends Worker
             }
             for (IAtom atm : atmsToDel)
             {
-                ligand.removeAtomAndConnectedElectronContainers(atm);
+                ligand.removeAtom(atm);
             }
             for (IBond bnd : bndsToDel)
             {

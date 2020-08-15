@@ -463,8 +463,8 @@ public class MolecularMutator extends Worker
                 Terminator.withMsgAndStatus("ERROR! Managment of "
                               + "multicenter bonds is not yet implemented.",-1);
             }
-            int atmId1 = iac.getAtomNumber(oldAtm1);
-            int atmId2 = iac.getAtomNumber(oldAtm2);
+            int atmId1 = iac.indexOf(oldAtm1);
+            int atmId2 = iac.indexOf(oldAtm2);
             try
             {
                 IBond.Order order = oldBnd.getOrder();

@@ -699,8 +699,8 @@ public class MolecularReorderer extends Worker
                 Terminator.withMsgAndStatus("ERROR! Managment of "
                               + "multicenter bonds is not yet implemented.",-1);
             }
-            int oldAtmId1 = iac.getAtomNumber(oldAtm1);
-            int oldAtmId2 = iac.getAtomNumber(oldAtm2);
+            int oldAtmId1 = iac.indexOf(oldAtm1);
+            int oldAtmId2 = iac.indexOf(oldAtm2);
             int frgId = fragFromOldID.get(oldAtmId1);
             int baseId = 0;
             for (Integer prevFrgId : sortedFrgIds)

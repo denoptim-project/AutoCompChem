@@ -548,8 +548,8 @@ public class AtomClashAnalyzer extends Worker
 
                 //Evaluate need of custom allowance
                 String pairkey = "";
-                int iAtm1 = mol.getAtomNumber(atmI);
-                int iAtm2 = mol.getAtomNumber(atmJ);
+                int iAtm1 = mol.indexOf(atmI);
+                int iAtm2 = mol.indexOf(atmJ);
                 if (iAtm1 < iAtm2)
                     pairkey = iAtm1 + "_" + iAtm2;
                 else

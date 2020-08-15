@@ -827,14 +827,14 @@ public class SpartanInputWriter extends Worker
                 }
                 IAtom atm = it.next();
                 sb.append(
-                         String.format("%5d",-mol.getConnectedAtomsCount(atm)));
+                         String.format("%5d",-mol.getConnectedBondsCount(atm)));
             }
             lines.add(sb.toString());
         }
         for (IBond bnd : mol.bonds())
         {
-            int iA = mol.getAtomNumber(bnd.getAtom(0));
-            int iB = mol.getAtomNumber(bnd.getAtom(1));
+            int iA = mol.indexOf(bnd.getAtom(0));
+            int iB = mol.indexOf(bnd.getAtom(1));
             int bo = -1;
             IBond.Order order = bnd.getOrder();
             if (order == IBond.Order.valueOf("SINGLE"))

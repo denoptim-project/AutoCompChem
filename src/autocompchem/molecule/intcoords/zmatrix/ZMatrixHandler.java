@@ -1165,7 +1165,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 if (null!=oldMol)
                 {
                     IBond oldBnd = oldMol.getBond(oldMol.getAtom(i),
-                                       oldMol.getAtom(mol.getAtomNumber(atmI)));
+                                       oldMol.getAtom(mol.indexOf(atmI)));
                     order = oldBnd.getOrder();
                     stereo = oldBnd.getStereo();
                     if (oldMol.getAtom(i) != oldBnd.getAtom(0))
@@ -1223,8 +1223,8 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
             ArrayList<IBond> bondsToDel = new ArrayList<IBond>();
             for (IBond bnd : mol.bonds())
             {
-                int ia = mol.getAtomNumber(bnd.getAtom(0));
-                int ib = mol.getAtomNumber(bnd.getAtom(1));
+                int ia = mol.indexOf(bnd.getAtom(0));
+                int ib = mol.indexOf(bnd.getAtom(1));
     
                 for (int[] bndToDel : zmat.getPointersToNonBonded())
                 {
@@ -1277,13 +1277,13 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
     {
         if (useTmpl)
         {
-            return tmplZMat.getZAtom(mol.getAtomNumber(atmC)).getIdRef(0);
+            return tmplZMat.getZAtom(mol.indexOf(atmC)).getIdRef(0);
         }
 
         List<ZAtomCandidate> candidates = new ArrayList<ZAtomCandidate>();
         for (IAtom nbr : mol.getConnectedAtomsList(atmC))
         {
-            if (mol.getAtomNumber(nbr) < mol.getAtomNumber(atmC))
+            if (mol.indexOf(nbr) < mol.indexOf(atmC))
             {
                 ZAtomCandidate cl = new ZAtomCandidate(nbr,1);
                 candidates.add(cl);
@@ -1293,7 +1293,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
         int result = 0;
         try 
         {
-            mol.getAtomNumber(candidates.get(0).getAtom());
+            mol.indexOf(candidates.get(0).getAtom());
         }
         catch (Throwable t)
         {
@@ -1304,7 +1304,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 + "any other atom in the chemical entity, or reorder the atom "
                 + "list as to follow the connectivity.",-1);
         }
-        return mol.getAtomNumber(candidates.get(0).getAtom());
+        return mol.indexOf(candidates.get(0).getAtom());
     }
 
 //----------------------------------------------------------------------------
@@ -1324,13 +1324,13 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
     {
         if (useTmpl)
         {
-            return tmplZMat.getZAtom(mol.getAtomNumber(atmC)).getIdRef(1);
+            return tmplZMat.getZAtom(mol.indexOf(atmC)).getIdRef(1);
         }
 
         List<ZAtomCandidate> candidates = new ArrayList<ZAtomCandidate>();
         for (IAtom nbr : mol.getConnectedAtomsList(atmI))
         {
-            if ((mol.getAtomNumber(nbr) < mol.getAtomNumber(atmC)) 
+            if ((mol.indexOf(nbr) < mol.indexOf(atmC)) 
                 && (nbr != atmC))
             {
                 ZAtomCandidate cl = new ZAtomCandidate(nbr,1);
@@ -1338,7 +1338,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
             }
         }
         Collections.sort(candidates, new ZAtomCandidateComparator());
-        return mol.getAtomNumber(candidates.get(0).getAtom());
+        return mol.indexOf(candidates.get(0).getAtom());
     }
 
 //----------------------------------------------------------------------------
@@ -1364,15 +1364,15 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                                                IAtomContainer mol, ZMatrix zmat)
     {
         String typK = "0";
-        int idC = mol.getAtomNumber(atmC);
-        int idI = mol.getAtomNumber(atmI);
-        int idJ = mol.getAtomNumber(atmJ);
+        int idC = mol.indexOf(atmC);
+        int idI = mol.indexOf(atmI);
+        int idJ = mol.indexOf(atmJ);
 
         if (useTmpl)
         {
             Object[] ob = new Object[2];
-            int idK =  tmplZMat.getZAtom(mol.getAtomNumber(atmC)).getIdRef(2);
-            typK = tmplZMat.getZAtom(mol.getAtomNumber(
+            int idK =  tmplZMat.getZAtom(mol.indexOf(atmC)).getIdRef(2);
+            typK = tmplZMat.getZAtom(mol.indexOf(
                                                       atmC)).getIC(2).getType();
             IAtom atmK = mol.getAtom(idK);
             // WARNING! The sign of the flag depends on the geometry of mol
@@ -1404,12 +1404,12 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 if (verbosity > 2)
                 {
                    System.err.println("  Eval. 3rd (ANG): " + nbr.getSymbol()
-                   + mol.getAtomNumber(nbr) + " "
-                   + (mol.getAtomNumber(nbr) < idC) + " "
+                   + mol.indexOf(nbr) + " "
+                   + (mol.indexOf(nbr) < idC) + " "
                    + (nbr != atmC) + " "
                    + (nbr != atmJ));
                 }
-                if ((mol.getAtomNumber(nbr) < idC) && (nbr != atmC) &&
+                if ((mol.indexOf(nbr) < idC) && (nbr != atmC) &&
                                                         (nbr != atmJ))
                 {
                     double dbcAng = MolecularUtils.calculateBondAngle(nbr,atmI,
@@ -1440,12 +1440,12 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 if (verbosity > 2)
                 {
                    System.err.println("  Eval. 3rd (TOR): " + nbr.getSymbol()
-                   + mol.getAtomNumber(nbr) + " "
-                   + (mol.getAtomNumber(nbr) < idC) + " "
+                   + mol.indexOf(nbr) + " "
+                   + (mol.indexOf(nbr) < idC) + " "
                    + (nbr != atmC) + " "
                    + (nbr != atmI));
                 }
-                if ((mol.getAtomNumber(nbr) < idC) && (nbr != atmC) &&
+                if ((mol.indexOf(nbr) < idC) && (nbr != atmC) &&
                                                         (nbr != atmI))
                 {
                     ZAtomCandidate cl = new ZAtomCandidate(nbr,1);
@@ -1482,7 +1482,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
 
         // build return object
         Object[] pair = new Object[2];
-        pair[0] = mol.getAtomNumber(atmK);
+        pair[0] = mol.indexOf(atmK);
         pair[1] = typK;
 
         return pair;
@@ -1505,7 +1505,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
         int tot = 0;
         for (IAtom nbr : mol.getConnectedAtomsList(a))
         {
-            if (mol.getAtomNumber(nbr) < i)
+            if (mol.indexOf(nbr) < i)
                 tot++;
         }
         return tot;

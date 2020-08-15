@@ -65,7 +65,7 @@ public class ConnectivityTable
             ArrayList<Integer> nbrs = new ArrayList<Integer>();
             for (IAtom nbr : mol.getConnectedAtomsList(atm))
             {
-                nbrs.add(mol.getAtomNumber(nbr));
+                nbrs.add(mol.indexOf(nbr));
             }
             cnTab.add(nbrs);
         }

@@ -34,7 +34,7 @@ public class SeedAtom
     public SeedAtom(IAtom seed, IAtomContainer mol)
     {
         this.seed = seed;
-        this.connections = mol.getConnectedAtomsCount(seed);
+        this.connections = mol.getConnectedBondsCount(seed);
     }
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ public class SeedAtom
      * @return the connection number
      */
 
-    public int getConnectedAtomsCount()
+    public int getConnectedBondsCount()
     {
         return connections;
     }

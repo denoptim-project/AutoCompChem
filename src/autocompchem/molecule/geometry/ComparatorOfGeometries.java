@@ -254,7 +254,7 @@ public class ComparatorOfGeometries
             }   
         }
 
-        //Initialize the tool for MCS (maximum common substructure)
+        //Initialise the tool for MCS (maximum common substructure)
 //        Isomorphism im = new Isomorphism(Algorithm.DEFAULT, bondSensitive);
 //This algorithm is faster for the kind of task meant here
 //but fails sometime
@@ -324,7 +324,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             //Align structured using the current mapping and get RMSD
             locRMSD = alignMolsWithMapping(refFromIM, inFromIM, mapping);
 
-            //Get RMS deviation of Itramolecular Distances
+            //Get RMS deviation of itramolecular Distances
             locRMSDIAD = getRMSDevIntramolecularDistances(mapping);
 
 //Only for testing
@@ -370,13 +370,13 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             printAtomMap(allAtomMaps.get(bestAtomMapping),inFromIM,refFromIM);
         }
 
-        //Try improving mapping and alignement up to convergence
+        //Try improving mapping and alignment up to convergence
 //TODO make this parameter user defined
         int maxCycles = 2;
         int numMapBeforeRef = allAtomMaps.size();
         for (int c=0; c<maxCycles; c++)
         {
-            //Adjust mapping on the basis of previous alignement
+            //Adjust mapping on the basis of previous alignment
             Map<IAtom,IAtom> newMap = adjustAtomMappingOfAlignedMols(
                                                                 refMolAlgn,
                                                                 inMolAlgn,
@@ -535,8 +535,8 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         Map<Integer,Integer> map = new HashMap<Integer,Integer>();
         for (IAtom atmB : atomMap.keySet())
         {
-            int atmNumB = molB.getAtomNumber(atmB);
-            int atmNumA = molA.getAtomNumber(atomMap.get(atmB));
+            int atmNumB = molB.indexOf(atmB);
+            int atmNumA = molA.indexOf(atomMap.get(atmB));
             map.put(atmNumB,atmNumA);
         }
         allAtomMapsAsIdx.add(map);

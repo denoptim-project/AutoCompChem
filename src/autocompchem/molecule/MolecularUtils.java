@@ -183,7 +183,7 @@ public class MolecularUtils
                         }
                     } else {
                         if (repOnScreen >= 3)
-                            System.out.print((mol.getAtomNumber(nbr)+1)+" ");
+                            System.out.print((mol.indexOf(nbr)+1)+" ");
                         visited.put(nbr,level);
                     }
                 }
@@ -212,7 +212,7 @@ public class MolecularUtils
             {
                 if (atm.getFormalCharge() == 0)
                 {
-                    if (mol.getConnectedAtomsCount(atm) == 3)
+                    if (mol.getConnectedBondsCount(atm) == 3)
                     {
                         if (atm.getFlag(CDKConstants.ISAROMATIC))
                         {
@@ -232,7 +232,7 @@ public class MolecularUtils
                                 {
                                     if (nbr.getFormalCharge() == 0)
                                     {
-                                        if (mol.getConnectedAtomsCount(nbr) ==3)
+                                        if (mol.getConnectedBondsCount(nbr) ==3)
                                         {
                                             int nNbr = numOfBondsWithBO(nbr,
                                                                 mol,"SINGLE");

@@ -201,8 +201,8 @@ public class ConnectivityUtils
         for (IBond bndRef : ref.bonds())
         {
             IBond bndMol = new Bond(
-                mol.getAtom(ref.getAtomNumber(bndRef.getAtom(0))),
-                mol.getAtom(ref.getAtomNumber(bndRef.getAtom(1))),
+                mol.getAtom(ref.indexOf(bndRef.getAtom(0))),
+                mol.getAtom(ref.indexOf(bndRef.getAtom(1))),
                 bndRef.getOrder());
             mol.addBond(bndMol);
         }
@@ -346,7 +346,7 @@ IOtools.pause();
 
         int numCompBranches = 0;
         int numAlreadyDone = 0;
-        int numBranches = mol.getConnectedAtomsCount(seedMol);
+        int numBranches = mol.getConnectedBondsCount(seedMol);
 
         List<IAtom> nbrsMol = mol.getConnectedAtomsList(seedMol);
         List<IAtom> nbrsRef = ref.getConnectedAtomsList(seedRef);
@@ -416,7 +416,7 @@ if (doneB.length() > maxlengtdone.length())
 */
                 
                 //Try to go on with another recursion = evaluate unvisited branches
-                if (mol.getConnectedAtomsCount(tMol) > 1)
+                if (mol.getConnectedBondsCount(tMol) > 1)
                 {
                     recNum++;
                     boolean branchOntMolIsCompatible = exploreConnectivity(mol,
@@ -678,7 +678,7 @@ if (doneB2.length() > maxlengtdone.length())
             }
             for (IAtom atm : atmsToDel)
             {
-                newIAC.removeAtomAndConnectedElectronContainers(atm);
+                newIAC.removeAtom(atm);
             }
             if (newIAC.getAtomCount() > minSize)
             {

@@ -229,7 +229,7 @@ public class MolecularPruner extends Worker
                 //Remove atoms
                 for (IAtom targetAtm : targets)
                 {
-                    mol.removeAtomAndConnectedElectronContainers(targetAtm);
+                    mol.removeAtom(targetAtm);
                 }
 
                 //Store output
