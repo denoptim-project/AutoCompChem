@@ -26,7 +26,7 @@ package autocompchem.datacollections;
  * @author Marco Foscato
  */
 
-public class Parameter extends NamedData
+public class Parameter extends NamedData implements Cloneable
 {
 
 //------------------------------------------------------------------------------
@@ -65,6 +65,16 @@ public class Parameter extends NamedData
     public Parameter(String reference, NamedDataType type, Object value)
     {
     	super(reference.toUpperCase(),type,value);
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Parameter clone() throws CloneNotSupportedException
+    {
+    	NamedData nd = super.clone();
+    	Parameter p = new Parameter(nd.getReference(),nd.getType(),nd.getValue());
+    	return p;
     }
     
 //------------------------------------------------------------------------------

@@ -47,7 +47,8 @@ public class TextAnalyzerTest
 {
     private final String NL = System.getProperty("line.separator");
     private final String TEXT = "First line" + NL + "Second line bla bla" 
-                + NL + "3rd line" + NL + "4th line here" + NL + "5th line here";
+                + NL + "3rd line a" + NL + "4th line here" + NL 
+                + "5th line here 3";
 
     private final String LONGTEXT = "l0 text " + NL + "l1 text KEY1" + NL 
         + "l2 text bla " + NL + "l3 text OPB1" + NL + "l4 text b1-1" + NL 
@@ -78,6 +79,30 @@ public class TextAnalyzerTest
     {
         BufferedReader br = new BufferedReader(new StringReader(TEXT));
         assertEquals(5,TextAnalyzer.count(br,"line"),"Total matches");
+        br.close();
+        
+        br = new BufferedReader(new StringReader(TEXT));
+        assertEquals(1,TextAnalyzer.count(br,"line a"),"Matches (A)");
+        br.close();
+        
+        br = new BufferedReader(new StringReader(TEXT));
+        assertEquals(1,TextAnalyzer.count(br,"*line a*"),"Matches (B)");
+        br.close();
+        
+        br = new BufferedReader(new StringReader(TEXT));
+        assertEquals(2,TextAnalyzer.count(br,"here"),"Matches (C)");
+        br.close();
+        
+        br = new BufferedReader(new StringReader(TEXT));
+        assertEquals(1,TextAnalyzer.count(br,"*here"),"Matches (D)");
+        br.close();
+        
+        br = new BufferedReader(new StringReader(TEXT));
+        assertEquals(2,TextAnalyzer.count(br,"3"),"Matches (E)");
+        br.close();
+        
+        br = new BufferedReader(new StringReader(TEXT));
+        assertEquals(1,TextAnalyzer.count(br,"3*"),"Matches (F)");
         br.close();
     }
 
@@ -783,7 +808,7 @@ public class TextAnalyzerTest
     	
     	assertEquals(3,m.size(),"Size of matches list");
     	assertTrue(m.contains("Second line bla bla"),"First match");
-    	assertTrue(m.contains("5th line here"),"Last match");
+    	assertTrue(m.contains("5th line here 3"),"Last match");
     }
 
 //------------------------------------------------------------------------------

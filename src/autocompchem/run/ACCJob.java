@@ -3,6 +3,7 @@ package autocompchem.run;
 import java.util.Date;
 
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -36,7 +37,7 @@ public class ACCJob extends Job
     public void runThisJobSubClassSpecific()
     {   
     	// Check for any ACC task...
-    	if (!this.params.contains("TASK"))
+    	if (!this.params.contains(WorkerConstants.PARTASK))
     	{
     		// ...if none, then this job is just a container for other jobs
     		if (getVerbosity() > 0)
@@ -47,7 +48,8 @@ public class ACCJob extends Job
     	}
 
         // Here we are sure the params include this keyword
-        String task = this.params.getParameter("TASK").getValue().toString();
+        String task = this.params.getParameter(WorkerConstants.PARTASK)
+        		.getValue().toString();
         
         Date date = new Date();
         if (getVerbosity() > 0)

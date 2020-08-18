@@ -8,6 +8,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -56,7 +57,8 @@ public class ACCMain
         	String pathName = args[0];
             try {
                 ACCParameters.importParameters(pathName);
-                task = ACCParameters.getParameter("TASK").getValueAsString();
+                task = ACCParameters.getParameter(WorkerConstants.PARTASK)
+                		.getValueAsString();
             } catch (Throwable t) {
             	t.printStackTrace();
                 String msg = "ERROR! Exception returned while reading "
@@ -142,7 +144,8 @@ public class ACCMain
     			// subclass of Worker.
     			// For now, this is not implemented yet...
 
-    			Parameter par = new Parameter("TASK", NamedDataType.STRING, 
+    			Parameter par = new Parameter(WorkerConstants.PARTASK, 
+    					NamedDataType.STRING, 
     					task);
     			params.setParameter(par);
     			

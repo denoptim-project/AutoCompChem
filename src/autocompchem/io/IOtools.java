@@ -18,6 +18,7 @@ package autocompchem.io;
  */
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -255,6 +256,64 @@ public class IOtools
                                                         start,
                                                         end);
         return filledForm;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Copy only a portion of a text file into another text file.
+     * @param inFileName pathname of the file to be read
+     * @param outFileName pathname of the file to be written
+     * @param start line number from which to extract lines. Note this
+     * is zero-based indexing. 
+     * @param stop line number at which to stop the extraction. Note this
+     * is zero-based indexing. 
+     */
+
+    public static void copyPortionOfTxtFile(String inFileName, 
+    		String outFileName, int start, int stop) throws Exception
+    {
+    	int bufferSize = 0;
+    	int bufferMaxSize = 1000; //arbitrary :|
+        int lineNum = -1;
+        BufferedReader buffRead = new BufferedReader(
+        		new FileReader(inFileName));
+        //NB here we do not append, but later we do
+        BufferedWriter buffWriter = new BufferedWriter(
+        		new FileWriter(new File (outFileName)));
+        String line = null;
+        StringBuilder sb = new StringBuilder();
+        while ((line = buffRead.readLine()) != null)
+        {
+            lineNum++;
+            if (lineNum >= start)
+            {
+                sb.append(line)
+                   .append(System.getProperty("line.separator"));
+                bufferSize++;
+                if (bufferSize > bufferMaxSize) 
+                {
+                    buffWriter.write(sb.toString());
+                    buffWriter.flush();
+                    buffWriter.close();
+                    buffWriter = new BufferedWriter(
+                    		new FileWriter(new File(outFileName),true));
+                    bufferSize = 0;
+                    sb = new StringBuilder();
+                }
+            }
+            if (lineNum >= stop)
+            {
+            	if (bufferSize>0)
+            	{
+	            	buffWriter.write(sb.toString());
+	                buffWriter.flush();
+	                buffWriter.close();
+            	}
+                break;
+            }
+        }
+        buffRead.close();
     }
 
 //------------------------------------------------------------------------------

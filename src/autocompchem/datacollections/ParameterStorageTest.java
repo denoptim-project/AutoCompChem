@@ -40,7 +40,7 @@ public class ParameterStorageTest
     @Test
     public void testCaseInsensitivity() throws Exception
     {
-        Parameter p1 = new Parameter("Key1", NamedDataType.STRING,1.123);
+        Parameter p1 = new Parameter("Key1", NamedDataType.STRING,"1.123");
         
         assertEquals("KEY1",p1.getReference(),"Upper case ref name");
         
@@ -57,7 +57,7 @@ public class ParameterStorageTest
     public void testGetRefNamesSet() throws Exception
     {
 
-        Parameter p1 = new Parameter("KEY1", NamedDataType.STRING,1.123);      
+        Parameter p1 = new Parameter("KEY1", NamedDataType.STRING,"1.123"); 
         Parameter p2 = new Parameter("KEY2", NamedDataType.DOUBLE,1.123);
         Parameter p3 = new Parameter("KEY3", NamedDataType.INTEGER,206);
         
@@ -67,7 +67,7 @@ public class ParameterStorageTest
     	ps.setParameter(p3);
     	
     	NamedData nd1 = new NamedData("ND1", NamedDataType.STRING, "val1");
-    	NamedData nd2 = new NamedData("ND2", NamedDataType.INTEGER, "int1");
+    	NamedData nd2 = new NamedData("ND2", NamedDataType.INTEGER, 23);
     	NamedDataCollector dc = (NamedDataCollector) ps;
     	dc.putNamedData("N1", nd1);
     	dc.putNamedData("N2", nd2);
@@ -81,11 +81,11 @@ public class ParameterStorageTest
     	Parameter rp2 = ps.getParameterOrNull("key2");
     	Parameter rp3 = ps.getParameterOrNull("key3");
     	
-    	assertTrue(rp1.getValueAsObjectSubclass() instanceof String, 
+    	assertTrue(rp1.getValue() instanceof String, 
     			"Verify type p1"); 
-        assertTrue(rp2.getValueAsObjectSubclass() instanceof Double, 
+        assertTrue(rp2.getValue() instanceof Double, 
         		"Verify type p2");
-        assertTrue(rp3.getValueAsObjectSubclass() instanceof Integer, 
+        assertTrue(rp3.getValue() instanceof Integer, 
         		"Verify type p3");
 
     }

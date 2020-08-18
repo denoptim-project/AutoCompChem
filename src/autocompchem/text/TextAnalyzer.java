@@ -87,7 +87,7 @@ public class TextAnalyzer
 //------------------------------------------------------------------------------
 
     /**
-     * Count lines containing a patter. 
+     * Count lines from buffer containing a patter. 
      * @param buffRead the source of text
      * @param query patters string. '*' is used
      * as usual to specify the continuation of the string with any number of 
@@ -108,12 +108,13 @@ public class TextAnalyzer
             {
             	String pattern = preparePattern(query,startMidEnd);
                 if (match(line,pattern,startMidEnd))
+                {
                     num++;
+                }
             }
         } catch (Throwable t) {
         	//none
-        } 
-
+        }
         return num;
     }
 
@@ -1097,28 +1098,40 @@ public class TextAnalyzer
     {
         boolean[] startMidEnd = new boolean[3];
 
+        boolean understood = false;
         if (str.startsWith("*") && (!str.endsWith("*")))
         {
             startMidEnd[0] = false;
             startMidEnd[1] = false;
             startMidEnd[2] = true;
+            understood = true;
         } else if (str.endsWith("*") && (!str.startsWith("*")))
         {
             startMidEnd[0] = true;
             startMidEnd[1] = false;
             startMidEnd[2] = false;
+            understood = true;
         } else if (str.startsWith("*") && str.endsWith("*"))
         {
             startMidEnd[0] = false;
             startMidEnd[1] = true;
             startMidEnd[2] = false;
+            understood = true;
         } else if ((!str.startsWith("*")) && (!str.endsWith("*")))
         {
             startMidEnd[0] = false;
             startMidEnd[1] = true;
             startMidEnd[2] = false;
+            understood = true;
         }
 
+        if (!understood)
+        {
+        	Terminator.withMsgAndStatus("ERROR! "
+        			+ "TextAnalyzer.getMatchingMethod failed to "
+        			+ "understand string '"+str+"'.", -1);
+        }
+        
         return startMidEnd;
     }
     
@@ -1129,13 +1142,16 @@ public class TextAnalyzer
     	String newPattern = pattern;
         if (relation[0])
         {
-        	newPattern = pattern.substring(1);
+        	newPattern = pattern.substring(0,pattern.length() - 1);
         } else if (relation[1])
         {
-        	newPattern = pattern.substring(1,pattern.length() - 1);
+        	if (pattern.startsWith("*") && pattern.endsWith("*"))
+        	{
+        		newPattern = pattern.substring(1,pattern.length() - 1);
+        	}
         } else if (relation[2])
         {
-        	newPattern = pattern.substring(0,pattern.length() - 1);
+        	newPattern = pattern.substring(1);
         }
     	return newPattern;
     }
@@ -1154,6 +1170,10 @@ public class TextAnalyzer
 
     private static boolean match(String line, String pattern, boolean[] relation)
     {
+    	//TODO del
+    	//System.out.println("Matching: "+line+" pat:"+pattern+"_ "
+    	//		+ relation[0]+"-"+relation[1]+"-"+relation[2]);
+    	
         boolean answ = false;
         if (relation[0])
         {

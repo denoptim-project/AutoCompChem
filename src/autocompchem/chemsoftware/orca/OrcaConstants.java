@@ -42,4 +42,61 @@ public class OrcaConstants
 	 */
 	public static final String INPEXTENSION = ".inp";
 	
+	/**
+	 * String identifying the total number of jobs processed in one Orca run
+	 */
+	public static final String LOGTOTJOBSTEPS = 
+			" JOBS TO BE PROCESSED THIS RUN ";
+
+	/**
+	 * String identifying the beginning of a single Orca job in a run that
+	 * includes more than one job.
+	 */
+	public static final String LOGJOBSTEPSTART = "  JOB NUMBER ";
+
+	/**
+	 * String identifying the normal termination of a single/multi job run. 
+	 * In case of multi job runs, this in only found at the end of the last job.
+	 */
+	public static final String LOGNORMALTERM = 
+			"\\*\\*\\*\\*ORCA TERMINATED NORMALLY\\*\\*\\*\\*";
+
+	/**
+	 * String identifying the single point energy at the end of a SP job
+	 */
+	public static final String LOGFINALSPENERGY = "FINAL SINGLE POINT ENERGY";
+
+	/**
+	 * String identifying a converged SCF optimisation
+	 */
+	public static final String LOGSCFSUCCESS = "SCF CONVERGED AFTER";
+
+	/**
+	 * String identifying the beginning of the current geometry
+	 */
+	public static final String JOBLOGCURRENTGEOMETRY = 
+			"CARTESIAN COORDINATES \\(ANGSTROEM\\)";
+	
+	/**
+	 * String identifying a converged geometry optimisation
+	 */
+	public static final String LOGGEOMOPTCONVERGED = 
+			"OPTIMIZATION HAS CONVERGED";
+	
+	/**
+	 * String identifying the list of vibrational frequencies
+	 */
+	public static final String LOGVIBFREQ = "VIBRATIONAL FREQUENCIES";
+
+	/**
+	 * String identifying the list of normal modes
+	 */
+	public static final String LOGVIBMODES = "NORMAL MODES";
+
+	/**
+	 * String identifying the Gibbs free energy including 
+	 * thermochemical corrections
+	 */
+	public static final String LOGGIBBSFREEENERGY = "Final Gibbs free energy ";
+	
 }

@@ -11,7 +11,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class NamedDataCollector 
+public class NamedDataCollector implements Cloneable
 {
 
     /**
@@ -172,6 +172,23 @@ public class NamedDataCollector
             return true;
         else
             return false;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return a deep copy of this collection of data
+     * @throws CloneNotSupportedException 
+     */
+    
+    public NamedDataCollector clone() throws CloneNotSupportedException
+    {
+    	NamedDataCollector ndc = new NamedDataCollector();
+    	for (Map.Entry<String, NamedData> e : allData.entrySet())
+    	{
+    		ndc.putNamedData(e.getKey(), e.getValue().clone());
+    	}
+    	return ndc;
     }
 
 //------------------------------------------------------------------------------

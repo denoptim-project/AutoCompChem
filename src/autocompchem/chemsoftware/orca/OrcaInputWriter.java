@@ -648,7 +648,7 @@ public class OrcaInputWriter extends Worker
 		{
 			if (dd.getName().equals(ChemSoftConstants.DIRDATAGEOMETRY))
 			{
-				Object o = dd.getValueAsObjectSubclass();
+				Object o = dd.getValue();
 				
 				//TODO del
 

@@ -82,7 +82,7 @@ See {@Link JobTest} for a possible solution.
             job.setRedirectOutErr(true);
             job.run();
             
-            File outFile = (File) job.getOutput("LOG").getValueAsObjectSubclass();
+            File outFile = (File) job.getOutput("LOG").getValue();
             assertTrue(outFile.exists(), "Log file should exist");
             
 

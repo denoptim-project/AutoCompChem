@@ -20,6 +20,7 @@ package autocompchem.worker;
 import java.util.ArrayList;
 import java.util.Set;
 
+import autocompchem.chemsoftware.ChemSoftOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
@@ -33,6 +34,7 @@ import autocompchem.chemsoftware.qmmm.QMMMInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
@@ -73,6 +75,18 @@ import autocompchem.run.Terminator;
 
 public class WorkerFactory
 {
+//-----------------------------------------------------------------------------
+
+    /**
+     * Create a new worker capable of performing the given task.
+     * @param task the AutoCompChem task to be performed by the worker.
+     * @return a suitable worker for the task.
+     */ 
+
+    public static Worker createWorker(TaskID taskID)
+    {
+    	return createWorker(taskID, null);
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -87,7 +101,7 @@ public class WorkerFactory
     	// Convert string-based task into enum
     	TaskID taskID = TaskID.getFromString(task);
     	
-    	return createWorker(taskID, null);
+    	return createWorker(taskID);
     }
 	
 //-----------------------------------------------------------------------------
@@ -140,7 +154,8 @@ public class WorkerFactory
 
     public static Worker createWorker(ParameterStorage params, Job masterJob)
     {
-    	String taskStr = params.getParameter("TASK").getValue().toString();
+    	String taskStr = params.getParameter(
+    			WorkerConstants.PARTASK).getValueAsString();
     	TaskID taskID = TaskID.getFromString(taskStr);
     	
     	Worker worker = createWorker(taskID, masterJob);
@@ -254,8 +269,10 @@ public class WorkerFactory
             return GaussianOutputHandler.capabilities;
         case GaussianReStarter:
             return GaussianReStarter.capabilities; 
+        /*
         case GenericToolOutputHandler:
             return GenericToolOutputHandler.capabilities;
+        */
         case JobEvaluator:
         	return JobEvaluator.capabilities;
         case MolecularComparator:
@@ -333,8 +350,10 @@ public class WorkerFactory
             return new GaussianOutputHandler();
         case GaussianReStarter:
             return new GaussianReStarter();
+        /*
         case GenericToolOutputHandler:
             return new GenericToolOutputHandler();
+        */
         case JobEvaluator:
         	return new JobEvaluator();
         case MolecularComparator:

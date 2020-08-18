@@ -33,6 +33,7 @@ import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -1288,8 +1289,10 @@ public class NWChemInputWriter extends Worker
             {
             	// Get a worker to deal with the basis set generation task
             	ParameterStorage paramsForBasisSetGen = locPars.clone();
-            	paramsForBasisSetGen.setParameter(new Parameter("TASK",
-            		NamedDataType.STRING, "GENERATEBASISSET"));
+            	paramsForBasisSetGen.setParameter(new Parameter(
+            			WorkerConstants.PARTASK,
+            		NamedDataType.STRING, TaskID.GENERATEBASISSET));
+            	
             	Worker w = WorkerFactory.createWorker(paramsForBasisSetGen);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
@@ -1870,7 +1873,8 @@ public class NWChemInputWriter extends Worker
 
         //Build the Z-Matrix from cartesian coordinates and connectivity
         ParameterStorage locPar = new ParameterStorage();
-        locPar.setParameter(new Parameter("TASK",NamedDataType.STRING,
+        locPar.setParameter(new Parameter(
+        		WorkerConstants.PARTASK,NamedDataType.STRING,
         		"PRINTZMATRIX"));
         locPar.setParameter(params.getParameter("VERBOSITY"));
         locPar.setParameter(new Parameter("MOL",

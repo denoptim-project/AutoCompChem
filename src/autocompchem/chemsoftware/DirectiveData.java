@@ -97,7 +97,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     {
     	super();
     	super.setReference(name);
-    	super.setValue(lines);        
+    	super.setValue(new TextBlock(lines));        
     }
 
 //-----------------------------------------------------------------------------
@@ -130,14 +130,14 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
      * @return the content of this block of data
      */
 
-    @SuppressWarnings("unchecked")
 	public ArrayList<String> getLines()
     {
     	ArrayList<String> list = new ArrayList<String>();
     	// TODO: improve. This is done to retain compatibility with legacy code
     	if (this.getType().equals(NamedDataType.TEXTBLOCK))
     	{
-    		return (ArrayList<String>) super.getValueAsObjectSubclass();
+    		return (ArrayList<String>) 
+    				((TextBlock) super.getValue());
     	} 
     	else if ((this.getType().equals(NamedDataType.STRING)))
     	{
@@ -159,7 +159,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 	{
 		if (this.getType().equals(NamedDataType.TEXTBLOCK))
 		{
-			for (String l : (TextBlock) this.getValueAsObjectSubclass())
+			for (String l : (TextBlock) this.getValue())
 			{
 				if (l.contains(ChemSoftConstants.JDLABACCTASK))
 					return true;
@@ -182,7 +182,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
       	
       	if (this.getType().equals(NamedDataType.TEXTBLOCK))
 		{
-      		TextBlock lines = (TextBlock) this.getValueAsObjectSubclass();
+      		TextBlock lines = (TextBlock) this.getValue();
 	        if (lines.size() > 1)
 	        {
 	        	toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
@@ -201,7 +201,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 		} else {
 			toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
 				+ ChemSoftConstants.JDDATAVALSEPARATOR 
-				+ this.getValueAsObjectSubclass());
+				+ this.getValue());
 		}
         
         return toJD;

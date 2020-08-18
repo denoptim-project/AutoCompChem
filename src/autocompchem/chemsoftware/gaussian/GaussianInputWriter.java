@@ -26,6 +26,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -539,7 +540,7 @@ public class GaussianInputWriter extends Worker
                     		NamedDataType.INTEGER, verbosity));
                     
                 	// Get a worker to deal with the basis set generation task
-                    locPars.setParameter(new Parameter("TASK",
+                    locPars.setParameter(new Parameter(WorkerConstants.PARTASK,
                 		NamedDataType.STRING, "GENERATEBASISSET"));
                 	Worker w = WorkerFactory.createWorker(locPars);
                     BasisSetGenerator bsg = (BasisSetGenerator) w;

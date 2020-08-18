@@ -47,7 +47,7 @@ import autocompchem.text.TextBlockIndexed;
  * @author Marco Foscato
  */
 
-public class ParameterStorage extends NamedDataCollector
+public class ParameterStorage extends NamedDataCollector implements Cloneable
 {
 
 	/**
@@ -342,11 +342,14 @@ public class ParameterStorage extends NamedDataCollector
     	ParameterStorage newPar = new ParameterStorage();
     	for (String ref : this.getRefNamesSet())
     	{
-    		Parameter p = this.getParameter(ref);
-    		String reference = p.getReference();
-    		NamedDataType type = p.getType();
-    		Object value = p.getValueAsObjectSubclass();
-    		newPar.setParameter(new Parameter(reference, type, value));
+    		try {
+				Parameter p = this.getParameter(ref).clone();
+				newPar.setParameter(p);
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+				Terminator.withMsgAndStatus("ERROR! Counl not clone "
+						+ "ParameterStorage",-1);
+			}
     	}
     	return newPar;
     }

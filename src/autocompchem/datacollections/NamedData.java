@@ -3,9 +3,14 @@ package autocompchem.datacollections;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.silent.AtomContainer;
 
+import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.vibrations.NormalMode;
+import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -34,7 +39,7 @@ import autocompchem.text.TextBlock;
  * @author Marco Foscato
  */
 
-public class NamedData
+public class NamedData implements Cloneable
 {
     /**
      * A string used to identify the data.
@@ -62,10 +67,15 @@ public class NamedData
         INTEGER,
         BOOLEAN,
         IATOMCONTAINER,
+        ATOMCONTAINERSET,
         SITUATION,
         FILE,
         BASISSET, 
-        ZMATRIX};
+        ZMATRIX, 
+        LISTOFDOUBLES, 
+        LISTOFINTEGERS,
+        NORMALMODE,
+        NORMALMODESET};
 
 //------------------------------------------------------------------------------
 
@@ -76,6 +86,22 @@ public class NamedData
     public NamedData()
     {
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a named data with a given content.
+     * @param reference the name of the data.
+     * @param type the type of object.
+     * @param value the actual data.
+     */
+
+    public NamedData(String reference, Object value)
+    {
+        this.reference = reference;
+        this.setValue(value);
+    }
+
 
 //------------------------------------------------------------------------------
 
@@ -145,66 +171,6 @@ public class NamedData
 //------------------------------------------------------------------------------
 
     /**
-     * Return the value of this data casted into its declared type.
-     * @return the value of this data.
-     */
-
-    public Object getValueAsObjectSubclass()
-    {
-    	Object valueObj = null;
-        try {
-			switch (type) {
-				case DOUBLE:
-					valueObj = Double.parseDouble(value.toString());
-					break;
-
-				case INTEGER: 
-					valueObj = Integer.parseInt(value.toString());
-					break;
-				
-				case STRING:
-					valueObj = value.toString();
-					break;
-					
-				case TEXTBLOCK:
-					@SuppressWarnings("unchecked") ArrayList<String> lines =
-					(ArrayList<String>) value;
-					valueObj = new TextBlock(lines);
-					break;
-					
-				case BOOLEAN:
-					valueObj = Boolean.parseBoolean(value.toString());
-					break;
-					
-				case IATOMCONTAINER:
-					valueObj = (IAtomContainer) value;
-					break;
-					
-				case FILE:
-					valueObj = (File) value;
-					break;
-					
-				case ZMATRIX:
-					valueObj = (ZMatrix) value;
-					break;
-						
-				default:
-					valueObj = value.toString();
-					break;
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			Terminator.withMsgAndStatus("ERROR! Failed cast of value '" + value 
-					+ "' to " + type + ". Unexpected named data requires "
-							+ "extension of implemented cases. Please, report "
-							+ "this to the authors.", -1);
-		}
-        return valueObj;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Return the string representation of the value of this data.
      * Corresponds to getValue().toString().
      * @return the value of this data.
@@ -240,7 +206,7 @@ public class NamedData
     	NamedDataType tp = NamedDataType.UNDEFINED;
        	String className = o.getClass().getName();
     	className = className.substring(className.lastIndexOf(".")+1);
-    	
+
     	switch (className)
     	{
     		case ("Boolean"):
@@ -263,6 +229,10 @@ public class NamedData
     			tp = NamedDataType.IATOMCONTAINER;
     			break;
     			
+    		case ("AtomContainerSet"):
+    			tp = NamedDataType.ATOMCONTAINERSET;
+    			break;
+    			
     		case ("AtomContainer2"):
     			tp = NamedDataType.IATOMCONTAINER;
     			break;
@@ -272,9 +242,19 @@ public class NamedData
     			break;
 
     		case ("ArrayList"):
+    			// NB: this is meant. I cannot see how to detect the type of
+    			// elements, so we take them as strings.
     			tp = NamedDataType.TEXTBLOCK;
     			break;
 
+    		case ("ListOfDoubles"):
+    			tp = NamedDataType.LISTOFDOUBLES;
+    			break;
+    			
+    		case ("ListOfIntegers"):
+    			tp = NamedDataType.LISTOFINTEGERS;
+    			break;
+    		
     		case ("TextBlock"):
     			tp = NamedDataType.TEXTBLOCK;
     			break;
@@ -294,6 +274,14 @@ public class NamedData
     		case ("ZMatrix"):
     			tp = NamedDataType.ZMATRIX;
     			break;
+    			
+    		case ("NormalMode"):
+    			tp = NamedDataType.NORMALMODE;
+    			break;
+    			
+    		case ("NormalModeSet"):
+    			tp = NamedDataType.NORMALMODESET;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -301,7 +289,107 @@ public class NamedData
     	}
     	return tp;
     }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * @return a deep copy of this data
+     * @throws CloneNotSupportedException 
+     */
+    
+    @Override
+    public NamedData clone() throws CloneNotSupportedException
+    {
+    	Object cVal = null;
+        switch (type) 
+        {
+        case DOUBLE:
+            cVal = Double.parseDouble(value.toString());
+            break;
+
+        case INTEGER:
+            cVal = Integer.parseInt(value.toString());
+            break;
+
+        case STRING:
+            cVal = value.toString();
+            break;
+
+        case TEXTBLOCK:
+        {
+            @SuppressWarnings("unchecked") ArrayList<String> lines =
+            (ArrayList<String>) value;
+            cVal = new TextBlock(lines);
+            break;
+        }
+        
+        case LISTOFDOUBLES:
+        {
+            @SuppressWarnings("unchecked") ArrayList<Double> doubles =
+            (ArrayList<Double>) value;
+            ListOfDoubles l = new ListOfDoubles();
+            for (Double d : doubles)
+            {
+            	l.add(d.doubleValue());
+            }
+            cVal = l;
+            break;
+        }
+
+        case LISTOFINTEGERS:
+        {
+            @SuppressWarnings("unchecked") ArrayList<Integer> ints =
+            (ArrayList<Integer>) value;
+            ListOfIntegers l = new ListOfIntegers();
+            for (Integer i : ints)
+            {
+            	l.add(i.intValue());
+            }
+            cVal = l;
+            break;
+        }
+
+        case BOOLEAN:
+            cVal = Boolean.parseBoolean(value.toString());
+            break;
+
+        case IATOMCONTAINER:
+            cVal = ((IAtomContainer) value).clone();
+            break;
+
+        case ATOMCONTAINERSET:
+        	AtomContainerSet cSet = new AtomContainerSet();
+        	for (IAtomContainer iac : ((AtomContainerSet) value).atomContainers())
+        	{
+        		cSet.addAtomContainer(iac.clone());
+        	}
+            cVal = cSet;
+            break;
+
+        case FILE:
+            cVal = new File(((File) value).getAbsolutePath());
+            break;
+
+        case ZMATRIX:
+        	cVal = ((ZMatrix) value).clone();
+            break;
+                        
+        case NORMALMODE:
+        	cVal = ((NormalMode) value).clone();
+        	break;
+
+        case NORMALMODESET:
+        	cVal = ((NormalModeSet) value).clone();
+        	break;
+        	
+        default:
+            cVal = value.toString();
+            break;
+        }
+    	NamedData nd = new NamedData(this.getReference(),type, cVal);
+    	return nd;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

@@ -122,7 +122,8 @@ public abstract class Worker implements IOutputExposer
     public void setParameters(ParameterStorage params)
     {
     	this.params = params;
-    	String taskStr = this.params.getParameter("TASK").getValue().toString();
+    	String taskStr = this.params.getParameter(WorkerConstants.PARTASK)
+    			.getValueAsString();
     	this.task = TaskID.getFromString(taskStr);
     }
 

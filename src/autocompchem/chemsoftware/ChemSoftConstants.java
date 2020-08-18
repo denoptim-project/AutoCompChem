@@ -203,4 +203,95 @@ public class ChemSoftConstants
 	 */
 	public static final String DIRDATAGEOMETRY = "DIRDATAGEOMETRY";
 
+	/**
+	 * Key for parameter defining the pathname to an output from a comp.
+	 * chem. job.
+	 */
+	public static final String PARJOBOUTPUTFILE = "JOBOUTPUTFILE";
+
+	/**
+	 * Key for parameter requesting to print the last geometry from a
+	 * comp.chem job
+	 */
+	public static final String PARPRINTLASTGEOM = "PRINTLASTGEOMETRY";
+	
+	/**
+	 * Key for parameter requesting to print the last geometry from a
+	 * comp.chem job
+	 */
+	public static final String PARPRINTALLGEOM = "PRINTALLGEOMETRIES";
+
+	/**
+	 * Key for parameter requesting to print vibrational modes
+	 */
+	public static final String PARPRINTVIBMODES = "PRINTVIBMODES";
+
+	/**
+	 * Key for parameter providing a file to be used as template connectivity
+	 */
+	public static final String PARTEMPLATECONNECTIVITY = 
+			"TEMPLATECONNECTIVITY";
+
+	/**
+	 * Key for parameter requesting to calculate free energy
+	 */
+	public static final String PARGETENERGY = "CALCULATEENERGY";
+
+	/**
+	 * Key for parameter requesting analysis of the kind of critical point
+	 * found on a potential energy surface (minimum vs. saddle point)
+	 */
+	public static final String PARCRITICALPOINTKIND = "DETECTKINDOFCRITICALPOINT";
+
+	/**
+	 * Name for data storing the line number where a job begins.
+	 */
+	public static final String JOBDATAINITLINE = "INITLINE";
+	
+	/**
+	 * Name for data storing the line number where a job ends
+	 */
+	public static final String JOBDATAENDLINE = "ENDLINE";
+
+	/**
+	 * Name of data flagging the successful end of a SCF optimisation
+	 */
+	public static final String JOBDATASCFCONVERGED = "SCFCONVERGENCE";
+
+	/**
+	 * Name of data storing the optimised SCF energies
+	 */
+	public static final String JOBDATASCFENERGIES = "SCFCONVENERGIES";
+
+	/**
+	 * Name of data storing the number of  SCF steps
+	 */
+	public static final String JOBDATASCFSTEPS = "SCFSTEPS";
+
+	/**
+	 * Name of data indicating that the geometry optimisation has converged
+	 */
+	public static final String JOBGEOMOPTCONVERGED = "GEOMOPTCONVERGED";
+	
+	/**
+	 * Name of data storing the vibrational frequencies
+	 */
+	public static final String JOBVIBFREQ = "VIBFREQ";
+
+	/**
+	 * Name of data storing the normal modes
+	 */
+	public static final String JOBVIBMODES = "VIBMOFES";
+
+	/**
+	 * Name of data collecting molecular geometries
+	 */
+	public static final String JOBDATAGEOMETRIES = "GEOMETRIES";
+
+	/**
+	 * Name of data containing Gibbs free energy already containing all
+	 * the thermochemical corrections.
+	 */
+	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
+
 }

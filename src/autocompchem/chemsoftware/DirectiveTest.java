@@ -200,7 +200,7 @@ public class DirectiveTest
     	IDirectiveComponent dd = d.getComponent("data", 
     			DirectiveComponentType.DIRECTIVEDATA);
     	assertEquals("A",((TextBlock) 
-    			((DirectiveData) dd).getValueAsObjectSubclass()).get(0),
+    			((DirectiveData) dd).getValue()).get(0),
     			"Retrieve DirectiveData");
     	
     	IDirectiveComponent x = d.getComponent("notThere", 

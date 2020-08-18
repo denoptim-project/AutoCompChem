@@ -1,0 +1,98 @@
+package autocompchem.chemsoftware;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import autocompchem.datacollections.ParameterStorage;
+
+/**
+ * A class representing the request of a kind of analysis and some settings
+ * associated with the analysis.
+ * 
+ * @author Marco Foscato
+ */
+public class AnalysisTask 
+{
+    
+	/**
+	 * The kind of analysis to perform
+	 */
+	private AnalysisKind kind;
+	
+    /**
+     * Possible kinds of analysis that can be asked for each job/step
+     */
+    public enum AnalysisKind {ENERGY,
+    	LASTGEOM,
+    	GEOMETRYNUM,
+    	CRITICALPOINTKIND,
+    	VIBMODE,
+    	VIBMODENUM,
+    	QHTHERMOCHEMISTRY, 
+    	ALLGEOM}
+    
+    /**
+     * Settings that control how the analysis is performed
+     */
+    private ParameterStorage params = new ParameterStorage();
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor 
+     * @param kind the kind of analysis to perform
+     */
+    public AnalysisTask(AnalysisKind kind)
+    {
+    	this.kind = kind;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor 
+     * @param kind the kind of analysis to perform
+     * @param params settings for the analysis
+     */
+    public AnalysisTask(AnalysisKind kind, ParameterStorage params)
+    {
+    	this.kind = kind;
+    	this.params = params;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Set the parameters associated with this analysis task.
+     * @param params settings for the analysis
+     */
+    public void setParams(ParameterStorage params)
+    {
+    	this.params = params;
+    }
+     
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Returns the parameters meant to control the analysis
+     * @return the parameters meant to control the analysis
+     */
+    public ParameterStorage getParams()
+    {
+    	return params;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    public String toString()
+    {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("[AnalysisTask: ").append(kind).append(" ");
+    	sb.append(params.toLinesJobDetails()).append("]");
+    	return sb.toString();
+    }
+    
+//-----------------------------------------------------------------------------
+    
+}

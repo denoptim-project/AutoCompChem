@@ -27,6 +27,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 
@@ -1098,7 +1099,8 @@ public class MolecularGeometryEditor extends Worker
 
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
-        locPar.setParameter(new Parameter("TASK",NamedDataType.STRING,
+        locPar.setParameter(new Parameter(WorkerConstants.PARTASK,
+        		NamedDataType.STRING,
         		"PRINTZMATRIX"));
         Worker w = WorkerFactory.createWorker(locPar);
         ZMatrixHandler zmh = (ZMatrixHandler) w;

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo To be replaced
+exit 0;
+
 grep -q -i "Error message 'FAKE ERROR MESSAGE 1 - USED ONLY TO TEST AutoCompChem' found" t60.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 1

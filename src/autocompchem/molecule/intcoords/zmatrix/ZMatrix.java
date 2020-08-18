@@ -30,7 +30,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */ 
 
-public class ZMatrix
+public class ZMatrix implements Cloneable
 {
     /**
      * Title/name (optional)
@@ -222,7 +222,7 @@ public class ZMatrix
     /**
      * Return the pointers to pairs of atoms that share a bond but have no
      * internal coordinate defining their distance.
-     * @return the list of pointers to bonded paits of atoms.
+     * @return the list of pointers to bonded pairs of atoms.
      */
 
     public ArrayList<int[]> getPointersToBonded()
@@ -325,6 +325,32 @@ public class ZMatrix
         return lines;
     }
 
+//------------------------------------------------------------------------------
+
+    /**
+     * @returns a deep copy of this ZMatrix
+     */
+    
+    @Override
+    public ZMatrix clone()
+    {
+    	ZMatrix c = new ZMatrix();
+    	c.setTitle(title);
+    	for (ZMatrixAtom zatm : zatoms)
+    	{
+    		c.addZMatrixAtom(zatm.clone());
+    	}
+    	for (int[] pair : addBondPointers)
+    	{
+    		c.addPointerToBonded(pair[0], pair[1]);
+    	}
+    	for (int[] pair : delBondPointers)
+    	{
+    		c.addPointerToNonBonded(pair[0], pair[1]);
+    	}
+    	return c;
+    }
+    
 //------------------------------------------------------------------------------
 
 }

@@ -211,7 +211,7 @@ public class ZMatrixHandler extends Worker
         if (params.contains("MOL"))
         {
             this.iac = (IAtomContainer) 
-            		params.getParameter("MOL").getValueAsObjectSubclass();
+            		params.getParameter("MOL").getValue();
         }
         
         //Get and check the input file (which has to be an SDF file)

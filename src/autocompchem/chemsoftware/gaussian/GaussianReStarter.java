@@ -36,6 +36,7 @@ import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -340,7 +341,8 @@ public class GaussianReStarter extends Worker
     {
     	// We take most of the parameters of the present worker
     	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
-    	paramsForOutputHandler.setParameter(new Parameter("TASK",
+    	paramsForOutputHandler.setParameter(new Parameter(
+    			WorkerConstants.PARTASK,
     		NamedDataType.STRING, "EVALUATEGAUSSIANOUTPUT"));
     	
         //Gather information on the error job

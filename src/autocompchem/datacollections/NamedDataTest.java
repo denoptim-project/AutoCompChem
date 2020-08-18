@@ -24,19 +24,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.vibrations.NormalMode;
+import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.situation.Situation;
 import autocompchem.text.TextBlock;
 
 
 /**
- * Unit Test for NAmedDataclass 
+ * Unit Test for NamedData class 
  * 
  * @author Marco Foscato
  */
@@ -50,6 +55,7 @@ public class NamedDataTest
     public void testDetectType() throws Exception
     {  
     	NamedData nd = new NamedData();
+    	
     	String s = "s";
     	nd.setValue(s);
     	assertTrue(NamedDataType.STRING.equals(nd.getType()),
@@ -80,6 +86,11 @@ public class NamedDataTest
     	assertTrue(NamedDataType.IATOMCONTAINER.equals(nd.getType()),
     			"Detecting IAtomContainer");
     	
+    	AtomContainerSet mols = new AtomContainerSet();
+    	nd.setValue(mols);
+    	assertTrue(NamedDataType.ATOMCONTAINERSET.equals(nd.getType()),
+    			"Detecting IAtomContainer");
+    	
     	ArrayList<String> lst = new ArrayList<String>();
     	nd.setValue(lst);
     	assertTrue(NamedDataType.TEXTBLOCK.equals(nd.getType()),
@@ -99,6 +110,26 @@ public class NamedDataTest
     	nd.setValue(zm);
     	assertTrue(NamedDataType.ZMATRIX.equals(nd.getType()),
     			"Detecting ZMatrix");
+    			
+    	ListOfDoubles ld =new ListOfDoubles();
+    	nd.setValue(ld);
+    	assertTrue(NamedDataType.LISTOFDOUBLES.equals(nd.getType()),
+    			"Detecting ListOfDoubles");
+    	
+    	ListOfIntegers li =new ListOfIntegers();
+    	nd.setValue(li);
+    	assertTrue(NamedDataType.LISTOFINTEGERS.equals(nd.getType()),
+    			"Detecting ListOfDoubles");    	
+    	
+    	NormalMode nm = new NormalMode();
+    	nd.setValue(nm);
+    	assertTrue(NamedDataType.NORMALMODE.equals(nd.getType()),
+    			"Detecting NormalMode");  
+    	
+    	NormalModeSet nms = new NormalModeSet();
+    	nd.setValue(nms);
+    	assertTrue(NamedDataType.NORMALMODESET.equals(nd.getType()),
+    			"Detecting NormalModeSet");  
     	
     	Object o = new Object();
     	nd.setValue(o);

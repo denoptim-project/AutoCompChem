@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * @author Marco Foscato
  */ 
 
-public class InternalCoord
+public class InternalCoord implements Cloneable
 {
     /**
      * Internal coordinate name
@@ -39,7 +39,7 @@ public class InternalCoord
     protected double value = 0.0;
 
     /**
-     * List of atom indeces defining this internal coordinate
+     * List of atom indexes defining this internal coordinate
      */
     protected ArrayList<Integer> ids = new ArrayList<Integer>();
 
@@ -146,8 +146,8 @@ public class InternalCoord
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the list of atom indeces
-     * @return the list of indeces
+     * Returns the list of atom indexes
+     * @return the list of indexes
      */
 
     public ArrayList<Integer> getIDs()
@@ -158,8 +158,8 @@ public class InternalCoord
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the number of atom indeces
-     * @return the number of indeces
+     * Returns the number of atom indexes
+     * @return the number of indexes
      */
 
     public int getIDsCount()
@@ -182,9 +182,9 @@ public class InternalCoord
 //------------------------------------------------------------------------------
 
     /**
-     * Evaluates if a list of atom indeces corresponds to the indeces used to 
+     * Evaluates if a list of atom indexes corresponds to the indexes used to 
      * define this coordinate.
-     * @param otherIds the othe list of indexes to compare with those of this
+     * @param otherIds the other list of indexes to compare with those of this
      * coordinate
      * @return <code>true</code> if the given list of indexes corresponds to
      * the one defining this coordinate.
@@ -343,6 +343,22 @@ public class InternalCoord
         sb.append("type:").append(type).append(", ");
         sb.append("]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return a deep copy
+     */
+
+    @Override
+    public InternalCoord clone()
+    {
+    	ArrayList<Integer> cIds = new ArrayList<Integer>();
+    	for (Integer id : ids)
+    		cIds.add(id.intValue());
+    	InternalCoord ic = new InternalCoord(name, value, cIds, type);
+    	return ic;
     }
 
 //------------------------------------------------------------------------------

@@ -38,6 +38,7 @@ import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -75,7 +76,7 @@ public class ACCJobTest
         	params.setParameter(
         			new Parameter(ParameterConstants.RUNNABLEAPPIDKEY,
         					NamedDataType.STRING, Job.RunnableAppID.ACC));
-        	params.setParameter(new Parameter("TASK", 
+        	params.setParameter(new Parameter(WorkerConstants.PARTASK, 
         			NamedDataType.STRING, "MeasureGeomDescriptors"));
         	params.setParameter(new Parameter("VERBOSITY",
         			NamedDataType.INTEGER,1));

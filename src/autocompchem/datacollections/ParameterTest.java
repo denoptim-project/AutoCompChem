@@ -47,20 +47,20 @@ public class ParameterTest
     @Test
     public void testParameterType() throws Exception
     {
-        Parameter p = new Parameter("KEY", NamedDataType.STRING,1.123);
-        Object o = p.getValueAsObjectSubclass();
+        Parameter p = new Parameter("KEY", NamedDataType.STRING,"1.123");
+        Object o = p.getValue();
         assertTrue(o instanceof String, "Verify String type");
        
         p = new Parameter("KEY", NamedDataType.DOUBLE,1.123);
-        o = p.getValueAsObjectSubclass();
+        o = p.getValue();
         assertTrue(o instanceof Double, "Verify Double type");
         
         p = new Parameter("KEY", NamedDataType.INTEGER,206);
-        o = p.getValueAsObjectSubclass();
+        o = p.getValue();
         assertTrue(o instanceof Integer, "Verify Integer type");
         
         p = new Parameter("KEY", NamedDataType.BOOLEAN,true);
-        o = p.getValueAsObjectSubclass();
+        o = p.getValue();
         assertTrue(o instanceof Boolean, "Verify Boolean type");
         
         IAtomContainer mol = new AtomContainer();
@@ -76,7 +76,7 @@ public class ParameterTest
         mol.addBond(bnd2);
         
         p = new Parameter("KEY", NamedDataType.IATOMCONTAINER,mol);
-        o = p.getValueAsObjectSubclass();
+        o = p.getValue();
         
         assertTrue(o instanceof IAtomContainer, "Verify IAC type");
         IAtomContainer molObj = (IAtomContainer) o;

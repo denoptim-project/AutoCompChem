@@ -88,8 +88,8 @@ public class Action
      * is expected to contain one or more lines (i.e., line separators), each
      * with one of the settings defining the action,
      * though multiline blocks are also allowed, if properly identified by the
-     * {@link ActionConstants.STARTMULTILINE} and 
-     * {@link ActionConstants.ENDMULTILINE} labels.
+     * {@link WorkerConstants.STARTMULTILINE} and 
+     * {@link WorkerConstants.ENDMULTILINE} labels.
      * @param txt the text to decode.
      * @throws Exception if unable to interpret text.
      */
@@ -109,8 +109,8 @@ public class Action
      * converts a text-based definition of actions in an Action object. Each
      * line is expected to contain one of the settings defining the action,
      * though multiline blocks are also allowed, if properly identified by the
-     * {@link ActionConstants.STARTMULTILINE} and 
-     * {@link ActionConstants.ENDMULTILINE} labels.
+     * {@link WorkerConstants.STARTMULTILINE} and 
+     * {@link WorkerConstants.ENDMULTILINE} labels.
      * @param lines the text to decode.
      * @throws Exception if unable to interpret text.
      */

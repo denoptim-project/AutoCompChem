@@ -32,7 +32,7 @@ import autocompchem.utils.NumberUtils;
  * @author Marco Foscato
  */ 
 
-public class ZMatrixAtom
+public class ZMatrixAtom implements Cloneable
 {
     /**
      * Center name (i.e., atom symbol)
@@ -519,7 +519,20 @@ public class ZMatrixAtom
         }
         return sb.toString();
     }
-
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return a deep copy of this ZMatrixAtom
+     */
+    
+    @Override
+    public ZMatrixAtom clone()
+    {
+    	ZMatrixAtom zma = new ZMatrixAtom(name, idI, idJ, idK, icI.clone(), 
+    			icJ.clone(), icK.clone());
+    	return zma;
+    }
 //------------------------------------------------------------------------------
 
 }

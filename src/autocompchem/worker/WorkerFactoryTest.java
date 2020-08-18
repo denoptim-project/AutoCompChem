@@ -60,14 +60,15 @@ public class WorkerFactoryTest
     {
     	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	ParameterStorage params = new ParameterStorage();
-    	params.setParameter(new Parameter("TASK", NamedDataType.STRING, 
+    	params.setParameter(new Parameter(WorkerConstants.PARTASK,
+    			NamedDataType.STRING, 
     			TaskID.DummyTask.toString()));
     	job.setParameters(params);
     	job.run();
     	NamedData output = job.getOutput(DummyWorker.DATAREF);
     	
     	assertTrue(output != null, "Output from dummy atom is found.");
-    	assertEquals(output.getValueAsObjectSubclass(),DummyWorker.DATAVALUE,
+    	assertEquals(output.getValue(),DummyWorker.DATAVALUE,
     			"Stored output data.");
     }
 

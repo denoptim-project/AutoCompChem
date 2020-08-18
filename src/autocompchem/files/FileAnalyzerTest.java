@@ -1,8 +1,12 @@
 package autocompchem.files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.io.IOtools;
 
@@ -15,15 +19,22 @@ import autocompchem.io.IOtools;
 
 public class FileAnalyzerTest 
 {
+    @TempDir 
+    File tempDir;
+    
     @Test
     public void testCountMatches() throws Exception
     {
-        String tmpPathName = "/tmp/__tmp_acc_junit";
-        IOtools.writeTXTAppend(tmpPathName,"First line",false);
-        IOtools.writeTXTAppend(tmpPathName,"Second line",true);
-        IOtools.writeTXTAppend(tmpPathName,"Third line",true);
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        assertEquals(3,FileAnalyzer.count(tmpPathName,"line"),"Total matches");
+        String tmpPathName = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "tmp.txt";
+        IOtools.writeTXTAppend(tmpPathName,"First line #",false);
+        IOtools.writeTXTAppend(tmpPathName,"Second line #",true);
+        IOtools.writeTXTAppend(tmpPathName,"Third line #",true);
+        IOtools.writeTXTAppend(tmpPathName,"last",true);
+        
+        assertEquals(3,FileAnalyzer.count(tmpPathName,"line #"),"Total matches");
     }
 
 }
