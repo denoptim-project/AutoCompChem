@@ -22,6 +22,8 @@ import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
 import autocompchem.chemsoftware.nwchem.NWChemTask;
+import autocompchem.datacollections.ListOfDoubles;
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
@@ -31,6 +33,7 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
@@ -108,6 +111,8 @@ public class ChemSoftOutputHandler extends Worker
      * String collecting the results of the analysis
      */
     private String analysisResultLog = "";
+    
+    private static String NL = System.getProperty("line.separator");
 
 //------------------------------------------------------------------------------
 
@@ -134,7 +139,7 @@ public class ChemSoftOutputHandler extends Worker
         this.inFile = new File(inFileName);
 
         //Get and check the output filename
-        if (params.contains("OUTFILEROOT"))
+        if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
         {
             outFileRootName = params.getParameter(
             		ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
@@ -150,12 +155,14 @@ public class ChemSoftOutputHandler extends Worker
         			ChemSoftConstants.PARPRINTLASTGEOM).getValueAsString();
             String[] p = s.split("\\s+");
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter("FORMAT", p[0]));
+            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFORMAT,
+            		p[0]));
             if (p.length>1)
             {
-                ps.setParameter(new Parameter("FILENAME", p[1]));
+                ps.setParameter(new Parameter(
+                		ChemSoftConstants.GENERALFILENAME, p[1]));
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOM,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
             analysisAllTasks.add(a);
         }
         
@@ -165,10 +172,12 @@ public class ChemSoftOutputHandler extends Worker
         			ChemSoftConstants.PARPRINTALLGEOM).getValueAsString();
             String[] p = s.split("\\s+");
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter("FORMAT", p[0]));
+            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFORMAT,
+            		p[0]));
             if (p.length>1)
             {
-                ps.setParameter(new Parameter("FILENAME", p[1]));
+                ps.setParameter(new Parameter(
+                		ChemSoftConstants.GENERALFILENAME, p[1]));
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.ALLGEOM,ps);
             analysisAllTasks.add(a);
@@ -203,8 +212,9 @@ public class ChemSoftOutputHandler extends Worker
                 list.add(w);
             }
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter("FILENAME", p[p.length-1]));
-            ps.setParameter(new Parameter("MODEIDS",
+            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFILENAME,
+            		p[p.length-1]));
+            ps.setParameter(new Parameter(ChemSoftConstants.GENERALINDEXES,
             		StringUtils.mergeListToString(list, " ")));
             AnalysisTask a = new AnalysisTask(AnalysisKind.VIBMODE,ps);
             analysisAllTasks.add(a);
@@ -232,7 +242,7 @@ public class ChemSoftOutputHandler extends Worker
             	String w = p[i].toUpperCase();
             	switch(w) 
             	{
-	            	case ("QUASIHARM"): 
+	            	case (ChemSoftConstants.QHARMTHRSLD): 
 	            	{
 	            		a = new AnalysisTask(AnalysisKind.QHTHERMOCHEMISTRY);
 	            		if ((i+1)>=p.length || !NumberUtils.isNumber(p[i+1]))
@@ -240,7 +250,8 @@ public class ChemSoftOutputHandler extends Worker
 	            			Terminator.withMsgAndStatus("ERROR! expecting a "
 	            					+ "value after QUASIHARM.",-1);
 	            		}
-	            		ps.setParameter(new Parameter("QUASIHARM", p[i+1]));
+	            		ps.setParameter(new Parameter(
+	            				ChemSoftConstants.QHARMTHRSLD, p[i+1]));
 	            	}
             	}
             }
@@ -260,14 +271,15 @@ public class ChemSoftOutputHandler extends Worker
             	String w = p[i].toUpperCase();
             	switch(w) 
             	{
-	            	case ("LOWESTFREQ"): 
+	            	case (ChemSoftConstants.SMALLESTFREQ): 
 	            	{
 	            		if ((i+1)>=p.length || !NumberUtils.isNumber(p[i+1]))
 	            		{
 	            			Terminator.withMsgAndStatus("ERROR! expecting a "
 	            					+ "value after LOWESTFREQ.",-1);
 	            		}
-	            		ps.setParameter(new Parameter("LOWESTFREQ", p[i+1]));
+	            		ps.setParameter(new Parameter(
+	            				ChemSoftConstants.SMALLESTFREQ, p[i+1]));
 	            	}
             	}
             }
@@ -320,7 +332,7 @@ public class ChemSoftOutputHandler extends Worker
      */
 
     private void analyzeFiles()
-    {
+    {	
         //Read and parse log files (typically called "output file")
     	try {
     		//software-specificity encapsulated in here
@@ -348,6 +360,23 @@ public class ChemSoftOutputHandler extends Worker
         			+ "terminate normally!");
         }
         
+        // Prepare collector of analysis results
+    	StringBuilder resultsString = new StringBuilder();
+        AtomContainerSet geomsToExpose = new AtomContainerSet();
+        TextBlock critPointKinds = new TextBlock();
+        IAtomContainer lastGeomToExpose = null;
+        
+        // Unless we have defined tasks for specific job steps, we take the 
+        // analysis tasks defined upon initialisation and perform them on all
+        // job steps.
+        if (analysisTasks.size() == 0)
+        {
+        	for (int i=0; i<numSteps; i++)
+        	{
+        		analysisTasks.put(i, analysisAllTasks);
+        	}
+        }
+        
         // Analyse one or more steps
         for (Integer stepId : analysisTasks.keySet())
         {
@@ -357,27 +386,209 @@ public class ChemSoftOutputHandler extends Worker
         		continue;
         	}
         	
+        	NamedDataCollector stepData = stepsData.get(stepId);
+        	resultsString.append(NL + "Step " + stepId + ":" + NL);
+        	
         	// What do we have to do on the current step?
         	ArrayList<AnalysisTask> todoList = analysisTasks.get(stepId);
         	for (AnalysisTask at : todoList)
         	{
+        		ParameterStorage atParams = at.getParams();
+        		switch (at.getKind())
+        		{
+	        		case ALLGEOM:
+	        		{
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATAGEOMETRIES))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No geometry found in step "
+		        						+ stepId + ".");
+		        			}
+	        				break;
+	        			}
+	        			String format = "XYZ";
+	        			format = changeIfParameterIsFound(format,
+	        					ChemSoftConstants.GENERALFORMAT,atParams);
+	        			String outFileName = outFileRootName+"_allGeoms."
+	        					+ format.toLowerCase();
+	        			outFileName= changeIfParameterIsFound(outFileName,
+	        					ChemSoftConstants.GENERALFILENAME,atParams);
+	        			
+	        			if (verbosity > 1)
+	        			{
+	        				System.out.println("Writing all geometries of "
+	        						+ "step " + stepId + " to file '" 
+	        						+ outFileName+"'");
+	        			}
+	        			AtomContainerSet acs = (AtomContainerSet) 
+	        					stepData.getNamedData(ChemSoftConstants
+	        							.JOBDATAGEOMETRIES).getValue();
+	        			
+	        			geomsToExpose.add(acs);
+	        			
+	        			IOtools.writeAtomContainerSetToFile(outFileName, acs,
+	        					format,true);
+	        			break;
+	        		}
+	        		
+	        		case LASTGEOMETRY:
+	        		{
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATAGEOMETRIES))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No geometry found in step "
+		        						+ stepId + ".");
+		        			}
+	        				break;
+	        			}
+	        			String format = "XYZ";
+	        			format = changeIfParameterIsFound(format,
+	        					ChemSoftConstants.GENERALFORMAT,atParams);
+	        			String outFileName = outFileRootName+"_lastGeom."
+	        					+ format.toLowerCase();
+	        			outFileName= changeIfParameterIsFound(outFileName,
+	        					ChemSoftConstants.GENERALFILENAME,atParams);
+	        			
+	        			if (verbosity > 1)
+	        			{
+	        				System.out.println("Writing last geometry of "
+	        						+ "step " + stepId + " to file '" 
+	        						+ outFileName+"'");
+	        			}
+	        			AtomContainerSet acs = (AtomContainerSet) 
+	        					stepData.getNamedData(ChemSoftConstants
+	        							.JOBDATAGEOMETRIES).getValue();
+	        			
+	        			IAtomContainer mol = acs.getAtomContainer(
+	        					acs.getAtomContainerCount()-1);
+	        			
+	        			lastGeomToExpose = mol;
+	        			
+	        			IOtools.writeAtomContainerToFile(outFileName, mol,
+	        					format,true);
+	        			break;
+	        		}
+	        		
+	        		case CRITICALPOINTKIND:
+	        		{
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATAVIBFREQ))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No frequencies found in "
+		        						+ "step " + stepId + ".");
+		        			}
+	        				break;
+	        			}
+	        			String smallestStr = "0.0";
+	        			smallestStr = changeIfParameterIsFound(smallestStr,
+	        					ChemSoftConstants.SMALLESTFREQ,atParams);
+	        			Double smallest = Double.parseDouble(smallestStr);
+	        			ListOfDoubles freqs = (ListOfDoubles) 
+	        					stepData.getNamedData(ChemSoftConstants
+	        							.JOBDATAVIBFREQ).getValue();
+	        			ListOfDoubles imgFreq = new ListOfDoubles();
+	        			for (Double freq : freqs)
+	        			{
+	        				if (Math.abs(freq)>smallest && freq<0)
+	        				{
+	        					imgFreq.add(freq);
+	        				}
+	        			}
+	        			String kindOfCriticalPoint = "";
+	        			switch (imgFreq.size())
+	        			{
+	        			case 0:
+	        				kindOfCriticalPoint = "MINIMUM";
+	        				break;
+	        			case 1:
+	        				kindOfCriticalPoint = "TRANSITION STATE";
+	        				break;
+	        			default:
+	        				kindOfCriticalPoint = "SADDLE POINT (" 
+	        						+ "order " + imgFreq.size()+ ")";
+	        				break;	        				
+	        			}
+	        			resultsString.append("-> ").append(kindOfCriticalPoint);
+	        			resultsString.append(" ").append(imgFreq.toString());
+	        			resultsString.append(NL);
+	        			
+	        			critPointKinds.add(kindOfCriticalPoint);
+	        		}
+	        		
+	        		case ENERGY:
+	        		{
+	        			
+	        		}
+	        		
+	        		case QHTHERMOCHEMISTRY:
+	        		{
+	        			
+	        		}
+	        		
+	        		case VIBMODE:
+	        		{
+	        			
+	        		}
+	        		
+	        		case VIBMODENUM:
+	        		{
+	        			
+	        		}
+        		}
         		
-        		//TODO: using the data that is already collected for the step
-        		// do whatever has to be done to produce the results
-        		
+        		//TODO
         		// Store result in output collector (to be exposed)
         	}
         }
      	
         if (verbosity > 0)
         {
-            System.out.println(" " + getResultsAsString());
+            System.out.println(resultsString.toString());
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @param original the original value
+     * @param key the reference name of the parameter to try to find
+     * @return either the original value, or, if the given parameter is found, 
+     * the value of that parameter
+     */
+    private int changeIfParameterIsFound(int original, String key,
+    		ParameterStorage ps) 
+    {
+    	String iStr = Integer.toString(original);
+    	iStr = changeIfParameterIsFound(iStr, key, ps);
+    	return Integer.parseInt(iStr);
     }
     
 //------------------------------------------------------------------------------
 
     /**
+     * @param original the original value
+     * @param key the reference name of the parameter to try to find
+     * @return either the original value, or, if the given parameter is found, 
+     * the value of that parameter
+     */
+    private String changeIfParameterIsFound(String original, String key,
+    		ParameterStorage ps) 
+    {
+		if (ps.contains(key))
+		{
+			return ps.getParameter(key).getValueAsString();
+		}
+		return original;
+	}
+
+//------------------------------------------------------------------------------
+	/**
      * Method that parses the log file of a comp.chem. software.
      * This method is meant to be overwritten by subclasses. 
      * @param file

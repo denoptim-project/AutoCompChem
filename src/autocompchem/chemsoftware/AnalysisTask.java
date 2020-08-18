@@ -23,9 +23,9 @@ public class AnalysisTask
     /**
      * Possible kinds of analysis that can be asked for each job/step
      */
-    public enum AnalysisKind {ENERGY,
-    	LASTGEOM,
-    	GEOMETRYNUM,
+    public enum AnalysisKind {
+    	ENERGY,
+    	LASTGEOMETRY,
     	CRITICALPOINTKIND,
     	VIBMODE,
     	VIBMODENUM,
@@ -70,6 +70,16 @@ public class AnalysisTask
     public void setParams(ParameterStorage params)
     {
     	this.params = params;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * @return the kind of analysis represented by this object
+     */
+    public AnalysisKind getKind()
+    {
+    	return kind;
     }
      
 //-----------------------------------------------------------------------------

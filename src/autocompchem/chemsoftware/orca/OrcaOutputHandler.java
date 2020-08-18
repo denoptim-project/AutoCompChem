@@ -164,7 +164,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                     {
                     	lineNum++;
                     	skipped++;
-                    	if (skipped<3)
+                    	if (skipped<2)
                     	{
                     		continue;
                     	}
@@ -229,7 +229,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                     	}
                     }
             	    stepData.putNamedData(new NamedData(
-        					ChemSoftConstants.JOBVIBFREQ,list));
+        					ChemSoftConstants.JOBDATAVIBFREQ,list));
             	}
             	
             	if (line.matches(".*" + OrcaConstants.LOGVIBMODES + ".*"))
@@ -250,7 +250,8 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                     	}
                     	if (line.trim().equals(""))
                     	{
-                    		// Initial empty lines were skipped, so they do not count
+                    		// Initial empty lines were skipped, so they do not
+                    		// count
                     		break;
                     	} else if (line.startsWith("           ")) {
                     		//This lines contain only the indexes of the modes
@@ -258,8 +259,8 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                     		if (p.length < 2)
                     		{
                     			Terminator.withMsgAndStatus("ERROR! Cannot "
-                    					+ "read normal modes indexes from line '" 
-                    					+ line + "'.",-1);
+                    					+ "read normal modes indexes from line"
+                    					+ " '" + line + "'.",-1);
                     		}
                     		currModes = new int[6]; //Cleanup previous numbers
                     		for (int i=0; i<p.length; i++)

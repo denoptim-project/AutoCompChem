@@ -729,6 +729,66 @@ public class IOtools
             }
         }
     }
+    
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Writes atom containers to file
+	 * file or appends to an existing one.
+	 * @param filename target XYZ file (new or existing)
+	 * @param acs set of atom containers to be written on the XYZ file
+	 * @param append <code>true</code> to append to existing file
+	 */
+	
+	public static void writeAtomContainerToFile(String filename, 
+	  		IAtomContainer ac, String format, boolean append)
+	{
+	  	switch(format)
+	  	{
+	  		case "XYZ":
+				writeXYZAppend(filename, ac, append);
+				break;
+			
+			case "SDF":
+				writeSDFAppend(filename, ac, append);
+				break;
+			
+			default:
+				Terminator.withMsgAndStatus("ERROR! Format '" + format + "' is "
+						+ "not a known format for writing atom containers", -1);
+		  			break;
+	  	}
+	}
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Writes atom containers to file
+     * file or appends to an existing one.
+     * @param filename target XYZ file (new or existing)
+     * @param acs set of atom containers to be written on the XYZ file
+     * @param append <code>true</code> to append to existing file
+     */
+
+    public static void writeAtomContainerSetToFile(String filename, 
+    		IAtomContainerSet acs, String format, boolean append)
+    {
+    	switch(format)
+    	{
+    		case "XYZ":
+    			writeXYZAppendSet(filename, acs, append);
+    			break;
+    			
+    		case "SDF":
+    			writeSDFAppendSet(filename, acs, append);
+    			break;
+    		
+    		default:
+    			Terminator.withMsgAndStatus("ERROR! Format '" + format + "' is "
+    					+ "not a known format for writing atom containers", -1);
+    			break;
+    	}
+    }
 
 //------------------------------------------------------------------------------
 

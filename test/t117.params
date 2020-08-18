@@ -1,0 +1,14 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Parsing data from Orca output
+VERBOSITY: 3
+TASK: AnalyseORCAOutput
+JobOutputFile: ../t117-orca.log
+ROOTPATHNAMEOUTPUT: t117_analysis
+PRINTALLGEOMETRIES: XYZ t117_allGeoms.xyz
+PRINTLASTGEOMETRY: SDF t117_lastGeom.sdf
+PRINTVIBMODES: 6 7 t117_vibModes_6_7.xyz
+TEMPLATECONNECTIVITY ../t117-tmpl.sdf
+CALCULATEENERGY: QUASIHARM 100
+DETECTKINDOFCRITICALPOINT: LOWESTFREQ 30

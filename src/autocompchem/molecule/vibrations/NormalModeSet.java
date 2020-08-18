@@ -89,7 +89,7 @@ public class NormalModeSet extends ArrayList<NormalMode> implements Cloneable
      * @param nm the text to append
      */
 
-    public void appendText(NormalMode nm)
+    public void append(NormalMode nm)
     {
         super.add(nm);
     }

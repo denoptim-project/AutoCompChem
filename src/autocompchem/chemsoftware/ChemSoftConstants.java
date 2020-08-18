@@ -276,7 +276,7 @@ public class ChemSoftConstants
 	/**
 	 * Name of data storing the vibrational frequencies
 	 */
-	public static final String JOBVIBFREQ = "VIBFREQ";
+	public static final String JOBDATAVIBFREQ = "VIBFREQ";
 
 	/**
 	 * Name of data storing the normal modes
@@ -293,5 +293,37 @@ public class ChemSoftConstants
 	 * the thermochemical corrections.
 	 */
 	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
+	
+	/**
+	 * Key of parameter generally used to provide specification of format.
+	 * This keyword is given without any context, so it can be used anywhere.
+	 */
+	public static final String GENERALFORMAT = "FORMAT";
+	
+	/**
+	 * Key of parameter generally used to provide specification of file name.
+	 * This keyword is given without any context, so it can be used anywhere.
+	 */
+	public static final String GENERALFILENAME = "FILENAME";
+	
+	/**
+	 * Key of parameter generally used to provide specification of one or more
+	 * indexes.
+	 * This keyword is given without any context, so it can be used anywhere.
+	 */
+	public static final String GENERALINDEXES = "INDEXES";
+
+	/**
+	 * Key of parameter specifying the threshold used for quasiharmonic
+	 * calculation of thermochemical corrections.
+	 */
+	public static final String QHARMTHRSLD = "QHTHRESHOLD";
+	
+	/**
+	 * Key of parameter specifying the smallest frequency considered to be
+	 * non-zero.
+	 */
+
+	public static final String SMALLESTFREQ = "LOWESTFREQ";
 
 }
