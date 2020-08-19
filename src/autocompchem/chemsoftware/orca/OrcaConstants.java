@@ -99,4 +99,53 @@ public class OrcaConstants
 	 */
 	public static final String LOGGIBBSFREEENERGY = "Final Gibbs free energy ";
 	
+	/**
+	 * String identifying the electronic entropy 
+	 */
+	public static final String LOGTHERMOCHEM_S_ELECTR = "Electronic entropy ";
+	
+	/**
+	 * String identifying the vibrational entropy
+	 */
+	//NB: the extra space in the string is needed!
+	public static final String LOGTHERMOCHEM_S_VIB = "Vibrational entropy  ";
+	
+	/**
+	 * String identifying the translational entropy
+	 */
+	//NB: the extra space in the string is needed!
+	public static final String LOGTHERMOCHEM_S_TRANS = "Rotational entropy  ";
+	
+	/**
+	 * String identifying the rotational entropy
+	 */
+	public static final String LOGTHERMOCHEM_S_ROT = "Translational entropy ";
+	
+	/**
+	 * String identifying the total enthalpy
+	 */
+	public static final String LOGTHERMOCHEM_H = "Total Enthalpy ";
+	
+	/**
+	 * String identifying the zero point energy
+	 */
+	public static final String LOGTHERMOCHEM_ZPE = "Zero point energy ";
+	
+	/**
+	 * String identifying the vibrational correction to thermal energy
+	 */
+	public static final String LOGTHERMOCHEM_UCORR_VIB = 
+			"Thermal vibrational correction ";
+	
+	/**
+	 * String identifying the rotational correction to thermal energy
+	 */
+	public static final String LOGTHERMOCHEM_UCORR_ROT = 
+			"Thermal rotational correction ";
+	
+	/**
+	 * String identifying the translational correction to thermal energy
+	 */
+	public static final String LOGTHERMOCHEM_UCORR_TRANS = 
+			"Thermal translational correction ";
 }

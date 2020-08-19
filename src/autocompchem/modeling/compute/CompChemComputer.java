@@ -50,7 +50,7 @@ public class CompChemComputer
     public static double vibrationalEntropyCorr(ArrayList<Double> freqs,
                                                                     double temp)
     {
-        return vibrationalEntropyCorr(freqs,temp,0.0,0.0,0.0,0);
+        return vibrationalEntropyCorr(freqs,temp,0.0,0.0,0.0001,0);
     }
 
 //------------------------------------------------------------------------------
@@ -141,7 +141,6 @@ public class CompChemComputer
                 }
                 freq = qhThrsh;  
             }
-
             // calculate contribution for this mode
             freq = hck * freq;  //[cm/K] * [1/cm] = 1/K
             double vs = cR*((freq/temp)/(Math.exp(freq/temp) - 1.0) 

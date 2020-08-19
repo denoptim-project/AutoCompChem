@@ -281,7 +281,7 @@ public class ChemSoftConstants
 	/**
 	 * Name of data storing the normal modes
 	 */
-	public static final String JOBVIBMODES = "VIBMOFES";
+	public static final String JOBDATAVIBMODES = "VIBMOFES";
 
 	/**
 	 * Name of data collecting molecular geometries
@@ -293,6 +293,53 @@ public class ChemSoftConstants
 	 * the thermochemical corrections.
 	 */
 	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
+	
+	/**
+	 * Name of data containing the electronic entropy
+	 */
+	public static final String JOBDATTHERMOCHEM_S_ELECTR = "ENTROPY_ELE";
+
+	/**
+	 * Name of data containing the vibrational entropy
+	 */
+	//NB: the extra space in the string is needed!
+	public static final String JOBDATTHERMOCHEM_S_VIB = "ENTROPY_VIB";
+
+	/**
+	 * Name of data containing the translational entropy
+	 */
+	//NB: the extra space in the string is needed!
+	public static final String JOBDATTHERMOCHEM_S_TRANS = "ENTROPY_TRN";
+
+	/**
+	 * Name of data containing the rotational entropy
+	 */
+	public static final String JOBDATTHERMOCHEM_S_ROT = "ENTROPY_ROT";
+
+	/**
+	 * Name of data containing the total enthalpy
+	 */
+	public static final String JOBDATTHERMOCHEM_H = "ENTHALPY";
+
+	/**
+	 * Name of data containing the zero point energy
+	 */
+	public static final String JOBDATTHERMOCHEM_ZPE = "ZPE";
+
+	/**
+	 * Name of data containing the vibrational correction to thermal energy
+	 */
+	public static final String JOBDATTHERMOCHEM_UCORR_VIB = "UCORR_VIB";
+
+	/**
+	 * Name of data containing the rotational correction to thermal energy
+	 */
+	public static final String JOBDATTHERMOCHEM_UCORR_ROT = "UCORR_ROT";
+
+	/**
+	 * Name of data containing the translational correction to thermal energy
+	 */
+	public static final String JOBDATTHERMOCHEM_UCORR_TRANS = "UCORR_TRN";
 	
 	/**
 	 * Key of parameter generally used to provide specification of format.
@@ -318,6 +365,20 @@ public class ChemSoftConstants
 	 * calculation of thermochemical corrections.
 	 */
 	public static final String QHARMTHRSLD = "QHTHRESHOLD";
+	
+	/**
+	 * Key of parameter specifying the threshold below which the we consider 
+	 * any imaginary mode a read one. If |iv|&lt;val then iv becomes v
+	 * when calculating quasi-harmonic vibrational component of entropy.
+	 */
+	public static final String QHARMTOREAL = "QHARMTOREAL";
+	
+	/**
+	 * Key of parameters specifying the threshold below which we ignore 
+	 * frequencies when calculating the quasi-harmonic vibrational entropy.
+	 * 
+	 */
+	public static final String QHARMIGNORE = "QHARMIGNORE";
 	
 	/**
 	 * Key of parameter specifying the smallest frequency considered to be

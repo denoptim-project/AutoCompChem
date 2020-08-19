@@ -151,8 +151,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             		String[] p = line.trim().split("\\s+");
             		stepScfConvSteps.add(Integer.parseInt(p[4]));
             		stepData.putNamedData(new NamedData(
-        					ChemSoftConstants.JOBDATASCFCONVERGED,
-        					true));
+        					ChemSoftConstants.JOBDATASCFCONVERGED,true));
             	}
             	
             	if (line.matches(".*" + 
@@ -280,7 +279,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                     	}
                     }
             	    stepData.putNamedData(new NamedData(
-        					ChemSoftConstants.JOBVIBMODES,nms));
+        					ChemSoftConstants.JOBDATAVIBMODES,nms));
             	}
    
             	if (line.matches(".*" + OrcaConstants.LOGGIBBSFREEENERGY+ ".*"))
@@ -291,6 +290,95 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
         					Double.parseDouble(p[5])));
             	}
             	
+                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ELECTR
+                        + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[3]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_S_ELECTR,
+                                val));
+                    }
+
+                    if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_VIB
+                        + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[3]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_S_VIB,
+                                val));
+                    }
+
+                    if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_TRANS
+                        + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[3]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_S_TRANS,
+                                val));
+                    }
+
+                    if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ROT
+                        + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[3]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_S_ROT,
+                                val));
+                    }
+
+                    if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_H
+                        + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[3]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_H,
+                                val));
+                    }
+
+                    if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_ZPE
+                        + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[4]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_ZPE,
+                                val));
+                    }
+
+                    if (line.matches(".*" 
+                    		+ OrcaConstants.LOGTHERMOCHEM_UCORR_VIB + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[4]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_UCORR_VIB,
+                                val));
+                    }
+
+                    if (line.matches(".*" 
+                    		+ OrcaConstants.LOGTHERMOCHEM_UCORR_ROT + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[4]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_UCORR_ROT,
+                                val));
+                    }
+
+                    if (line.matches(".*" 
+                    		+ OrcaConstants.LOGTHERMOCHEM_UCORR_TRANS + ".*"))
+                    {
+                        String[] p = line.trim().split("\\s+");
+                        Double val = Double.parseDouble(p[4]);
+                        stepData.putNamedData(new NamedData(
+                                ChemSoftConstants.JOBDATTHERMOCHEM_UCORR_TRANS,
+                                val));
+                    }
             	
             	// There is plenty of other data in the Orca log file. 
             	// So, this list of parsed data will grow as neede...
@@ -300,6 +388,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
 
             	if (line.matches(".*" + OrcaConstants.____+ ".*"))
             	{
+            		String[] p = line.trim().split("\\s+");
             		//TODO: write code that parses data
             		 
             	    stepData.putNamedData(new NamedData(

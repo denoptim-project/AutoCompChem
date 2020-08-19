@@ -1,42 +1,28 @@
 package autocompchem.chemsoftware;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
-import autocompchem.chemsoftware.nwchem.NWChemTask;
 import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.molecule.connectivity.ConnectivityUtils;
+import autocompchem.modeling.compute.CompChemComputer;
+import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Terminator;
-import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**
@@ -57,12 +43,6 @@ public class ChemSoftOutputHandler extends Worker
      * Root pathname for any potential output file
      */
     private String outFileRootName;
-
-    /**
-     * Pathnames where to print results such output geometries, trajectories,
-     * vibrational modes, etc.
-     */
-    private Map<String,String> outPathNames = new HashMap<String,String>();
 
     /**
      * Verbosity level
@@ -235,7 +215,7 @@ public class ChemSoftOutputHandler extends Worker
             String s = params.getParameter(ChemSoftConstants.PARGETENERGY)
             		.getValueAsString();
             String[] p = s.split("\\s+");
-            AnalysisTask a = new AnalysisTask(AnalysisKind.ENERGY);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.SCFENERGY);
             ParameterStorage ps = new ParameterStorage();
             for (int i=0; i<p.length; i++)
             {
@@ -365,6 +345,8 @@ public class ChemSoftOutputHandler extends Worker
         AtomContainerSet geomsToExpose = new AtomContainerSet();
         TextBlock critPointKinds = new TextBlock();
         IAtomContainer lastGeomToExpose = null;
+        ListOfDoubles convergedScfEnergies = new ListOfDoubles();
+        ListOfDoubles qhGibbsEnergies = new ListOfDoubles();
         
         // Unless we have defined tasks for specific job steps, we take the 
         // analysis tasks defined upon initialisation and perform them on all
@@ -426,6 +408,8 @@ public class ChemSoftOutputHandler extends Worker
 	        					stepData.getNamedData(ChemSoftConstants
 	        							.JOBDATAGEOMETRIES).getValue();
 	        			
+	        			//TODO apply useTemplateConnectivity
+	        			
 	        			geomsToExpose.add(acs);
 	        			
 	        			IOtools.writeAtomContainerSetToFile(outFileName, acs,
@@ -462,6 +446,8 @@ public class ChemSoftOutputHandler extends Worker
 	        			AtomContainerSet acs = (AtomContainerSet) 
 	        					stepData.getNamedData(ChemSoftConstants
 	        							.JOBDATAGEOMETRIES).getValue();
+
+	        			//TODO apply useTemplateConnectivity
 	        			
 	        			IAtomContainer mol = acs.getAtomContainer(
 	        					acs.getAtomContainerCount()-1);
@@ -485,22 +471,27 @@ public class ChemSoftOutputHandler extends Worker
 		        			}
 	        				break;
 	        			}
-	        			String smallestStr = "0.0";
-	        			smallestStr = changeIfParameterIsFound(smallestStr,
+	        			Double smallest = 0.0;
+	        			smallest = changeIfParameterIsFound(smallest,
 	        					ChemSoftConstants.SMALLESTFREQ,atParams);
-	        			Double smallest = Double.parseDouble(smallestStr);
 	        			ListOfDoubles freqs = (ListOfDoubles) 
 	        					stepData.getNamedData(ChemSoftConstants
 	        							.JOBDATAVIBFREQ).getValue();
 	        			ListOfDoubles imgFreq = new ListOfDoubles();
+	        			boolean ignoredSome = false;
 	        			for (Double freq : freqs)
 	        			{
 	        				if (Math.abs(freq)>smallest && freq<0)
 	        				{
 	        					imgFreq.add(freq);
 	        				}
+	        				if (Math.abs(freq)<smallest && freq<0)
+	        				{
+	        					ignoredSome = true;
+	        				}
 	        			}
 	        			String kindOfCriticalPoint = "";
+	        			String imgFreqStr = "";
 	        			switch (imgFreq.size())
 	        			{
 	        			case 0:
@@ -508,49 +499,220 @@ public class ChemSoftOutputHandler extends Worker
 	        				break;
 	        			case 1:
 	        				kindOfCriticalPoint = "TRANSITION STATE";
+	        				imgFreqStr = imgFreq.toString();
 	        				break;
 	        			default:
 	        				kindOfCriticalPoint = "SADDLE POINT (" 
 	        						+ "order " + imgFreq.size()+ ")";
+	        				imgFreqStr = imgFreq.toString();
 	        				break;	        				
 	        			}
 	        			resultsString.append("-> ").append(kindOfCriticalPoint);
-	        			resultsString.append(" ").append(imgFreq.toString());
+	        			if (Math.abs(smallest) > 0.000001 && ignoredSome)
+	        			{
+	        				resultsString.append(" (ignoring v<"+smallest+")");
+	        			}
+	        			resultsString.append(" ").append(imgFreqStr);
 	        			resultsString.append(NL);
 	        			
 	        			critPointKinds.add(kindOfCriticalPoint);
+	        			break;
 	        		}
 	        		
-	        		case ENERGY:
+	        		case SCFENERGY:
 	        		{
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATASCFENERGIES))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No SCF converged energy "
+		        						+ "found in step " + stepId + ".");
+		        			}
+	        				break;
+	        			}
+	        			ListOfDoubles l = (ListOfDoubles) stepData.getNamedData(
+	        					ChemSoftConstants.JOBDATASCFENERGIES).getValue();
+	        			Double energy = l.get(l.size()-1);
+	        			resultsString.append("-> SCF Energy ").append(energy);
+	        			resultsString.append(NL);
 	        			
+	        			convergedScfEnergies.add(energy);
+	        			break;
 	        		}
 	        		
 	        		case QHTHERMOCHEMISTRY:
 	        		{
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATAVIBFREQ))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No frequencies found in "
+		        						+ "step " + stepId 
+		        						+ ". Skipping QHThermochemistry.");
+		        			}
+	        				break;
+	        			}
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No Gibbs free energy found in "
+		        						+ "step " + stepId 
+		        						+ ". Skipping QHThermochemistry.");
+		        			}
+	        				break;
+	        			}
 	        			
+	        			Double gibbsFreeEnergy = (Double) stepData.getNamedData(
+	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY).getValue();
+	        			//TODO del
+	        			System.out.println("gibbsFreeEnergy FILE: "+gibbsFreeEnergy);
+	        			
+	        			Double temp = 298.15;
+	        			@SuppressWarnings("unchecked")
+						Double vibS = CompChemComputer.vibrationalEntropyCorr(
+	        					(ArrayList<Double>) stepData.getNamedData(
+	    	        					ChemSoftConstants.JOBDATAVIBFREQ).getValue(), 
+	        					temp);
+
+	        			Double qhThrsh = 0.0;
+	        			qhThrsh = changeIfParameterIsFound(qhThrsh,
+	        					ChemSoftConstants.QHARMTHRSLD,atParams);
+	        			Double imThrsh = 0.0;
+	        			imThrsh  = changeIfParameterIsFound(imThrsh,
+	        					ChemSoftConstants.QHARMTOREAL,atParams);
+	        			Double ignThrsh = 0.1;
+	        			ignThrsh = changeIfParameterIsFound(ignThrsh,
+	        					ChemSoftConstants.QHARMIGNORE,atParams);
+	        			@SuppressWarnings("unchecked")
+						Double qhVibS = CompChemComputer.vibrationalEntropyCorr(
+	        					(ArrayList<Double>) stepData.getNamedData(
+	    	        					ChemSoftConstants.JOBDATAVIBFREQ).getValue(), 
+	        					temp, qhThrsh, imThrsh, ignThrsh, verbosity-1);
+	        			
+	        			gibbsFreeEnergy = gibbsFreeEnergy - vibS + qhVibS;
+	        			
+	        			resultsString.append("-> Quasi-Harm. corrected "
+	        					+ "Gibbs free energy ").append(gibbsFreeEnergy);
+	        			resultsString.append(" (").append(qhThrsh).append("; ");
+	        			resultsString.append(imThrsh).append("; ").append(ignThrsh);
+	        			resultsString.append(")").append(NL);
+	        			
+	        			qhGibbsEnergies.add(gibbsFreeEnergy);
+	        			break;
 	        		}
 	        		
 	        		case VIBMODE:
 	        		{
-	        			
-	        		}
-	        		
-	        		case VIBMODENUM:
-	        		{
-	        			
+	        			if (!stepData.contains(
+	        					ChemSoftConstants.JOBDATAVIBMODES))
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("No normal modes found in "
+		        						+ "step " + stepId + ".");
+		        			}
+	        				break;
+	        			}
+	        			NormalModeSet nms = (NormalModeSet) stepData.getNamedData(
+	        					ChemSoftConstants.JOBDATAVIBMODES).getValue();
+	        			String outFile = outFileRootName + "_nm.xyz";
+	        			outFile = changeIfParameterIsFound(outFile, 
+	        					ChemSoftConstants.GENERALFILENAME, atParams);
+	        			String idxsStr = "";
+	        			idxsStr = changeIfParameterIsFound(idxsStr, 
+	        					ChemSoftConstants.GENERALINDEXES, atParams);
+	        			boolean all = false;
+	        			ListOfIntegers idxs = new ListOfIntegers();
+	        			if (!idxsStr.equals(""))
+	        			{
+		        			String[] p = idxsStr.split("\\s+");
+		        			for (int i=0; i<p.length; i++)
+		        			{
+		        				idxs.add(Integer.parseInt(p[i]));
+		        			}
+	        			} else {
+	        				all = true;
+	        				for (int i=0; i<nms.size(); i++)
+	        				{
+	        					idxs.add(i);
+	        				}
+	        			}
+	        			StringBuilder sb = new StringBuilder();
+	        			if (verbosity > 1)
+	        			{ 
+	        				if (all)
+	        				{
+	        					System.out.print("Esporting all normal modes");
+	        				} else {
+	        					System.out.print("Esporting normal modes ");
+	        				}
+	        			}
+	        			for (Integer id : idxs)
+	        			{
+	        				if (verbosity>1 && !all)
+		        			{ 
+	        					System.out.print(id + "  ");
+		        			}
+	        				sb.append("# Normal mode #").append(id).append(NL);
+	        				sb.append(nms.get(id).toLines());
+	        			}
+	        			if (verbosity > 1)
+	        			{ 
+        					System.out.println(" to file '" + outFile + "'");
+	        			}
+	        			IOtools.writeTXTAppend(outFile, sb.toString(), true);
+	        			break;
 	        		}
         		}
         		
-        		//TODO
-        		// Store result in output collector (to be exposed)
+        		//TODO: more? ...just add it here ;-)
         	}
         }
      	
         if (verbosity > 0)
         {
+        	System.out.println(" ");
+        	System.out.println("Summary of the results:");
             System.out.println(resultsString.toString());
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @param original the original value
+     * @param key the reference name of the parameter to try to find
+     * @return either the original value, or, if the given parameter is found, 
+     * the value of that parameter
+     */
+    private double changeIfParameterIsFound(double original, String key,
+    		ParameterStorage ps) 
+    {
+    	String iStr = Double.toString(original);
+    	iStr = changeIfParameterIsFound(iStr, key, ps);
+    	return Double.parseDouble(iStr);
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * @param original the original value
+     * @param key the reference name of the parameter to try to find
+     * @return either the original value, or, if the given parameter is found, 
+     * the value of that parameter
+     */
+    private ListOfIntegers changeIfParameterIsFound(ListOfIntegers original, 
+    		String key, ParameterStorage ps) 
+    {
+		if (ps.contains(key))
+		{
+			return (ListOfIntegers) ps.getParameter(key).getValue();
+		}
+    	return original;
     }
     
 //------------------------------------------------------------------------------
@@ -588,11 +750,13 @@ public class ChemSoftOutputHandler extends Worker
 	}
 
 //------------------------------------------------------------------------------
+    
 	/**
      * Method that parses the log file of a comp.chem. software.
      * This method is meant to be overwritten by subclasses. 
      * @param file
      */
+    
     protected void readLogFile(File file) throws Exception
     {
     	// This is a template to be used in the subclasses
@@ -628,131 +792,6 @@ public class ChemSoftOutputHandler extends Worker
     			+ "ChemSoftOutputHandler did "
     			+ "not overwrite the readLogFile method. Please, report this "
     			+ "to the authors.",-1);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * TODO
-     */
-
-    public void printLastOutputGeometry(String outFormat)
-    {
-    	//TODO ensure we have run the analysis
-    	
-    	//TODO split the part where you chose which molecule/s
-    	// from that where you write them
-    	
-    	IAtomContainer mol = null;
-        switch (outFormat.toUpperCase())
-        {
-            case "SDF":
-            {
-                String outFile = outFileRootName + ".sdf";
-                if (useTemplateConnectivity)
-                {
-                    ConnectivityUtils.importConnectivityFromReference(
-                                                mol,connectivityTemplate);
-                }
-                IOtools.writeSDFAppend(outFile,mol,false);
-                break;
-            }
-
-            case "XYZ":
-            {
-            	String outFile = outFileRootName + ".sdf";
-                IOtools.writeXYZAppend(outFile,mol,false);
-                break;
-            }
-
-            case "SDFXYZ":
-            {
-            	String outFile = outFileRootName + ".xyz";
-                IOtools.writeXYZAppend(outFile + ".xyz",mol,false);
-                if (useTemplateConnectivity)
-                {
-                    ConnectivityUtils.importConnectivityFromReference(
-                                                mol,connectivityTemplate);
-                }
-                outFile = outFileRootName + ".sdf";
-                IOtools.writeSDFAppend(outFile + ".sdf",mol,false);
-                break;
-            }
-
-            default:
-                Terminator.withMsgAndStatus("ERROR! Format '" + outFormat 
-                    + "' cannot be use for output in this context. Try SDF,"
-                    + " XYZ, or SDFXYZ (will print both).",-1);
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Print selected vibrational modes projected in Cartesian coordinates
-     * according to the parameters defined by constructor.
-     */
-
-    /*
-    private void printVibrationalModes()
-    {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (int vmId : selectedVibModes)
-        {
-            if (first)
-            {
-                first = false;
-            } else {
-                sb.append(">").append(System.getProperty("line.separator"));
-            }
-            ArrayList<Double> mode = vibModes.get(vmId);
-            for (int atmId=0; atmId<(mode.size()/3); atmId++)
-            {
-                sb.append(String.format(" %5.5f",mode.get(atmId*3)));
-                sb.append(String.format(" %5.5f",mode.get(atmId*3+1)));
-                sb.append(String.format(" %5.5f",mode.get(atmId*3+2)));
-                sb.append(System.getProperty("line.separator"));
-            }
-        }
-        IOtools.writeTXTAppend(outFileVibModes,sb.toString(),false);
-        if (verbosity > 1)
-        {
-            System.out.println(" Vibrational mode " + selectedVibModes 
-                + " written to '" + outFileVibModes + "'.");
-        }
-    }
-    */
-
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns a string summarising the results of the evaluation 
-     * @return the summary as a string
-     */
-
-    public String getResultsAsString()
-    {
-        String str = "File:" + inFile + " Steps:" + numSteps + " NormalTerm:"
-                        + normalTerminated;
-        if (!normalTerminated)
-        {
-        	//TODO
-        	/*
-            str = str + " Error:";
-            if (errorIsDecoded)
-                str = str + actualEM.getName();
-            else
-                str = str + "Not Known";
-                */
-        }
-        else
-        {
-            str = str + "\n " + analysisResultLog;
-        }
-
-        return str;
     }
 
 //------------------------------------------------------------------------------

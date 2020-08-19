@@ -24,11 +24,10 @@ public class AnalysisTask
      * Possible kinds of analysis that can be asked for each job/step
      */
     public enum AnalysisKind {
-    	ENERGY,
+    	SCFENERGY,
     	LASTGEOMETRY,
     	CRITICALPOINTKIND,
     	VIBMODE,
-    	VIBMODENUM,
     	QHTHERMOCHEMISTRY, 
     	ALLGEOM}
     

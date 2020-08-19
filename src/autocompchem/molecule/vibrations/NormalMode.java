@@ -170,9 +170,7 @@ public class NormalMode implements Cloneable
     	StringBuilder sb = new StringBuilder();
     	for (Point3d p : components)
     	{
-    		sb.append(p.x).append(" ");
-    		sb.append(p.y).append(" ");
-    		sb.append(p.z);
+    		sb.append(String.format("%-13.7f %-13.7f %-13.7f", p.x, p.y, p.z));
     		sb.append(System.getProperty("line.separator"));
     	}
     	return sb.toString();
