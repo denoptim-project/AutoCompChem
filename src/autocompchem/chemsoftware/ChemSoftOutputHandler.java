@@ -18,6 +18,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
+import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
@@ -368,9 +369,44 @@ public class ChemSoftOutputHandler extends Worker
         		continue;
         	}
         	
+        	//This contains all the data parsed from the file/s
         	NamedDataCollector stepData = stepsData.get(stepId);
         	resultsString.append(NL + "Step " + stepId + ":" + NL);
         	
+            // We inherit connectivity here so all analysis of geometries can
+            // make use of the connectivity
+    		if (useTemplateConnectivity)
+    		{
+    			if (stepData.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
+    			{
+    				AtomContainerSet acs = (AtomContainerSet) stepData
+    						.getNamedData(ChemSoftConstants.JOBDATAGEOMETRIES)
+    						.getValue();
+    				if (acs.getAtomContainerCount() > 0)
+    				{
+	    				if (acs.getAtomContainer(0).getAtomCount() !=
+	    						connectivityTemplate.getAtomCount())
+	    				{
+	    					Terminator.withMsgAndStatus("ERROR! Number of "
+	    							+ "atom in template structure does "
+	    							+ "not correspond to number of atom "
+	    							+ "in file '" + inFile + "' (" 
+	    							+ connectivityTemplate.getAtomCount() 
+	    							+ " vs. "
+	    							+ acs.getAtomContainer(0).getAtomCount()
+	    							+ ").", -1);
+	    				}
+	    				for (int i=0; i<acs.getAtomContainerCount(); i++)
+	    				{
+	    					IAtomContainer iac = acs.getAtomContainer(i);
+	    					ConnectivityUtils.
+	    					importConnectivityFromReference(iac, 
+	    							connectivityTemplate);
+	    				}
+    				}
+    			}
+    		}
+    		
         	// What do we have to do on the current step?
         	ArrayList<AnalysisTask> todoList = analysisTasks.get(stepId);
         	for (AnalysisTask at : todoList)
@@ -408,8 +444,6 @@ public class ChemSoftOutputHandler extends Worker
 	        					stepData.getNamedData(ChemSoftConstants
 	        							.JOBDATAGEOMETRIES).getValue();
 	        			
-	        			//TODO apply useTemplateConnectivity
-	        			
 	        			geomsToExpose.add(acs);
 	        			
 	        			IOtools.writeAtomContainerSetToFile(outFileName, acs,
@@ -446,8 +480,6 @@ public class ChemSoftOutputHandler extends Worker
 	        			AtomContainerSet acs = (AtomContainerSet) 
 	        					stepData.getNamedData(ChemSoftConstants
 	        							.JOBDATAGEOMETRIES).getValue();
-
-	        			//TODO apply useTemplateConnectivity
 	        			
 	        			IAtomContainer mol = acs.getAtomContainer(
 	        					acs.getAtomContainerCount()-1);
@@ -502,12 +534,13 @@ public class ChemSoftOutputHandler extends Worker
 	        				imgFreqStr = imgFreq.toString();
 	        				break;
 	        			default:
-	        				kindOfCriticalPoint = "SADDLE POINT (" 
-	        						+ "order " + imgFreq.size()+ ")";
-	        				imgFreqStr = imgFreq.toString();
+	        				kindOfCriticalPoint = "SADDLE POINT (order " 
+	        						+ imgFreq.size() + ")";
+	        				imgFreqStr = imgFreq.toString().replace("-","i");
 	        				break;	        				
 	        			}
-	        			resultsString.append("-> ").append(kindOfCriticalPoint);
+        				imgFreqStr = imgFreqStr.replace("-", "i");
+        				resultsString.append("-> ").append(kindOfCriticalPoint);
 	        			if (Math.abs(smallest) > 0.000001 && ignoredSome)
 	        			{
 	        				resultsString.append(" (ignoring v<"+smallest+")");
@@ -568,8 +601,6 @@ public class ChemSoftOutputHandler extends Worker
 	        			
 	        			Double gibbsFreeEnergy = (Double) stepData.getNamedData(
 	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY).getValue();
-	        			//TODO del
-	        			System.out.println("gibbsFreeEnergy FILE: "+gibbsFreeEnergy);
 	        			
 	        			Double temp = 298.15;
 	        			@SuppressWarnings("unchecked")
