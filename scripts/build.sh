@@ -260,7 +260,12 @@ function functionalityTesting() {
         echo " "
         echo "Running test $i/${#chosenTests[@]}"
         log=t$i.log
-        "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  "../t$i.params" > "$log" 2>&1
+        if $interactiveRun
+        then
+            "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  "../t$i.params"
+        else
+            "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  "../t$i.params" > "$log" 2>&1
+        fi
 
         if $printFuncTestLog
         then
@@ -357,6 +362,7 @@ runUnitTests=false
 runCliTesting=false
 runFunctionalityTests=false
 printFuncTestLog=false
+interactiveRun=false
 chosenUnitTests=()
 chosenCliTests=()
 chosenTests=()
@@ -395,6 +401,7 @@ do
                   fi
               done;;
 	"-l") printFuncTestLog=true;;
+        "-i") interactiveRun=true;;
         "-n") runBuild=false;;
         "-j") getArg "$i" "$#"
               javaDir="$argument";;

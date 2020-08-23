@@ -421,8 +421,8 @@ public class ChemSoftOutputHandler extends Worker
 	        			{
 	        				if (verbosity > 1)
 		        			{
-		        				System.out.println("No geometry found in step "
-		        						+ stepId + ".");
+		        				System.out.println("No geometries found in "
+		        						+ "step " + stepId + ".");
 		        			}
 	        				break;
 	        			}
@@ -434,20 +434,35 @@ public class ChemSoftOutputHandler extends Worker
 	        			outFileName= changeIfParameterIsFound(outFileName,
 	        					ChemSoftConstants.GENERALFILENAME,atParams);
 	        			
+	        			AtomContainerSet acs = (AtomContainerSet) 
+	        					stepData.getNamedData(ChemSoftConstants
+	        							.JOBDATAGEOMETRIES).getValue();
+	        			
+	        			if (acs.getAtomContainerCount()==0)
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("Empty list of geometry in "
+		        						+ "step " + stepId + ".");
+		        			}
+	        				break;
+	        			}
+
 	        			if (verbosity > 1)
 	        			{
 	        				System.out.println("Writing all geometries of "
 	        						+ "step " + stepId + " to file '" 
 	        						+ outFileName+"'");
 	        			}
-	        			AtomContainerSet acs = (AtomContainerSet) 
-	        					stepData.getNamedData(ChemSoftConstants
-	        							.JOBDATAGEOMETRIES).getValue();
 	        			
 	        			geomsToExpose.add(acs);
 	        			
 	        			IOtools.writeAtomContainerSetToFile(outFileName, acs,
 	        					format,true);
+	        			
+	        			resultsString.append("-> #geometries ").append(
+	        					acs.getAtomContainerCount());
+	        			resultsString.append(NL);
 	        			break;
 	        		}
 	        		
@@ -471,15 +486,26 @@ public class ChemSoftOutputHandler extends Worker
 	        			outFileName= changeIfParameterIsFound(outFileName,
 	        					ChemSoftConstants.GENERALFILENAME,atParams);
 	        			
+	        			AtomContainerSet acs = (AtomContainerSet) 
+	        					stepData.getNamedData(ChemSoftConstants
+	        							.JOBDATAGEOMETRIES).getValue();
+	        			
+	        			if (acs.getAtomContainerCount() == 0)
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("Empty list of geometries "
+		        						+ "in step " + stepId + ".");
+		        			}
+	        				break;
+	        			}
+	        			
 	        			if (verbosity > 1)
 	        			{
 	        				System.out.println("Writing last geometry of "
 	        						+ "step " + stepId + " to file '" 
 	        						+ outFileName+"'");
 	        			}
-	        			AtomContainerSet acs = (AtomContainerSet) 
-	        					stepData.getNamedData(ChemSoftConstants
-	        							.JOBDATAGEOMETRIES).getValue();
 	        			
 	        			IAtomContainer mol = acs.getAtomContainer(
 	        					acs.getAtomContainerCount()-1);
@@ -696,6 +722,10 @@ public class ChemSoftOutputHandler extends Worker
         					System.out.println(" to file '" + outFile + "'");
 	        			}
 	        			IOtools.writeTXTAppend(outFile, sb.toString(), true);
+	        			
+	        			resultsString.append("-> #vibrational Modes ").append(
+	        					nms.size());
+	        			resultsString.append(NL);
 	        			break;
 	        		}
         		}

@@ -562,7 +562,7 @@ public class IOtools
 
     /**
      * Read a molecular structure file that might contain multiple structures.
-     * Accepta SDF or XYZ files
+     * Accepts SDF or XYZ files
      * @param filename file to be read
      * @return all the chemical objects into an <code>ArrayList</code>
      */

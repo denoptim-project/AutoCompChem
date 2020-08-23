@@ -220,7 +220,7 @@ INFO   : the flag for use of LIBINT has been found!
 ================================================================================
                                        INPUT FILE
 ================================================================================
-NAME = m.inp
+NAME = t118.inp
 |  1> ! XTB2 xyzfile
 |  2> %pal nprocs 3 end
 |  3> * xyz 0 1
@@ -239,7 +239,7 @@ NAME = m.inp
 | 16> %pal nprocs 3 end
 | 17> %geom
 | 18>   InHess Read
-| 19>   InHessName "m_job2.hess"
+| 19>   InHessName "t118_job2.hess"
 | 20> end
 | 21> *xyzfile 0 1
 | 22> 
@@ -322,10 +322,10 @@ NAME = m.inp
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118
           hostname                   : c22-7
-          calculation namespace      : m
-          coordinate file            : m_XTB.xyz
+          calculation namespace      : t118
+          coordinate file            : t118_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -576,10 +576,10 @@ XTB module                      ...        0.080 sec (=   0.001 min) 100.0 %
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_job2_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m_job2
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_job2_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118_job2
           hostname                   : c22-7
-          calculation namespace      : m_job2
-          coordinate file            : m_job2_XTB.xyz
+          calculation namespace      : t118_job2
+          coordinate file            : t118_job2_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -774,14 +774,14 @@ Numerical increment            ... 5.000e-03 bohr
 IR-spectrum generation         ... on
 Raman-spectrum generation      ... off
 Surface Crossing Hessian       ... off
-List of participating nodes    ...  m_job2.hostnames
+List of participating nodes    ...  t118_job2.hostnames
 
 The output will be reduced. Please look at the following files:
-SCF program output             ... >m_job2.lastscf
-Integral program output        ... >m_job2.lastint
-Gradient program output        ... >m_job2.lastgrad
-Dipole moment program output   ... >m_job2.lastmom
-AutoCI program output          ... >m_job2.lastautoci
+SCF program output             ... >t118_job2.lastscf
+Integral program output        ... >t118_job2.lastint
+Gradient program output        ... >t118_job2.lastgrad
+Dipole moment program output   ... >t118_job2.lastmom
+AutoCI program output          ... >t118_job2.lastautoci
 
 
          <<< Energy and Gradient at the input geometry >>>
@@ -1030,7 +1030,7 @@ Strict Convergence                ....  False
 The optimization will be done in new redundant internal coordinates
 Making redundant internal coordinates   ...  (new redundants) done
 Evaluating the initial hessian          ... (Reading Exact Hessian)...  
-InHessName: m_job2.hess	The file <m_job2.hess> is opened as a .hess file
+InHessName: t118_job2.hess	The file <t118_job2.hess> is opened as a .hess file
 done
 done
 Diagonalizing the Hessian               .... done
@@ -1118,10 +1118,10 @@ Number of degrees of freedom            .... 3
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m_job3
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118_job3
           hostname                   : c22-7
-          calculation namespace      : m_job3
-          coordinate file            : m_job3_XTB.xyz
+          calculation namespace      : t118_job3
+          coordinate file            : t118_job3_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -1324,7 +1324,7 @@ Maximum allowed component of the step   ....  0.300
 Current trust radius                    ....  0.300
 Evaluating the initial hessian          ....  (read) 
 (Reading Exact Hessian)...  
-InHessName: m_job2.hess	The file <m_job2.hess> is opened as a .hess file
+InHessName: t118_job2.hess	The file <t118_job2.hess> is opened as a .hess file
 done
 done
 Diagonalizing the Hessian               .... done
@@ -1436,10 +1436,10 @@ The optimization has not yet converged - more geometry cycles are needed
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m_job3
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118_job3
           hostname                   : c22-7
-          calculation namespace      : m_job3
-          coordinate file            : m_job3_XTB.xyz
+          calculation namespace      : t118_job3
+          coordinate file            : t118_job3_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -1743,10 +1743,10 @@ The optimization has not yet converged - more geometry cycles are needed
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m_job3
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118_job3
           hostname                   : c22-7
-          calculation namespace      : m_job3
-          coordinate file            : m_job3_XTB.xyz
+          calculation namespace      : t118_job3
+          coordinate file            : t118_job3_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -2053,10 +2053,10 @@ Storing new coordinates                 .... done
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m_job3
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_job3_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118_job3
           hostname                   : c22-7
-          calculation namespace      : m_job3
-          coordinate file            : m_job3_XTB.xyz
+          calculation namespace      : t118_job3
+          coordinate file            : t118_job3_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -2309,10 +2309,10 @@ XTB module                      ...        0.221 sec (=   0.004 min)   0.4 %
           |                Calculation Setup                |
            -------------------------------------------------
 
-          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb m_job4_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace m_job4
+          program call               : /cluster/projects/nn2506k/marcof/tools/orca_4_2_1_linux_x86-64_openmpi314/otool_xtb t118_job4_XTB.xyz --grad -c 0 -u 0 -P 3 --namespace t118_job4
           hostname                   : c22-7
-          calculation namespace      : m_job4
-          coordinate file            : m_job4_XTB.xyz
+          calculation namespace      : t118_job4
+          coordinate file            : t118_job4_XTB.xyz
           omp threads                :                     3
           number of atoms            :                     3
           number of electrons        :                     8
@@ -2507,14 +2507,14 @@ Numerical increment            ... 5.000e-03 bohr
 IR-spectrum generation         ... on
 Raman-spectrum generation      ... off
 Surface Crossing Hessian       ... off
-List of participating nodes    ...  m_job4.hostnames
+List of participating nodes    ...  t118_job4.hostnames
 
 The output will be reduced. Please look at the following files:
-SCF program output             ... >m_job4.lastscf
-Integral program output        ... >m_job4.lastint
-Gradient program output        ... >m_job4.lastgrad
-Dipole moment program output   ... >m_job4.lastmom
-AutoCI program output          ... >m_job4.lastautoci
+SCF program output             ... >t118_job4.lastscf
+Integral program output        ... >t118_job4.lastint
+Gradient program output        ... >t118_job4.lastgrad
+Dipole moment program output   ... >t118_job4.lastmom
+AutoCI program output          ... >t118_job4.lastautoci
 
 
          <<< Energy and Gradient at the input geometry >>>

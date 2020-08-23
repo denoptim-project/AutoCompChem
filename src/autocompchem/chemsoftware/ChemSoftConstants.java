@@ -384,7 +384,18 @@ public class ChemSoftConstants
 	 * Key of parameter specifying the smallest frequency considered to be
 	 * non-zero.
 	 */
-
 	public static final String SMALLESTFREQ = "LOWESTFREQ";
+
+	/**
+	 * Key of flag signaling that the output of a job is scattered over
+	 * multiple files.
+	 */
+	public static final String JOBOUTPUTONMULTIPLEFILES = "MULTIPLEOUTPUTFILES";
+
+	/**
+	 * Name of data containing the pathnames of additional files that contain
+	 * the geometries.
+	 */
+	public static final String EXTERNALFILEGEOMETRIES = "EXTERNALGEOMSFILE";
 
 }

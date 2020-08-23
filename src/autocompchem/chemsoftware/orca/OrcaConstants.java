@@ -148,4 +148,11 @@ public class OrcaConstants
 	 */
 	public static final String LOGTHERMOCHEM_UCORR_TRANS = 
 			"Thermal translational correction ";
+
+	/**
+	 * String identifying the line defining the namespace for Orca-xTB output
+	 * WARNINB: this is controlled by Grimme's xTB software, not by Orca!
+	 */
+	public static final String LOGJOBEXTNAMESPACE = 
+			"calculation namespace ";
 }

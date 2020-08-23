@@ -1,0 +1,63 @@
+#!/bin/bash
+
+if [ ! -f t118.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if [ ! -f t118_allGeoms.xyz ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+if [ ! -f t118_lastGeom.sdf ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+if [ ! -f t118_vibModes_6_7.xyz ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+n=0;n=$(grep -c " MINIMUM " t118.log )
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c ".*Gibbs free energy -5.068905.* (123.0; 0.0; 0.1)" t118.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^3$" t118_allGeoms.xyz )
+if [ $n -ne 7 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^O\s" t118_allGeoms.xyz )
+if [ $n -ne 7 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^H\s" t118_allGeoms.xyz )
+if [ $n -ne 14 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\$\$\$\$" t118_lastGeom.sdf )
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^ *0\.6375 *0\.6106 *0\.7399 H " t118_lastGeom.sdf )
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^  3  2  0" t118_lastGeom.sdf )
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^# Normal" t118_vibModes_6_7.xyz )
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^0.04142.. *0.03419.. *0.04756" t118_vibModes_6_7.xyz )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^-0.26305.. *0.38540.. *0.53610" t118_vibModes_6_7.xyz )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 15 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t118.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 16
+exit -1
+fi
