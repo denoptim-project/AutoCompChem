@@ -33,7 +33,54 @@ import autocompchem.worker.WorkerFactory;
 
 /**
  * Tool for editing molecular geometries. 
- * 
+ * HEre are the parameters that can be given to constructor:
+ * <ul>
+ * <li>
+ * <b>INFILE</b> pathname of the SDF file containing the molecular
+ * structure.
+ * (only SDF files with ONE molecule are acceptable!).
+ * </li>
+ * <li>
+ * <b>OUTFILE</b> pathname of the SDF file where results are to be
+ * written.
+ * </li>
+ * <li>
+ * <b>CARTESIANMOVE</b> (optional) pathname to a file defining 
+ * the Cartesian components of the geometric change. The file format
+ * consists of a list of translation vectors in Cartesian coordinates, 
+ * where each vector is reported as a space-separated  (X Y Z) tupla.
+ * The Cartesian move is orientation-dependent. Unless a
+ * reference substructure is also provided (see keyword 
+ * REFERENCESUBSTRUCTURE), it is assumed that the 1-to-N vectors refer to
+ * the 1-to-N atoms in the molecular system provided as input and that the
+ * orientation of the molecule is consistent with that of the Cartesian 
+ * move. When a reference substructure is provided (see parameter
+ * REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed
+ * to be consistent with that of the reference substructure.
+ * </li>
+ * <li>
+ * <b>OPTIMIZESCALINGFACTORS</b> (optional) requests the optimisation of 
+ * scaling factors to Cartesian mode and specifies i) the kind of distribution
+ *  to be produced (one string - acceptable kinds are <code>EVEN</code> and 
+ *  <code>BALANCED</code>), and ii) the number of scaling factors to generate
+ *  (one integer), iii) the percent of the possible negative path to consider, 
+ *  and iv) the percent of the possible positive path to consider.</li>
+ * <li>
+ * <b>CARTESIANSCALINGFACTORS</b> (optional) one or more scaling factors
+ * (real numbers) to be applied to the Cartesian move. The Cartesian
+ * move is applies on the initial structure per each given scaling factor.
+ * The default is 1.0).
+ * <li>
+ * <b>REFERENCESUBSTRUCTUREFILE</b> (optional) pathname to SDF file with 
+ * the definition of the substructure to which the geometric change has 
+ * to be applied. The atom list is used to assign the Cartesian moves to
+ * the atoms of the molecular system given via the INFILE keyword.
+ * </li>
+ * <li>
+ * <b>VERBOSITY</b> (optional) verbosity level.
+ * </li>
+ * </ul>
+ *
  * @author Marco Foscato
  */
 
@@ -131,6 +178,16 @@ public class MolecularGeometryEditor extends Worker
     private double percOfPos = 1.0;
     
     /**
+     * Default maximum overall displacement for one atom (opt. scaling factors)
+     */
+    private static double defMaxDispl = 5.0;
+    
+    /**
+     * Maximum overall displacement of a single atom
+     */
+    private double maxDispl = defMaxDispl;
+    
+    /**
      * Default tolerance for interatomic distances (opt. scaling factors)
      */
     private static double defTolInteratmDist = 0.03;
@@ -139,11 +196,6 @@ public class MolecularGeometryEditor extends Worker
      * Default tolerance w.r.t the sum covalent radii (opt. scaling factors)
      */
     private static double defTolCovRadSum = 0.05;
-    
-    /**
-     * Default maximum overall displacement for one atom (opt. scaling factors)
-     */
-    private static double defMaxDispl = 5.0;
     
     /**
      * Default convergence criteria (opt. scaling factors)
@@ -164,65 +216,10 @@ public class MolecularGeometryEditor extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+    
+    private final String NL =System.getProperty("line.separator"); 
 
-
-//------------------------------------------------------------------------------
-
-    //TODO move to class doc
-    /**
-     * Constructs a MolecularGeometryEditor specifying the parameters with a
-     * {@link ParameterStorage}. 
-     * <ul>
-     * <li>
-     * <b>INFILE</b> pathname of the SDF file containing the molecular
-     * structure.
-     * (only SDF files with ONE molecule are acceptable!).
-     * </li>
-     * <li>
-     * <b>OUTFILE</b> pathname of the SDF file where results are to be
-     * written.
-     * </li>
-     * <li>
-     * <b>CARTESIANMOVE</b> (optional) pathname to a file defining 
-     * the Cartesian components of the geometrical change. The file format
-     * consists of a list of translation vectors in Cartesian coordinates, 
-     * where each vector is reported as a space-separated  (X Y Z) tupla.
-     * The Cartesian move is orientation-dependent. Unless a
-     * reference substructure is also provided (see keyword 
-     * REFERENCESUBSTRUCTURE), it is assumed that the 1-to-N vectors refer to
-     * the 1-to-N atoms in the molecular system provided as input and that the
-     * orientation of the molecule is consistent with that of the Cartesian 
-     * move. When a reference substructure is provided (see parameter
-     * REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed
-     * to be consistent with that of the reference substructure.
-     * </li>
-     * <li>
-     * <b>OPTIMIZESCALINGFACTORS</b> (optional) requests the optimisation of 
-     * scaling factors to Cartesian mode and specifies i) the kind of distribution
-     *  to be produced (one string - acceptable kinds are <code>EVEN</code> and 
-     *  <code>BALANCED</code>), and ii) the number of scaling factors to generate
-     *  (one integer), iii) the percent of the possible negative path to consider, 
-     *  and iv) the percent of the possible positive path to consider.</li>
-     * <li>
-     * <b>CARTESIANSCALINGFACTORS</b> (optional) one or more scaling factors
-     * (real numbers) to be applied to the Cartesian move. The Cartesian
-     * move is applies on the initial structure per each given scaling factor.
-     * The default is 1.0).
-     * <li>
-     * <b>REFERENCESUBSTRUCTUREFILE</b> (optional) pathname to SDF file with 
-     * the definition of the substructure to which the geometrical change has 
-     * to be applied. The atom list is used to assign the Cartesian moves to
-     * the atoms of the molecular system given via the INFILE keyword.
-     * </li>
-     * <li>
-     * <b>VERBOSITY</b> (optional) verbosity level.
-     * </li>
-     * </ul>
-     *
-     * @param params object <code>ParameterStorage</code> containing all the
-     * parameters needed
-     */
-
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -331,10 +328,12 @@ public class MolecularGeometryEditor extends Worker
         	optimizeScalingFactors = true;
             scaleFactors.clear();
             String[] words = line.trim().split("\\s+");
-            if (words.length != 4)
+            if (words.length != 4 && words.length != 5)
             {
             	Terminator.withMsgAndStatus("ERROR! Cannot understand value '"
-                        + line + "'. Expecting one word and one integer.",-1);
+                        + line + "'. Expecting either of these syntaxes: " + NL  
+                        + "  <word> <integer> <real> <real> " + NL
+                        + "  <word> <integer> <real> <real> <real>.",-1);
             }
             String kind = words[0];
             if (!kind.toUpperCase().equals("EVEN") && 
@@ -367,7 +366,18 @@ public class MolecularGeometryEditor extends Worker
             	Terminator.withMsgAndStatus("ERROR! Cannot understand '" + num
                         + "' as the percentage of the possible positive path. "
                         + "Expecting a double.",-1);
-            } 
+            }
+            if (words.length >= 5)
+            {
+	            num = words[4];
+	            try {
+	            	maxDispl = Double.parseDouble(num);
+	            } catch (Throwable t) {
+	            	Terminator.withMsgAndStatus("ERROR! Cannot understand '" 
+	                        + num + "' as the maximum displacement for a "
+	                        + "single atom. Expecting a double.",-1);
+	            }
+            }
         }
 
         // Get the Cartesian move
@@ -542,7 +552,7 @@ public class MolecularGeometryEditor extends Worker
         			percOfPos,
         			defTolInteratmDist, 
         			defTolCovRadSum,
-        			defMaxDispl, 
+        			maxDispl, 
         			defConvCrit, 
         			defMaxStep,
         			verbosity-1);
@@ -796,18 +806,18 @@ public class MolecularGeometryEditor extends Worker
   	 * to put half of the points on each side of the 0.0 scaling.</li>
   	 * </ul>
   	 * @param percentualNeg the amount of the possible path to consider 
-  	 * as valid (for negative scaling factors)
+  	 * as valid (for negative scaling factors).
   	 * @param percentualPos the amount of the possible path to consider 
-  	 * as valid (for positive scaling factors)
+  	 * as valid (for positive scaling factors).
   	 * @param tolInteractDist permits down to this % of the initial 
-  	 * interatomic distance
+  	 * interatomic distance.
   	 * @param tolCovRadSum permits down to this % of the sum of covalent 
-  	 * radii
+  	 * radii.
   	 * @param stretchLimit permits up to this displacement for a single atom.
-  	 * @param convergence stop search when step falls below this value
-  	 * @param maxStep maximum allowed step
-  	 * @param verbosity amount of log to stdout
-  	 * @return the optimised list of scaling factors
+  	 * @param convergence stop search when step falls below this value.
+  	 * @param maxStep maximum allowed step.
+  	 * @param verbosity amount of log to stdout.
+  	 * @return the optimised list of scaling factors.
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
     		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
@@ -855,7 +865,7 @@ public class MolecularGeometryEditor extends Worker
 			    		+ "largestOK Notes");
             }
 			
-			// Get interatorim distances in initial geometry (for later)
+			// Get interatomic distances in initial geometry (for later)
 			DistanceMatrix initialDM = 
 					MolecularUtils.getInteratormicDistanceMatrix(mol);
 			

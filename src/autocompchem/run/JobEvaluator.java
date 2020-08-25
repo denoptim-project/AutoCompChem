@@ -39,7 +39,7 @@ public class JobEvaluator extends Worker
 	/**
 	 * The parameter key used to provide pathname to a list of situations
 	 */
-	public static final String SITUATIONSDBPARAM = "SITUATIONSDBROOT";
+	public static final String SITUATIONSDBROOT = "SITUATIONSDBROOT";
 
     /**
      * Situation base: list of known situations/concepts
@@ -51,17 +51,45 @@ public class JobEvaluator extends Worker
      */
     private InfoChannelBase icDB;
     
+    /**
+     * The job being evaluated
+     */
+    private Job job;
+    
 //-----------------------------------------------------------------------------
 	
 	@Override
 	public void initialize() 
 	{
 		
-		if (params.contains(SITUATIONSDBPARAM)) 
+		if (params.contains(SITUATIONSDBROOT)) 
 		{
 			
 		}
 		
+		/*
+		if (params.contains(INPUTFILE)) 
+		{
+			
+		}
+		
+		if (params.contains(LOGFILE)) 
+		{
+			
+		}
+		
+		if (params.contains(OUTPUTFILE)) 
+		{
+			
+		}
+		
+		if (params.contains(JOBDETAILSFILE)) 
+		{
+			// Detect job kind: this will be used to choose how to parse
+			// output files
+			 
+		}
+		*/
 		
 		//TODO: read in sitsDB from params
 		
@@ -74,6 +102,9 @@ public class JobEvaluator extends Worker
 	@Override
 	public void performTask() 
 	{
+		// Collect and prepare info
+		// e.g. parse output files to extract data and build info from it
+		
 		// Attempt perception
 		Perceptron p = new Perceptron(sitsDB,icDB);
 		try {
@@ -90,7 +121,6 @@ public class JobEvaluator extends Worker
 			exposeOutputData(
 					new NamedData(SITUATIONOUTKEY,NamedDataType.SITUATION,s));
 		}
-
 	}
 	
 //-----------------------------------------------------------------------------	

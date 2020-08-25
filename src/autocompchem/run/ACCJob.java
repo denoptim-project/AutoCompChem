@@ -55,7 +55,7 @@ public class ACCJob extends Job
         if (getVerbosity() > 0)
         {
             System.out.println(" " + date.toString());
-            System.out.println(" AutoCompChedm is initiating the task '" 
+            System.out.println(" AutoCompChem is initiating the ACC task '" 
                             + task + "'. ");
         }
         

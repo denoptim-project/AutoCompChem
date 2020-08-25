@@ -79,6 +79,7 @@ public class ACCMain
             System.out.println(" AutoCompChem is initiating the task '" 
                             + task + "'. ");
 
+            //TODO Make Job and run it. This doTask is basically doing the same
             doTask(task,ACCParameters);
             
         } catch (Throwable t) {

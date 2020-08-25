@@ -177,7 +177,7 @@ public class WorkerFactory
 
     public static Worker createWorker(TaskID task, Job masterJob)
     {
-    	// We first find out which worker is meant to take care of a the given 
+    	// We first find out which worker is meant to take care of the given 
     	// task
     	ArrayList<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
     	if (suitableWorkerIDs.size() > 1)

@@ -347,7 +347,9 @@ public class OrcaInputWriter extends Worker
     private void printInputForEachMol()
     {
     	// TODO: what about files other than the .inp?
-    	// For instance, the XYZ file for neb-ts jobs
+    	// For instance, the XYZ file for neb-ts jobs.
+    	// In some cases (i.e., Orca) we can just wrote their filename in input 
+    	// file, but in other cases we might need to give separate geom files
     	
     	for (int molId = 0; molId<inpGeom.size(); molId++)
     	{

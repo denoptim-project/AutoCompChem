@@ -88,22 +88,21 @@ public class ChemSoftOutputHandler extends Worker
      */
     private boolean useTemplateConnectivity = false;
     
-    /**
-     * String collecting the results of the analysis
-     */
-    private String analysisResultLog = "";
-    
     private static String NL = System.getProperty("line.separator");
 
 //------------------------------------------------------------------------------
 
     /**
-     * Initialise the worker according to the parameters loaded by constructor.
+     * Initialise the worker according to the parameters given to the 
+     * constructor.
      */
 
     @Override
     public void initialize()
     {
+    	//TODO: should be clean up previous initializations? I guess so.
+    	//we could change the params and re-initialize this class.
+    	
         //Define verbosity
         String vStr = params.getParameter("VERBOSITY").getValueAsString();
         this.verbosity = Integer.parseInt(vStr);
