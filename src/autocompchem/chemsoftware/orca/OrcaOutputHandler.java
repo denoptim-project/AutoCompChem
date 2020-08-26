@@ -357,8 +357,12 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             			&& stepGeoms.getAtomContainerCount()==0)
             	{
             		String[] p = line.trim().split("\\s+");
-            		String path = file.getParent() + System.getProperty(
+			String path = "";
+			if (file.getParent() != null)
+			{
+            			path = file.getParent() + System.getProperty(
             				"file.separator");
+			}
             		String nameSpace = p[3];
             		File xyzOpt = new File(path + nameSpace+"_trj.xyz");
             		if (!xyzOpt.exists())
@@ -373,19 +377,22 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                 					+ xyzOpt.getAbsolutePath() + "' could "
                 					+ "be found! " + System.getProperty(
                 							"line.separator") 
-                					+ "I cannot find geometries!");
-                			break;
+                					+ "I cannot find geometries for step "
+							+  (stepId+1) + "!");
                 		}
                 		xyzOpt = xyzSP;
             		}
             		
-            		ArrayList<IAtomContainer> mols = IOtools.readXYZ(
+			if (xyzOpt.exists())
+                        {
+            			ArrayList<IAtomContainer> mols = IOtools.readXYZ(
             				xyzOpt.getAbsolutePath());
             		
-            		for (IAtomContainer mol : mols)
-            		{
-            			stepGeoms.addAtomContainer(mol);
-            		}
+            			for (IAtomContainer mol : mols)
+            			{
+            				stepGeoms.addAtomContainer(mol);
+            			}
+			}
             	}
         	
             	// There is plenty of other data in the Orca log file. 

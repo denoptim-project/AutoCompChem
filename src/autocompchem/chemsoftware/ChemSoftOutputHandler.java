@@ -513,6 +513,11 @@ public class ChemSoftOutputHandler extends Worker
 	        			
 	        			IOtools.writeAtomContainerToFile(outFileName, mol,
 	        					format,true);
+
+                                        resultsString.append("-> last geometry out of ").append(
+                                                        acs.getAtomContainerCount());
+                                        resultsString.append(NL);
+
 	        			break;
 	        		}
 	        		
