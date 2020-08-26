@@ -1,5 +1,6 @@
 package autocompchem.molecule.connectivity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -55,6 +56,11 @@ import autocompchem.worker.Worker;
  * bonds are to be 
  * added
  * </li>
+ * <li>
+ * <b>TEMPLATE</b>: a complete definition of connectivity that is meant to be 
+ * imposed to the molecule/s in the INFILE. When this is used, all the others
+ * parameters are ignored (apart from INFILE and OUTFILE).
+ * </li>
  * </ul>
  *          
  * @author Marco Foscato
@@ -69,7 +75,8 @@ public class ConnectivityGenerator extends Worker
     public static final Set<TaskID> capabilities =
             Collections.unmodifiableSet(new HashSet<TaskID>(
                     Arrays.asList(TaskID.RICALCULATECONNECTIVITY,
-                    		TaskID.ADDBONDSFORSINGLEELEMENT)));
+                    		TaskID.ADDBONDSFORSINGLEELEMENT,
+                    		TaskID.IMPOSECONNECTIONTABLE)));
 	
     //Filenames
     private String inFile;
@@ -90,47 +97,12 @@ public class ConnectivityGenerator extends Worker
 
     //Target elements on which bonds are to be added
     private String targetEl = "";
+    
+    private String templatePathName = "";
+    private boolean useTemplate = false;
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor providing a {@link ParameterStorage} object that should
-     * contain all the information needed to perform the required actions.
-     * The following parameters must provided:
-     * <ul>
-     * <li>
-     * <b>INFILE</b>: path/name of the SDF file containing the structure
-     * </li>
-     * <li>
-     * <b>TOLERANCE</b>: a new bond is added only when the distance between 
-     *  two atoms is below the sum of their v.d.W. radii
-     * minus the tolerance (as percentage). Values between 0.0 and 1.0 should 
-     * be used.
-     * </li>
-     * <li>
-     * (optional)<b>TOLERANCE2NDSHELL</b>: additional contribution to the 
-     * tollerance
-     * of atoms in 1-3 relation (i.e., when evaluating the distance r_AC 
-     * in A-B-C) 
-     * </li>
-     * <li>
-     * (optional)<b>TARGETELEMENT</b>: element symbol of atoms to which 
-     * bonds are to be 
-     * added
-     * </li>
-     * <li>
-     * <b>OUTFILE</b>: path or name of the SDF file where the result is to be 
-     * written
-     * </li>
-     * <li><b>VERBOSITY</b>: verbosity level
-     * </li>
-     *</ul>
-     *
-     * @param params the ensemble of parameters
-     */
-    
-//TODO move to class doc? or where?
-    
     /**
      * Initialise the worker according to the parameters loaded by constructor.
      */
@@ -172,6 +144,14 @@ public class ConnectivityGenerator extends Worker
                     params.getParameter("TARGETELEMENT").getValue().toString();
             this.targetEl = ts;
         }
+        
+        if (params.contains("TEMPLATE"))
+        {
+            String templatePathName =
+                    params.getParameter("TEMPLATE").getValue().toString();
+            this.templatePathName = templatePathName;
+            this.useTemplate = true;
+        }
 
 
         //Get and check output file
@@ -198,6 +178,9 @@ public class ConnectivityGenerator extends Worker
                 break;
             case ADDBONDSFORSINGLEELEMENT:
             	addBondsOnSingleElement();
+                break;
+            case IMPOSECONNECTIONTABLE:
+            	imposeConnectionTable();
                 break;
             }
 
@@ -331,6 +314,41 @@ public class ConnectivityGenerator extends Worker
                     mol.addBond(newBnd);
                 }
             }
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Uses the loaded parameters to impose a given connection table to the
+     * molecules in the input.
+     */
+    
+    private void imposeConnectionTable()
+    {
+        if (verbosity > 1)
+            System.out.println(" Imposing connectivity on file " + inFile);
+
+        ArrayList<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
+        
+        //TODO: what to do when there is more than one template?
+        
+        try {
+            SDFIterator sdfItr = new SDFIterator(inFile);
+            while (sdfItr.hasNext())
+            {
+                IAtomContainer mol = sdfItr.next();
+                
+                ConnectivityUtils.importConnectivityFromReference(mol, 
+                		tmpl.get(0));
+
+                IOtools.writeSDFAppend(outFile,mol,true);
+            }
+            sdfItr.close();
+        } catch (Throwable t) {
+            Terminator.withMsgAndStatus("ERROR! Exception returned while "
+                + "iterating over SDF file to impose connection tables."
+                + " I was reading file " + inFile, -1);
         }
     }
 

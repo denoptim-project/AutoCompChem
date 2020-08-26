@@ -50,7 +50,8 @@ public enum TaskID
     REORDERATOMLIST,          
     RICALCULATECONNECTIVITY,  
     SORTSDFMOLECULES,         
-    SUBTRACTZMATRICES;        
+    SUBTRACTZMATRICES, 
+    IMPOSECONNECTIONTABLE;        
 	
 //-----------------------------------------------------------------------------
 	
