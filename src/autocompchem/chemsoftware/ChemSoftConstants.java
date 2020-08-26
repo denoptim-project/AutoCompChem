@@ -216,6 +216,13 @@ public class ChemSoftConstants
 	public static final String PARPRINTLASTGEOM = "PRINTLASTGEOMETRY";
 	
 	/**
+	 * Key for parameter requesting to print the last geometry from each step of
+	 * a comp.chem job
+	 */
+	public static final String PARPRINTLASTGEOMEACH = 
+			"PRINTLASTGEOMETRYOFEACHSTEP";
+	
+	/**
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */

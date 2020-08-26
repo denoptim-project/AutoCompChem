@@ -73,6 +73,13 @@ public class ChemSoftOutputHandler extends Worker
     		new ArrayList<AnalysisTask>();
     
     /**
+     * List of analysis to perform on the overall job. This might be
+     * something like getting the overall last geometry,
+     */
+    private ArrayList<AnalysisTask> analysisGlobalTasks = 
+    		new ArrayList<AnalysisTask>();
+    
+    /**
      * List analysis to perform on each step
      */
     private Map<Integer,ArrayList<AnalysisTask>> analysisTasks = 
@@ -129,6 +136,23 @@ public class ChemSoftOutputHandler extends Worker
         	outFileRootName = FileUtils.getRootOfFileName(inFileName);
         }
 
+        if (params.contains(ChemSoftConstants.PARPRINTLASTGEOMEACH))
+        {
+        	String s = params.getParameter(
+        			ChemSoftConstants.PARPRINTLASTGEOMEACH).getValueAsString();
+            String[] p = s.split("\\s+");
+            ParameterStorage ps = new ParameterStorage();
+            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFORMAT,
+            		p[0]));
+            if (p.length>1)
+            {
+                ps.setParameter(new Parameter(
+                		ChemSoftConstants.GENERALFILENAME, p[1]));
+            }
+            AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
+            analysisAllTasks.add(a);
+        }
+        
         if (params.contains(ChemSoftConstants.PARPRINTLASTGEOM))
         {
         	String s = params.getParameter(
@@ -143,7 +167,7 @@ public class ChemSoftOutputHandler extends Worker
                 		ChemSoftConstants.GENERALFILENAME, p[1]));
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
-            analysisAllTasks.add(a);
+            analysisGlobalTasks.add(a);
         }
         
         if (params.contains(ChemSoftConstants.PARPRINTALLGEOM))
@@ -514,9 +538,9 @@ public class ChemSoftOutputHandler extends Worker
 	        			IOtools.writeAtomContainerToFile(outFileName, mol,
 	        					format,true);
 
-                                        resultsString.append("-> last geometry out of ").append(
-                                                        acs.getAtomContainerCount());
-                                        resultsString.append(NL);
+                        resultsString.append("-> extracting last geometry out of ")
+                        	.append(acs.getAtomContainerCount());
+                        resultsString.append(NL);
 
 	        			break;
 	        		}
@@ -737,12 +761,73 @@ public class ChemSoftOutputHandler extends Worker
         		//TODO: more? ...just add it here ;-)
         	}
         }
+        
      	
         if (verbosity > 0)
         {
         	System.out.println(" ");
         	System.out.println("Summary of the results:");
             System.out.println(resultsString.toString());
+        }
+        
+        
+        // Analyse one on the collection of steps takes as a whole
+        for (AnalysisTask at : analysisGlobalTasks)
+        {
+        	ParameterStorage atParams = at.getParams();
+    		switch (at.getKind())
+    		{
+				case LASTGEOMETRY:
+				{
+					String format = "XYZ";
+					format = changeIfParameterIsFound(format,
+							ChemSoftConstants.GENERALFORMAT,atParams);
+					String outFileName = outFileRootName+"_lastGeom."
+							+ format.toLowerCase();
+					outFileName= changeIfParameterIsFound(outFileName,
+							ChemSoftConstants.GENERALFILENAME,atParams);
+					
+					IAtomContainer lastGeom = null;
+					for (int stepId=0; stepId<numSteps; stepId++)
+					{
+						if (!stepsData.containsKey(stepId))
+						{
+							continue;
+						}
+						NamedDataCollector stepData = stepsData.get(stepId);
+						if (stepData.contains(
+								ChemSoftConstants.JOBDATAGEOMETRIES))
+						{
+							AtomContainerSet acs = (AtomContainerSet) 
+									stepData.getNamedData(ChemSoftConstants
+											.JOBDATAGEOMETRIES).getValue();
+							lastGeom = acs.getAtomContainer(
+									acs.getAtomContainerCount()-1);
+						}
+					}
+					
+					if (lastGeom == null || lastGeom.isEmpty())
+					{
+						if (verbosity > 1)
+		    			{
+		    				System.out.println("WARNING! Empty list of geometries "
+		    						+ "from this job. I cannot find the last "
+		    						+ "geometry ");
+		    			}
+						break;
+					}
+					
+					if (verbosity > 1)
+					{
+						System.out.println("Writing overal last geometry to "
+								+ "file '" + outFileName+"'");
+					}
+					IOtools.writeAtomContainerToFile(outFileName,lastGeom,
+        					format,true);
+					lastGeomToExpose = lastGeom;
+					break;
+				}
+    		}
         }
     }
     

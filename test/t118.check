@@ -36,13 +36,13 @@ n=0;n=$(grep -c "^H\s" t118_allGeoms.xyz )
 if [ $n -ne 14 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
 
 n=0;n=$(grep -c "\$\$\$\$" t118_lastGeom.sdf )
-if [ $n -ne 4 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^ *0\.6375 *0\.6106 *0\.7399 H " t118_lastGeom.sdf )
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^  3  2  0" t118_lastGeom.sdf )
-if [ $n -ne 4 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^# Normal" t118_vibModes_6_7.xyz )
 if [ $n -ne 4 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi

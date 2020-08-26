@@ -7,7 +7,7 @@ TASK: AnalyseORCAOutput
 JobOutputFile: ../t117-orca.log
 ROOTPATHNAMEOutput: t117_analysis
 PRINTALLGEOmeTRIES: XYZ t117_allGeoms.xyz
-PRINTLASTGEOmeTRY: SDF t117_lastGeom.sdf
+PRINTLASTGEOmeTRYOFEACHSTEP: SDF t117_lastGeom.sdf
 PRINTVIBModES: 6 7 t117_vibModes_6_7.xyz
 TEMPLATECOnnECTIVITY: ../t117-tmpl.sdf
 CALCULATEEneRGY: QHTHREshOLD 123
