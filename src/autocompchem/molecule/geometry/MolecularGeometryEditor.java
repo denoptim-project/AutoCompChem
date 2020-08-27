@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -44,6 +45,9 @@ import autocompchem.worker.WorkerFactory;
  * <b>OUTFILE</b> pathname of the SDF file where results are to be
  * written.
  * </li>
+ *  * <li>
+ * <b>OUTFORMAT</b> format of the putput file.
+ * </li>
  * <li>
  * <b>CARTESIANMOVE</b> (optional) pathname to a file defining 
  * the Cartesian components of the geometric change. The file format
@@ -61,10 +65,10 @@ import autocompchem.worker.WorkerFactory;
  * <li>
  * <b>OPTIMIZESCALINGFACTORS</b> (optional) requests the optimisation of 
  * scaling factors to Cartesian mode and specifies i) the kind of distribution
- *  to be produced (one string - acceptable kinds are <code>EVEN</code> and 
- *  <code>BALANCED</code>), and ii) the number of scaling factors to generate
- *  (one integer), iii) the percent of the possible negative path to consider, 
- *  and iv) the percent of the possible positive path to consider.</li>
+ * to be produced (one string - acceptable kinds are <code>EVEN</code> and 
+ * <code>BALANCED</code>), and ii) the number of scaling factors to generate
+ * (one integer), iii) the percent of the possible negative path to consider, 
+ * and iv) the percent of the possible positive path to consider.</li>
  * <li>
  * <b>CARTESIANSCALINGFACTORS</b> (optional) one or more scaling factors
  * (real numbers) to be applied to the Cartesian move. The Cartesian
@@ -118,6 +122,11 @@ public class MolecularGeometryEditor extends Worker
      * Name of the output file
      */
     private String outFile;
+    
+    /**
+     * Format of the output file
+     */
+    private String outFormat = "SDF";
 
     /**
      * Molecular representation of the final systems
@@ -264,6 +273,11 @@ public class MolecularGeometryEditor extends Worker
             outToFile = true;
             this.outFile = params.getParameter("OUTFILE").getValue().toString();
             FileUtils.mustNotExist(this.outFile);
+        }
+        
+        if (params.contains("OUTFORMAT"))
+        {
+            this.outFormat = params.getParameter("OUTFORMAT").getValueAsString();
         }
 
         // Get the Cartesian move
@@ -597,7 +611,10 @@ public class MolecularGeometryEditor extends Worker
         
         if (outToFile)
         {
-            IOtools.writeSDFAppend(outFile,outMols,false);
+        	AtomContainerSet mols = new AtomContainerSet();
+        	for (IAtomContainer iac : outMols)
+        		mols.addAtomContainer(iac);
+            IOtools.writeAtomContainerSetToFile(outFile, mols, outFormat, false);
         }
         
         allDone = true;
@@ -1175,7 +1192,11 @@ public class MolecularGeometryEditor extends Worker
             outMols.add(outMol);
             if (outToFile)
             {
-                IOtools.writeSDFAppend(outFile,outMol,true);
+            	AtomContainerSet mols = new AtomContainerSet();
+            	for (IAtomContainer iac : outMols)
+            		mols.addAtomContainer(iac);
+                IOtools.writeAtomContainerSetToFile(outFile, mols, outFormat, 
+                		false);
             }
         }
         

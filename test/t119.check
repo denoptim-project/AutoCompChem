@@ -1,11 +1,11 @@
 #!/bin/bash
 
-if [ ! -f t119-path.sdf ] ; then
+if [ ! -f t119-path.xyz ] ; then
 echo NOT Passed ERROR 1
 exit -1
 fi
 
-n=0;n=$(grep -c "\$\$\$\$" t119-path.sdf)
+n=0;n=$(grep -c ">" t119-path.xyz)
 if [ $n -ne 19 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 
 n=0;n=$(grep -c "factor 1.5" t119.log)

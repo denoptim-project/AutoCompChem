@@ -34,6 +34,7 @@ import java.util.List;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.io.MDLV2000Reader;
@@ -42,10 +43,13 @@ import org.openscience.cdk.io.XYZReader;
 import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
+import autocompchem.atom.AtomUtils;
+import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 
 
@@ -773,8 +777,12 @@ public class IOtools
     public static void writeAtomContainerSetToFile(String filename, 
     		IAtomContainerSet acs, String format, boolean append)
     {
-    	switch(format)
+    	switch(format.toUpperCase())
     	{
+    		case "ORCATRAJECTORY":
+    			writeOrcaTrj(filename, acs, append);
+    			break;
+    			
     		case "XYZ":
     			writeXYZAppendSet(filename, acs, append);
     			break;
@@ -823,6 +831,37 @@ public class IOtools
              }
         }
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Writes on a new file with Orca's trajectory format (i.e., multi-molecule
+     * XYZ file where each molecule is separated by the next one by a &gt; 
+     * symbol.
+     * @param filename target XYZ file (new or existing)
+     * @param acs set of atom containers to be written on the XYZ file
+     * @param append <code>true</code> to append to existing file,
+     * otherwise we overwrite.
+     */
+    public static void writeOrcaTrj(String filename, IAtomContainerSet acs,
+            boolean append)
+    {
+    	for (int i=0; i<acs.getAtomContainerCount(); i++)
+        {
+    		IAtomContainer mol = acs.getAtomContainer(i);
+    		TextBlock tb = new TextBlock();
+    		tb.add(mol.getAtomCount()+"");
+    		tb.add(MolecularUtils.getNameOrID(mol));
+            for (IAtom a : mol.atoms())
+            {
+            	tb.add(AtomUtils.getSymbolOrLabel(a)+"  "
+            			+a.getPoint3d().x+"  "+a.getPoint3d().y+"  "
+            			+a.getPoint3d().z);
+            }
+            tb.add(">");
+            writeTXTAppend(filename, tb, true);
+        }
+    }
 
 //------------------------------------------------------------------------------
 
@@ -831,7 +870,8 @@ public class IOtools
      * file or appends to an existing one.
      * @param filename target XYZ file (new or existing)
      * @param acs set of atom containers to be written on the XYZ file
-     * @param append <code>true</code> to append to existing file
+     * @param append <code>true</code> to append to existing file,
+     * otherwise we overwrite.
      */
 
     public static void writeXYZAppendSet(String filename, IAtomContainerSet acs,
