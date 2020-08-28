@@ -489,6 +489,17 @@ public class MolecularMeter extends Worker
                                                          allQuantities.get(key);
                     if (key.toUpperCase().startsWith("DIST"))
                     {
+                    	if (atmsForQuantity.size() != 2)
+                    	{
+                    		if (verbosity > 0)
+                            {
+                                System.out.println(" Not enough matches for "
+                                		+ "quantity '" + key + "'. Found only " 
+                                		+ atmsForQuantity.size() + " set.");
+                            }
+                    		continue;
+                    	}
+                    	
                         //Measure distance A-B
                         ArrayList<Double> distances = new ArrayList<Double>();
                         for (IAtom atmA : atmsForQuantity.get(0))
@@ -536,6 +547,17 @@ public class MolecularMeter extends Worker
                     } 
                     else if (key.toUpperCase().startsWith("ANG"))
                     {
+                    	if (atmsForQuantity.size() != 3)
+                    	{
+                    		if (verbosity > 0)
+                            {
+                                System.out.println(" Not enough matches for "
+                                		+ "quantity '" + key + "'. Found only " 
+                                		+ atmsForQuantity.size() + " set.");
+                            }
+                    		continue;
+                    	}
+                    	
                         //Measure angle A-B-C
                         ArrayList<Double> angles = new ArrayList<Double>();
                         for (IAtom atmA : atmsForQuantity.get(0))
@@ -599,6 +621,17 @@ public class MolecularMeter extends Worker
                     } 
                     else if (key.toUpperCase().startsWith("DIH"))
                     {
+                    	if (atmsForQuantity.size() != 4)
+                    	{
+                    		if (verbosity > 0)
+                            {
+                                System.out.println(" Not enough matches for "
+                                		+ "quantity '" + key + "'. Found only " 
+                                		+ atmsForQuantity.size() + " set.");
+                            }
+                    		continue;
+                    	}
+                    	
                         //Measure dihedral angle A-B-C-D
                         ArrayList<Double> dihedrals = new ArrayList<Double>();
                         for (IAtom atmA : atmsForQuantity.get(0))
