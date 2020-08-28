@@ -197,7 +197,10 @@ public class ConnectivityUtils
         {
             return false;
         }
-
+        
+        mol.removeAllElectronContainers();
+        mol.removeAllBonds();
+       
         for (IBond bndRef : ref.bonds())
         {
             IBond bndMol = new Bond(
