@@ -1,0 +1,39 @@
+JOBSTART
+VERBOSITY: 1
+parallelize: 3
+JOBSTART
+APP: SHELL
+parallelize: 1
+EXE: /bin/bash
+SCRIPT: ../t123.sh
+JOBEND
+JOBSTART
+VERBOSITY: 2
+APP: ACC
+parallelize: 1
+TASK: PruneMolecules
+INFILE: ../t123-mol.sdf
+OUTFILE: t123-pruned.sdf
+SMARTS:  [#6]~[#7]
+JOBEND
+JOBSTART
+VERBOSITY: 2
+APP: ACC
+parallelize: 1
+TASK: PruneMolecules
+INFILE: ../t123-mol.sdf
+OUTFILE: t123-pruned-2.sdf
+SMARTS:  [#17] 
+JOBEND
+JOBEND
+
+JOBSTART
+APP: ACC
+VERBOSITY: 3
+TASK: MeasureGeomDescriptors
+INFILE: t123-pruned-2.sdf
+$STARTSMARTS:
+dist [#6] [Ru]
+$END
+ONLYBONDEN: true
+JOBEND

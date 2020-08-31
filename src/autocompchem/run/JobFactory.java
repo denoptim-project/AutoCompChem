@@ -177,17 +177,28 @@ public class JobFactory
 
         Job job = new Job();
         
-        String appKey = ParameterConstants.RUNNABLEAPPIDKEY;
-        if (locPar.contains(appKey))
+        RunnableAppID appId = RunnableAppID.ACC;
+        if (locPar.contains(ParameterConstants.RUNNABLEAPPIDKEY))
         {
-        	String app = locPar.getParameter(appKey).getValue().toString();
-        	RunnableAppID appId = RunnableAppID.valueOf(app);
-        	job = createJob(appId);
+        	String app = locPar.getParameter(
+        			ParameterConstants.RUNNABLEAPPIDKEY).getValueAsString();
+        	appId = RunnableAppID.valueOf(app.trim().toUpperCase());
+        }
+        job = createJob(appId);
+        
+        if (locPar.contains(ParameterConstants.PARALLELIZE))
+        {
+        	int nThreadsPerSubJob = Integer.parseInt(locPar.getParameter(
+        			ParameterConstants.PARALLELIZE).getValueAsString());
+        	job.setParallelizable(true);
+        	job.setNumberOfThreads(nThreadsPerSubJob);
         }
         
         job.setParameters(locPar);
         if (tb.getNestedBlocks().size() > 0)
         {
+        	//NB: well, they are called steps, but for a parallelized job they
+        	// are the independent jobs to be submitted in parallel
             for (TextBlockIndexed intTb : tb.getNestedBlocks())
             {
                 // Recursive exploration of nested structure of TextBlocks

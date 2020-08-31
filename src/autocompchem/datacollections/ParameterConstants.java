@@ -60,4 +60,10 @@ public class ParameterConstants
 	 */
 	public final static String RUNNABLEAPPIDKEY = "APP";
 
+	/**
+	 * Keyword of parameter requesting parallelization of sub jobs 
+	 * and specifying the number of threads.
+	 */
+	public static final String PARALLELIZE = "PARALLELIZE";
+
 }

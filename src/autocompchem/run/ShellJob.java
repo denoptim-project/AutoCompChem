@@ -137,6 +137,26 @@ public class ShellJob extends Job
     @Override
     public void runThisJobSubClassSpecific()
     {
+    	// First we need to see if the command comes from the constructor of
+    	// from parameter storage
+    	if (params.contains(ShellJobConstants.LABINTERPRETER))
+    	{
+    		interpreter = params.getParameter(
+    				ShellJobConstants.LABINTERPRETER).getValueAsString();
+    	}
+    	if (params.contains(ShellJobConstants.LABARGS))
+    	{
+    		args = params.getParameter(
+    				ShellJobConstants.LABARGS).getValueAsString();
+    	}
+    	if (params.contains(ShellJobConstants.LABSCRIPT))
+    	{
+    		script = params.getParameter(
+    				ShellJobConstants.LABSCRIPT).getValueAsString();
+    		File scriptFile = new File(script);
+    		script = scriptFile.getAbsolutePath();
+    	}
+    	
         Date date = new Date();
         if (getVerbosity() > 0)
         {

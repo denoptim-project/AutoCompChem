@@ -502,10 +502,10 @@ public class Job implements Runnable
     public void run()
     {
     	//TODO use logger
-    	if (verbosity > -1)
+    	if (verbosity > 0)
     	{
-    		System.out.println("");
-    		System.out.println("Initiating " + appID + " Job " + getId());
+    		System.out.println(System.getProperty("line.separator") 
+    				+ "Initiating " + appID + " Job " + getId());
     	}
     	
         // First do the work of this very Job
@@ -562,7 +562,6 @@ public class Job implements Runnable
 
     /**
      * Runs all the sub-jobs in an embarrassingly parallel fashion.
-     * This method is overwritten by subclasses.
      */
 
     public void runSubJobsPararelly()
