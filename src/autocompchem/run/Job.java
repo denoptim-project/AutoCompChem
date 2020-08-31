@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -21,6 +22,22 @@ import autocompchem.datacollections.ParameterStorage;
 
 public class Job implements Runnable
 {
+	/**
+	 * Reference to the parent job. This is null for the outermost, master job
+	 */
+	private Job parentJob = null;
+	
+	/**
+	 * A job identifier meant to be unique only within sibling jobs, i.e., jobs
+	 * that belong to the same master job.
+	 */
+	protected int jobId = 0;
+	
+	/**
+	 * Counter for subjobs
+	 */
+	private AtomicInteger idSubJob = new AtomicInteger(1);
+	
     /**
      * Container for parameters fed to this job. 
      * Typically contains initial settings, pathnames 
@@ -328,9 +345,36 @@ public class Job implements Runnable
 
     public void addStep(Job step)
     {
+    	step.setParent(this);
+    	step.setId(idSubJob);
         steps.add(step);
     }
 
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the reference to the parent job, which is the job that contains
+     * this one.
+     */
+    
+    public void setParent(Job parentJob)
+    {
+    	this.parentJob = parentJob;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the reference to the parent job, which is the job that contains
+     * this one.
+     * @return the parent job.
+     */
+    
+    public Job getParent()
+    {
+    	return parentJob;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -349,7 +393,38 @@ public class Job implements Runnable
         }
         return steps.get(i);
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the identifier of this job. This identifier is unique only within
+     * the context of a single master job, i.e., all sub jobs have unique ID.
+     * @return the string identifying this jobs
+     */
+    
+    public String getId()
+    {
+    	String idStr = "";
+    	if (parentJob == null)
+    	{
+    		idStr = "#" + jobId;
+    	} else {
+    		idStr = parentJob.getId() + "." + jobId;
+    	}
+    	return idStr;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the identifier of this job.
+     */
+    private void setId(AtomicInteger idSrc)
+    {
 
+    	jobId = idSrc.getAndIncrement();
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -426,6 +501,13 @@ public class Job implements Runnable
 
     public void run()
     {
+    	//TODO use logger
+    	if (verbosity > -1)
+    	{
+    		System.out.println("");
+    		System.out.println("Initiating " + appID + " Job " + getId());
+    	}
+    	
         // First do the work of this very Job
         runThisJobSubClassSpecific();
         

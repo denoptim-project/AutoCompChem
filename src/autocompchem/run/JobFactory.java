@@ -76,6 +76,7 @@ public class JobFactory
         }
         else
         {
+        	job = createJob(RunnableAppID.ACC);
             for (TextBlockIndexed tb : blocks)
             {
                 Job subJob = createJob(tb);
