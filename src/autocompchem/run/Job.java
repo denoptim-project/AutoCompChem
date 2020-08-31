@@ -447,7 +447,7 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Tries to do the work of this very Job. Does not consider the subjobs
+     * Tries to do the work of this very Job. Does not consider the sub jobs
      * This method is overwritten by subclasses.
      */
 

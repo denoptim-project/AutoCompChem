@@ -1,16 +1,14 @@
 package autocompchem.ui;
 
-import java.util.Date;
-
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.Job;
+import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
-import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
-
 /**
  * Main for AtomCompChem (Automated Computational Chemist). The entry point
  * for both CLI and GUI based runs.
@@ -40,11 +38,11 @@ public class ACCMain
         printInit();
         
         // Detect kind of run (command line arguments or parameter file)
-        String task = "none";
-        ParameterStorage ACCParameters = new ParameterStorage();
-        ACCParameters.setDefault();
+        // and what is the job to be done
+        Job job = null;
         if (args.length < 1)
         {
+        	//TODO eventually here we will launch the gui.
             printUsage();
             Terminator.withMsgAndStatus("ERROR! No input or command line "
                 + "argument given. " + NL
@@ -56,32 +54,26 @@ public class ACCMain
         {
         	String pathName = args[0];
             try {
-                ACCParameters.importParameters(pathName);
-                task = ACCParameters.getParameter(WorkerConstants.PARTASK)
-                		.getValueAsString();
+            	job = JobFactory.buildFromFile(pathName);
             } catch (Throwable t) {
             	t.printStackTrace();
                 String msg = "ERROR! Exception returned while reading "
-                		+ "parameters from file '" + pathName + "'.";
+                		+ "job settings from file '" + pathName + "'.";
                 Terminator.withMsgAndStatus(msg,-1);
             }
         }
         else if (args.length > 1)
         {
-        	task = parseCLIArgs(args, ACCParameters);
+            ParameterStorage ACCParameters = new ParameterStorage();
+            ACCParameters.setDefault();
+        	parseCLIArgs(args, ACCParameters);
+        	job = JobFactory.createJob(RunnableAppID.ACC);
+        	job.setParameters(ACCParameters);
         }
 
         // Do the task
         try {
-        	//TODO move to Worker log
-            Date date = new Date();
-            System.out.println(" " + date.toString());
-            System.out.println(" AutoCompChem is initiating the task '" 
-                            + task + "'. ");
-
-            //TODO Make Job and run it. This doTask is basically doing the same
-            doTask(task,ACCParameters);
-            
+            job.run();
         } catch (Throwable t) {
             t.printStackTrace();
             String msg = t.getMessage();
@@ -118,9 +110,7 @@ public class ACCMain
     protected static String parseCLIArgs(String[] args, ParameterStorage params)
     {
     	String task = null;
-    	
-    	//TODO: we'll need to allow for CLI startup of GUI
-    	
+
     	// First, look for the -t/--task
     	for (int iarg=0; iarg<args.length; iarg++)
     	{
@@ -138,23 +128,17 @@ public class ACCMain
     			//NB: this will kill me with an error message in case 
     			// the given string does not correspond to a registered 
     			// task.
-    			TaskID taskId = TaskID.getFromString(task);
+    			TaskID.getFromString(task);
     			
-    			//TODO: here we can use the TaskID to get a suitable 
-    			// WorkerID, and take the required options from the
-    			// subclass of Worker.
-    			// For now, this is not implemented yet...
-
     			Parameter par = new Parameter(WorkerConstants.PARTASK, 
-    					NamedDataType.STRING, 
-    					task);
+    					NamedDataType.STRING,task);
     			params.setParameter(par);
     			
     			break;
     		}
     	}
     	
-    	//Then, read-in all CLI args in parameter storage unit
+    	//Then, read-in all CLI arguments in parameter storage unit
     	
     	//NB: the following block of code makes it so that we can only run
     	// single step jobs when submitting via CLI interface using CLI 
@@ -211,24 +195,6 @@ public class ACCMain
     		}
     	}
     	return task;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Run a specific task.
-     * @param task the string identifying the type of task.
-     * @param params a {@link ParameterStorage}
-     * passing all the necessary parameters to the tool executing the task.
-     */
-    
-    private static void doTask(String task, ParameterStorage params) 
-                                                                throws Throwable
-    {
-        Worker worker = WorkerFactory.createWorker(task);
-        worker.setParameters(params);
-        worker.initialize();
-        worker.performTask();
     }
 
 //------------------------------------------------------------------------------

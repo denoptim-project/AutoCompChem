@@ -106,7 +106,7 @@ public class TextBlockIndexed
 
     public TextBlockIndexed(ArrayList<String> lines, int idA, int idB, int idC)
     {
-        this.lines = new ArrayList<String>();
+        this.lines = lines;
         this.nestedBlocks = new ArrayList<TextBlockIndexed>();
         this.idA = idA;
         this.idB = idB;

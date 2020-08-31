@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
+import autocompchem.io.IOtools;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextBlockIndexed;
 
@@ -54,6 +55,17 @@ public class JobFactory
                                         ParameterConstants.ENDJOB, //delimiter
                                         false,  //don't take only first
                                         false); //don't include delimiters
+        
+        if (blocks.size() == 0)
+        {
+        	// Since there are no JOBSTART/JOBEND blocks we interpret the text
+        	// as parameters for a single job
+        	ArrayList<String> lines = IOtools.readTXT(pathName);
+        	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
+        			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
+        	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
+        	blocks.add(tb);
+        }
 
         // Unless there is only one set of parameters the outermost job serves
         // as a container of the possibly nested structure of sub-jobs.

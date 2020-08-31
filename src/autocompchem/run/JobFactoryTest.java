@@ -19,6 +19,7 @@ package autocompchem.run;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -28,6 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.io.IOtools;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -65,6 +69,49 @@ public class JobFactoryTest
     	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
     			"Creation of Undefined job");
     	
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /*
+     * The difference between this test and the testJobCreationFromJDFile is 
+     * that here we have only the parameters and no JOBSTART/JOBEND strings.
+     * So, the entire text is to be understood as a single text block that
+     * pertains a single job.
+     */
+    
+    @Test
+    public void testJobCreatsSimpleFromParamsFile() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+
+        File paramFile = new File(tempDir.getAbsolutePath() + SEP + "acc.par");
+
+        Job job = null;
+        try 
+        {
+            FileWriter writer = new FileWriter(paramFile);
+
+            writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
+            		+ TaskID.DummyTask + NL);
+            writer.write("key1" + ParameterConstants.SEPARATOR 
+            		+ "value1" + NL);
+            writer.write("key2" + ParameterConstants.SEPARATOR 
+            		+ "value2a value2b" + NL);
+            writer.close();
+
+            job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertFalse(true, "Exception. Unable to work with tmp files.");
+        }  
+
+        assertNotNull(job,"Job is null");
+        assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
+        assertEquals(Job.RunnableAppID.ACC, job.getAppID(),
+        		"App for master job");
     }
     
 //-----------------------------------------------------------------------------
@@ -127,11 +174,11 @@ public class JobFactoryTest
             
             assertEquals(3, job.getNumberOfSteps(), "Number of steps");
             assertEquals(job.getStep(0).getAppID(), Job.RunnableAppID.ACC,
-            		"Add for first step");
+            		"App for first step");
             assertEquals(job.getStep(1).getAppID(), Job.RunnableAppID.SHELL,
-            		"Add for second step");
+            		"App for second step");
             assertEquals(job.getStep(2).getAppID(), Job.RunnableAppID.UNDEFINED,
-            		"Add for third step");
+            		"App for third step");
         }
         catch (Throwable t)
         {
