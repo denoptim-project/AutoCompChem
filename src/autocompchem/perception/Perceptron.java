@@ -140,6 +140,19 @@ public class Perceptron
     /**
      * Returns a clone of the list of matched situations.
      * This method cannot be used to alter the results of the perception.
+     * @return the number of  situations that were matches by the circumstances.
+     */
+
+    public int getOccurringSituationsCount()
+    {
+        return occurringSituations.size();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns a clone of the list of matched situations.
+     * This method cannot be used to alter the results of the perception.
      * @return the list of matched situations 
      */
 
@@ -231,9 +244,16 @@ public class Perceptron
            default:
                 if (verbosity > 1)
                 {
-                    System.out.println(init + "Confusion - The situation "
-                                        + "matches multiple known "
-                                        + "situation.");
+                	StringBuilder sb = new StringBuilder();
+                	sb.append(init + "Confusion - The situation matches "
+                			+ "multiple known situation. You may have to make "
+                            + "the situations more specific as to "
+                            + "disctiminate between these: ");
+                	for (Situation s : occurringSituations)
+                	{
+                		sb.append(s.getRefName()).append(" ");
+                	}
+                    System.out.println(sb.toString());
                 }
                 break;
         }
@@ -460,7 +480,7 @@ this.printScores();
                 for (int qID = 0; qID < txtQueriesAsStr.size(); qID++)
                 {
                     TxtQuery tq = txtQueries.get(qID);
-                    if (verbosity > 3)
+                    if (verbosity > 4)
                     {
                         System.out.println("Result for text query "+tq);
                     }
@@ -476,8 +496,9 @@ this.printScores();
 
                         if (verbosity > 3)
                         {        
-                             System.out.println("Matches for text query " 
-                                                  + txtQueriesAsStr.get(qID));
+                             System.out.println("Matches for text query '" 
+                            		 + txtQueriesAsStr.get(qID) + "' = "
+                            		 + matches.size() + ". Lines:");
                             for (String m : matches)
                             {
                                 System.out.println("  ->  " + m);
@@ -489,8 +510,8 @@ this.printScores();
                         //This is a text query that does NOT have any match
                         if (verbosity > 3)
                         {        
-                            System.out.println("No matches for text query ="
-                                                  + txtQueriesAsStr.get(qID));
+                            System.out.println("No matches for text query '"
+                                             + txtQueriesAsStr.get(qID) + "'");
                         }
                     }
 

@@ -63,14 +63,17 @@ public class SituationBase
     /**
      * Creates a database of known situations from a collection of files.
      * Searches the given root folder and in its sub folders.
+     * <b>WARNING:</b> we only look for files with a specific file extension 
+     * ({@value SituationConstants.SITUATIONTXTFILEEXT}).
      * @param rootFolder root of the folder tree to be searched.
      */
 
     public SituationBase(File rootFolder)
     {
     	// WARNING: we only look for files with the expected formats
+    	
         ArrayList<File> listFiles = FileUtils.find(rootFolder,
-        		SituationConstants.SITUATIONTXTFILEEXT);
+        		"*" + SituationConstants.SITUATIONTXTFILEEXT);
         //listFiles.addAll(FilesManager.find(pathNameRoot,
         //		SituationConstants.SITUATIONXMLFILEEXT));
 
@@ -112,6 +115,18 @@ public class SituationBase
                            new ArrayList<Situation>(Arrays.asList(situation)));
             }
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the number of situations in this collection
+     * @return the number of known situations
+     */
+    
+    public int getSituationCount()
+    {
+    	return allSituations.size();
     }
 
 //------------------------------------------------------------------------------

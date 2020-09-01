@@ -249,6 +249,28 @@ public class ParallelRunner
         cleanup(tpExecutor, futureJobs, submittedJobs);
         tpExecutor.shutdown();
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Check for exceptions in sub-jobs
+     * @return <code>true</code> if any sub-job returned an exception
+     */
+
+    private boolean exceptionInSubJobs()
+    {
+        boolean found = false;
+        for (Job j : submittedJobs)
+        {
+            if (j.foundException())
+            {
+            	found = false;
+                break;
+            }
+        }
+
+        return found;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -334,12 +356,14 @@ public class ParallelRunner
             }
             catch (IllegalArgumentException iae)
             {
-                Terminator.withMsgAndStatus("ERROR! Negative waiting time.",-1);
+                Terminator.withMsgAndStatus("ERROR! Negative waiting time in "
+                		+ "ParallelRunner.",-1);
             }
             catch (InterruptedException ie)
             {
                 ie.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR! Thread is interrupted.",-1);
+                Terminator.withMsgAndStatus("ERROR! Interrupted thread in "
+                		+ "ParallelRunner.",-1);
             }
         }
 

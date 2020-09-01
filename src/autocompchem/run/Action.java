@@ -64,7 +64,7 @@ public class Action
      * Possible Action objects (i.e., the thing on which we do the action)
      */
     public enum ActionObject {FOCUSJOB,
-    	MASTERJOB, PREVIUSJOB, PARALLELJOB, SUBSEQUENTJOB};
+    	MASTERJOB, PREVIOUSJOB, PARALLELJOB, SUBSEQUENTJOB};
     	
     /**
      * Details pertaining this action
@@ -87,7 +87,7 @@ public class Action
      * converts a text-based definition of actions in an Action object. The text
      * is expected to contain one or more lines (i.e., line separators), each
      * with one of the settings defining the action,
-     * though multiline blocks are also allowed, if properly identified by the
+     * though multiple line blocks are also allowed, if properly identified by
      * {@link WorkerConstants.STARTMULTILINE} and 
      * {@link WorkerConstants.ENDMULTILINE} labels.
      * @param txt the text to decode.
@@ -108,7 +108,7 @@ public class Action
      * Constructs an Action that is defined in a set of lines. This method 
      * converts a text-based definition of actions in an Action object. Each
      * line is expected to contain one of the settings defining the action,
-     * though multiline blocks are also allowed, if properly identified by the
+     * though multiple line blocks are also allowed, if properly identified by
      * {@link WorkerConstants.STARTMULTILINE} and 
      * {@link WorkerConstants.ENDMULTILINE} labels.
      * @param lines the text to decode.
@@ -145,10 +145,10 @@ public class Action
     		switch (key)
     		{
     		case (ActionConstants.TYPEKEY):
-    			type = ActionType.valueOf(form.get(key));
+    			type = ActionType.valueOf(form.get(key).toUpperCase());
     			break;
     		case (ActionConstants.OBJECTKEY):
-    			object = ActionObject.valueOf(form.get(key));
+    			object = ActionObject.valueOf(form.get(key).toUpperCase());
     			break;
     		case (ActionConstants.DETAILSKEY):
     			String detStr = form.get(key);

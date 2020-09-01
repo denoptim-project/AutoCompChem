@@ -1,14 +1,22 @@
 package autocompchem.run;
 
+import java.io.File;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterConstants;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.perception.Perceptron;
+import autocompchem.perception.infochannel.FileAsSource;
+import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.worker.TaskID;
@@ -36,11 +44,6 @@ public class JobEvaluator extends Worker
 	 */
 	public static final String SITUATIONOUTKEY = "PerceivedSituation";
 	
-	/**
-	 * The parameter key used to provide pathname to a list of situations
-	 */
-	public static final String SITUATIONSDBROOT = "SITUATIONSDBROOT";
-
     /**
      * Situation base: list of known situations/concepts
      */
@@ -57,44 +60,148 @@ public class JobEvaluator extends Worker
     private Job job;
     
 //-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor defining the knowledge base and source of information.
+     * @param sitsDB the collection of known situations.
+     * @param icDB the collection of information channels.
+     */
+    public JobEvaluator()
+    {
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor defining the knowledge base and source of information.
+     * @param sitsDB the collection of known situations.
+     * @param icDB the collection of information channels.
+     */
+    public JobEvaluator(SituationBase sitsDB, InfoChannelBase icDB, Job job)
+    {
+        this.sitsDB = sitsDB;
+        this.icDB = icDB;
+        this.job = job;
+    }
+    
+//-----------------------------------------------------------------------------
 	
 	@Override
 	public void initialize() 
 	{
-		
-		if (params.contains(SITUATIONSDBROOT)) 
+		if (params.contains(ParameterConstants.SITUATIONSDBROOT)) 
 		{
-			
+			String pathName = params.getParameter(
+					ParameterConstants.SITUATIONSDBROOT).getValueAsString();
+			sitsDB = new SituationBase(new File(pathName));
 		}
 		
-		/*
-		if (params.contains(INPUTFILE)) 
+		if (params.contains(ParameterConstants.INFOSRCINPUTFILES)) 
 		{
-			
+			String pathNames = params.getParameter(
+					ParameterConstants.INFOSRCINPUTFILES).getValueAsString();
+			if (icDB == null)
+			{
+				icDB = new InfoChannelBase();
+			}
+			String[] list = pathNames.trim().split(File.pathSeparator);
+			for (int i=0; i<list.length; i++)
+			{
+				FileUtils.foundAndPermissions(list[i], true, false, false);
+				InfoChannel ic = new FileAsSource(list[i]);
+				ic.setType(InfoChannelType.INPUTFILE);
+				icDB.addChannel(ic);
+			}
 		}
 		
-		if (params.contains(LOGFILE)) 
+		if (params.contains(ParameterConstants.INFOSRCLOGFILES)) 
 		{
-			
+			String pathNames = params.getParameter(
+					ParameterConstants.INFOSRCLOGFILES).getValueAsString();
+			if (icDB == null)
+			{
+				icDB = new InfoChannelBase();
+			}
+			String[] list = pathNames.trim().split(File.pathSeparator);
+			for (int i=0; i<list.length; i++)
+			{
+				FileUtils.foundAndPermissions(list[i], true, false, false);
+				InfoChannel ic = new FileAsSource(list[i]);
+				ic.setType(InfoChannelType.LOGFEED);
+				icDB.addChannel(ic);
+			}
 		}
 		
-		if (params.contains(OUTPUTFILE)) 
+		if (params.contains(ParameterConstants.INFOSRCOUTPUTFILES)) 
 		{
-			
+			String pathNames = params.getParameter(
+					ParameterConstants.INFOSRCOUTPUTFILES).getValueAsString();
+			if (icDB == null)
+			{
+				icDB = new InfoChannelBase();
+			}
+			String[] list = pathNames.trim().split(File.pathSeparator);
+			for (int i=0; i<list.length; i++)
+			{
+				FileUtils.foundAndPermissions(list[i], true, false, false);
+				InfoChannel ic = new FileAsSource(list[i]);
+				ic.setType(InfoChannelType.OUTPUTFILE);
+				icDB.addChannel(ic);
+			}
 		}
 		
-		if (params.contains(JOBDETAILSFILE)) 
+		if (params.contains(ParameterConstants.INFOSRCJOBDETAILS)) 
 		{
-			// Detect job kind: this will be used to choose how to parse
-			// output files
-			 
+			String pathNames = params.getParameter(
+					ParameterConstants.INFOSRCJOBDETAILS).getValueAsString();
+			if (icDB == null)
+			{
+				icDB = new InfoChannelBase();
+			}
+			String[] list = pathNames.trim().split(File.pathSeparator);
+			for (int i=0; i<list.length; i++)
+			{
+				FileUtils.foundAndPermissions(list[i], true, false, false);
+				InfoChannel ic = new FileAsSource(list[i]);
+				ic.setType(InfoChannelType.JOBDETAILS);
+				icDB.addChannel(ic);
+			}
 		}
-		*/
 		
-		//TODO: read in sitsDB from params
+		if (params.contains(ParameterConstants.JOBDEF)) 
+		{
+			String pathName = params.getParameter(
+					ParameterConstants.JOBDEF).getValueAsString();
+			FileUtils.foundAndPermissions(pathName, true, false, false);
+			job = JobFactory.buildFromFile(pathName);
+		}
 		
-		//TODO: read in icDB from params
-
+		String whatIsNull = "";
+		if (job==null)
+		{
+			whatIsNull="the job to evaluate";
+		}
+		if (sitsDB==null)
+		{
+			if (whatIsNull.equals(""))
+			{
+				whatIsNull=whatIsNull + ", and ";
+			}
+			whatIsNull=whatIsNull + "the collection of known situations";
+		}
+		if (icDB==null)
+		{
+			if (whatIsNull.equals(""))
+			{
+				whatIsNull=whatIsNull + ", and ";
+			}
+			whatIsNull=whatIsNull + "the collection of information channels";
+		}
+		if (!whatIsNull.equals(""))
+		{
+			Terminator.withMsgAndStatus("ERROR! Cannot evaluate job. Missing "
+					+ "data in " + whatIsNull + ".", -1);
+		}
 	}
 	
 //-----------------------------------------------------------------------------
@@ -102,13 +209,52 @@ public class JobEvaluator extends Worker
 	@Override
 	public void performTask() 
 	{
-		// Collect and prepare info
+		// Pre-flight checks
+		if (sitsDB.getSituationCount()==0)
+		{
+			Terminator.withMsgAndStatus("ERROR! List of known situations is "
+					+ "empty! Some knowledge is needed to do perception.",-1);
+		}
+		if (icDB.getInfoChannelCount()==0)
+		{
+			Terminator.withMsgAndStatus("ERROR! List of information channels "
+					+ "is empty! Information is needed to do perception.",-1);
+		}
+		
+		//TODO Collect and prepare info
 		// e.g. parse output files to extract data and build info from it
+
 		
 		// Attempt perception
 		Perceptron p = new Perceptron(sitsDB,icDB);
+		
+		//TODO del
+		p.setVerbosity(1);
+		
 		try {
 			p.perceive();
+			
+			if (p.isAware())
+			{
+				Situation sit = p.getOccurringSituations().get(0);
+				
+				//TODO use logger
+				System.out.println("Situation perceived is " + sit.getRefName());
+				
+				if (sit.hasReaction())
+				{
+					Action a = sit.getReaction();
+					
+					//TODO use logger
+					System.out.println("Action is: "+a);
+				}
+				
+			} else {
+				//TODO use logger
+				System.out.println("NOT PERCEIVED");
+			}
+			//TODO: alter master job with reaction triggered by outcome of analysis
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

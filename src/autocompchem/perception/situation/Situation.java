@@ -127,7 +127,7 @@ public class Situation extends Concept
     {
         super();
         
-    	String format = FileUtils.getFileExtension(file).toUpperCase();
+    	String format = FileUtils.getFileExtension(file).toLowerCase();
     	
     	// TODO: detect format from file content
     	
@@ -140,7 +140,7 @@ public class Situation extends Concept
 			default:
 				throw new Exception("Unknown format for file '" 
 						+ file.getAbsolutePath() + "', which was expected to "
-						+ "contain a the definition of a Known situation.");
+						+ "contain the definition of a known situation.");
 		}
 	}
     
@@ -169,11 +169,11 @@ public class Situation extends Concept
         boolean actionFound = false;
         for (int i=0; i<form.size(); i++)
         {
-            ArrayList<String> signleBlock = form.get(i);
-            String key = signleBlock.get(0);
-            String value = signleBlock.get(1);
+            ArrayList<String> singleBlock = form.get(i);
+            String key = singleBlock.get(0);
+            String value = singleBlock.get(1);
             value = value.trim();
-            switch (key)
+            switch (key.toUpperCase())
             {
             	case SituationConstants.SITUATIONTYPE:
             		this.setType(value);
@@ -229,7 +229,7 @@ public class Situation extends Concept
         
         
         //Checking requirements
-        if (refNameFound)
+        if (!refNameFound)
         {
         	throw new Exception("No reference name found for situation defined "
         			+ "in file '" + f.getAbsolutePath()+ "'");
@@ -282,6 +282,30 @@ public class Situation extends Concept
     public void setLogicalExpression(String el)
     {
         this.logicalExpression = el;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if this known situation can trigger a reaction.
+     * @return <code>true</code> a reaction to this situation is defined.
+     */
+    public boolean hasReaction()
+    {
+    	return reaction != null;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the expected reaction to this situation, or null if no reaction
+     * is known.
+     * @return the behaviour in response of the occurrence of this situation
+     */
+    
+    public Action getReaction()
+    {
+    	return reaction;
     }
 
 //------------------------------------------------------------------------------

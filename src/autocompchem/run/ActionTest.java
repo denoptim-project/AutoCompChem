@@ -47,7 +47,7 @@ public class ActionTest
     {
     	
     	String str = ActionConstants.TYPEKEY+SEP+" "+ActionType.REDO+NL
-    			+ ActionConstants.OBJECTKEY+SEP+" "+ActionObject.PREVIUSJOB+NL
+    			+ ActionConstants.OBJECTKEY+SEP+" "+ActionObject.PREVIOUSJOB+NL
     			+ ActionConstants.STARTMULTILINE+ActionConstants.DETAILSKEY+SEP
     				+ ActionConstants.STARTMULTILINE+"KEEP"+SEP+" optA"+NL
     				+"optB"+NL+ActionConstants.ENDMULTILINE+NL
@@ -58,7 +58,7 @@ public class ActionTest
     	Action a = new Action(str);
     	
     	assertEquals(ActionType.REDO,a.getType(),"ActionType");
-    	assertEquals(ActionObject.PREVIUSJOB,a.getObject(),"ActionObject");
+    	assertEquals(ActionObject.PREVIOUSJOB,a.getObject(),"ActionObject");
     	assertNotNull(a.getDetail("CHANGE"),"Detail exists: Change");
     	assertTrue(a.getDetail("CHANGE").toString().contains("optD 123"),
     			"Detail content: Change-1");

@@ -43,3 +43,5 @@
 - use shell job to start ezternal software (e.g. Gaussian)
 
 - make master job able to react to the perception of an error and the inpulse to perform an error fixing action
+
+- remove OS dependency from t123

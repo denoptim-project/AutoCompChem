@@ -18,12 +18,27 @@ package autocompchem.perception.situation;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.Circumstance;
+import autocompchem.perception.circumstance.CircumstanceConstants;
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.run.ActionConstants;
+import autocompchem.run.Action.ActionObject;
+import autocompchem.run.Action.ActionType;
 
 /**
  * Unit Test for Situation class
@@ -34,6 +49,75 @@ import autocompchem.perception.circumstance.Circumstance;
 public class SituationTest 
 {
 
+    private final String SEP = System.getProperty("file.separator");
+    private final String NL = System.getProperty("line.separator");
+    private final String S = SituationConstants.SEPARATOR;
+
+    @TempDir 
+    File tempDir;
+    
+//-----------------------------------------------------------------------------
+	
+	@Test
+	public void testMakeFromTxtFile() throws Exception
+	{
+		assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+
+        //Define pathnames
+        String txtFile = tempDir.getAbsolutePath() + SEP + "situation.txt";
+        
+        try
+        {
+        	StringBuilder sb = new StringBuilder();
+        	sb.append(SituationConstants.REFERENCENAMELINE).append(S);
+        	sb.append("Err-1.1").append(NL);
+        	
+        	sb.append(SituationConstants.SITUATIONTYPE).append(S);
+        	sb.append("error").append(NL);
+        	
+        	sb.append(SituationConstants.CIRCUMSTANCE).append(S);
+        	sb.append(InfoChannelType.LOGFEED+" ");
+        	sb.append(CircumstanceConstants.MATCHES);
+        	sb.append(" BLABLA").append(NL);
+        	
+        	sb.append(SituationConstants.CIRCUMSTANCE).append(S);
+        	sb.append(InfoChannelType.OUTPUTFILE+" ");
+        	sb.append(CircumstanceConstants.NOMATCH);
+        	sb.append(" RIBLA").append(NL);
+        	
+        	sb.append(SituationConstants.STARTMULTILINE);
+        	sb.append(SituationConstants.ACTION).append(S);
+        	sb.append(ActionConstants.TYPEKEY+ActionConstants.SEPARATOR);
+        	sb.append(ActionType.REDO).append(NL);
+        	sb.append(ActionConstants.OBJECTKEY+ActionConstants.SEPARATOR);
+        	sb.append(ActionObject.PREVIOUSJOB).append(NL);
+        	sb.append(SituationConstants.ENDMULTILINE);
+        	IOtools.writeTXTAppend(txtFile, sb.toString(), true);
+        } 
+        catch  (Throwable t) 
+        {
+        	t.printStackTrace();
+            assertFalse(true, "Unable to work with tmp files.");
+        }
+        
+        Situation s = new Situation(new File (txtFile));
+
+        assertNotNull(s,"The new situation should be not null.");
+        assertEquals("error",s.getType(),"Type of situation.");
+        assertEquals(2,s.getCircumstances().size(),"Number of circumstances.");
+        ICircumstance c = s.getCircumstances().get(0);
+        assertEquals(InfoChannelType.LOGFEED,c.getChannelType(),"Channel type "
+        		+ "for 1st circumstance.");
+        assertTrue(c instanceof MatchText, 
+        		"Kind of 1st corcumstance is MatchText");
+        MatchText mt = (MatchText) c;
+        assertEquals("BLABLA",mt.getPattern(),"Pattern of 1st circumstance");
+        
+        assertNotNull(s.getReaction(),"Action should be not null.");
+        assertEquals(ActionType.REDO,s.getReaction().getType(),"Action type.");
+	}
+
+//-----------------------------------------------------------------------------
 	
     @Test
     public void testIsOccurring() throws Exception
@@ -80,7 +164,6 @@ public class SituationTest
         sit.setLogicalExpression("${v0 && (4 > 2)}");
         assertEquals(true,sit.isOccurring(fingerprint),
                                                 "mixing numerical and boolean");
-
     }
 
 //------------------------------------------------------------------------------

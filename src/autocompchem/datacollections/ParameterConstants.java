@@ -65,5 +65,50 @@ public class ParameterConstants
 	 * and specifying the number of threads.
 	 */
 	public static final String PARALLELIZE = "PARALLELIZE";
+	
+	/**
+	 * Keyword of parameter identifying a jobs as possibly runnable in parallel
+	 */
+	public static final String PARALLELIZABLE = "PARALLELIZABLE";
+	
+	/**
+	 * Keyword of parameter defining input files as source of information, i.e.,
+	 * info channels. With 'input' we mean one or more input files of the job
+	 * that is being evaluated.
+	 */
+	public static final String INFOSRCINPUTFILES = "IC-INPUT";
+	
+	/**
+	 * Keyword of parameter defining output files as source of information, 
+	 * i.e., info channels. With 'output' we mean one or more output file 
+	 * produced by the job being evaluated.
+	 */
+	public static final String INFOSRCOUTPUTFILES = "IC-OUTPUT";
+	
+	/**
+	 * Keyword of parameter defining log files as source of information, i.e.,
+	 * info channels. With 'log file' we mean one or more log file produced by 
+	 * the job being evaluated.
+	 */
+	public static final String INFOSRCLOGFILES = "IC-LOGS";
+	
+	/**
+	 * Keyword of parameter defining a job details file as source of
+	 * information, i.e., info channel. With 'job' we mean the job being 
+	 * evaluated.
+	 */
+	public static final String INFOSRCJOBDETAILS = "IC-JOBDETAILS";
+	
+	/**
+	 * Keyword defining the pathname to the root folder that collects all known
+	 * situations, i.e., the database of known situations.
+	 */
+	public static final String SITUATIONSDBROOT = "SITUATIONSDBROOT";
 
+	/**
+	 * Keyword of parameter defining where, i.e., in which file, to find the 
+	 * definition of a job.
+	 */
+	public static final String JOBDEF = "JOBDEFINITION";
+	
 }

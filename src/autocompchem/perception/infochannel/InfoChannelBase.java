@@ -78,6 +78,18 @@ public class InfoChannelBase
                             new ArrayList<InfoChannel>(Arrays.asList(channel)));
         }
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the number of channels in this collection
+     * @return the number of information channels
+     */
+    
+    public int getInfoChannelCount()
+    {
+    	return allInfoChans.size();
+    }
 
 //------------------------------------------------------------------------------
 

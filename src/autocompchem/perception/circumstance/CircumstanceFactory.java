@@ -71,9 +71,9 @@ public class CircumstanceFactory
     	
     	// Choose kind of circumstance to create
     	Circumstance c = null;
-    	String act = parts[1].toUpperCase();
-    	String restOfStr = str.substring(str.indexOf(act) + act.length());
-    	switch (act)
+    	String act = parts[1];
+    	String restOfStr = str.substring(str.indexOf(act) + act.length()).trim();
+    	switch (act.toUpperCase())
     	{
     		case CircumstanceConstants.MATCHES:
     			c = new MatchText(restOfStr, ict);

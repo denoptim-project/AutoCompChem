@@ -76,7 +76,7 @@ public abstract class InfoChannel
 
     /**
      * Returns the tool reading characters from the info stream source.
-     * The Reader subclass instnce is decided by the subclasses depending on the
+     * The Reader subclass instance is decided by the subclasses depending on the
      * kind og source to be read.
      * The stream is typically closed outside of the information channel, by
      * whatever reads the Reader and defined that the Reader is no longer
