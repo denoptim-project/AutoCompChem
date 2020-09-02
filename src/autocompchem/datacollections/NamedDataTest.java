@@ -37,6 +37,9 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.situation.Situation;
+import autocompchem.run.Action;
+import autocompchem.run.Action.ActionObject;
+import autocompchem.run.Action.ActionType;
 import autocompchem.text.TextBlock;
 
 
@@ -130,6 +133,11 @@ public class NamedDataTest
     	nd.setValue(nms);
     	assertTrue(NamedDataType.NORMALMODESET.equals(nd.getType()),
     			"Detecting NormalModeSet");  
+    	
+    	Action a = new Action(ActionType.STOP,ActionObject.MASTERJOB);
+    	nd.setValue(a);
+    	assertTrue(NamedDataType.ACTION.equals(nd.getType()),
+    			"Detecting Action");  
     	
     	Object o = new Object();
     	nd.setValue(o);

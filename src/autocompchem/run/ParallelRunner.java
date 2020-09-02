@@ -29,6 +29,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import autocompchem.datacollections.Parameter;
+import autocompchem.run.Action.ActionObject;
+import autocompchem.run.Action.ActionType;
+
 
 /**
  * Class for running a list of independent jobs in parallel.
@@ -38,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ParallelRunner 
 {
+	//TODO check permissions on these fields
+	
     /**
      * List of jobs to run
      */
@@ -52,7 +58,17 @@ public class ParallelRunner
      * List of references to the submitted subjobs.
      */
     final ArrayList<Job> submittedJobs;
-
+    
+    /**
+     * List of threads used for monitoring 
+     */
+    private ArrayList<Thread> listenerThreads;
+    
+    /**
+     * List of monitoring objects
+     */
+    private ArrayList<ParallelJobListener> listeners;
+    
     /**
      * Asynchronous tasks manager
      */
@@ -83,7 +99,23 @@ public class ParallelRunner
      * Verbosity level: amount of logging from this jobs
      */
     private int verbosity = 0;
+    
+    /**
+     * Flag signalling that we are still in time, i.e., runtime is lower than 
+     * limit
+     */
+	private boolean withinTime;
 
+	/**
+	 * The time when we started running
+	 */
+	private long startTime;
+	
+	/**
+	 * Flag signalling that the parallel jobs have to be restarted
+	 */
+	private boolean restart = false;
+	
 //------------------------------------------------------------------------------
 
     /**
@@ -145,7 +177,7 @@ public class ParallelRunner
             catch (InterruptedException ie)
             {
                 // remove traces and cleanup
-                cleanup(tpExecutor, futureJobs, submittedJobs);
+                cleanupPresentBatch();
                 // (Re-)Cancel if current thread also interrupted
                 tpExecutor.shutdownNow();
                 // and stop possibly alive thread
@@ -219,8 +251,7 @@ public class ParallelRunner
      * Remove all reference to submitted and future jobs
      */
 
-    private void cleanup(ThreadPoolExecutor tpe, List<Future<?>> futureJobs,
-                            ArrayList<Job> submittedJobs)
+    private void cleanupPresentBatch()
     {
         for (Future<?> f : futureJobs)
         {
@@ -234,8 +265,8 @@ public class ParallelRunner
 
         submittedJobs.clear();
         
-        tpe.purge();
-        tpe.getQueue().clear();
+        tpExecutor.purge();
+        tpExecutor.getQueue().clear();
     }
 
 //------------------------------------------------------------------------------
@@ -244,9 +275,9 @@ public class ParallelRunner
      * Stops all subtasks and shutdown executor
      */
 
-    public void stopRun()
+    public void stopAndTerminateRun()
     {
-        cleanup(tpExecutor, futureJobs, submittedJobs);
+        cleanupPresentBatch();
         tpExecutor.shutdown();
     }
     
@@ -290,6 +321,18 @@ public class ParallelRunner
                 break;
             }
         }
+        for (int il=0; il<listeners.size(); il++)
+        {
+        	ParallelJobListener pjl = listeners.get(il);
+        	Thread t = listenerThreads.get(il);
+        	if (!pjl.done && t.isAlive())
+        	{
+        		//TODO del
+        		System.out.println("Waiting for PJL: "+pjl.notificationFlagId +"("+pjl.done+") on thread "+t.getName()+"("+t.isAlive()+")");
+        		allDone = false;
+        		//break;
+        	}
+        }
 
         return allDone;
     }
@@ -302,11 +345,14 @@ public class ParallelRunner
 
     public void start()
     {
-        boolean withinTime = true;
+        withinTime = true;
 
         // Initialise empty threads that will be used for the sub-jobs
         tpExecutor.prestartAllCoreThreads();
-        long startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
+
+    	listeners = new ArrayList<ParallelJobListener>();
+        listenerThreads = new ArrayList<Thread>();
 
         // Submit all sub-jobs in once. Those that do not fit because of all
         // thread pool is filled-up are dealt with by RejectedExecHandlerImp
@@ -318,28 +364,51 @@ public class ParallelRunner
                 withinTime = false;
                 break;
             }
+            
+            //TODO: set dedicated logger with dedicated log file
+            
             Job job = it.next();
+           
+            // Start a listening task on another thread. This task handles any
+            // request of further action from the job it monitors.
+            // This thread is not part of the pool managed by tpExecutor.
+            Object notificationFlagId = job.hashCode();
+            job.setRequestActionFlagId(notificationFlagId);
+            ParallelJobListener pjl = new ParallelJobListener(job,notificationFlagId);
+            listeners.add(pjl);
+            Thread pjlThread = new Thread(pjl, "PJL-thread");
+            pjlThread.start();
+            listenerThreads.add(pjlThread);
 
             submittedJobs.add(job);
             Future<?> fut = tpExecutor.submit(job);
             futureJobs.add(fut);
-//TODO del
-//System.out.println("HERE: submitting "+job+" future "+fut+ " " + (System.currentTimeMillis()-startTime)+" queue"+tpExecutor.getQueue());
-
         }
-
+       
+        int ii = 0;
         //Wait for completion
         while (true && withinTime)
         {
+        	//TODO del
+        	ii++;
+        	System.out.println("WAITING LOOP ITERATION ========  "+ii);
             //Completion clause
             if (allSubJobsCompleted())
             {
+            	//TODO del
+            	System.out.println("STOPPIND DUE TO ALL COMPLETED");
             	if (verbosity > 0)
                 {
                     System.out.println("All "+submittedJobs.size()+" sub-jobs "
                              + "have been completed. Parallelized jobs done.");
                 }
                 break;
+            }
+            //TODO del
+            else {
+            	System.out.println("PPLL: NOT all completed");
+            	for (Job j : submittedJobs)
+            		System.out.println(j + " " +j.isCompleted()+" "+j.requestsAction());
             }
 
             // Check walltime
@@ -366,11 +435,164 @@ public class ParallelRunner
                 		+ "ParallelRunner.",-1);
             }
         }
-
-        //All done stop and clean up
-        stopRun();
+        
+        listeners.clear();
+        listenerThreads.clear();
+        
+        cleanupPresentBatch();
+        stopAndTerminateRun();
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * This is a listener that is associated with a specific job in the pool of
+     * jobs run in parallel. Instances of this class are created only after the 
+     * ThreadPoolExecutor has been initialised, so it is safe to assume that
+     * the tpExecutor exists and is capable of accepting new jobs.
+     */
+  /*  private class ParallelJobListener implements JobNotificationListener
+    {
+    	Action requestedAction;
 
+		@Override
+		public void reactToRequestOfAction(Action action, Job sender) 
+		{
+			this.requestedAction = action;
+		}
+    }
+*/
+    
+    private class ParallelJobListener implements Runnable
+    {
+    	private final Job object;
+    	private final Object notificationFlagId;
+    	protected boolean done = false;
+    	
+    	public ParallelJobListener(Job object, Object notificationFlagId)
+    	{
+    		this.object = object;
+    		this.notificationFlagId = notificationFlagId;
+    		
+    		//TODO set counters based on 'object'
+    	}
+    	
+    	public void run()
+    	{
+			synchronized (notificationFlagId)
+    		{
+				if (Thread.currentThread().isInterrupted())
+				{
+					//TODO del
+					System.out.println("PJL -> INTERRUPTED");
+					return;
+				}
+					
+				//TODO del
+				System.out.println("PJL -> waiting on noNotificationFlag:"+notificationFlagId+" for "+object);
+				try {
+					notificationFlagId.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					terminate();
+					return;
+				}
+				
+				if (!object.requestsAction())
+				{
+					//TODO del
+					System.out.println("Nothing to do for PJL "+notificationFlagId+ " ("+done+")");
+					terminate();
+					return;
+				}
+				
+				//TODO del: handling of the action HAS to be done outside the ParallelRunner
+				// the only thing we do here is to STOP the parallel Threads
+				
+				Action a = object.getRequestedAction();
+				
+				if (a.getObject().equals(ActionObject.PARALLELJOB))
+				{
+					switch (a.getType())
+    				{
+					case STOP:
+					case REDO:
+					case REDOAFTER:
+						System.out.println("KILLING ALL upon action's request");
+						cleanupPresentBatch();
+						break;
+						
+					case REDO:
+						//TODO del
+						System.out.println("KILLING ALL upon action's request-REDO");
+						cleanupPresentBatch();
+						
+						int numRestarts = 0;
+						if (object.getParameter("RESTART") != null)
+						{
+							numRestarts = Integer.parseInt(
+									object.getParameter("RESTART")
+									.getValueAsString());
+						}
+						numRestarts++;
+						object.setParameter(new Parameter("RESTART",
+								numRestarts+""));
+						
+						//TODO get maximum from parameters
+						if (numRestarts>5)
+						{
+							//TODO logging
+							break;
+						}
+						
+						//TODO: alter jobs according to action details
+						
+						// Make the new batch of modified jobs
+						ArrayList<Job> newJobs = new ArrayList<Job>();
+						for (Job oldJob : todoJobs)
+						{
+							Job newJob = JobFactory.createJob(
+									oldJob.toTextBlockJobDetails());
+							newJobs.add(newJob);
+						}
+						//todoJobs = newJobs; //NOT POSSIBLE
+						//restart = true;
+						break;
+					}
+				}
+
+    			//TODO del
+    			System.out.println("PJL -> AFTER "+notificationFlagId);
+    			//noNotificationFlag.notify();
+    		}
+			terminate();
+			return;
+    	}
+    	
+    	private void terminate()
+    	{
+    		//TODO del
+			System.out.println("Terminating PJL "+notificationFlagId);
+    		done = true;
+    		Thread.currentThread().interrupt();
+    	}
+    }
+//------------------------------------------------------------------------------
+
+    /*
+     * In handling notification from a Job, note that that job is completed.
+     * So, remove it from the list of submitted (and future?) and, if the
+     * job is a monitoring one, resubmit to tpExcecutor:
+     * 
+     *      Job job = (the same , for monitoring jobs)
+     *      submittedJobs.add(job);
+            Future<?> fut = tpExecutor.submit(job);
+            futureJobs.add(fut);
+            
+     * this should restart the job in the same thread, which has become 
+     * available in the meantime, because the old job has terminated.
+     */
+    
 //------------------------------------------------------------------------------
 
    /**

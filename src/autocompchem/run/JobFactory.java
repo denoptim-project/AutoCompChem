@@ -1,5 +1,8 @@
 package autocompchem.run;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -22,8 +25,10 @@ import java.util.ArrayList;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job.RunnableAppID;
+import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
 
@@ -50,11 +55,12 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName)
     {
-        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(pathName,
-                                        ParameterConstants.STARTJOB, //delimiter
-                                        ParameterConstants.ENDJOB, //delimiter
-                                        false,  //don't take only first
-                                        false); //don't include delimiters
+        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        		pathName,
+                ParameterConstants.STARTJOB, //delimiter
+                ParameterConstants.ENDJOB, //delimiter
+                false,  //don't take only first
+                false); //don't include delimiters
         
         if (blocks.size() == 0)
         {
@@ -66,7 +72,22 @@ public class JobFactory
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
         	blocks.add(tb);
         }
-
+        
+        return createJob(blocks);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Creates a job from a collection of text blocks extracted from a job
+     * details file.
+     * @param blocks the blocks of text, each corresponding to a single job
+     * that can possibly contain nested jobs.
+     * @return the outermost job, with any nested job within it.
+     */
+    
+    public static Job createJob(ArrayList<TextBlockIndexed> blocks)
+    {
         // Unless there is only one set of parameters the outermost job serves
         // as a container of the possibly nested structure of sub-jobs.
         Job job = new Job();
@@ -138,7 +159,8 @@ public class JobFactory
      * @return the job, possibly including nested sub-jobs
      */ 
 
-    public static Job createJob(RunnableAppID appID, int nThreads, boolean parallelizable)
+    public static Job createJob(RunnableAppID appID, int nThreads, 
+    		boolean parallelizable)
     {
     	Job job;
     	switch (appID) 

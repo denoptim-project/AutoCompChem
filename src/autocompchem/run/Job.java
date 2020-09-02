@@ -12,6 +12,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.text.TextBlockIndexed;
 
 
 /**
@@ -94,7 +95,17 @@ public class Job implements Runnable
      * to run sub-jobs in parallel. To this end, each sub-job must also be 
      * parallelizable.
      */
-    private int nThreads = 1; 
+    private int nThreads = 1;
+    
+    /**
+     * A listener that can hear notifications from (i.e., observe) this job. 
+     * Typically, the listener is a master job or the manager of parallel jobs.
+     */
+    //TODO del
+    //private JobNotificationListener observer;
+    //private Action requestedAction;
+    private Object notificationFlagId;
+    
 
     /**
      * Flag signalling that this job has thrown an exception
@@ -251,6 +262,25 @@ public class Job implements Runnable
         this.nThreads = n;
     }
     
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a listener/observer, i.e., a class that can listen to notifications 
+     * sent out by this job.
+     * @param observer the observer
+     */
+  /*  
+   //TODO: del
+    public void setJobNotificationListener(JobNotificationListener listener)
+    {
+    	this.observer = listener;
+    }
+    */
+    
+    public void setRequestActionFlagId(Object notificationFlagId)
+    {
+    	this.notificationFlagId = notificationFlagId;
+    }
 //------------------------------------------------------------------------------
     
     /**
@@ -494,12 +524,12 @@ public class Job implements Runnable
     /**
      * Method that runs this job and its sub-jobs. This is the only method
      * that can label this job as 'completed'.
-     * Also, this method is only implemented in the super-class. 
-     * Sub-classes might overwrite 
-     * {@Link #runSubJobsPararelly} and {@Link runSubJobsSequentially}.
+     * Also, this method is only implemented in the super-class, and 
+     * Sub-classed cannot overwrite it. Instead, sub-classes can overwrite 
+     * {@link runThisJobSubClassSpecific()}, which is called by {@link run()}.
      */
 
-    public void run()
+    public final void run()
     {
     	//TODO use logger
     	if (verbosity > 0)
@@ -523,6 +553,19 @@ public class Job implements Runnable
             runSubJobsSequentially();
         }
         
+        // If this job runs in parallel with others, then we notify its master
+        // for any request for further action which might affect this or any
+        // of its parallel siblings.
+        if (notificationFlagId!=null)
+        {
+        	synchronized (notificationFlagId)
+        	{
+    			notificationFlagId.notify();
+        	}
+        }
+
+        //TODO del
+        System.out.println("End of run for job "+this);
         completed = true;
     }
 
@@ -547,14 +590,19 @@ public class Job implements Runnable
 
     /**
      * Runs all the sub-jobs sequentially.
-     * This method is overwritten by subclasses.
      */
 
-    public void runSubJobsSequentially()
+    private void runSubJobsSequentially()
     {
-        for (Job j : steps)
+        for (int iJob=0; iJob<steps.size(); iJob++)
         {
+        	Job j = steps.get(iJob);
             j.run();
+            
+            if (j.requestsAction())
+            {
+            	//TODO reactToEvent(j,act,i);
+            }
         }
     }
 
@@ -564,13 +612,12 @@ public class Job implements Runnable
      * Runs all the sub-jobs in an embarrassingly parallel fashion.
      */
 
-    public void runSubJobsPararelly()
+    private void runSubJobsPararelly()
     {
         ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
         parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
-
     
 //------------------------------------------------------------------------------
     
@@ -578,6 +625,7 @@ public class Job implements Runnable
      * Returns the collector of output data
      * @return the collector of output data
      */
+    
     public NamedDataCollector getOutputCollector()
     {
     	return exposedOutput;
@@ -589,6 +637,7 @@ public class Job implements Runnable
      * Returns the collection of all exposed output data.
      * @return the collection of all exposed output data.
      */
+    
     public Collection<NamedData> getOutputDataSet()
     {
     	return exposedOutput.getAllNamedData().values();
@@ -647,7 +696,36 @@ public class Job implements Runnable
     {
         return thrownExc;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if this job is requesting any action.
+     * @return <code>true</code> if this job is requesting any action
+     */
+    
+    public boolean requestsAction()
+    {
+    	return exposedOutput.contains(JobEvaluator.REACTIONTOSITUATION);
+    }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * @return the requested action or null, if no action is requested
+     */
+    
+    public Action getRequestedAction()
+    {
+    	if (requestsAction())
+    	{
+    		return (Action) exposedOutput.getNamedData(
+    				JobEvaluator.REACTIONTOSITUATION).getValue();
+    	} else {
+    		return null;
+    	}
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -672,7 +750,40 @@ public class Job implements Runnable
             return;
         }
         this.jobIsBeingKilled = true;
+        notifyParallelJobListener();
         Thread.currentThread().interrupt();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Parallel job listeners are used to respond to any action triggered by the 
+     * completion of a job that is run in a thread pool. This methods checks if
+     * there is any listeners that required 
+     */
+	private void notifyParallelJobListener() 
+	{
+        if (notificationFlagId!=null)
+        {
+        	synchronized (notificationFlagId)
+        	{
+    			notificationFlagId.notify();
+        	}
+        }
+	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Produced a text representation of this job following the format of
+     * autocompchem's JobDetail text file, but collecting the text in
+     * a {@link TextBlockIndexed}
+     * @return the list of lines ready to print a jobDetails file.
+     */
+
+    public TextBlockIndexed toTextBlockJobDetails()
+    {
+    	return new TextBlockIndexed(toLinesJobDetails(), 0, 0, 0);
     }
 
 //------------------------------------------------------------------------------

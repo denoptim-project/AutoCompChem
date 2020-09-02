@@ -40,9 +40,16 @@ public class JobEvaluator extends Worker
 					Arrays.asList(TaskID.EVALUATEJOB)));
 	
 	/**
-	 * The string used to identify the perceived situation when exposing output.
+	 * The string used to identify the perceived situation in the exposed 
+	 * job output data structure.
 	 */
 	public static final String SITUATIONOUTKEY = "PerceivedSituation";
+	
+	/**
+	 * The string used to identify the reaction to the perceived situation the
+	 * exposed job output data structure.
+	 */
+	public static final String REACTIONTOSITUATION = "ReactionToSituation";
 	
     /**
      * Situation base: list of known situations/concepts
@@ -228,30 +235,23 @@ public class JobEvaluator extends Worker
 		// Attempt perception
 		Perceptron p = new Perceptron(sitsDB,icDB);
 		
-		//TODO del
+		//TODO control via logger
 		p.setVerbosity(1);
 		
 		try {
 			p.perceive();
 			
+			//TODO use logger
 			if (p.isAware())
 			{
 				Situation sit = p.getOccurringSituations().get(0);
 				
 				//TODO use logger
-				System.out.println("Situation perceived is " + sit.getRefName());
-				
-				if (sit.hasReaction())
-				{
-					Action a = sit.getReaction();
-					
-					//TODO use logger
-					System.out.println("Action is: "+a);
-				}
+				System.out.println("Situation perceived = " + sit.getRefName());
 				
 			} else {
 				//TODO use logger
-				System.out.println("NOT PERCEIVED");
+				System.out.println("No known situation perceived.");
 			}
 			//TODO: alter master job with reaction triggered by outcome of analysis
 			
@@ -264,8 +264,15 @@ public class JobEvaluator extends Worker
 		if (p.isAware())
 		{
 			Situation s = p.getOccurringSituations().get(0);
-			exposeOutputData(
-					new NamedData(SITUATIONOUTKEY,NamedDataType.SITUATION,s));
+			exposeOutputData(new NamedData(SITUATIONOUTKEY,
+					NamedDataType.SITUATION, s));
+			
+			if (s.hasReaction())
+			{
+				Action a = s.getReaction();
+				exposeOutputData(new NamedData(REACTIONTOSITUATION,
+						NamedDataType.ACTION, a));
+			}
 		}
 	}
 	

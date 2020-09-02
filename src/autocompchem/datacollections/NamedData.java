@@ -11,6 +11,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.run.Action;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -75,7 +76,8 @@ public class NamedData implements Cloneable
         LISTOFDOUBLES, 
         LISTOFINTEGERS,
         NORMALMODE,
-        NORMALMODESET};
+        NORMALMODESET, 
+        ACTION};
 
 //------------------------------------------------------------------------------
 
@@ -282,6 +284,10 @@ public class NamedData implements Cloneable
     		case ("NormalModeSet"):
     			tp = NamedDataType.NORMALMODESET;
     			break;
+    			
+    		case ("Action"):
+    			tp = NamedDataType.ACTION;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -381,6 +387,9 @@ public class NamedData implements Cloneable
         case NORMALMODESET:
         	cVal = ((NormalModeSet) value).clone();
         	break;
+        	
+        case ACTION:
+        	cVal = ((Action) value).clone();
         	
         default:
             cVal = value.toString();
