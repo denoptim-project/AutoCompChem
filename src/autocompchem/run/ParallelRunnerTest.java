@@ -121,7 +121,7 @@ public class ParallelRunnerTest
      * - all jobs fit into max number of threads 
      * - runtime of all jobs is < wall time of PArallelRunner
      */
-    //@Testt
+    @Test
     public void testParallelJobsA() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -156,7 +156,7 @@ public class ParallelRunnerTest
      * - all jobs fit into max number of threads 
      * - runtime of all jobs is > wall time of ParallelRunner
      */
-    //@Testt
+    @Test
     public void testParallelJobsB() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -191,7 +191,7 @@ public class ParallelRunnerTest
      * - more jobs that threads, jobs need to queue 
      * - runtime for running all jobs < wall time of ParallelRunner
      */
-    //@Testt
+    @Test
     public void testParallelJobsC() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -226,7 +226,7 @@ public class ParallelRunnerTest
      * - more jobs that threads, jobs need to queue 
      * - runtime for running all jobs > wall time of ParallelRunner
      */
-    //@Testt
+    @Test
     public void testParallelJobsD() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -268,7 +268,7 @@ public class ParallelRunnerTest
     {
     	
     	//Check availability of shell on this OS, if not, then skip this test
-    	if (!(new File("/bin/sffh")).canExecute())
+    	if (!(new File("/bin/sh")).canExecute())
     	{
     		String NL = System.getProperty("line.separator");
     		System.out.println(NL + "WARNING: Skipping test that depends on "
