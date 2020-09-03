@@ -83,6 +83,7 @@ public class JobEvaluator extends Worker
      * Constructor defining the knowledge base and source of information.
      * @param sitsDB the collection of known situations.
      * @param icDB the collection of information channels.
+     * @param job the job being evaluated.
      */
     public JobEvaluator(SituationBase sitsDB, InfoChannelBase icDB, Job job)
     {
@@ -95,15 +96,15 @@ public class JobEvaluator extends Worker
 	
 	@Override
 	public void initialize() 
-	{
-		if (params.contains(ParameterConstants.SITUATIONSDBROOT)) 
+	{   	
+		if (hasParameter(ParameterConstants.SITUATIONSDBROOT)) 
 		{
 			String pathName = params.getParameter(
 					ParameterConstants.SITUATIONSDBROOT).getValueAsString();
 			sitsDB = new SituationBase(new File(pathName));
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCINPUTFILES)) 
+		if (hasParameter(ParameterConstants.INFOSRCINPUTFILES)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCINPUTFILES).getValueAsString();
@@ -121,7 +122,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCLOGFILES)) 
+		if (hasParameter(ParameterConstants.INFOSRCLOGFILES)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCLOGFILES).getValueAsString();
@@ -139,7 +140,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCOUTPUTFILES)) 
+		if (hasParameter(ParameterConstants.INFOSRCOUTPUTFILES)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCOUTPUTFILES).getValueAsString();
@@ -157,7 +158,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCJOBDETAILS)) 
+		if (hasParameter(ParameterConstants.INFOSRCJOBDETAILS)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCJOBDETAILS).getValueAsString();
@@ -175,14 +176,14 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.JOBDEF)) 
+		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
 			String pathName = params.getParameter(
 					ParameterConstants.JOBDEF).getValueAsString();
 			FileUtils.foundAndPermissions(pathName, true, false, false);
 			job = JobFactory.buildFromFile(pathName);
 		}
-		
+    	
 		String whatIsNull = "";
 		if (job==null)
 		{
@@ -274,6 +275,9 @@ public class JobEvaluator extends Worker
 						NamedDataType.ACTION, a));
 			}
 		}
+		
+		//TODO del
+		System.out.println(" EVAL DONE: "+p.isAware());
 	}
 	
 //-----------------------------------------------------------------------------	

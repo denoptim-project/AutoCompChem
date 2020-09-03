@@ -130,6 +130,24 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
 
     /**
+     * Checks if a parameter has been set.
+     * @param refName the reference name of the parameter.
+     * @return <code>true</code if the parameter exists, of <code>false</code>
+     * if it is not set or if the parameter storage is null.
+     */
+
+    public boolean hasParameter(String refName)
+    {
+    	if (params != null)
+    	{
+    		return params.contains(refName);
+    	}
+        return false;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Initialise this worker according to the given parameters. 
      * This method is overwritten by subclasses.
      */
@@ -173,7 +191,8 @@ public abstract class Worker implements IOutputExposer
 		else
 		{
 			//TODO better
-			System.out.println("WARNING! Attempt to put data on a null output collector");
+			System.out.println("WARNING! Worker trying to put data on a null "
+					+ "output collector");
 		}
 	}
 	

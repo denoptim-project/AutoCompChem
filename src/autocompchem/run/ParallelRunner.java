@@ -67,12 +67,12 @@ public class ParallelRunner
      * Index of notifications. Used to avoid concurrent notifications by
      * serving notification on the basis of first come, first served.
      */
-    private final AtomicInteger notifId = new AtomicInteger();
+    private final AtomicInteger notificationId = new AtomicInteger();
     
     /**
-     * Asynchronous tasks manager
+     * Asynchronous execution service with a queue
      */
-    final ThreadPoolExecutor tpExecutor;
+    final ScheduledThreadPoolExecutor tpExecutor;
 
     /**
      * Number of threads
@@ -106,7 +106,7 @@ public class ParallelRunner
 	private long startTime;
 	
 	/**
-	 * Lock for synchronisation of main thread with notifiers from sub jobs
+	 * Lock for synchronisation of main thread with notifications from jobs
 	 */
 	private Object lock = new Object();
 	
@@ -135,11 +135,14 @@ public class ParallelRunner
 
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
         
-        /*
-         tpExecutor = new ScheduledThreadPoolExecutor(nThreads, threadFactory, 
-         	new RejectedExecHandlerImpl());
-        */
         
+        tpExecutor = new ScheduledThreadPoolExecutor(nThreads, threadFactory, 
+         	new RejectedExecHandlerImpl());
+         	/*
+         tpExecutor.setMaximumPoolSize(nThreads);
+         tpExecutor.setKeepAliveTime(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        */
+        /*
         tpExecutor = new ThreadPoolExecutor(nThreads,
                                         nThreads,
                                         Long.MAX_VALUE,
@@ -147,7 +150,7 @@ public class ParallelRunner
                                         new ArrayBlockingQueue<Runnable>(1),
                                         threadFactory,
                                         new RejectedExecHandlerImpl());
-        
+        */
 
         // Add a shutdown mechanism to kill the master thread and its subjobs
         // including planned ones.
@@ -178,7 +181,7 @@ public class ParallelRunner
             catch (InterruptedException ie)
             {
                 // remove traces and cleanup
-                cancellAllRunningThreads();
+                cancellAllRunningThreadsAndShutDown();
                 // (Re-)Cancel if current thread also interrupted
                 tpExecutor.shutdownNow();
                 // and stop possibly alive thread
@@ -253,7 +256,7 @@ public class ParallelRunner
      * Remove all reference to submitted and future jobs
      */
 
-    private void cancellAllRunningThreads()
+    private void cancellAllRunningThreadsAndShutDown()
     {
     	// NB: assumption futureJobs.size() == submittedJobs.size()
     	
@@ -270,20 +273,8 @@ public class ParallelRunner
         }
 
         submittedJobs.clear();
-        
         tpExecutor.purge();
         tpExecutor.getQueue().clear();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Stops all subtasks and shutdown executor
-     */
-
-    public void stopAndTerminateRun()
-    {
-        cancellAllRunningThreads();
         tpExecutor.shutdown();
     }
     
@@ -327,21 +318,6 @@ public class ParallelRunner
                 break;
             }
         }
-        /*
-        for (int il=0; il<listeners.size(); il++)
-        {
-        	ParallelJobListener pjl = listeners.get(il);
-        	Thread t = listenerThreads.get(il);
-        	if (!pjl.done && t.isAlive())
-        	{
-        		//TODO del
-        		System.out.println("Waiting for PJL: "+pjl.notificationFlagId +"("+pjl.done+") on thread "+t.getName()+"("+t.isAlive()+")");
-        		allDone = false;
-        		//break;
-        	}
-        }
-        */
-
         return allDone;
     }
 
@@ -367,42 +343,23 @@ public class ParallelRunner
         Iterator<Job> it = todoJobs.iterator();
         while (it.hasNext())
         {
-            if(checkAgainstWalltime(startTime))
-            {
-            	//TODO logger
-            	System.out.println("Wall time reached: some jobs were never submitted.");
-            	cancellAllRunningThreads();
-                withinTime = false;
-                break;
-            }
             
             //TODO: set dedicated logger with dedicated log file
             
             Job job = it.next();
-           
-            /*
-            // Start a listening task on another thread. This task handles any
-            // request of further action from the job it monitors.
-            // This thread is not part of the pool managed by tpExecutor.
-            Object notificationFlagId = job.hashCode();
-            job.setRequestActionFlagId(notificationFlagId);
-            ParallelJobListener pjl = new ParallelJobListener(job,notificationFlagId);
-            listeners.add(pjl);
-            Thread pjlThread = new Thread(pjl, "PJL-thread");
-            pjlThread.start();
-            listenerThreads.add(pjlThread);
-			*/
 			job.setJobNotificationListener(new ParallelJobListener());
-            
+			
             submittedJobs.add(job);
-            Future<?> fut = tpExecutor.submit(job);
+            Future<?> fut = job.submitThread(tpExecutor);
             futureJobs.add(fut);
         }
         
-        // NB: counter-intuitive: this stops the execution from accepting tasks
-        // and is needed to initiate an ordinary termination of the execution 
-        // service.
-        tpExecutor.shutdown();
+        // NB: tpExecutor.shutdown() stops the execution from accepting tasks
+        // but is needed to initiate an ordinary termination of the execution 
+        // service. However it cannot be used because if cancels also the 
+        // periodic tasks (i.e., MonitoringJob).
+        // For this reason tpExecutor.shutdown() is done in the 
+        // cancellAllRunningThreadsAndShutDown method.
         
         //Wait for completion
         int ii = 0;
@@ -426,18 +383,23 @@ public class ParallelRunner
                 break;
             }
             //TODO del
+            /*
             else {
             	System.out.println("PPLL: NOT all completed");
             	for (Job j : submittedJobs)
             		System.out.println(j + " " +j.isCompleted()+" "+j.requestsAction());
+            	for (Future<?> f : futureJobs)
+            		System.out.println(f);
+            		
             }
+        */
 
             // Check wall time
             if(checkAgainstWalltime(startTime))
             {
             	//TODO logger
             	System.out.println("Wall time reached: some jobs are being interrupted");
-            	cancellAllRunningThreads();
+            	cancellAllRunningThreadsAndShutDown();
                 withinTime = false;
                 break;
             }
@@ -453,66 +415,26 @@ public class ParallelRunner
             catch (InterruptedException ie)
             {
                 ie.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR! Interrupted thread in "
-                		+ "ParallelRunner.",-1);
+                cancellAllRunningThreadsAndShutDown();
             }
         }
         
         try
         {
+        	tpExecutor.shutdown();
             // Wait just a bit more in case existing tasks have to terminate
             if (!tpExecutor.awaitTermination(10, TimeUnit.SECONDS))
             {
-                tpExecutor.shutdownNow(); // Now cancel running tasks
+                tpExecutor.shutdownNow(); // Now cancel hanging, running tasks
             }
         }
         catch (InterruptedException ie)
         {
             // remove traces and cleanup
-            cancellAllRunningThreads();
+            cancellAllRunningThreadsAndShutDown();
             // (Re-)Cancel if current thread also interrupted
             tpExecutor.shutdownNow();
         }
-        /*
-        listeners.clear();
-        listenerThreads.clear();
-        */
-        //cleanupPresentBatch();
-        //stopAndTerminateRun();
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * A runnable object that stops a job when it is run. This is used to 
-     * enforce a timeout on a job.
-     * 
-     * @author Marco Foscato
-     */
-    
-    @Deprecated
-    private class TimeoutEnforcer implements Runnable
-    {
-    	private Job targetJob;
-    	private Future<?> targetFuture;
-    	
-    	public TimeoutEnforcer(Job targetJob, Future<?> targetFuture)
-    	{
-    		this.targetJob = targetJob;
-    		this.targetFuture = targetFuture;
-    	}
-    	
-        public void run()
-        {
-        	//TODO del
-        	System.out.println("RUNNING STOP TO "+targetJob);
-        	targetJob.stopJob();
-        	targetFuture.cancel(true);
-        	
-            submittedJobs.remove(targetJob);
-            futureJobs.remove(targetFuture);
-            
-        }      
     }
     
 //------------------------------------------------------------------------------
@@ -529,7 +451,9 @@ public class ParallelRunner
 		@Override
 		public void reactToRequestOfAction(Action action, Job sender) 
 		{
-			if (notifId.getAndIncrement() == 0)
+			//TODO del
+			System.out.println("HEARD REQUEST in PJL");
+			if (notificationId.getAndIncrement() == 0)
 			{
 				//This is the very first notification: we take it into account
 				if (action.getObject().equals(ActionObject.PARALLELJOB))
@@ -539,10 +463,14 @@ public class ParallelRunner
 						case STOP:
 						case REDO:
 						case REDOAFTER:
+							//TODO logging
 							System.out.println("KILLING ALL upon action's request");
 							//TODO reactivate
-							cancellAllRunningThreads();
-							stopAndTerminateRun();
+							cancellAllRunningThreadsAndShutDown();
+							synchronized (lock)
+			            	{
+			            		lock.notify();
+			            	}
 							break;
 							
 						default:

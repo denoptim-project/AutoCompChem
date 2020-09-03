@@ -4,6 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.datacollections.NamedData;
@@ -237,6 +242,24 @@ public class Job implements Runnable
     public void setParameter(Parameter par)
     {
         params.setParameter(par);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if a parameter has been set.
+     * @param refName the reference name of the parameter.
+     * @return <code>true</code if the parameter exists, of <code>false</code>
+     * if it is not set or if the parameter storage is null.
+     */
+
+    public boolean hasParameter(String refName)
+    {
+    	if (params != null)
+    	{
+    		return params.contains(refName);
+    	}
+        return false;
     }
 
 //------------------------------------------------------------------------------
@@ -600,7 +623,7 @@ public class Job implements Runnable
     private void runSubJobsPararelly()
     {
         ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
-        if (params.contains("WALLTIME"))
+        if (hasParameter("WALLTIME"))
         {
         	parallRun.setWallTime(Long.parseLong(
         			params.getParameterValue("WALLTIME")));
@@ -608,6 +631,21 @@ public class Job implements Runnable
         parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sends this job to an executing thread managed by an existing, and
+     * pre-started thread manager. This method is overwritten by subclasses 
+     * that need special kinds of execution. For example, see 
+     * {@link MonitoringJob}.
+     * @param tpExecutor the manager of the job executing threads.
+     * @return a Future representing pending completion of the task.
+     */
+    
+  	protected Future<?> submitThread(ScheduledThreadPoolExecutor tpExecutor) {
+  		return tpExecutor.submit(this);
+  	}
     
 //------------------------------------------------------------------------------
     
@@ -817,7 +855,7 @@ public class Job implements Runnable
         lines.add(ParameterConstants.ENDJOB);
         return lines;
     }
-
+    
 //------------------------------------------------------------------------------
 
 }

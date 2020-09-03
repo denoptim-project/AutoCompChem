@@ -96,7 +96,7 @@ public class Situation extends Concept
 
     public Situation(String conceptType)
     {
-        super(conceptType);
+        super(conceptType,"noRefName");
     }
 
 //------------------------------------------------------------------------------
@@ -109,8 +109,39 @@ public class Situation extends Concept
 
     public Situation(String conceptType, ArrayList<ICircumstance> context)
     {
-        super(conceptType);
+        super(conceptType,"noRefName");
         this.context = context;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a Situation with given type and context.
+     * @param conceptType the type on situation to construct
+     * @param context the context as a list of circumstances
+     */
+
+    public Situation(String conceptType, String refName,
+    		ArrayList<ICircumstance> context)
+    {
+        super(conceptType,refName);
+        this.context = context;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a Situation with given type and context.
+     * @param conceptType the type on situation to construct
+     * @param context the context as a list of circumstances
+     */
+
+    public Situation(String conceptType, String refName,
+    		ArrayList<ICircumstance> context, Action reaction)
+    {
+        super(conceptType,refName);
+        this.context = context;
+        this.reaction = reaction;
     }
     
 //------------------------------------------------------------------------------

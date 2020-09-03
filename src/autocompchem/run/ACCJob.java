@@ -37,7 +37,7 @@ public class ACCJob extends Job
     public void runThisJobSubClassSpecific()
     {   
     	// Check for any ACC task...
-    	if (!this.params.contains(WorkerConstants.PARTASK))
+    	if (!hasParameter(WorkerConstants.PARTASK))
     	{
     		// ...if none, then this job is just a container for other jobs
     		if (getVerbosity() > 0)
