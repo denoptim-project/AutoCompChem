@@ -98,15 +98,16 @@ public class Job implements Runnable
     private int nThreads = 1;
     
     /**
-     * A listener that can hear notifications from (i.e., observe) this job. 
+     * A listener that can hear notifications from this job (i.e., observer). 
      * Typically, the listener is a master job or the manager of parallel jobs.
      */
-    //TODO del
-    //private JobNotificationListener observer;
-    //private Action requestedAction;
-    private Object notificationFlagId;
-    
+    private JobNotificationListener observer;
 
+    /**
+     * Flag signalling that this job has been interrupted
+     */
+    protected boolean isInterrupted = false;
+    
     /**
      * Flag signalling that this job has thrown an exception
      */
@@ -269,18 +270,12 @@ public class Job implements Runnable
      * sent out by this job.
      * @param observer the observer
      */
-  /*  
-   //TODO: del
+
     public void setJobNotificationListener(JobNotificationListener listener)
     {
     	this.observer = listener;
     }
-    */
     
-    public void setRequestActionFlagId(Object notificationFlagId)
-    {
-    	this.notificationFlagId = notificationFlagId;
-    }
 //------------------------------------------------------------------------------
     
     /**
@@ -553,20 +548,10 @@ public class Job implements Runnable
             runSubJobsSequentially();
         }
         
-        // If this job runs in parallel with others, then we notify its master
-        // for any request for further action which might affect this or any
-        // of its parallel siblings.
-        if (notificationFlagId!=null)
-        {
-        	synchronized (notificationFlagId)
-        	{
-    			notificationFlagId.notify();
-        	}
-        }
-
         //TODO del
         System.out.println("End of run for job "+this);
-        completed = true;
+        
+        finalizeStatusAndNotifications();
     }
 
 //------------------------------------------------------------------------------
@@ -615,6 +600,11 @@ public class Job implements Runnable
     private void runSubJobsPararelly()
     {
         ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
+        if (params.contains("WALLTIME"))
+        {
+        	parallRun.setWallTime(Long.parseLong(
+        			params.getParameterValue("WALLTIME")));
+        }
         parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
@@ -700,6 +690,30 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
+     * Set the flag signalling that the execution of this job was interrupted
+     * @param flag set to <code>true</code> to flag this job as interrupted.
+     */
+    
+    public void setInterrupted(boolean flag)
+    {
+    	this.isInterrupted = flag;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns <code>true</code> if the execution of this job was interrupted.
+     * @return <code>true</code> if the execution of this job was interrupted.
+     */
+    
+    public boolean isInterrupted()
+    {
+    	return isInterrupted;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Checks if this job is requesting any action.
      * @return <code>true</code> if this job is requesting any action
      */
@@ -750,27 +764,24 @@ public class Job implements Runnable
             return;
         }
         this.jobIsBeingKilled = true;
-        notifyParallelJobListener();
+        finalizeStatusAndNotifications();
         Thread.currentThread().interrupt();
     }
     
 //------------------------------------------------------------------------------
-    
+
     /**
-     * Parallel job listeners are used to respond to any action triggered by the 
-     * completion of a job that is run in a thread pool. This methods checks if
-     * there is any listeners that required 
+     * Sets the status to 'complete' and notifies any listener that might be 
+     * listening to this job
      */
-	private void notifyParallelJobListener() 
-	{
-        if (notificationFlagId!=null)
+    private void finalizeStatusAndNotifications() 
+    {
+    	completed = true;
+    	if (requestsAction() && observer!=null)
         {
-        	synchronized (notificationFlagId)
-        	{
-    			notificationFlagId.notify();
-        	}
+        	observer.reactToRequestOfAction(getRequestedAction(), this);
         }
-	}
+    }
 
 //------------------------------------------------------------------------------
 

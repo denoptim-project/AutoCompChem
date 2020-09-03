@@ -1,7 +1,5 @@
 package autocompchem.run;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -20,12 +18,24 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import autocompchem.datacollections.Parameter;
+import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
+import autocompchem.run.Job.RunnableAppID;
 
 
 /**
@@ -37,13 +47,236 @@ import org.junit.jupiter.api.io.TempDir;
 public class ParallelRunnerTest 
 {
     private final String SEP = System.getProperty("file.separator");
-
+    
     @TempDir 
-    File tempDir;
+    protected File tempDir;
+    
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * A dummy test job that is parallelizable and simply logs into a file
+     * every ca. half second. 
+     * The job lasts a time defined in the constructor.
+     */
+    
+    private class TestJob extends Job
+    {    	
+    	protected int i = 0;
+    	protected int wallTime = 0;
+    	protected String logPathName = "noLogName";
+    	
+    	public TestJob(String logPathName, int wallTime)
+    	{
+    		super();
+    		this.logPathName = logPathName;
+    		this.wallTime = wallTime;
+    		setParallelizable(true);
+    		setNumberOfThreads(1);
+    	}
+    	
+    	@Override
+    	public void runThisJobSubClassSpecific()
+    	{	
+    		// The dummy command will just ping every half second
+    		ScheduledThreadPoolExecutor stpe = 
+    				new ScheduledThreadPoolExecutor(1);
+    		stpe.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+    		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+    		stpe.scheduleAtFixedRate( new Task(), 500, 490, 
+    				TimeUnit.MILLISECONDS);
+    		
+    		CountDownLatch cdl = new CountDownLatch(1);
+            try {
+				while (!cdl.await(wallTime, TimeUnit.SECONDS)) 
+				{
+					stpe.shutdownNow();
+					break;
+				}
+			} catch (InterruptedException e) {
+				//Ignoring exception: interruption is signalled in the Job object
+				//e.printStackTrace();
+			} finally {
+				stpe.shutdownNow();
+			}
+    	}
+    	
+    	private class Task implements Runnable
+    	{
+			@Override
+			public void run() 
+			{
+				i++;
+				//TODO del
+				System.out.println("IN TASK_RUN "+i+" writing to "+logPathName);
+				IOtools.writeTXTAppend(logPathName, "Iteration "+i, true);
+			}
+    	}
+    }
+
+//-----------------------------------------------------------------------------
+
+    /*
+     * Case tested:
+     * - all jobs fit into max number of threads 
+     * - runtime of all jobs is < wall time of PArallelRunner
+     */
+    //@Testt
+    public void testParallelJobsA() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+
+        //Job master = JobFactory.createJob(RunnableAppID.ACC);
+        //master.addStep(new TestJob(roothName+"A"));
+        
+        
+        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        master.setParameter(new Parameter("WALLTIME", "10"));
+        for (int i=0; i<3; i++)
+        {
+        	master.addStep(new TestJob(roothName+i,3));
+        }
+        
+        master.run();
+        
+        for (int i=0; i<3; i++)
+        {
+        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
+            		"Lines in log "+i);
+        	assertFalse(master.getStep(i).isInterrupted,
+        			"Interruption flag on job-"+i);
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /*
+     * Case tested:
+     * - all jobs fit into max number of threads 
+     * - runtime of all jobs is > wall time of ParallelRunner
+     */
+    //@Testt
+    public void testParallelJobsB() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+
+        //Job master = JobFactory.createJob(RunnableAppID.ACC);
+        //master.addStep(new TestJob(roothName+"A"));
+        
+        
+        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        master.setParameter(new Parameter("WALLTIME", "3"));
+        for (int i=0; i<3; i++)
+        {
+        	master.addStep(new TestJob(roothName+i,5));
+        }
+        
+        master.run();
+        
+        for (int i=0; i<3; i++)
+        {
+        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
+            		"Lines in log "+i);
+        	assertTrue(master.getStep(i).isInterrupted,
+        			"Interruption flag on job-"+i);
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /*
+     * Case tested:
+     * - more jobs that threads, jobs need to queue 
+     * - runtime for running all jobs < wall time of ParallelRunner
+     */
+    //@Testt
+    public void testParallelJobsC() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+
+        //Job master = JobFactory.createJob(RunnableAppID.ACC);
+        //master.addStep(new TestJob(roothName+"A"));
+        
+        
+        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        master.setParameter(new Parameter("WALLTIME", "10"));
+        for (int i=0; i<6; i++)
+        {
+        	master.addStep(new TestJob(roothName+i,3));
+        }
+        
+        master.run();
+        
+        for (int i=0; i<6; i++)
+        {
+        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
+            		"Lines in log "+i);
+        	assertFalse(master.getStep(i).isInterrupted,
+        			"Interruption flag on job-"+i);
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /*
+     * Case tested:
+     * - more jobs that threads, jobs need to queue 
+     * - runtime for running all jobs > wall time of ParallelRunner
+     */
+    //@Testt
+    public void testParallelJobsD() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+
+        //Job master = JobFactory.createJob(RunnableAppID.ACC);
+        //master.addStep(new TestJob(roothName+"A"));
+        
+        
+        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        master.setParameter(new Parameter("WALLTIME", "5"));
+        for (int i=0; i<6; i++)
+        {
+        	master.addStep(new TestJob(roothName+i,3));
+        }
+        
+        master.run();
+        
+        for (int i=0; i<3; i++)
+        {
+        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
+            		"Lines in log "+i);
+        	assertFalse(master.getStep(i).isInterrupted,
+        			"Interruption flag on job-"+i);
+        }
+        for (int i=3; i<6; i++)
+        {
+        	assertTrue(6>FileAnalyzer.count(roothName+i, "Iteration*"),
+            		"Lines in log "+i);
+        	assertTrue(master.getStep(i).isInterrupted,
+        			"Interruption flag on job-"+i);
+        }
+    }
+    
+//-----------------------------------------------------------------------------
 
     @Test
     public void testParallelShellJobs() throws Exception
     {
+    	
+    	//Check availability of shell on this OS, if not, then skip this test
+    	if (!(new File("/bin/sffh")).canExecute())
+    	{
+    		String NL = System.getProperty("line.separator");
+    		System.out.println(NL + "WARNING: Skipping test that depends on "
+    				+ "/bin/sh, which is not found." + NL);
+    		
+    		return;
+    	}
+    	
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 
         //Define paths in tmp dir
