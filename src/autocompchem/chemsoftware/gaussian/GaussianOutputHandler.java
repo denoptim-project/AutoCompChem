@@ -1427,6 +1427,10 @@ TODO add other tasks here
             for (int i=3; i<(lines.size()-2); i++)
             {
                 String[] parts = lines.get(i).trim().split("\\s+");
+            	if (lines.get(i).matches("^ -----------------.*$"))
+            	{
+            		break;
+            	}
                 String el = AtomUtils.getElementalSymbol(Integer.parseInt(parts[1]));
                 Point3d p3d = new Point3d(Double.parseDouble(parts[3]),
                                           Double.parseDouble(parts[4]),
