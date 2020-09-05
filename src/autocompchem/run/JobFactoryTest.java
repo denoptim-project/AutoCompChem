@@ -30,6 +30,16 @@ import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
+import autocompchem.perception.circumstance.Circumstance;
+import autocompchem.perception.circumstance.CircumstanceConstants;
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.situation.Situation;
+import autocompchem.perception.situation.SituationBase;
+import autocompchem.perception.situation.SituationConstants;
+import autocompchem.run.Action.ActionObject;
+import autocompchem.run.Action.ActionType;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 
@@ -50,7 +60,7 @@ public class JobFactoryTest
     
 //-----------------------------------------------------------------------------
     
-    @Test
+    //@Test
     public void testCreateJob() throws Exception
     {
     	Job job = JobFactory.createJob(Job.RunnableAppID.UNDEFINED);
@@ -80,7 +90,7 @@ public class JobFactoryTest
      * pertains a single job.
      */
     
-    @Test
+    //@Test
     public void testJobCreatsSimpleFromParamsFile() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -117,6 +127,84 @@ public class JobFactoryTest
 //-----------------------------------------------------------------------------
     
     @Test
+    public void testJobCreateMonitoringJob() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+
+        File paramFile = new File(tempDir.getAbsolutePath() + SEP + "acc.par");
+
+        Job job = null;
+        try 
+        {
+            FileWriter writer = new FileWriter(paramFile);
+
+            writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
+            		+ TaskID.EVALUATEJOB + NL);
+            writer.write(MonitoringJob.DELAYPAR + ParameterConstants.SEPARATOR
+            		+ "3" + NL);
+            writer.write(MonitoringJob.DELAYUNITS 
+            		+ ParameterConstants.SEPARATOR 
+            		+ "SECONDS" + NL);
+            writer.write(MonitoringJob.PERIODPAR + ParameterConstants.SEPARATOR
+            		+ "1" + NL);
+            writer.write(MonitoringJob.PERIODUNITS 
+            		+ ParameterConstants.SEPARATOR
+            		+ "MINUTES" + NL);
+            writer.write(ParameterConstants.SITUATION 
+            		+ ParameterConstants.SEPARATOR 
+            		+ ParameterConstants.STARTMULTILINE  
+            		+ SituationConstants.REFERENCENAMELINE 
+            		+ SituationConstants.SEPARATOR + "LimitReached"+NL);
+            writer.write(SituationConstants.SITUATIONTYPE 
+            		+ SituationConstants.SEPARATOR + "error" + NL);
+            writer.write(SituationConstants.CIRCUMSTANCE
+            		+ SituationConstants.SEPARATOR 
+            		+ InfoChannelType.LOGFEED + " "
+            		+ CircumstanceConstants.MATCHES + " BASH-A: 3" + NL);
+            writer.write(SituationConstants.ACTION 
+            		+ SituationConstants.SEPARATOR 
+            		+ SituationConstants.STARTMULTILINE
+            		+ ActionConstants.TYPEKEY + ActionConstants.SEPARATOR
+            		+ ActionType.STOP.toString() + NL);
+            writer.write(ActionConstants.OBJECTKEY
+            		+ ActionConstants.SEPARATOR + ActionObject.PARALLELJOB+NL);
+            writer.write(SituationConstants.ENDMULTILINE + NL);
+            writer.write(ParameterConstants.ENDMULTILINE + NL);
+            writer.write(ParameterConstants.INFOSRCLOGFILES
+            		+ ParameterConstants.SEPARATOR + " pathName" +NL);
+            writer.close();
+
+            job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            assertFalse(true, "Exception. Unable to work with tmp files.");
+        }  
+
+        assertNotNull(job,"Job is null");
+        assertEquals(MonitoringJob.class, job.getClass(), 
+        		"Type of job object");
+        assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
+        assertEquals(Job.RunnableAppID.ACC, job.getAppID(), "App for job");
+        assertEquals(3000, ((MonitoringJob) job).getDelay(),
+        		"Value of delay in milliseconds");
+        assertEquals(60000, ((MonitoringJob) job).getPeriod(),
+        		"Value of period in milliseconds");
+        SituationBase sb = ((EvaluationJob)job).getDBSituations();
+        assertEquals(1, sb.getSituationCount(), "Number of known situations");
+        Situation s = sb.getRelevantSituations(InfoChannelType.LOGFEED).get(0);
+        assertEquals(1,s.getCircumstances().size(),"Number of circumstances");
+        assertTrue(s.getCircumstances().get(0) instanceof MatchText,
+        		"Type of circumstance");
+        Action a = s.getReaction();
+        assertNotNull(a,"Reaction should not be null");
+        assertEquals(a.getType(),ActionType.STOP,"Action type is STOP");
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    //@Test
     public void testJobCreationFromJDFile() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -189,7 +277,7 @@ public class JobFactoryTest
         
 //-----------------------------------------------------------------------------
 
-    @Test
+    //@Test
     public void testMultiStepJobFromJDFile() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -239,7 +327,7 @@ public class JobFactoryTest
 
 //------------------------------------------------------------------------------
 
-    @Test
+    //@Test
     public void testNestedJobsFromJDFiles() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");

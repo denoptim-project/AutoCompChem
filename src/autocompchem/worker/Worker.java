@@ -72,7 +72,7 @@ public abstract class Worker implements IOutputExposer
     /**
      * Verbosity level
      */
-    protected int verbosity = 1;
+    protected int verbosity = 0;
 
 //------------------------------------------------------------------------------
 

@@ -46,6 +46,11 @@ public class ParameterConstants
     public final static String ENDMULTILINE = "$END";
 
     /**
+     * String defining the verbosity of a job
+     */
+    public final static String VERBOSITY = "VERBOSITY";
+
+    /**
      * String defining the beginning of a job.
      */
     public final static String STARTJOB = "JOBSTART";
@@ -110,5 +115,10 @@ public class ParameterConstants
 	 * definition of a job.
 	 */
 	public static final String JOBDEF = "JOBDEFINITION";
+
+	/**
+	 * Keyword of parameter defining a situation
+	 */
+	public static final String SITUATION = "SITUATION";
 	
 }

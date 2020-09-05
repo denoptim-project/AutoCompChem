@@ -1,14 +1,13 @@
 package autocompchem.run;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.datacollections.NamedData;
@@ -169,6 +168,20 @@ public class Job implements Runnable
      * Verbosity level: amount of logging from this jobs
      */
     private int verbosity = 0;
+    
+	/**
+	 * The string used to identify the data holding a action requested by a
+	 * sub-job.
+	 */
+	public static final String ACTIONREQUESTBYSUBJOB = 
+			"ActionRequestedByChild";
+	
+	/**
+	 * The string used to identify the data holding the sub-job that requested 
+	 * an action.
+	 */
+	public static final String SUBJOBREQUESTINGACTION = 
+			"SubJobRequestingAction";
     
 //------------------------------------------------------------------------------
 
@@ -571,10 +584,7 @@ public class Job implements Runnable
             runSubJobsSequentially();
         }
         
-        //TODO del
-        System.out.println("End of run for job "+this);
-        
-        finalizeStatusAndNotifications();
+        finalizeStatusAndNotifications(!jobIsBeingKilled);
     }
 
 //------------------------------------------------------------------------------
@@ -622,11 +632,17 @@ public class Job implements Runnable
 
     private void runSubJobsPararelly()
     {
-        ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
-        if (hasParameter("WALLTIME"))
+        ParallelRunner parallRun = 
+        		new ParallelRunner(steps,nThreads,nThreads,this);
+        if (hasParameter(ParallelRunner.WALLTIMEPARAM))
         {
         	parallRun.setWallTime(Long.parseLong(
-        			params.getParameterValue("WALLTIME")));
+        			params.getParameterValue(ParallelRunner.WALLTIMEPARAM)));
+        }
+        if (hasParameter(ParallelRunner.WAITTIMEPARAM))
+        {
+        	parallRun.setWaitingStep(Long.parseLong(
+        			params.getParameterValue(ParallelRunner.WAITTIMEPARAM)));
         }
         parallRun.setVerbosity(verbosity);
         parallRun.start();
@@ -799,10 +815,12 @@ public class Job implements Runnable
     {
         if (completed)
         {
+        	//This avoid looking with finalizeStatusAndNotifications sending
+        	// a notification, and the notification triggering calling stopJob
             return;
         }
         this.jobIsBeingKilled = true;
-        finalizeStatusAndNotifications();
+        finalizeStatusAndNotifications(false);
         Thread.currentThread().interrupt();
     }
     
@@ -812,13 +830,21 @@ public class Job implements Runnable
      * Sets the status to 'complete' and notifies any listener that might be 
      * listening to this job
      */
-    private void finalizeStatusAndNotifications() 
+    private void finalizeStatusAndNotifications(boolean notify) 
     {
     	completed = true;
-    	if (requestsAction() && observer!=null)
-        {
-        	observer.reactToRequestOfAction(getRequestedAction(), this);
-        }
+    	if (observer!=null && notify)
+    	{
+	    	if (requestsAction())
+	        {
+	        	observer.reactToRequestOfAction(getRequestedAction(), this);
+	        } else {
+	        	if (!(this instanceof MonitoringJob))
+	        	{
+	        		observer.notifyTermination(this);
+	        	}
+	        }
+    	}
     }
 
 //------------------------------------------------------------------------------

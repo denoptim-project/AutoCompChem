@@ -1,9 +1,9 @@
 #/bin/bash
-echo "BASH: START-A"
-for i in $(seq 0 10)
+echo "BASH: START-A" > t124a.log
+for i in $(seq 0 3)
 do
-  sleep 2
-  echo "BASH-A: $i"
+  sleep 1
+  echo "BASH-A: $i" >> t124a.log
 done
-echo "BASH: DONE-A"
+echo "BASH: DONE-A" >> t124a.log
 exit 0

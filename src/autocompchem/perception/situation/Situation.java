@@ -117,8 +117,9 @@ public class Situation extends Concept
 
     /**
      * Constructor for a Situation with given type and context.
-     * @param conceptType the type on situation to construct
-     * @param context the context as a list of circumstances
+     * @param conceptType the type of situation (i.e., error, warning,...).
+     * @param refName the name of the situation (i.e., Error-1.3C).
+     * @param context the context as a list of circumstances.
      */
 
     public Situation(String conceptType, String refName,
@@ -132,8 +133,11 @@ public class Situation extends Concept
 
     /**
      * Constructor for a Situation with given type and context.
-     * @param conceptType the type on situation to construct
-     * @param context the context as a list of circumstances
+     * @param conceptType the type of situation (i.e., error, warning,...).
+     * @param refName the name of the situation (i.e., Error-1.3C).
+     * @param context the context as a list of circumstances.
+     * @param reaction the action to be triggered by the perception of this
+     * situation.
      */
 
     public Situation(String conceptType, String refName,
@@ -195,7 +199,32 @@ public class Situation extends Concept
 	    		SituationConstants.COMMENTLINE,
 	    		SituationConstants.STARTMULTILINE,
 	    		SituationConstants.ENDMULTILINE);
-	
+	    
+	    configure(form,"file "+fname);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Import all configurations from formatted test
+     * @param form the formatted text
+     */
+    
+    public void configure(ArrayList<ArrayList<String>> form) throws Exception
+    {
+    	configure(form,"given form");
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Import all configurations from formatted test
+     * @param form the formatted text
+     */
+    
+    private void configure(ArrayList<ArrayList<String>> form, String source) 
+    		throws Exception
+    {
         boolean refNameFound = false;
         boolean actionFound = false;
         for (int i=0; i<form.size(); i++)
@@ -217,16 +246,16 @@ public class Situation extends Concept
                         this.setRefName(value);
                         if (this.getRefName().equals(""))
                         {
-                            Terminator.withMsgAndStatus("Empty '"
+                            throw new Exception("Empty '"
                                     + SituationConstants.REFERENCENAMELINE
                                     + "' while defining a Situation from text" 
-                                    + " file. Check file '" + fname + "'.",-1);
+                                    + " file. Check " + source + ".");
                         }
                     } else {
                         throw new Exception("Multiple '"
                                     + SituationConstants.REFERENCENAMELINE 
                                     + "' while defining a Situation from text"
-                                    + " file. Check file '" + fname + "'.");
+                                    + " file. Check " + source + ".");
                     }
                     break;
                     
@@ -246,13 +275,13 @@ public class Situation extends Concept
                         {
                         	throw new Exception("Coul not read impulse "
                                     + " while defining a Situation from text"
-                                    + " file. Check file '" + fname + "'.");
+                                    + " file. Check " + source + ".");
                         }
                     } else {
                         throw new Exception("Multiple '"
                                     + SituationConstants.ACTION 
                                     + "' while defining a Situation from text"
-                                    + " file. Check file '" + fname + "'.");
+                                    + " file. Check " + source + ".");
                     }
                 	break;
             } //end of switch
@@ -263,7 +292,7 @@ public class Situation extends Concept
         if (!refNameFound)
         {
         	throw new Exception("No reference name found for situation defined "
-        			+ "in file '" + f.getAbsolutePath()+ "'");
+        			+ "in " + source);
         }
     }
 

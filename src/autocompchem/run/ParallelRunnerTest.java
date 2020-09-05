@@ -52,9 +52,6 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Action.ActionObject;
 import autocompchem.run.Action.ActionType;
 import autocompchem.run.Job.RunnableAppID;
-import autocompchem.text.TextBlockIndexed;
-import autocompchem.worker.TaskID;
-import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -69,6 +66,15 @@ public class ParallelRunnerTest
     
     @TempDir 
     protected File tempDir;
+    
+    // The ingredients to bake a perceptron
+    private ICircumstance c = new MatchText("Iteration 3",
+    		InfoChannelType.LOGFEED);
+    private Action a = new Action(ActionType.STOP, ActionObject.PARALLELJOB);
+    private Situation s = new Situation("SituationType","TestSituation", 
+    		new ArrayList<ICircumstance>(Arrays.asList(c)),a);
+    
+    private final boolean debug = false;
     
 
 //-----------------------------------------------------------------------------
@@ -87,8 +93,8 @@ public class ParallelRunnerTest
     	protected int period = 490;
     	protected String logPathName = "noLogName";
     	protected Date date = new Date();
-    	protected SimpleDateFormat formatter = 
-    			new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss.SSS ");
+    	protected SimpleDateFormat df = 
+    			new SimpleDateFormat(" HH:mm:ss.SSS ");
     	
     	public TestJob(String logPathName, int wallTime)
     	{
@@ -113,10 +119,12 @@ public class ParallelRunnerTest
     	@Override
     	public void runThisJobSubClassSpecific()
     	{	
-    		//TODO del
-    		date = new Date();
-    		System.out.println("RUNNING TestJobLog: ");
-    		System.out.println("     "+formatter.format(date));
+    		if (debug)
+    		{
+	    		date = new Date();
+	    		System.out.println("RUNNING TestJobLog: "+df.format(date));
+	    		System.out.println("Pathname: "+logPathName);
+    		}
     		
     		// The dummy command will just ping every half second
     		ScheduledThreadPoolExecutor stpe = 
@@ -134,7 +142,7 @@ public class ParallelRunnerTest
 					break;
 				}
 			} catch (InterruptedException e) {
-				//Ignoring exception: interruption is signalled in the Job object
+				//Ignoring exception: interruption is signalled by Job
 				//e.printStackTrace();
 			} finally {
 				stpe.shutdownNow();
@@ -147,9 +155,6 @@ public class ParallelRunnerTest
 			public void run() 
 			{
 				i++;
-				//TODO del
-				date = new Date();
-				System.out.println(i+" -> "+formatter.format(date)+" "+logPathName);
 				IOtools.writeTXTAppend(logPathName, "Iteration "+i, true);
 			}
     	}
@@ -160,15 +165,15 @@ public class ParallelRunnerTest
     /*
      * Only meant to test the private class TestJob
      */
-    //@Test
-    public void testProva() throws Exception
+    
+    public void testPrivateClass() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
-    	System.out.println("START");
+    	System.out.println("STARTING TestJob");
     	Job job = new TestJob(roothName,6,3000,500);
     	job.run();
-    	System.out.println(" END");
+    	System.out.println(" END of TestJob");
     }
 
 //-----------------------------------------------------------------------------
@@ -176,17 +181,13 @@ public class ParallelRunnerTest
     /*
      * Case tested:
      * - all jobs fit into max number of threads 
-     * - runtime of all jobs is < wall time of PArallelRunner
+     * - runtime of all jobs is < wall time of ParallelRunner
      */
-    //@Test
+    @Test
     public void testParallelJobsA() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
-
-        //Job master = JobFactory.createJob(RunnableAppID.ACC);
-        //master.addStep(new TestJob(roothName+"A"));
-        
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
         master.setParameter(new Parameter("WALLTIME", "10"));
@@ -213,7 +214,7 @@ public class ParallelRunnerTest
      * - all jobs fit into max number of threads 
      * - runtime of all jobs is > wall time of ParallelRunner
      */
-    //@Test
+    @Test
     public void testParallelJobsB() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -248,7 +249,7 @@ public class ParallelRunnerTest
      * - more jobs that threads, jobs need to queue 
      * - runtime for running all jobs < wall time of ParallelRunner
      */
-    //@Test
+    @Test
     public void testParallelJobsC() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -283,7 +284,7 @@ public class ParallelRunnerTest
      * - more jobs that threads, jobs need to queue 
      * - runtime for running all jobs > wall time of ParallelRunner
      */
-    //@Test
+    @Test
     public void testParallelJobsD() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -322,55 +323,91 @@ public class ParallelRunnerTest
 
     /*
      * Here we test the notification hook: if a job terminates with a request 
-     * to kill its siblings (i.e., the other jobs running in parallel with
-     * that job, and controlled by the same PArallelRunner), then the 
+     * to kill itself and its siblings (i.e., the jobs running in parallel with
+     * that job, and controlled by the same ParallelRunner), then the 
      * ParallelRunner wakes up and kills all the running/future tasks 
      * and shuts down the execution service.
      */
     @Test
-    public void testParallelJobNotifications() throws Exception
+    public void testParallelJobActionNotifications() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+    	String baseName ="testjob.log";
+        String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        master.setParameter(new Parameter("WALLTIME", "6"));
         
-        // A 'whatever' job that will be evaluated triggering the reaction
-        Job jobToEvaluate = new TestJob(roothName+0,3);
+        // A "long-lasting" job that will be evaluated
+        Job jobToEvaluate = new TestJob(roothName+0,3,0,490);
         master.addStep(jobToEvaluate);
         
-        // Collect the ingredients to bake a perceptron
-        ICircumstance c = new MatchText("Iteration 2",InfoChannelType.LOGFEED);
-        Action a = new Action(ActionType.STOP, ActionObject.PARALLELJOB);
-        Situation s = new Situation("SituationType","TestSituation", 
-        		new ArrayList<ICircumstance>(Arrays.asList(c)),a);
+        // Prepare ingredients to do perception
         SituationBase sitsDB = new SituationBase();
         sitsDB.addSituation(s);
         InfoChannelBase icDB = new InfoChannelBase();
         icDB.addChannel(new FileAsSource(roothName+0,InfoChannelType.LOGFEED));
         
-        // Make the job that will trigger the action
-        Job monitoringJob = new MonitoringJob(jobToEvaluate, sitsDB, icDB, 1000, 500); //TODO set time
+        // Make the job that will monitor the ongoing job and trigger an action
+        Job monitoringJob = new MonitoringJob(jobToEvaluate, sitsDB, icDB, 
+        		750, 500);
         master.addStep(monitoringJob);
         
-        // Other 'whatever' jobs (i.e., the siblings)
-        master.setParameter(new Parameter("WALLTIME", "6"));
-        for (int i=1; i<0; i++) //TODO back to 6
+        // Other 'whatever' jobs (i.e., the siblings) that will be killed too
+        for (int i=1; i<6; i++) 
         {
-        	master.addStep(new TestJob(roothName+i,3));
+        	master.addStep(new TestJob(roothName+i,3,0,200));
         }
         
+        assertEquals(7,master.getNumberOfSteps(),"Number of parallel jobs");
         
         master.run();
         
-        //TODO goon
-        IOtools.pause();
-        
+        int iPingFiles = FileUtils.find(tempDir, baseName).size();
+        assertEquals(2,iPingFiles,"Number of initiated TestJobs");
     }
     
 //-----------------------------------------------------------------------------
 
-    //@Test
+    /*
+     * Here we test the notification hook: if a job terminates with a request 
+     * to kill itself and its siblings (i.e., the jobs running in parallel with
+     * that job, and controlled by the same ParallelRunner), then the 
+     * ParallelRunner wakes up and kills all the running/future tasks 
+     * and shuts down the execution service.
+     */
+    @Test
+    public void testParallelJobCompletionNotifications() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	String baseName ="testjob.log";
+        String roothName = tempDir.getAbsolutePath() + SEP + baseName;
+        
+        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        master.setParameter(new Parameter("WALLTIME", "6"));
+        master.setParameter(new Parameter("WAITSTEP", "7"));
+        // Basically the waiting step is much longer than the time it 
+        // will take to do the actual jobs, and also to the time given to the
+        // ParallelRunner as a wall time. So, check for completion
+        // should be triggered by the actual completion of any job.
+       
+        master.addStep(new TestJob(roothName+"_A",1,0,200));
+        master.addStep(new TestJob(roothName+"_B",2,0,200));
+        master.addStep(new TestJob(roothName+"_C",2,0,200));
+        
+        master.run();
+
+        int iPingFiles = FileUtils.find(tempDir, baseName).size();
+        assertEquals(3,iPingFiles,"Number of initiated TestJobs");
+        
+        //TODO add more checking. This will be made available once we'll
+        // implement job specific logging
+    }
+    
+    
+//-----------------------------------------------------------------------------
+
+    @Test
     public void testParallelShellJobs() throws Exception
     {
     	
@@ -406,7 +443,7 @@ public class ParallelRunnerTest
             for (int i=0; i<10; i++)
             {
                 ShellJob sj = new ShellJob(shellFlvr,script.getAbsolutePath(),
-                                                                    newFile+i);
+                		newFile+i);
                 sj.setParallelizable(true);
                 job.addStep(sj);
             }

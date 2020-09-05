@@ -15,4 +15,11 @@ interface JobNotificationListener
 	 * @param sender the job that is placing the request.
 	 */
 	public void reactToRequestOfAction(Action action, Job sender);
+	
+	/**
+	 * Sends a notification that signals the completion of the job
+	 * which might weak up any waiting process.
+	 */
+	public void notifyTermination(Job sender);
+	
 }

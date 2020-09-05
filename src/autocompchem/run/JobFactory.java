@@ -30,6 +30,8 @@ import autocompchem.io.IOtools;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -111,9 +113,8 @@ public class JobFactory
 
     /**
      * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     * @return the job, possibly including nested sub-jobs
+     * @param appID the application to be used to do the job.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID)
@@ -125,9 +126,9 @@ public class JobFactory
 
     /**
      * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     * @return the job, possibly including nested sub-jobs
+     * @param appID the application to be used to do the job.
+     * @param nThreads max parallel threads for independent sub-jobs.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID, int nThreads)
@@ -139,9 +140,10 @@ public class JobFactory
 
     /**
      * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job
-     * @param parallelizable set <code>true</code> if this job if independent 
-     * @return the job, possibly including nested sub-jobs
+     * @param appID the application to be used to do the job.
+     * @param parallelizable set <code>true</code> if this job can be 
+     * parallelized.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID, boolean parallelizable)
@@ -152,11 +154,12 @@ public class JobFactory
 //------------------------------------------------------------------------------
 
     /**
-     * Create a new job calling the appropriate subclass
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     * @param parallelizable set <code>true</code> if this job if independent 
-     * @return the job, possibly including nested sub-jobs
+     * Create a new job calling the appropriate subclass.
+     * @param appID the application to be used to do the job.
+     * @param nThreads max parallel threads for independent sub-jobs.
+     * @param parallelizable set <code>true</code> if this job can be 
+     * parallelized.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID, int nThreads, 
@@ -207,6 +210,19 @@ public class JobFactory
         	appId = RunnableAppID.valueOf(app.trim().toUpperCase());
         }
         job = createJob(appId);
+
+        if (locPar.contains(WorkerConstants.PARTASK) 
+        		&& locPar.getParameterValue(WorkerConstants.PARTASK)
+        		.toUpperCase().equals(TaskID.EVALUATEJOB.toString()))
+        {
+        	if (locPar.contains(MonitoringJob.PERIODPAR) 
+        			|| locPar.contains(MonitoringJob.DELAYPAR))
+        	{
+        		job = new MonitoringJob();
+        	} else {
+        		job = new EvaluationJob();
+        	}
+        }
         
         if (locPar.contains(ParameterConstants.PARALLELIZE))
         {
@@ -216,10 +232,15 @@ public class JobFactory
         	job.setNumberOfThreads(nThreadsPerSubJob);
         }
         
+        if (locPar.contains(ParameterConstants.PARALLELIZABLE))
+        {
+        	job.setParallelizable(true);
+        }
+        
         job.setParameters(locPar);
         if (tb.getNestedBlocks().size() > 0)
         {
-        	//NB: well, they are called steps, but for a parallelized job they
+        	//NB: here they are called steps, but for a parallelized job they
         	// are the independent jobs to be submitted in parallel
             for (TextBlockIndexed intTb : tb.getNestedBlocks())
             {

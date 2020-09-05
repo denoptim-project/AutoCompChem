@@ -19,6 +19,7 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -97,6 +98,19 @@ public class JobEvaluator extends Worker
 	@Override
 	public void initialize() 
 	{   	
+		if (hasParameter(ParameterConstants.VERBOSITY)) 
+		{
+			String vStr= params.getParameter(
+					ParameterConstants.VERBOSITY).getValueAsString();
+			if (!NumberUtils.isNumber(vStr))
+			{
+				Terminator.withMsgAndStatus("ERROR! Value '" + vStr + "' "
+						+ "cannot be converted to an integer. Check parameter "
+						+ ParameterConstants.VERBOSITY, -1);
+			}
+			verbosity = Integer.parseInt(vStr);
+		}		
+		
 		if (hasParameter(ParameterConstants.SITUATIONSDBROOT)) 
 		{
 			String pathName = params.getParameter(
@@ -185,13 +199,16 @@ public class JobEvaluator extends Worker
 		}
     	
 		String whatIsNull = "";
+		/*
+		// Not really a requirement
 		if (job==null)
 		{
 			whatIsNull="the job to evaluate";
 		}
+		*/
 		if (sitsDB==null)
 		{
-			if (whatIsNull.equals(""))
+			if (!whatIsNull.equals(""))
 			{
 				whatIsNull=whatIsNull + ", and ";
 			}
@@ -199,7 +216,7 @@ public class JobEvaluator extends Worker
 		}
 		if (icDB==null)
 		{
-			if (whatIsNull.equals(""))
+			if (!whatIsNull.equals(""))
 			{
 				whatIsNull=whatIsNull + ", and ";
 			}
@@ -235,27 +252,25 @@ public class JobEvaluator extends Worker
 		
 		// Attempt perception
 		Perceptron p = new Perceptron(sitsDB,icDB);
-		
-		//TODO control via logger
-		p.setVerbosity(1);
+		p.setVerbosity(verbosity-1);
 		
 		try {
 			p.perceive();
 			
-			//TODO use logger
-			if (p.isAware())
+			if (verbosity > 0)
 			{
-				Situation sit = p.getOccurringSituations().get(0);
-				
 				//TODO use logger
-				System.out.println("Situation perceived = " + sit.getRefName());
-				
-			} else {
-				//TODO use logger
-				System.out.println("No known situation perceived.");
+				if (p.isAware())
+				{
+					Situation sit = p.getOccurringSituations().get(0);
+					System.out.println("JobEvaluator: Situation perceived = " 
+							+ sit.getRefName());
+					
+				} else {
+					System.out.println("JobEvaluator: No known situation "
+							+ "perceived.");
+				}
 			}
-			//TODO: alter master job with reaction triggered by outcome of analysis
-			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -273,11 +288,9 @@ public class JobEvaluator extends Worker
 				Action a = s.getReaction();
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
 						NamedDataType.ACTION, a));
+				//TODO: alter master job with reaction triggered by outcome of analysis
 			}
 		}
-		
-		//TODO del
-		System.out.println(" EVAL DONE: "+p.isAware());
 	}
 	
 //-----------------------------------------------------------------------------	

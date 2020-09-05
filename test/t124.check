@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ ! -f t124.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if [ ! -f t124a.log ] ; then echo NOT Passed ERROR 2 ; exit -1 ; fi
+if [ ! -f t124b.log ] ; then echo NOT Passed ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c "BASH" t124a.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "BASH" t124b.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "Situation perceived = Err-1.1" t124.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t124.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 6
+exit -1
+fi
