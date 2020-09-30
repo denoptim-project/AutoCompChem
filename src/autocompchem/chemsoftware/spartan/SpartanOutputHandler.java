@@ -823,8 +823,8 @@ TODO add other tasks here
 
         // Get connectivity block
         blocks = FileAnalyzer.extractMultiTxtBlocksWithDelimiters(sprtInpFile,
-                                                       SpartanConstants.TOPOOPN,
-                                                       SpartanConstants.TOPOEND,
+                                                  "^" + SpartanConstants.TOPOOPN,
+                                                SpartanConstants.TOPOEND+"(.*)",
                                                                            true,
                                                                          false);
 
@@ -836,8 +836,9 @@ TODO add other tasks here
             for (String line : blocks.get(0))
             {
                 // Need to check for keyword abbreviation
-                if (line.toUpperCase().startsWith(SpartanConstants.TOPOOPN) ||
-                    line.toUpperCase().startsWith(SpartanConstants.TOPOEND))
+                if (line.toUpperCase().startsWith("^"+SpartanConstants.TOPOOPN)
+                    || line.toUpperCase().startsWith(SpartanConstants.TOPOEND
+                    		+ "(.*)"))
                 {
                     continue;
                 }

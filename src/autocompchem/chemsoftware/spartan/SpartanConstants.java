@@ -71,7 +71,7 @@ public class SpartanConstants
     /**
      * End of topology directive
      */
-    public final static String TOPOEND = "^ENDHESS(.*)";
+    public final static String TOPOEND = "ENDHESS";
 
     /**
      * Begin of comment directive
