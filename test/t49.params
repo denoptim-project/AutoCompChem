@@ -6,7 +6,7 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem
 INFILE: ../t49-mol.sdf
-JOBDETAILS: ../t48-jobDetails
+JOBDETAILSFILE: ../t48-jobDetails
 CoordinatesType: internal
 CHARGE: 0
 SPIN_MULTIPLICITY: 1

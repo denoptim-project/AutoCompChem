@@ -9,6 +9,6 @@
 VERBOSITY: 2
 TASK: PrepareInputGaussian
 INFILE: ../t8-mol.sdf
-JOBDETAILS: ../t6-jobDetails
+JOBDETAILSFILE: ../t6-jobDetails
 CHARGE: -34
 SPIN_MULTIPLICITY: 55

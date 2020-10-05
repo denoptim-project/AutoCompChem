@@ -6,6 +6,6 @@
 VERBOSITY: 2
 TASK: PrepareInputNWChem
 INFILE: ../t80-mol.sdf
-JOBDETAILS: ../t80-jobDetails
+JOBDETAILSFILE: ../t80-jobDetails
 CHARGE: 0
 SPIN_MULTIPLICITY: 1

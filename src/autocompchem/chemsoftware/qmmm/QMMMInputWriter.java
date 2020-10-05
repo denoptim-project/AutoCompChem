@@ -13,6 +13,8 @@ import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.tinker.TinkerXYZReader;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -164,10 +166,11 @@ public class QMMMInputWriter extends Worker
      * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
      * </li>
      * <li>
-     * <b>JOBDETAILS</b>: formatted text file defining all
+     * <b>JOBDETAILSFILE</b>: formatted text file defining all
      * the details of a {@link QMMMJob}.
      * The definition of the format of jobdetails files can be found in
-     * {@link QMMMJob} documentation.
+     * {@link QMMMJob} documentation. In alternative use <b>JOBDETAILSDATA</b>
+     * to provide job details in a nested block of text.
      * </li>
      * <li>
      * (optional) <b>VERBOSITY</b> verbosity level.
@@ -284,23 +287,36 @@ public class QMMMInputWriter extends Worker
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Use QMMMJob; we do not accept headers in the form of plain text
-        if (params.contains("JOBDETAILS"))
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            //Use QMMMJob
-            String jdFile = 
-                        params.getParameter("JOBDETAILS").getValue().toString();
+            String jdFile = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
             if (verbosity > 0)
             {
-                System.out.println(" Compound QMMM job: details from "  
-                         + jdFile);
+                System.out.println(" Job details from JD file '" 
+                		+ jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.qmmmJob = new QMMMJob(jdFile);
-        } 
+        }
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.qmmmJob = new QMMMJob(lines);
+        }
         else 
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-                                  + " No 'JOBDETAILS' found in parameters.",-1);
+            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "'found in parameters.",-1);
         }
 
         //Name of output

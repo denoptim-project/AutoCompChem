@@ -1,5 +1,5 @@
 #!/bin/bash
-grep -q "Compound Gaussian job: details from ../t6-jobDetails" t9.log
+grep -q "Job details from JD file '../t6-jobDetails'." t9.log
 if [ $? != 0 ] ; then
 echo NOT Passed
 exit -1

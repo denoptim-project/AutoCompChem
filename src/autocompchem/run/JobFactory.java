@@ -1,5 +1,8 @@
 package autocompchem.run;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -22,9 +25,13 @@ import java.util.ArrayList;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job.RunnableAppID;
+import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -50,11 +57,12 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName)
     {
-        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(pathName,
-                                        ParameterConstants.STARTJOB, //delimiter
-                                        ParameterConstants.ENDJOB, //delimiter
-                                        false,  //don't take only first
-                                        false); //don't include delimiters
+        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        		pathName,
+                ParameterConstants.STARTJOB, //delimiter
+                ParameterConstants.ENDJOB, //delimiter
+                false,  //don't take only first
+                false); //don't include delimiters
         
         if (blocks.size() == 0)
         {
@@ -66,7 +74,22 @@ public class JobFactory
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
         	blocks.add(tb);
         }
-
+        
+        return createJob(blocks);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Creates a job from a collection of text blocks extracted from a job
+     * details file.
+     * @param blocks the blocks of text, each corresponding to a single job
+     * that can possibly contain nested jobs.
+     * @return the outermost job, with any nested job within it.
+     */
+    
+    public static Job createJob(ArrayList<TextBlockIndexed> blocks)
+    {
         // Unless there is only one set of parameters the outermost job serves
         // as a container of the possibly nested structure of sub-jobs.
         Job job = new Job();
@@ -90,9 +113,8 @@ public class JobFactory
 
     /**
      * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     * @return the job, possibly including nested sub-jobs
+     * @param appID the application to be used to do the job.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID)
@@ -104,9 +126,9 @@ public class JobFactory
 
     /**
      * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     * @return the job, possibly including nested sub-jobs
+     * @param appID the application to be used to do the job.
+     * @param nThreads max parallel threads for independent sub-jobs.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID, int nThreads)
@@ -118,9 +140,10 @@ public class JobFactory
 
     /**
      * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job
-     * @param parallelizable set <code>true</code> if this job if independent 
-     * @return the job, possibly including nested sub-jobs
+     * @param appID the application to be used to do the job.
+     * @param parallelizable set <code>true</code> if this job can be 
+     * parallelized.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
     public static Job createJob(RunnableAppID appID, boolean parallelizable)
@@ -131,14 +154,16 @@ public class JobFactory
 //------------------------------------------------------------------------------
 
     /**
-     * Create a new job calling the appropriate subclass
-     * @param appID the application to be used to do the job
-     * @param nThreads max parallel threads for independent sub-jobs
-     * @param parallelizable set <code>true</code> if this job if independent 
-     * @return the job, possibly including nested sub-jobs
+     * Create a new job calling the appropriate subclass.
+     * @param appID the application to be used to do the job.
+     * @param nThreads max parallel threads for independent sub-jobs.
+     * @param parallelizable set <code>true</code> if this job can be 
+     * parallelized.
+     * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(RunnableAppID appID, int nThreads, boolean parallelizable)
+    public static Job createJob(RunnableAppID appID, int nThreads, 
+    		boolean parallelizable)
     {
     	Job job;
     	switch (appID) 
@@ -185,6 +210,25 @@ public class JobFactory
         	appId = RunnableAppID.valueOf(app.trim().toUpperCase());
         }
         job = createJob(appId);
+
+        if (locPar.contains(WorkerConstants.PARTASK) 
+        		&& locPar.getParameterValue(WorkerConstants.PARTASK)
+        		.toUpperCase().equals(TaskID.EVALUATEJOB.toString()))
+        {
+        	if (locPar.contains(MonitoringJob.PERIODPAR) 
+        			|| locPar.contains(MonitoringJob.DELAYPAR))
+        	{
+        		job = new MonitoringJob();
+        	} else {
+        		job = new EvaluationJob();
+        	}
+        }
+        
+        if (locPar.contains(ParameterConstants.VERBOSITY))
+        {
+        	job.setVerbosity(Integer.parseInt(locPar.getParameter(
+        			ParameterConstants.VERBOSITY).getValueAsString()));
+        }
         
         if (locPar.contains(ParameterConstants.PARALLELIZE))
         {
@@ -194,10 +238,15 @@ public class JobFactory
         	job.setNumberOfThreads(nThreadsPerSubJob);
         }
         
+        if (locPar.contains(ParameterConstants.PARALLELIZABLE))
+        {
+        	job.setParallelizable(true);
+        }
+        
         job.setParameters(locPar);
         if (tb.getNestedBlocks().size() > 0)
         {
-        	//NB: well, they are called steps, but for a parallelized job they
+        	//NB: here they are called steps, but for a parallelized job they
         	// are the independent jobs to be submitted in parallel
             for (TextBlockIndexed intTb : tb.getNestedBlocks())
             {

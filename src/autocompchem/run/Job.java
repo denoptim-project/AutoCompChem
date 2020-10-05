@@ -1,9 +1,13 @@
 package autocompchem.run;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.datacollections.NamedData;
@@ -12,6 +16,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.text.TextBlockIndexed;
 
 
 /**
@@ -94,8 +99,19 @@ public class Job implements Runnable
      * to run sub-jobs in parallel. To this end, each sub-job must also be 
      * parallelizable.
      */
-    private int nThreads = 1; 
+    private int nThreads = 1;
+    
+    /**
+     * A listener that can hear notifications from this job (i.e., observer). 
+     * Typically, the listener is a master job or the manager of parallel jobs.
+     */
+    private JobNotificationListener observer;
 
+    /**
+     * Flag signalling that this job has been interrupted
+     */
+    protected boolean isInterrupted = false;
+    
     /**
      * Flag signalling that this job has thrown an exception
      */
@@ -152,6 +168,20 @@ public class Job implements Runnable
      * Verbosity level: amount of logging from this jobs
      */
     private int verbosity = 0;
+    
+	/**
+	 * The string used to identify the data holding a action requested by a
+	 * sub-job.
+	 */
+	public static final String ACTIONREQUESTBYSUBJOB = 
+			"ActionRequestedByChild";
+	
+	/**
+	 * The string used to identify the data holding the sub-job that requested 
+	 * an action.
+	 */
+	public static final String SUBJOBREQUESTINGACTION = 
+			"SubJobRequestingAction";
     
 //------------------------------------------------------------------------------
 
@@ -226,6 +256,24 @@ public class Job implements Runnable
     {
         params.setParameter(par);
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if a parameter has been set.
+     * @param refName the reference name of the parameter.
+     * @return <code>true</code if the parameter exists, of <code>false</code>
+     * if it is not set or if the parameter storage is null.
+     */
+
+    public boolean hasParameter(String refName)
+    {
+    	if (params != null)
+    	{
+    		return params.contains(refName);
+    	}
+        return false;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -249,6 +297,19 @@ public class Job implements Runnable
     public void setNumberOfThreads(int n)
     {
         this.nThreads = n;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a listener/observer, i.e., a class that can listen to notifications 
+     * sent out by this job.
+     * @param observer the observer
+     */
+
+    public void setJobNotificationListener(JobNotificationListener listener)
+    {
+    	this.observer = listener;
     }
     
 //------------------------------------------------------------------------------
@@ -494,12 +555,12 @@ public class Job implements Runnable
     /**
      * Method that runs this job and its sub-jobs. This is the only method
      * that can label this job as 'completed'.
-     * Also, this method is only implemented in the super-class. 
-     * Sub-classes might overwrite 
-     * {@Link #runSubJobsPararelly} and {@Link runSubJobsSequentially}.
+     * Also, this method is only implemented in the super-class, and 
+     * Sub-classed cannot overwrite it. Instead, sub-classes can overwrite 
+     * {@link runThisJobSubClassSpecific()}, which is called by {@link run()}.
      */
 
-    public void run()
+    public final void run()
     {
     	//TODO use logger
     	if (verbosity > 0)
@@ -523,7 +584,7 @@ public class Job implements Runnable
             runSubJobsSequentially();
         }
         
-        completed = true;
+        finalizeStatusAndNotifications(!jobIsBeingKilled);
     }
 
 //------------------------------------------------------------------------------
@@ -547,14 +608,19 @@ public class Job implements Runnable
 
     /**
      * Runs all the sub-jobs sequentially.
-     * This method is overwritten by subclasses.
      */
 
-    public void runSubJobsSequentially()
+    private void runSubJobsSequentially()
     {
-        for (Job j : steps)
+        for (int iJob=0; iJob<steps.size(); iJob++)
         {
+        	Job j = steps.get(iJob);
             j.run();
+            
+            if (j.requestsAction())
+            {
+            	//TODO reactToEvent(j,act,i);
+            }
         }
     }
 
@@ -564,13 +630,38 @@ public class Job implements Runnable
      * Runs all the sub-jobs in an embarrassingly parallel fashion.
      */
 
-    public void runSubJobsPararelly()
+    private void runSubJobsPararelly()
     {
-        ParallelRunner parallRun = new ParallelRunner(steps,nThreads,nThreads);
+        ParallelRunner parallRun = 
+        		new ParallelRunner(steps,nThreads,nThreads,this);
+        if (hasParameter(ParallelRunner.WALLTIMEPARAM))
+        {
+        	parallRun.setWallTime(Long.parseLong(
+        			params.getParameterValue(ParallelRunner.WALLTIMEPARAM)));
+        }
+        if (hasParameter(ParallelRunner.WAITTIMEPARAM))
+        {
+        	parallRun.setWaitingStep(Long.parseLong(
+        			params.getParameterValue(ParallelRunner.WAITTIMEPARAM)));
+        }
         parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Sends this job to an executing thread managed by an existing, and
+     * pre-started thread manager. This method is overwritten by subclasses 
+     * that need special kinds of execution. For example, see 
+     * {@link MonitoringJob}.
+     * @param tpExecutor the manager of the job executing threads.
+     * @return a Future representing pending completion of the task.
+     */
+    
+  	protected Future<?> submitThread(ScheduledThreadPoolExecutor tpExecutor) {
+  		return tpExecutor.submit(this);
+  	}
     
 //------------------------------------------------------------------------------
     
@@ -578,6 +669,7 @@ public class Job implements Runnable
      * Returns the collector of output data
      * @return the collector of output data
      */
+    
     public NamedDataCollector getOutputCollector()
     {
     	return exposedOutput;
@@ -589,6 +681,7 @@ public class Job implements Runnable
      * Returns the collection of all exposed output data.
      * @return the collection of all exposed output data.
      */
+    
     public Collection<NamedData> getOutputDataSet()
     {
     	return exposedOutput.getAllNamedData().values();
@@ -647,7 +740,60 @@ public class Job implements Runnable
     {
         return thrownExc;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Set the flag signalling that the execution of this job was interrupted
+     * @param flag set to <code>true</code> to flag this job as interrupted.
+     */
+    
+    public void setInterrupted(boolean flag)
+    {
+    	this.isInterrupted = flag;
+    }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Returns <code>true</code> if the execution of this job was interrupted.
+     * @return <code>true</code> if the execution of this job was interrupted.
+     */
+    
+    public boolean isInterrupted()
+    {
+    	return isInterrupted;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if this job is requesting any action.
+     * @return <code>true</code> if this job is requesting any action
+     */
+    
+    public boolean requestsAction()
+    {
+    	return exposedOutput.contains(JobEvaluator.REACTIONTOSITUATION);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the requested action or null, if no action is requested
+     */
+    
+    public Action getRequestedAction()
+    {
+    	if (requestsAction())
+    	{
+    		return (Action) exposedOutput.getNamedData(
+    				JobEvaluator.REACTIONTOSITUATION).getValue();
+    	} else {
+    		return null;
+    	}
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -669,10 +815,50 @@ public class Job implements Runnable
     {
         if (completed)
         {
+        	//This avoid looking with finalizeStatusAndNotifications sending
+        	// a notification, and the notification triggering calling stopJob
             return;
         }
         this.jobIsBeingKilled = true;
+        finalizeStatusAndNotifications(false);
         Thread.currentThread().interrupt();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the status to 'complete' and notifies any listener that might be 
+     * listening to this job
+     */
+    private void finalizeStatusAndNotifications(boolean notify) 
+    {
+    	completed = true;
+    	if (observer!=null && notify)
+    	{
+	    	if (requestsAction())
+	        {
+	        	observer.reactToRequestOfAction(getRequestedAction(), this);
+	        } else {
+	        	if (!(this instanceof MonitoringJob))
+	        	{
+	        		observer.notifyTermination(this);
+	        	}
+	        }
+    	}
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Produced a text representation of this job following the format of
+     * autocompchem's JobDetail text file, but collecting the text in
+     * a {@link TextBlockIndexed}
+     * @return the list of lines ready to print a jobDetails file.
+     */
+
+    public TextBlockIndexed toTextBlockJobDetails()
+    {
+    	return new TextBlockIndexed(toLinesJobDetails(), 0, 0, 0);
     }
 
 //------------------------------------------------------------------------------
@@ -695,7 +881,7 @@ public class Job implements Runnable
         lines.add(ParameterConstants.ENDJOB);
         return lines;
     }
-
+    
 //------------------------------------------------------------------------------
 
 }

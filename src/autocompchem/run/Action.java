@@ -1,14 +1,5 @@
 package autocompchem.run;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
-import autocompchem.text.TextAnalyzer;
-
 /*
  *   Copyright (C) 2017  Marco Foscato
  *
@@ -26,12 +17,21 @@ import autocompchem.text.TextAnalyzer;
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import autocompchem.text.TextAnalyzer;
 
 /**
  * Action to be taken in a job workflow.
  * 
  * Naming conventions for job relations in  workflow:
  * <ul>
+ *   <li>EVALJOB: is the job evaluation job itself.</li>
  *   <li>FOCUS: is the job that is being or has been evaluated.</li>
  *   <li>MASTER: is the job of which the FOCUS job is a sub job.</li>
  *   <li>PREVIUS (or PREV): is the job that was done before starting the FOCUS job.</li>
@@ -43,7 +43,7 @@ import autocompchem.text.TextAnalyzer;
  * @author Marco Foscato
  */
 
-public class Action
+public class Action implements Cloneable
 {
     /**
      * Type of action
@@ -51,7 +51,7 @@ public class Action
     private ActionType type = ActionType.GOON;
     
     /**
-     * Thing on Which we do the action
+     * Thing on which we do the action
      */
     private ActionObject object = ActionObject.FOCUSJOB;
     
@@ -63,13 +63,13 @@ public class Action
     /**
      * Possible Action objects (i.e., the thing on which we do the action)
      */
-    public enum ActionObject {FOCUSJOB,
-    	MASTERJOB, PREVIOUSJOB, PARALLELJOB, SUBSEQUENTJOB};
+    public enum ActionObject {FOCUSJOB, MASTERJOB, PREVIOUSJOB, PARALLELJOB, 
+    	SUBSEQUENTJOB, EVALJOB};
     	
     /**
      * Details pertaining this action
      */
-    private Map<String,Object> details = new HashMap<String,Object>();
+    private Map<String,String> details = new HashMap<String,String>();
     
     
 //------------------------------------------------------------------------------
@@ -77,9 +77,42 @@ public class Action
     /**
      * Constructor for an empty Action
      */
+    
     public Action()
     {}
     
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for an Action with given fields.
+     * @param type the type of action to perform.
+     * @param object the object on which the action is to be performed.
+     * @param details the map of details associated to this action.
+     */
+    
+    public Action(ActionType type, ActionObject object)
+    {
+    	this.type = type;
+    	this.object = object;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for an Action with given fields.
+     * @param type the type of action to perform.
+     * @param object the object on which the action is to be performed.
+     * @param details the map of details associated to this action.
+     */
+    
+    public Action(ActionType type, ActionObject object, 
+    		Map<String,String> details)
+    {
+    	this.type = type;
+    	this.object = object;
+    	this.details = details;
+    }
+
 //------------------------------------------------------------------------------
 
     /**
@@ -147,11 +180,12 @@ public class Action
     		case (ActionConstants.TYPEKEY):
     			type = ActionType.valueOf(form.get(key).toUpperCase());
     			break;
+    			
     		case (ActionConstants.OBJECTKEY):
     			object = ActionObject.valueOf(form.get(key).toUpperCase());
     			break;
+    			
     		case (ActionConstants.DETAILSKEY):
-    			String detStr = form.get(key);
     		    ArrayList<ArrayList<String>> inFrm = TextAnalyzer.readKeyValue(
     		    	new ArrayList<String>(Arrays.asList(
     		    	form.get(key).split(System.getProperty("line.separator")))),
@@ -164,6 +198,7 @@ public class Action
     		    	details.put(arr.get(0), arr.get(1));
     		    }
     			break;
+    			
     		default:
     			throw new Exception("Unable to understand keyword '" + key 
     					+ "' while creation an Action.");
@@ -203,7 +238,7 @@ public class Action
      * @return the details.
      */
 
-    public Map<String, Object> getDetails()
+    public Map<String, String> getDetails()
     {
         return details;
     }
@@ -215,11 +250,29 @@ public class Action
      * @return the detail or null
      */
 
-    public  Object getDetail(String ref)
+    public String getDetail(String ref)
     {
         return details.get(ref);
     }
-
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns a deep copy of this object
+     * @return a deep copy
+     */
+    
+    public Action clone()
+    {
+    	Map<String,String> newMap = new HashMap<String,String>();
+    	for (String key : details.keySet())
+    	{
+    		newMap.put(key, details.get(key).toString());
+    	}
+    	Action a = new Action(type, object, newMap);
+    	return a;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

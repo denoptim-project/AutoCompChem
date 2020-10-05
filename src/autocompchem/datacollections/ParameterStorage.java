@@ -160,6 +160,23 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Return the value of the parameter, which is expected to exist, or null.
+     * @param ref reference name of the parameter (case insensitive).
+     * @return the parameter with the given reference string, or null
+     */
+
+    public String getParameterValue(String ref)
+    {
+        if (this.contains(ref))
+        {
+        	return allData.get(ref.toUpperCase()).getValueAsString();
+        }
+        return null;
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * Updates the subset of NamedData as to contain only those that are

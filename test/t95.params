@@ -9,4 +9,4 @@
 VERBOSITY: 2
 TASK: PrepareInputGaussian
 INFILE: ../t95-mol.sdf
-JOBDETAILS: ../t95-jobDetails
+JOBDETAILSFILE: ../t95-jobDetails

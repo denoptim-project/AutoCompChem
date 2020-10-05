@@ -4,4 +4,4 @@
 VERBOSITY: 1
 TASK: PrepareInputGaussian
 INFILE: ../t73-mol.sdf
-JOBDETAILS: ../t73-jobDetails
+JOBDETAILSFILE: ../t73-jobDetails

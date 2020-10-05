@@ -1,5 +1,24 @@
+JOBSTART
+VERBOSITY: 1
+parallelize: 3
+JOBSTART
+parallelize: 1
 VERBOSITY: 1
 TASK: EvaluateJob
 SITUATIONSDBROOT: ../t124_KB
 IC-LOGS: ../t124.appLog:../t124.appLog2
-JOBDEFINITION: ../t124_jodToEvaluate.jd
+JOBDEFINITION: ../t124_jobToEvaluate.jd
+JOBEND
+JOBSTART
+APP: SHELL
+parallelize: 1
+exe: /bin/bash
+SCRIPT: ../t124a.sh
+JOBEND
+JOBSTART
+APP: SHELL
+parallelize: 1
+exe: /bin/bash
+SCRIPT: ../t124b.sh
+JOBEND
+JOBEND

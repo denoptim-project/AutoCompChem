@@ -1,8 +1,5 @@
 package autocompchem.run;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -20,14 +17,22 @@ import java.util.Iterator;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import autocompchem.datacollections.NamedData;
+import autocompchem.run.Action.ActionObject;
 
 
 /**
@@ -36,8 +41,15 @@ import java.util.concurrent.TimeUnit;
  * @author Marco Foscato
  */
 
-public class ParallelRunner 
+public class ParallelRunner
 {
+	/**
+	 * The job that requred the serives of this class
+	 */
+	private final Job master;
+	
+	//TODO check permissions on these fields
+	
     /**
      * List of jobs to run
      */
@@ -47,16 +59,37 @@ public class ParallelRunner
      * List of references to the submitted subtasks
      */
     final List<Future<?>> futureJobs;
-
+    
     /**
      * List of references to the submitted subjobs.
      */
     final ArrayList<Job> submittedJobs;
-
+    
     /**
-     * Asynchronous tasks manager
+     * List of references to the submitted monitoting subtasks
      */
-    final ThreadPoolExecutor tpExecutor;
+    final List<Future<?>> futureMonitoringJobs;
+    
+    /**
+     * List of references to the submitted monitoting subjobs.
+     */
+    final ArrayList<Job> submittedMonitoringJobs;
+    
+    /**
+     * Index of notifications. Used to avoid concurrent notifications by
+     * serving notification on the basis of first come, first served.
+     */
+    private final AtomicInteger notificationId = new AtomicInteger();
+    
+    /**
+     * Asynchronous execution service with a queue
+     */
+    final ScheduledThreadPoolExecutor tpExecutor;
+    
+    /**
+     * Asynchronous execution service with a queue. Dedicated to monitoring.
+     */
+    final ScheduledThreadPoolExecutor stpeMonitoring;
 
     /**
      * Number of threads
@@ -67,14 +100,14 @@ public class ParallelRunner
      * Walltime for waiting for completion (milliseconds)
      */
     private long walltimeMillis = 600000L; //Default 10 min
-
+    
     /**
      * Time step for waiting for completion (milliseconds)
      */
     private long waitingStep = 1000L; //Default 1 sec
     
     /**
-     * Placeholder for exception throws by a subjob
+     * Placeholder for exception throws by a sub job
      */
     @SuppressWarnings("unused")
 	private Throwable thrownBySubJob;
@@ -84,6 +117,33 @@ public class ParallelRunner
      */
     private int verbosity = 0;
 
+	/**
+	 * The time when we started running
+	 */
+	private long startTime;
+	
+	/**
+	 * Lock for synchronisation of main thread with notifications from jobs
+	 */
+	private Object lock = new Object();
+	
+	/**
+	 * The reference name of a Job parameter that can be used to control the
+	 * walltime. Value in seconds.
+	 */
+	public static final String WALLTIMEPARAM = "WALLTIME";
+	
+	/**
+	 * The reference name of a Job parameter that can be used to control the
+	 * time step between each check for completion. Value in seconds.
+	 */
+	public static final String WAITTIMEPARAM = "WAITSTEP";
+	
+	//TODO: delete?
+	protected Date date = new Date();
+	protected SimpleDateFormat formatter = 
+			new SimpleDateFormat("HH:mm:ss.SSS ");
+	
 //------------------------------------------------------------------------------
 
     /**
@@ -93,34 +153,70 @@ public class ParallelRunner
      * in parallel. No validity checking!
      * @param poolSize number of parallel threads. We assume the number is 
      * sensible. No validity checking! If less jobs are available, then this 
-     * number is ignored and we'll run as many threads as jobs.
+     * number is ignored and we'll run as many threads as jobs. In case the
+     * pool of jobs includes a monitoring jobs, we will reserve as many threads
+     * as the number of monitoring jobs, and these threads will only be used 
+     * for monitoring.
      * @param queueSize the size of the queue. When the queue is full, the 
      * executor gets blocked until any thread becomes available and take is a 
      * job from the queue.
+     * @param master the job that creates this {@link ParallelRunner}.
      */
 
-    public ParallelRunner(ArrayList<Job> todoJobs, int poolSize, int queueSize)
+    public ParallelRunner(ArrayList<Job> todoJobs, int poolSize, int queueSize, 
+    		Job master)
     {
+    	this.master = master;
         this.todoJobs = todoJobs;
         this.nThreads = Math.min(poolSize,todoJobs.size());
         
         futureJobs = new ArrayList<>();
         submittedJobs = new ArrayList<Job>();
+        futureMonitoringJobs = new ArrayList<>();
+        submittedMonitoringJobs = new ArrayList<Job>();
 
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        tpExecutor = new ThreadPoolExecutor(nThreads,
-                                        nThreads,
-                                        Long.MAX_VALUE,
-                                        TimeUnit.NANOSECONDS,
-                                        new ArrayBlockingQueue<Runnable>(1),
-                                        threadFactory,
-                                        new RejectedExecHandlerImpl());
+        
+        int nMonitors = countMonitoringJobs(todoJobs);
+        if (nMonitors > 0)
+        {
+        	nThreads = nThreads - nMonitors;
+        	stpeMonitoring =  new ScheduledThreadPoolExecutor(nMonitors, 
+        			threadFactory, 
+                 	new RejectedExecHandlerImpl());
+        } else {
+        	stpeMonitoring = null;
+        }
+        
+        tpExecutor = new ScheduledThreadPoolExecutor(nThreads, threadFactory, 
+         	new RejectedExecHandlerImpl());
 
         // Add a shutdown mechanism to kill the master thread and its subjobs
         // including planned ones.
         Runtime.getRuntime().addShutdownHook(new ShutDownHook());
     }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Just counts the instances of {@link MonitoringJob}
+     * @param todoJobs the list to all jobs
+     * @return the number of instances of {@link MonitoringJob}
+     */
+    
+    private int countMonitoringJobs(ArrayList<Job> todoJobs)
+    {
+    	int num = 0;
+    	for (Job j : todoJobs)
+    	{
+    		if (j instanceof MonitoringJob)
+    		{
+    			num++;
+    		}
+    	}
+    	return num;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -133,21 +229,32 @@ public class ParallelRunner
         @Override
         public void run()
         {
-            tpExecutor.shutdown(); 
+            tpExecutor.shutdown();
+            if (stpeMonitoring != null)
+            {
+            	stpeMonitoring.shutdown();
+        	}
             try
             {
                 // Wait a while for existing tasks to terminate
                 if (!tpExecutor.awaitTermination(30, TimeUnit.SECONDS))
                 {
                     tpExecutor.shutdownNow(); // Cancel running asks
+                    if (stpeMonitoring != null 
+                    		&& !stpeMonitoring.awaitTermination(10, 
+                    				TimeUnit.SECONDS))
+                    {
+                    	stpeMonitoring.shutdownNow();
+                    }
                 }
             }
             catch (InterruptedException ie)
             {
                 // remove traces and cleanup
-                cleanup(tpExecutor, futureJobs, submittedJobs);
+                cancellAllRunningThreadsAndShutDown();
                 // (Re-)Cancel if current thread also interrupted
                 tpExecutor.shutdownNow();
+                stpeMonitoring.shutdownNow();
                 // and stop possibly alive thread
                 Thread.currentThread().interrupt();
             }
@@ -183,24 +290,24 @@ public class ParallelRunner
 
     /**
      * Set the maximum time we'll wait for completion of subjobs
-     * @param walltimeMillis the walltime in milliseconds
+     * @param walltime the walltime in seconds
      */
 
-    public void setWallTime(long walltimeMillis)
+    public void setWallTime(long walltime)
     {
-        this.walltimeMillis = walltimeMillis;
+        this.walltimeMillis = walltime*1000;
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Set the idle time between evaluations of sub-jobs completion status.
-     * @param waitingStep the step in milliseconds
+     * @param waitingStep the step in seconds
      */
 
     public void setWaitingStep(long waitingStep)
     {
-        this.waitingStep = waitingStep;
+        this.waitingStep = 1000*waitingStep;
     }
     
 //------------------------------------------------------------------------------
@@ -208,9 +315,28 @@ public class ParallelRunner
     /**
      * Set the level of detail for logging
      */
+    
     public void setVerbosity(int level)
     {
     	this.verbosity = level;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Shuts down the execution services
+     */
+    private void shutDownExecutionService()
+    {
+        tpExecutor.purge();
+        tpExecutor.getQueue().clear();
+        tpExecutor.shutdownNow();
+        if (stpeMonitoring!=null)
+        {
+	        stpeMonitoring.purge();
+	        stpeMonitoring.getQueue().clear();
+	        stpeMonitoring.shutdownNow();
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -219,35 +345,36 @@ public class ParallelRunner
      * Remove all reference to submitted and future jobs
      */
 
-    private void cleanup(ThreadPoolExecutor tpe, List<Future<?>> futureJobs,
-                            ArrayList<Job> submittedJobs)
+    private void cancellAllRunningThreadsAndShutDown()
     {
-        for (Future<?> f : futureJobs)
-        {
-            f.cancel(true);
+    	// NB: assumption futureJobs.size() == submittedJobs.size()
+    	
+    	for (int i=0; i< submittedJobs.size(); i++)
+    	{
+    		Future<?> f  = futureJobs.get(i);
+    		Job j = submittedJobs.get(i);
+    		if (!f.isDone())
+    		{
+    			j.setInterrupted(true);
+    		}
+    		f.cancel(true);
+            j.stopJob();
         }
-
-        for (Job r : submittedJobs)
-        {
-            r.stopJob();
+    	
+    	for (int i=0; i< submittedMonitoringJobs.size(); i++)
+    	{
+    		Future<?> f  = futureMonitoringJobs.get(i);
+    		Job j = submittedMonitoringJobs.get(i);
+    		if (!f.isDone())
+    		{
+    			j.setInterrupted(true);
+    		}
+    		f.cancel(true);
+            j.stopJob();
         }
-
         submittedJobs.clear();
-        
-        tpe.purge();
-        tpe.getQueue().clear();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Stops all subtasks and shutdown executor
-     */
-
-    public void stopRun()
-    {
-        cleanup(tpExecutor, futureJobs, submittedJobs);
-        tpExecutor.shutdown();
+        submittedMonitoringJobs.clear();
+    	shutDownExecutionService();
     }
     
 //------------------------------------------------------------------------------
@@ -261,6 +388,15 @@ public class ParallelRunner
     {
         boolean found = false;
         for (Job j : submittedJobs)
+        {
+            if (j.foundException())
+            {
+            	found = false;
+                break;
+            }
+        }
+        
+        for (Job j : submittedMonitoringJobs)
         {
             if (j.foundException())
             {
@@ -290,7 +426,14 @@ public class ParallelRunner
                 break;
             }
         }
-
+        for (Job j : submittedMonitoringJobs)
+        {
+            if (!j.isCompleted())
+            {
+                allDone = false;
+                break;
+            }
+        }
         return allDone;
     }
 
@@ -302,82 +445,177 @@ public class ParallelRunner
 
     public void start()
     {
-        boolean withinTime = true;
-
-        // Initialise empty threads that will be used for the sub-jobs
+    	// Initialise empty threads that will be used for the sub-jobs
         tpExecutor.prestartAllCoreThreads();
-        long startTime = System.currentTimeMillis();
+        if (stpeMonitoring!=null)
+        {
+        	stpeMonitoring.prestartAllCoreThreads();
+        }
+        
+        startTime = System.currentTimeMillis();
+        boolean withinTime = true;
 
         // Submit all sub-jobs in once. Those that do not fit because of all
         // thread pool is filled-up are dealt with by RejectedExecHandlerImp
         Iterator<Job> it = todoJobs.iterator();
         while (it.hasNext())
         {
-            if(checkAgainstWalltime(startTime))
-            {
-                withinTime = false;
-                break;
-            }
+            
+            //TODO: set dedicated logger with dedicated log file
+            
             Job job = it.next();
-
-            submittedJobs.add(job);
-            Future<?> fut = tpExecutor.submit(job);
-            futureJobs.add(fut);
-//TODO del
-//System.out.println("HERE: submitting "+job+" future "+fut+ " " + (System.currentTimeMillis()-startTime)+" queue"+tpExecutor.getQueue());
-
+			job.setJobNotificationListener(new ParallelJobListener());
+			
+			// Monitoring jobs are run on their own resources
+			if (job instanceof MonitoringJob)
+			{
+	            submittedMonitoringJobs.add(job);
+	            Future<?> fut = job.submitThread(stpeMonitoring);
+	            futureMonitoringJobs.add(fut);
+			} else {
+	            submittedJobs.add(job);
+	            Future<?> fut = job.submitThread(tpExecutor);
+	            futureJobs.add(fut);
+			}
         }
-
+        
+        // NB: tpExecutor.shutdown() stops the execution from accepting tasks
+        // but is needed to initiate an ordinary termination of the execution 
+        // service. However, it cannot be used because it cancels also the 
+        // periodic tasks (i.e., MonitoringJob).
+        // For this reason shutdown() is done in the 
+        // cancellAllRunningThreadsAndShutDown method.
+        
         //Wait for completion
-        while (true && withinTime)
+        int ii = 0;
+        while (withinTime)
         {
-            //Completion clause
-            if (allSubJobsCompleted())
-            {
-            	if (verbosity > 0)
-                {
-                    System.out.println("All "+submittedJobs.size()+" sub-jobs "
-                             + "have been completed. Parallelized jobs done.");
-                }
-                break;
-            }
-
-            // Check walltime
-            if(checkAgainstWalltime(startTime))
-            {
-                withinTime = false;
-                break;
-            }
-
-            //wait
-            try
-            {
-                Thread.sleep(waitingStep);
-            }
-            catch (IllegalArgumentException iae)
-            {
-                Terminator.withMsgAndStatus("ERROR! Negative waiting time in "
-                		+ "ParallelRunner.",-1);
-            }
-            catch (InterruptedException ie)
-            {
-                ie.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR! Interrupted thread in "
-                		+ "ParallelRunner.",-1);
-            }
+        	synchronized (lock) 
+        	{
+	        	ii++;
+	        	
+	        	if (verbosity > 2)
+		        {
+		        	date = new Date();
+		        	System.out.println("Waiting for parallel jobs - Step " 
+		        			+ ii + " - " + formatter.format(date));
+	        	}
+	        	
+	            //Completion clause
+	            if (allSubJobsCompleted())
+	            {
+	            	if (verbosity > 0)
+	                {
+	                    System.out.println("All "+submittedJobs.size()
+	                    		+ " sub-jobs are completed. Parallelized "
+	                    		+ "jobs done.");
+	                }
+	            	shutDownExecutionService();
+	                break;
+	            } else {
+	            	if (verbosity > 0)
+	            	{
+		            	for (Job j : submittedJobs)
+		            		System.out.println(j + " " +j.isCompleted());
+		            	for (Job j : submittedMonitoringJobs)
+		            		System.out.println(j + " " +j.isCompleted());
+	            	}
+	            }
+	
+	            // Check wall time
+	            if(checkAgainstWalltime(startTime))
+	            {
+	            	if (verbosity > 0)
+	            	{
+	            		System.out.println("WARNING! Wall time reached: some "
+	            				+ "jobs are being interrupted");
+	            	}
+	            	cancellAllRunningThreadsAndShutDown();
+	                withinTime = false;
+	                break;
+	            }
+	
+	            // wait some time before checking again, 
+	            // or weak up upon notification
+	            try
+	            {
+	        		lock.wait(waitingStep);
+	            }
+	            catch (InterruptedException ie)
+	            {
+	                ie.printStackTrace();
+	            }
+        	}
         }
-
-        //All done stop and clean up
-        stopRun();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * This is a listener that is associated with a specific job in the pool of
+     * jobs run in parallel. Instances of this class are created only after the 
+     * ThreadPoolExecutor has been initialised, so it is safe to assume that
+     * the tpExecutor exists and is capable of accepting new jobs.
+     */
+    
+    private class ParallelJobListener implements JobNotificationListener
+    {
+		@Override
+		public void reactToRequestOfAction(Action action, Job sender) 
+		{
+			if (notificationId.getAndIncrement() == 0)
+			{
+				master.exposedOutput.putNamedData(new NamedData(
+						Job.ACTIONREQUESTBYSUBJOB, action));
+				master.exposedOutput.putNamedData(new NamedData(
+						Job.SUBJOBREQUESTINGACTION, sender));
+				
+				//This is the very first notification: we take it into account
+				if (action.getObject().equals(ActionObject.PARALLELJOB))
+				{
+					switch (action.getType())
+    				{
+						case STOP:
+						case REDO:
+						case REDOAFTER:
+							if (verbosity > 0)
+							{
+								System.out.println("KILLING ALL sub-jobs upon "
+										+ "job's request.");
+							}
+							synchronized (lock)
+			            	{
+								cancellAllRunningThreadsAndShutDown();
+			            		lock.notify();
+			            	}
+							break;
+							
+						default:
+							break;
+    				}
+				}
+			} else {
+				//Ignore late-coming notifications
+			}
+		}
+		
+		@Override
+		public void notifyTermination(Job sender)
+		{
+			synchronized (lock)
+			{
+        		lock.notify();
+        	}
+		}
     }
 
 //------------------------------------------------------------------------------
 
    /**
-    * Stop all if walltime is reached
-    * @param startTime the initial time in milliseconds single EPOCH
-    * @return <code>true</code> if the walltime has been reached and we are 
-    * killing sub-jobs
+    * Stop all if the maximum run time has been reached.
+    * @param startTime the initial time in milliseconds single EPOCH.
+    * @return <code>true</code> if the wall time has been reached and we are 
+    * killing sub-jobs.
     */
 
     private boolean checkAgainstWalltime(long startTime)
@@ -393,9 +631,6 @@ public class ParallelRunner
 	            System.out.println("Walltime reached for parallel job execution.");
 	            System.out.println("Killing remaining sub-jobs.");
             }
-
-            Terminator.withMsgAndStatus("ERROR! Walltime reached for "
-                                             + "parallel run. Killing all.",-1);
             res = true;
         }
         return res;

@@ -142,7 +142,7 @@ public class OrcaInputWriter extends Worker
     /** 
      * Verbosity level
      */
-    private int verbosity = 1;
+    private int verbosity = 0;
     
     private final String NL = System.getProperty("line.separator");
 
@@ -159,7 +159,7 @@ public class OrcaInputWriter extends Worker
         if (params.contains(ChemSoftConstants.PARVERBOSITY))
         {
             String str = params.getParameter(
-            		ChemSoftConstants.PARVERBOSITY).getValue().toString();
+            		ChemSoftConstants.PARVERBOSITY).getValueAsString();
             this.verbosity = Integer.parseInt(str);
 
             if (verbosity > 0)
@@ -169,7 +169,7 @@ public class OrcaInputWriter extends Worker
         if (params.contains(ChemSoftConstants.PARGEOMFILE))
         {
 	        this.inGeomFile = params.getParameter(
-	        		ChemSoftConstants.PARGEOMFILE).getValue().toString();
+	        		ChemSoftConstants.PARGEOMFILE).getValueAsString();
 	        
 	        //TODO: use automated detection of file type
 	        
@@ -218,14 +218,14 @@ public class OrcaInputWriter extends Worker
         {
         	String value = 
                     params.getParameter(ChemSoftConstants.PARMULTIGEOMMODE
-                    		).getValue().toString();
+                    		).getValueAsString();
             this.multiGeomMode = MultiGeomMode.valueOf(value);
         }
 
-        if (params.contains(ChemSoftConstants.PARJOBDETAILS))
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
             String jdFile = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILS).getValue().toString();
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
             if (verbosity > 0)
             {
                 System.out.println(" Job details from JD file '" 
@@ -233,17 +233,31 @@ public class OrcaInputWriter extends Worker
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.ccJob = new CompChemJob(jdFile);
-        } 
+        }
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.ccJob = new CompChemJob(lines);
+        }
         else 
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-            		+ "No 'JOBDETAILS' found in parameters.",-1);
+            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "'found in parameters.",-1);
         }
 
         if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
         {
             outFileNameRoot = params.getParameter(
-            		ChemSoftConstants.PAROUTFILEROOT).getValue().toString();
+            		ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
             outFileName = outFileNameRoot + OrcaConstants.INPEXTENSION;
             outJDFile = outFileName + ChemSoftConstants.JDEXTENSION;
         } else {
@@ -262,13 +276,13 @@ public class OrcaInputWriter extends Worker
         if (params.contains(ChemSoftConstants.PARCHARGE))
         {
             charge = Integer.parseInt(params.getParameter(
-            		ChemSoftConstants.PARCHARGE).getValue().toString());
+            		ChemSoftConstants.PARCHARGE).getValueAsString());
         } 
 
         if (params.contains(ChemSoftConstants.PARSPINMULT))
         {
             spinMult = Integer.parseInt(params.getParameter(
-            		ChemSoftConstants.PARSPINMULT).getValue().toString());
+            		ChemSoftConstants.PARSPINMULT).getValueAsString());
         }
     }
     

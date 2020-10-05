@@ -72,8 +72,8 @@ public class Concept implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
-     * Sets the type of this concept
-     * @param type
+     * Sets the type of this concept.
+     * @param type the type of concept.
      */
     
     public void setType(String type)
@@ -84,8 +84,8 @@ public class Concept implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
-     * Sets the type of this concept
-     * @param type
+     * Sets the type of this concept.
+     * @param refName the reference name.
      */
     
     public void setRefName(String refName)

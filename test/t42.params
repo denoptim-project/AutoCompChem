@@ -9,4 +9,4 @@
 VERBOSITY: 2
 TASK: PrepareInputGaussian
 INFILE: ../t42-mol.xyz
-JOBDETAILS: ../t6-jobDetails
+JOBDETAILSFILE: ../t6-jobDetails

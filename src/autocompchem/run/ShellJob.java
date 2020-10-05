@@ -215,8 +215,10 @@ public class ShellJob extends Job
                 }
                 catch (InterruptedException ie)
                 {
-                    if(!super.jobIsBeingKilled)
+                    if (jobIsBeingKilled || isInterrupted)
                     {
+                    	p.destroy();
+                    } else {
                         throw ie;
                     }
                 }
