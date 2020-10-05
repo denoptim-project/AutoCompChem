@@ -67,7 +67,7 @@ import autocompchem.worker.WorkerFactory;
  * <li>
  * <b>JOBDETAILSFILE</b>: formatted text file defining all the details 
  * of the NWChem job originally submitted to NWChem. In alternative use
- * <b>JOBDETAILSDATA</b> to provide the job details in a nested block of text
+ * <b>JOBDETAILS</b> to provide the job details in a nested block of text
  * </li> 
  * <li>
  * (optional)<b>NWCHEMERRORS</b> path to the folder storing NWChem known errors.
@@ -201,10 +201,10 @@ public class NWChemReStarter extends Worker
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.nwcJob = new NWChemJob(jdFile);
         }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
             String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
             if (verbosity > 0)
             {
                 System.out.println(" Job details from nested parameter block.");
@@ -217,7 +217,7 @@ public class NWChemReStarter extends Worker
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
             		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILS 
             		+ "'found in parameters.",-1);
         }
         

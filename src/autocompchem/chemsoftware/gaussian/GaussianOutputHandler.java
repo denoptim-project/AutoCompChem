@@ -281,10 +281,10 @@ public class GaussianOutputHandler extends Worker
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
         }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
             String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
             if (verbosity > 0)
             {
                 System.out.println(" Job details from nested parameter block.");

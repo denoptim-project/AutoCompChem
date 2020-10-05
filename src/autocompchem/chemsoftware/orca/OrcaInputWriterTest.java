@@ -170,7 +170,7 @@ public class OrcaInputWriterTest
         		+ ParameterConstants.SEPARATOR +  molFile.getAbsolutePath());
     	parLines2.add(ChemSoftConstants.PAROUTFILEROOT
     			+ ParameterConstants.SEPARATOR + inpRoot2);
-    	parLines2.add(ChemSoftConstants.PARJOBDETAILSDATA
+    	parLines2.add(ChemSoftConstants.PARJOBDETAILS
         		+ ParameterConstants.SEPARATOR 
         		+ ParameterConstants.STARTMULTILINE);
     	parLines2.addAll(ccj.toLinesJobDetails());

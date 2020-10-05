@@ -169,7 +169,7 @@ public class QMMMInputWriter extends Worker
      * <b>JOBDETAILSFILE</b>: formatted text file defining all
      * the details of a {@link QMMMJob}.
      * The definition of the format of jobdetails files can be found in
-     * {@link QMMMJob} documentation. In alternative use <b>JOBDETAILSDATA</b>
+     * {@link QMMMJob} documentation. In alternative use <b>JOBDETAILS</b>
      * to provide job details in a nested block of text.
      * </li>
      * <li>
@@ -299,10 +299,10 @@ public class QMMMInputWriter extends Worker
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.qmmmJob = new QMMMJob(jdFile);
         }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
             String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
             if (verbosity > 0)
             {
                 System.out.println(" Job details from nested parameter block.");
@@ -315,7 +315,7 @@ public class QMMMInputWriter extends Worker
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
             		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILS 
             		+ "'found in parameters.",-1);
         }
 

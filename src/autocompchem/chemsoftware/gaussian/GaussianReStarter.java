@@ -66,7 +66,7 @@ import autocompchem.worker.WorkerFactory;
  * <li>
  * <b>JOBDETAILSFILE</b>:  text file defining all the details 
  * of  the Gaussian job originally submitted to Gaussian. In alternative,
- * use <b>JOBDETAILSDATA</b>:
+ * use <b>JOBDETAILS</b>:
  * </li> 
  * <li>
  * <b>GAUSSIANERRORS</b> path to the folder storing Gaussian known errors.
@@ -219,10 +219,10 @@ public class GaussianReStarter extends Worker
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
         }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
             String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
             if (verbosity > 0)
             {
                 System.out.println(" Job details from nested parameter block.");
@@ -235,7 +235,7 @@ public class GaussianReStarter extends Worker
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
             		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILS 
             		+ "'found in parameters.",-1);
         }
     }

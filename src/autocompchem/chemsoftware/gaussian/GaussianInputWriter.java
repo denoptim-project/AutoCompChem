@@ -47,7 +47,7 @@ import autocompchem.worker.WorkerFactory;
  * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
  * ) for 
  * Gaussian (see {@link GaussianJob} for the format of jobdetails files).
- * In alternative, use <b>JOBDETAILSDATA</b> to give the details of the job
+ * In alternative, use <b>JOBDETAILS</b> to give the details of the job
  * in a nested block of text.
  * keyword 
  * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
@@ -190,10 +190,10 @@ public class GaussianInputWriter extends Worker
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
         }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
             String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
             if (verbosity > 0)
             {
                 System.out.println(" Job details from nested parameter block.");
@@ -215,7 +215,7 @@ public class GaussianInputWriter extends Worker
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
             		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILS 
             		+ "'found in parameters.",-1);
         }
         

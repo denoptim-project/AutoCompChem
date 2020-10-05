@@ -193,7 +193,7 @@ public class NWChemOutputHandler extends Worker
      *  errors.
      * </li>
      * <li>
-     * (optional) <b>JOBDETAILSDATA</b>: formatted text file defining all
+     * (optional) <b>JOBDETAILS</b>: formatted text file defining all
      * the details of a {@link NWChemJob}. Usually the jobdetails txt
      * file is the file used to generate the input file (name.nw) for
      * NWChem (see {@link NWChemInputWriter}).
