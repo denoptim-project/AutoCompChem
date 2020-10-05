@@ -6,5 +6,7 @@ SITUATIONTYPE: error
 CIRCUMSTANCE: logfeed matches WARNING: nasty things happening
 CIRCUMSTANCE: logfeed matches ERROR: failure in this and that!
 ACTION: $STARTACTIONTYPE: redo
-ACTIONOBJ: previousjob
+ACTIONOBJ: paralleljob
+$STARTACTIONDETAILS: maxRestart: 3
+$END
 $END

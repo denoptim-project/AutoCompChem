@@ -6,6 +6,6 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem
 INFILE: ../t96-mol.sdf
-JOBDETAILS: ../t96-jobDetails
+JOBDETAILSFILE: ../t96-jobDetails
 NOCHARGE: whatever... doesn't matter what
 NOSPIN_MULTIPLICITY: whatever... doesn't matter what

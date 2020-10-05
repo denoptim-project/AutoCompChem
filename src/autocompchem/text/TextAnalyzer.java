@@ -457,7 +457,7 @@ public class TextAnalyzer
                                                              boolean inclPatts)
     {
         return extractTextBlocks(buffRead, new ArrayList<String>(), 
-                                                                     startPattrns,
+                                                                  startPattrns,
                                                                     endPattrns,
                                                                      onlyFirst,
                                                                      inclPatts,

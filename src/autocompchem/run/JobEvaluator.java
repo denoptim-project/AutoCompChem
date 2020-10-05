@@ -19,6 +19,7 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -40,9 +41,16 @@ public class JobEvaluator extends Worker
 					Arrays.asList(TaskID.EVALUATEJOB)));
 	
 	/**
-	 * The string used to identify the perceived situation when exposing output.
+	 * The string used to identify the perceived situation in the exposed 
+	 * job output data structure.
 	 */
 	public static final String SITUATIONOUTKEY = "PerceivedSituation";
+	
+	/**
+	 * The string used to identify the reaction to the perceived situation the
+	 * exposed job output data structure.
+	 */
+	public static final String REACTIONTOSITUATION = "ReactionToSituation";
 	
     /**
      * Situation base: list of known situations/concepts
@@ -76,6 +84,7 @@ public class JobEvaluator extends Worker
      * Constructor defining the knowledge base and source of information.
      * @param sitsDB the collection of known situations.
      * @param icDB the collection of information channels.
+     * @param job the job being evaluated.
      */
     public JobEvaluator(SituationBase sitsDB, InfoChannelBase icDB, Job job)
     {
@@ -88,15 +97,28 @@ public class JobEvaluator extends Worker
 	
 	@Override
 	public void initialize() 
-	{
-		if (params.contains(ParameterConstants.SITUATIONSDBROOT)) 
+	{   	
+		if (hasParameter(ParameterConstants.VERBOSITY)) 
+		{
+			String vStr= params.getParameter(
+					ParameterConstants.VERBOSITY).getValueAsString();
+			if (!NumberUtils.isNumber(vStr))
+			{
+				Terminator.withMsgAndStatus("ERROR! Value '" + vStr + "' "
+						+ "cannot be converted to an integer. Check parameter "
+						+ ParameterConstants.VERBOSITY, -1);
+			}
+			verbosity = Integer.parseInt(vStr);
+		}		
+		
+		if (hasParameter(ParameterConstants.SITUATIONSDBROOT)) 
 		{
 			String pathName = params.getParameter(
 					ParameterConstants.SITUATIONSDBROOT).getValueAsString();
 			sitsDB = new SituationBase(new File(pathName));
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCINPUTFILES)) 
+		if (hasParameter(ParameterConstants.INFOSRCINPUTFILES)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCINPUTFILES).getValueAsString();
@@ -114,7 +136,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCLOGFILES)) 
+		if (hasParameter(ParameterConstants.INFOSRCLOGFILES)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCLOGFILES).getValueAsString();
@@ -132,7 +154,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCOUTPUTFILES)) 
+		if (hasParameter(ParameterConstants.INFOSRCOUTPUTFILES)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCOUTPUTFILES).getValueAsString();
@@ -150,7 +172,7 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.INFOSRCJOBDETAILS)) 
+		if (hasParameter(ParameterConstants.INFOSRCJOBDETAILS)) 
 		{
 			String pathNames = params.getParameter(
 					ParameterConstants.INFOSRCJOBDETAILS).getValueAsString();
@@ -168,22 +190,25 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
-		if (params.contains(ParameterConstants.JOBDEF)) 
+		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
 			String pathName = params.getParameter(
 					ParameterConstants.JOBDEF).getValueAsString();
 			FileUtils.foundAndPermissions(pathName, true, false, false);
 			job = JobFactory.buildFromFile(pathName);
 		}
-		
+    	
 		String whatIsNull = "";
+		/*
+		// Not really a requirement
 		if (job==null)
 		{
 			whatIsNull="the job to evaluate";
 		}
+		*/
 		if (sitsDB==null)
 		{
-			if (whatIsNull.equals(""))
+			if (!whatIsNull.equals(""))
 			{
 				whatIsNull=whatIsNull + ", and ";
 			}
@@ -191,7 +216,7 @@ public class JobEvaluator extends Worker
 		}
 		if (icDB==null)
 		{
-			if (whatIsNull.equals(""))
+			if (!whatIsNull.equals(""))
 			{
 				whatIsNull=whatIsNull + ", and ";
 			}
@@ -227,34 +252,25 @@ public class JobEvaluator extends Worker
 		
 		// Attempt perception
 		Perceptron p = new Perceptron(sitsDB,icDB);
-		
-		//TODO del
-		p.setVerbosity(1);
+		p.setVerbosity(verbosity-1);
 		
 		try {
 			p.perceive();
 			
-			if (p.isAware())
+			if (verbosity > 0)
 			{
-				Situation sit = p.getOccurringSituations().get(0);
-				
 				//TODO use logger
-				System.out.println("Situation perceived is " + sit.getRefName());
-				
-				if (sit.hasReaction())
+				if (p.isAware())
 				{
-					Action a = sit.getReaction();
+					Situation sit = p.getOccurringSituations().get(0);
+					System.out.println("JobEvaluator: Situation perceived = " 
+							+ sit.getRefName());
 					
-					//TODO use logger
-					System.out.println("Action is: "+a);
+				} else {
+					System.out.println("JobEvaluator: No known situation "
+							+ "perceived.");
 				}
-				
-			} else {
-				//TODO use logger
-				System.out.println("NOT PERCEIVED");
 			}
-			//TODO: alter master job with reaction triggered by outcome of analysis
-			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -264,8 +280,16 @@ public class JobEvaluator extends Worker
 		if (p.isAware())
 		{
 			Situation s = p.getOccurringSituations().get(0);
-			exposeOutputData(
-					new NamedData(SITUATIONOUTKEY,NamedDataType.SITUATION,s));
+			exposeOutputData(new NamedData(SITUATIONOUTKEY,
+					NamedDataType.SITUATION, s));
+			
+			if (s.hasReaction())
+			{
+				Action a = s.getReaction();
+				exposeOutputData(new NamedData(REACTIONTOSITUATION,
+						NamedDataType.ACTION, a));
+				//TODO: alter master job with reaction triggered by outcome of analysis
+			}
 		}
 	}
 	

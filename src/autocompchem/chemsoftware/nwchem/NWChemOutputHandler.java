@@ -193,7 +193,7 @@ public class NWChemOutputHandler extends Worker
      *  errors.
      * </li>
      * <li>
-     * (optional) <b>JOBDETAILS</b>: formatted text file defining all
+     * (optional) <b>JOBDETAILSDATA</b>: formatted text file defining all
      * the details of a {@link NWChemJob}. Usually the jobdetails txt
      * file is the file used to generate the input file (name.nw) for
      * NWChem (see {@link NWChemInputWriter}).
@@ -263,33 +263,6 @@ public class NWChemOutputHandler extends Worker
 
         if (verbosity > 0)
             System.out.println(" Adding parameters to NWChemOutputHandler");
-
-        /*
-        //TODO del? jobdetails should not be needed here, but I have to check
-        //Get and check the job details file
-        if (params.contains("JOBDETAILS"))
-        {
-            String jdFile =
-                        params.getParameter("JOBDETAILS").getValue().toString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Taking NWChem job details from " + jdFile);
-            }
-            FilesManager.foundAndPermissions(jdFile,true,false,false);
-            this.nwcJob = new NWChemJob(jdFile);
-        }
-        else
-        {
-            if (verbosity > 0)
-            {
-                System.out.println(" ");
-                System.out.println(" WARNING! No JOBDETAILS provided. Some error "
-                    + "cannot be interpreted without JOBDETAILS file.");
-                System.out.println(" ");
-            }
-            noJobDetails = true;
-        }
-        */
 
         //Get and check the input file (which is an output from NWChem)
         this.inFile = params.getParameter("INFILE").getValue().toString();

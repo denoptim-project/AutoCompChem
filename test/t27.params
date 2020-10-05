@@ -5,5 +5,5 @@ VERBOSITY: 4
 TASK: FixAndRestartGaussian 
 INFILE: ../t27.out
 NEWINPFILE: restart-t27.inp
-JOBDETAILS: ../t27-jobdetails
+JOBDETAILSFILE: ../t27-jobdetails
 GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian09

@@ -5,5 +5,5 @@ VERBOSITY: 3
 TASK: FixAndRestartNWChem
 INFILE: ../t57-nwc.out
 NewNwFile: restart-t57.nw
-JOBDETAILS: ../t57.jobDetails
+JOBDETAILSFILE: ../t57.jobDetails
 NWChemERRORS: ../data/errorsDefAndFix/nwchem6.3

@@ -5,5 +5,5 @@ VERBOSITY: 2
 TASK: FixAndRestartGaussian 
 INFILE: ../t1-mol.out
 NEWINPFILE: restart-t11.inp
-JOBDETAILS: ../t11-jobDetails
+JOBDETAILSFILE: ../t11-jobDetails
 GAUSSIANERRORS: ../data/errorsDefAndFix/

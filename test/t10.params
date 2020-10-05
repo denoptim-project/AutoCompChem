@@ -4,6 +4,6 @@
 VERBOSITY: 2
 TASK: PrepareInputGaussian
 INFILE: ../t10-mol.sdf
-JOBDETAILS: ../t10-jobDetails
+JOBDETAILSFILE: ../t10-jobDetails
 OUTNAME: 10byhand.inp
 COMMENT: comment by hand

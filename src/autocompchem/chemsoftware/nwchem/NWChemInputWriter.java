@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
@@ -69,10 +71,11 @@ import autocompchem.worker.WorkerFactory;
  * label.
  * </li>
  * <li>
- * <b>JOBDETAILS</b>: formatted text file defining all
+ * <b>JOBDETAILSFILE</b>: formatted text file defining all
  * the details of a {@link NWChemJob}.
  * The definition of the format of jobdetails files can be found in
- * {@link NWChemJob} documentation.
+ * {@link NWChemJob} documentation. In alternative use <b>JOBDETAILSDATA</b>
+ * to provide the job details in a nested block of text.
  * </li>
  * <li>
  * (optional) <b>VERBOSITY</b> verbosity level.
@@ -376,19 +379,18 @@ public class NWChemInputWriter extends Worker
         }
 
         //Use NWChemJob; we do not accept headers in the form of plain text
-        if (params.contains("JOBDETAILS"))
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            //Use NWChemJob
-            String jdFile = 
-                        params.getParameter("JOBDETAILS").getValue().toString();
+            String jdFile = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
             if (verbosity > 0)
             {
-                System.out.println(" Compound NWChem job: details from "  
-                         + jdFile);
+                System.out.println(" Job details from JD file '" 
+                		+ jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.nwcJob = new NWChemJob(jdFile);
-
+            
             //Deal with job details that affect the input writer initial setup
             if (nwcJob.getStep(0).hasACCParams())
             {
@@ -416,11 +418,53 @@ public class NWChemInputWriter extends Worker
                     this.sameTagsInMultigeom = true;
                 }
             }
-        } 
+        }
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.nwcJob = new NWChemJob(lines);
+            
+            //Deal with job details that affect the input writer initial setup
+            if (nwcJob.getStep(0).hasACCParams())
+            {
+                ParameterStorage pp = nwcJob.getStep(0).getTaskSpecificParams();
+                if (pp.contains("MULTIGEOMNWCHEM"))
+                {
+                    this.multiGeom = true;
+                    this.geomNames.clear();
+                    String line = pp.getParameter(
+                                       "MULTIGEOMNWCHEM").getValue().toString();
+                    String[] parts = line.trim().split("\\s+");
+                    for (int i=0; i<parts.length; i++)
+                    {
+                        if (this.geomNames.contains(parts[i]))
+                        {
+                            Terminator.withMsgAndStatus("ERROR! Geometry name '"
+                                        + parts[i] + "' is used more than once."
+                                        + " Check line '" + line + "'.",-1);
+                        }
+                        this.geomNames.add(parts[i]);
+                    }
+                }
+                if (pp.contains("USESAMETAGSFORMULTIGEOM"))
+                {
+                    this.sameTagsInMultigeom = true;
+                }
+            }
+        }
         else 
         {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-                                  + " No 'JOBDETAILS' found in parameters.",-1);
+            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "'found in parameters.",-1);
         }
 
         //Name of output

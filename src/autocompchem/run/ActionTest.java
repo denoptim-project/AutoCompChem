@@ -60,19 +60,19 @@ public class ActionTest
     	assertEquals(ActionType.REDO,a.getType(),"ActionType");
     	assertEquals(ActionObject.PREVIOUSJOB,a.getObject(),"ActionObject");
     	assertNotNull(a.getDetail("CHANGE"),"Detail exists: Change");
-    	assertTrue(a.getDetail("CHANGE").toString().contains("optD 123"),
+    	assertTrue(a.getDetail("CHANGE").contains("optD 123"),
     			"Detail content: Change-1");
-    	assertTrue(a.getDetail("CHANGE").toString().contains("optF ABC"),
+    	assertTrue(a.getDetail("CHANGE").contains("optF ABC"),
     			"Detail content: Change-2");
-    	assertEquals(3,a.getDetail("CHANGE").toString().split(NL).length,
+    	assertEquals(3,a.getDetail("CHANGE").split(NL).length,
     			"Detail content: Change-3");
 
     	assertNotNull(a.getDetail("KEEP"),"Detail exists: Keep");
-    	assertTrue(a.getDetail("KEEP").toString().contains("optA"),
+    	assertTrue(a.getDetail("KEEP").contains("optA"),
     			"Detail content: Keep-1");
-    	assertTrue(a.getDetail("KEEP").toString().contains("optB"),
+    	assertTrue(a.getDetail("KEEP").contains("optB"),
     			"Detail content: Keep-2");
-    	assertEquals(2,a.getDetail("KEEP").toString().split(NL).length,
+    	assertEquals(2,a.getDetail("KEEP").split(NL).length,
     			"Detail content: Keep-3");
     	
     }

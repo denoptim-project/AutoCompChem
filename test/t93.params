@@ -6,4 +6,4 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem
 INFILE: ../t93-mol.sdf
-JOBDETAILS: ../t93-jobDetails
+JOBDETAILSFILE: ../t93-jobDetails

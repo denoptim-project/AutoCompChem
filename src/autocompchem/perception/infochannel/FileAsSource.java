@@ -60,6 +60,20 @@ public class FileAsSource extends InfoChannel
         super();
         this.pathName = pathName;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructs a FileAsSource and specify the pathname. Absolute or relative
+     * pathnames should be expected. No assumption of pathname.
+     */
+
+    public FileAsSource(String pathName, InfoChannelType ict)
+    {
+        super();
+        this.pathName = pathName;
+        setType(ict);
+    }
 
 //------------------------------------------------------------------------------
 
@@ -80,7 +94,7 @@ public class FileAsSource extends InfoChannel
      * The stream is typically closed outside of the information channel, by
      * whatever reads the Reader and defined that the Reader is no longer
      * needed.
-     * @return a readed for reading the character-info from the source
+     * @return a reader for reading the character-info from the source
      */
 
     public Reader getSourceReader()

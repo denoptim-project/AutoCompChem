@@ -7,7 +7,7 @@ VERBOSITY: 2
 TASK: PrepareInputNWChem
 INFILE: ../t50-mol.sdf
 OUTFILE: nwchem51.nw
-JOBDETAILS: ../t48-jobDetails
+JOBDETAILSFILE: ../t48-jobDetails
 CoordinatesType: cartesian
 $STARTFREEZEATM: 
 [$([#1][#6]~[Ru])]
