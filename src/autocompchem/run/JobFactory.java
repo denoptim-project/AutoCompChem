@@ -224,6 +224,12 @@ public class JobFactory
         	}
         }
         
+        if (locPar.contains(ParameterConstants.VERBOSITY))
+        {
+        	job.setVerbosity(Integer.parseInt(locPar.getParameter(
+        			ParameterConstants.VERBOSITY).getValueAsString()));
+        }
+        
         if (locPar.contains(ParameterConstants.PARALLELIZE))
         {
         	int nThreadsPerSubJob = Integer.parseInt(locPar.getParameter(

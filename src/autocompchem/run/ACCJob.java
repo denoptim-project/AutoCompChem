@@ -54,9 +54,8 @@ public class ACCJob extends Job
         Date date = new Date();
         if (getVerbosity() > 0)
         {
-            System.out.println(" " + date.toString());
             System.out.println(" AutoCompChem is initiating the ACC task '" 
-                            + task + "'. ");
+                            + task + "' - "+date.toString());
         }
         
         Worker worker = WorkerFactory.createWorker(params,this);
@@ -66,8 +65,7 @@ public class ACCJob extends Job
         date = new Date();
         if (getVerbosity() > 0)
         {
-            System.out.println(" " + date.toString());
-            System.out.println("Done with ACC job (" + task	+ ")");
+            System.out.println("Done with ACC job (" + task	+ ") - "+date.toString());
         }
     }
 

@@ -13,6 +13,8 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
@@ -39,13 +41,14 @@ import autocompchem.worker.WorkerFactory;
  * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
  * </li>
  * <li>
- * <b>JOBDETAILS</b>: formatted text file defining all 
+ * <b>JOBDETAILSFILE</b>: formatted text file defining all 
  * the details of a {@link GaussianJob}. Usually the jobdetails txt 
  * file is the file used to generate the input file (name
  * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
  * ) for 
  * Gaussian (see {@link GaussianJob} for the format of jobdetails files).
- * In alternative, use
+ * In alternative, use <b>JOBDETAILSDATA</b> to give the details of the job
+ * in a nested block of text.
  * keyword 
  * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
  * starting with the $START label and finishing with the $END label).
@@ -175,18 +178,29 @@ public class GaussianInputWriter extends Worker
 
         //Use GaussianJob or header specified by hand?
         useHeader = false;
-        if (params.contains("JOBDETAILS"))
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            //Use GaussianJob
-            String jdFile = 
-                        params.getParameter("JOBDETAILS").getValue().toString();
+            String jdFile = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
             if (verbosity > 0)
             {
-                System.out.println(" Compound Gaussian job: details from "  
-                         + jdFile);
+                System.out.println(" Job details from JD file '" 
+                		+ jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
+        }
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.gaussJob = new GaussianJob(lines);
         } else if (params.contains("HEADER")) {
             //Use header (only for single step jobs)
             useHeader = true;
@@ -196,11 +210,15 @@ public class GaussianInputWriter extends Worker
                 System.out.println(" Single step Gaussian job "
                         + "(details from header)\n" + header);
             }
-        } else {
-            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-                + " No 'JOBDETAILS' or 'HEADER' found in parameters.",-1);
         }
-
+        else 
+        {
+            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
+            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "'found in parameters.",-1);
+        }
+        
         //Name of output
         if (params.contains("OUTNAME"))
         {

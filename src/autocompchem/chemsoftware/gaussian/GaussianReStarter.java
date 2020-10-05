@@ -27,6 +27,8 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
@@ -62,8 +64,9 @@ import autocompchem.worker.WorkerFactory;
  * before the new <code>inp</code> is submitted to Gaussian. 
  * </li>
  * <li>
- * <b>JOBDETAILS</b>:  text file defining all the details 
- * of  the Gaussian job originally submitted to Gaussian.
+ * <b>JOBDETAILSFILE</b>:  text file defining all the details 
+ * of  the Gaussian job originally submitted to Gaussian. In alternative,
+ * use <b>JOBDETAILSDATA</b>:
  * </li> 
  * <li>
  * <b>GAUSSIANERRORS</b> path to the folder storing Gaussian known errors.
@@ -204,15 +207,37 @@ public class GaussianReStarter extends Worker
         checkPointName = FileUtils.getRootOfFileName(this.inpFile);
         newJDFile = FileUtils.getRootOfFileName(this.inpFile) + ".jd";
 
-        //Get and check the job details file
-        String jdFile = 
-                params.getParameter("JOBDETAILS").getValue().toString();
-        if (verbosity > 0)
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            System.out.println(" Taking Gaussian job details from " + jdFile);
+            String jdFile = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from JD file '" 
+                		+ jdFile + "'.");
+            }
+            FileUtils.foundAndPermissions(jdFile,true,false,false);
+            this.gaussJob = new GaussianJob(jdFile);
         }
-        FileUtils.foundAndPermissions(jdFile,true,false,false);
-        this.gaussJob = new GaussianJob(jdFile);
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.gaussJob = new GaussianJob(lines);
+        }
+        else 
+        {
+            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
+            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "'found in parameters.",-1);
+        }
     }
     
 //------------------------------------------------------------------------------

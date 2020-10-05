@@ -37,6 +37,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.NamedData;
@@ -201,7 +203,7 @@ public class GaussianOutputHandler extends Worker
      *  errors.
      * </li>
      * <li>
-     * <b>JOBDETAILS</b>: formatted text file defining all the details of 
+     * <b>JOBDETAILSFILE</b>: formatted text file defining all the details of 
      *            {@link GaussianJob}
      *            the JOBDETAILS txt file is the file used to generate the 
      *            input file (name.inp) for Gaussian.
@@ -267,22 +269,33 @@ public class GaussianOutputHandler extends Worker
         if (verbosity > 0)
             System.out.println(" Adding parameters to GaussianOutputHandler");
 
-        //Get and check the job details file
-        if (params.contains("JOBDETAILS"))
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            String jdFile =
-                params.getParameter("JOBDETAILS").getValue().toString();
+            String jdFile = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
             if (verbosity > 0)
             {
-                System.out.println(" Taking Gaussian job details from "
-                                                                      + jdFile);
+                System.out.println(" Job details from JD file '" 
+                		+ jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.gaussJob = new GaussianJob(jdFile);
         }
-        else
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
         {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
             if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.gaussJob = new GaussianJob(lines);
+        }
+        else 
+        {
+        	if (verbosity > 0)
             {
                 System.out.println(" ");
                 System.out.println(" WARNING! No JOBDETAILS provided. Some "
@@ -1145,8 +1158,8 @@ public class GaussianOutputHandler extends Worker
                                     System.out.println(" ");
                                     System.out.println("WARNING! "
                                         + "Task cannot be "
-                                        + "executed without providing the "
-                                        + "JOBDETAILS. Skipping");
+                                        + "executed without providing "
+                                        + "job details. Skipping");
                                     System.out.println(" ");
                                     break;
                                 }

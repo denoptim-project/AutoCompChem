@@ -140,7 +140,13 @@ public class ChemSoftConstants
 	 * Key for parameter defining the pathname to the file defining the details
 	 * of the computational chemistry job.
 	 */
-	public static final String PARJOBDETAILS = "JOBDETAILS";
+	public static final String PARJOBDETAILSFILE = "JOBDETAILSFILE";
+	
+	/**
+	 * Key for parameter defining the pathname to the file defining the details
+	 * of the computational chemistry job.
+	 */
+	public static final String PARJOBDETAILSDATA = "JOBDETAILS";
 
 	/**
 	 * Key for parameter defining the pathname's root for any output file (i.e.,

@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -63,8 +65,9 @@ import autocompchem.worker.WorkerFactory;
  * before the new <code>name.nw</code> is submitted to NWChem. 
  * </li>
  * <li>
- * <b>JOBDETAILS</b>: formatted text file defining all the details 
- * of the NWChem job originally submitted to NWChem.
+ * <b>JOBDETAILSFILE</b>: formatted text file defining all the details 
+ * of the NWChem job originally submitted to NWChem. In alternative use
+ * <b>JOBDETAILSDATA</b> to provide the job details in a nested block of text
  * </li> 
  * <li>
  * (optional)<b>NWCHEMERRORS</b> path to the folder storing NWChem known errors.
@@ -150,58 +153,6 @@ public class NWChemReStarter extends Worker
     private ParameterStorage paramsLoc;
 
 //------------------------------------------------------------------------------
-//TODO move to class doc
-    /**
-     * Constructor specifying the all parameters in a single 
-     * <code>ParameterStorage</code>. The following parameters
-     * are required:
-     * <ul>
-     * <li>
-     * <b>INFILE</b>: path or name of the output from NWChem 
-     * (i.e. name.out).
-     * </li>
-     * <li>
-     * <b>NEWNWFILE</b>: path or name of the new input file (i.e, 
-     * <code>name.nw</code>) to be generated for NWChem. The input will
-     *  consider that a database file with the very same root name 
-     * (i.e., <code>name.db</code>) is to be used. This means that a copy
-     *  of the old database file has to be made and placed properly 
-     * before the new <code>name.nw</code> is submitted to NWChem. 
-     * </li>
-     * <li>
-     * <b>JOBDETAILS</b>:  f text file defining all the details 
-     * of  the NWChem job originally submitted to NWChem.
-     * </li> 
-     * <li>
-     * (optional)<b>NWCHEMERRORS</b> path to the folder storing NWChem known
-     * errors.
-     * If this parameter is not defined, the software will only try to redo the
-     * last task.
-     * The format of the files defining errors described in
-     * {@link ErrorMessage}'s documentation. Acceptable error-fixing actions
-     * are listed in the documentation of the {@link #restartJobWithErrorFix}
-     * method.
-     *  </li> 
-     * <li>
-     * <b>VERBOSITY</b> verbosity level.
-     * </li>
-     * </ul>
-     * In addition, the following parameters are optional:
-     * <ul>
-     * <li>
-     * (optional) <b>NWCDATABASE</b> name of NWChem's database file that hold
-     * runtime setings and data of an NWChem job.
-     * </li>
-     * </ul>
-     * 
-     * @param params object <code>ParameterStorage</code> containing all the
-     * parameters needed
-     */
-/*
-    public NWChemReStarter(ParameterStorage params) 
-    {
-    */
-    
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.
@@ -238,15 +189,37 @@ public class NWChemReStarter extends Worker
                                            "NWCDATABASE").getValue().toString();
         }
 
-        //Get and check the job details file
-        String jdFile = 
-                params.getParameter("JOBDETAILS").getValue().toString();
-        if (verbosity > 0)
+        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            System.out.println(" Taking NWChem job details from " + jdFile);
+            String jdFile = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from JD file '" 
+                		+ jdFile + "'.");
+            }
+            FileUtils.foundAndPermissions(jdFile,true,false,false);
+            this.nwcJob = new NWChemJob(jdFile);
         }
-        FileUtils.foundAndPermissions(jdFile,true,false,false);
-        this.nwcJob = new NWChemJob(jdFile);
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSDATA))
+        {
+            String jdLines = params.getParameter(
+            		ChemSoftConstants.PARJOBDETAILSDATA).getValueAsString();
+            if (verbosity > 0)
+            {
+                System.out.println(" Job details from nested parameter block.");
+            }
+            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            		jdLines.split("\\r?\\n")));
+            this.nwcJob = new NWChemJob(lines);
+        }
+        else 
+        {
+            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
+            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
+            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILSDATA 
+            		+ "'found in parameters.",-1);
+        }
         
         //Get and check the list of known errors
         if (params.contains("NWCHEMERRORS"))

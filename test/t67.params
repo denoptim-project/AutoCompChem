@@ -6,7 +6,7 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem
 INFILE: ../t67-mol.sdf
-JOBDETAILS: ../t67-jobDetails
+JOBDETAILSFILE: ../t67-jobDetails
 CoordinatesType: Cartesian
 $STARTZCOORD:
 [C] [N] 1.2 key1

@@ -6,7 +6,7 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem
 INFILE: ../t52-mol.sdf
-JOBDETAILS: ../t48-jobDetails
+JOBDETAILSFILE: ../t48-jobDetails
 CoordinatesType: internal
 $STARTFREEZEIC: 
 [*] [$([#6](~[Ru])(~[#7])~[#7])]
