@@ -59,6 +59,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
      * @throws CloneNotSupportedException 
      */
     
+    @Override
     protected void readLogFile(File file) throws Exception
     {	
         BufferedReader buffRead = null;

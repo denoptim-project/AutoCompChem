@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.openscience.cdk.AtomContainerSet;
@@ -24,15 +25,17 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
+import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**
- * Reader and analyser for computational chemistry software output files.
+ * Core components of any reader and analyser of computational chemistry 
+ * software output files.
  * 
  * @author Marco Foscato
  */
 
-public class ChemSoftOutputHandler extends Worker
+public abstract class ChemSoftOutputHandler extends Worker
 {   
     /**
      * Name of the output file from comp.chem. software, i.e., 
@@ -538,7 +541,8 @@ public class ChemSoftOutputHandler extends Worker
 	        			IOtools.writeAtomContainerToFile(outFileName, mol,
 	        					format,true);
 
-                        resultsString.append("-> extracting last geometry out of ")
+                        resultsString.append("-> extracting last geometry out"
+                        		+ " of ")
                         	.append(acs.getAtomContainerCount());
                         resultsString.append(NL);
 
@@ -646,21 +650,23 @@ public class ChemSoftOutputHandler extends Worker
 	        			{
 	        				if (verbosity > 1)
 		        			{
-		        				System.out.println("No Gibbs free energy found in "
-		        						+ "step " + stepId 
+		        				System.out.println("No Gibbs free energy found"
+		        						+ " in step " + stepId 
 		        						+ ". Skipping QHThermochemistry.");
 		        			}
 	        				break;
 	        			}
 	        			
 	        			Double gibbsFreeEnergy = (Double) stepData.getNamedData(
-	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY).getValue();
+	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY)
+	        					.getValue();
 	        			
 	        			Double temp = 298.15;
 	        			@SuppressWarnings("unchecked")
 						Double vibS = CompChemComputer.vibrationalEntropyCorr(
 	        					(ArrayList<Double>) stepData.getNamedData(
-	    	        					ChemSoftConstants.JOBDATAVIBFREQ).getValue(), 
+	    	        					ChemSoftConstants.JOBDATAVIBFREQ)
+	        					.getValue(), 
 	        					temp);
 
 	        			Double qhThrsh = 0.0;
@@ -675,7 +681,8 @@ public class ChemSoftOutputHandler extends Worker
 	        			@SuppressWarnings("unchecked")
 						Double qhVibS = CompChemComputer.vibrationalEntropyCorr(
 	        					(ArrayList<Double>) stepData.getNamedData(
-	    	        					ChemSoftConstants.JOBDATAVIBFREQ).getValue(), 
+	    	        					ChemSoftConstants.JOBDATAVIBFREQ)
+	        					.getValue(), 
 	        					temp, qhThrsh, imThrsh, ignThrsh, verbosity-1);
 	        			
 	        			gibbsFreeEnergy = gibbsFreeEnergy - vibS + qhVibS;
@@ -683,7 +690,8 @@ public class ChemSoftOutputHandler extends Worker
 	        			resultsString.append("-> Quasi-Harm. corrected "
 	        					+ "Gibbs free energy ").append(gibbsFreeEnergy);
 	        			resultsString.append(" (").append(qhThrsh).append("; ");
-	        			resultsString.append(imThrsh).append("; ").append(ignThrsh);
+	        			resultsString.append(imThrsh).append("; ");
+	        			resultsString.append(ignThrsh);
 	        			resultsString.append(")").append(NL);
 	        			
 	        			qhGibbsEnergies.add(gibbsFreeEnergy);
@@ -702,7 +710,8 @@ public class ChemSoftOutputHandler extends Worker
 		        			}
 	        				break;
 	        			}
-	        			NormalModeSet nms = (NormalModeSet) stepData.getNamedData(
+	        			NormalModeSet nms = 
+	        					(NormalModeSet) stepData.getNamedData(
 	        					ChemSoftConstants.JOBDATAVIBMODES).getValue();
 	        			String outFile = outFileRootName + "_nm.xyz";
 	        			outFile = changeIfParameterIsFound(outFile, 
@@ -810,8 +819,9 @@ public class ChemSoftOutputHandler extends Worker
 					{
 						if (verbosity > 1)
 		    			{
-		    				System.out.println("WARNING! Empty list of geometries "
-		    						+ "from this job. I cannot find the last "
+		    				System.out.println("WARNING! Empty list of "
+		    						+ "geometries from this job. "
+		    						+ "I cannot find the last "
 		    						+ "geometry ");
 		    			}
 						break;
@@ -907,42 +917,7 @@ public class ChemSoftOutputHandler extends Worker
      * @param file
      */
     
-    protected void readLogFile(File file) throws Exception
-    {
-    	// This is a template to be used in the subclasses
-    	/*
-        BufferedReader buffRead = null;
-        try {
-            buffRead = new BufferedReader(new FileReader(file));
-            String line = null;
-            while ((line = buffRead.readLine()) != null)
-            {
-            	
-                 ...and here goes the software-specific code!
-            	
-            }
-        } catch (FileNotFoundException fnf) {
-            System.err.println("File Not Found: " + file.getAbsolutePath());
-            System.err.println(fnf.getMessage());
-            System.exit(-1);
-        } catch (IOException ioex) {
-            System.err.println(ioex.getMessage());
-            System.exit(-1);
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (IOException ioex2) {
-                System.err.println(ioex2.getMessage());
-                System.exit(-1);
-            }
-        }
-        */
-    	Terminator.withMsgAndStatus(" ERROR! A subclass of "
-    			+ "ChemSoftOutputHandler did "
-    			+ "not overwrite the readLogFile method. Please, report this "
-    			+ "to the authors.",-1);
-    }
+    protected abstract void readLogFile(File file) throws Exception;
 
 //------------------------------------------------------------------------------
 

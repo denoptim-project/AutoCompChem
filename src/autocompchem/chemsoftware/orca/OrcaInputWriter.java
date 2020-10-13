@@ -17,6 +17,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
+import autocompchem.chemsoftware.ChemSortInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
@@ -41,7 +42,7 @@ import autocompchem.worker.Worker;
 
 //TODO: write doc
 
-public class OrcaInputWriter extends Worker
+public class OrcaInputWriter extends ChemSortInputWriter
 {
     /**
      * Declaration of the capabilities of this subclass of {@link Worker}.
@@ -50,375 +51,60 @@ public class OrcaInputWriter extends Worker
             Collections.unmodifiableSet(new HashSet<TaskID>(
                     Arrays.asList(TaskID.PREPAREINPUTORCA)));
     
-    /**
-     * Molecular geometries input file. One or more geometries depending on the
-     * kind of computational chemistry job. 
-     */
-    private String inGeomFile;
-    
-    /**
-     * List of molecular systems considered as input. This can either be
-     * the list of molecules for which we want to make the input, or the list
-     * of geometries used to make a multi-geometry input file.
-     */
-    private ArrayList<IAtomContainer> inpGeom = new ArrayList<IAtomContainer>();
-
-    /**
-     * Definition of how to use multiple geometries
-     */
-    private enum MultiGeomMode {SingleGeom,ReactProd,ReactTSProd,Path};
-    
-    /**
-     * Chosen mode of handling multiple geometries.
-     */
-    private MultiGeomMode multiGeomMode = MultiGeomMode.SingleGeom;
-
-    /**
-     * Geometry names
-     */
-    private ArrayList<String> geomNames = new ArrayList<String>(
-                                                     Arrays.asList("geometry"));
-
-    /**
-     * Input format identifier.
-     */
-    private String inFileFormat = "nd";
-
-    /**
-     * Pathname root for output files (input for comp.chem. software).
-     */
-    private String outFileNameRoot;
-    
-    /**
-     * Output name (input for comp.chem. software).
-     */
-    private String outFileName;
-
-    /**
-     * Output job details name.
-     */
-    private String outJDFile;
-
-    /**
-     * Unique counter for SMARTS reference names
-     */
-    private final AtomicInteger iNameSmarts = new AtomicInteger(0);
-
-    /**
-     * Storage of SMARTS queries
-     */
-    private Map<String,String> smarts = new HashMap<String,String>();
-
-    /**
-     * Label used to identify single-atom smarts in the smarts reference name
-     */
-    private static final String SUBRULELAB = "_p";
-
-    /**
-     * Root of the smarts reference names
-     */
-    private static final String MSTRULEROOT = "smarts ";
-    
-    /**
-     * Default value for integers
-     */
-    private final int def = -999999;
-
-    /**
-     * charge of the whole system
-     */
-    private int charge = def;
-    
-    /**
-     * Spin multiplicity of the whole system
-     */
-    private int spinMult = def;
-    
-    /**
-     * Object containing the details on the Orca job
-     */
-    private CompChemJob ccJob;
-
-    /** 
-     * Verbosity level
-     */
-    private int verbosity = 0;
-    
-    private final String NL = System.getProperty("line.separator");
-
 //-----------------------------------------------------------------------------
 
     /**
-     * Initialise the worker according to the parameters provided in the 
-     * collection of input parameters.
+     * 
      */
 
-    @Override
-    public void initialize()
+    public OrcaInputWriter() 
     {
-        if (params.contains(ChemSoftConstants.PARVERBOSITY))
-        {
-            String str = params.getParameter(
-            		ChemSoftConstants.PARVERBOSITY).getValueAsString();
-            this.verbosity = Integer.parseInt(str);
-
-            if (verbosity > 0)
-                System.out.println(" Adding parameters to OrcaInputWriter");
-        }
-
-        if (params.contains(ChemSoftConstants.PARGEOMFILE))
-        {
-	        this.inGeomFile = params.getParameter(
-	        		ChemSoftConstants.PARGEOMFILE).getValueAsString();
-	        
-	        //TODO: use automated detection of file type
-	        
-	        if (inGeomFile.endsWith(".sdf"))
-	        {
-	            inFileFormat = "SDF";
-	        }
-	        else if (inGeomFile.endsWith(".xyz"))
-	        {
-	            inFileFormat = "XYZ";
-	        }
-	        else if (inGeomFile.endsWith(".out"))
-	        {
-	        	//TODO: identify the kind of cc-software that produced that file
-	        	Terminator.withMsgAndStatus("ERROR! Format of file '" + inGeomFile 
-	        			+ "' not recognized!",-1);
-	        }
-	        else
-	        {
-	        	Terminator.withMsgAndStatus("ERROR! Format of file '" + inGeomFile 
-	        			+ "' not recognized!",-1);
-	        }
-	        FileUtils.foundAndPermissions(this.inGeomFile,true,false,false);
-	        
-	        //TODO: make and use a general molecular structure reader
-            switch (inFileFormat) 
-            {
-            case "SDF":
-                inpGeom = IOtools.readSDF(inGeomFile);
-                break;
-
-            case "XYZ":
-                inpGeom = IOtools.readXYZ(inGeomFile);
-                break;
-
-            default:
-                Terminator.withMsgAndStatus("ERROR! OrcaInputWriter "
-                    + "can read multi-geometry input files "
-                    + "only when starting from XYZ of SDF files. Make "
-                    + "sure file '" + inGeomFile +"' has proper "
-                    + "format and extension.", -1);
-            }
-        }
-
-        if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
-        {
-        	String value = 
-                    params.getParameter(ChemSoftConstants.PARMULTIGEOMMODE
-                    		).getValueAsString();
-            this.multiGeomMode = MultiGeomMode.valueOf(value);
-        }
-
-        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
-        {
-            String jdFile = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Job details from JD file '" 
-                		+ jdFile + "'.");
-            }
-            FileUtils.foundAndPermissions(jdFile,true,false,false);
-            this.ccJob = new CompChemJob(jdFile);
-        }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
-        {
-            String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Job details from nested parameter block.");
-            }
-            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
-            		jdLines.split("\\r?\\n")));
-            this.ccJob = new CompChemJob(lines);
-        }
-        else 
-        {
-            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILS 
-            		+ "'found in parameters.",-1);
-        }
-
-        if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
-        {
-            outFileNameRoot = params.getParameter(
-            		ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
-            outFileName = outFileNameRoot + OrcaConstants.INPEXTENSION;
-            outJDFile = outFileName + ChemSoftConstants.JDEXTENSION;
-        } else {
-            outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
-            outFileName = outFileNameRoot + OrcaConstants.INPEXTENSION;
-            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
-            if (verbosity > 0)
-            {
-                System.out.println(" No '" + ChemSoftConstants.PAROUTFILEROOT
-                		+ "' parameter found. " + NL
-                        + "Root of any output file name set to '" 
-                		+ outFileNameRoot + "'.");
-            }
-        }
-
-        if (params.contains(ChemSoftConstants.PARCHARGE))
-        {
-            charge = Integer.parseInt(params.getParameter(
-            		ChemSoftConstants.PARCHARGE).getValueAsString());
-        } 
-
-        if (params.contains(ChemSoftConstants.PARSPINMULT))
-        {
-            spinMult = Integer.parseInt(params.getParameter(
-            		ChemSoftConstants.PARSPINMULT).getValueAsString());
-        }
-    }
+		inpExtrension = OrcaConstants.INPEXTENSION;
+		outExtension = OrcaConstants.INPEXTENSION;
+	}
     
-//-----------------------------------------------------------------------------
-
-    /**
-     * Performs any of the registered tasks according to how this worker
-     * has been initialised.
-     */
-
-    @SuppressWarnings("incomplete-switch")
-    @Override
-    public void performTask()
-    {
-        switch (task)
-          {
-          case PREPAREINPUTORCA:
-        	  printInput();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * get the sorted list of master names 
-     */
-
-    private ArrayList<String> getSortedSMARTSRefNames(Map<String,String> smarts)
-    {
-        ArrayList<String> sortedMasterNames = new ArrayList<String>();
-        for (String k : smarts.keySet())
-        {
-            String[] p = k.split(SUBRULELAB);
-            if (!sortedMasterNames.contains(p[0]))
-            {
-                sortedMasterNames.add(p[0]);
-            }
-        }
-        Collections.sort(sortedMasterNames, new NumberAwareStringComparator());
-        return sortedMasterNames;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Write input file according to any settings that have been given to this
-     * input writer.
-     */
-
-    private void printInput()
-    {
-        if (multiGeomMode.equals(MultiGeomMode.SingleGeom))
-        {
-        	printInputForEachMol();
-        }
-        else
-        {
-        	//TODO
-        	printInputWithMultipleGeometry();
-        }
-    }
     
 //------------------------------------------------------------------------------
     
-    private void printInputForEachMol()
-    {
-    	// TODO: what about files other than the .inp?
-    	// For instance, the XYZ file for neb-ts jobs.
-    	// In some cases (i.e., Orca) we can just wrote their filename in input 
-    	// file, but in other cases we might need to give separate geom files
-    	
-    	for (int molId = 0; molId<inpGeom.size(); molId++)
-    	{
-    		IAtomContainer mol = inpGeom.get(molId);
-    		
-    		CompChemJob molSpecJob = ccJob.clone();
-    		
-    		if (verbosity > 0)
-    		{
-    			System.out.println(" Writing Orca input file for molecule #" 
-    					+ (molId+1) + ": " + MolecularUtils.getNameOrID(mol));
-    		}
-    		
-    		Parameter pathnamePar = new Parameter(
-    				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-    		if (molId>0)
-    		{
-    			outFileName = outFileNameRoot + "-" + molId
-    					+ OrcaConstants.INPEXTENSION;
-    			pathnamePar = new Parameter(
-        				ChemSoftConstants.PAROUTFILEROOT,
-        				outFileNameRoot + "-" + molId);
-    		}
-    		molSpecJob.setParameter(pathnamePar);
-    		for (Job subJob : molSpecJob.getSteps())
-    		{
-    			subJob.setParameter(pathnamePar);
-    		}
-    		
-    		// These take care also of the sub-jobs/directives
-    		molSpecJob.processDirectives(mol);
-    		molSpecJob.sortDirectivesBy(new OrcaDirectiveComparator());
-    		
-        	// WARNING: for now we are not considering the possibility of having
-        	// both directives AND sub jobs. So it's either one or the other
-    		
-    		if (molSpecJob.getNumberOfSteps()>0)
-    		{
-    			for (int i=0; i<molSpecJob.getNumberOfSteps(); i++)
-    			{
-    				CompChemJob step = (CompChemJob) molSpecJob.getStep(i);
-    				ArrayList<String> lines = new ArrayList<String>();
-    				lines.addAll(getTextForInput(step));
-    				if (i<(molSpecJob.getNumberOfSteps()-1))
-    				{
-    					lines.add(OrcaConstants.JOBSEPARATOR);
-    				}
-    				IOtools.writeTXTAppend(outFileName, lines, true);
-    			}
-    		} else {
+    protected void printInputForOneMol(IAtomContainer mol, 
+    		String outFileName, String outFileNameRoot)
+    {		
+		CompChemJob molSpecJob = ccJob.clone();
+
+		Parameter pathnamePar = new Parameter(
+				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
+		molSpecJob.setParameter(pathnamePar);
+		
+		for (Job subJob : molSpecJob.getSteps())
+		{
+			subJob.setParameter(pathnamePar);
+		}
+		
+		// These take care also of the sub-jobs/directives
+		molSpecJob.processDirectives(mol);
+		molSpecJob.sortDirectivesBy(new OrcaDirectiveComparator());
+		
+    	// WARNING: for now we are not considering the possibility of having
+    	// both directives AND sub jobs. So it's either one or the other
+		
+		if (molSpecJob.getNumberOfSteps()>0)
+		{
+			for (int i=0; i<molSpecJob.getNumberOfSteps(); i++)
+			{
+				CompChemJob step = (CompChemJob) molSpecJob.getStep(i);
 				ArrayList<String> lines = new ArrayList<String>();
-				lines.addAll(getTextForInput(molSpecJob));
+				lines.addAll(getTextForInput(step));
+				if (i<(molSpecJob.getNumberOfSteps()-1))
+				{
+					lines.add(OrcaConstants.JOBSEPARATOR);
+				}
 				IOtools.writeTXTAppend(outFileName, lines, true);
-    		}
-    	}
+			}
+		} else {
+			ArrayList<String> lines = new ArrayList<String>();
+			lines.addAll(getTextForInput(molSpecJob));
+			IOtools.writeTXTAppend(outFileName, lines, true);
+		}
     }
     
 //------------------------------------------------------------------------------
@@ -665,13 +351,6 @@ public class OrcaInputWriter extends Worker
 			if (dd.getName().equals(ChemSoftConstants.DIRDATAGEOMETRY))
 			{
 				Object o = dd.getValue();
-				
-				//TODO del
-
-        		System.out.println(" ");
-        		System.out.println(" IN ORCA WRITER");
-        		System.out.println(dd);
-				
 				switch (dd.getType())
 				{
 					case IATOMCONTAINER:
@@ -727,15 +406,6 @@ public class OrcaInputWriter extends Worker
     	return lines;
     }
     
-//------------------------------------------------------------------------------
-    
-    private void printInputWithMultipleGeometry()
-    {
-    	Terminator.withMsgAndStatus(" ERROR! Running "
-    			+ "printInputWithMultipleGeometry, which should have been"
-    			+ " overwritten by devellpers.",-1);
-    }
-
 //------------------------------------------------------------------------------
 
 }
