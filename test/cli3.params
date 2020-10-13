@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+TASK: PruneMolecules
+INFILE: ../STRINGFROMCLI.sdf
+OUTFILE: cli3-pruned.sdf
+SMARTS: [#6]

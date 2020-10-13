@@ -22,6 +22,8 @@ public class FileAnalyzerTest
     @TempDir 
     File tempDir;
     
+//------------------------------------------------------------------------------
+
     @Test
     public void testCountMatches() throws Exception
     {
@@ -34,7 +36,10 @@ public class FileAnalyzerTest
         IOtools.writeTXTAppend(tmpPathName,"Third line #",true);
         IOtools.writeTXTAppend(tmpPathName,"last",true);
         
-        assertEquals(3,FileAnalyzer.count(tmpPathName,"line #"),"Total matches");
+        assertEquals(3,FileAnalyzer.count(tmpPathName,"line #"),
+        		"Total matches");
     }
+
+//------------------------------------------------------------------------------
 
 }

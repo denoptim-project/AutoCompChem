@@ -212,7 +212,7 @@ public class TextAnalyzerTest
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
-        assertEquals(4,blocks.size(),"Tutal number of blocks");
+        assertEquals(4,blocks.size(),"Total number of blocks");
         for (TextBlockIndexed tb : blocks)
         {
             String key = tb.getIndexA() + "_" 
@@ -328,7 +328,8 @@ public class TextAnalyzerTest
 
 //------------------------------------------------------------------------------
 
-    private final ArrayList<String> KEYVALKUELINES = new ArrayList<String>(Arrays.asList(
+    private final ArrayList<String> KEYVALKUELINES = 
+    		new ArrayList<String>(Arrays.asList(
     		"#comment",
     		"key1: value1",
     		"key2:value2",
@@ -376,8 +377,10 @@ public class TextAnalyzerTest
     		
 	       	assertEquals(1,form.size(), "Number of key:val pairs");
 	       	assertEquals("n1",form.get(0).get(0), "First key");
-	    	assertFalse(form.get(0).get(1).contains("$START"), "No leftover $START "+i);
-	    	assertFalse(form.get(0).get(1).contains("$END"), "No leftover $END "+i);
+	    	assertFalse(form.get(0).get(1).contains("$START"), 
+	    			"No leftover $START "+i);
+	    	assertFalse(form.get(0).get(1).contains("$END"), 
+	    			"No leftover $END "+i);
     	}
        	
     	ArrayList<String> linesC = new ArrayList<String>(Arrays.asList(
@@ -401,8 +404,10 @@ public class TextAnalyzerTest
     			":","#","$START","$END");
 	       	assertEquals(1,form.size(), "Number of key:val pairs (B) "+i);
 	       	assertEquals("n1",form.get(0).get(0), "First key (B) "+i);
-	    	assertTrue(form.get(0).get(1).contains("$START"), "Surviving $START (B) "+i);
-	    	assertTrue(form.get(0).get(1).contains("$END"), "Surviving $END (B)"+i);
+	    	assertTrue(form.get(0).get(1).contains("$START"), 
+	    			"Surviving $START (B) "+i);
+	    	assertTrue(form.get(0).get(1).contains("$END"), 
+	    			"Surviving $END (B)"+i);
     	}
     }
     
@@ -642,9 +647,11 @@ public class TextAnalyzerTest
     			new ArrayList<String>(Arrays.asList(nestedBLock.split(
     					System.getProperty("line.separator")))),
     			":","#","$START","$END");
-    	assertEquals(3,nestedPairs.size(),"Number of key:value pairs in nested.");
+    	assertEquals(3,nestedPairs.size(),
+    			"Number of key:value pairs in nested.");
     	assertTrue(nestedPairs.containsKey("second"),"Nested key");
-    	assertTrue(nestedPairs.containsKey("nestedKey"),"Nested multiline block");
+    	assertTrue(nestedPairs.containsKey(
+    			"nestedKey"),"Nested multiline block");
     }
     
 //------------------------------------------------------------------------------

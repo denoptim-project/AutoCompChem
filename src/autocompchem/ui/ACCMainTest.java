@@ -21,9 +21,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import java.io.File;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.IOtools;
+import autocompchem.run.Job;
+import autocompchem.run.Job.RunnableAppID;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Unit Test for methods in ACCMain. 
@@ -33,6 +42,11 @@ import autocompchem.datacollections.ParameterStorage;
 
 public class ACCMainTest 
 {
+
+    private final String NL = System.getProperty("line.separator");
+    
+    @TempDir 
+    File tempDir;
     
 //------------------------------------------------------------------------------
 
@@ -44,9 +58,11 @@ public class ACCMainTest
     			"-o", "file.out",
     			"--long", "\"many", "words", "all", "quoted\"",
     			"-z", "-z2"};
-    	ParameterStorage params = new ParameterStorage();
-    	ACCMain.parseCLIArgs(args, params);
-
+    	
+    	Job job = ACCMain.parseCLIArgs(args);
+    	ParameterStorage params = job.getParameters();
+    	
+    	assertEquals(RunnableAppID.ACC,job.getAppID(),"Job APP");
     	assertTrue(params.contains("long"),"Parsed long and quoted option.");
     	assertEquals(4,params.getParameter("long").getValue().toString()
     			.split("\\s+").length,"Length of long and quoted option.");
@@ -55,10 +71,64 @@ public class ACCMainTest
     			"Value of option '-o'.");
     	assertTrue(params.contains("00"),"Parsed value-less option (first)");
     	assertTrue(params.contains("z2"),"Parsed value-less option (last)");
-    	
-    	
     }
 
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCLIArgsParsingAndParFile() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        
+        final String RTN = "FromCLI";
+        final String EXT = "_suffix.ext";
+        
+        
+        String tmpPathName = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "acc.params";
+        StringBuilder sb = new StringBuilder();
+        sb.append(ParameterConstants.RUNNABLEAPPIDKEY
+        		+ParameterConstants.SEPARATOR
+        		+RunnableAppID.ACC+NL);
+        sb.append(WorkerConstants.PARTASK
+        		+ParameterConstants.SEPARATOR
+        		+TaskID.DummyTask+NL);
+        sb.append("CUSTOM_PAR"
+        		+ParameterConstants.SEPARATOR
+        		+"bla bla ribla"+NL);
+        sb.append("P1"
+        		+ParameterConstants.SEPARATOR
+        		+"value from file"+NL);
+        sb.append("P2"
+        		+ParameterConstants.SEPARATOR
+        		+ParameterConstants.STRINGFROMCLI+EXT);
+        IOtools.writeTXTAppend(tmpPathName,sb.toString(),false);
+        
+        String[] args = {"-p3","\"param","from","command","line\"",
+        		"-P1","value_from_CLI","-p", tmpPathName,
+        		"--"+ParameterConstants.STRINGFROMCLI, RTN};
+    	
+    	Job job = ACCMain.parseCLIArgs(args);
+    	
+    	assertEquals(RunnableAppID.ACC,job.getAppID(),"Job APP");
+    	assertEquals(TaskID.DummyTask.toString(),job.getParameter(
+    			WorkerConstants.PARTASK).getValueAsString(),
+    			"Task ID");
+    	assertEquals("bla bla ribla",job.getParameter(
+    			"CUSTOM_PAR").getValueAsString(),
+    			"Parameter in params file");
+    	assertTrue(job.hasParameter("P1"),"Has parameter P1");
+    	assertEquals("value_from_CLI",job.getParameter("P1").getValueAsString(),
+    			"Parameter in command line overwrites value from params file");
+    	assertTrue(job.hasParameter("P2"),"Has parameter P2");
+    	assertEquals(RTN+EXT,job.getParameter("P2").getValueAsString(),
+    			"Parameter in command line overwrites value from params file");
+    	assertTrue(job.hasParameter("P3"),"Has parameter P3");
+    	assertEquals("param from command line",job.getParameter(
+    			"P3").getValueAsString(),
+    			"Parameter in command line");
+    }
+    
 //------------------------------------------------------------------------------
 
 }

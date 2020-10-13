@@ -568,7 +568,7 @@ public class TextAnalyzer
 
                 //Indexed list of open blocks that await closure
                 Map<Integer,TextBlockIndexed> openBlocks =
-                                               new HashMap<Integer,TextBlockIndexed>();
+                		new HashMap<Integer,TextBlockIndexed>();
 
                 //Map of open block key to pattern ID
                 Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
@@ -611,8 +611,9 @@ public class TextAnalyzer
                             // WARNING: Single line matches cannot be nested
                             // 
 
-                            TextBlockIndexed tb = new TextBlockIndexed(block,countMatches,
-                                                 pattIdx,countsSL.get(pattIdx));
+                            TextBlockIndexed tb = 
+                            		new TextBlockIndexed(block,countMatches,
+                            				pattIdx,countsSL.get(pattIdx));
                             blocks.add(tb);
                         }
                     }
@@ -632,7 +633,8 @@ public class TextAnalyzer
                             }
                             countsML.set(pattIdx,1 + countsML.get(pattIdx));
 
-                            TextBlockIndexed tb = new TextBlockIndexed(countMatches,
+                            TextBlockIndexed tb = 
+                            		new TextBlockIndexed(countMatches,
                                                       pattIdx+slPattrns.size(),
                                                          countsML.get(pattIdx));
                             if (inclPatts)
@@ -675,7 +677,8 @@ public class TextAnalyzer
 
                             //Get the block that we are closing now
                             Integer newstOBlk = sortedOpnBlkKeys.get(0);
-                            TextBlockIndexed thisBlock = openBlocks.get(newstOBlk);
+                            TextBlockIndexed thisBlock = 
+                            		openBlocks.get(newstOBlk);
 
                             if (inclPatts)
                             {
@@ -1168,7 +1171,8 @@ public class TextAnalyzer
      * @return <code>true</code> in case of match
      */
 
-    private static boolean match(String line, String pattern, boolean[] relation)
+    private static boolean match(String line, String pattern, 
+    		boolean[] relation)
     {
     	//TODO del
     	//System.out.println("Matching: "+line+" pat:"+pattern+"_ "
@@ -1470,7 +1474,7 @@ public class TextAnalyzer
         			line = line.substring(0,line.lastIndexOf(end))
         					+ line.substring(line.lastIndexOf(end) 
         							+ end.length());
-        			// and append it to the previously collected parts of the line
+        			// and append it to the previously collected parts of line
         			line = growingLine + newline + line;
         			// As we have finished appending, we reset the pointer
         			isGrowing = false;
@@ -1483,13 +1487,14 @@ public class TextAnalyzer
         		// We are inside the nested system, so we append lines
         		if (!isGrowing)
         		{
-        			// We just entered the outermost nest. Take note of the level
+        			// We just entered the outermost nest. Take note of level
         			isGrowing = true;
         			// Take away the leftmost 'start' label, and start growing 
         			// the new collective line (which will contain newLine chars
         			
         			growingLine = line.substring(0,line.indexOf(start))
-        					+ line.substring(line.indexOf(start)+start.length());
+        					+ line.substring(line.indexOf(start) 
+        							+ start.length());
         			// To keep growing we jump to the next iteration of the loop
         			continue;
         		}

@@ -118,6 +118,21 @@ public class StringUtils
     	}
     	return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
+
+    
+    
+    public static int countMatches(String str, String regex)
+    {
+        Matcher m = Pattern.compile(regex).matcher(str);
+    	int n=0;
+    	while (m.find())
+    		n++;
+    	
+    	return n;
+    }
+    
 //------------------------------------------------------------------------------
 
 }

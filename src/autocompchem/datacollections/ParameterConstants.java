@@ -120,5 +120,12 @@ public class ParameterConstants
 	 * Keyword of parameter defining a situation
 	 */
 	public static final String SITUATION = "SITUATION";
+
+	/**
+	 * Placeholder for a string defined via command line argument. This
+	 * placeholder string is replaced with the string given in CLI upon
+	 * importing parameters from a file.
+	 */
+	public static final String STRINGFROMCLI = "STRINGFROMCLI";
 	
 }

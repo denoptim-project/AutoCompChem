@@ -309,7 +309,30 @@ public class TextBlockIndexed
 
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Replaces all occurrences of a given substring matching the regex with
+     * a new string in all text, including in nested blocks of text.
+     * @param regex the regular expression identifying the substring to replace.
+     * @param replacement the new string that should replace every matching 
+     * substring.
+     */
+
+    public void replaceAll(String regex, String replacement)
+    {
+    	for (int i=0; i<lines.size(); i++)
+    	{
+    		String line = lines.get(i);
+    		lines.set(i, line.replaceAll(regex, replacement));
+    	}
+    	for (TextBlockIndexed tb : nestedBlocks)
+    	{
+    		tb.replaceAll(regex, replacement);
+    	}
+    }
+    
 //------------------------------------------------------------------------------
 
 }

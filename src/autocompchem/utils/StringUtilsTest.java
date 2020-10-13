@@ -37,4 +37,13 @@ public class StringUtilsTest
 
 //------------------------------------------------------------------------------
 
+    @Test
+    public void testCount() throws Exception
+    {
+    	String s = "TRGAadfTR_G sdg hjnujTRGk fhjx vbn xTRGvbx vbn xbn TRG";
+    	assertEquals(4,StringUtils.countMatches(s, "TRG"),"Number of matches");
+    }
+    
+//------------------------------------------------------------------------------
+
 }

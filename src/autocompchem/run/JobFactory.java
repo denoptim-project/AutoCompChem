@@ -44,7 +44,7 @@ public class JobFactory
 {
 
 //------------------------------------------------------------------------------
-
+	
     /**
      * Build a Job from from an existing definition stored in a file.
      * Currently supported file formats: 
@@ -72,6 +72,49 @@ public class JobFactory
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
         			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
+        	blocks.add(tb);
+        }
+        
+        return createJob(blocks);
+    }
+	
+//------------------------------------------------------------------------------
+
+    /**
+     * Build a Job from from an existing definition stored in a file and
+     * a given string that will replace the placeholder (i.e.,
+     * {@value ParameterConstants.STRINGFROMCLI}).
+     * Currently supported file formats: 
+     * <ul>
+     * <li><i>jobDetails</i> format.</li>
+     * </ul>
+     * @param pathName the pathname of the file
+     * @return the collection of parameters
+     */
+
+    public static Job buildFromFile(String pathName, String cliString)
+    {
+        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        		pathName,
+                ParameterConstants.STARTJOB, //delimiter
+                ParameterConstants.ENDJOB, //delimiter
+                false,  //don't take only first
+                false); //don't include delimiters
+        
+        for (TextBlockIndexed tb : blocks)
+        {
+        	tb.replaceAll(ParameterConstants.STRINGFROMCLI,cliString);
+        }
+        
+        if (blocks.size() == 0)
+        {
+        	// Since there are no JOBSTART/JOBEND blocks we interpret the text
+        	// as parameters for a single job
+        	ArrayList<String> lines = IOtools.readTXT(pathName);
+        	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
+        			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
+        	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
+        	tb.replaceAll(ParameterConstants.STRINGFROMCLI,cliString);
         	blocks.add(tb);
         }
         

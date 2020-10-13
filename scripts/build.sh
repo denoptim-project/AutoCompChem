@@ -244,7 +244,7 @@ function functionalityTesting() {
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenTests[@]} -eq 0 ]
     then 
-        for i in $(seq 1 $(ls ../*.params | wc -l | awk '{print $1}'))
+        for i in $(seq 1 $(ls ../t*.params | wc -l | awk '{print $1}'))
         do
             chosenTests+=($i)
         done

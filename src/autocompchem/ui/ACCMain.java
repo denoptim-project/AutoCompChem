@@ -2,7 +2,9 @@ package autocompchem.ui;
 
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
@@ -64,11 +66,7 @@ public class ACCMain
         }
         else if (args.length > 1)
         {
-            ParameterStorage ACCParameters = new ParameterStorage();
-            ACCParameters.setDefault();
-        	parseCLIArgs(args, ACCParameters);
-        	job = JobFactory.createJob(RunnableAppID.ACC);
-        	job.setParameters(ACCParameters);
+        	job = parseCLIArgs(args);
         }
 
         // Do the task
@@ -103,15 +101,23 @@ public class ACCMain
     /**
      * Parses the vector of command line arguments.
      * @param args the vector of arguments to be parsed.
-     * @param params the storage where parsed parameters will be stored.
-     * @return the string defining the task, or null.
+     * @return job the job set up from the parameters parsed from command line.
      */
     
-    protected static String parseCLIArgs(String[] args, ParameterStorage params)
+    protected static Job parseCLIArgs(String[] args)
     {
+    	Job job = null;
+    	
+    	ParameterStorage params = new ParameterStorage();
+    	params.setDefault();
+    	
+    	// First, look for the -t/--task or for -p/--params: 
+    	// either one must be there
+    	boolean foundTask = false;
     	String task = null;
-
-    	// First, look for the -t/--task
+    	boolean foundParams = false;
+    	String paramsFile = null;
+    	String cliString = "";
     	for (int iarg=0; iarg<args.length; iarg++)
     	{
     		String arg = args[iarg];
@@ -122,28 +128,85 @@ public class ACCMain
     				Terminator.withMsgAndStatus("ERROR! Option -t (--task)"
     						+ " seems to have no value. I expect to find "
     						+ "something like '-t <taskID>', but I see "
-    						+ "only '-t' or '--task'.",-1);
+    						+ "only '" + arg + "'.",-1);
     			}
     			task = args[iarg+1];
-    			//NB: this will kill me with an error message in case 
-    			// the given string does not correspond to a registered 
-    			// task.
-    			TaskID.getFromString(task);
-    			
-    			Parameter par = new Parameter(WorkerConstants.PARTASK, 
-    					NamedDataType.STRING,task);
-    			params.setParameter(par);
-    			
-    			break;
+    			foundTask = true;
+    		}
+    		
+    		if (arg.equalsIgnoreCase("-p") || arg.equalsIgnoreCase("--params"))
+    		{	
+    			if (iarg+1 >= args.length)
+    			{
+    				Terminator.withMsgAndStatus("ERROR! Option -p (--params)"
+    						+ " seems to have no value. I expect to find "
+    						+ "something like '-p <pathname>', but I see "
+    						+ "only '" + arg + "'.",-1);
+    			}
+    			paramsFile = args[iarg+1];
+    			foundParams=true;
+    		}
+    		
+    		if (arg.equalsIgnoreCase("--"+ParameterConstants.STRINGFROMCLI))
+    		{	
+    			if (iarg+1 >= args.length)
+    			{
+    				Terminator.withMsgAndStatus("ERROR! Option " + arg
+    						+ " seems to have no value. I expect to find "
+    						+ "a string after '" + arg + "'.",-1);
+    			}
+    			cliString = args[iarg+1];
     		}
     	}
     	
-    	//Then, read-in all CLI arguments in parameter storage unit
+    	// Check consistency between use of -t and -p
+    	if (foundTask && foundParams)
+    	{
+    		Terminator.withMsgAndStatus("ERROR! Found both -t/--task and "
+    				+ "-p/--params options. "
+    				+ "You can use only one of the two.",-1);
+    	}
+    	if (!foundTask && !foundParams)
+    	{
+    		Terminator.withMsgAndStatus("ERROR! Neither -t/--task nor "
+    				+ "-p/--params options found. "
+    				+ "You must use either -t/-p, or provide a single argument"
+    				+ " that is the pathname to an existing paremeters file.",
+    				-1);
+    	}
     	
+    	if (foundTask)
+    	{
+			//NB: this will kill me with an error message in case 
+			// the given string does not correspond to a registered 
+			// task.
+			TaskID.getFromString(task);
+			
+			Parameter par = new Parameter(WorkerConstants.PARTASK, 
+					NamedDataType.STRING,task);
+			params.setParameter(par);
+    	}
+    	
+    	if (foundParams)
+    	{
+    		//NB: this will kill me with an error if the file is not found
+			// or not readable.
+			FileUtils.foundAndPermissions(paramsFile, true, false, false);
+			
+			if (cliString.equals(""))
+			{
+				job = JobFactory.buildFromFile(paramsFile);
+			} else {
+				job = JobFactory.buildFromFile(paramsFile,cliString);
+			}
+    	}
+    	
+    	//Read-in all CLI arguments in parameter storage unit
+	    	
     	//NB: the following block of code makes it so that we can only run
     	// single step jobs when submitting via CLI interface using CLI 
-    	// arguments/options
-    	
+    	// arguments/options and -t/--task option
+		
     	for (int iarg=0; iarg<args.length; iarg++)
     	{
     		String arg = args[iarg];
@@ -155,7 +218,7 @@ public class ACCMain
     			iarg++;
     			continue;
     		}
-    		
+	    		
     		//Read-in the option or the key:value pair
     		arg = arg.replaceFirst("^-*", "");
     		if ((iarg+1 >= args.length) || args[iarg+1].startsWith("-"))
@@ -163,7 +226,14 @@ public class ACCMain
     			// A value-less parameter
     			Parameter par = new Parameter(arg, NamedDataType.STRING, 
     					"none");
-    			params.setParameter(par);
+	    		
+    	    	if (foundTask && !foundParams)
+    	    	{
+    	    		params.setParameter(par);
+    	    	} else if (!foundTask && foundParams)
+    	    	{
+    	    		job.setParameter(par);
+    	    	}
 			}
     		else
     		{
@@ -189,12 +259,32 @@ public class ACCMain
     				value = args[iarg+1];
     				iarg++;
     			}
-    			Parameter par = new Parameter(arg, NamedDataType.STRING, 
-    					value);
-    			params.setParameter(par);
+    			Parameter par = new Parameter(arg, NamedDataType.STRING, value);
+	    		
+    			if (foundTask && !foundParams)
+    	    	{
+    	    		params.setParameter(par);
+    	    	} else if (!foundTask && foundParams)
+    	    	{
+    	    		job.setParameter(par);
+    	    	}
     		}
+	    }
+	    	
+    	if (foundTask && !foundParams)
+    	{
+	    	// Finally, pack all into a job
+	    	job = JobFactory.createJob(RunnableAppID.ACC);
+	    	job.setParameters(params);
     	}
-    	return task;
+    	
+    	if (job == null)
+    	{
+    		Terminator.withMsgAndStatus("ERROR! Could not parse command line "
+    				+ "arguments to make a job. Check your input.",-1);
+    	}
+    	
+    	return job;
     }
 
 //------------------------------------------------------------------------------
