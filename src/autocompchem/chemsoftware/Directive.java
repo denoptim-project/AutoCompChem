@@ -22,10 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
+import autocompchem.chemsoftware.nwchem.NWChemConstants;
+import autocompchem.chemsoftware.nwchem.NWChemKeyword;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
@@ -36,6 +40,9 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.SMARTS;
+import autocompchem.smarts.SMARTSQueryHandler;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
@@ -836,6 +843,82 @@ public class Directive implements IDirectiveComponent
                 dd.setValue(bs);
                 setDataDirective(dd);
                 break;
+            }
+            
+            case ChemSoftConstants.PARGEOMCONSTRAINTS:
+            {
+            	//TODO
+            	Terminator.withMsgAndStatus("ERROR! handling of "
+        				+ "geometrical contraints is not implemented "
+        				+ "yet... sorry!",-1);
+            	
+            	break;
+            }
+            
+            case ChemSoftConstants.PARFREEZECENTERS:
+            {	
+            	//TODO verbosity/logging
+                System.out.println(" ACC sets the list of active centers");
+            	
+            	String propAsStr = params.getParameter(
+            		ChemSoftConstants.PARFREEZECENTERS).getValueAsString();
+            	
+            	Map<String,String> freezingSmarts = 
+            			SMARTSQueryHandler.getNamedAtomSMARTS(propAsStr);
+                
+                // make an initial list of active atoms including all
+                ArrayList<Integer> activeIds = new ArrayList<Integer>();
+                for (int i=-1; i<(mol.getAtomCount()-1); i++, activeIds.add(i));
+
+                // Identify atom to freeze
+                ManySMARTSQuery msq = new ManySMARTSQuery(mol,freezingSmarts,0);
+                if (msq.hasProblems())
+                {
+                    String cause = msq.getMessage();
+                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+                }
+                for (String key : freezingSmarts.keySet())
+                {
+                    if (msq.getNumMatchesOfQuery(key) == 0)
+                    {
+                         System.out.println("WARNING! No match for SMARTS "
+                         		+ "query " + freezingSmarts.get(key) 
+                         		+ " in molecule "
+                                 + MolecularUtils.getNameOrID(mol));
+                        continue;
+                    }
+                    List<List<Integer>> allMatches = 
+                    		msq.getMatchesOfSMARTS(key);
+                    String reportFrozen = "";
+                    boolean reportedMultiple = false;
+                    for (List<Integer> atmIDsLst : allMatches)
+                    {
+                        for (Integer frozenAtmId : atmIDsLst)
+                        {
+                            activeIds.remove(Integer.valueOf(frozenAtmId));
+                            reportFrozen = reportFrozen + frozenAtmId + " ";
+                        }
+                    }
+                    //TODO verbosity/logging
+                    System.out.println("Atom-freezing SMARTS matched by atom "
+                    		+ "IDs " + reportFrozen);
+                }
+              	
+            	//Replace DirectiveData with one with the BS object
+                DirectiveData dd = new DirectiveData();
+                dd.setReference(dirComp.getName());
+                dd.setValue(activeIds);
+                setDataDirective(dd);
+            	break;
+            }
+            
+            case ChemSoftConstants.PARADDINTCOORDS:
+            {
+            	//TODO
+            	Terminator.withMsgAndStatus("ERROR! handling of "
+        				+ "redundant internal coordinates not implemented "
+        				+ "yet... sorry!",-1);
+            	break;
             }
             	
                 

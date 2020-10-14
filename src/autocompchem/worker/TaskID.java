@@ -51,7 +51,8 @@ public enum TaskID
     RICALCULATECONNECTIVITY,  
     SORTSDFMOLECULES,         
     SUBTRACTZMATRICES, 
-    IMPOSECONNECTIONTABLE;        
+    IMPOSECONNECTIONTABLE,
+    FINDATOMSETS;        
 	
 //-----------------------------------------------------------------------------
 	

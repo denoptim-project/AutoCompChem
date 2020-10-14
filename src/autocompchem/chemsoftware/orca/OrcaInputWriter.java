@@ -17,7 +17,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
-import autocompchem.chemsoftware.ChemSortInputWriter;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
@@ -42,7 +42,7 @@ import autocompchem.worker.Worker;
 
 //TODO: write doc
 
-public class OrcaInputWriter extends ChemSortInputWriter
+public class OrcaInputWriter extends ChemSoftInputWriter
 {
     /**
      * Declaration of the capabilities of this subclass of {@link Worker}.
@@ -54,7 +54,7 @@ public class OrcaInputWriter extends ChemSortInputWriter
 //-----------------------------------------------------------------------------
 
     /**
-     * 
+     * Constructor sets the parameters that depend on Orca conventions.
      */
 
     public OrcaInputWriter() 
@@ -62,7 +62,6 @@ public class OrcaInputWriter extends ChemSortInputWriter
 		inpExtrension = OrcaConstants.INPEXTENSION;
 		outExtension = OrcaConstants.INPEXTENSION;
 	}
-    
     
 //------------------------------------------------------------------------------
     

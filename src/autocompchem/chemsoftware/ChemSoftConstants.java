@@ -254,8 +254,25 @@ public class ChemSoftConstants
 	 * Key for parameter requesting analysis of the kind of critical point
 	 * found on a potential energy surface (minimum vs. saddle point)
 	 */
-	public static final String PARCRITICALPOINTKIND = "DETECTKINDOFCRITICALPOINT";
+	public static final String PARCRITICALPOINTKIND = 
+			"DETECTKINDOFCRITICALPOINT";
 
+	/**
+	 * Key for parameter requesting the generation of geometrical constraints.
+	 */
+	public static final String PARGEOMCONSTRAINTS = "GEOMCONTRAINTS";
+	
+	/**
+	 * Key for parameter requesting to freeze come centers in the
+	 */
+	public static final String PARFREEZECENTERS = "FREEZECENTERS";
+
+	/**
+	 * Key for parameter requesting the inclusion of additional internal
+	 * coordinates.
+	 */
+	public static final String PARADDINTCOORDS = "ADDINTCOORDS";
+	
 	/**
 	 * Name for data storing the line number where a job begins.
 	 */

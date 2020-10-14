@@ -104,10 +104,10 @@ public class ManySMARTSQuery
             }
         }
     }
-    
+
 //------------------------------------------------------------------------------
-    
-    private String getStringFor(Mappings listOfIds)
+
+	private String getStringFor(Mappings listOfIds)
     {
     	String matchesString = "";
     	Iterator<int[]> it = listOfIds.iterator();

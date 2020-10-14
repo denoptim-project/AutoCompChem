@@ -338,7 +338,7 @@ public class GaussianInputWriter extends Worker
      * field defined by the constructor.
      * No argument is accepted by this method, so,
      * before running, make sure you provided the proper settings
-     * during contruction of this GaussianInputWriter.
+     * during construction of this GaussianInputWriter.
      */
 
     public void writeInp()

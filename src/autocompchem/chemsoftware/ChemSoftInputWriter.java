@@ -41,7 +41,7 @@ import autocompchem.worker.Worker;
 
 //TODO: write doc
 
-public abstract class ChemSortInputWriter extends Worker
+public abstract class ChemSoftInputWriter extends Worker
 {
     
     /**
@@ -222,8 +222,8 @@ public abstract class ChemSortInputWriter extends Worker
         if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
         {
             String value = 
-                    params.getParameter(ChemSoftConstants.PARMULTIGEOMMODE
-                            ).getValueAsString();
+                    params.getParameter(ChemSoftConstants.PARMULTIGEOMMODE)
+                    .getValueAsString();
             this.multiGeomMode = MultiGeomMode.valueOf(value);
         }
 
@@ -298,16 +298,15 @@ public abstract class ChemSortInputWriter extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task)
+
+        if (multiGeomMode.equals(MultiGeomMode.SingleGeom))
         {
-//TODO make agnostic
-            case PREPAREINPUTORCA:
-                printInput();
-                break;
+            printInputForEachMol();
+        } else {
+            printInputWithMultipleGeometry();
         }
 
         if (exposedOutputCollector != null)
@@ -341,26 +340,6 @@ public abstract class ChemSortInputWriter extends Worker
         Collections.sort(sortedMasterNames, new NumberAwareStringComparator());
         return sortedMasterNames;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Write input file according to any settings that have been given to this
-     * input writer.
-     */
-
-    private void printInput()
-    {
-        if (multiGeomMode.equals(MultiGeomMode.SingleGeom))
-        {
-            printInputForEachMol();
-        }
-        else
-        {
-            //TODO
-            printInputWithMultipleGeometry();
-        }
-    }
     
 //------------------------------------------------------------------------------
     
@@ -380,8 +359,6 @@ public abstract class ChemSortInputWriter extends Worker
 	        for (int molId = 0; molId<inpGeom.size(); molId++)
 	        {
 	            IAtomContainer mol = inpGeom.get(molId);
-	            
-	            CompChemJob molSpecJob = ccJob.clone();
 	            
 	            if (verbosity > 0)
 	            {
