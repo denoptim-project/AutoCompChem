@@ -33,6 +33,7 @@ import autocompchem.chemsoftware.nwchem.NWChemKeyword;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -586,6 +587,14 @@ public class Directive implements IDirectiveComponent
     	{
     		if (dd.hasACCTask())
     		{
+    			//WARNING: the task is defined in a nested multiline block in 
+    			// the DirectiveData value. So, we define a task in a job 
+    			// details file one need to nest the ACCTask's parameter into 
+    			// TWO multiline blocks:
+    	    	// - one for delimiting the ACCTask-defining lines,
+    	    	// - one for delimiting the lines that belong to the 
+    			// DirectiveData value
+    			
 	    		ArrayList<ParameterStorage> psLst = 
 	    				getACCTaskParams(dd.getLines(), dd);
 	    		for (ParameterStorage ps : psLst)
@@ -606,7 +615,7 @@ public class Directive implements IDirectiveComponent
 //-----------------------------------------------------------------------------
     
     /**
-     * Parses the block of lines as to find parameters defining the ACC tasks.
+     * Parses the block of lines as to find parameters defining an ACC tasks.
      * @param lines to parse.
      * @return the list of parameter storage units.
      */
@@ -614,13 +623,13 @@ public class Directive implements IDirectiveComponent
     private ArrayList<ParameterStorage> getACCTaskParams(
     		ArrayList<String> lines, IDirectiveComponent dirComp)
     {	
-    	// This takes case of any $START/$END label needed to make all JD lines
+    	// This takes care of any $START/$END label needed to make all JD lines
     	// fit into a single line for the purpose of making the 
     	// directive component line.
     	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
     			lines, ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
-    	
+		
     	// Then we take away any line that does not contain ACC tasks
     	ArrayList<String> linesWithACCTasks = new ArrayList<String>();
     	for (String line : linesPack)
@@ -679,6 +688,7 @@ public class Directive implements IDirectiveComponent
      * @param ps the collection of parameters defining one single task (though 
      * this can certainly require more than one parameter).
      * @param dirComp the component that contained the definition of the task.
+     * @param job the job containing the directive component
      */
     
     private void performACCTask(IAtomContainer mol, ParameterStorage params, 
@@ -859,55 +869,81 @@ public class Directive implements IDirectiveComponent
             {	
             	//TODO verbosity/logging
                 System.out.println(" ACC sets the list of active centers");
-            	
-            	String propAsStr = params.getParameter(
-            		ChemSoftConstants.PARFREEZECENTERS).getValueAsString();
-            	
-            	Map<String,String> freezingSmarts = 
-            			SMARTSQueryHandler.getNamedAtomSMARTS(propAsStr);
                 
+                //TODO del
+                System.out.println("PARAMS: "+params);
+            	
                 // make an initial list of active atoms including all
                 ArrayList<Integer> activeIds = new ArrayList<Integer>();
                 for (int i=-1; i<(mol.getAtomCount()-1); i++, activeIds.add(i));
-
-                // Identify atom to freeze
-                ManySMARTSQuery msq = new ManySMARTSQuery(mol,freezingSmarts,0);
-                if (msq.hasProblems())
+                
+                if (params.contains(ChemSoftConstants.PARFREEZECENTERSSMARTS))
                 {
-                    String cause = msq.getMessage();
-                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+	            	String propAsStr = params.getParameter(
+	            			ChemSoftConstants.PARFREEZECENTERSSMARTS)
+	            			.getValueAsString();
+	            	
+	            	Map<String,String> freezingSmarts = 
+	            			SMARTSQueryHandler.getNamedAtomSMARTS(propAsStr);
+	                
+	                // Identify atom to freeze
+	                ManySMARTSQuery msq = new ManySMARTSQuery(mol,freezingSmarts,0);
+	                if (msq.hasProblems())
+	                {
+	                    String cause = msq.getMessage();
+	                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+	                }
+	                for (String key : freezingSmarts.keySet())
+	                {
+	                    if (msq.getNumMatchesOfQuery(key) == 0)
+	                    {
+	                         System.out.println("WARNING! No match for SMARTS "
+	                         		+ "query " + freezingSmarts.get(key) 
+	                         		+ " in molecule "
+	                                 + MolecularUtils.getNameOrID(mol));
+	                        continue;
+	                    }
+	                    List<List<Integer>> allMatches = 
+	                    		msq.getMatchesOfSMARTS(key);
+	                    String reportFrozen = "";
+	                    boolean reportedMultiple = false;
+	                    for (List<Integer> atmIDsLst : allMatches)
+	                    {
+	                        for (Integer frozenAtmId : atmIDsLst)
+	                        {
+	                            activeIds.remove(Integer.valueOf(frozenAtmId));
+	                            reportFrozen = reportFrozen + frozenAtmId + " ";
+	                        }
+	                    }
+	                    //TODO verbosity/logging
+	                    System.out.println("Atom-freezing SMARTS matched by atom "
+	                    		+ "IDs " + reportFrozen);
+	                }
+	                
                 }
-                for (String key : freezingSmarts.keySet())
+                
+                if (params.contains(ChemSoftConstants.PARFREEZECENTERSIDS))
                 {
-                    if (msq.getNumMatchesOfQuery(key) == 0)
-                    {
-                         System.out.println("WARNING! No match for SMARTS "
-                         		+ "query " + freezingSmarts.get(key) 
-                         		+ " in molecule "
-                                 + MolecularUtils.getNameOrID(mol));
-                        continue;
-                    }
-                    List<List<Integer>> allMatches = 
-                    		msq.getMatchesOfSMARTS(key);
-                    String reportFrozen = "";
-                    boolean reportedMultiple = false;
-                    for (List<Integer> atmIDsLst : allMatches)
-                    {
-                        for (Integer frozenAtmId : atmIDsLst)
-                        {
-                            activeIds.remove(Integer.valueOf(frozenAtmId));
-                            reportFrozen = reportFrozen + frozenAtmId + " ";
-                        }
-                    }
-                    //TODO verbosity/logging
-                    System.out.println("Atom-freezing SMARTS matched by atom "
-                    		+ "IDs " + reportFrozen);
+                	String allStr = params.getParameter(
+	            			ChemSoftConstants.PARFREEZECENTERSIDS)
+	            			.getValueAsString();
+                	
+                	String reportFrozen = "";
+                	String[] idsStr = allStr.trim().split(",");
+                	for (int i=0; i<idsStr.length; i++)
+                	{
+                		activeIds.remove(Integer.valueOf(idsStr[i]));
+                        reportFrozen = reportFrozen + idsStr[i] + " ";
+                	}
+                	//TODO verbosity/logging
+                    System.out.println("Freexing atoms with IDs " 
+                    	+ reportFrozen);
                 }
               	
             	//Replace DirectiveData with one with the BS object
                 DirectiveData dd = new DirectiveData();
                 dd.setReference(dirComp.getName());
-                dd.setValue(activeIds);
+                dd.setValue(activeIds.toString()); //TODO
                 setDataDirective(dd);
             	break;
             }

@@ -137,6 +137,12 @@ public class DirectiveTest
     					+ ParameterConstants.SEPARATOR + ".sfx" 
     					+ ChemSoftConstants.JDCLOSEBLOCK))));
     	
+    	//WARNING: the task is defined in a nested multiline block in the
+    	// DirectiveData value. So, wo define a task in a job details file
+    	// one need to nest the ACCTask's parameter into TWO multiline blocks:
+    	// - one for delimiting the ACCTask-defining lines,
+    	// - one for delimiting the lines that belong to the DirectiveData value
+    	
     	Job j = new Job();
     	j.setParameter(new Parameter(ChemSoftConstants.PAROUTFILEROOT, "/path "
     			+ "/to/filenameRoot"));

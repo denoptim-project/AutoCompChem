@@ -2,13 +2,18 @@ $DIR_# $MT_comment=just a comment
 $DIR_! $MT_functional=BP86
 $DIR_! $KV_key=value
 $DIR_# $KV_commentKey=this is a dummy input file
-$DIR_geom $DIR_constraints $DATA_constraints={A 102 C}
 $DIR_geom $DIR_InHess $MT_hessSource=Read
 $DIR_geom $DIR_InHessName $MT_filename=$START$ACCTASK: GET_FILENAME
 SUFFIX: .hess
 QUOTATION: "
 $END
 $DIR_coords $DATA_tmp=$ACCTASK: ADD_GEOMETRY
+#$DIR_geom $DIR_constraints $DATA_constraints=$START$START$ACCTASK: FREEZECENTERS
+#SMARTS:$START[#8]
+#[C]([#1])([#1])[#1]
+#$END
+#AtomIDS: 2,3
+#$END$END
 ----NEW-STEP----
 $DIR_dummy $DIR_nestOne $DIR_nestTwo $KV_key2=value2
 $DIR_dummy $DIR_nestOne $DIR_nestTwo $DATA_data=$STARTfirst 2345

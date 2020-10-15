@@ -71,8 +71,18 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         }
         String block = parts[1];
         if (block.toUpperCase().startsWith(ChemSoftConstants.JDOPENBLOCK))
-        {
-            block = block.substring(ChemSoftConstants.JDOPENBLOCK.length());
+        {	
+        	if (!block.toUpperCase().contains(ChemSoftConstants.JDCLOSEBLOCK))
+        	{
+        		Exception e = new Exception("WARNING! Unexpected need to take "
+        				+ "away a '" + ChemSoftConstants.JDOPENBLOCK 
+        				+ "' label. Please, report this to the developers.");
+        		e.printStackTrace();
+        		block = block.substring(ChemSoftConstants.JDOPENBLOCK.length());
+        	} else {
+        		block = block.substring(ChemSoftConstants.JDOPENBLOCK.length(),
+        				block.lastIndexOf(ChemSoftConstants.JDCLOSEBLOCK));
+        	}
         }
         if (block.toUpperCase().startsWith(System.getProperty(
                                                              "line.separator")))
@@ -193,12 +203,15 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 	        		toJD.add(lines.get(i));
 	        	}
 	            toJD.add(ChemSoftConstants.JDCLOSEBLOCK);
-	        } else
+	        } 
+	        else
 	        {
 	        	toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
 	            		+ ChemSoftConstants.JDDATAVALSEPARATOR + lines.get(0));
 	        }
-		} else {
+		} 
+      	else 
+      	{
 			toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
 				+ ChemSoftConstants.JDDATAVALSEPARATOR 
 				+ this.getValue());

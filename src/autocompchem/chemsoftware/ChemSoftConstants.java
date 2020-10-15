@@ -266,6 +266,18 @@ public class ChemSoftConstants
 	 * Key for parameter requesting to freeze come centers in the
 	 */
 	public static final String PARFREEZECENTERS = "FREEZECENTERS";
+	
+	/**
+	 * Key for parameter specifying the SMARTS queries that identify which
+	 * atoms should be frozen.
+	 */
+	public static final String PARFREEZECENTERSSMARTS = "SMARTS";
+	
+	/**
+	 * Key for parameter specifying the atom indexes of
+	 * atoms that should be frozen.
+	 */
+	public static final String PARFREEZECENTERSIDS = "ATOMIDS";
 
 	/**
 	 * Key for parameter requesting the inclusion of additional internal
