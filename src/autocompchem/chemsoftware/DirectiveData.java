@@ -70,20 +70,6 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
             		+  jdLine + "'. Check jobdetails file.",-1);
         }
         String block = parts[1];
-        if (block.toUpperCase().startsWith(ChemSoftConstants.JDOPENBLOCK))
-        {	
-        	if (!block.toUpperCase().contains(ChemSoftConstants.JDCLOSEBLOCK))
-        	{
-        		Exception e = new Exception("WARNING! Unexpected need to take "
-        				+ "away a '" + ChemSoftConstants.JDOPENBLOCK 
-        				+ "' label. Please, report this to the developers.");
-        		e.printStackTrace();
-        		block = block.substring(ChemSoftConstants.JDOPENBLOCK.length());
-        	} else {
-        		block = block.substring(ChemSoftConstants.JDOPENBLOCK.length(),
-        				block.lastIndexOf(ChemSoftConstants.JDCLOSEBLOCK));
-        	}
-        }
         if (block.toUpperCase().startsWith(System.getProperty(
                                                              "line.separator")))
         {
