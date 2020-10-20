@@ -14,6 +14,7 @@ public enum WorkerID
     BasisSetGenerator,
     ChelateAnalyzer,
     ConnectivityGenerator,
+    ConstraintsGenerator,
     DummyObjectsHandler,
     ForceFieldEditor,
 	GaussianInputWriter,

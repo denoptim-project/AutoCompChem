@@ -37,6 +37,7 @@ import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
 import autocompchem.modeling.forcefield.ForceFieldEditor;
 import autocompchem.molecule.MolecularComparator;
@@ -259,6 +260,8 @@ public class WorkerFactory
             return ChelateAnalyzer.capabilities;
         case ConnectivityGenerator:
             return ConnectivityGenerator.capabilities;
+        case ConstraintsGenerator:
+        	return ConstraintsGenerator.capabilities;
         case DummyObjectsHandler:
             return DummyObjectsHandler.capabilities;
         case ForceFieldEditor:
@@ -340,6 +343,8 @@ public class WorkerFactory
             return new ChelateAnalyzer();
         case ConnectivityGenerator:
             return new ConnectivityGenerator();
+        case ConstraintsGenerator:
+        	return new ConstraintsGenerator();
         case DummyObjectsHandler:
             return new DummyObjectsHandler();
         case ForceFieldEditor:

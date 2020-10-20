@@ -61,6 +61,13 @@ public class SMARTS
 
 //------------------------------------------------------------------------------
 
+    public String getString()
+    {
+    	return smartsAsString;
+    }
+    
+//------------------------------------------------------------------------------
+
     /**
      * Evaluates if the SMARTS query is a single-atom SMARTS. A single-atom
      * SMARTS is a query that is meant to match groups of atoms not larger than
