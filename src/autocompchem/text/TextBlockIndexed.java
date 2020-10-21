@@ -156,6 +156,23 @@ public class TextBlockIndexed
     {
         return lines;
     }
+    
+//------------------------------------------------------------------------------
+
+      /**
+       * Get the lines of text from any recursion level below this one
+       */
+
+      public ArrayList<String> getTextRecursive()
+      {
+    	  ArrayList<String> recLines = new ArrayList<String>();
+    	  recLines.addAll(lines);
+    	  for (TextBlockIndexed t : nestedBlocks)
+    	  {
+    		  recLines.addAll(t.getTextRecursive());
+    	  }
+          return recLines;
+      }
 
 //------------------------------------------------------------------------------
 
@@ -308,6 +325,22 @@ public class TextBlockIndexed
         }
 
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Prints the content of this text block to stdout.
+     */
+    public void printContent(String indent)
+    {
+    	System.out.println(indent+getText());
+		for (TextBlockIndexed t : nestedBlocks)
+		{
+			System.out.println(indent+"-> "+t.getText());
+			for (TextBlockIndexed t2 : t.getNestedBlocks())
+				t2.printContent(indent+"---");
+		}
     }
     
 //------------------------------------------------------------------------------

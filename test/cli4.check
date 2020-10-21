@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+if [ ! -f cli4.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if [ ! -f cli4-mol.inp ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+n=0;n=$(grep -c "^\* *xyzfile *0 *1 *cli4-mol.xyz.*$" cli4-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c " InHessName  \"cli4-mol.hess\"" cli4-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^ *{ C 0 1 10 11 12 16 17 18 29 30 31 42 46 50 C } *" cli4-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^ *{ D 2 3 4 5 -0.123 C } *$" cli4-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "Log file \'\.\.\/cli4-mol\.log\' contains 2 steps" cli4.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "did terminate normally" cli4.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' cli4.log
+if [ $? == 0 ] ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 9
+exit -1
+fi

@@ -100,7 +100,7 @@ public class JobFactory
                 ParameterConstants.ENDJOB, //delimiter
                 false,  //don't take only first
                 false); //don't include delimiters
-        
+		
         for (TextBlockIndexed tb : blocks)
         {
         	tb.replaceAll(ParameterConstants.STRINGFROMCLI,cliString);
@@ -124,8 +124,8 @@ public class JobFactory
 //-----------------------------------------------------------------------------
     
     /**
-     * Creates a job from a collection of text blocks extracted from a job
-     * details file.
+     * Creates a job from a collection of text blocks typically extracted from a
+     * job details file.
      * @param blocks the blocks of text, each corresponding to a single job
      * that can possibly contain nested jobs.
      * @return the outermost job, with any nested job within it.
@@ -133,18 +133,19 @@ public class JobFactory
     
     public static Job createJob(ArrayList<TextBlockIndexed> blocks)
     {
-        // Unless there is only one set of parameters the outermost job serves
-        // as a container of the possibly nested structure of sub-jobs.
+    	// Unless there is only one set of parameters the outermost job serves
+        // as a container of a possibly nested structure of sub-jobs.
         Job job = new Job();
         if (blocks.size() == 1)
         {
-            job = createJob(blocks.get(0));
+        	job = createJob(blocks.get(0));
         }
         else
         {
         	job = createJob(RunnableAppID.ACC);
             for (TextBlockIndexed tb : blocks)
             {
+                
                 Job subJob = createJob(tb);
                 job.addStep(subJob);
             }
@@ -242,7 +243,7 @@ public class JobFactory
     {
         ParameterStorage locPar = new ParameterStorage();
         locPar.importParameters(tb);
-
+        
         Job job = new Job();
         
         RunnableAppID appId = RunnableAppID.ACC;

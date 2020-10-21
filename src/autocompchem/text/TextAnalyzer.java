@@ -28,7 +28,7 @@ import autocompchem.utils.StringUtils;
 public class TextAnalyzer
 {
 
-    public static String newline = System.getProperty("line.separator");
+    public static final String NL = System.getProperty("line.separator");
 
 //------------------------------------------------------------------------------
 
@@ -1438,6 +1438,7 @@ public class TextAnalyzer
         ArrayList<String> newLines = new ArrayList<String>();
         
         int nestingLevel = 0;
+        ArrayList<String> blockOpeninglines = new ArrayList<String>();
         String growingLine = "";
         boolean isGrowing = false;
         for (int i=0; i<lines.size(); i++)
@@ -1450,16 +1451,19 @@ public class TextAnalyzer
             	continue;
             }
             
+            
         	String subStr = line;
         	while (subStr.contains(start))
         	{
         		nestingLevel++;
+        		blockOpeninglines.add(line);
         		subStr = subStr.substring(0,subStr.lastIndexOf(start));
         	}
         	subStr = line;
         	while (subStr.contains(end))
         	{
         		nestingLevel--;
+        		blockOpeninglines.remove(blockOpeninglines.size()-1);
                 subStr = subStr.substring(0,subStr.lastIndexOf(end));
         	}
 
@@ -1475,7 +1479,7 @@ public class TextAnalyzer
         					+ line.substring(line.lastIndexOf(end) 
         							+ end.length());
         			// and append it to the previously collected parts of line
-        			line = growingLine + newline + line;
+        			line = growingLine + NL + line;
         			// As we have finished appending, we reset the pointer
         			isGrowing = false;
         		}
@@ -1500,7 +1504,7 @@ public class TextAnalyzer
         		}
         		else
         		{
-        			growingLine = growingLine + newline + line;
+        			growingLine = growingLine + NL + line;
         			continue;
         		}
         	} 
@@ -1509,15 +1513,43 @@ public class TextAnalyzer
         		StringBuilder sb = new StringBuilder();
         		for (String l : lines)
         		{
-        			sb.append(l + newline);
+        			sb.append(l + NL);
         		}
         		Terminator.withMsgAndStatus("ERROR! There is an label '" 
         				+ ChemSoftConstants.JDCLOSEBLOCK+ "' indicating the "
-        				+ "end of a multiline block of text, but no opening "
-        				+ "label '" + ChemSoftConstants.JDOPENBLOCK + "'was "
-        				+ "found before this point. Check this input: "
-        				+ newline + sb.toString(), -1);
+        				+ "end of a multi line block of text, but no opening "
+        				+ "label '" + ChemSoftConstants.JDOPENBLOCK + "' was "
+        				+ "found before this point. Check input up to this: "
+        				+ NL + sb.toString(), -1);
         	}
+        }
+        
+        if (nestingLevel>0)
+        {
+        	String msg = NL + "ERROR! ";
+        	if (nestingLevel > 1)
+        	{
+        		msg = msg + "There are "+nestingLevel+" unterminated multi "
+        				+ "line blocks. " + NL + "The following lines "
+                		+ "opened blocks that could not closed: ";
+        	} else {
+        		msg = msg + "There is 1 unterminated multi line block. " + NL
+        				+ "The following line opened a block that could not be "
+        				+ "closed: ";
+        	}
+            for (String l : blockOpeninglines)
+            {
+            	msg = msg + NL + " -> '" + l + "'";
+            }
+        	Terminator.withMsgAndStatus(msg, -1);
+        }
+        if (nestingLevel<0)
+        {
+        	Terminator.withMsgAndStatus("ERROR! There is an label '" 
+    				+ ChemSoftConstants.JDCLOSEBLOCK+ "' indicating the "
+    				+ "end of a multi line block of text, but no opening "
+    				+ "label '" + ChemSoftConstants.JDOPENBLOCK + "' was "
+    				+ "found before the last line of text.", -1);
         }
         
         return newLines;
