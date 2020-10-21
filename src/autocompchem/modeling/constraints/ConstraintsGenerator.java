@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -38,13 +39,12 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
-import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 
 /**
- * Facility to generate geometrical constraints
+ * Facility to generate geometric constraints
  * given list of matching rules.
  * 
  * @author Marco Foscato
@@ -70,11 +70,21 @@ public class ConstraintsGenerator extends Worker
      */
     private ArrayList<ConstrainDefinition> rules = 
     		new ArrayList<ConstrainDefinition>();
+    
+    /**
+     * Results
+     */
+    private ArrayList<ConstraintsSet> output = new ArrayList<ConstraintsSet>();
 
     /**
      * Verbosity level
      */
     private int verbosity = 0;
+
+    /**
+     * Unique identifier for rules
+     */
+	private AtomicInteger ruleID = new AtomicInteger(0);
 
 
 //-----------------------------------------------------------------------------
@@ -94,7 +104,7 @@ public class ConstraintsGenerator extends Worker
         }
 
         if (verbosity > 0)
-            System.out.println(" Adding parameters to BasisSetGenerator");
+            System.out.println(" Adding parameters to ConstraintstGenerator");
 
         // Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE"))
@@ -114,11 +124,6 @@ public class ConstraintsGenerator extends Worker
         	String all = params.getParameter("ATOMIDS").getValueAsString();
         	setConstrainDefinitions(all);
         }
-        
-        // Read the atom type matching rules
-        //TODO
-        //setConstrainDefinitions(params.getParameter(
-        //                    BasisSetConstants.ATMSPECBS).getValue().toString());
     }
     
 //-----------------------------------------------------------------------------
@@ -174,17 +179,16 @@ public class ConstraintsGenerator extends Worker
 
     public void setConstrainDefinitions(ArrayList<String> lines)
     {
-        for (int i=0; i<lines.size(); i++)
+        for (String line : lines)
         {
-            rules.add(new ConstrainDefinition(lines.get(i),i));
+            rules.add(new ConstrainDefinition(line,ruleID.getAndIncrement()));
         }
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Define constraints to all structures found in the input
-     * according to the parameters given to constructor. This
+     * Define constraints for all structures found in the input structures feed.
      * method is meant for working on structures taken from an input file.
      */
 
@@ -206,9 +210,11 @@ public class ConstraintsGenerator extends Worker
                 //Assign Basis Set
                 ConstraintsSet cs = createConstraints(mol);
                 
-                //TODO: to output?
-                //Now we just print on screen
-                cs.printAll();
+                if (verbosity > 1)
+                {
+                	cs.printAll();
+                }
+                output.add(cs);
                 
             } //end loop over molecules
             sdfItr.close();
@@ -222,7 +228,8 @@ public class ConstraintsGenerator extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Define constraints in a given molecule and using the loaded rules.
+     * Define constraints in a given molecule and using the currently loaded 
+     * constraint defining rules.
      * @param mol the molecular system we create constraints for.
      * @return the set of constraints.
      * @throws Exception  
@@ -251,10 +258,7 @@ public class ConstraintsGenerator extends Worker
             }
             else if (r.getType() == RuleType.ID)
             {
-            	for (Integer i : r.getAtomIDs())
-            	{
-            		cLst.add(new Constraint(i));
-            	}
+            	cLst.add(r.makeConstraint());
             }
         }
         
@@ -319,7 +323,7 @@ public class ConstraintsGenerator extends Worker
            
             if (verbosity>1)
 	        {
-	            System.out.println("Matched for each CD: ");
+	            System.out.println("Matches for each CD: ");
 	            for (String key : sortedKeys)
 	            {
 	            	if (!allIDsForEachCD.containsKey(key))

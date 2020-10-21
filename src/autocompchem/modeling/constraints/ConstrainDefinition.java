@@ -32,12 +32,12 @@ public class ConstrainDefinition
     /**
      * The rule's SMARTS query
      */
-    private ArrayList<SMARTS> smarts;
+    private ArrayList<SMARTS> smartsQry;
     
     /**
-     * Type rules IDs
+     * The rules atom IDs query
      */
-    private ArrayList<Integer> ids;
+    private ArrayList<Integer> idsQry;
     
 	/**
 	 * A given value for this constraint
@@ -45,7 +45,7 @@ public class ConstrainDefinition
 	private double value;
 	
 	/**
-	 * Flag signaling that this rule defines value-based constraints
+	 * Flag signalling that this rule defines value-based constraints
 	 */
 	private boolean hasValue = false;
 	
@@ -65,7 +65,7 @@ public class ConstrainDefinition
 
     public ConstrainDefinition(String txt, int i)
     {
-        String[] p = txt.split("\\s+");
+        String[] p = txt.trim().split("\\s+");
         String msg = "ERROR! The following string does not look like a "
         		+ "properly formatted rule for constraints generation. ";
         
@@ -76,17 +76,38 @@ public class ConstrainDefinition
         }
         
         this.refName = "CnstrRule-"+i;
+        
+        //The first string distinguished between SMARTS (i.e., a alphanumeric
+        // string) and atom IDs (i.e., an integer).
+        
         if (NumberUtils.isNumber(p[0]))
         {
         	this.type = RuleType.ID;
-        	this.ids = new ArrayList<Integer>();
+        	this.idsQry = new ArrayList<Integer>();
+            boolean endOfIDs = false;
             for (int j=0; j<p.length; j++)
             {
-            	this.ids.add(Integer.parseInt(p[j]));
+            	if (!NumberUtils.isParsableToInt(p[j]) 
+            			&& NumberUtils.isParsableToDouble(p[j]))
+            	{
+            		// WARNING! For now we expect only one double value
+            		// So, the last double we find is going to be The one.
+            		endOfIDs = true;
+            		this.hasValue = true;
+            		this.value = Double.parseDouble(p[j]);
+            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
+            		endOfIDs = true;
+            		this.onlyBonded = true;
+            	} else {
+            		if (!endOfIDs)
+            		{
+            			this.idsQry.add(Integer.parseInt(p[j]));
+            		}
+            	}
             }
         } else {
         	this.type = RuleType.SMARTS;
-        	this.smarts = new ArrayList<SMARTS>();
+        	this.smartsQry = new ArrayList<SMARTS>();
         	boolean endOfSmarts = false;
             for (int j=0; j<p.length; j++)
             {
@@ -103,7 +124,7 @@ public class ConstrainDefinition
             	} else {
             		if (!endOfSmarts)
             		{
-            			this.smarts.add(new SMARTS(p[j]));
+            			this.smartsQry.add(new SMARTS(p[j]));
             		}
             	}
             }
@@ -137,23 +158,23 @@ public class ConstrainDefinition
 //------------------------------------------------------------------------------
     
     /**
-     * @return the list of SMARTS included in this rule
+     * @return the list of SMARTS queries of this rule
      */
     
     public ArrayList<SMARTS> getSMARTS()
     {
-    	return smarts;
+    	return smartsQry;
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * @return the list of atom IDs included in this rule
+     * @return the list of atom IDs queries of this rule
      */
     
     public ArrayList<Integer> getAtomIDs()
     {
-    	return ids;
+    	return idsQry;
     }
     
 //------------------------------------------------------------------------------
@@ -161,6 +182,13 @@ public class ConstrainDefinition
   	public boolean limitToBonded() 
   	{
   		return onlyBonded;
+  	}
+
+//------------------------------------------------------------------------------
+
+  	public Constraint makeConstraint() throws Exception 
+  	{
+  		return makeConstraintFromIDs(idsQry);
   	}
   	
 //------------------------------------------------------------------------------
@@ -184,9 +212,13 @@ public class ConstrainDefinition
         sb.append(type).append(" = ");
         if (type == RuleType.SMARTS)
         {
-        	sb.append(smarts).append("] ");
+        	sb.append(smartsQry).append("] ");
         } else {
-        	sb.append(ids).append("] ");
+        	sb.append(idsQry).append("]");
+        }
+        if (hasValue)
+        {
+        	sb.append(", [value = ").append(value).append("]");
         }
         return sb.toString();
     }

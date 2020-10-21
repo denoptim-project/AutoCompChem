@@ -1,4 +1,5 @@
 TASK: GENERATECONSTRAINTS
+VERBOSITY: 2
 INFILE: ../t126-mol.sdf
 SMARTS:$START[#7]
 [#7] [#17] 1.234
@@ -6,4 +7,8 @@ SMARTS:$START[#7]
 [$([#6;X3](~[Ru])~[#7])] [Ru] [#17] onlyBonded 180
 [#6;X3;$([#6](~[#7])(~[#1])~[#6])] [#7] [$([#6;X3]~[Ru])] [Ru] -123.09 onlyBonded
 $END
-AtomIDS: 2 3
+AtomIDS:$START 2 3
+4 5 99.0
+2 3 4 5 999.0
+24
+$END 
