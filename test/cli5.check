@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ ! -f cli5.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=0;n=$(grep -c "\-p\/\-\-params" cli5.log )
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' cli5.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 3
+  exit -1
+fi

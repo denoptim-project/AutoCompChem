@@ -27,6 +27,17 @@ public class ACCMain
     // System.spec line separator
     private static final String NL = System.getProperty("line.separator");
 
+    /**
+     * The command line argument that triggers the printing of the help message.
+     */
+	private static final Object CLIHELP = "--HELP";
+
+    /**
+     * The short form of the command line argument that triggers the printing of
+     *  the help message.
+     */
+	private static final Object CLIHELPSHORT = "-H";
+
 //------------------------------------------------------------------------------
     
     /**
@@ -55,6 +66,14 @@ public class ACCMain
         else if (args.length == 1)
         {
         	String pathName = args[0];
+        	
+        	if (CLIHELP.equals(pathName.toUpperCase()) 
+        			|| CLIHELPSHORT.equals(pathName.toUpperCase()))
+        	{
+        		printUsage();
+        		Terminator.withMsgAndStatus("Normal termination", 0);
+        	}
+        	
             try {
             	job = JobFactory.buildFromFile(pathName);
             } catch (Throwable t) {
@@ -95,10 +114,10 @@ public class ACCMain
         // Exit
         Terminator.withMsgAndStatus("Normal Termination",0);
     }
-    
+
 //------------------------------------------------------------------------------
     
-    /**
+	/**
      * Parses the vector of command line arguments.
      * @param args the vector of arguments to be parsed.
      * @return job the job set up from the parameters parsed from command line.
@@ -308,16 +327,55 @@ public class ACCMain
 //------------------------------------------------------------------------------
     
     /**
-     * Write the manual/usage information.
+     * Write the manual/usage information to stdout.
      */
     
     private static void printUsage()
     {
-        System.out.println(NL + " Usage: "
-        		+ NL + " java -jar AutoCompChem.jar <parameters_file>" + NL
-        		+ NL + " java -jar AutoCompChem.jar -t <task> [other command "
-        				+ "line options]");
+    	String s = NL + " Alternative usage from the command line: " + NL
+    		+ NL + " java -jar AutoCompChem.jar <parameters_file>"
+    		+ NL + " java -jar AutoCompChem.jar -t/--task <task> [more args]"
+			+ NL + " java -jar AutoCompChem.jar -p/--params "
+					+ "<file> [more args]"
+			+ NL + NL + " Where:" + NL
+			+ NL + "  -t/--task and -p/--params indicate that these options"
+			+ " can be specified "
+			+ NL + "         using either a long (e.g., --task) or short "
+			+ "(e.g., -t) version." + NL
+			+ NL + "  <file> is the filename or pathname to a file "
+			+ "containing the job details." + NL
+			+ NL + "  <task> is any string among the following ones. "
+			+ "(case-insensitive).";
+    	
+    	String indent ="          -> ";
+    	for (TaskID t : TaskID.values())
+    	{
+    		switch (t) 
+    		{
+				case UNSET:
+				case DummyTask: 
+					break;
+				default:
+					s = s + NL + indent + t;
+					break;
+			}
+    	}
+    	s = s + NL + NL 
+    			+ "  [more args] are optional arguments that depend on the "
+    			+ "task at hand. " + NL 
+    			+ "  See user manual for further instructions.";
+        System.out.println(s);
     }
+    
+//------------------------------------------------------------------------------
+    
+    /*
+    private static void printHelp() 
+    {
+    	//TODO implement help that prints options available based on the 
+    	// arguments already present in the CLI
+	}
+	*/
 
 //------------------------------------------------------------------------------
 }
