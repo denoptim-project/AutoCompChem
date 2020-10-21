@@ -26,6 +26,9 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.Parameter;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -79,31 +82,29 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			subJob.setParameter(pathnamePar);
 		}
 		
-		// These take care also of the sub-jobs/directives
+		// These calls take care also of the sub-jobs/directives
 		molSpecJob.processDirectives(mol);
 		molSpecJob.sortDirectivesBy(new OrcaDirectiveComparator());
 		
     	// WARNING: for now we are not considering the possibility of having
     	// both directives AND sub jobs. So it's either one or the other
 		
+		ArrayList<String> lines = new ArrayList<String>();
 		if (molSpecJob.getNumberOfSteps()>0)
 		{
 			for (int i=0; i<molSpecJob.getNumberOfSteps(); i++)
 			{
 				CompChemJob step = (CompChemJob) molSpecJob.getStep(i);
-				ArrayList<String> lines = new ArrayList<String>();
 				lines.addAll(getTextForInput(step));
 				if (i<(molSpecJob.getNumberOfSteps()-1))
 				{
 					lines.add(OrcaConstants.JOBSEPARATOR);
 				}
-				IOtools.writeTXTAppend(outFileName, lines, true);
 			}
 		} else {
-			ArrayList<String> lines = new ArrayList<String>();
 			lines.addAll(getTextForInput(molSpecJob));
-			IOtools.writeTXTAppend(outFileName, lines, true);
 		}
+		IOtools.writeTXTAppend(outFileName, lines, true);
     }
     
 //------------------------------------------------------------------------------
@@ -124,10 +125,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     
     /**
      * This is the method the encodes the syntax of the Orca input file for a 
-     * single job directive.
+     * single job directive. Here we translate all chem.software agnostic 
+     * components to Orca-specific format.
      * @param d
-     * @param outmost set <code>true</code> if the directive is the outermost and
-     * thus, must be decorated with the '%' character.
+     * @param outmost set <code>true</code> if the directive is the outermost 
+     * and, thus, must be decorated with the '%' character.
      * @return the list of lines for the input file
      */
     
@@ -181,7 +183,8 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     		dirName = dirName.substring(1).trim();
     	} 
     	
-    	
+    	// Here we translate all chem.software agnostic components 
+    	// to Orca-specific formated text.
 		switch (dirName.toUpperCase())
 		{
 			case ("!"):
@@ -235,6 +238,22 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
+			case ("CONSTRAINTS"):
+			{
+				lines.addAll(getTextForConstraintsBlock(d));
+				break;
+			}
+			
+			//TODO: add handling of customized basis set
+			// see https://www.researchgate.net/post/How_to_create_ORCA_input_and_insert_the_basis_sets_manually
+			/*
+			case ("BASIS"):
+			{
+				lines.addAll(getTextForBasisSetDirective(d));
+				break;
+			}
+			*/
+			
 			default:
 			{
 				boolean needEnd = false;
@@ -281,6 +300,77 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				}
 			}
 		}
+    	return lines;
+    }
+
+//------------------------------------------------------------------------------
+    
+    private ArrayList<String> getTextForConstraintsBlock(Directive d)
+    {
+    	ArrayList<String> lines = new ArrayList<String>();
+    	lines.add(d.getName());
+    	
+    	//WARNING! We assume there is only one data block, and that is is
+    	// indeed a set of constraints.
+    	ConstraintsSet cs = (ConstraintsSet) d.getAllDirectiveDataBlocks()
+    			.get(0).getValue();
+    	
+    	String frozenCentersStr = OrcaConstants.INDENT + "{ C";
+    	for (Constraint c : cs.getConstrainsWithType(ConstraintType.FROZENATM))
+    	{
+    		frozenCentersStr = frozenCentersStr + " " + c.getAtomIDs()[0];
+    	}
+    	frozenCentersStr = frozenCentersStr + " C }";
+    	lines.add(frozenCentersStr);
+    	
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.DISTANCE))
+        {
+        	String frozenBondsStr = OrcaConstants.INDENT + "{ B";
+        	if (c.hasValue())
+        	{
+        		frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs()[0] + " "
+                		+ c.getAtomIDs()[1] + " " + c.getValue();
+        	} else {
+                frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs()[0] + " "
+                		+ c.getAtomIDs()[1];
+        	}
+        	frozenBondsStr = frozenBondsStr + " C }";
+        	lines.add(frozenBondsStr);
+        }
+        
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.ANGLE))
+        {
+            String frozenAngleStr = OrcaConstants.INDENT + "{ A";
+            if (c.hasValue())
+            {
+                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " " 
+                		+ c.getValue();
+            } else {
+                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2];
+            }
+            frozenAngleStr = frozenAngleStr + " C }";
+            lines.add(frozenAngleStr);
+        }
+        
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.DIHEDRAL))
+        {
+            String frozenTorsStr = OrcaConstants.INDENT + "{ D";
+            if (c.hasValue())
+            {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
+                        + c.getAtomIDs()[3] + " " + c.getValue();
+            } else {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
+                        + c.getAtomIDs()[3];
+            }
+            frozenTorsStr = frozenTorsStr + " C }";
+            lines.add(frozenTorsStr);
+        }
+        lines.add("end");
     	return lines;
     }
     

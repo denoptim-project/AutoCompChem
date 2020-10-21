@@ -21,6 +21,11 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	private double value;
 	
+	/**
+	 * Flag signalling this constrain uses a value
+	 */
+	private boolean hasValue = false;
+	
 //------------------------------------------------------------------------------
 	
 	public Constraint(int i)
@@ -64,6 +69,7 @@ public class Constraint implements Comparable<Constraint>
 	{
 		this(i,j);
 		this.value = value;
+		this.hasValue = true;
 	}
 	
 //------------------------------------------------------------------------------
@@ -72,6 +78,7 @@ public class Constraint implements Comparable<Constraint>
 	{
 		this(i,j,k);
 		this.value = value;
+		this.hasValue = true;
 	}
 	
 //------------------------------------------------------------------------------
@@ -80,6 +87,7 @@ public class Constraint implements Comparable<Constraint>
 	{
 		this(i,j,k,l);
 		this.value = value;
+		this.hasValue = true;
 	}
 
 //------------------------------------------------------------------------------
@@ -133,6 +141,20 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 	
+	public boolean hasValue()
+	{
+		return hasValue;
+	}
+	
+//------------------------------------------------------------------------------
+
+	public double getValue()
+	{
+		return value;
+	}
+	
+//------------------------------------------------------------------------------
+	
 	@Override
 	public String toString()
 	{
@@ -182,16 +204,84 @@ public class Constraint implements Comparable<Constraint>
 					{
 						return Integer.compare(this.getAtomIDs()[3],
 								o.getAtomIDs()[3]);
+					} else if (this.getNumberOfIDs() == 4)
+					{
+						if (this.getAtomIDs()[0] == o.getAtomIDs()[3]
+							&& this.getAtomIDs()[1] == o.getAtomIDs()[2]
+							&& this.getAtomIDs()[3] == o.getAtomIDs()[1]
+							&& this.getAtomIDs()[3] == o.getAtomIDs()[0])
+						{
+							return 0;
+						} else {
+							return Integer.compare(this.getAtomIDs()[2], 
+									o.getAtomIDs()[2]);
+						}
 					} else {
-						return Integer.compare(this.getAtomIDs()[2],
+						return Integer.compare(this.getAtomIDs()[2], 
 								o.getAtomIDs()[2]);
 					}
+				} else if (this.getNumberOfIDs() == 3)
+				{
+					if (this.getAtomIDs()[0] == o.getAtomIDs()[2]
+						&& this.getAtomIDs()[1] == o.getAtomIDs()[1]
+						&& this.getAtomIDs()[2] == o.getAtomIDs()[0])
+					{
+						return 0;
+					} else {
+						return Integer.compare(this.getAtomIDs()[1], 
+								o.getAtomIDs()[1]);
+					}
+				} else if (this.getNumberOfIDs() == 4)
+				{
+					if (this.getAtomIDs()[0] == o.getAtomIDs()[3]
+						&& this.getAtomIDs()[1] == o.getAtomIDs()[2]
+						&& this.getAtomIDs()[3] == o.getAtomIDs()[1]
+						&& this.getAtomIDs()[3] == o.getAtomIDs()[0])
+					{
+						return 0;
+					} else {
+						return Integer.compare(this.getAtomIDs()[1], 
+								o.getAtomIDs()[1]);
+					}
 				} else {
-					return Integer.compare(this.getAtomIDs()[1],
+					return Integer.compare(this.getAtomIDs()[1], 
 							o.getAtomIDs()[1]);
 				}
+			} else if (this.getNumberOfIDs() == 2)
+			{
+				if (this.getAtomIDs()[0] == o.getAtomIDs()[1]
+					&& this.getAtomIDs()[1] == o.getAtomIDs()[0])
+				{
+					return 0;
+				} else {
+					return Integer.compare(this.getAtomIDs()[0], 
+							o.getAtomIDs()[0]);
+				}
+			} else if (this.getNumberOfIDs() == 3)
+			{
+				if (this.getAtomIDs()[0] == o.getAtomIDs()[2]
+					&& this.getAtomIDs()[1] == o.getAtomIDs()[1]
+					&& this.getAtomIDs()[2] == o.getAtomIDs()[0])
+				{
+					return 0;
+				} else {
+					return Integer.compare(this.getAtomIDs()[0], 
+							o.getAtomIDs()[0]);
+				}
+			} else if (this.getNumberOfIDs() == 4)
+			{
+				if (this.getAtomIDs()[0] == o.getAtomIDs()[3]
+					&& this.getAtomIDs()[1] == o.getAtomIDs()[2]
+					&& this.getAtomIDs()[3] == o.getAtomIDs()[1]
+					&& this.getAtomIDs()[3] == o.getAtomIDs()[0])
+				{
+					return 0;
+				} else {
+					return Integer.compare(this.getAtomIDs()[0], 
+							o.getAtomIDs()[0]);
+				}
 			} else {
-				return Integer.compare(this.getAtomIDs()[0], o.getAtomIDs()[0]);
+				return Integer.compare(this.getAtomIDs()[0],o.getAtomIDs()[0]);
 			}
 		} else {
 			return Integer.compare(this.getNumberOfIDs(), o.getNumberOfIDs());

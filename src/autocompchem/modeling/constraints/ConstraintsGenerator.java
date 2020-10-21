@@ -310,15 +310,24 @@ public class ConstraintsGenerator extends Worker
                         smartsRefNamesForCD.add(k2);
                     }
                 }
+                boolean allComponentsMatched = true;;
                 ArrayList<ArrayList<IAtom>> atmsForCD =
                                 new ArrayList<ArrayList<IAtom>>();
                 for (int ig = 0; ig<smartsRefNamesForCD.size(); ig++)
                 {
                 	//NB: here we assume the format of the SMARTS ref names
                     String k2qry = key + "_" + Integer.toString(ig);
-                    atmsForCD.add(groupedByRule.get(k2qry));
+                    if (groupedByRule.containsKey(k2qry))
+                    {
+                    	atmsForCD.add(groupedByRule.get(k2qry));
+                    } else {
+                    	allComponentsMatched = false;
+                    }
                 }
-                allIDsForEachCD.put(key,atmsForCD);
+                if (allComponentsMatched)
+                {
+                	allIDsForEachCD.put(key,atmsForCD);
+                }
             }
            
             if (verbosity>1)
@@ -360,7 +369,8 @@ public class ConstraintsGenerator extends Worker
             	if (!allIDsForEachCD.containsKey(key))
             		continue;
             	
-                ArrayList<ArrayList<IAtom>> atmsForCD =allIDsForEachCD.get(key);
+                ArrayList<ArrayList<IAtom>> atmsForCD =
+                		allIDsForEachCD.get(key);
 
                 if (atmsForCD.size() == 0)
                 {

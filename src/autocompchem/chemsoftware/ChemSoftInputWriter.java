@@ -92,26 +92,6 @@ public abstract class ChemSoftInputWriter extends Worker
      * Output job details name.
      */
     private String outJDFile;
-
-    /**
-     * Unique counter for SMARTS reference names
-     */
-    private final AtomicInteger iNameSmarts = new AtomicInteger(0);
-
-    /**
-     * Storage of SMARTS queries
-     */
-    private Map<String,String> smarts = new HashMap<String,String>();
-
-    /**
-     * Label used to identify single-atom smarts in the smarts reference name
-     */
-    private static final String SUBRULELAB = "_p";
-
-    /**
-     * Root of the smarts reference names
-     */
-    private static final String MSTRULEROOT = "smarts ";
     
     /**
      * Default value for integers
@@ -138,8 +118,6 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     protected int verbosity = 0;
     
-    private final String NL = System.getProperty("line.separator");
-    
     /**
      * Default extension of the chem.soft. input file
      */
@@ -150,6 +128,8 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     protected String outExtension;
 
+    private final String NL = System.getProperty("line.separator");
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -319,27 +299,6 @@ public abstract class ChemSoftInputWriter extends Worker
 */
         }
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * get the sorted list of master names 
-     */
-
-    private ArrayList<String> getSortedSMARTSRefNames(Map<String,String> smarts)
-    {
-        ArrayList<String> sortedMasterNames = new ArrayList<String>();
-        for (String k : smarts.keySet())
-        {
-            String[] p = k.split(SUBRULELAB);
-            if (!sortedMasterNames.contains(p[0]))
-            {
-                sortedMasterNames.add(p[0]);
-            }
-        }
-        Collections.sort(sortedMasterNames, new NumberAwareStringComparator());
-        return sortedMasterNames;
-    }
     
 //------------------------------------------------------------------------------
     
@@ -376,9 +335,9 @@ public abstract class ChemSoftInputWriter extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Write the input for a single chemical entity
-     * @param mol the chemical entity
-     * @param outFileName the pathname where to write
+     * Write the input for a single chemical entity.
+     * @param mol the chemical entity.
+     * @param outFileName the pathname where to write.
      */
     protected abstract void printInputForOneMol(IAtomContainer mol, 
     		String outFileName, String outFileNameRoot);

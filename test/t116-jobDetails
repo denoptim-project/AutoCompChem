@@ -9,11 +9,15 @@ QUOTATION: "
 $END
 $DIR_coords $DATA_tmp=$ACCTASK: ADD_GEOMETRY
 $DIR_geom $DIR_constraints $DATA_constraints=$START$ACCTASK: GenerateConstraints
+VERBOSITY: 2
 SMARTS:$START[#8]
 [$([#6](~[#1])(~[#1])~[#1])]
+[#6] [#8] [#6] onlybonded
 $END
 AtomIDS:$START 1
 2 3 1.234
+2 3 4 126.0
+2 3 4 5 -0.123
 12$END
 $END
 ----NEW-STEP----

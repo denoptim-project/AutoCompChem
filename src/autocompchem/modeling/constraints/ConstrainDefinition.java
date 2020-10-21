@@ -99,6 +99,7 @@ public class ConstrainDefinition
             		endOfIDs = true;
             		this.onlyBonded = true;
             	} else {
+            		//TODO: deal with wildcards
             		if (!endOfIDs)
             		{
             			this.idsQry.add(Integer.parseInt(p[j]));
