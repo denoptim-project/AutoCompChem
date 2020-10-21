@@ -37,6 +37,8 @@ import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.modeling.constraints.ConstraintsGenerator;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.run.Job;
@@ -45,6 +47,7 @@ import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.smarts.SMARTSQueryHandler;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
 
@@ -587,16 +590,20 @@ public class Directive implements IDirectiveComponent
     	{
     		if (dd.hasACCTask())
     		{
-    			//WARNING: the task is defined in a nested multiline block in 
-    			// the DirectiveData value. So, we define a task in a job 
-    			// details file one need to nest the ACCTask's parameter into 
-    			// TWO multiline blocks:
-    	    	// - one for delimiting the ACCTask-defining lines,
-    	    	// - one for delimiting the lines that belong to the 
-    			// DirectiveData value
+    			ArrayList<String> lines = dd.getLines();
     			
-	    		ArrayList<ParameterStorage> psLst = 
-	    				getACCTaskParams(dd.getLines(), dd);
+    			// WARNING! HEre we assume that the entire content of the 
+    			// directive data, is about the ACC task. Thus, we add the 
+    			// multiline start/end labels so that the getACCTaskParams
+    			// method will keep read all the lines as one.
+    			if (lines.size()>1)
+    			{
+	    			lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+	    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
+	    					+ ChemSoftConstants.JDCLOSEBLOCK);
+    			}
+    			ArrayList<ParameterStorage> psLst = 
+	    				getACCTaskParams(lines, dd);
 	    		for (ParameterStorage ps : psLst)
 	    		{
 	        		performACCTask(mol,ps,dd,job);
@@ -629,16 +636,17 @@ public class Directive implements IDirectiveComponent
     	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
     			lines, ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
-		
+    	
     	// Then we take away any line that does not contain ACC tasks
     	ArrayList<String> linesWithACCTasks = new ArrayList<String>();
     	for (String line : linesPack)
     	{
-    		if (line.contains(ChemSoftConstants.JDLABACCTASK))
+    		if (line.toUpperCase().contains(ChemSoftConstants.JDLABACCTASK))
     		{
     			linesWithACCTasks.add(line);
     		}
     	}
+    	
     	if (linesWithACCTasks.size()==0)
 		{
     		// Nothing to do
@@ -649,17 +657,6 @@ public class Directive implements IDirectiveComponent
     		Terminator.withMsgAndStatus("ERROR! Unexpected format of "
     				+ "the directive component containing this value: '" 
     				+ lines + "'", -1);
-    	}
-    	
-    	if (linesWithACCTasks.get(0).contains(ChemSoftConstants.JDOPENBLOCK))
-    	{
-	    	// Split and re-pack multilines blocks to account for the
-	    	// presence of more than one ACC task in this IDirectiveComponent
-	    	linesPack = new ArrayList<String>(Arrays.asList(linesPack.get(0).split(
-	    			System.getProperty("line.separator"))));
-	    	linesPack = TextAnalyzer.readTextWithMultilineBlocks(
-	    			linesPack, ChemSoftConstants.JDCOMMENT, 
-	    			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	}
 
     	ArrayList<ParameterStorage> psList = new ArrayList<ParameterStorage>();
@@ -746,7 +743,7 @@ public class Directive implements IDirectiveComponent
             case ChemSoftConstants.PARGEOMETRY:
             {
             	//TODO verbosity/logging
-                System.out.println(" ACC adds geometry to job");
+                System.out.println("ACC adds geometry to job");
                 
             	DirectiveData dirDataWithGeom = new DirectiveData();
             	dirDataWithGeom.setReference(ChemSoftConstants.DIRDATAGEOMETRY);
@@ -823,7 +820,7 @@ public class Directive implements IDirectiveComponent
             case BasisSetConstants.ATMSPECBS:
             {
             	//TODO verbosity/logging
-                System.out.println(" ACC starts creating atom-specific "
+                System.out.println("ACC starts creating atom-specific "
                 		+ "Basis Set");
                 
             	//We require the component to be a DirectiveData
@@ -855,96 +852,41 @@ public class Directive implements IDirectiveComponent
                 break;
             }
             
-            case ChemSoftConstants.PARGEOMCONSTRAINTS:
+            //TODO make this work on enum, and create TaskIDs for all other tasks
+            //case TaskID.GENERATECONSTRAINTS:
+            case "GENERATECONSTRAINTS":
             {
-            	//TODO
-            	Terminator.withMsgAndStatus("ERROR! handling of "
-        				+ "geometrical contraints is not implemented "
-        				+ "yet... sorry!",-1);
-            	
-            	break;
-            }
-            
-            case ChemSoftConstants.PARFREEZECENTERS:
-            {	
+            	String s = TaskID.GENERATECONSTRAINTS.toString();
             	//TODO verbosity/logging
-                System.out.println(" ACC sets the list of active centers");
+                System.out.println("ACC starts creating geometric constraints");
                 
-                //TODO del
-                System.out.println("PARAMS: "+params);
+                ParameterStorage cnstrParams = params.clone();
+                
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                cnstrParams.setParameter(new Parameter("TASK",
+            		NamedDataType.STRING, TaskID.GENERATECONSTRAINTS));
+                
+            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
             	
-                // make an initial list of active atoms including all
-                ArrayList<Integer> activeIds = new ArrayList<Integer>();
-                for (int i=-1; i<(mol.getAtomCount()-1); i++, activeIds.add(i));
-                
-                if (params.contains(ChemSoftConstants.PARFREEZECENTERSSMARTS))
-                {
-	            	String propAsStr = params.getParameter(
-	            			ChemSoftConstants.PARFREEZECENTERSSMARTS)
-	            			.getValueAsString();
-	            	
-	            	Map<String,String> freezingSmarts = 
-	            			SMARTSQueryHandler.getNamedAtomSMARTS(propAsStr);
-	                
-	                // Identify atom to freeze
-	                ManySMARTSQuery msq = new ManySMARTSQuery(mol,freezingSmarts,0);
-	                if (msq.hasProblems())
-	                {
-	                    String cause = msq.getMessage();
-	                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
-	                }
-	                for (String key : freezingSmarts.keySet())
-	                {
-	                    if (msq.getNumMatchesOfQuery(key) == 0)
-	                    {
-	                         System.out.println("WARNING! No match for SMARTS "
-	                         		+ "query " + freezingSmarts.get(key) 
-	                         		+ " in molecule "
-	                                 + MolecularUtils.getNameOrID(mol));
-	                        continue;
-	                    }
-	                    List<List<Integer>> allMatches = 
-	                    		msq.getMatchesOfSMARTS(key);
-	                    String reportFrozen = "";
-	                    boolean reportedMultiple = false;
-	                    for (List<Integer> atmIDsLst : allMatches)
-	                    {
-	                        for (Integer frozenAtmId : atmIDsLst)
-	                        {
-	                            activeIds.remove(Integer.valueOf(frozenAtmId));
-	                            reportFrozen = reportFrozen + frozenAtmId + " ";
-	                        }
-	                    }
-	                    //TODO verbosity/logging
-	                    System.out.println("Atom-freezing SMARTS matched by atom "
-	                    		+ "IDs " + reportFrozen);
-	                }
-	                
-                }
-                
-                if (params.contains(ChemSoftConstants.PARFREEZECENTERSIDS))
-                {
-                	String allStr = params.getParameter(
-	            			ChemSoftConstants.PARFREEZECENTERSIDS)
-	            			.getValueAsString();
-                	
-                	String reportFrozen = "";
-                	String[] idsStr = allStr.trim().split(",");
-                	for (int i=0; i<idsStr.length; i++)
-                	{
-                		activeIds.remove(Integer.valueOf(idsStr[i]));
-                        reportFrozen = reportFrozen + idsStr[i] + " ";
-                	}
-                	//TODO verbosity/logging
-                    System.out.println("Freexing atoms with IDs " 
-                    	+ reportFrozen);
-                }
-              	
-            	//Replace DirectiveData with one with the BS object
+            	ConstraintsSet cs = new ConstraintsSet();
+            	try {
+					cs = cnstrg.createConstraints(mol);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Unable to create "
+							+ "constraints. Exception from the "
+							+ "ConstraintGenerator.", -1);
+				}
+            	
+            	//Replace DirectiveData with the constraints container
                 DirectiveData dd = new DirectiveData();
                 dd.setReference(dirComp.getName());
-                dd.setValue(activeIds.toString()); //TODO
+                dd.setValue(cs);
                 setDataDirective(dd);
+                
+                //TODO verbosity/logging
+                cs.printAll();
             	break;
             }
             

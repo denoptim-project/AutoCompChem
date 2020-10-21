@@ -361,8 +361,12 @@ public class ConstraintsGenerator extends Worker
             		continue;
             	
                 ArrayList<ArrayList<IAtom>> atmsForCD =allIDsForEachCD.get(key);
-                
 
+                if (atmsForCD.size() == 0)
+                {
+                	continue;
+                }
+                
                 for (IAtom atmA : atmsForCD.get(0))
                 {
                 	if (atmsForCD.size() == 1)

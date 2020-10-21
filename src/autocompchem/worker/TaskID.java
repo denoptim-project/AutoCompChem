@@ -53,7 +53,7 @@ public enum TaskID
     SORTSDFMOLECULES,         
     SUBTRACTZMATRICES, 
     IMPOSECONNECTIONTABLE,
-    FINDATOMSETS;        
+    FINDATOMSETS;   //TODO check: is it implemented?     
 	
 //-----------------------------------------------------------------------------
 	

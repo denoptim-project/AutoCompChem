@@ -128,20 +128,14 @@ public class DirectiveTest
     			new ArrayList<String>(Arrays.asList("a","b"))));
     	d.addKeyword(new Keyword("key2", true, 
     			new ArrayList<String>(Arrays.asList("c","d"))));
-    	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
-    			Arrays.asList(ChemSoftConstants.JDOPENBLOCK
-    					+ ChemSoftConstants.JDLABACCTASK
-    					+ ParameterConstants.SEPARATOR
-    					+ ChemSoftConstants.PARGETFILENAMEROOT + NL
-    					+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
-    					+ ParameterConstants.SEPARATOR + ".sfx" 
-    					+ ChemSoftConstants.JDCLOSEBLOCK))));
-    	
-    	//WARNING: the task is defined in a nested multiline block in the
-    	// DirectiveData value. So, wo define a task in a job details file
-    	// one need to nest the ACCTask's parameter into TWO multiline blocks:
-    	// - one for delimiting the ACCTask-defining lines,
-    	// - one for delimiting the lines that belong to the DirectiveData value
+    	String ddString = "data" 
+    			+ ChemSoftConstants.JDDATAVALSEPARATOR
+				+ ChemSoftConstants.JDLABACCTASK
+				+ ParameterConstants.SEPARATOR
+				+ ChemSoftConstants.PARGETFILENAMEROOT + NL
+				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
+				+ ParameterConstants.SEPARATOR + ".sfx";
+    	d.addDirectiveData(new DirectiveData(ddString));
     	
     	Job j = new Job();
     	j.setParameter(new Parameter(ChemSoftConstants.PAROUTFILEROOT, "/path "
@@ -168,7 +162,7 @@ public class DirectiveTest
     	
     	assertTrue(d2.getKeyword("key1").getValue().toString().contains(
     			"filenameRoot_job2.xyz"),
-    			"Task changing DirectiveData");
+    			"Task changing keyword");
     	
     }
     
