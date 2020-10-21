@@ -38,6 +38,15 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
 n=0;n=$(grep -c "^ *H * 4.98.* 0.284.* 2.359.*$" t116-mol-1.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
 
+n=0;n=$(grep -c "{ C 0 1 2 12 C }" t116-mol-1.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{ A 5 6 7 C }" t116-mol-0.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{ D 2 3 4 5 -0\.123 C }" t116-mol-1.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
+
 grep -q 'Termination status: 0' t116.log
 if [ $? == 0 ] ; then 
 echo Passed
