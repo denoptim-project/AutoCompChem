@@ -23,7 +23,7 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 n=0;n=$(grep -c "^ *{ D 2 3 4 5 -0.123 C } *$" cli4-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
-n=0;n=$(grep -c "Log file \'\.\.\/cli4-mol\.log\' contains 2 steps" cli4.log)
+n=0;n=$(grep -c "Log file .*cli4-mol\.log.* contains 2 steps" cli4.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
 n=0;n=$(grep -c "did terminate normally" cli4.log)
