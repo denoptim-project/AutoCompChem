@@ -1,6 +1,8 @@
 package autocompchem.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 
 /*   
@@ -107,7 +109,7 @@ public class StringUtils
      * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
      */
     
-    public static String mergeListToString(ArrayList<String> list, String sep)
+    public static String mergeListToString(List<String> list, String sep)
     {
     	StringBuilder sb = new StringBuilder();
     	for (int i=0; i<list.size(); i++)
