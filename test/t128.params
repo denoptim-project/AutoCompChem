@@ -2,8 +2,7 @@ JOBSTART
 VERBOSITY: 1
 JOBSTART
 APP: SHELL
-EXE: /bin/bash
-SCRIPT: ../t127.sh
+CMD: /bin/bash ../t128.sh
 ARGS: a b " c c c"
 JOBEND
 JOBEND

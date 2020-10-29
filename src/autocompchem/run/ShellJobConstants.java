@@ -8,6 +8,11 @@ package autocompchem.run;
 
 public class ShellJobConstants
 {
+	/**
+	 * Keyword for the parameter defining an entire command
+	 */
+	public final static String LABCOMMAND = "CMD";
+	
     /**
      * Keyword for interpreter
      */

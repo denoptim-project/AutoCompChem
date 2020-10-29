@@ -2,8 +2,11 @@ package autocompchem.run;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -17,7 +20,6 @@ import autocompchem.utils.StringUtils;
 
 public class ShellJob extends Job
 {
-	
     /**
      * The command will try to run
      */
@@ -33,6 +35,21 @@ public class ShellJob extends Job
     {
         super();
         this.appID = RunnableAppID.SHELL;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a ShellJob with a defined interpreter, script and 
+     * arguments/options.
+     * @param commandComponents an array of string where each string is a 
+     * component of the overall command.
+     */
+
+    public ShellJob(String... commandComponents)
+    {
+    	this();
+    	this.command = new ArrayList<String>(Arrays.asList(commandComponents));
     }
     
 //------------------------------------------------------------------------------
@@ -109,6 +126,15 @@ public class ShellJob extends Job
     @Override
     public void runThisJobSubClassSpecific()
     {
+		if (params.contains(ShellJobConstants.LABINTERPRETER)
+				&& params.contains(ShellJobConstants.LABCOMMAND))
+		{
+			Terminator.withMsgAndStatus("ERROR! Cannot have both "
+					+ ShellJobConstants.LABCOMMAND + " and " 
+					+ ShellJobConstants.LABINTERPRETER + " as parameters "
+					+ "in a shell job. Use either one or the other.",-1);
+		}
+		
     	// First we need to see if the command comes from the constructor of
     	// from parameter storage
     	if (params.contains(ShellJobConstants.LABINTERPRETER))
@@ -119,9 +145,9 @@ public class ShellJob extends Job
     	
     		if (!params.contains(ShellJobConstants.LABSCRIPT))
     		{
-    			Terminator.withMsgAndStatus("Expecting a script pathname, but "
-    					+ ShellJobConstants.LABSCRIPT + " parameter is not "
-    							+ "found.", -1);
+    			Terminator.withMsgAndStatus("ERROR! Expecting a script "
+    					+ "pathname, but " + ShellJobConstants.LABSCRIPT 
+    					+ " parameter is not found.", -1);
     		}
     		
     		String script = params.getParameter(
@@ -129,16 +155,29 @@ public class ShellJob extends Job
     		script = script.replaceFirst("^~", System.getProperty("user.home")); 
     		File scriptFile = new File(script);
     		command.add(scriptFile.getAbsolutePath());
-    		
-    		if (params.contains(ShellJobConstants.LABARGS))
-        	{
-    			String list = params.getParameter(
-    					ShellJobConstants.LABARGS).getValueAsString();
-    			for (String w : list.split("\\s+"))
-    			{
-    				command.add(w);
-    			}
-        	}
+    	} else if (params.contains(ShellJobConstants.LABCOMMAND))
+    	{
+    		command = new ArrayList<String>();
+    		Pattern regexMatchingArgs = Pattern.compile(
+    				"[^\\s\"']+|\"[^\"]*\"|'[^']*'");
+    		Matcher matcher = regexMatchingArgs.matcher(params.getParameter(
+					ShellJobConstants.LABCOMMAND).getValueAsString());
+    		while (matcher.find()) 
+    		{
+    		    command.add(matcher.group());
+    		}	
+    	}
+    	
+    	if (params.contains(ShellJobConstants.LABARGS))
+    	{	
+			Pattern regexMatchingArgs = Pattern.compile(
+    				"[^\\s\"']+|\"[^\"]*\"|'[^']*'");
+    		Matcher matcher = regexMatchingArgs.matcher(params.getParameter(
+					ShellJobConstants.LABARGS).getValueAsString());
+    		while (matcher.find()) 
+    		{
+    		    command.add(matcher.group());
+    		}
     	}
     	
         Date date = new Date();
@@ -162,7 +201,7 @@ public class ShellJob extends Job
                 }
                 
                 // Recover environmental variables to be exposed as output data
-                // NB: this is the INITIAL environment! 
+                // NB: this is the INITIAL environment for the VM! 
                 // There is no way (yet) the get the environment after running 
                 // the process... sadly.
                 

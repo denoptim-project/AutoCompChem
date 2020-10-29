@@ -7,7 +7,7 @@ fi
 
 if ! grep -q "1 is _a_" t127.log  ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 if ! grep -q "2 is _b_" t127.log  ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
-if ! grep -q "3 is _c_" t127.log  ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+if ! grep -q "3 is _\" c c c\"_" t127.log  ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 if ! grep -q "Tot is _3_" t127.log  ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' t127.log
