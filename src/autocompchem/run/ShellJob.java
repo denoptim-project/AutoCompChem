@@ -52,12 +52,7 @@ public class ShellJob extends Job
 
     public ShellJob(String interpreter, String script)
     {
-        super();
-        this.appID = RunnableAppID.SHELL;
-        this.interpreter = interpreter;
-        this.script = script;
-        this.args = "";
-        this.setVerbosity(0);
+    	this(interpreter,script,"",0);
     }
     
 //------------------------------------------------------------------------------
@@ -73,12 +68,7 @@ public class ShellJob extends Job
 
     public ShellJob(String interpreter, String script, String args)
     {
-        super();
-        this.appID = RunnableAppID.SHELL;
-        this.interpreter = interpreter;
-        this.script = script;
-        this.args = args;
-        this.setVerbosity(0);
+    	this(interpreter,script,args,0);
     }
     
 //------------------------------------------------------------------------------
@@ -153,6 +143,7 @@ public class ShellJob extends Job
     	{
     		script = params.getParameter(
     				ShellJobConstants.LABSCRIPT).getValueAsString();
+    		script = script.replaceFirst("^~", System.getProperty("user.home")); 
     		File scriptFile = new File(script);
     		script = scriptFile.getAbsolutePath();
     	}
