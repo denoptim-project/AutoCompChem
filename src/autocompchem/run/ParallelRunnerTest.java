@@ -220,10 +220,6 @@ public class ParallelRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        //Job master = JobFactory.createJob(RunnableAppID.ACC);
-        //master.addStep(new TestJob(roothName+"A"));
-        
-        
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
         master.setParameter(new Parameter("WALLTIME", "3"));
         for (int i=0; i<3; i++)

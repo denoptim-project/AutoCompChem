@@ -315,13 +315,17 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	ConstraintsSet cs = (ConstraintsSet) d.getAllDirectiveDataBlocks()
     			.get(0).getValue();
     	
-    	String frozenCentersStr = OrcaConstants.INDENT + "{ C";
-    	for (Constraint c : cs.getConstrainsWithType(ConstraintType.FROZENATM))
+    	if (!cs.getConstrainsWithType(ConstraintType.FROZENATM).isEmpty())
     	{
-    		frozenCentersStr = frozenCentersStr + " " + c.getAtomIDs()[0];
+	    	String frozenCentersStr = OrcaConstants.INDENT + "{ C";
+	    	for (Constraint c : cs.getConstrainsWithType(
+	    			ConstraintType.FROZENATM))
+	    	{
+	    		frozenCentersStr = frozenCentersStr + " " + c.getAtomIDs()[0];
+	    	}
+	    	frozenCentersStr = frozenCentersStr + " C }";
+	    	lines.add(frozenCentersStr);
     	}
-    	frozenCentersStr = frozenCentersStr + " C }";
-    	lines.add(frozenCentersStr);
     	
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.DISTANCE))
         {
