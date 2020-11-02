@@ -598,7 +598,8 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        				break;	        				
 	        			}
         				imgFreqStr = imgFreqStr.replace("-", "i");
-        				resultsString.append("-> ").append(kindOfCriticalPoint);
+        				resultsString.append("-> Critial Point: ").append(
+        						kindOfCriticalPoint);
 	        			if (Math.abs(smallest) > 0.000001 && ignoredSome)
 	        			{
 	        				resultsString.append(" (ignoring v<"+smallest+")");
