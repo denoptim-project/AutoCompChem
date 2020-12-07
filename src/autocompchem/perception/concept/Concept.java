@@ -17,6 +17,7 @@ package autocompchem.perception.concept;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//TODO: consider renaming this to Event
 
 /**
  * Abstract concept
