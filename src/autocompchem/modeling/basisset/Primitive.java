@@ -1,5 +1,9 @@
 package autocompchem.modeling.basisset;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -20,9 +24,9 @@ package autocompchem.modeling.basisset;
 
 /**
  * Object representing a single primitive function. 
- * Type and angular momentum can  be used to characterize this function, but
- * there is no internal chem that the information in the <code>type</code>
- * and that in of the <code>type</code> are consistent.
+ * Type and angular momentum can be used to characterize this function, but
+ * there is no internal check that the information in the <code>type</code>
+ * and that in of the <code>angMmnt</code> are consistent.
  *
  * @author Marco Foscato
  */
@@ -40,9 +44,12 @@ public class Primitive
     private int angMmnt = -1;
 
     /**
-     * Coefficient
+     * Coefficients. Can be more than one in accordance to the use of hybrid
+     * primitives that mix functions with different angular momentum into one
+     * single line. For instance, see how 6-31G basis set for C is reported in
+     * the basis set exchange website.
      */
-    private double coefficient = 0.0;
+    private List<Double> coefficient = new ArrayList<Double>();
 
     /**
      * Exponent
@@ -50,7 +57,7 @@ public class Primitive
     private double exponent = 0.0;
 
     /**
-     * Precision of the coefficient
+     * Precision of the coefficients
      */
     private int precCoeff = 0;
 
@@ -81,12 +88,35 @@ public class Primitive
      * @param precExp the precision of the exponent
      */
 
-    public Primitive(String type, int angMmnt, double coeff, double exp, 
+    public Primitive(String type, int angMmnt, List<Double> coeff, double exp, 
                                                      int precCoeff, int precExp)
     {
         this.type = type;
         this.angMmnt = angMmnt;
         this.coefficient = coeff;
+        this.exponent = exp;
+        this.precCoeff = precCoeff;
+        this.precExp = precExp;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a Primitive with definition of all the fields
+     * @param type the string-representation of the type of primitive
+     * @param angMmnt the angular momentum
+     * @param coeff the coefficient 
+     * @param exp the exponent
+     * @param precCoeff the precision of the coefficient
+     * @param precExp the precision of the exponent
+     */
+
+    public Primitive(String type, int angMmnt, double coeff, double exp, 
+                                                     int precCoeff, int precExp)
+    {
+        this.type = type;
+        this.angMmnt = angMmnt;
+        this.coefficient = new ArrayList<Double>(Arrays.asList(coeff));
         this.exponent = exp;
         this.precCoeff = precCoeff;
         this.precExp = precExp;
@@ -97,7 +127,7 @@ public class Primitive
     /**
      * Sets the type of function. The type can be a string representation of 
      * the angular momentum, but the value of the field <code>type</code>
-     * is disjoint from tha of the angular momentum.
+     * is disjoint from that of the angular momentum.
      * @param type the type of this function
      */
 
@@ -110,7 +140,7 @@ public class Primitive
 
     /**
      * Sets the angular momentum
-     * @param l the angolar momentum quantum number (L)
+     * @param l the angular momentum quantum number (L)
      */
 
     public void setAngularMomentum(int l)
@@ -127,7 +157,19 @@ public class Primitive
 
     public void setCoefficient(double c)
     {
-        this.coefficient = c;
+        this.coefficient = new ArrayList<Double>(Arrays.asList(c));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Append a coefficient
+     * @param c the coefficient
+     */
+
+    public void appendCoefficient(double c)
+    {
+        this.coefficient.add(c);
     }
 
 //------------------------------------------------------------------------------
@@ -170,7 +212,7 @@ public class Primitive
 
     /**
      * Returns the angular moment
-     * @return the angolar momentum
+     * @return the angular momentum
      */
  
     public int getAngMmnt()
@@ -185,7 +227,7 @@ public class Primitive
      * @return the coefficient
      */
 
-    public double getCoeff()
+    public List<Double> getCoeff()
     {
         return coefficient;
     }
@@ -218,7 +260,7 @@ public class Primitive
 
     /**
      * Returns the precision for the exponent
-     * @return the trecision
+     * @return the precision
      */
 
     public int getExpPrecision()

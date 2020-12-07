@@ -52,7 +52,7 @@ public class BasisSetUtils
         CenterBasisSet cbs;
         if (verbosity > 1)
         {
-            System.out.println(" Importing basis set from GBSfile " + inFile);
+            System.out.println(" Importing basis set from GBS file " + inFile);
         }
         ArrayList<String> lines = IOtools.readTXT(inFile);
         for (int i=0; i<lines.size(); i++)
@@ -60,7 +60,7 @@ public class BasisSetUtils
             // File is read line-by-line sequentially
             String line = lines.get(i);
 
-            // Ignote comments
+            // Ignore comments
             if (line.trim().startsWith("!"))
             {
                 continue;
@@ -77,7 +77,7 @@ public class BasisSetUtils
             // Ignore empty lines
             if (line.trim().equals(""))
             {
-                // ...unless the blank line separated basis set from ECP
+                // ...unless the blank line separates basis set from ECP
                 if (foundBSSection)
                 {
                     if (!isECPSection && verbosity > 2)
@@ -89,11 +89,19 @@ public class BasisSetUtils
                 continue;
             }
 
+            //WARNING: the syntax of the files returned by the basis set
+            // exchange website changed so that the initial '****' that
+            // could be found before the basis set, is no longer included.
+            // Thus both basis set and ecp sections start simply with the
+            // line including only element symbol and atom index.
+            // The following cannot be assumed anymore.
+            /*
             // If is not empty and doesn't start with "****" then is ECP
             if (!foundBSSection)
             {
                 isECPSection = true;
             }
+            */
 
             String[] wrds = line.trim().split("\\s+");
 
@@ -163,7 +171,34 @@ public class BasisSetUtils
                         {
                             System.out.println("Adding primitive " + p);
                         }
-                    }
+                    } 
+                    else if (wrds.length>2 
+                            && NumberUtils.isNumber(wrds[0])
+                            && NumberUtils.isNumber(wrds[1])
+                            && NumberUtils.isNumber(wrds[2]))
+					{
+					    Primitive p = new Primitive();
+					    p.setType(shell.getType());
+					    p.setExponent(Double.parseDouble(
+					            NumberUtils.formatScientificNotation(wrds[0])));
+					    p.setExpPrecision(NumberUtils.getPrecision(wrds[0]));
+					    for (int ic=1; ic<wrds.length; ic++)
+					    {
+					    	p.appendCoefficient(Double.parseDouble(
+					    			NumberUtils.formatScientificNotation(
+					    					wrds[ic])));
+					    	if (ic==1)
+					    	{
+					    		p.setCoeffPrecision(NumberUtils.getPrecision(
+					    				wrds[ic]));
+					    	}
+					    }
+					    shell.add(p);
+					    if (verbosity > 2)
+					    {
+					        System.out.println("Adding primitive " + p);
+					    }
+					} 
                     else
                     {
                         msg = "ERROR! Unable to understand line '" + line + "' "

@@ -1,0 +1,9 @@
+VERBOSITY: 1
+TASK: GenerateBasisSet
+INFILE: ../t130-mol.sdf
+OUTFILE: t130.gbs
+$STARTAtomSpecificBasisSet:
+Element H Name LANL2DZ
+SMARTS [C] Link ../data/basisset/gaussian/C_6-31G.gbs
+$END
+FORMAT: Gaussian

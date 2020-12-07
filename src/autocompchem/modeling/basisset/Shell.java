@@ -163,10 +163,14 @@ public class Shell
                 {
                     String eForm = "%" + (p.getExpPrecision() + 6) + "." 
                                            + (p.getExpPrecision()-1) + "E     ";
-                    String cForm = "%" + (p.getCoeffPrecision() + 6) + "."
-                                              + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
-                    sb.append(String.format(cForm,p.getCoeff()));
+                    
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                                              + (p.getCoeffPrecision()-1) + "E";
+                    for (Double c : p.getCoeff())
+                    {
+                    	sb.append(String.format(cForm,c));
+                    }
                     sb.append(nl);
                 }
                 break;
@@ -179,10 +183,14 @@ public class Shell
                 {
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                           + (p.getExpPrecision()-1) + "E      ";
-                    String cForm = "%" + (p.getCoeffPrecision() + 6) + "."
-                                              + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
-                    sb.append(String.format(cForm,p.getCoeff()));
+                    
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                            + (p.getCoeffPrecision()-1) + "E";
+					for (Double c : p.getCoeff())
+					{
+						sb.append(String.format(cForm,c));
+					}
                     sb.append(nl);
                 }
                 break;

@@ -124,8 +124,8 @@ public class ECPShell
      * the specified format.
      * Known formats include: "Gaussian".
      * @param format the format for input file-like output
-     * @return a list of lines os text that can be used in input files of
-     * software packages recognizing the given format.
+     * @return a list of lines of text that can be used in input files of
+     * software packages recognising the given format.
      */
 
     public String toInputFileString(String format)
@@ -142,10 +142,14 @@ public class ECPShell
                     sb.append(String.format("%-1d",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                            + (p.getExpPrecision()-1) + "E     ";
-                    String cForm = "%" + (p.getCoeffPrecision() + 6) + "."
-                                              + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
-                    sb.append(String.format(cForm,p.getCoeff()));
+                    
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                            + (p.getCoeffPrecision()-1) + "E";
+					for (Double c : p.getCoeff())
+					{
+					    sb.append(String.format(cForm,c));
+					}
                     sb.append(nl);
                 }
                 break;
@@ -157,10 +161,14 @@ public class ECPShell
                     sb.append(String.format("  %d ",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                            + (p.getExpPrecision()-1) + "E     ";
-                    String cForm = "%" + (p.getCoeffPrecision() + 6) + "."
-                                              + (p.getCoeffPrecision()-1) + "E";
                     sb.append(String.format(eForm,p.getExp()));
-                    sb.append(String.format(cForm,p.getCoeff()));
+
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                            + (p.getCoeffPrecision()-1) + "E";
+					for (Double c : p.getCoeff())
+					{
+					    sb.append(String.format(cForm,c));
+					}
                     sb.append(nl);
                 }
                 break;

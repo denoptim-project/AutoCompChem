@@ -591,7 +591,7 @@ public class BasisSetGenerator extends Worker
 
     private void importBasisSetFromFile(String bsName, String src)
     {
-        //TODO for now only GCB files can be imported
+        //TODO for now only GBS files can be imported
         BasisSet bs = BasisSetUtils.importBasisSetFromGBSFile(src,verbosity);
         importedBSs.put(bsName,bs);
     }
