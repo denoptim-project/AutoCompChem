@@ -315,6 +315,24 @@ public class BasisSetGenerator extends Worker
 
     public BasisSet assignBasisSet(IAtomContainer mol)
     {
+    	// Reset any previous basis set assigned to atoms on this atom container
+    	for (IAtom atm : mol.atoms())
+    	{
+    		Set<Object> keysToRemove = new HashSet<Object>();
+    		for (Object k : atm.getProperties().keySet())
+    		{
+    			if (k.toString().toUpperCase().startsWith(
+    					BasisSetConstants.BSATMPROP))
+    			{
+    				keysToRemove.add(k);
+    			}
+    		}
+    		for (Object k : keysToRemove)
+    		{
+    			atm.removeProperty(k);
+    		}
+    	}
+    	
         //Split atom matching rules based on type
         Map<String,String> smarts = new HashMap<String,String>();
         Map<String,String> elmnts = new HashMap<String,String>();
@@ -339,9 +357,10 @@ public class BasisSetGenerator extends Worker
         }
         if (verbosity > 0)
         {
-            System.out.println(" SMARTS for basis set assignation: " + smarts);
-            System.out.println(" Elemental symbols for basis set assignation: "
-                                                                      + elmnts);
+            System.out.println(" SMARTS rules for basis set assignation: " 
+            		+ smarts);
+            System.out.println(" Elemental symbols rules for basis set "
+            		+ "assignation: " + elmnts);
         }
 
         // Apply SMARTS-bases ruled 
@@ -375,7 +394,8 @@ public class BasisSetGenerator extends Worker
             }
         }
 
-        //Verify that all atoms have got a basis set
+        //Verify that all atoms have got a basis set based on SMARTS, if an
+        // atom does not have one, then try to use elemental symbol rules.
         for (IAtom atm : mol.atoms())
         {
             boolean hasAtmSpecBS = false;
@@ -540,7 +560,7 @@ public class BasisSetGenerator extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Stored the basis set reference (i.e., the name of the atom mathing rule)
+     * Stored the basis set reference (i.e., the name of the atom matching rule)
      * as a property into the given atom
      * @param atm the atom to work with
      * @param rulRef the reference name identifying which basis set component 
