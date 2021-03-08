@@ -138,7 +138,7 @@ public class DirectiveFactoryTest
     			+ ChemSoftConstants.JDLABDIRECTIVE + " dir_1.1.1 ");
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + " dir_1 " 
     			+ ChemSoftConstants.JDLABLOUDKEY + " key1 " 
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "value1A 123 @#£ 456");
+    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "value1A 123 @# 456");
     	
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + " dir_1 " 
     			+ ChemSoftConstants.JDLABDATA + " data1 " 
