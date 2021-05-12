@@ -45,8 +45,8 @@ import autocompchem.worker.WorkerFactory;
  * <b>OUTFILE</b> pathname of the SDF file where results are to be
  * written.
  * </li>
- *  * <li>
- * <b>OUTFORMAT</b> format of the putput file.
+ * <li>
+ * <b>OUTFORMAT</b> format of the output file.
  * </li>
  * <li>
  * <b>CARTESIANMOVE</b> (optional) pathname to a file defining 
