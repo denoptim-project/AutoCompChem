@@ -1,0 +1,5 @@
+VERBOSITY: 1
+TASK: CheckBondLengths
+INFILE: ../t132-mol.sdf
+REFERENCE: ../t132-ref.sdf
+Tolerance: 0.5

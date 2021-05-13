@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ ! -f "t132.log" ]
+then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if ! grep -q -i "Unacceptable bond distance deviation" t132.log ; then echo "NOT PASSED: expected output not reproduced (see t132.log)"; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t132.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo "NOT Passed (termination status not found)"
+exit -1
+fi

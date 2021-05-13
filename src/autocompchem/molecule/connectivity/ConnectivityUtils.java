@@ -215,8 +215,8 @@ public class ConnectivityUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Given a file with a reference molecule (connectivity matrix), compares
-     * the argument molecules by mean of their connectivity matrices.
+     * Compares given molecule against a reference one by mean of their 
+     * connectivity matrices.
      * @param mol the atom container under evaluation
      * @param ref the reference atom container 
      * @return <code>true</code> if the two connectivity matrices are equal
@@ -234,19 +234,12 @@ public class ConnectivityUtils
                     {
                         if (compatibleAtoms(mol,sMol,ref,sRef))
                         {
-//System.out.println("\n found possible pair of seeds for trees");
-                            //Suitable pair of atoms for evaluating the trees
-//                            Set<IAtom> emptyDoneMol = new HashSet<IAtom>();
-//                            Set<IAtom> emptyDoneRef = new HashSet<IAtom>();
                             List<IAtom> emptyDoneMol = new ArrayList<IAtom>();
                             List<IAtom> emptyDoneRef = new ArrayList<IAtom>();
                             boolean compTrees = exploreConnectivity(mol, sMol, 
                                         emptyDoneMol, ref, sRef, emptyDoneRef);
                             if (compTrees)
                             {
-//System.out.println(" maxlengtdone = "+maxlengtdone);
-//System.out.println(" maxlengtdone2= "+maxlengtdone2);
-
                                 return true;
                             }
                         }
@@ -262,16 +255,128 @@ public class ConnectivityUtils
             if (verbosity > 0)
                 System.out.println("Different number of atoms!");
         }
-//System.out.println(" maxlengtdone = "+maxlengtdone);
-//System.out.println(" maxlengtdone2= "+maxlengtdone2);
         return false;
     }
 
 //------------------------------------------------------------------------------
 
     /**
+     * Compares the bond distances within an atom container with the 
+     * corresponding ones of a reference container. The connectivity of the
+     * reference defines what are the pair of bonded atoms.
+     * @param mol the atom container under evaluation.
+     * @param ref the reference atom container .
+     * @param tolerance the tolerance applied when comparing interatomic 
+     * distances.
+     * @return <code>true</code> if the two interatomic distances are compatible
+     * with the given connectivity matrix (within the given tolerance).
+     */
+
+    public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
+    		IAtomContainer ref, double tolerance)
+    {
+    	return compareBondDistancesWithReference(mol, ref, tolerance, 0);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Compares the bond distances within an atom container with the 
+     * corresponding ones of a reference container. The connectivity of the
+     * reference defines what are the pair of bonded atoms.
+     * @param mol the atom container under evaluation.
+     * @param ref the reference atom container .
+     * @param tolerance the tolerance applied when comparing interatomic 
+     * distances.
+     * @param verbosity about of log in stdout.
+     * @return <code>true</code> if the two interatomic distances are compatible
+     * with the given connectivity matrix (within the given tolerance).
+     */
+
+    public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
+    		IAtomContainer ref, double tolerance, int verbosity)
+    {
+    	String largest = "";
+    	double maxDelta = -10000.0;
+        if (mol.getAtomCount() == ref.getAtomCount()) 
+        {
+        	if (verbosity > 1)
+            {
+            	System.out.println("  Compatison of bond distances:");
+            }
+            for (IBond refBnd : ref.bonds())
+            {
+            	int iA = ref.indexOf(refBnd.getAtom(0));
+            	int iB = -1;
+            	if (refBnd.getAtomCount() > 1)
+            	{
+            		iB = ref.indexOf(refBnd.getAtom(1));
+            	}
+            	if (refBnd.getAtomCount() != 2)
+            	{
+            		String msg = "WARNING! Comparison of bond distanced "
+            				+ "assumes two atoms are involved, but a bond was "
+            				+ "found that involves a different number of atoms."
+            				+ " Ignoring bond involving "
+            				+ MolecularUtils.getAtomRef(refBnd.getAtom(0), ref);
+            		for (int i=1; i<refBnd.getAtomCount(); i++)
+            		{
+            			msg = msg + "-"
+            				+ MolecularUtils.getAtomRef(refBnd.getAtom(i), ref);
+            		}
+            		System.out.println(msg);
+            		continue;
+            	}
+            	double refDist = MolecularUtils.calculateInteratomicDistance(
+            			ref.getAtom(iA), ref.getAtom(iB));
+            	double molDist = MolecularUtils.calculateInteratomicDistance(
+            			mol.getAtom(iA), mol.getAtom(iB));
+            	double delta = Math.abs(refDist - molDist);
+            	String line = MolecularUtils.getAtomRef(refBnd.getAtom(0),ref)
+        				+ "-" 
+        				+ MolecularUtils.getAtomRef(refBnd.getAtom(1),ref)
+        				+ ": |" + refDist + "-" + molDist + "| = " + delta;
+            	if (verbosity > 1)
+                {
+                	System.out.println("  -> "+line);
+                }
+            	if (delta > maxDelta)
+            	{
+            		maxDelta = delta;
+            		largest = line;
+            	}
+            	double maxAllowed = Math.abs(refDist*tolerance);
+            	if (delta > maxAllowed)
+            	{
+            		if (verbosity > 0)
+            		{
+            			System.out.println("Unacceptable bond distance "
+            					+ "deviation: "+ largest + " > " + maxAllowed);
+            		}
+            		return false;
+            	}
+            }
+        } else {
+            if (verbosity > 0)
+            {
+            	System.out.println("Different number of atoms!");
+            	return false;
+            }
+        }
+
+        if (verbosity > 0)
+        {
+            System.out.println("Largest deviation in bond distance: " 
+            		+ largest);
+        }
+        return true;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Evaluate compatibility of two atoms according to their
-     * element symbol and connected environment (size and element synbols)
+     * element symbol and connected environment (size and element symbols)
      * @param molA first molecule 
      * @param atmA the candidate atom in <code>molA</code>
      * @param molB second molecule

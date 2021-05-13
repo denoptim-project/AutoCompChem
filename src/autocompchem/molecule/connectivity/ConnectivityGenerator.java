@@ -76,11 +76,13 @@ public class ConnectivityGenerator extends Worker
             Collections.unmodifiableSet(new HashSet<TaskID>(
                     Arrays.asList(TaskID.RICALCULATECONNECTIVITY,
                     		TaskID.ADDBONDSFORSINGLEELEMENT,
-                    		TaskID.IMPOSECONNECTIONTABLE)));
+                    		TaskID.IMPOSECONNECTIONTABLE,
+                    		TaskID.CHECKBONDLENGTHS)));
 	
     //Filenames
     private String inFile;
     private String outFile;
+    private String refFile;
 
     //Reporting flag
     private int verbosity = 0;
@@ -152,14 +154,20 @@ public class ConnectivityGenerator extends Worker
             this.templatePathName = templatePathName;
             this.useTemplate = true;
         }
+        
+        if (params.contains("REFERENCE"))
+        {
+	        this.refFile = params.getParameter("REFERENCE").getValue().toString();
+	        FileUtils.foundAndPermissions(this.refFile,true,false,false);
+        }
 
-
-        //Get and check output file
-        this.outFile = params.getParameter("OUTFILE").getValue().toString();
-        FileUtils.mustNotExist(this.outFile);
+        if (params.contains("OUTFILE"))
+        {
+	        this.outFile = params.getParameter("OUTFILE").getValue().toString();
+	        FileUtils.mustNotExist(this.outFile);
+        }
     }
     
-
 //-----------------------------------------------------------------------------
 
       /**
@@ -182,6 +190,9 @@ public class ConnectivityGenerator extends Worker
             case IMPOSECONNECTIONTABLE:
             	imposeConnectionTable();
                 break;
+            case CHECKBONDLENGTHS:
+            	checkBondLengthsAgainstConnectivity();
+            	break;
             }
 
           if (exposedOutputCollector != null)
@@ -195,7 +206,58 @@ public class ConnectivityGenerator extends Worker
           }
       }
 
+//------------------------------------------------------------------------------
 
+      /**
+       * Uses the connectivity of a given reference container to identify pairs 
+       * of connected atoms and checks whether the interatomic distances (i.e.,
+       * bond length) is consistent with that given in reference geometry. This
+       * method is useful to evaluate potential changes of connectivity 
+       * occurring after any molecular modeling that does not take into account 
+       * connectivity in its input (e.g., any quantum mechanical driven 
+       * molecular modeling engine).
+       */
+
+      public void checkBondLengthsAgainstConnectivity()
+      {
+          ArrayList<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
+          try 
+          { 
+        	  refMols = IOtools.readMultiMolFiles(refFile);
+          } catch (Throwable t) {
+              Terminator.withMsgAndStatus("ERROR! Exception returned by "
+                      + "SDFIterator while reading " + refFile, -1);
+          }
+          
+          //TODO: possibility of allowing one different reference for each entry
+
+          if (refMols.size() > 1)
+          {
+        	  System.out.println("WARNING: multiple references found in '" 
+        			  + refFile + "'. We'll use only the first one.");
+          }
+          IAtomContainer ref = refMols.get(0); 
+          
+          try {
+              SDFIterator sdfItr = new SDFIterator(inFile);
+              int i = 0;
+              while (sdfItr.hasNext())
+              {
+            	  i++;
+            	  if (verbosity > 0)
+            		  System.out.println("Checking bond lengths in mol #"+i);
+            	  
+                  IAtomContainer mol = sdfItr.next();
+                  ConnectivityUtils.compareBondDistancesWithReference(mol, 
+                		  ref, tolerance, verbosity);
+              }
+              sdfItr.close();
+          } catch (Throwable t) {
+              Terminator.withMsgAndStatus("ERROR! Exception returned by "
+                  + "SDFIterator while reading " + inFile, -1);
+          }
+      }
+      
 //------------------------------------------------------------------------------
 
     /**
@@ -206,9 +268,11 @@ public class ConnectivityGenerator extends Worker
     public void addBondsOnSingleElement()
     {
         if (verbosity > 1)
+        {
             System.out.println(" ConnectivityGenerator starts to work on "
                                 + inFile);
-
+        }
+        
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
