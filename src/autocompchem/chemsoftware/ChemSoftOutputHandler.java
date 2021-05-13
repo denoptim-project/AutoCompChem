@@ -98,6 +98,21 @@ public abstract class ChemSoftOutputHandler extends Worker
      */
     private boolean useTemplateConnectivity = false;
     
+    //TODO del
+    /**
+     * Flag controlling whether to check consistency between connectivity and 
+     * interatomic distances,
+     */
+    private boolean connectivityCheckBL = false;
+    
+    /**
+     * Tolerance on the variation of interatomic distance of bonded atom pairs.
+     * With a tolerance equal to <i>t</i> and a reference interatomic distance 
+     * <i>d</i> only an absolute deviation larger than <i>abs(t*d)</i> will be 
+     * seen as incompatible. Default <i>t = 0.05</i>.
+     */
+    private double connectivityCheckTol = 0.05;
+    
     private static String NL = System.getProperty("line.separator");
 
 //------------------------------------------------------------------------------
@@ -230,11 +245,69 @@ public abstract class ChemSoftOutputHandler extends Worker
         if (params.contains(ChemSoftConstants.PARTEMPLATECONNECTIVITY))
         {
             this.useTemplateConnectivity = true;
-            String fileWithTplt = params.getParameter(
+            String val = params.getParameter(
             		ChemSoftConstants.PARTEMPLATECONNECTIVITY)
             		.getValueAsString();
+            String[] p = val.split("\\s+");
+            String fileWithTplt = p[0];
             FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
+            //NB: assumption: only one atom container as template.
             this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
+            
+            ParameterStorage ps = new ParameterStorage();
+            boolean checkBLvsCT = true;
+            for (int i=1; i<(p.length); i++)
+            {
+                String arg = p[i];
+                if (arg.toUpperCase().startsWith(
+                		ChemSoftConstants.PARBONDLENGTHTOLETANCE))
+                {
+                	String w = arg.substring(
+                			(ChemSoftConstants.PARBONDLENGTHTOLETANCE + "=")
+                				.length());
+	                try
+	                {
+	                	double v = Double.parseDouble(w);
+	                } 
+	                catch (Throwable t)
+	                {
+	                    Terminator.withMsgAndStatus("ERROR! Cannot convert '" 
+	                    	+ w + "' to a double. Check "
+	                        + ChemSoftConstants.PARBONDLENGTHTOLETANCE + " for "
+	                        + ChemSoftConstants.PARTEMPLATECONNECTIVITY 
+	                        + ".", -1); 
+	                }
+	                //Silly: we check the conversion to double and then store a string...
+	                ps.setParameter(new Parameter(
+	                		ChemSoftConstants.PARBONDLENGTHTOLETANCE,w));
+	                checkBLvsCT = true;
+                }
+            }
+            if (checkBLvsCT)
+            {
+            	// We have to ensure that last geometry is extracted
+            	boolean addLastGeom = true;
+            	for (AnalysisTask at : analysisGlobalTasks)
+            	{
+            		if (at.getKind() == AnalysisKind.LASTGEOMETRY)
+            		{
+            			addLastGeom = false;
+            		}
+            	}
+            	if (addLastGeom)
+            	{
+            		analysisGlobalTasks.add(new AnalysisTask(
+            				AnalysisKind.LASTGEOMETRY));
+            	}
+            	
+                AnalysisTask a = new AnalysisTask(
+                		AnalysisKind.BLVSCONNECTIVITY,ps);
+                // WARNING: we assume that this analysis task as added AFTER
+                // the extraction of the last geometry!!!
+                analysisGlobalTasks.add(a);
+                // NB: here we could have the possibility to decide which 
+                // geometry to analyse: all or just the last one.
+            }
         }
 
         if (params.contains(ChemSoftConstants.PARGETENERGY))
@@ -768,7 +841,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        		}
         		}
         		
-        		//TODO: more? ...just add it here ;-)
+        		//TODO: more? ...just add it here
         	}
         }
         
@@ -780,6 +853,11 @@ public abstract class ChemSoftOutputHandler extends Worker
             System.out.println(resultsString.toString());
         }
         
+        // Prepare collector of final analysis results
+    	StringBuilder finalResultsString = new StringBuilder();
+    	
+        // WARNING: the LASTGEOMETRY analysis is expected to run before
+        // the BLVSCONNECTIVITY
         
         // Analyse one on the collection of steps takes as a whole
         for (AnalysisTask at : analysisGlobalTasks)
@@ -794,7 +872,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 							ChemSoftConstants.GENERALFORMAT,atParams);
 					String outFileName = outFileRootName+"_lastGeom."
 							+ format.toLowerCase();
-					outFileName= changeIfParameterIsFound(outFileName,
+					outFileName = changeIfParameterIsFound(outFileName,
 							ChemSoftConstants.GENERALFILENAME,atParams);
 					
 					IAtomContainer lastGeom = null;
@@ -838,7 +916,36 @@ public abstract class ChemSoftOutputHandler extends Worker
 					lastGeomToExpose = lastGeom;
 					break;
 				}
+				
+				case BLVSCONNECTIVITY:
+				{
+					// WARNING: lastGeomToExpose is not null because this task
+					// should come (if at all) after the extraction of the last 
+					// geometry
+					double tolerance = 0.05;
+					tolerance = changeIfParameterIsFound(tolerance,
+							ChemSoftConstants.PARBONDLENGTHTOLETANCE, atParams);
+					String result = " compatible ";
+					StringBuffer log = new StringBuffer();
+					if (!ConnectivityUtils.compareBondDistancesWithReference(
+							lastGeomToExpose, connectivityTemplate, tolerance, 
+							0, log))
+					{
+						result = " NOT compatible! " + log.toString();
+					}
+					finalResultsString.append("Bond lengths vs. connectivity:")
+						.append(result).append(NL);
+					break;
+				}
     		}
+        }
+        
+     	
+        if (verbosity > 0)
+        {
+        	System.out.println(" ");
+        	System.out.println("Summary of final results:");
+            System.out.println(finalResultsString.toString());
         }
     }
     

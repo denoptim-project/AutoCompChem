@@ -244,6 +244,17 @@ public class ChemSoftConstants
 	 */
 	public static final String PARTEMPLATECONNECTIVITY = 
 			"TEMPLATECONNECTIVITY";
+	
+	/**
+	 * Key for parameter defining the tolerance value
+	 */
+	public static final String PARBONDLENGTHTOLETANCE = "TOLERANCE";
+	
+	/**
+	 * Key for parameters requesting to perform an analysis only on the very 
+	 * last geometry
+	 */
+	public static final String ANALYZEONLYFINALGEOM = "FINALGEOM";
 
 	/**
 	 * Key for parameter requesting to calculate free energy

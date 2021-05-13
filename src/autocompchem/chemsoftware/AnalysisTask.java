@@ -8,7 +8,7 @@ import autocompchem.datacollections.ParameterStorage;
 
 /**
  * A class representing the request of a kind of analysis and some settings
- * associated with the analysis.
+ * associated with the analysis task.
  * 
  * @author Marco Foscato
  */
@@ -21,7 +21,7 @@ public class AnalysisTask
 	private AnalysisKind kind;
 	
     /**
-     * Possible kinds of analysis that can be asked for each job/step
+     * Possible kinds of analysis that can be asked for jobs/steps
      */
     public enum AnalysisKind {
     	SCFENERGY,
@@ -29,7 +29,8 @@ public class AnalysisTask
     	CRITICALPOINTKIND,
     	VIBMODE,
     	QHTHERMOCHEMISTRY, 
-    	ALLGEOM}
+    	ALLGEOM,
+    	BLVSCONNECTIVITY}
     
     /**
      * Settings that control how the analysis is performed

@@ -296,13 +296,37 @@ public class ConnectivityUtils
     public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
     		IAtomContainer ref, double tolerance, int verbosity)
     {
+    	return compareBondDistancesWithReference(mol, ref, tolerance, verbosity, 
+    			new StringBuffer());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Compares the bond distances within an atom container with the 
+     * corresponding ones of a reference container. The connectivity of the
+     * reference defines what are the pair of bonded atoms.
+     * @param mol the atom container under evaluation.
+     * @param ref the reference atom container .
+     * @param tolerance the tolerance applied when comparing interatomic 
+     * distances.
+     * @param verbosity about of log in stdout.
+     * @param log a string with the log from this analysis.
+     * @return <code>true</code> if the two interatomic distances are compatible
+     * with the given connectivity matrix (within the given tolerance).
+     */
+
+    public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
+    		IAtomContainer ref, double tolerance, int verbosity, 
+    		StringBuffer log)
+    {  
     	String largest = "";
     	double maxDelta = -10000.0;
         if (mol.getAtomCount() == ref.getAtomCount()) 
         {
         	if (verbosity > 1)
             {
-            	System.out.println("  Compatison of bond distances:");
+            	System.out.println(" Compatison of bond distances:");
             }
             for (IBond refBnd : ref.bonds())
             {
@@ -348,18 +372,22 @@ public class ConnectivityUtils
             	double maxAllowed = Math.abs(refDist*tolerance);
             	if (delta > maxAllowed)
             	{
+            		String msg = "Unacceptable bond distance "
+        					+ "deviation: "+ largest + " > " + maxAllowed;
             		if (verbosity > 0)
             		{
-            			System.out.println("Unacceptable bond distance "
-            					+ "deviation: "+ largest + " > " + maxAllowed);
+            			System.out.println(msg );
             		}
+            		log.append(msg);
             		return false;
             	}
             }
         } else {
             if (verbosity > 0)
             {
-            	System.out.println("Different number of atoms!");
+            	String msg = "Different number of atoms!";
+            	System.out.println(msg);
+            	log.append(msg);
             	return false;
             }
         }
@@ -429,10 +457,6 @@ public class ConnectivityUtils
                 result = true;
             }
         }
-/*System.out.println("\ncomp => Atom "+MolecularUtils.getAtomRef(atmA,molA)+" and "+MolecularUtils.getAtomRef(atmB,molB)+" NFound: "+numFound+" RES: "+result);
-System.out.println("        A: "+nbrsRefA+"   B: "+nbrsRefB);
-IOtools.pause();
-*/
         return result;
     }
 
