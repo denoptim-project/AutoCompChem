@@ -1,3 +1,4 @@
-build_test_DOoNotCommit.sh
 jar/*
+bin
 test/results/*
+AutoCompChem.jar
