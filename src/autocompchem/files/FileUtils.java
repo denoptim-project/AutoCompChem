@@ -42,6 +42,26 @@ public class FileUtils
     public FileUtils()
     {
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Return the pathname of the parent folder, if possible. If the given 
+     * pathname does not define a parent then it returns ".".
+     * @param pathname
+     * @return the pathname to the parent or ".".
+     */
+    public static String getPathToPatent(String pathname)
+    {
+    	File f = new File(pathname);
+    	String path = ".";
+    	String parent = f.getParent();
+    	if (parent != null)
+    	{
+    		path = parent;
+    	}
+    	return path;
+    }
 
 //------------------------------------------------------------------------------
 

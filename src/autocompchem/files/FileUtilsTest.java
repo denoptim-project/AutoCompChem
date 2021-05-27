@@ -47,5 +47,21 @@ public class FileUtilsTest
         assertEquals(null,FileUtils.getFileExtension(f),
         		"Extention of filename with no dot");
     }
+    
+    @Test
+    public void testGetPathToPatent() throws Exception
+    {
+        String a = "/path/to/me";
+        assertEquals("/path/to",FileUtils.getPathToPatent(a),
+        		"Absolute pathname");
+        
+        a = "../path/../to/me";
+        assertEquals("../path/../to",FileUtils.getPathToPatent(a),
+        		"Relative pathname");
+        
+        a = "me";
+        assertEquals(".",FileUtils.getPathToPatent(a),
+        		"Only file name without path");
+    }
 
 }

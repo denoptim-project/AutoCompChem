@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -240,8 +242,10 @@ public class GaussianInputWriter extends Worker
         if (params.contains("OUTNAME"))
         {
             outFile = params.getParameter("OUTNAME").getValue().toString();
-            outJDFile = FileUtils.getRootOfFileName(outFile)
-                                                + GaussianConstants.JDEXTENSION;
+            outJDFile = FileUtils.getPathToPatent(outFile)
+            		+ System.getProperty("file.separator")
+            		+ FileUtils.getRootOfFileName(outFile)
+            		+ GaussianConstants.JDEXTENSION;
         } else {
             String inputRoot = FileUtils.getRootOfFileName(inFile);
             outFile = inputRoot + GaussianConstants.GAUINPEXTENSION;
