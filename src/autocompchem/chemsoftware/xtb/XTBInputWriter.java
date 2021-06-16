@@ -470,6 +470,9 @@ public class XTBInputWriter extends ChemSoftInputWriter
     private ArrayList<String> getTextForFixBlock(Directive d)
     {
     	ArrayList<String> lines = new ArrayList<String>();
+    	
+    	if (d.getAllDirectiveDataBlocks().size() == 0)
+    		return lines;
 
     	//WARNING! We assume there is only one data block, and that it is
     	// indeed a set of constraints.
@@ -501,6 +504,9 @@ public class XTBInputWriter extends ChemSoftInputWriter
     {
     	ArrayList<String> lines = new ArrayList<String>();
 
+    	if (d.getAllDirectiveDataBlocks().size() == 0)
+    		return lines;
+    	
     	//WARNING! We assume there is only one data block, and that it is
     	// indeed a set of constraints.
     	ConstraintsSet cs = (ConstraintsSet) d.getAllDirectiveDataBlocks()
