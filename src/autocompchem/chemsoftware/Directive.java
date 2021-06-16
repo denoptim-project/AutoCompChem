@@ -592,7 +592,7 @@ public class Directive implements IDirectiveComponent
     		{
     			ArrayList<String> lines = dd.getLines();
     			
-    			// WARNING! HEre we assume that the entire content of the 
+    			// WARNING! Here we assume that the entire content of the 
     			// directive data, is about the ACC task. Thus, we add the 
     			// multiline start/end labels so that the getACCTaskParams
     			// method will keep read all the lines as one.

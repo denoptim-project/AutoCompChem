@@ -30,6 +30,17 @@ public class ConstrainDefinition
 	 * that are bonded in the order given by the tuple.
 	 */
     private static final Object PARONLYBONDED = "ONLYBONDED";
+    
+    /**
+     * Parameter used to flag the request to decouple the list of center identifiers
+     * from the definition of an internal coordinate. When this is found the
+     * constraint (whatever it is) will be applied to all atoms, and not to
+     * the internal coordinate type defined by the number of identifiers (e,g,
+     * distance from two ids, angle from 3, and so on).
+     * For example, the constraint could be a potential applies to displacements 
+     * from the initial position of the identified atoms.
+     */
+    private static final String PARNOINTCOORD = "NOTANIC";
 
 	/**
      * Reference name 
@@ -70,6 +81,12 @@ public class ConstrainDefinition
 	 * Flag specifying that the tupla of atoms must be a bonded set
 	 */
 	private boolean onlyBonded = false;
+	
+	/**
+	 * Flag specifying that this tupla in not really a tupla, but an unordered
+	 * collection that does not define an internal coordinate.
+	 */
+	private boolean notAnIC = false;
 
 //------------------------------------------------------------------------------
 
@@ -115,6 +132,9 @@ public class ConstrainDefinition
             	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
             		endOfIDs = true;
             		this.onlyBonded = true;
+            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
+            		endOfIDs = true;
+            		this.notAnIC = true;
             	} else {
             		//TODO: deal with wildcards
             		if (!endOfIDs)
@@ -139,6 +159,9 @@ public class ConstrainDefinition
             	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
             		endOfSmarts = true;
             		this.onlyBonded = true;
+            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
+            		endOfSmarts = true;
+            		this.notAnIC = true;
             	} else {
             		if (!endOfSmarts)
             		{
@@ -214,10 +237,24 @@ public class ConstrainDefinition
   	public Constraint makeConstraintFromIDs(ArrayList<Integer> arrayList) 
   			throws Exception 
   	{
-  		if (!hasValue)
-  			return Constraint.buildConstraint(arrayList);
-  		else 
-  			return Constraint.buildConstraint(arrayList, value);
+  		if (notAnIC)
+  		{
+  			// NB: we do not expect a value for constraints that do not 
+  			// correspond to and internal coordinate.
+  			Constraint c = new Constraint();
+  			int[] ids = new int[arrayList.size()];
+  			for (int i=0; i<arrayList.size(); i++)
+  			{
+  				ids[i] = arrayList.get(i);
+  			}
+  			c.setAtomIDs(ids);
+  			return c;
+  		} else {
+	  		if (!hasValue)
+	  			return Constraint.buildConstraint(arrayList);
+	  		else 
+	  			return Constraint.buildConstraint(arrayList, value);
+  		}
   	}
 
 //------------------------------------------------------------------------------

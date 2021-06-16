@@ -51,6 +51,23 @@ public class StringUtilsTest
         assertEquals(3,TextAnalyzer.countStringInLine(sep, res),
         		"Number of separators ");
     }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testMergeListToStringTrimmed() throws Exception
+    {
+        ArrayList<String> lst = new ArrayList<String>();
+        lst.add("e1");
+        lst.add("e2");
+        lst.add("e3");
+        String sep = "@";
+        
+        String res = StringUtils.mergeListToString(lst, sep, true);
+        
+        assertEquals(2,TextAnalyzer.countStringInLine(sep, res),
+        		"Number of separators ");
+    }
 
 //------------------------------------------------------------------------------
 

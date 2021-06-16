@@ -20,7 +20,7 @@ package autocompchem.worker;
 import autocompchem.run.Terminator;
 
 /**
- * Collection of all registered workers.
+ * Collection of all registered tasks.
  * 
  * @author Marco Foscato
  */
@@ -60,6 +60,7 @@ public enum TaskID
     PREPAREINPUTGAUSSIAN,    
     PREPAREINPUTNWCHEM,
     PREPAREINPUTORCA,
+    PREPAREINPUTXTB,
     PREPAREINPUTQMMM,        
     PREPAREINPUTSPARTAN,     
     PRINTZMATRIX,            

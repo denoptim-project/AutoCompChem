@@ -1,0 +1,85 @@
+#!/bin/bash
+
+if [ ! -f t134-mol-0.xcontrol ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if [ ! -f t134-mol-1.xcontrol ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+n=0;n=$(grep -c "^ *logfile=trajectory.xyz$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *runtyp opt$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+n=0;n=$(grep -c "^\$opt$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+n=0;n=$(grep -c "^\$set$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+n=0;n=$(grep -c "^\$chrg 0$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+n=0;n=$(grep -c "^\$spin 0$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+n=0;n=$(grep -c "^\$fix$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9; exit -1 ; fi
+n=0;n=$(grep -c "^ *atoms: 0,1,2,3,4,5,7,9,10,11,12,13$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10; exit -1 ; fi
+n=0;n=$(grep -c "^ *elements: O,P,S$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11; exit -1 ; fi
+n=0;n=$(grep -c "^\$constrain$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 12; exit -1 ; fi
+n=0;n=$(grep -c "^ *force constant=1.2345$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13; exit -1 ; fi
+n=0;n=$(grep -c "^ *elements: C,O,1$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 14; exit -1 ; fi
+n=0;n=$(grep -c "^ *distance: 5, 6, auto$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 15; exit -1 ; fi
+n=0;n=$(grep -c "^ *angle: 2, 3, 4, auto$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 16; exit -1 ; fi
+n=0;n=$(grep -c "^ *dihedral: 2, 3, 4, 5, -0.123$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 17; exit -1 ; fi
+n=0;n=$(grep -c "^ *atoms: 6$" t134-mol-0.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 18; exit -1 ; fi
+
+
+n=0;n=$(grep -c "^ *logfile=trajectory.xyz$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 19 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *runtyp opt$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 20; exit -1 ; fi
+n=0;n=$(grep -c "^\$opt$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 21; exit -1 ; fi
+n=0;n=$(grep -c "^\$set$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 22; exit -1 ; fi
+n=0;n=$(grep -c "^\$chrg -1$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 23; exit -1 ; fi
+n=0;n=$(grep -c "^\$spin 1$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 24; exit -1 ; fi
+n=0;n=$(grep -c "^\$fix$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 25; exit -1 ; fi
+n=0;n=$(grep -c "^ *atoms: 0,1,2,3,7,9,10,11,12,13$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 26; exit -1 ; fi
+n=0;n=$(grep -c "^ *elements: O,P,S$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 27; exit -1 ; fi
+n=0;n=$(grep -c "^\$constrain$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 28; exit -1 ; fi
+n=0;n=$(grep -c "^ *force constant=1.2345$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 29; exit -1 ; fi
+n=0;n=$(grep -c "^ *elements: C,O,1$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 30; exit -1 ; fi
+n=0;n=$(grep -c "^ *angle: 2, 3, 4, auto$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 31; exit -1 ; fi
+n=0;n=$(grep -c "^ *dihedral: 2, 3, 4, 5, -0.123$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 32; exit -1 ; fi
+n=0;n=$(grep -c "^ *atoms: 1, 2, 3, 4, 5$" t134-mol-1.xcontrol)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 33; exit -1 ; fi
+
+grep -q 'Termination status: 0' t134.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 99
+exit -1
+fi

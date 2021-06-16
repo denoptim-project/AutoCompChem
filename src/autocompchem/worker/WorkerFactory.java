@@ -34,6 +34,7 @@ import autocompchem.chemsoftware.qmmm.QMMMInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -173,7 +174,7 @@ public class WorkerFactory
      * job.
      * @param task the AutoCompChem task to be performed by the worker.
      * @param masterJob the job that is creating a worker to perform a task.
-     * @return a suitable worker for the task.
+     * @return a suitable worker for the task or null.
      */ 
 
     public static Worker createWorker(TaskID task, Job masterJob)
@@ -300,6 +301,8 @@ public class WorkerFactory
             return NWChemReStarter.capabilities;
         case OrcaInputWriter:
         	return OrcaInputWriter.capabilities;
+        case XTBInputWriter:
+        	return XTBInputWriter.capabilities;
         case OrcaOutputHandler:
         	return OrcaOutputHandler.capabilities;
         case QMMMInputWriter:
@@ -385,6 +388,12 @@ public class WorkerFactory
         	return new OrcaInputWriter();
         case OrcaOutputHandler:
         	return new OrcaOutputHandler();
+        case XTBInputWriter:
+        	return new XTBInputWriter();
+        /*
+        case XTBOutputHandler:
+        	return new XTBOutputHandler();
+        */
         case QMMMInputWriter:
             return new QMMMInputWriter();
         case SpartanInputWriter:

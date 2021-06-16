@@ -19,6 +19,19 @@ package autocompchem.modeling.constraints;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents the concept of a constraint that is applied on a list
+ * of centers, which are represented by indexes (i.e., atom indexes in an atom list).
+ * Notably, a constrain in itself might not define whether it is freezing 
+ * an internal coordinate or applying some sort of potential to it. This aspect
+ * is quite software-specific and therefore does not pertain this software-agnostic class.
+ * Upon translating the constraints into software-specific input information, 
+ * the distinction between freezing or applying a potential should be made clear
+ * by the context in which the constraints are used.
+ * 
+ * @author Marco Foscato
+ */
+
 public class Constraint implements Comparable<Constraint>
 {
 	public enum ConstraintType {FROZENATM, DISTANCE, ANGLE, DIHEDRAL, UNDEFINED}
@@ -42,6 +55,14 @@ public class Constraint implements Comparable<Constraint>
 	 * Flag signalling this constrain uses a value
 	 */
 	private boolean hasValue = false;
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Builds an undefined constraint
+	 */
+	public Constraint()
+	{}
 	
 //------------------------------------------------------------------------------
 	
@@ -177,13 +198,25 @@ public class Constraint implements Comparable<Constraint>
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("Constraint [Type=");
-		sb.append(type).append(", IDs=[").append(atmIDs[0]).append(",");
-		sb.append(atmIDs[1]).append(",").append(atmIDs[2]).append(",");
-		sb.append(atmIDs[3]).append("], value=").append(value);
+		sb.append(type).append(", IDs=[");
+		for (int i=0; i<atmIDs.length; i++)
+		{
+			sb.append(atmIDs[i]);
+			if (i<(atmIDs.length-1))
+				sb.append(",");
+		}
+		sb.append("], value=").append(value);
 		sb.append("] ");
 		return sb.toString();
 	}
 
+//------------------------------------------------------------------------------
+
+	public void setAtomIDs(int[] ids)
+	{
+		atmIDs = ids;
+	}
+	
 //------------------------------------------------------------------------------
 
 	public int[] getAtomIDs()

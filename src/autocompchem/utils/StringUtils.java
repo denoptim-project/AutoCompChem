@@ -37,9 +37,9 @@ public class StringUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Converts escaped charaters into a string not containing any special 
+     * Converts escaped characters into a string not containing any special 
      * character
-     * @param str the sctring
+     * @param str the string
      * @return the string with the escapable special characters converted
      */
 
@@ -99,7 +99,7 @@ public class StringUtils
         }
         return result;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -111,12 +111,31 @@ public class StringUtils
     
     public static String mergeListToString(List<String> list, String sep)
     {
+    	return mergeListToString(list,sep,false);
+    }
+//------------------------------------------------------------------------------
+
+    /**
+     * Appends all entries of a list to obtain a single string.
+     * @param list the entries to append.
+     * @param sep separator to use between entries.
+     * @param trim if <code>true</code> avoids to write separator after the
+     * last entry.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     */
+    
+    public static String mergeListToString(List<String> list, String sep,
+    		boolean trim)
+    {
     	StringBuilder sb = new StringBuilder();
     	for (int i=0; i<list.size(); i++)
     	{
     		sb.append(list.get(i));
-    		if (i<list.size())
+    		if (i<(list.size()-1))
     			sb.append(sep);
+    		else
+    			if (!trim)
+    				sb.append(sep);
     	}
     	return sb.toString();
     }
