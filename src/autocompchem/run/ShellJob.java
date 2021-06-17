@@ -18,6 +18,8 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,7 +32,9 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.utils.StringUtils;
 
 /**
- * A shell job is work to be done by the shell
+ * A shell job is work to be done by the shell. The shell command can be executed
+ * in a newly created subfolder. In this case any pathname should reflect the
+ * fact that `pwd` would return the pathname of the subfolder.
  *
  * @author Marco Foscato
  */
@@ -152,7 +156,7 @@ public class ShellJob extends Job
 					+ "in a shell job. Use either one or the other.",-1);
 		}
 		
-    	// First we need to see if the command comes from the constructor of
+    	// First we need to see if the command comes from the constructor or
     	// from parameter storage
     	if (params.contains(ShellJobConstants.LABINTERPRETER))
     	{
@@ -197,6 +201,49 @@ public class ShellJob extends Job
     		}
     	}
     	
+    	// We might want to run this in a subfolder
+    	if (params.contains(ShellJobConstants.WORKDIR))
+    	{
+    		File workDir = new File(params.getParameter(
+    				ShellJobConstants.WORKDIR).getValueAsString());
+    		if (!workDir.exists() && !workDir.mkdirs())
+    		{
+    			Terminator.withMsgAndStatus("ERROR! Could not make the "
+    					+ "required subfolder '" + workDir + "'.",-1);
+    		}
+    		this.setUserDir(workDir);
+    	}
+    	
+    	if (params.contains(ShellJobConstants.COPYTOWORKDIR))
+    	{
+    		String listAsStr = params.getParameter(
+    				ShellJobConstants.COPYTOWORKDIR).getValueAsString();
+    		String[] list = listAsStr.split(",");
+    		for (int i=0; i<list.length; i++)
+    		{
+    			File source = new File(list[i].trim());
+    			File dest = new File(this.customUserDir 
+    					+ System.getProperty("file.separator")
+    					+ source.getName());
+    			if (source.exists())
+    			{
+    				try {
+						com.google.common.io.Files.copy(source,dest);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						Terminator.withMsgAndStatus("ERROR! Could not copy "
+								+ "file '" + source + "' to work directory.",-1);
+					}
+    			} else {
+    				System.out.println("WARNING: file '" + source 
+    						+ "' was listed among "
+    						+ "those to copy into the work directory, "
+    						+ "but it does not exist. I'll skipp it.");
+    			}
+    		}
+    	}
+    	
         Date date = new Date();
         if (getVerbosity() > 0)
         {
@@ -214,6 +261,7 @@ public class ShellJob extends Job
                 ProcessBuilder pb = new ProcessBuilder(command);
                 if (customUserDir != null)
                 {
+                	// Here is where we move to the work space
                 	pb.directory(customUserDir);
                 }
                 

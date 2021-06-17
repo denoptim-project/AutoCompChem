@@ -45,4 +45,17 @@ public class ShellJobConstants
      */
     public final static String LABARGS = "ARGS";
 
+    /**
+     * Keyword for requesting to run the command from a customised location
+     */
+	public static final String WORKDIR = "WORKDIR";
+
+	/**
+	 * Keyword requesting to copy some pathnames to the location from which the 
+	 * command will be executed, which could be "." or anywhere according to the
+	 * 
+	 */
+	public static final String COPYTOWORKDIR = "COPYTOWORKDIR";
+	
+
 }

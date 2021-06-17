@@ -346,7 +346,7 @@ public class Job implements Runnable
     /**
      * Set redirection of STDOUT and STDERR to job specific files. The pathnames
      * are collected among the exposed output of the job.
-     * @param redirectOutErr if <code>True</code> the nSTDOUT and STDERR will
+     * @param redirectOutErr if <code>True</code> the STDOUT and STDERR will
      * be redirected to job specific files.
      */
     

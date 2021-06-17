@@ -1,0 +1,7 @@
+JOBSTART
+APP: SHELL
+# Note that the pathname of t136.sh is relative to the inside of the work dir.
+CMD: /bin/bash ../../t136.sh
+WORKDIR: t136_workDir
+COPYTOWORKDIR: ../t136_in1, ../t136_in2,../t136_in3
+JOBEND
