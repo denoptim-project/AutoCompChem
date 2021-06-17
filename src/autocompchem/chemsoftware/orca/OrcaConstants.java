@@ -151,7 +151,7 @@ public class OrcaConstants
 
 	/**
 	 * String identifying the line defining the namespace for Orca-xTB output
-	 * WARNINB: this is controlled by Grimme's xTB software, not by Orca!
+	 * WARNING: this is controlled by Grimme's xTB software, not by Orca!
 	 */
 	public static final String LOGJOBEXTNAMESPACE = 
 			"calculation namespace ";

@@ -936,17 +936,32 @@ public abstract class ChemSoftOutputHandler extends Worker
 				
 				case BLVSCONNECTIVITY:
 				{
-					// WARNING: lastGeomToExpose is not null because this task
-					// should come (if at all) after the extraction of the last 
-					// geometry
+
 					double tolerance = 0.05;
 					tolerance = changeIfParameterIsFound(tolerance,
 							ChemSoftConstants.PARBONDLENGTHTOLETANCE, atParams);
+
 					String result = " compatible ";
 					StringBuffer log = new StringBuffer();
-					if (!ConnectivityUtils.compareBondDistancesWithReference(
+					
+					// WARNING: lastGeomToExpose is not null because this task
+					// should come (if at all) after the extraction of the last 
+					// geometry. Still, it might be that the geometry was not 
+					// available in the log/output files.
+					boolean isCompatible = true;
+					if (lastGeomToExpose == null)
+					{
+						System.out.println("WARNING! Undefined last geometry. "
+								+ "I cannot compare connectivity with bond "
+								+ "lengths. ");
+						isCompatible = false;
+					} else if (!ConnectivityUtils.compareBondDistancesWithReference(
 							lastGeomToExpose, connectivityTemplate, tolerance, 
 							0, log))
+					{
+						isCompatible = false;
+					}
+					if (!isCompatible)
 					{
 						result = " NOT compatible! " + log.toString();
 					}

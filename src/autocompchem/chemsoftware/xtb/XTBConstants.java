@@ -51,7 +51,7 @@ public class XTBConstants
 	/**
 	 * String identifying the single point energy at the end of a SP job
 	 */
-	public static final String LOGFINALSPENERGY = "| TOTAL ENERGY";
+	public static final String LOGFINALSPENERGY = "\\| TOTAL ENERGY";
 
 	/**
 	 * String identifying a converged SCF optimisation
@@ -64,6 +64,7 @@ public class XTBConstants
 	 */
 	public static final Map<String,Set<String>> COLONSEPARATEDKEYS = 
 			new HashMap<String,Set<String>>();
+	
 	static {
 		COLONSEPARATEDKEYS.put("CONSTRAIN", new HashSet<String>(Arrays.asList(
 				"ELEMENTS",
@@ -101,4 +102,44 @@ public class XTBConstants
         		"ELLIPSOID")));
 	}
 
+	/**
+	 * String identifying the beginning of a single job step in the XTB log.
+	 */
+	public static final String LOGJOBSTEPSTART = " \\* started run on ";
+
+	/**
+	 * String identifying a converged geometry optimisation in the XTB log.
+	 */
+	public static final String LOGGEOMOPTCONVERGED = "\\*\\*\\* GEOMETRY "
+			+ "OPTIMIZATION CONVERGED AFTER .* ITERATIONS \\*\\*\\*";
+	
+	/**
+	 * String identifying the declaration of where is the optimized geometry
+	 * in the XTB log
+	 */
+	public static final String LOGOPTGEOMFILENAME = 
+			"optimized geometry written to";
+	
+	/**
+	 * String identifying the declaration of where is the geometry trajectory
+	 * of geometry optimization run is. This from the XTB log
+	 */
+	public static final String LOGOPTTRJFILENAME = 
+			"Optimization log is written to";
+
+	/**
+	 * String identifying the list of vibrational frequencies
+	 */
+	public static final String LOGVIBFREQ = "\\| * Frequency Printout *\\|";
+	
+	/**
+	 * String identifying the Gibbs free energy including 
+	 * thermochemical corrections
+	 */
+	public static final String LOGGIBBSFREEENERGY = "\\| TOTAL FREE ENERGY";
+	
+	
+	
+	
+	
 }
