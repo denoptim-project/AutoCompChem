@@ -211,6 +211,8 @@ public class ShellJob extends Job
     			Terminator.withMsgAndStatus("ERROR! Could not make the "
     					+ "required subfolder '" + workDir + "'.",-1);
     		}
+    		System.out.println("WARNING: setting work directory to '"
+    				+ workDir + "'.");
     		this.setUserDir(workDir);
     	}
     	
