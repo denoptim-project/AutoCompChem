@@ -24,7 +24,7 @@ n=0;n=$(grep -c "^\$spin 0$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 n=0;n=$(grep -c "^\$fix$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9; exit -1 ; fi
-n=0;n=$(grep -c "^ *atoms: 0,1,2,3,4,5,7,9,10,11,12,13$" t134-mol-0.xcontrol)
+n=0;n=$(grep -c "^ *atoms: 1,2,3,4,5,6,8,10,11,12,13,14$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10; exit -1 ; fi
 n=0;n=$(grep -c "^ *elements: O,P,S$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11; exit -1 ; fi
@@ -34,13 +34,13 @@ n=0;n=$(grep -c "^ *force constant=1.2345$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13; exit -1 ; fi
 n=0;n=$(grep -c "^ *elements: C,O,1$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 14; exit -1 ; fi
-n=0;n=$(grep -c "^ *distance: 5, 6, auto$" t134-mol-0.xcontrol)
+n=0;n=$(grep -c "^ *distance: 6, 7, auto$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 15; exit -1 ; fi
-n=0;n=$(grep -c "^ *angle: 2, 3, 4, auto$" t134-mol-0.xcontrol)
+n=0;n=$(grep -c "^ *angle: 3, 4, 5, auto$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 16; exit -1 ; fi
-n=0;n=$(grep -c "^ *dihedral: 2, 3, 4, 5, -0.123$" t134-mol-0.xcontrol)
+n=0;n=$(grep -c "^ *dihedral: 3, 4, 5, 6, -0.123$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 17; exit -1 ; fi
-n=0;n=$(grep -c "^ *atoms: 6$" t134-mol-0.xcontrol)
+n=0;n=$(grep -c "^ *atoms: 7$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 18; exit -1 ; fi
 
 
@@ -58,7 +58,7 @@ n=0;n=$(grep -c "^\$spin 1$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 24; exit -1 ; fi
 n=0;n=$(grep -c "^\$fix$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 25; exit -1 ; fi
-n=0;n=$(grep -c "^ *atoms: 0,1,2,3,7,9,10,11,12,13$" t134-mol-1.xcontrol)
+n=0;n=$(grep -c "^ *atoms: 1,2,3,4,8,10,11,12,13,14$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 26; exit -1 ; fi
 n=0;n=$(grep -c "^ *elements: O,P,S$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 27; exit -1 ; fi
@@ -68,11 +68,11 @@ n=0;n=$(grep -c "^ *force constant=1.2345$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 29; exit -1 ; fi
 n=0;n=$(grep -c "^ *elements: C,O,1$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 30; exit -1 ; fi
-n=0;n=$(grep -c "^ *angle: 2, 3, 4, auto$" t134-mol-1.xcontrol)
+n=0;n=$(grep -c "^ *angle: 3, 4, 5, auto$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 31; exit -1 ; fi
-n=0;n=$(grep -c "^ *dihedral: 2, 3, 4, 5, -0.123$" t134-mol-1.xcontrol)
+n=0;n=$(grep -c "^ *dihedral: 3, 4, 5, 6, -0.123$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 32; exit -1 ; fi
-n=0;n=$(grep -c "^ *atoms: 1, 2, 3, 4, 5$" t134-mol-1.xcontrol)
+n=0;n=$(grep -c "^ *atoms: 2, 3, 4, 5, 6$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 33; exit -1 ; fi
 
 grep -q 'Termination status: 0' t134.log

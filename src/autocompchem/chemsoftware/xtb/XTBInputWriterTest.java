@@ -1,6 +1,5 @@
 package autocompchem.chemsoftware.xtb;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -20,12 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,19 +41,7 @@ import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.modeling.compute.CompChemComputer;
-import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.CircumstanceConstants;
-import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
-import autocompchem.perception.situation.SituationConstants;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.worker.TaskID;
@@ -73,7 +57,6 @@ import autocompchem.worker.WorkerConstants;
 public class XTBInputWriterTest 
 {
     private final String SEP = System.getProperty("file.separator");
-    private final String NL = System.getProperty("line.separator");
 
     @TempDir 
     File tempDir;
@@ -95,7 +78,6 @@ public class XTBInputWriterTest
     	File molFile = new File(tmpDir1.getAbsolutePath() + SEP + "mol.sdf");
     	final String INPNAMEROOT = "molinp";
     	String inpRoot = tmpDir1.getAbsolutePath() + SEP + INPNAMEROOT;
-    	final String COORDGEOM = "myGeom.xyz";
 
     	IAtomContainer mol = new AtomContainer();
     	mol.addAtom(new Atom("C", new Point3d(1.0,2.0,3.0)));
