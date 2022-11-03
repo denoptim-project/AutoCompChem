@@ -338,7 +338,7 @@ public abstract class ChemSoftInputWriter extends Worker
 	            
 	            if (verbosity > 0)
 	            {
-	                System.out.println(" Writing Orca input file for molecule #" 
+	                System.out.println(" Writing input file for molecule #" 
 	                        + (molId+1) + ": " 
 	                		+ MolecularUtils.getNameOrID(mol));
 	            }

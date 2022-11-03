@@ -51,12 +51,12 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/cdk-2.3_noGuava.jar" sourcepath="/Users/marco/tools/cdk/cdk-cdk-2.3">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/OpenJDK 11.0.17 [11.0.17]">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/adoptopenjdk-8">
+	<classpathentry kind="lib" path="lib/cdk-2.3_noGuava.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

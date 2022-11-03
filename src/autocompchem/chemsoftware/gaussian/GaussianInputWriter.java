@@ -34,6 +34,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
@@ -43,6 +44,9 @@ import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.ConstraintsGenerator;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -604,6 +608,121 @@ public class GaussianInputWriter extends Worker
                     stepRoute.put(bsKeyRef,genBsKey);
                     result = bs.toInputFileString("gaussian");
                     break;
+                    
+                case "GENERATECONSTRAINTS":
+                {
+                	//TODO verbosity/logging
+                    System.out.println("ACC starts creating geometric constraints");
+                    
+                    ParameterStorage cnstrParams = new ParameterStorage();
+                    //TODO: this should be avoided by using TASK instead of ACCTASK
+                    cnstrParams.setParameter(new Parameter("TASK",
+                		NamedDataType.STRING, TaskID.GENERATECONSTRAINTS));
+                    
+                    //TODO:change here we translate the syntax to get the 
+                    // parameters for the internal task. This is shit that will
+                    // go away one we'll use the ChemSoftInputWriter.
+                    ArrayList<String> lines = new ArrayList<String>();
+                    String allLines = (String) params.getParameter(action).getValue();
+                    lines.addAll(Arrays.asList(allLines.split("\n")));
+                    String smarts = "";
+                    String atomIDs ="";
+                    for (String line : lines)
+                    {
+                      	System.out.println("---> line "+line);
+                    	//TODO change: this is very hardcoded!!!
+                    	String key = line.substring(0, line.indexOf(":"));
+                    	String value = line.substring(line.indexOf(":")+1).trim();
+                    	switch (key.toUpperCase())
+                    	{
+                    		case "SMARTS":
+                    			if (smarts.isBlank())
+                    			{
+                    				smarts = value;
+                    			} else {
+                    				smarts = smarts 
+                    						+ System.getProperty("line.separator") 
+                    						+ value;
+                    			}
+                    			break;
+                    		case "ATOMIDS":
+                    			if (atomIDs.isBlank())
+                    			{
+                    				atomIDs = value;
+                    			} else {
+                    				atomIDs = atomIDs 
+                    						+ System.getProperty("line.separator") 
+                    						+ value;
+                    			}
+                    			break;
+                    		case "GENERATECONSTRAINTS":
+                    			break;
+                    		default:
+                    			cnstrParams.setParameter(new Parameter(key,
+                    					line.substring(line.indexOf(":")+1).trim()));
+                    	}
+                    }
+                    if (!smarts.isBlank())
+        			{
+                    	cnstrParams.setParameter(new Parameter("SMARTS",smarts));
+        			}
+                    if (!atomIDs.isBlank())
+        			{
+                    	cnstrParams.setParameter(new Parameter("ATOMIDS",atomIDs));
+        			}
+                    
+                	Worker wrkr = WorkerFactory.createWorker(cnstrParams);
+                	ConstraintsGenerator cnstrg = (ConstraintsGenerator) wrkr;
+                	
+                	ConstraintsSet cs = new ConstraintsSet();
+                	try {
+    					cs = cnstrg.createConstraints(mol);
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    					Terminator.withMsgAndStatus("ERROR! Unable to create "
+    							+ "constraints. Exception from the "
+    							+ "ConstraintGenerator.", -1);
+    				}
+                    
+                    //TODO verbosity/logging
+                    cs.printAll();
+                    for (Constraint cns : cs)
+                    {
+                    	String str = "";
+                    	switch (cns.getType())
+                    	{
+						case ANGLE:
+							str = "A " + cns.getAtomIDs()[0] + " "
+									+ cns.getAtomIDs()[1] + " "
+									+ cns.getAtomIDs()[2];
+							
+							break;
+						case DIHEDRAL:
+							str = "D " + cns.getAtomIDs()[0] + " "
+									+ cns.getAtomIDs()[1] + " "
+									+ cns.getAtomIDs()[2] + " "
+									+ cns.getAtomIDs()[3];
+							break;
+						case DISTANCE:
+							str = "B " + cns.getAtomIDs()[0] + " "
+									+ cns.getAtomIDs()[1];
+							break;
+						case FROZENATM:
+							str = "X " + cns.getAtomIDs()[0];
+							break;
+						case UNDEFINED:
+							break;
+						default:
+							break;
+                    	}
+                    	
+                    	if (cns.hasValue())
+                    		str = str + " " + cns.getValue();
+                    	
+                    	result = result + str + System.getProperty("line.separator");
+                    }
+                	break;
+                }
 
                 //TODO: add here other atom/molecule specific option
 
