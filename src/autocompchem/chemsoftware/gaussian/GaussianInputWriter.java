@@ -692,23 +692,23 @@ public class GaussianInputWriter extends Worker
                     	switch (cns.getType())
                     	{
 						case ANGLE:
-							str = "A " + cns.getAtomIDs()[0] + " "
-									+ cns.getAtomIDs()[1] + " "
-									+ cns.getAtomIDs()[2];
+							str = "A " + (cns.getAtomIDs()[0]+1) + " "
+									+ (cns.getAtomIDs()[1]+1) + " "
+									+ (cns.getAtomIDs()[2]+1);
 							
 							break;
 						case DIHEDRAL:
-							str = "D " + cns.getAtomIDs()[0] + " "
-									+ cns.getAtomIDs()[1] + " "
-									+ cns.getAtomIDs()[2] + " "
-									+ cns.getAtomIDs()[3];
+							str = "D " + (cns.getAtomIDs()[0]+1) + " "
+									+ (cns.getAtomIDs()[1]+1) + " "
+									+ (cns.getAtomIDs()[2]+1) + " "
+									+ (cns.getAtomIDs()[3]+1);
 							break;
 						case DISTANCE:
-							str = "B " + cns.getAtomIDs()[0] + " "
-									+ cns.getAtomIDs()[1];
+							str = "B " + (cns.getAtomIDs()[0]+1) + " "
+									+ (cns.getAtomIDs()[1]+1);
 							break;
 						case FROZENATM:
-							str = "X " + cns.getAtomIDs()[0];
+							str = "X " + (cns.getAtomIDs()[0]+1);
 							break;
 						case UNDEFINED:
 							break;
@@ -719,7 +719,9 @@ public class GaussianInputWriter extends Worker
                     	if (cns.hasValue())
                     		str = str + " " + cns.getValue();
                     	
-                    	result = result + str + System.getProperty("line.separator");
+                    	result = result + str 
+                    			+ System.getProperty("line.separator")
+                    			+ System.getProperty("line.separator");
                     }
                 	break;
                 }
