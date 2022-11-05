@@ -52,9 +52,22 @@ public class Constraint implements Comparable<Constraint>
 	private double value;
 	
 	/**
-	 * Flag signalling this constrain uses a value
+	 * Flag signaling this constrain uses a value
 	 */
 	private boolean hasValue = false;
+	
+	/**
+	 * A given optional setting for this constraint. Examples are the options
+	 * telling the comp. chem. software what to do with this constraints, i.e.,
+	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
+	 * (add constraint).
+	 */
+	private String options;
+	
+	/**
+	 * Flag signaling this constrain uses options.
+	 */
+	private boolean hasOpt = false;
 
 //------------------------------------------------------------------------------
 
@@ -65,105 +78,167 @@ public class Constraint implements Comparable<Constraint>
 	{}
 	
 //------------------------------------------------------------------------------
-	
+
+	/**
+	 * Constructs a constraint for a frozen atom.
+	 * @param i the index of the atom to freeze.
+	 */
 	public Constraint(int i)
 	{
-		this.type = ConstraintType.FROZENATM;
-		this.atmIDs[0] = i;
+		this(i, -1, -1, -1, ConstraintType.FROZENATM, null, null);
 	}
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * Constructs a constraint for a distance
+	 * @param i first index (0-based)
+	 * @param j second index (0-based)
+	 */
 	public Constraint(int i, int j)
 	{
-		this.type = ConstraintType.DISTANCE;
-		this.atmIDs[0] = i;
-		this.atmIDs[1] = j;
+		this(i, j, -1, -1, ConstraintType.DISTANCE, null, null);
 	}
 //------------------------------------------------------------------------------
 
+	/**
+	 * Constructs a constraint for an angle.
+	 * @param i first index (0-based)
+	 * @param j second index (0-based)
+	 * @param k third index (0-based)
+	 */
 	public Constraint(int i, int j, int k)
 	{
-		this.type = ConstraintType.ANGLE;
-		this.atmIDs[0] = i;
-		this.atmIDs[1] = j;
-		this.atmIDs[2] = k;
+		this(i, j, k, -1, ConstraintType.ANGLE, null, null);
 	}
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * Constructs a constraint for a dihedral.
+	 * @param i first index (0-based)
+	 * @param j second index (0-based)
+	 * @param k third index (0-based)
+	 * @param l forth index (0-based)
+	 */
 	public Constraint(int i, int j, int k, int l)
 	{
-		this.type = ConstraintType.DIHEDRAL;
+		this(i, j, k, l, ConstraintType.DIHEDRAL, null, null);
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructs a constraint for a distance
+	 * @param i first index (0-based)
+	 * @param j second index (0-based)
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
+	 */
+	public Constraint(int i, int j, double value)
+	{
+		this(i, j, -1, -1, ConstraintType.DISTANCE, Double.valueOf(value),null);
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Constructs a constraint for an angle.
+	 * @param i first index (0-based)
+	 * @param j second index (0-based)
+	 * @param k third index (0-based)
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
+	 */
+	public Constraint(int i, int j, int k, double value)
+	{
+		this(i, j, k, -1, ConstraintType.ANGLE, Double.valueOf(value), null);
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructs a constraint of any kind offering the possibility to define
+	 * a specific value and options to assign to the constraint.
+	 * @param i first index (0-based)
+	 * @param j second index (0-based)
+	 * @param k third index (0-based)
+	 * @param l forth index (0-based)
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
+	 * @param type the type of constraint. This defines how many of the indexes
+	 * are actually used.
+	 * @param options additional string usually used to tell the comp. chem.
+	 * software how to use the given information. For example,
+	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
+	 * (add constraint). Or null, if no option has to be given.
+	 */
+	public Constraint(int i, int j, int k, int l, 
+			ConstraintType type, Double value, String options)
+	{
 		this.atmIDs[0] = i;
 		this.atmIDs[1] = j;
 		this.atmIDs[2] = k;
 		this.atmIDs[3] = l;
-	}
-	
-//------------------------------------------------------------------------------
-
-	public Constraint(int i, int j, double value)
-	{
-		this(i,j);
-		this.value = value;
-		this.hasValue = true;
-	}
-	
-//------------------------------------------------------------------------------
-
-	public Constraint(int i, int j, int k, double value)
-	{
-		this(i,j,k);
-		this.value = value;
-		this.hasValue = true;
-	}
-	
-//------------------------------------------------------------------------------
-
-	public Constraint(int i, int j, int k, int l, double value)
-	{
-		this(i,j,k,l);
-		this.value = value;
-		this.hasValue = true;
+		if (value != null)
+		{
+			this.value = value.doubleValue();
+			this.hasValue = true;
+		}
+		if (options != null)
+		{
+			this.options = options;
+			this.hasOpt = true;
+		}
+		this.type = type;
 	}
 
 //------------------------------------------------------------------------------
 
+	/**
+	 * Constructs a constrain.
+	 * @param ids atom IDs. The number of value determines the type of 
+	 * constraint.
+	 * @throws Exception
+	 */
 	public static Constraint buildConstraint(ArrayList<Integer> ids) 
 			throws Exception
+	{
+		return buildConstraint(ids, null, null);
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructs a constrain.
+	 * @param ids atom IDs. The number of value determines the type of 
+	 * constraint.
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
+	 * @param opts additional string usually used to tell the comp. chem.
+	 * software how to use the given information. For example,
+	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
+	 * (add constraint). Or null, if no option has to be given.
+	 * @return the constraint.
+	 * @throws Exception
+	 */
+	public static Constraint buildConstraint(ArrayList<Integer> ids, 
+			Double value, String opts) throws Exception
 	{
 		switch (ids.size())
 		{
 			case 1:
-				return new Constraint(ids.get(0));
+				return new Constraint(ids.get(0), -1, -1, -1,
+						ConstraintType.FROZENATM, value, opts);
 			case 2:
-				return new Constraint(ids.get(0),ids.get(1));
+				return new Constraint(ids.get(0), ids.get(1), -1, -1,
+						ConstraintType.DISTANCE, value, opts);
 			case 3:
-				return new Constraint(ids.get(0),ids.get(1),ids.get(2));
+				return new Constraint(ids.get(0), ids.get(1), ids.get(2), -1,
+						ConstraintType.ANGLE, value, opts);
 			case 4:
-				return new Constraint(ids.get(0),ids.get(1),ids.get(2),
-						ids.get(3));
-			default:
-				throw new Exception("Unexpected number of atom IDs (" 
-						+ ids.size() + "). Cannot construct a Constraint.");
-		}
-	}
-	
-//------------------------------------------------------------------------------
-
-	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			double value) throws Exception
-	{
-		switch (ids.size())
-		{
-			case 2:
-				return new Constraint(ids.get(0),ids.get(1),value);
-			case 3:
-				return new Constraint(ids.get(0),ids.get(1),ids.get(2),value);
-			case 4:
-				return new Constraint(ids.get(0),ids.get(1),ids.get(2),
-						ids.get(3),value);
+				return new Constraint(ids.get(0), ids.get(1), ids.get(2),
+						ids.get(3), ConstraintType.DIHEDRAL, value, opts);
 			default:
 				throw new Exception("Unexpected number of atom IDs (" 
 						+ ids.size() + "). Cannot construct a Constraint.");
@@ -206,6 +281,7 @@ public class Constraint implements Comparable<Constraint>
 				sb.append(",");
 		}
 		sb.append("], value=").append(value);
+		sb.append("], options=").append(options);
 		sb.append("] ");
 		return sb.toString();
 	}
@@ -336,6 +412,27 @@ public class Constraint implements Comparable<Constraint>
 		} else {
 			return Integer.compare(this.getNumberOfIDs(), o.getNumberOfIDs());
 		}
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * @return <code>true</code> is this constraint is associated with any 
+	 * additional optional string.
+	 */
+	public boolean hasOpt() 
+	{
+		return hasOpt;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * @return the optional string associated with this constraint.
+	 */
+	public String getOpt() 
+	{
+		return options;
 	}
 	
 //------------------------------------------------------------------------------

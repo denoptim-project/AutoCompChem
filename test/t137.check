@@ -12,16 +12,19 @@ if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 n=0;n=$(grep -c "C " t137-mol.inp)
 if [ $n -ne 0 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^X " t137-mol.inp)
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+n=0;n=$(grep -c "^X 2$" t137-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^B 3 4 1.234" t137-mol.inp)
+n=0;n=$(grep -c "^X 8$" t137-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^B 3 4 A$" t137-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^A 3 4 5 126.0" t137-mol.inp)
+n=0;n=$(grep -c "^A 3 4 5 F$" t137-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^D 3 4 5 6 -0.123" t137-mol.inp)
+n=0;n=$(grep -c "^D 3 4 5 6 A b c d$" t137-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
 n=0;n=$(grep -c "STO-3G" t137-mol.inp)

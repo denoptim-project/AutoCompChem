@@ -24,7 +24,7 @@ n=0;n=$(grep -c "^\$spin 0$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 n=0;n=$(grep -c "^\$fix$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9; exit -1 ; fi
-n=0;n=$(grep -c "^ *atoms: 1,2,3,4,5,6,8,10,11,12,13,14$" t134-mol-0.xcontrol)
+n=0;n=$(grep -c "^ *atoms: 2, 3, 4, 5, 6$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10; exit -1 ; fi
 n=0;n=$(grep -c "^ *elements: O,P,S$" t134-mol-0.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11; exit -1 ; fi

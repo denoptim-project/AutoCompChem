@@ -51,7 +51,7 @@ public class ConnectivityUtilsTest
         {
             IAtom atom = chemBuilder.newAtom();
             atom.setSymbol(elements[i]);
-            atom.setPoint3d(new Point3d(0.0,0.0, new Double(i)));
+            atom.setPoint3d(new Point3d(0.0,0.0, Double.valueOf(i)));
             ref.addAtom(atom);
             if (i>0)
                 ref.addBond(i-1, i, IBond.Order.SINGLE);
@@ -62,7 +62,7 @@ public class ConnectivityUtilsTest
         {
             IAtom atom = chemBuilder.newAtom();
             atom.setSymbol(elements[i]);
-            atom.setPoint3d(new Point3d(0.0,0.0, new Double(i)));
+            atom.setPoint3d(new Point3d(0.0,0.0, Double.valueOf(i)));
             mol1.addAtom(atom);
             if (i>0)
                 mol1.addBond(i-1, i, IBond.Order.SINGLE);
@@ -73,7 +73,7 @@ public class ConnectivityUtilsTest
         {
             IAtom atom = chemBuilder.newAtom();
             atom.setSymbol(elements[i]);
-            atom.setPoint3d(new Point3d(0.0,0.0, new Double(i*2)));
+            atom.setPoint3d(new Point3d(0.0,0.0, Double.valueOf(i*2)));
             mol2.addAtom(atom);
             if (i>0)
                 mol2.addBond(i-1, i, IBond.Order.SINGLE);

@@ -629,7 +629,6 @@ public class GaussianInputWriter extends Worker
                     String atomIDs ="";
                     for (String line : lines)
                     {
-                      	System.out.println("---> line "+line);
                     	//TODO change: this is very hardcoded!!!
                     	String key = line.substring(0, line.indexOf(":"));
                     	String value = line.substring(line.indexOf(":")+1).trim();
@@ -691,36 +690,41 @@ public class GaussianInputWriter extends Worker
                     	String str = "";
                     	switch (cns.getType())
                     	{
-						case ANGLE:
-							str = "A " + (cns.getAtomIDs()[0]+1) + " "
-									+ (cns.getAtomIDs()[1]+1) + " "
-									+ (cns.getAtomIDs()[2]+1);
-							
-							break;
-						case DIHEDRAL:
-							str = "D " + (cns.getAtomIDs()[0]+1) + " "
-									+ (cns.getAtomIDs()[1]+1) + " "
-									+ (cns.getAtomIDs()[2]+1) + " "
-									+ (cns.getAtomIDs()[3]+1);
-							break;
-						case DISTANCE:
-							str = "B " + (cns.getAtomIDs()[0]+1) + " "
-									+ (cns.getAtomIDs()[1]+1);
-							break;
-						case FROZENATM:
-							str = "X " + (cns.getAtomIDs()[0]+1);
-							break;
-						case UNDEFINED:
-							break;
-						default:
-							break;
+							case ANGLE:
+								str = "A " + (cns.getAtomIDs()[0]+1) + " "
+										+ (cns.getAtomIDs()[1]+1) + " "
+										+ (cns.getAtomIDs()[2]+1);
+								
+								break;
+							case DIHEDRAL:
+								str = "D " + (cns.getAtomIDs()[0]+1) + " "
+										+ (cns.getAtomIDs()[1]+1) + " "
+										+ (cns.getAtomIDs()[2]+1) + " "
+										+ (cns.getAtomIDs()[3]+1);
+								break;
+							case DISTANCE:
+								str = "B " + (cns.getAtomIDs()[0]+1) + " "
+										+ (cns.getAtomIDs()[1]+1);
+								break;
+							case FROZENATM:
+								str = "X " + (cns.getAtomIDs()[0]+1);
+								break;
+							case UNDEFINED:
+								break;
+							default:
+								break;
                     	}
                     	
+                    	// NB: Gaussian does not yet accept a value!
+                    	/*
                     	if (cns.hasValue())
                     		str = str + " " + cns.getValue();
+                    	*/
+                    	
+                    	if (cns.hasOpt())
+                    		str = str + " " + cns.getOpt();
                     	
                     	result = result + str 
-                    			+ System.getProperty("line.separator")
                     			+ System.getProperty("line.separator");
                     }
                 	break;

@@ -18,7 +18,11 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -164,6 +168,10 @@ public class GaussianOptionsSection
     private ArrayList<String> sortOpts(Set<String> keySet)
     {
         ArrayList<String> sortedKeys = new ArrayList<String>();
+        if (keySet.contains(GaussianConstants.MODREDUNDANTKEY))
+        {
+            sortedKeys.add(GaussianConstants.MODREDUNDANTKEY);
+        }
         if (keySet.contains(GaussianConstants.BASISOPTKEY))
         {
             sortedKeys.add(GaussianConstants.BASISOPTKEY);
@@ -175,7 +183,8 @@ public class GaussianOptionsSection
         for (String key : keySet)
         {
             if (key.equals(GaussianConstants.PCMOPTKEY) 
-                || key.equals(GaussianConstants.BASISOPTKEY))
+                || key.equals(GaussianConstants.BASISOPTKEY)
+                || key.equals(GaussianConstants.MODREDUNDANTKEY))
             {
                 continue;
             }
@@ -187,9 +196,9 @@ public class GaussianOptionsSection
 //------------------------------------------------------------------------------
 
     /**
-     * Return an array of strings without new line characters
-     * Suitable to print this Options Section in a Gaussian input file
-     * @return the lines of text ready for a Gaussian input file
+     * Return an array of strings without new line characters.
+     * Suitable to print this Options Section in a Gaussian input file.
+     * @return the lines of text ready for a Gaussian input file.
      */
 
     public ArrayList<String> toLinesInp()

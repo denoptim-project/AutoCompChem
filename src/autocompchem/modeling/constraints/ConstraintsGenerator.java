@@ -377,6 +377,12 @@ public class ConstraintsGenerator extends Worker
                 	continue;
                 }
                 
+                if (r.getType() == RuleType.SMARTS &&
+                		r.getSMARTS().size() != atmsForCD.size())
+                {
+                	continue;
+                }
+                
                 for (IAtom atmA : atmsForCD.get(0))
                 {
                 	if (atmsForCD.size() == 1)

@@ -154,6 +154,11 @@ public class GaussianConstants
      * JobDetails keyword for basis set option section
      */
     public final static String BASISOPTKEY = LABMUTEKEY + "BASIS";
+    
+    /**
+     * JobDetails keyword for modRedundant section
+     */
+    public final static String MODREDUNDANTKEY = LABMUTEKEY + "MODREDUNDANT";
 
     /**
      * String identifying the beginning of a geometry block.

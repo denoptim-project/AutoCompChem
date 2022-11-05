@@ -17,12 +17,13 @@ $END
 optSection# $MTmodRedundant=$ACCPAR_$STARTGenerateConstraints:
 VERBOSITY: 2
 SMARTS: [#8]
-SMARTS: [$([#6](~[#1])(~[#1])~[#1])]
+SMARTS: [$([#6](~[#1])(~[#1])~[#1])] 
 SMARTS: [#6] [#8] [#6] onlybonded
+SMARTS: [#6] [#8] options:F more
 AtomIDS: 1
-AtomIDS: 2 3 1.234
-AtomIDS: 2 3 4 126.0
-AtomIDS: 2 3 4 5 -0.123
+AtomIDS: 2 3 A
+AtomIDS: 2 3 4 126.0 F
+AtomIDS: 2 3 4 5 -0.123 options:A b c d
 $END
 --link1--
 rutSection# $MTprint=P

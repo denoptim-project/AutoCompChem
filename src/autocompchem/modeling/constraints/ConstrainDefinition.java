@@ -26,13 +26,14 @@ import autocompchem.utils.NumberUtils;
 public class ConstrainDefinition 
 {
 	/**
-	 * Parameter used to flag the request of considering only tuples of atoms 
+	 * Keyword used to flag the request of considering only tuples of atoms 
 	 * that are bonded in the order given by the tuple.
 	 */
     private static final Object PARONLYBONDED = "ONLYBONDED";
     
     /**
-     * Parameter used to flag the request to decouple the list of center identifiers
+     * Keyword used to flag the request to decouple the list of center 
+     * identifiers
      * from the definition of an internal coordinate. When this is found the
      * constraint (whatever it is) will be applied to all atoms, and not to
      * the internal coordinate type defined by the number of identifiers (e,g,
@@ -41,6 +42,11 @@ public class ConstrainDefinition
      * from the initial position of the identified atoms.
      */
     private static final String PARNOINTCOORD = "NOTANIC";
+    
+    /**
+     * Keyword used to flag the identification of options.
+     */
+    private static final String KEYOPTIONS = "OPTIONS:";
 
 	/**
      * Reference name 
@@ -87,6 +93,14 @@ public class ConstrainDefinition
 	 * collection that does not define an internal coordinate.
 	 */
 	private boolean notAnIC = false;
+	
+	/**
+	 * A given optional setting for the constraint. Examples are the options
+	 * telling the comp. chem. software what to do with this constraints, i.e.,
+	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
+	 * (add constraint).
+	 */
+	private String options;
 
 //------------------------------------------------------------------------------
 
@@ -121,32 +135,44 @@ public class ConstrainDefinition
             boolean endOfIDs = false;
             for (int j=0; j<p.length; j++)
             {
-            	if (!NumberUtils.isParsableToInt(p[j]) 
-            			&& NumberUtils.isParsableToDouble(p[j]))
+            	if (NumberUtils.isParsableToInt(p[j]))
             	{
-            		// WARNING! For now we expect only one double value
-            		// So, the last double we find is going to be The one.
-            		endOfIDs = true;
-            		this.hasValue = true;
-            		this.value = Double.parseDouble(p[j]);
-            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
-            		endOfIDs = true;
-            		this.onlyBonded = true;
-            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
-            		endOfIDs = true;
-            		this.notAnIC = true;
+            		// Reading atom IDs
+            		this.idsQry.add(Integer.parseInt(p[j]));
             	} else {
-            		//TODO: deal with wildcards
-            		if (!endOfIDs)
-            		{
-            			this.idsQry.add(Integer.parseInt(p[j]));
-            		}
+            		endOfIDs = true;
+	            	if (NumberUtils.isParsableToDouble(p[j]))
+	            	{
+	            		// Reading optional value
+	            		// WARNING! For now we expect only one double value
+	            		this.hasValue = true;
+	            		this.value = Double.parseDouble(p[j]);
+	            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
+	            		// Parsing ACC option
+	            		this.onlyBonded = true;
+	            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
+	            		// Parsing ACC option
+	            		this.notAnIC = true;
+	            	} else {
+	            		// Anything else is interpreted as an additional option,
+	            		// i.e., the "A" or "F" of Gaussian constraints
+	            		String s =  p[j];
+	            		if (p[j].toUpperCase().startsWith(KEYOPTIONS))
+	            			s = s.substring(KEYOPTIONS.length());
+	            		if (this.options!=null)
+	            		{
+	            			this.options = this.options + " " + s;
+	            		} else {
+	            			this.options = s;
+	            		}
+	            	}
             	}
             }
         } else {
         	this.type = RuleType.SMARTS;
         	this.smartsQry = new ArrayList<SMARTS>();
         	boolean endOfSmarts = false;
+        	boolean readOpts = false;
             for (int j=0; j<p.length; j++)
             {
             	if (NumberUtils.isNumber(p[j]))
@@ -163,6 +189,20 @@ public class ConstrainDefinition
             		endOfSmarts = true;
             		this.notAnIC = true;
             	} else {
+            		String s = p[j];
+            		if (p[j].toUpperCase().startsWith(KEYOPTIONS) || readOpts)
+            		{
+            			endOfSmarts = true;
+            			readOpts = true;
+            			if (p[j].toUpperCase().startsWith(KEYOPTIONS))
+            				s = s.substring(KEYOPTIONS.length());
+            			if (this.options!=null)
+	            		{
+	            			this.options = this.options + " " + s;
+	            		} else {
+	            			this.options = s;
+	            		}
+            		}
             		if (!endOfSmarts)
             		{
             			this.smartsQry.add(new SMARTS(p[j]));
@@ -251,9 +291,9 @@ public class ConstrainDefinition
   			return c;
   		} else {
 	  		if (!hasValue)
-	  			return Constraint.buildConstraint(arrayList);
+	  			return Constraint.buildConstraint(arrayList, null, options);
 	  		else 
-	  			return Constraint.buildConstraint(arrayList, value);
+	  			return Constraint.buildConstraint(arrayList, value, options);
   		}
   	}
 
@@ -275,6 +315,7 @@ public class ConstrainDefinition
         {
         	sb.append(", [value = ").append(value).append("]");
         }
+        sb.append(", [options = ").append(options).append("]");
         return sb.toString();
     }
 
