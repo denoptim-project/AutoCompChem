@@ -6,7 +6,7 @@ echo NOT Passed ERROR 1
 exit -1
 fi
 
-if [ $(wc -l t129-mol.inp | awk '{print $1}') != 176 ]; then echo NOT Passed ERROR 2; exit -1 ; fi
+if [ $(wc -l t129-mol.inp | awk '{print $1}') != 180 ]; then echo NOT Passed ERROR 2; exit -1 ; fi
 
  if ! grep -q "# HF/GEN 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
  if ! grep -q "H * 0" t129-mol.inp ; then echo NOT Passed ERROR 15 ; exit -1 ; fi

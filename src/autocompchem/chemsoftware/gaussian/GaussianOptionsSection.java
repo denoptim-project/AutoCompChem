@@ -210,6 +210,8 @@ public class GaussianOptionsSection
                          ParameterUtils.removeMultilineLabels(parts.get(key))));
             lines.add("");
         }
+        // An extra blank line seems not necessary in Gaussian16
+        lines.add("");
 
         return lines;
     }
