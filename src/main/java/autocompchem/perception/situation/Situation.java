@@ -24,10 +24,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.jsp.el.ExpressionEvaluator;
-import javax.servlet.jsp.el.VariableResolver;
-
-import org.apache.commons.el.ExpressionEvaluatorImpl;
+import jakarta.el.ELContext;
+import jakarta.el.ELException;
+import jakarta.el.ELResolver;
+import jakarta.el.ExpressionFactory;
+import jakarta.el.FunctionMapper;
+import jakarta.el.ValueExpression;
+import jakarta.el.VariableMapper;
 
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -37,7 +40,6 @@ import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.run.Action;
-import autocompchem.run.Terminator;
 
 
 /**
@@ -389,31 +391,6 @@ public class Situation extends Concept
 //------------------------------------------------------------------------------
 
     /**
-     * Map of variables that links (i.e., resolves) the name of a variable 
-     * with its value, whatever that might be.
-     */
-
-    private class MyVariableResolver implements VariableResolver 
-    {
-        private HashMap<String, Object> vars;
-        public MyVariableResolver(HashMap<String, Object> vars)
-        {
-            this.vars = vars;
-        }
-
-        /**
-         * @return the value of a given variable, whatever that might be
-         */
-
-        public Object resolveVariable(String pName)
-        {
-            return vars.get(pName);
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Checks if all circumstances are satisfied. This method evaluates 
      * the logical expression that puts in relation all the 
      * circumstances and returns the boolean result.
@@ -434,17 +411,112 @@ public class Situation extends Concept
                                  + "circumstances (" + context.size() + ")");
         }
 
-
         HashMap<String,Object> vars = new HashMap<String,Object>();
         for (int i=0; i<fingerprint.size(); i++)
         {
-            vars.put("v" + Integer.toString(i),fingerprint.get(i));
+            vars.put("v" + Integer.toString(i), fingerprint.get(i));
         }
+        
+        ExpressionFactory expFactory = ExpressionFactory.newInstance();
+        ELContext ncc = new ELContext() {
+        	VariableMapper vm = new VariableMapper() {
+        		@Override
+        		public ValueExpression resolveVariable(String varName) 
+        		{
+        			ValueExpression ve = new ValueExpression() 
+        			{
+        				Object value;
+        				
+						/**
+						 * Version ID
+						 */
+						private static final long serialVersionUID = 1L;
 
-        VariableResolver variableResolver = new MyVariableResolver(vars);
-        ExpressionEvaluator evaluator = new ExpressionEvaluatorImpl();
+						@Override
+						public Object getValue(ELContext context) {
+							if (vars.containsKey(varName))
+							{
+								value = vars.get(varName);
+							} else {
+								throw new ELException("Variable '" + varName
+										+ "' cannot be resolved.");
+							}
+							return value;
+						}
 
-        if (logicalExpression.equals(DEFLOGICAL))
+						// This should not make sense since this is read-only
+						@Override
+						public void setValue(ELContext context, Object value) {
+							this.value = value;
+						}
+
+						@Override
+						public boolean isReadOnly(ELContext context) {
+							return true;
+						}
+
+						@Override
+						public Class<?> getType(ELContext context) {
+							return value.getClass();
+						}
+
+						@Override
+						public Class<?> getExpectedType() {
+							return Boolean.class;
+						}
+
+						@Override
+						public String getExpressionString() {
+							return null;
+						}
+
+						@Override
+						public boolean equals(Object obj) {
+							return false;
+						}
+
+						@Override
+						public int hashCode() {
+							//Dummy hashcode
+							return 0;
+						}
+
+						@Override
+						public boolean isLiteralText() {
+							return false;
+						}
+        			};
+        			return ve;
+        		}
+
+        		// Read-only
+				@Override
+				public ValueExpression setVariable(String variable, 
+						ValueExpression expression) 
+				{
+					return null;
+				}
+        	};
+       
+			@Override
+			public ELResolver getELResolver() {
+				//None
+				return null;
+			}
+
+			@Override
+			public FunctionMapper getFunctionMapper() {
+				// None
+				return null;
+			}
+
+			@Override
+			public VariableMapper getVariableMapper() {
+				return vm;
+			}
+		};
+		
+		if (logicalExpression.equals(DEFLOGICAL))
         {
             StringBuilder sb = new StringBuilder();
             sb.append("${");
@@ -459,20 +531,18 @@ public class Situation extends Concept
             sb.append("}");
             logicalExpression = sb.toString();
         }
-
-        try
-        {
-            Object value = evaluator.evaluate(logicalExpression,
-                           String.class,  //class of the returned value
-                           variableResolver, //variable names-to-values map
-                           null); // name-to-function map (not needed)
+		
+		try
+		{
+			ValueExpression ve = expFactory.createValueExpression(ncc, 
+					logicalExpression, Boolean.class);
+			Object value = ve.getValue(ncc);
 
             if (value != null) 
             {
                 String[] words = ((String) value).split("\\s+");
                 if (words.length > 1)
                 {
-                    //TODO warning?
                     throw new Exception("Evaluation of Expression "
                             + "'" + logicalExpression + "' "
                             + "returned more than one word (i.e., '" 
@@ -489,7 +559,6 @@ public class Situation extends Concept
                             res = false;
                             break;
                         default:
-                            //TODO warning?
                             throw new Exception("Evaluation of Expression "
                             + "'" + logicalExpression 
                             + "' did not return a Boolean (i.e., '"
@@ -499,9 +568,10 @@ public class Situation extends Concept
             }
             else
             {
-            //TODO warning?
-                 throw new Exception("Evaluation of Expression Language "
-                   + "returned null instead of boolean. Check expression.");
+            	//TODO error?
+                throw new Exception("Evaluation of Expression Language "
+                		+ "returned null instead of boolean. "
+                		+ "Check expression.");
             }
         }
         catch (Throwable t)
