@@ -22,24 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 
 
-import java.io.File;
-import java.util.ArrayList;
-
 import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.modeling.basisset.BasisSet;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
-import autocompchem.perception.situation.Situation;
-import autocompchem.text.TextBlock;
 
 
 /**

@@ -24,14 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.el.ELContext;
-import jakarta.el.ELException;
-import jakarta.el.ELResolver;
-import jakarta.el.ExpressionFactory;
-import jakarta.el.FunctionMapper;
-import jakarta.el.ValueExpression;
-import jakarta.el.VariableMapper;
-
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.Circumstance;
@@ -40,6 +32,13 @@ import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.run.Action;
+import jakarta.el.ELContext;
+import jakarta.el.ELException;
+import jakarta.el.ELResolver;
+import jakarta.el.ExpressionFactory;
+import jakarta.el.FunctionMapper;
+import jakarta.el.ValueExpression;
+import jakarta.el.VariableMapper;
 
 
 /**

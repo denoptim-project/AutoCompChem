@@ -1,7 +1,5 @@
 package autocompchem.chemsoftware.gaussian;
 
-import java.io.File;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -33,8 +31,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;

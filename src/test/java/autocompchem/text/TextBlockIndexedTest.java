@@ -1,15 +1,13 @@
 package autocompchem.text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -28,14 +26,8 @@ import java.util.HashSet;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Pattern;
-
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.utils.StringUtils;
 

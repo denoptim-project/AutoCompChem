@@ -139,9 +139,9 @@ public class SMARTSQueryHandler
 
     /**
      * Reads SMARTS for defining internal coordinates. 
-     * This methos collects all non-single-atom SMARTS strings found in a
+     * This method collects all non-single-atom SMARTS strings found in a
      * given string. The string is
-     * assumend to contain one or more lines (i.e., newline-character separated)
+     * assumed to contain one or more lines (i.e., newline-character separated)
      * and each line to contain from 2 to 4 space-separated single-atom SMARTS.
      * @param allLines the string collecting all lines and including newline
      * characters

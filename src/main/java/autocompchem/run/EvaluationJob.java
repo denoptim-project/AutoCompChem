@@ -19,20 +19,18 @@ package autocompchem.run;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.perception.Perceptron;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.perception.situation.SituationConstants;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.TaskID;
-import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 /**
  * A class of {@link ACCJob}s that in meant to evaluate other jobs.

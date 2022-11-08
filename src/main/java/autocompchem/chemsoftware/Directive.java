@@ -22,18 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
-import autocompchem.chemsoftware.nwchem.NWChemConstants;
-import autocompchem.chemsoftware.nwchem.NWChemKeyword;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -43,9 +38,6 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.SMARTS;
-import autocompchem.smarts.SMARTSQueryHandler;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;

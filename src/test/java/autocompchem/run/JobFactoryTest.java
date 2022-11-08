@@ -29,10 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.io.IOtools;
-import autocompchem.perception.circumstance.Circumstance;
 import autocompchem.perception.circumstance.CircumstanceConstants;
-import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;

@@ -19,9 +19,7 @@ package autocompchem.chemsoftware;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.openscience.cdk.AtomContainerSet;
@@ -42,7 +40,6 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**
@@ -284,7 +281,7 @@ public abstract class ChemSoftOutputHandler extends Worker
                 				.length());
 	                try
 	                {
-	                	double v = Double.parseDouble(w);
+	                	connectivityCheckTol = Double.parseDouble(w);
 	                } 
 	                catch (Throwable t)
 	                {
@@ -300,6 +297,8 @@ public abstract class ChemSoftOutputHandler extends Worker
 	                checkBLvsCT = true;
                 }
             }
+            //TODO-gg set use of the default if is not already defined without
+            // the need to have the parameter. If so, remove the associated fields.
             if (checkBLvsCT)
             {
             	// We have to ensure that last geometry is extracted

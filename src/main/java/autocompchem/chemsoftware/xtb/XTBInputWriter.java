@@ -20,36 +20,24 @@ package autocompchem.chemsoftware.xtb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.utils.StringUtils;

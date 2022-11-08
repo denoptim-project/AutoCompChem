@@ -28,9 +28,11 @@ import org.openscience.cdk.interfaces.IAtom;
 public class AtomClash
 {
     //Atoms involved
-        private IAtom atm1;
+    @SuppressWarnings("unused")
+	private IAtom atm1;
     private String ref1;
-    private IAtom atm2;
+    @SuppressWarnings("unused")
+	private IAtom atm2;
     private String ref2;
 
     //Interatomic distance

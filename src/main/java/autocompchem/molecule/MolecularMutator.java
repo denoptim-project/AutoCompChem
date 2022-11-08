@@ -92,11 +92,6 @@ public class MolecularMutator extends Worker
     private Map<String,String> newElms = new HashMap<String,String>();
 
     /**
-     * FLag reporting that all tasks are done
-     */
-    private boolean allDone = false;
-
-    /**
      * Verbosity level
      */
     private int verbosity = 0;
@@ -236,7 +231,6 @@ public class MolecularMutator extends Worker
     public void mutateAll()
     {
         int i = 0;
-        allDone = false;
         try 
         {
             SDFIterator sdfItr = new SDFIterator(inFile);
@@ -274,7 +268,6 @@ public class MolecularMutator extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
         }
-        allDone = true;
     }
 
 //-----------------------------------------------------------------------------

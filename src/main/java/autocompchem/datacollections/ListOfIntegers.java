@@ -20,8 +20,6 @@ package autocompchem.datacollections;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import autocompchem.utils.StringUtils;
-
 /**
  * Class representing an ordered list of integers.
  * 

@@ -5,14 +5,11 @@ import java.util.ArrayList;
 
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.silent.AtomContainer;
 
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Action;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
 /*

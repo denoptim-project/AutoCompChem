@@ -264,9 +264,7 @@ public class ChelateAnalyzer extends Worker
             {
                 //Get the molecule
                 i++;
-                boolean skipMol = false;
                 IAtomContainer mol = sdfItr.next();
-                String molName = MolecularUtils.getNameOrID(mol);
 
                 //Perform analysis
                 analyzeChelation(mol);

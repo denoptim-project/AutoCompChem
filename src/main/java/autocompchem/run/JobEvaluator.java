@@ -18,17 +18,15 @@ package autocompchem.run;
  */
 
 import java.io.File;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterConstants;
-import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.datacollections.ParameterConstants;
+import autocompchem.files.FileUtils;
 import autocompchem.perception.Perceptron;
 import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;

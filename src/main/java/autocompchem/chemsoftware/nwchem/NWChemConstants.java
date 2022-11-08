@@ -23,8 +23,6 @@ import java.util.HashSet;
 
 import java.util.Set;
 
-import autocompchem.worker.WorkerConstants;
-
 /**
  * Storage of predefined constants for NWChem related tools
  *

@@ -1,7 +1,5 @@
 package autocompchem.molecule.vibrations;
 
-import java.awt.Component;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -20,7 +18,6 @@ import java.awt.Component;
  */
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.vecmath.Point3d;
 

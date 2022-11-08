@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import autocompchem.text.TextAnalyzer;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Action to be taken in a job workflow.

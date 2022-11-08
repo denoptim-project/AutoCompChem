@@ -38,7 +38,6 @@ import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
 import autocompchem.datacollections.NamedData;

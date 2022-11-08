@@ -1,8 +1,5 @@
 package autocompchem.run;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -25,10 +22,8 @@ import java.util.ArrayList;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job.RunnableAppID;
-import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
