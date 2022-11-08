@@ -1,6 +1,5 @@
-jar/*
 bin
 test/results/*
 AutoCompChem.jar
 .settings
-/target/
+target/
