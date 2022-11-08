@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ ! -f t122.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if [ ! -f t122-pruned.sdf ] ; then echo NOT Passed ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c " N " t122-pruned.sdf)
+if [ $n -ne 0 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+if [ ! -f t122-pruned-2.sdf ] ; then echo NOT Passed ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c " Cl " t122-pruned.sdf)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c " Cl " t122-pruned-2.sdf)
+if [ $n -ne 0 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t122.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 8
+exit -1
+fi

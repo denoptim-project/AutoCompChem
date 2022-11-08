@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Parsing data from Orca output
+VERBOSITY: 2
+TASK: AnalyseORCAOutput
+JobOutputFile: ../t133-orca.log
+TEMPLATECONNECTIVITY: ../t133-tmpl.sdf TOLERANCE=0.20

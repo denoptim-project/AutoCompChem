@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ ! -f "t130.gbs" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+ if ! grep -q "H *  0" t130.gbs ; then echo NOT Passes ERROR 1 ; exit -1 ; fi
+ if ! grep -q "LANL2DZ" t130.gbs ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+ if ! grep -q "\*\*\*\*" t130.gbs ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+ if ! grep -q "C1 * 0" t130.gbs ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+ if ! grep -q "S * 6 * 1\.000  " t130.gbs ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+ if ! grep -q " 3\.047524880E+03 * 1\.83473713.E-03" t130.gbs ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+ if ! grep -q " 4\.573695180E+02 * 1\.40373228.E-02" t130.gbs ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+ if ! grep -q " 1\.039486850E+02 * 6\.88426222.E-02" t130.gbs ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+ if ! grep -q " 2\.921015530E+01 * 2\.32184443.E-01" t130.gbs ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+ if ! grep -q " 9\.286662960E+00 * 4\.67941348.E-01" t130.gbs ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+ if ! grep -q " 3\.163926960E+00 * 3\.62311985.E-01" t130.gbs ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+ if ! grep -q "SP * 3 * 1\.000  " t130.gbs ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+ if ! grep -q " 7\.868272350E+00 *  -1\.19332419.E-01 * 6\.89990665.E-02" t130.gbs ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
+ if ! grep -q " 1\.881288540E+00 *  -1\.60854151.E-01 * 3\.16423961.E-01" t130.gbs ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
+ if ! grep -q " 5\.442492580E-01 * 1\.14345643.E+00  7\.44308290.E-01" t130.gbs ; then echo NOT Passes ERROR 15 ; exit -1 ; fi
+ if ! grep -q "SP * 1 * 1\.000  " t130.gbs ; then echo NOT Passes ERROR 16 ; exit -1 ; fi
+ if ! grep -q " 1\.687144782E-01 * 1.00000000.E+00  * 1\.00000000.E+00" t130.gbs ; then echo NOT Passes ERROR 17 ; exit -1 ; fi
+ if ! grep -q "\*\*\*\*" t130.gbs ; then echo NOT Passes ERROR 18 ; exit -1 ; fi
+
+
+grep -q 'Termination status: 0' "t130.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 99
+exit -1
+fi

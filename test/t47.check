@@ -1,12 +1,12 @@
 #!/bin/bash
 
-grep -q '#Candidate dummy atoms (in multihapto): 1' t47.log
+grep -q '#Candidate dummy atoms .*: 1' t47.log
 if [ $? != 0 ] ; then
   echo NOT Passed 1
   exit -1
 fi
 
-grep -q 'Du: 12 #neighbours: 6' t47.log
+grep -q 'Fixing connectivity for:.*12 #neighbours: 6' t47.log
 if [ $? != 0 ] ; then
   echo NOT Passed 2
   exit -1

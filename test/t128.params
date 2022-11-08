@@ -1,0 +1,8 @@
+JOBSTART
+VERBOSITY: 1
+JOBSTART
+APP: SHELL
+CMD: /bin/bash ../t128.sh
+ARGS: a b " c c c"
+JOBEND
+JOBEND

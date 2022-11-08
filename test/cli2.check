@@ -1,0 +1,29 @@
+#!/bin/bash
+
+n=0
+grep -q "58 57  0  0  0  0  0  0  0  0" cli2-pruned.sdf
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -q "Matches for query '0': 3" cli2.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -q "Matches for query '1': 2" cli2.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -q 'Termination status: 0' cli2.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 4
+exit -1
+fi

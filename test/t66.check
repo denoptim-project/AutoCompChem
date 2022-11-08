@@ -15,7 +15,7 @@ exit -1
 fi
 
 n=0
-n=$(grep -c " Zan " t66-mol_mutated.sdf)
+n=$(grep -c " U " t66-mol_mutated.sdf)
 if [ $n != 1 ] ; then
 echo NOT Passed ERROR 3
 exit -1

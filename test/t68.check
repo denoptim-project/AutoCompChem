@@ -13,7 +13,7 @@ echo NOT Passed ERROR 2
 exit -1
 fi
 
-grep -q "Matches for query '1': 1" t68.log
+grep -q "Matches for query '1': 2" t68.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 3
 exit -1

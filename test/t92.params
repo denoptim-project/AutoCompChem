@@ -8,4 +8,4 @@ TASK: PrepareInputNWChem
 INFILE: ../t92-mol.sdf
 MULTIGEOMNWCHEM: first_G second_G
 USESAMETAGSFORMULTIGEOM: the value doesn't have any effect
-JOBDETAILS: ../t92-jobDetails
+JOBDETAILSFILE: ../t92-jobDetails

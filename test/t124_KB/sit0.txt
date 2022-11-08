@@ -1,0 +1,6 @@
+#
+# This is a dummy situation
+#
+REFERENCENAME: Sit-0
+SITUATIONTYPE: comunication breakdown
+CIRCUMSTANCE: logfeed matches something something 

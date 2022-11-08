@@ -5,5 +5,5 @@ VERBOSITY: 2
 TASK: FixAndRestartGaussian 
 INFILE: ../t40.out
 NEWINPFILE: t40.inp
-JOBDETAILS: ../t40-jobDetails
+JOBDETAILSFILE: ../t40-jobDetails
 GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian09/

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ ! -f t126.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=0;n=$(grep -c "FROZENATM" t126.log)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "DISTANCE" t126.log)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "ANGLE" t126.log)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "DIHEDRAL" t126.log)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "=-123\.09]" t126.log)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "IDs=\[17\,14\,7\,1\]" t126.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "IDs=\[25\,15\,7\,1\]" t126.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "DIST.*=99\.0]" t126.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c "DIHEDRAL.*=999\.0]" t126.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t126.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 10
+  exit -1
+fi

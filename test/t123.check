@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ ! -f t123.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if [ ! -f t123-pruned.sdf ] ; then echo NOT Passed ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c " N " t123-pruned.sdf)
+if [ $n -ne 0 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+if [ ! -f t123-pruned-2.sdf ] ; then echo NOT Passed ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c " Cl " t123-pruned.sdf)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c " Cl " t123-pruned-2.sdf)
+if [ $n -ne 0 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c " N " t123-pruned-2.sdf)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "BASH: DONE" t123.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c "C29:Ru2" t123.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t123.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 10
+exit -1
+fi

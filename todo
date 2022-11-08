@@ -38,3 +38,12 @@
 -mode redundant methods for reading and storing SMARTS-based rules defining options related to internal coordinates (see VibModuleOutputHandler and NWChemInputWriter).
 
 -can use commons-cli-1.4.jar to deal with the command line arguments
+
+- thing like ZMatrixHandler and BasisSetGenerator and MolecularMeter should be constructable without WorkerFacory
+
+- use shell job to start ezternal software (e.g. Gaussian)
+
+- make master job able to react to the perception of an error and the inpulse to perform an error fixing action
+
+- remove OS dependency from t123
+

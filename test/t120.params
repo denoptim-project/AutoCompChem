@@ -1,0 +1,5 @@
+VERBOSITY: 2
+TASK: ImposeConnectionTable
+INFILE: ../t120-mol.sdf
+TEMPLATE: ../t120-tmpl.sdf
+OUTFILE: t120-new-ct.sdf

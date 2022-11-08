@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ ! -f "t131-mol.inp" ]
+then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if ! command -v diff > /dev/null ; then "Skipped: command diff not found" ; exit 0 ; fi
+
+if ! diff -w t131-mol.inp ../t131-ref.inp ; then echo "NOT Passed: unexpected differences in output file t131-mol.inp"; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t131.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo "NOT Passed (termination status not found)"
+exit -1
+fi

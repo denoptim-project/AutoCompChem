@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ ! -f "t114.log" ]; then echo NOT Passed ERROR 1; exit -1 ; fi
+if [ ! -f "t114_final.sdf" ]; then echo NOT Passed ERROR 2; exit -1 ; fi
+if [ ! -f "t114_vb.xyz" ]; then echo NOT Passed ERROR 3; exit -1 ; fi
+
+n=0;n=$(grep -c " 0.0035.* -0.0054.* -0.0014.*" t114_vb.xyz)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c " 0.0357.* -0.0453.* 0.0179.*" t114_vb.xyz)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t114.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 6
+exit -1
+fi
+

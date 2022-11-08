@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ ! -f t128.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+if ! grep -q "1 is _a_" t128.log  ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+if ! grep -q "2 is _b_" t128.log  ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+if ! grep -q "3 is _\" c c c\"_" t128.log  ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+if ! grep -q "Tot is _3_" t128.log  ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' t128.log
+if [ $? == 0 ] ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 6
+  exit -1
+fi

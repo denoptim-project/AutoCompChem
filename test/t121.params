@@ -1,0 +1,7 @@
+VERBOSITY: 3
+TASK: MeasureGeomDescriptors
+INFILE: ../t121-mol.sdf
+$STARTSMARTS:
+dist [$([#1]~[Ru])] [Ru]
+dist [$([#6]~[#1]~[Ru])] [Ru]
+$END

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep -q 'Du: 12 #neighbours: 6' t44.log
+grep -q 'Fixing connectivity for: .*12 #neighbours: 6' t44.log
 if [ $? != 0 ] ; then
   echo NOT Passed 1
   exit -1
