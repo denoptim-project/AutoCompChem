@@ -539,37 +539,21 @@ public class Situation extends Concept
 
             if (value != null) 
             {
-                String[] words = ((String) value).split("\\s+");
-                if (words.length > 1)
-                {
+            	if (value instanceof Boolean)
+            	{
+            		res = ((Boolean) value).booleanValue();
+            	} else {
                     throw new Exception("Evaluation of Expression "
                             + "'" + logicalExpression + "' "
-                            + "returned more than one word (i.e., '" 
-                            + value + "'). Check expression.");
-                }
-                else
-                {
-                    switch (words[0])
-                    {
-                        case ("true"):
-                            res = true;
-                            break;
-                        case ("false"):
-                            res = false;
-                            break;
-                        default:
-                            throw new Exception("Evaluation of Expression "
-                            + "'" + logicalExpression 
-                            + "' did not return a Boolean (i.e., '"
-                            + value + "'). Check expression.");
-                    }
+                            + "returned '" + value.getClass() + "'). "
+                            		+ "Check expression.");
                 }
             }
             else
             {
             	//TODO error?
                 throw new Exception("Evaluation of Expression Language "
-                		+ "returned null instead of boolean. "
+                		+ "returned null instead of Boolean. "
                 		+ "Check expression.");
             }
         }
@@ -578,7 +562,7 @@ public class Situation extends Concept
             //TODO error or warning?
             throw new Exception("ERROR in Expression Language! " 
                     + "Expression '" + logicalExpression + "' triggers " 
-                    + t);
+                    + t, t);
         }
 
         return res;
