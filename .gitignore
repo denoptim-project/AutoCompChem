@@ -1,4 +1,5 @@
-AutoCompChem.jar
+jar/*
+bin
 test/results/*
-bin/
+AutoCompChem.jar
 .settings

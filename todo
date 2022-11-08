@@ -37,6 +37,7 @@
 
 -mode redundant methods for reading and storing SMARTS-based rules defining options related to internal coordinates (see VibModuleOutputHandler and NWChemInputWriter).
 
+-can use commons-cli-1.4.jar to deal with the command line arguments
 
 - thing like ZMatrixHandler and BasisSetGenerator and MolecularMeter should be constructable without WorkerFacory
 
