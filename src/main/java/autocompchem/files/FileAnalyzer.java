@@ -19,6 +19,7 @@ package autocompchem.files;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -294,23 +295,28 @@ public class FileAnalyzer
         
         FileUtils.foundAndPermissions(pathName,true,false,false);
         BufferedReader br = null;
+        ArrayList<TextBlockIndexed> blocks = null;
         try
         {
             br = new BufferedReader(new FileReader(pathName));
+            blocks = TextAnalyzer.extractTextBlocks(br, new ArrayList<String>(),
+            		startPattrns, 
+            		endPattrns,
+            		onlyFirst,
+            		inclPatts,
+            		false);
+        } catch (Exception e) {
+            Terminator.withMsgAndStatus("ERROR! Unable to read "+ pathName,-1);
+        } finally {
+	        if (br!=null)
+	        {
+				try {
+					br.close();
+				} catch (IOException e) {
+					br = null;
+				}
+	        }
         }
-        catch (Exception e)
-        {
-            // the file manager will have stopped us before this point
-            Terminator.withMsgAndStatus("ERROR! File "+ pathName
-                                                          + " not found!.",-1);
-        }
-        ArrayList<TextBlockIndexed> blocks = 
-              TextAnalyzer.extractTextBlocks(br, new ArrayList<String>(),
-                                                                  startPattrns,
-                                                                    endPattrns,
-                                                                     onlyFirst,
-                                                                     inclPatts,
-                                                                         false);
         return blocks;
     }
 

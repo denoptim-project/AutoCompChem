@@ -32,6 +32,8 @@ import org.junit.jupiter.api.Test;
 
 public class FileUtilsTest 
 {
+	private static String fileSeparator = System.getProperty("file.separator");
+	
     @Test
     public void testGetExtension() throws Exception
     {
@@ -52,11 +54,13 @@ public class FileUtilsTest
     public void testGetPathToPatent() throws Exception
     {
         String a = "/path/to/me";
-        assertEquals("/path/to",FileUtils.getPathToPatent(a),
+        assertEquals(fileSeparator + "path" + fileSeparator + "to",
+        		FileUtils.getPathToPatent(a),
         		"Absolute pathname");
         
         a = "../path/../to/me";
-        assertEquals("../path/../to",FileUtils.getPathToPatent(a),
+        assertEquals(".." + fileSeparator + "path" + fileSeparator + ".." 
+        		+ fileSeparator + "to",FileUtils.getPathToPatent(a),
         		"Relative pathname");
         
         a = "me";
