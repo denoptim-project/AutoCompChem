@@ -1,15 +1,22 @@
 #!/bin/bash
 #------------------------------------------------------------------------------
 #
-#                   Script for the compilation of AutoCompChem
+#                   Script for running functionality tests
 #                                by Marco Foscato
-#                              Bergen, 11/June/2020
+#                              Bergen, 11/June/2022
 #
 #------------------------------------------------------------------------------
 #
 # Run with '-h' or '--help' to print the usage instructions and exit.
 #
 ###############################################################################
+
+#
+# Function to get version from POM file
+#
+function getAccVersion () {
+    accVersion=$(grep -m 1 "<version>" "$ACCHome/pom.xml" | awk -F'[>,<]' '{print $3}')
+}
 
 #
 # Function to find java toolbox and set javaDir path accordingly
@@ -24,7 +31,7 @@ function findJava () {
             javaDir="$JAVA_HOME/bin"
         else
             echo " "
-            echo "Compiling AutoCompChem requires JDK 1.7 or above. None found."
+            echo "Compiling AutoCompChem requires JDK 11 or above. None found."
             echo "Please, do any of the following:"
             echo " - add Java executables to the PATH, or "
             echo " - define the JAVA_HOME environmental variable, or "
@@ -60,9 +67,9 @@ function findJava () {
     else
         jvNum="$(echo "$jvNum" | awk -F. '{printf("%d%04d",$1,$2)}')"
     fi
-    if [ "$jvNum" -lt "70000" ]; then
+    if [ "$jvNum" -lt "110000" ]; then
         echo " "
-        echo "Compiling AutoCompChem requires JDK 1.7 or above. Found $javaVersion"
+        echo "Compiling AutoCompChem requires JDK 11 or above. Found $javaVersion"
         echo " "
         exit 1
     fi
@@ -75,7 +82,7 @@ function findJava () {
 function printUsage () {
 cat <<EOF
 
-  Run this script with no argument to just build AutoCompChem.
+  Use this script to run functionality tests.
 
   Usage:
 
@@ -83,21 +90,21 @@ cat <<EOF
 
   Options:
 
-  -h      prints this help message.
+  -h         prints this help message.
 
-  --help  prints this help message.
+  --help     prints this help message.
 
-  -u      runs unit tests after building AutoCompChem. If followed by one or more strings (i.e., class names), then runs only the unit testing found in the given classes.
+  -c [args]  runs command line interface (CLI) testing. If followed by one 
+             or more integer numbers, then runs only the corresponding CLI 
+             tests.
 
-  -c      runs command line interface testing. If followed by one or more integer numbers, then runs only the corresponding CLI tests.
+  -f [args]  runs functionality tests after building AutoCompChem. If 
+             followed by one or more integer numbers, then runs only the 
+             corresponding functionality tests.
 
-  -f      runs functionality tests after building AutoCompChem. If followed by one or more integer numbers, then runs only the corresponding functionality tests.
+  -l          prints the log of any functionality test that is run.
 
-  -l      prints the log of any functionality test that is run
-
-  -n      excludes building step. Use it to run only tests.
-
-  -j <path/binr>     specifies the pathname of a specific Java bin folder. 
+  -j <path/bin>     specifies the pathname of a specific Java bin folder. 
 
 EOF
 }
@@ -151,82 +158,29 @@ function getMyAbsoluteDirname() {
 function build() {
     echo "Building AutoCompChem"
 
-    # Clean traces of old jar
-    rm -f AutoCompChem.jar
-    
-    # Compile
-    find "$ACCHome/src" -name "*.java" > sourcefiles.txt
-    jarsColumnSeparated=$(ls -1 $ACCHome/lib/*.jar | while read l ; do echo $l"@@" ; done | tr -d "\n" | sed 's/@@/:/g' | sed 's/\:$//g')
-    
-    $javaDir/javac -cp "$jarsColumnSeparated" @sourcefiles.txt -d . -Xlint:unchecked 
+    if ! [ -x "$(command -v mvn)" ]; then
+        echo " "
+        echo "ERROR: cannot build software. Maven not found."
+        echo "Are you sure the environment is properly set up?"
+        echo " "
+        exit 1
+    fi
+ 
+    mvn clean
+    mvn package
     exitStatus=$?
     # And check
     if [ $exitStatus != 0 ]
     then
         echo " "
-        echo "JAVAC returned non zero exit status!"
+        echo "ERROR: Maven returned non zero exit status!"
         echo " "
-        exit 1
-    fi
-    
-    # Copy text files
-    lst=$(find "$ACCHome/src" -name "*.txt")
-    txtFilesList=""
-    for f in $lst
-    do
-        tmp=$(echo $f | sed "s|$ACCHome\/src\/||" )
-        cp $f $tmp
-        txtFilesList=$txtFilesList" $tmp"
-    done
-    
-    # list jars in lib
-    jars=$(ls -1 $ACCHome/lib/*.jar | while read l ; do echo $l"@@" ; done | tr -d "\n" | sed 's/@@/ /g')
-    
-    # Create manifest
-    echo "Txt files added to classpath: $txtFilesList" 
-    echo "Main-Class: autocompchem.ui.ACCMain" > manifest.mf
-    echo "Class-Path:$(echo $jars $txtFilesList | fold -w58 | awk '{print " "$0}')" >> manifest.mf
-    echo >> manifest.mf
-    
-    # Make archive
-    find ./ -name "*.class" > compiled.txt
-    $javaDir/jar cvfm AutoCompChem.jar manifest.mf autocompchem
-    # And check
-    if [ ! -f "AutoCompChem.jar" ]; then
-        echo "###########################################"
-        echo "Cannot make AutoCompChem.jar"
-        echo "###########################################"
         exit 1
     else
         echo "BUILDING DONE!"
-        buildingDone=true
     fi
-
-    #Clean tmp files
-    rm -rf sourcefiles.txt manifest.mf compiled.txt sourcefiles.txt autocompchem
 }    
 
-#
-# Function running unit tests
-#
-function unitTesting() {
-    echo "Starting unit testing"
-
-    if [ ${#chosenUnitTests[@]} -gt 0 ]
-    then
-        for class in ${chosenUnitTests[@]}
-        do
-            $javaDir/java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" -c "$class"
-        done
-    else
-        #Run all JUnit tests
-        $javaDir/java -jar junit/junit-platform-console-standalone-1.5.1.jar -cp .:AutoCompChem.jar:"$jarsColumnSeparated" --scan-classpath=:AutoCompChem.jar --details=tree
-    fi
-    
-    echo " "
-    echo "UNIT TESTING DONE!"
-    echo " "
-}
 
 #
 # Function running functionality tests, i.e., real usage case tests.
@@ -262,9 +216,9 @@ function functionalityTesting() {
         log=t$i.log
         if $interactiveRun
         then
-            "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  "../t$i.params"
+            "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar"  "../t$i.params"
         else
-            "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  "../t$i.params" > "$log" 2>&1
+            "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar"  "../t$i.params" > "$log" 2>&1
         fi
 
         if $printFuncTestLog
@@ -323,8 +277,8 @@ function cliTesting() {
         echo "Running test CLI $i/${#chosenCliTests[@]}"
         log=cli$i.log
 
-#TODO: une running script rather than calling java directly
-        "$javaDir/java" -jar "$ACCHome/AutoCompChem.jar"  $argsToACC > "$log" 2>&1
+#TODO: use running script rather than calling java directly
+        "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar"  $argsToACC > "$log" 2>&1
 
         if $printFuncTestLog
         then
@@ -356,9 +310,7 @@ function cliTesting() {
 
 # Now, parse command line options
 args=($@)
-runBuild=true
-buildingDone=false
-runUnitTests=false
+runBuild=false
 runCliTesting=false
 runFunctionalityTests=false
 printFuncTestLog=false
@@ -372,12 +324,7 @@ do
     case "$arg" in
         "-h") printUsage; exit 1;;
         "--help") printUsage; exit 1;;
-        "-u") runUnitTests=true
-              getArg "$i" "$#"
-              if [[ "none" != "$argument" ]]
-              then
-                chosenUnitTests+=($argument)
-              fi;;
+        "-b") runBuild=true;;
         "-f") runFunctionalityTests=true
               for ((j=$i; j<$#; j++))
               do
@@ -402,7 +349,6 @@ do
               done;;
 	"-l") printFuncTestLog=true;;
         "-i") interactiveRun=true;;
-        "-n") runBuild=false;;
         "-j") getArg "$i" "$#"
               javaDir="$argument";;
         -[a-z,A-Z,0-9]) echo "ERROR! Unrecognized option '$arg'";
@@ -411,10 +357,10 @@ do
     esac
 done
 
-if ! $runBuild && ! $runUnitTests && ! $runCliTesting && ! $runFunctionalityTests 
+if ! $runCliTesting && ! $runFunctionalityTests && ! $runBuild
 then
-    echo "Nothing to do. '-n' requires no building, but none among the '-u', '-c', and '-f' options was given. So there is nothing I can do and I exit."
-    exit 0
+    runFunctionalityTests=true
+    runCliTesting=true
 fi
 
 # Find where I am, and cd to the ACCHome folder
@@ -427,21 +373,16 @@ getMyAbsoluteDirname
 ACCHome="$(cd "$myDir/.." ; pwd -P)"
 cd "$ACCHome"
 
+# This script looks for the version specified in the POM file
+getAccVersion
+echo "Using ACC version $accVersion"
+
 # Here we make sure that java tools are available
 findJava
 
-if $runBuild
+if [ ! -f "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" ] || $runBuild
 then
     build
-    if ! $buildingDone
-    then
-        exit 1
-    fi
-fi
-
-if $runUnitTests
-then
-    unitTesting
 fi
 
 if $runCliTesting
