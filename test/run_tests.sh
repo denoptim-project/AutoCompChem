@@ -94,6 +94,8 @@ cat <<EOF
 
   --help     prints this help message.
 
+  -b         request to rebuilt AutoCompChem.
+
   -c [args]  runs command line interface (CLI) testing. If followed by one 
              or more integer numbers, then runs only the corresponding CLI 
              tests.
@@ -357,7 +359,7 @@ do
     esac
 done
 
-if ! $runCliTesting && ! $runFunctionalityTests && ! $runBuild
+if ! $runCliTesting && ! $runFunctionalityTests
 then
     runFunctionalityTests=true
     runCliTesting=true
