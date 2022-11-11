@@ -171,7 +171,7 @@
             <!-- MainClass in mainfest make a executable jar -->
             <archive>
               <manifest>
-                <mainClass>denoptim.main.Main</mainClass>
+                <mainClass>autocompchem.ui.ACCMain</mainClass>
               </manifest>
             </archive>
           </configuration>
