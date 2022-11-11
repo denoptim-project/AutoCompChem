@@ -55,7 +55,7 @@ public class CoordinationGeometryReferences
         allCG = new ArrayList<CoordinationGeometry>();
         cgByName = new HashMap<String, CoordinationGeometry>();
 
-        String file = "autocompchem/molecule/coordinationgeometry/referenceCG.txt";
+        String file = "coordinationgeometry/referenceCG.txt";
         InputStream ins = CoordinationGeometryReferences.class.getClassLoader().
                                                         getResourceAsStream(file);
         BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
