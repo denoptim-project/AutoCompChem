@@ -1,5 +1,5 @@
 ## AutoCompChem
-AutoCompChem (or ACC) is a colelction of tools used to automatize computational chemistry tasks.
+AutoCompChem (or ACC) is a collection of tools used to automatize computational chemistry tasks.
 
 ## Installation
 1) Make sure you have [Maven](https://maven.apache.org/), which is used to build AutoCompChem. The following command should return the version of Maven
