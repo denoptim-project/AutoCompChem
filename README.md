@@ -3,23 +3,23 @@ AutoCompChem (or ACC) is a colelction of tools used to automatize computational 
 
 ## Installation
 1) Make sure you have [Maven](https://maven.apache.org/), which is used to build AutoCompChem. The following command should return the version of Maven
-```
-mvn -version
-```
+    ```
+    mvn -version
+    ```
 2) Make sure you have a version of JAVA that is &ge;11. To this end try the following command
-``` 
-javac -version
-```
+    ``` 
+    javac -version
+    ```
 3) Download the latest release and unzip/untar-gs the resulting archive. Alternatively, clone this github repository.
 
 4) move inside the resulting folder, which we'll call `$ACC_HOME`
-```
-cd AutoCompChem
-```
+    ```
+    cd AutoCompChem
+    ```
 5) Build the project and run all tests
-```
-./test/run_tests.sh
-```
+    ```
+    ./test/run_tests.sh
+    ```
 6) If the above command terminates successfully, you are done. AutoCompChem is ready to be used.
 
 ## Usage
