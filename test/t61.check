@@ -17,7 +17,7 @@ if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" ==
 then
     echo Skipping UNIX-only checks
 else
-    nn=$(echo $(wc -l t61-mol.nw | awk '{print $1}') - $(grep -n ZCOORD t61-mol.nw | awk -F":" '{print $1}') | bc)
+    n=$(echo $(wc -l t61-mol.nw | awk '{print $1}') - $(grep -n ZCOORD t61-mol.nw | awk -F":" '{print $1}') | bc)
     m=$(tail -n $n t61-mol.nw | grep -n -m1 END | awk -F":" '{print $1}')
     b=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c BOND )
     if [ "$b" != 28 ] ; then
