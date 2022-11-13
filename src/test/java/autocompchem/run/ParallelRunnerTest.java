@@ -196,8 +196,9 @@ public class ParallelRunnerTest
         
         for (int i=0; i<3; i++)
         {
-        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
-            		"Lines in log "+i);
+        	int n = FileAnalyzer.count(roothName+i, "Iteration*");
+        	assertTrue(n>4,"Lines in log "+i);
+        	assertTrue(n<8,"Lines in log "+i);
         	assertFalse(master.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
@@ -227,8 +228,9 @@ public class ParallelRunnerTest
         
         for (int i=0; i<3; i++)
         {
-        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
-            		"Lines in log "+i);
+        	int n = FileAnalyzer.count(roothName+i, "Iteration*");
+        	assertTrue(n>4,"Lines in log "+i);
+        	assertTrue(n<10,"Lines in log "+i);
         	assertTrue(master.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
@@ -262,8 +264,9 @@ public class ParallelRunnerTest
         
         for (int i=0; i<6; i++)
         {
-        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
-            		"Lines in log "+i);
+        	int n = FileAnalyzer.count(roothName+i, "Iteration*");
+        	assertTrue(n>4,"Lines in log "+i);
+        	assertTrue(n<8,"Lines in log "+i);
         	assertFalse(master.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
@@ -297,8 +300,9 @@ public class ParallelRunnerTest
         
         for (int i=0; i<3; i++)
         {
-        	assertEquals(6,FileAnalyzer.count(roothName+i, "Iteration*"),
-            		"Lines in log "+i);
+        	int n = FileAnalyzer.count(roothName+i, "Iteration*");
+        	assertTrue(n>4,"Lines in log "+i);
+        	assertTrue(n<8,"Lines in log "+i);
         	assertFalse(master.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
@@ -396,13 +400,11 @@ public class ParallelRunnerTest
         // implement job specific logging
     }
     
-    
 //-----------------------------------------------------------------------------
 
     @Test
     public void testParallelShellJobs() throws Exception
     {
-    	
     	//Check availability of shell on this OS, if not, then skip this test
     	if (!(new File("/bin/sh")).canExecute())
     	{
@@ -428,7 +430,6 @@ public class ParallelRunnerTest
 
             // Choose shell flavour
             String shellFlvr = "/bin/sh";
-            //FIXME: check for available interpreters.
 
             // Nest 4 shell jobs in an undefined job
             Job job = JobFactory.createJob(Job.RunnableAppID.ACC,4);
