@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -481,7 +482,8 @@ public class GaussianReStarter extends Worker
                     }
 
                     double mNewVal = mOldVal - mRedVal;
-                    String mNewStr = String.format("%.0f",mNewVal) + "MB";
+                    String mNewStr = String.format(Locale.ENGLISH,
+                    		"%.0f",mNewVal) + "MB";
                     newGJob.setAllLinkSections("MEM",mNewStr);
                 }
 

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1031,7 +1032,7 @@ public class MolecularGeometryEditor extends Worker
             	// Finished with this step
 				if (verbosity > 0)
 	            {
-				    String msg = String.format("%+7.1f %-11.3e %-11.3e %-11.3e "
+				    String msg = String.format(Locale.ENGLISH,"%+7.1f %-11.3e %-11.3e %-11.3e "
 				    		+ "%-7.1f %-11.3e %1.1B(%1.1B) %-11.3e  %-11.3e %s",
 						sign,lowestDist,maxDisplacement,guessSF,direction,step,
 						isOK,lastWasOK,smallestToNotOK,largestToOK,reason);

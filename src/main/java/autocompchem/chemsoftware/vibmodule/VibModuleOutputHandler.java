@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1040,13 +1041,17 @@ public class VibModuleOutputHandler extends Worker
             {
                 StringBuilder sb = new StringBuilder();
                 sb.append(" Term '").append(termName).append("' \n");
-                sb.append(String.format("  Min.     K: %f Eq. %f \n",
+                sb.append(String.format(Locale.ENGLISH,
+                		"  Min.     K: %f Eq. %f \n",
                                                  saFrcKst.min(),saEqVal.min()));
-                sb.append(String.format("  Max.     K: %f Eq. %f \n",
+                sb.append(String.format(Locale.ENGLISH,
+                		"  Max.     K: %f Eq. %f \n",
                                                  saFrcKst.max(),saEqVal.max()));
-                sb.append(String.format("  Mean     K: %f Eq. %f \n",
+                sb.append(String.format(Locale.ENGLISH,
+                		"  Mean     K: %f Eq. %f \n",
                                                saFrcKst.mean(),saEqVal.mean()));
-                sb.append(String.format("  Std.Dev. K: %f Eq. %f \n",
+                sb.append(String.format(Locale.ENGLISH,
+                		"  Std.Dev. K: %f Eq. %f \n",
                                         saFrcKst.populationStandardDeviation(),
                                         saEqVal.populationStandardDeviation()));
                 System.out.println(sb.toString());

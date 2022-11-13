@@ -24,6 +24,7 @@ import java.util.HashSet;
  */
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -479,10 +480,10 @@ public class MolecularComparator extends Worker
                                                                 gRef,
                                                                 0);
             String nStd = gRef.getName();
-            String report = String.format(" MAD_mol;" + nStd + " %1.2f", madA);
-            report = report + String.format(" MAD_ref;" + nStd + " %1.2f",madR);
+            String report = String.format(Locale.ENGLISH," MAD_mol;" + nStd + " %1.2f", madA);
+            report = report + String.format(Locale.ENGLISH," MAD_ref;" + nStd + " %1.2f",madR);
             double diff = (madA - madR);
-            report = report + String.format(" D-MAD(" + nStd + ")= %1.2f",diff);
+            report = report + String.format(Locale.ENGLISH," D-MAD(" + nStd + ")= %1.2f",diff);
 //            System.out.println("->" + gRef.getName() + ": MadA = " + madA
 //                                + " MadR = " +madR);
 //            System.out.println("D-MAD("+ gRef.getName() + ") = " + (madA-madR));

@@ -18,12 +18,18 @@ echo NOT Passed ERROR 3
 exit -1
 fi
 
-n=$(echo $(wc -l t49-mol.nw | awk '{print $1}') - $(grep -n SCF t49-mol.nw | awk -F":" '{print $1}') | bc)
-m=$(tail -n $n t49-mol.nw | grep -n -m1 END | awk -F":" '{print $1}')
-tail -n $n t49-mol.nw | head -n $m | grep -i -q "TRIPLET"
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4
-exit -1
+# Excluding test depedent on command bc
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Skipping UNIX-only checks
+else
+    n=$(echo $(wc -l t49-mol.nw | awk '{print $1}') - $(grep -n SCF t49-mol.nw | awk -F":" '{print $1}') | bc)
+    m=$(tail -n $n t49-mol.nw | grep -n -m1 END | awk -F":" '{print $1}')
+    tail -n $n t49-mol.nw | head -n $m | grep -i -q "TRIPLET"
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4
+        exit -1
+    fi
 fi
 
 grep -q -i "mult[[:space:]]*3" t49-mol.nw

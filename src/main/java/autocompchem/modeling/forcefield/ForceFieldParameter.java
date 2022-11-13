@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /*   
@@ -367,13 +368,13 @@ public class ForceFieldParameter implements Serializable
         sb.append("K:");
         for (ForceConstant k : forceKsts)
         {
-            sb.append("(" + String.format("%f",k.getValue()) + ")");
+            sb.append("(" + String.format(Locale.ENGLISH,"%f",k.getValue()) + ")");
         }
         sb.append(", ");
         sb.append("eq:");
         for (EquilibriumValue e : eqVals)
         {
-            sb.append("(" + String.format("%f",e.getValue()) + ")");
+            sb.append("(" + String.format(Locale.ENGLISH,"%f",e.getValue()) + ")");
         }
         sb.append("] ");
         return sb.toString();

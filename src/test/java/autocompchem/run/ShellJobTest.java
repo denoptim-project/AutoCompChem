@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.files.FileAnalyzer;
@@ -52,6 +54,7 @@ public class ShellJobTest
 //------------------------------------------------------------------------------
 
     @Test
+    @DisabledOnOs(WINDOWS)
     public void testExposeShellOuputEnv() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -107,6 +110,7 @@ See {@Link JobTest} for a possible solution.
 //------------------------------------------------------------------------------
 
     //@Test
+    //@DisabledOnOs(WINDOWS)
     public void testParallelizableSubJobs() throws Exception
     {
         Job job = JobFactory.createJob(Job.RunnableAppID.ACC);

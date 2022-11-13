@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 
 import java.util.List;
+import java.util.Locale;
 
 import autocompchem.run.Terminator;
 
@@ -146,7 +147,7 @@ public class Shell
      * Known formats include: "Gaussian".
      * @param format the format for input file-like output
      * @param atomId the atom label to be added to the output lines
-     * @return a list of lines os text that can be used in input files of
+     * @return a list of lines of text that can be used in input files of
      * software packages recognizing the given format.
      */
 
@@ -157,19 +158,19 @@ public class Shell
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
-                sb.append(String.format("%-3s %-3d %-7.3f",
+                sb.append(String.format(Locale.ENGLISH, "%-3s %-3d %-7.3f",
                                   type,primitives.size(),scaleFact)).append(nl);
                 for (Primitive p : primitives)
                 {
                     String eForm = "%" + (p.getExpPrecision() + 6) + "." 
                                            + (p.getExpPrecision()-1) + "E     ";
-                    sb.append(String.format(eForm,p.getExp()));
+                    sb.append(String.format(Locale.ENGLISH, eForm,p.getExp()));
                     
                     String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
                                               + (p.getCoeffPrecision()-1) + "E";
                     for (Double c : p.getCoeff())
                     {
-                    	sb.append(String.format(cForm,c));
+                    	sb.append(String.format(Locale.ENGLISH, cForm, c));
                     }
                     sb.append(nl);
                 }
@@ -178,18 +179,19 @@ public class Shell
             case "NWCHEM":
                 String atmStr = Character.toUpperCase(atomId.charAt(0)) 
                                             + atomId.toLowerCase().substring(1);
-                sb.append(String.format("  %s %s",atmStr,type)).append(nl);
+                sb.append(String.format(Locale.ENGLISH, 
+                		"  %s %s",atmStr,type)).append(nl);
                 for (Primitive p : primitives)
                 {
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                           + (p.getExpPrecision()-1) + "E      ";
-                    sb.append(String.format(eForm,p.getExp()));
+                    sb.append(String.format(Locale.ENGLISH, eForm,p.getExp()));
                     
                     String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
                             + (p.getCoeffPrecision()-1) + "E";
 					for (Double c : p.getCoeff())
 					{
-						sb.append(String.format(cForm,c));
+						sb.append(String.format(Locale.ENGLISH, cForm, c));
 					}
                     sb.append(nl);
                 }

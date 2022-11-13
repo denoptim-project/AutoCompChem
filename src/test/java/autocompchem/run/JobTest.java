@@ -20,11 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.File;
 import java.io.FileWriter;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
 
@@ -45,6 +47,7 @@ public class JobTest
 //------------------------------------------------------------------------------
 
     @Test
+    @DisabledOnOs(WINDOWS)
     public void testSequentialShellJobs() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -134,6 +137,7 @@ public class JobTest
 //------------------------------------------------------------------------------
 
     @Test
+    @DisabledOnOs(WINDOWS)
     public void testParallelizableSubJobs() throws Exception
     {
         Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
@@ -149,6 +153,7 @@ public class JobTest
 //------------------------------------------------------------------------------
 
     @Test
+    @DisabledOnOs(WINDOWS)
     public void testParallelizedJob() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");

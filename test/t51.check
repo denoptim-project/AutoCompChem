@@ -18,12 +18,18 @@ echo NOT Passed ERROR 3
 exit -1
 fi
 
-n=$(echo $(wc -l nwchem51.nw | awk '{print $1}') - $(grep -n SCF nwchem51.nw | awk -F":" '{print $1}') | bc)
-m=$(tail -n $n nwchem51.nw | grep -n -m1 END | awk -F":" '{print $1}')
-tail -n $n nwchem51.nw | head -n $m | grep -i -q "NOPEN[[:space:]]*10"
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4
-exit -1
+# Excluding test depedent on command bc
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Skipping UNIX-only checks
+else
+    n=$(echo $(wc -l nwchem51.nw | awk '{print $1}') - $(grep -n SCF nwchem51.nw | awk -F":" '{print $1}') | bc)
+    m=$(tail -n $n nwchem51.nw | grep -n -m1 END | awk -F":" '{print $1}')
+    tail -n $n nwchem51.nw | head -n $m | grep -i -q "NOPEN[[:space:]]*10"
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4
+        exit -1
+    fi
 fi
 
 grep -q -i "mult[[:space:]]*10" nwchem51.nw

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Ignoring UNIX-only test
+    exit 0
+fi
+
 if [ ! -f t128.log ] ; then
 echo NOT Passed ERROR 1
 exit -1

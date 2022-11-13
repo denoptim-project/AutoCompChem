@@ -24,6 +24,7 @@ import java.util.HashSet;
  */
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -344,7 +345,7 @@ public class AtomTypeMatcher extends Worker
 
             //Get Atom type name (and add index)
             String at = parts[0];
-            String id = String.format("%04d",i);
+            String id = String.format(Locale.ENGLISH,"%04d",i);
             at = id + "_" + at;
 
             //Note that second field is not used

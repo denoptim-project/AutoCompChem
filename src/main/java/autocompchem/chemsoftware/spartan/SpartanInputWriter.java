@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -805,10 +806,10 @@ public class SpartanInputWriter extends Worker
             double z = MolecularUtils.getCoords3d(atm).z;
  
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%3d",atm.getAtomicNumber())).append(" ");
-            sb.append(String.format(" %13.8f",x)).append(" ");
-            sb.append(String.format(" %13.8f",y)).append(" ");
-            sb.append(String.format(" %13.8f",z));
+            sb.append(String.format(Locale.ENGLISH,"%3d",atm.getAtomicNumber())).append(" ");
+            sb.append(String.format(Locale.ENGLISH," %13.8f",x)).append(" ");
+            sb.append(String.format(Locale.ENGLISH," %13.8f",y)).append(" ");
+            sb.append(String.format(Locale.ENGLISH," %13.8f",z));
             lines.add(sb.toString());
         }
         lines.add(SpartanConstants.XYZEND);
@@ -827,7 +828,7 @@ public class SpartanInputWriter extends Worker
                 }
                 IAtom atm = it.next();
                 sb.append(
-                         String.format("%5d",-mol.getConnectedBondsCount(atm)));
+                         String.format(Locale.ENGLISH,"%5d",-mol.getConnectedBondsCount(atm)));
             }
             lines.add(sb.toString());
         }
@@ -861,9 +862,9 @@ public class SpartanInputWriter extends Worker
                 bo = 1;
             }
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%5d",iA+1)); //to 1-based ID
-            sb.append(String.format("%5d",iB+1)); //to 1-based ID
-            sb.append(String.format("%5d",bo));
+            sb.append(String.format(Locale.ENGLISH,"%5d",iA+1)); //to 1-based ID
+            sb.append(String.format(Locale.ENGLISH,"%5d",iB+1)); //to 1-based ID
+            sb.append(String.format(Locale.ENGLISH,"%5d",bo));
             lines.add(sb.toString());
         }
         lines.add(SpartanConstants.TOPOEND);
@@ -1090,7 +1091,7 @@ public class SpartanInputWriter extends Worker
         {
             i++;
             //NB: change from 0-based to 1-based atom index
-            sb.append(String.format("%5d",atmId+1));
+            sb.append(String.format(Locale.ENGLISH,"%5d",atmId+1));
             if (i > 11)
             {
                 i = 0;
@@ -1156,7 +1157,7 @@ public class SpartanInputWriter extends Worker
         {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.getAtomIDsAsString(true,"%5d"));
-            sb.append(String.format("%5d",cc.getFold()));
+            sb.append(String.format(Locale.ENGLISH,"%5d",cc.getFold()));
             lines.add(sb.toString());
         }
 
@@ -1483,22 +1484,22 @@ public class SpartanInputWriter extends Worker
         for (Integer id : ids)
         {
             //WARNING: here we change from 0-based to 1-based
-            sb.append(String.format("%5d",id+1)).append(" ");
+            sb.append(String.format(Locale.ENGLISH,"%5d",id+1)).append(" ");
         }
         if (details.size() == 0)
         {
             switch (numIds)
             {
                 case 2:
-                    sb.append(String.format("%10.6f",currentValue));
+                    sb.append(String.format(Locale.ENGLISH,"%10.6f",currentValue));
                     break;
 
                 case 3:
-                    sb.append(String.format("%10.6f",currentValue));
+                    sb.append(String.format(Locale.ENGLISH,"%10.6f",currentValue));
                     break;
 
                 case 4:
-                    sb.append(String.format("%10.6f",currentValue));
+                    sb.append(String.format(Locale.ENGLISH,"%10.6f",currentValue));
                     break;
             }
         }
@@ -1841,7 +1842,7 @@ public class SpartanInputWriter extends Worker
         for (Integer id : ids)
         {
             //WARNING: here we change from 0-based to 1-based
-            sb.append(String.format("%5d",id+1)).append(" ");
+            sb.append(String.format(Locale.ENGLISH,"%5d",id+1)).append(" ");
         }
             switch (numIds)
         {

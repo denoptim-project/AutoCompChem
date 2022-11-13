@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -780,7 +781,8 @@ public class NWChemOutputHandler extends Worker
                                                                 0.01,
                                                                 verbosity);
                                 corrS = traS + rotS + vibS;
-                                res = res + String.format("%.2f ",corrS); 
+                                res = res + String.format(Locale.ENGLISH,
+                                		"%.2f ",corrS); 
                             }
                         }
                     }
@@ -1003,9 +1005,9 @@ public class NWChemOutputHandler extends Worker
             ArrayList<Double> mode = vibModes.get(vmId);
             for (int atmId=0; atmId<(mode.size()/3); atmId++)
             {
-                sb.append(String.format(" %5.5f",mode.get(atmId*3)));
-                sb.append(String.format(" %5.5f",mode.get(atmId*3+1)));
-                sb.append(String.format(" %5.5f",mode.get(atmId*3+2)));
+                sb.append(String.format(Locale.ENGLISH," %5.5f",mode.get(atmId*3)));
+                sb.append(String.format(Locale.ENGLISH," %5.5f",mode.get(atmId*3+1)));
+                sb.append(String.format(Locale.ENGLISH," %5.5f",mode.get(atmId*3+2)));
                 sb.append(System.getProperty("line.separator"));
             }
         }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 
 import java.util.List;
+import java.util.Locale;
 
 import autocompchem.run.Terminator;
 
@@ -125,7 +126,7 @@ public class ECPShell
      * Known formats include: "Gaussian".
      * @param format the format for input file-like output
      * @return a list of lines of text that can be used in input files of
-     * software packages recognising the given format.
+     * software packages recognizing the given format.
      */
 
     public String toInputFileString(String format)
@@ -135,20 +136,25 @@ public class ECPShell
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
-                sb.append(String.format("%-20s",type)).append(nl);
-                sb.append(String.format(" %2d",primitives.size())).append(nl);
+                sb.append(String.format(Locale.ENGLISH,
+                		"%-20s",type)).append(nl);
+                sb.append(String.format(Locale.ENGLISH,
+                		" %2d",primitives.size())).append(nl);
                 for (Primitive p : primitives)
                 {
-                    sb.append(String.format("%-1d",p.getAngMmnt()));
+                    sb.append(String.format(Locale.ENGLISH,
+                    		"%-1d",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                            + (p.getExpPrecision()-1) + "E     ";
-                    sb.append(String.format(eForm,p.getExp()));
+                    sb.append(String.format(Locale.ENGLISH,
+                    		eForm,p.getExp()));
                     
                     String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
                             + (p.getCoeffPrecision()-1) + "E";
 					for (Double c : p.getCoeff())
 					{
-					    sb.append(String.format(cForm,c));
+					    sb.append(String.format(Locale.ENGLISH,
+					    		cForm,c));
 					}
                     sb.append(nl);
                 }
@@ -158,16 +164,19 @@ public class ECPShell
                 // The header is printed by the CenterBasisSet class.
                 for (Primitive p : primitives)
                 {
-                    sb.append(String.format("  %d ",p.getAngMmnt()));
+                    sb.append(String.format(Locale.ENGLISH,
+                    		"  %d ",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                            + (p.getExpPrecision()-1) + "E     ";
-                    sb.append(String.format(eForm,p.getExp()));
+                    sb.append(String.format(Locale.ENGLISH,
+                    		eForm,p.getExp()));
 
                     String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
                             + (p.getCoeffPrecision()-1) + "E";
 					for (Double c : p.getCoeff())
 					{
-					    sb.append(String.format(cForm,c));
+					    sb.append(String.format(Locale.ENGLISH,
+					    		cForm,c));
 					}
                     sb.append(nl);
                 }

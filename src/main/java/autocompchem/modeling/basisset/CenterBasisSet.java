@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 
 import java.util.List;
+import java.util.Locale;
 
 import autocompchem.run.Terminator;
 
@@ -345,14 +346,14 @@ public class CenterBasisSet
                 {
                     for (String n : namedComponents)
                     {
-                        sb.append(String.format("%-6s 0",atmId)).append(nl);
+                        sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId)).append(nl);
                         sb.append(n).append(nl);
                         sb.append("****").append(nl);
                     } 
                 }
                 if (shells.size() > 0)
                 {
-                    sb.append(String.format("%-6s 0",atmId)).append(nl);
+                    sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId)).append(nl);
                     for (Shell s : shells)
                     {
                         sb.append(s.toInputFileString(format,"notUsed"));
@@ -369,11 +370,11 @@ public class CenterBasisSet
                     if (n.contains(" "))
                     {
                         sb.append(
-                                 String.format("  %s library \"%s\"",atmStr,n));
+                                 String.format(Locale.ENGLISH,"  %s library \"%s\"",atmStr,n));
                     }
                     else
                     {
-                        sb.append(String.format("  %s library %s",atmStr,n));
+                        sb.append(String.format(Locale.ENGLISH,"  %s library %s",atmStr,n));
                     }
                     sb.append(nl);
                 }
@@ -416,8 +417,10 @@ public class CenterBasisSet
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
-                sb.append(String.format("%-6s 0",atmId)).append(nl);
-                sb.append(String.format("%s %2d %3d",ecpType,maxl,ne));
+                sb.append(String.format(Locale.ENGLISH,
+                		"%-6s 0",atmId)).append(nl);
+                sb.append(String.format(Locale.ENGLISH,
+                		"%s %2d %3d",ecpType,maxl,ne));
                 sb.append(nl);
                 for (ECPShell s : ecps)
                 {
@@ -428,7 +431,8 @@ public class CenterBasisSet
             case "NWCHEM":
                 String atmStr = Character.toUpperCase(atmId.charAt(0)) 
                                              + atmId.toLowerCase().substring(1);
-                sb.append(String.format("  %s nelec %s",atmStr,ne)).append(nl);
+                sb.append(String.format(Locale.ENGLISH,
+                		"  %s nelec %s",atmStr,ne)).append(nl);
                 boolean first = true;
                 for (ECPShell s : ecps)
                 {
@@ -444,7 +448,8 @@ public class CenterBasisSet
                         String[] parts = ecpsType.split("-");
                         ecpsType = parts[0]; 
                     }
-                    sb.append(String.format("  %s %s",atmStr,ecpsType));
+                    sb.append(String.format(Locale.ENGLISH,
+                    		"  %s %s",atmStr,ecpsType));
                     sb.append(nl);
                     sb.append(s.toInputFileString(format));
                 }
