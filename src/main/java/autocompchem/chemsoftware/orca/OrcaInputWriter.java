@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
@@ -465,10 +466,10 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 						{
 							Point3d p3d = MolecularUtils.getCoords3d(atm);
 							lines.add(OrcaConstants.INDENT 
-									+ String.format(" %3s",atm.getSymbol())
-									+ String.format(" %10.5f",p3d.x)
-									+ String.format(" %10.5f",p3d.y)
-									+ String.format(" %10.5f",p3d.z));
+									+ String.format(Locale.ENGLISH," %3s",atm.getSymbol())
+									+ String.format(Locale.ENGLISH," %10.5f",p3d.x)
+									+ String.format(Locale.ENGLISH," %10.5f",p3d.y)
+									+ String.format(Locale.ENGLISH," %10.5f",p3d.z));
 						}
 						break;
 					}

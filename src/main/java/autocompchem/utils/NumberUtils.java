@@ -1,5 +1,7 @@
 package autocompchem.utils;
 
+import java.text.DecimalFormat;
+
 /*   
  *   Copyright (C) 2017  Marco Foscato 
  *
@@ -19,6 +21,7 @@ package autocompchem.utils;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -43,10 +46,10 @@ public class NumberUtils
     public static boolean isNumber(String str)
     {
         str = formatScientificNotation(str);
-        NumberFormat format = NumberFormat.getInstance();
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.ENGLISH);
         ParsePosition position = new ParsePosition(0);
-        format.parse(str, position);
-        if (str.length() == position.getIndex())
+        Number num = format.parse(str, position);
+        if (str.length() == position.getIndex() || num!=null)
         {
             return true;
         }
@@ -216,6 +219,41 @@ public class NumberUtils
             }
         }
         return p;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Formats a decimal number using the given pattern but with English format
+     * as for separators.
+     * @param pattern the pattern to use. Example "###.#"
+     * @param decimals minimum number of decimal digits to print. Overwrites the
+     * specific defined by the pattern.
+     * @param value the value to format
+     * @return the formatted string
+     */
+    public static String getEnglishFormattedDecimal(String pattern, 
+            int decimals, double value)
+    {
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+        DecimalFormat df = (DecimalFormat) nf;
+        df.applyPattern(pattern);
+        df.setMinimumFractionDigits(decimals);
+        return df.format(value);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Formats a decimal number using the given pattern but with English format
+     * as for separators. Imposes 4 as the minimum number of fractional digits.
+     * @param pattern the pattern to use. Example "###.####"
+     * @param value the value to format
+     * @return the formatted string
+     */
+    public static String getEnglishFormattedDecimal(String pattern, double value)
+    {
+        return getEnglishFormattedDecimal(pattern,4,value);
     }
 
 //------------------------------------------------------------------------------     

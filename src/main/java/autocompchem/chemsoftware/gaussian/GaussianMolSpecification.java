@@ -18,6 +18,7 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.vecmath.Point3d;
 
@@ -133,9 +134,9 @@ public class GaussianMolSpecification
             String line = "";
             String symbol = a.getSymbol();
             Point3d p3d = MolecularUtils.getCoords3d(a);
-            String x = String.format("%17.12f",p3d.x);
-            String y = String.format("%17.12f",p3d.y);
-            String z = String.format("%17.12f",p3d.z);
+            String x = String.format(Locale.ENGLISH,"%17.12f",p3d.x);
+            String y = String.format(Locale.ENGLISH,"%17.12f",p3d.y);
+            String z = String.format(Locale.ENGLISH,"%17.12f",p3d.z);
             String spacer = "     ";
             line = symbol + spacer + x + spacer + y + spacer + z;
             addPart(line);

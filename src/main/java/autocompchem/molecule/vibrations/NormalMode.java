@@ -18,6 +18,7 @@ package autocompchem.molecule.vibrations;
  */
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.vecmath.Point3d;
 
@@ -167,7 +168,7 @@ public class NormalMode implements Cloneable
     	StringBuilder sb = new StringBuilder();
     	for (Point3d p : components)
     	{
-    		sb.append(String.format("%-13.7f %-13.7f %-13.7f", p.x, p.y, p.z));
+    		sb.append(String.format(Locale.ENGLISH,"%-13.7f %-13.7f %-13.7f", p.x, p.y, p.z));
     		sb.append(System.getProperty("line.separator"));
     	}
     	return sb.toString();

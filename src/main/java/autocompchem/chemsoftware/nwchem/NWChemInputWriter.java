@@ -49,6 +49,7 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -1487,7 +1488,7 @@ public class NWChemInputWriter extends Worker
             iAtomTag = new AtomicInteger(1);
         }
 
-        // Preare the Cartesian coordinates data block
+        // Prepare the Cartesian coordinates data block
         ArrayList<String> lines = new ArrayList<String>();
         for (IAtom atm : mol.atoms())
         {
@@ -1497,12 +1498,12 @@ public class NWChemInputWriter extends Worker
                 sb.append(iAtomTag.getAndIncrement());
                 atm.setProperty(ACCConstants.ATMTAGPROP,sb.toString());
             }
-            sb.append(String.format(" %5.8f",
-                                            MolecularUtils.getCoords3d(atm).x));
-            sb.append(String.format(" %5.8f",
-                                            MolecularUtils.getCoords3d(atm).y));
-            sb.append(String.format(" %5.8f",
-                                            MolecularUtils.getCoords3d(atm).z));
+            sb.append(" ").append(NumberUtils.getEnglishFormattedDecimal(
+            		"####.########", 8, MolecularUtils.getCoords3d(atm).x));
+            sb.append(" ").append(NumberUtils.getEnglishFormattedDecimal(
+            		"####.########", 8, MolecularUtils.getCoords3d(atm).y));
+            sb.append(" ").append(NumberUtils.getEnglishFormattedDecimal(
+            		"####.########", 8, MolecularUtils.getCoords3d(atm).z));
             if (customCharge)
             {
                 sb.append(" ").append(atm.getCharge());

@@ -394,7 +394,7 @@ public class BasisSetUtils
      * Writes a basis set to an output file according to the given format.
      * Known formats are listed in the {@link BasisSet} documentation.
      * @param bs the basis set to be written
-     * @param format the format of thebasis set (i.e., the name of the software
+     * @param format the format of the basis set (i.e., the name of the software
      * package meant to read the basis set) 
      * @param out the pathname of the output file
      */

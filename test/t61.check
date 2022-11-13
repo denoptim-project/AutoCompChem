@@ -13,22 +13,27 @@ exit -1
 fi
 
 
-n=$(echo $(wc -l t61-mol.nw | awk '{print $1}') - $(grep -n ZCOORD t61-mol.nw | awk -F":" '{print $1}') | bc)
-m=$(tail -n $n t61-mol.nw | grep -n -m1 END | awk -F":" '{print $1}')
-b=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c BOND )
-if [ "$b" != 28 ] ; then
-echo NOT Passed ERROR 3
-exit -1
-fi
-a=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c ANGLE )
-if [ "$a" != 55 ] ; then
-echo NOT Passed ERROR 4
-exit -1
-fi
-t=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c TORSION )
-if [ "$t" != 189 ] ; then
-echo NOT Passed ERROR 5
-exit -1
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Skipping UNIX-only checks
+else
+    nn=$(echo $(wc -l t61-mol.nw | awk '{print $1}') - $(grep -n ZCOORD t61-mol.nw | awk -F":" '{print $1}') | bc)
+    m=$(tail -n $n t61-mol.nw | grep -n -m1 END | awk -F":" '{print $1}')
+    b=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c BOND )
+    if [ "$b" != 28 ] ; then
+    echo NOT Passed ERROR 3
+    exit -1
+    fi
+    a=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c ANGLE )
+    if [ "$a" != 55 ] ; then
+    echo NOT Passed ERROR 4
+    exit -1
+    fi
+    t=$(tail -n $n t61-mol.nw | head -n $m | grep -i -c TORSION )
+    if [ "$t" != 189 ] ; then
+    echo NOT Passed ERROR 5
+    exit -1
+    fi
 fi
 
 n=$(grep -i -c "^SET " t61-mol.nw)

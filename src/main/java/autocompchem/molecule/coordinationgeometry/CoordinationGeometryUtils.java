@@ -21,6 +21,7 @@ import java.util.Collection;
  */
 
 import java.util.List;
+import java.util.Locale;
 
 import com.google.common.collect.Collections2;
 
@@ -262,7 +263,7 @@ TODO: test and update
                  CoordinationGeometry cgJ = listGeometries.get(j);
                  double mad = calculateMeanAngleDifference(cgI,cgJ,0);
 //System.out.println("Comparing "+cgI.getName()+"-"+cgJ.getName()+" MAD: "+mad);
-                 String madStr = String.format("%.3f", mad);
+                 String madStr = String.format(Locale.ENGLISH,"%.3f", mad);
                  line = line + madStr;
                  for (int ii=0; ii<(16-madStr.length()); ii++)
                       line = line + " ";

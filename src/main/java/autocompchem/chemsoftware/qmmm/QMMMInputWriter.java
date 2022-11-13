@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -956,9 +957,9 @@ public class QMMMInputWriter extends Worker
         for (IAtom atm : mol.atoms())
         {
             StringBuilder sb = new StringBuilder(atm.getSymbol());
-            sb.append(String.format(" %5.8f",atm.getPoint3d().x));
-            sb.append(String.format(" %5.8f",atm.getPoint3d().y));
-            sb.append(String.format(" %5.8f",atm.getPoint3d().z));
+            sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().x));
+            sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().y));
+            sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().z));
             lines.add(sb.toString());
         }
         QMMMList geomLst = new QMMMList(QMMMConstants.GEOMLIST,lines);
@@ -1010,15 +1011,15 @@ public class QMMMInputWriter extends Worker
             for (IAtom atm : mol.atoms())
             {
                 StringBuilder sb = new StringBuilder();
-                sb.append(String.format("%1$4s",atmId + 1)); //1-based ID
-                sb.append(String.format(" %1$2s",atm.getSymbol()));
-                sb.append(String.format(" %1$3s",atm.getAtomTypeName()));
-                sb.append(String.format(" %5.8f",atm.getPoint3d().x));
-                sb.append(String.format(" %5.8f",atm.getPoint3d().y));
-                sb.append(String.format(" %5.8f",atm.getPoint3d().z));
-                sb.append(String.format(" %1$4s",atm.getProperty(
+                sb.append(String.format(Locale.ENGLISH,"%1$4s",atmId + 1)); //1-based ID
+                sb.append(String.format(Locale.ENGLISH," %1$2s",atm.getSymbol()));
+                sb.append(String.format(Locale.ENGLISH," %1$3s",atm.getAtomTypeName()));
+                sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().x));
+                sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().y));
+                sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().z));
+                sb.append(String.format(Locale.ENGLISH," %1$4s",atm.getProperty(
                         QMMMConstants.NUMERICALATMTYPFIELD).toString()));
-                sb.append(String.format(" %1$4s",ct.getNbrsIdAsString(atmId,
+                sb.append(String.format(Locale.ENGLISH," %1$4s",ct.getNbrsIdAsString(atmId,
                                                                    false," ")));
                 lines.add(sb.toString());
                 atmId++;

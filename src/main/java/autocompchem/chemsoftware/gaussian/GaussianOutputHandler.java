@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -717,7 +718,7 @@ public class GaussianOutputHandler extends Worker
                                     System.out.println("S_ROT: "+rotS); 
                                 }
 
-                                res = res + String.format("%.2f ",corrS); 
+                                res = res + String.format(Locale.ENGLISH,"%.2f ",corrS); 
                             }
                         }
                     }

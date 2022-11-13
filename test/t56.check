@@ -12,22 +12,29 @@ echo NOT Passed ERROR 3
 exit -1
 fi
 
-n=$(echo $(wc -l restart-t56.pro.nw | awk '{print $1}') - $(grep -n -i TOTEST restart-t56.pro.nw | awk -F":" '{print $1}') | bc)
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4a
-exit -1
-fi
-m=$(tail -n $n restart-t56.pro.nw | grep -n -i -m1 "^END" | awk -F":" '{print $1}')
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4b
-exit -1
-fi
-tail -n $n restart-t56.pro.nw | head -n $m > tmp-t56.res
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4c
-exit -1
-fi
-cat<<EOF>tmp-t56.ori
+# Excluding test depedent on command bc
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Skipping UNIX-only checks
+else
+    n=$(echo $(wc -l restart-t56.pro.nw | awk '{print $1}') - $(grep -n -i TOTEST restart-t56.pro.nw | awk -F":" '{print $1}') | bc)
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4a
+        exit -1
+    fi
+
+    m=$(tail -n $n restart-t56.pro.nw | grep -n -i -m1 "^END" | awk -F":" '{print $1}')
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4b
+        exit -1
+    fi
+    tail -n $n restart-t56.pro.nw | head -n $m > tmp-t56.res
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4c
+        exit -1
+    fi
+
+    cat<<EOF>tmp-t56.ori
   2ND 
     1st line in block
     2nd line in block
@@ -40,19 +47,20 @@ cat<<EOF>tmp-t56.ori
   END
 END
 EOF
-#
-# WARNING: this comparison considers also whitespace characters.
-# Otherwise equal output might have different indentation for NWChem directives
-# and trailing whitespaces. This check script is meant to spot also such 
-# differences.
-#
-diff tmp-t56.ori tmp-t56.res
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4
-exit -1
+    #
+    # WARNING: this comparison considers also whitespace characters.
+    # Otherwise equal output might have different indentation for NWChem directives
+    # and trailing whitespaces. This check script is meant to spot also such 
+    # differences.
+    #
+    diff tmp-t56.ori tmp-t56.res
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 4
+    exit -1
+    fi
+    rm tmp-t56.ori
+    rm tmp-t56.res
 fi
-rm tmp-t56.ori
-rm tmp-t56.res
 
 n=$(grep -c -i "RESTART[[:space:]]*restart-t56.pro " restart-t56.pro.nw)
 if [ $n != 1 ] ; then

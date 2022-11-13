@@ -31,6 +31,17 @@ import org.junit.jupiter.api.Test;
 
 public class NumberUtilsTest 
 {
+	//------------------------------------------------------------------------------
+
+    @Test
+    public void testIsNumber() throws Exception
+    {
+    	assertTrue(NumberUtils.isNumber("1.01"));
+    	assertTrue(NumberUtils.isNumber("1.00"));
+    	assertTrue(NumberUtils.isNumber("1"));
+    	assertTrue(NumberUtils.isNumber("1.00E10"));
+    	assertTrue(NumberUtils.isNumber("1.01E01"));
+    }
 
 //------------------------------------------------------------------------------
 

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import org.openscience.cdk.AtomType;
@@ -444,17 +445,17 @@ public class TinkerForceFieldHandler
             }
             StringBuilder sb2 = new StringBuilder();
             sb2.append(TinkerConstants.FFKEYATMTYP).append("   ").
-               append(String.format(" %4s",
+               append(String.format(Locale.ENGLISH," %4s",
                      at.getProperty(ForceFieldConstants.ATMTYPINT).toString())).
-               append(String.format(" %4s",
+               append(String.format(Locale.ENGLISH," %4s",
                      at.getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-               append(String.format(" %6s",
+               append(String.format(Locale.ENGLISH," %6s",
                      at.getProperty(ForceFieldConstants.ATMTYPSTR).toString())).
-               append(String.format(" %30s",
+               append(String.format(Locale.ENGLISH," %30s",
                      at.getProperty(ForceFieldConstants.ATMTYPTXT).toString())).
-               append(String.format(" %4s",at.getAtomicNumber())).
-               append(String.format(" %7.3f",at.getExactMass())).
-               append(String.format(" %3d",at.getValency()));
+               append(String.format(Locale.ENGLISH," %4s",at.getAtomicNumber())).
+               append(String.format(Locale.ENGLISH," %7.3f",at.getExactMass())).
+               append(String.format(Locale.ENGLISH," %3d",at.getValency()));
             lines.add(sb2.toString());
         }
         Collections.sort(lines);
@@ -479,15 +480,15 @@ public class TinkerForceFieldHandler
                 for (int i=1; i<p.getAtomTypes().size(); i++)
                 {
                    AtomType atmCls = p.getAtomTypes().get(i);
-                   sb2.append(String.format("%5s",atmCls.getProperty(
+                   sb2.append(String.format(Locale.ENGLISH,"%5s",atmCls.getProperty(
                                     ForceFieldConstants.ATMCLSSTR).toString()));
                 }
                 sb2.append(
-                        String.format("%6s",p.getAtomTypes().get(0).getProperty(
+                        String.format(Locale.ENGLISH,"%6s",p.getAtomTypes().get(0).getProperty(
                                     ForceFieldConstants.ATMTYPINT).toString())).
                     append(" # ").
                     append(
-                        String.format("%6s",p.getAtomTypes().get(0).getProperty(
+                        String.format(Locale.ENGLISH,"%6s",p.getAtomTypes().get(0).getProperty(
                                     ForceFieldConstants.ATMTYPSTR).toString()));
                 lines.add(sb2.toString());
             }
@@ -520,19 +521,19 @@ public class TinkerForceFieldHandler
             }
             StringBuilder sb2 = new StringBuilder();
             sb2.append(TinkerConstants.FFKEYMMFFATPROP).append("   ").
-               append(String.format(" %4s",atmCls.getProperty(
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getProperty(
                                     ForceFieldConstants.ATMCLSSTR).toString())).
-               append(String.format(" %4s",atmCls.getAtomicNumber())).
-               append(String.format(" %4s",atmCls.getFormalNeighbourCount())).
-               append(String.format(" %4s",atmCls.getProperty(
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getAtomicNumber())).
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getFormalNeighbourCount())).
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getProperty(
                                TinkerConstants.FFPRPROPMMFFACPILP).toString())).
-               append(String.format(" %4s",atmCls.getProperty(
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getProperty(
                                TinkerConstants.FFPRPROPMMFFACMLTB).toString())).
-               append(String.format(" %4s",atmCls.getProperty(
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getProperty(
                                TinkerConstants.FFPRPROPMMFFACAROM).toString())).
-               append(String.format(" %4s",atmCls.getProperty(
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getProperty(
                                 TinkerConstants.FFPRPROPMMFFACLIN).toString())).
-               append(String.format(" %4s",atmCls.getProperty(
+               append(String.format(Locale.ENGLISH," %4s",atmCls.getProperty(
                                TinkerConstants.FFPRPROPMMFFACSBMB).toString()));
             lines.add(sb2.toString());
         }
@@ -554,18 +555,18 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFAROM).append("   ").
-                   append(String.format(" %4s",
+                   append(String.format(Locale.ENGLISH," %4s",
                                             p.getAtomTypes().get(0).getProperty(
                                     ForceFieldConstants.ATMTYPINT).toString())).
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFARMRS).toString())).
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                  TinkerConstants.FFPRPROPMMFFARML).toString())).
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFARMIM).toString())).
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFARMCP).toString())).
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFARMOR).toString()));
                 lines.add(sb2.toString());
             }
@@ -592,19 +593,19 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFVDW).append("   ").
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                     ForceFieldConstants.ATMCLSINT).toString())).
-                   append(String.format(" %13.9f",
+                   append(String.format(Locale.ENGLISH," %13.9f",
                                             p.getEqValues().get(0).getValue())).
-                   append(String.format(" %7.3f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %7.3f",p.getProperty(
                                  TinkerConstants.FFPRPROPMMFFVDWA))).
-                   append(String.format(" %7.3f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %7.3f",p.getProperty(
                                  TinkerConstants.FFPRPROPMMFFVDWN))).
-                   append(String.format(" %7.3f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %7.3f",p.getProperty(
                                  TinkerConstants.FFPRPROPMMFFVDWG)));
                    if (p.getProperty(TinkerConstants.FFPRPROPMMFFVDWDA) != null)
                    {
-                       sb2.append(String.format(" %3s",p.getProperty(
+                       sb2.append(String.format(Locale.ENGLISH," %3s",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFVDWDA).toString()));
                    }
                 lines.add(sb2.toString());
@@ -626,11 +627,11 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMHILVDW).append("   ").
-                   append(String.format(" %4s",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4s",p.getProperty(
                                     ForceFieldConstants.ATMCLSINT).toString())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                             p.getEqValues().get(0).getValue())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(0).getValue()));
                 lines.add(sb2.toString());
             }
@@ -657,15 +658,15 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFSTR).append("   ").
-                   append(String.format(" %4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(1).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(1).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(0).getValue())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                             p.getEqValues().get(0).getValue())).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFSTRBT)));
                 lines.add(sb2.toString());
             }
@@ -686,13 +687,13 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFEMPSTR).append("   ").
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFEMPSTRNA))).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                 TinkerConstants.FFPRPROPMMFFEMPSTRNB))).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                             p.getEqValues().get(0).getValue())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(0).getValue()));
                 lines.add(sb2.toString());
             }
@@ -713,13 +714,13 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFEMPRAD).append("   ").
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                            TinkerConstants.FFPRPROPMMFFEMPAN))).
-                   append(String.format(" %6.3f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %6.3f",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFEMPRAD)));
                 if (p.getProperty(TinkerConstants.FFPRPROPMMFFEMPEL) != null)
                 {
-                    sb2.append(String.format(" %6.3f",p.getProperty(
+                    sb2.append(String.format(Locale.ENGLISH," %6.3f",p.getProperty(
                                            TinkerConstants.FFPRPROPMMFFEMPEL)));
                 }
                 lines.add(sb2.toString());
@@ -747,17 +748,17 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFBND).append("   ").
-                   append(String.format(" %4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(1).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(1).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(2).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(2).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(0).getValue())).
-                   append(String.format(" %8.3f",
+                   append(String.format(Locale.ENGLISH," %8.3f",
                                             p.getEqValues().get(0).getValue())).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFANGTYP)));
                 lines.add(sb2.toString());
             }
@@ -784,17 +785,17 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFSBN).append("   ").
-                   append(String.format(" %4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(1).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(1).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(2).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(2).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(0).getValue())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(1).getValue())).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFSBNTYP)));
                 lines.add(sb2.toString());
             }
@@ -815,15 +816,15 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFDEFSBN).append("   ").
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                         TinkerConstants.FFPRPROPMMFFEMPSTBIR))).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                         TinkerConstants.FFPRPROPMMFFEMPSTBJR))).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                         TinkerConstants.FFPRPROPMMFFEMPSTBKR))).
-                   append(String.format(" %7.3f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %7.3f",p.getProperty(
                                       TinkerConstants.FFPRPROPMMFFEMPSTBKIJK))).
-                   append(String.format(" %7.3f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %7.3f",p.getProperty(
                                       TinkerConstants.FFPRPROPMMFFEMPSTBKKJI)));
                 lines.add(sb2.toString());
             }
@@ -850,15 +851,15 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFOOP).append("   ").
-                   append(String.format(" %4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(1).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(1).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(2).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(2).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(3).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(3).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %7.3f",
+                   append(String.format(Locale.ENGLISH," %7.3f",
                                       p.getForceConstants().get(0).getValue()));
                 lines.add(sb2.toString());
             }
@@ -892,22 +893,22 @@ public class TinkerForceFieldHandler
                 ArrayList<Integer> ns = (ArrayList<Integer>) p.getProperty(
                                              TinkerConstants.FFPRPROPMMFFTORNS);
                 sb2.append(TinkerConstants.FFKEYMMFFTOR).append("   ").
-                   append(String.format("%4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH,"%4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format("%4s",p.getAtomTypes().get(1).
+                   append(String.format(Locale.ENGLISH,"%4s",p.getAtomTypes().get(1).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format("%4s",p.getAtomTypes().get(2).
+                   append(String.format(Locale.ENGLISH,"%4s",p.getAtomTypes().get(2).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format("%4s",p.getAtomTypes().get(3).
+                   append(String.format(Locale.ENGLISH,"%4s",p.getAtomTypes().get(3).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString()));
                 for (int ik=0;
                      ik<Math.min(Math.min(kt.size(),ph.size()),ns.size()); ik++)
                 {
-                    sb2.append(String.format(" %7.3f",kt.get(ik).getValue())).
-                                     append(String.format(" %.0f",ph.get(ik))).
-                                       append(String.format(" %d",ns.get(ik)));
+                    sb2.append(String.format(Locale.ENGLISH," %7.3f",kt.get(ik).getValue())).
+                                     append(String.format(Locale.ENGLISH," %.0f",ph.get(ik))).
+                                       append(String.format(Locale.ENGLISH," %d",ns.get(ik)));
                 }
-                sb2.append(String.format("  %s",p.getProperty(
+                sb2.append(String.format(Locale.ENGLISH,"  %s",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFTORTYP)));
                 lines.add(sb2.toString());
             }
@@ -934,13 +935,13 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFBCI).append("   ").
-                   append(String.format(" %4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %4s",p.getAtomTypes().get(1).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(1).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %8.4f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %8.4f",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFBCI))).
-                   append(String.format(" %4d",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %4d",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFBCIBT)));
                 lines.add(sb2.toString());
             }
@@ -961,11 +962,11 @@ public class TinkerForceFieldHandler
             {
                 StringBuilder sb2 = new StringBuilder();
                 sb2.append(TinkerConstants.FFKEYMMFFPBCI).append("   ").
-                   append(String.format(" %4s",p.getAtomTypes().get(0).
+                   append(String.format(Locale.ENGLISH," %4s",p.getAtomTypes().get(0).
                         getProperty(ForceFieldConstants.ATMCLSSTR).toString())).
-                   append(String.format(" %8.4f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %8.4f",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFBCIP))).
-                   append(String.format(" %8.4f",p.getProperty(
+                   append(String.format(Locale.ENGLISH," %8.4f",p.getProperty(
                                           TinkerConstants.FFPRPROPMMFFBCIF)));
                 lines.add(sb2.toString());
             }

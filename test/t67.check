@@ -36,22 +36,26 @@ echo NOT Passed ERROR 6
 exit -1
 fi
 
-n=$(echo $(wc -l t67-mol.nw | awk '{print $1}') - $(grep -n -m1 ZCOORD t67-mol.nw | awk -F":" '{print $1}') | bc)
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 7a
-exit -1
-fi
-m=$(tail -n $n t67-mol.nw | grep -n -m1 "^END" | awk -F":" '{print $1}')
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 7b
-exit -1
-fi
-tail -n $n t67-mol.nw | head -n $m > tmp-t67.res
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 7c
-exit -1
-fi
-cat<<EOF>tmp-t67.ori
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Skipping UNIX-only checks
+else
+    n=$(echo $(wc -l t67-mol.nw | awk '{print $1}') - $(grep -n -m1 ZCOORD t67-mol.nw | awk -F":" '{print $1}') | bc)
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 7a
+    exit -1
+    fi
+    m=$(tail -n $n t67-mol.nw | grep -n -m1 "^END" | awk -F":" '{print $1}')
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 7b
+    exit -1
+    fi
+    tail -n $n t67-mol.nw | head -n $m > tmp-t67.res
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 7c
+    exit -1
+    fi
+    cat<<EOF>tmp-t67.ori
     BOND 15 16 1.2 key1 
     BOND 15 43 1.2 key1 
     BOND 16 37 1.2 key1 
@@ -72,31 +76,30 @@ EOF
 # and trailing whitespaces. This check script is meant to spot also such
 # differences.
 #
-diff tmp-t67.ori tmp-t67.res
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 7
-exit -1
-fi
-rm tmp-t67.ori
-rm tmp-t67.res
+    diff tmp-t67.ori tmp-t67.res
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 7
+    exit -1
+    fi
+    rm tmp-t67.ori
+    rm tmp-t67.res
 
-
-n=$(echo $(wc -l t67-mol.nw | awk '{print $1}') - $(grep -n -m2 ZCOORD t67-mol.nw | tail -n1 | awk -F":" '{print $1}') | bc)
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 8a
-exit -1
-fi
-m=$(tail -n $n t67-mol.nw | grep -n -m1 "^END" | awk -F":" '{print $1}')
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 8b
-exit -1
-fi
-tail -n $n t67-mol.nw | head -n $m > tmp-t67.res
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 8c
-exit -1
-fi
-cat<<EOF>tmp-t67.ori
+    n=$(echo $(wc -l t67-mol.nw | awk '{print $1}') - $(grep -n -m2 ZCOORD t67-mol.nw | tail -n1 | awk -F":" '{print $1}') | bc)
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 8a
+    exit -1
+    fi
+    m=$(tail -n $n t67-mol.nw | grep -n -m1 "^END" | awk -F":" '{print $1}')
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 8b
+    exit -1
+    fi
+    tail -n $n t67-mol.nw | head -n $m > tmp-t67.res
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 8c
+    exit -1
+    fi
+    cat<<EOF>tmp-t67.ori
     BOND 12 13 2.5 BondRuCl constant 
     BOND 12 14 2.5 BondRuCl constant 
     BOND 15 16 
@@ -119,13 +122,14 @@ EOF
 # and trailing whitespaces. This check script is meant to spot also such
 # differences.
 #
-diff tmp-t67.ori tmp-t67.res
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 8
-exit -1
+    diff tmp-t67.ori tmp-t67.res
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 8
+    exit -1
+    fi
+    rm tmp-t67.ori
+    rm tmp-t67.res
 fi
-rm tmp-t67.ori
-rm tmp-t67.res
 
 n=0
 n=$(grep -c -i "^ *ZCOORD " t67-mol.nw)

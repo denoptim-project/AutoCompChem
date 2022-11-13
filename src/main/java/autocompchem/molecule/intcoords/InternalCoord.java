@@ -18,6 +18,7 @@ package autocompchem.molecule.intcoords;
  */
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Object representing a single internal coordinate with a name, a value, and 
@@ -263,7 +264,7 @@ public class InternalCoord implements Cloneable
         }
         else
         {
-            s = String.format(" %5.8f",value);
+            s = String.format(Locale.ENGLISH," %5.8f",value);
         }
         if (!type.equals("notype"))
         {
@@ -283,7 +284,7 @@ public class InternalCoord implements Cloneable
  
     public String getVariabeDefLine(String separator)
     {
-        String s = name + separator + String.format(" %5.8f",value);
+        String s = name + separator + String.format(Locale.ENGLISH," %5.8f",value);
         return s;
     }
 
