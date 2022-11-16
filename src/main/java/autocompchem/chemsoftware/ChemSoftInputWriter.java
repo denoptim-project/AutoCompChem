@@ -34,8 +34,6 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-//TODO: write doc
-
 public abstract class ChemSoftInputWriter extends Worker
 {
     
@@ -125,6 +123,14 @@ public abstract class ChemSoftInputWriter extends Worker
 
     private final String NL = System.getProperty("line.separator");
     
+
+//-----------------------------------------------------------------------------
+
+    public ChemSoftInputWriter()
+    {
+    	super("inputdefinition/ChemSoftInputWriter.json");
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -142,7 +148,8 @@ public abstract class ChemSoftInputWriter extends Worker
             this.verbosity = Integer.parseInt(str);
 
             if (verbosity > 0)
-                System.out.println(" Adding parameters to OrcaInputWriter");
+                System.out.println(" Adding parameters to chemical software "
+                		+ "input writer.");
         }
 
         if (params.contains(ChemSoftConstants.PARGEOMFILE))

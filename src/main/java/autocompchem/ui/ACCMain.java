@@ -22,11 +22,13 @@ import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
+import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 /**
  * Main for AtomCompChem (Automated Computational Chemist). The entry point
@@ -103,6 +105,31 @@ public class ACCMain
         else if (args.length > 1)
         {
         	job = parseCLIArgs(args);
+        	
+        	boolean requiresHelp = false;
+        	for (int i=0; i<args.length; i++)
+        	{
+        		if (CLIHELP.equals(args[i].toUpperCase()) 
+            			|| CLIHELPSHORT.equals(args[i].toUpperCase()))
+            	{
+        			requiresHelp = true;
+        			break;
+            	}
+        	}
+        	
+        	if (requiresHelp)
+        	{
+	        	if (job instanceof ACCJob)
+	        	{
+	        		Worker w = ((ACCJob) job).getWorker();
+	        		System.out.println(w.getTaskSpecificHelp());
+	        	} else {
+	        		//TODO-gg what here?
+	        		System.out.println("Not implemented yet!!! ");
+	        	}
+	        	Terminator.withMsgAndStatus("Exiting upon request to print "
+	        			+ "help message",0);
+        	}
         }
 
         // Do the task

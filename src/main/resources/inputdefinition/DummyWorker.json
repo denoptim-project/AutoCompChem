@@ -1,0 +1,14 @@
+[
+  {
+    "key": "INFILE",
+    "doc": "The pathname to the file to read as input."
+  },
+  {
+    "key": "PARAM1",
+    "doc": "Doc of parameter 1"
+  },
+  {
+    "key": "PARAM2",
+    "doc": "Doc\nof\nparameter 2"
+  }
+]

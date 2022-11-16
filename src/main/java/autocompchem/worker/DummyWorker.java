@@ -38,18 +38,17 @@ public class DummyWorker extends Worker
 	public static final String DATAREF = "duDataB";
 	public static final String DATAVALUE = "Output data B";
 	
+	protected String infile = "empty";
+	
 	public static final Set<TaskID> capabilities = 
 			Collections.unmodifiableSet(new HashSet<TaskID>(
 					Arrays.asList(TaskID.DummyTask)));
 	
 //-----------------------------------------------------------------------------
 
-	public DummyWorker(){}
-	
-//-----------------------------------------------------------------------------
-
-	public DummyWorker(TaskID task) {
-		super(task);
+	public DummyWorker()
+	{
+		super("inputdefinition/DummyWorker.json");
 	}
 
 //-----------------------------------------------------------------------------
@@ -76,8 +75,10 @@ public class DummyWorker extends Worker
 		
 		if (params.contains("VERBOSITY")) 
 		{
-			if (Integer.parseInt(params.getParameter("VERBOSITY").getValue().toString()) > 2) {
-				// In some tests we might want to check that the input has been read
+			if (Integer.parseInt(params.getParameter("VERBOSITY").getValue()
+					.toString()) > 2) {
+				// In some tests we might want to check that the input has been 
+				// read
 				// properly, so we echo the content of the param. storage
 				System.out.println(params.toLinesJobDetails());
 			} 

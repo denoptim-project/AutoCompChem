@@ -75,7 +75,8 @@ public class ACCJob extends Job
                             + task + "' - "+date.toString());
         }
         
-        Worker worker = WorkerFactory.createWorker(params,this);
+        Worker worker = getWorker();
+        worker.initialize();
         worker.performTask();
        
 
@@ -84,6 +85,23 @@ public class ACCJob extends Job
         {
             System.out.println("Done with ACC job (" + task	+ ") - "+date.toString());
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * 
+     * @return the {@link Worker} that can perform the task required in this job
+     * or null.
+     */
+    public Worker getWorker()
+    {
+    	// Check for any ACC task...
+    	if (!hasParameter(WorkerConstants.PARTASK))
+    	{
+    		return null;
+    	}
+       return WorkerFactory.createWorker(params,this,false);
     }
 
 //------------------------------------------------------------------------------

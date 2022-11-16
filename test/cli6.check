@@ -1,0 +1,28 @@
+#!/bin/bash
+
+
+if [ ! -f cli6.log ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=0;n=$(grep -c "VERBOSITY" cli6.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c "PREPAREINPUTORCA" cli6.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "JOBDETAILSFILE" cli6.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "Defines the spin multiplicity" cli6.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' cli6.log
+if [ $? == 0 ] ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 6
+exit -1
+fi
