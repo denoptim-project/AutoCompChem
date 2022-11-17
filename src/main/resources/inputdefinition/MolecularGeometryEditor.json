@@ -1,0 +1,47 @@
+[
+  {
+    "key": "INFILE",
+    "type": "<String>",
+    "doc": "The pathname to the SDF file containing the chemical system to work with."
+  },
+  {
+    "key": "OUTFILE",
+    "type": "<String>",
+    "doc": "The pathname to the file where to print the resulting chemical system."
+  },
+  {
+    "key": "OUTFORMAT",
+    "type": "<String>",
+    "doc": "Format for output file. Acceptable values are 'SDF', 'XYZ', and 'ORCATRAJECTORY'."
+  },
+  {
+    "key": "CARTESIANMOVE",
+    "type": "<String>",
+    "doc": "Pathname to a file defining the Cartesian components of the geometric change. The file format consists of a list of translation vectors in Cartesian coordinates, where each vector is reported as a space-separated  (X Y Z) tupla. The Cartesian move is orientation-dependent. Unless a reference substructure is also provided (see keyword REFERENCESUBSTRUCTURE), it is assumed that the 1-to-N vectors refer to the 1-to-N atoms in the molecular system provided as input and that the orientation of the molecule is consistent with that of the Cartesian move. When a reference substructure is provided (see parameter REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed to be consistent with that of the reference substructure."
+  },
+  {
+    "key": "CARTESIANSCALINGFACTORS",
+    "type": "<float> [<float> [<float> [...]]]",
+    "doc": "One or more scaling factors (real numbers) to be applied to the Cartesian move. The Cartesian move is applied on the initial structure per each given scaling factor. The default is 1.0."
+  },
+  {
+    "key": "OPTIMIZESCALINGFACTORS",
+    "type": "<String> <int> <float> <float> [<float>]",
+    "doc": "Requests the optimisation of scaling factors to Cartesian mode and specifies i) the kind of distribution to be produced (one string - acceptable kinds are 'EVEN' and 'BALANCED'), and ii) the number of scaling factors to generate (one integer), iii) the percent of the possible negative path to consider, and iv) the percent of the possible positive path to consider, and (optional) the maximum acceptable displacement."
+  },
+  {
+    "key": "REFERENCESUBSTRUCTUREFILE",
+    "type": "<String>",
+    "doc": "Pathname to SDF file with the definition of the substructure to which the geometric change has to be applied. The atom list is used to assign the Cartesian moves to the atoms of the molecular system given via the INFILE keyword."
+  },
+  {
+    "key": "ZMATRIXMOVE",
+    "type": "<String>",
+    "doc": "Pathname to a file defining the components of the geometric change in terms of internal coordinates using a ZMatrix. The file format consists of a ZMatrix where entries correspond to how much each internal coordinate changes. ."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

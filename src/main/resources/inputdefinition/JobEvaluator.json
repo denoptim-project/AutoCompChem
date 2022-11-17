@@ -1,0 +1,37 @@
+[
+  {
+    "key": "SITUATIONSDBROOT",
+    "type": "<String>",
+    "doc": "The pathname to the root folder that collects all known situations, i.e., the database of known situations."
+  },
+  {
+    "key": "IC-INPUT",
+    "type": "<String>[:<String>[:<String>[...]]]",
+    "doc": "List (separated by OS's path separator) of input files to be included as source of information, i.e., information channels. With 'input' we mean one or more input files of the job that is being evaluated."
+  },
+  {
+    "key": "IC-LOGS",
+    "type": "<String>[:<String>[:<String>[...]]]",
+    "doc": "List (separated by OS's path separator) of log files to be included as source of information, i.e., information channels. With 'log file' we mean one or more file containing the log produced by the job being evaluated."
+  },
+  {
+    "key": "IC-OUTPUT",
+    "type": "<String>[:<String>[:<String>[...]]]",
+    "doc": "List (separated by OS's path separator) of output files to be used as source of information, i.e., information channels. With 'output' we mean one or more output file produced by the job being evaluated."
+  },
+  {
+    "key": "IC-JOBDETAILS",
+    "type": "<String>[:<String>[:<String>[...]]]",
+    "doc": "List (separated by OS's path separator) of job details file to be used as source of information, i.e., information channel. With 'job' we mean the job being evaluated."
+  },
+  {
+    "key": "JOBDEFINITION",
+    "type": "<String>",
+    "doc": "Pathname to the job details file defining the job being evaluated."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

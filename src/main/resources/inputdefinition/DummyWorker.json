@@ -1,14 +1,17 @@
 [
   {
     "key": "INFILE",
+    "type": "<String>",
     "doc": "The pathname to the file to read as input."
   },
   {
     "key": "PARAM1",
+    "type": "<String>",
     "doc": "Doc of parameter 1"
   },
   {
     "key": "PARAM2",
+    "type": "<String>",
     "doc": "Doc\nof\nparameter 2"
   }
 ]

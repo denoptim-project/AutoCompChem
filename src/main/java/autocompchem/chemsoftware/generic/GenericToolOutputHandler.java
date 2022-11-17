@@ -110,6 +110,16 @@ public class GenericToolOutputHandler extends Worker
     private GenericToolParameters gtParams = new GenericToolParameters();
 
 //-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public GenericToolOutputHandler()
+    {
+        super("inputdefinition/GenericToolOutputHandler.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.

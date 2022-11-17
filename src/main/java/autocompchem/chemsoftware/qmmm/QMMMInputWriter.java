@@ -159,13 +159,13 @@ public class QMMMInputWriter extends Worker
 
 
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Constructor for an empty QMMMInputWriter
+     * Constructor.
      */
-
     public QMMMInputWriter()
     {
+        super("inputdefinition/todo.json");
     }
 
 //------------------------------------------------------------------------------
@@ -243,7 +243,7 @@ public class QMMMInputWriter extends Worker
      * one SMARTS and the cap atom properties (name, atom type, scale factor) 
      * used to define the cap atom that replaces the atom matched by the SMARTS 
      * query.
-     * The syntax for each lice is as follows: [SMARTSquery] [cap atom specs]
+     * The syntax for each line is as follows: [SMARTSquery] [cap atom specs]
      * </li>
      * <li>
      * (optional) <b>FREEZEATM</b> define frozen atoms.

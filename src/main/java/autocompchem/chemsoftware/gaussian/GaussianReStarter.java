@@ -140,6 +140,16 @@ public class GaussianReStarter extends Worker
     {
     }
 */
+    
+
+    /**
+     * Constructor.
+     */
+    public GaussianReStarter()
+    {
+        super("inputdefinition/todo.json");
+    }
+
 //------------------------------------------------------------------------------
 
     /**

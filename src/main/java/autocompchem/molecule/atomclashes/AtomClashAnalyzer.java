@@ -53,55 +53,6 @@ import autocompchem.worker.Worker;
  * where <i>allowance</i> is a value in angstrom that allows to specify that 
  * some atoms can came closer to each other that the sum of their van der Waals 
  * radii.<br>
- * Parameters needed by the AtomClashAnalyzer:
- * <ul>
- * <li> 
- * <b>INFILE</b> name of the SDF file containing the structures
- * Multiple structures can be provided (better if mols have different 
- * name/title)
- * </li>
- * <li>
- * (optional) <b>OUTFILE</b> name of SDF output file containing information
- * on atom clashes in fields
- * </li>
- * <li>
- * (optional) <b>TARGETSMARTS</b> single or multi line argument providing the
- * list of SMARTS that identify the atoms to be included in the 
- * analysis.
- * </li>
- * <li>
- * (optional) <b>CUTOFF</b> specifies the value of the cutoff (default: 0.6)
- * </li>
- * <li>
- * (optional) <b>ALLOWANCE</b> specifies the value of the allowance
- * (default: 0.4)
- * </li>
- * <li>
- * (optional) <b>ALLOWANCE13</b> specifies the value of the allowance between 
- * atoms in 1-3 relationship. This value overwrites the default allowance
- * for atoms in 1-3 relationship.
- * </li>
- * <li>
- * (optional) <b>ALLOWANCE14</b> specifies the value of the allowance between 
- * atoms in 1-4 relationship. This value overwrites the default allowance
- * for atoms in 1-4 relationship.
- * </li>
- * <li>
- * (optional) <b>CUSTOMALLOWANCE</b> specifies the value of the allowance between 
- * atoms defined by SMARTS strings. This option can set specific allowance 
- * values for specific pairs of atom types. Custom allowances can be defined
- * by single or multi
- * line argument (one custom allowance per line) according to the following 
- * format:
- * <br><br>
- * <code>[smart1] [smart2] allowance</code>
- * <br><br>
- * </li>
- * <li>
- * <b>VERBOSITY</b> verbosity level
- * </li>
- * </ul>
- * 
  * 
  * @author Marco Foscato
  */
@@ -150,6 +101,16 @@ public class AtomClashAnalyzer extends Worker
 
     //Verbosity level
     private int verbosity = 1;
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public AtomClashAnalyzer()
+    {
+        super("inputdefinition/AtomClashAnalyzer.json");
+    }
 
 //-----------------------------------------------------------------------------
 

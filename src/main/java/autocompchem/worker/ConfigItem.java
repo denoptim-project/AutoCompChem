@@ -51,11 +51,13 @@ public class ConfigItem
 	 */
 	public Object getStringForHelpMsg() {
 		String[] words = doc.split("\\s+");
-		StringBuilder sb = new StringBuilder();
-		sb.append(" -> ").append(key).append(" ").append(type);
+		StringBuilder sbHeader = new StringBuilder();
+		sbHeader.append(" -> ").append(key).append(" ").append(type);
 		String indent = "        ";
-		sb.append(System.getProperty("line.separator")).append(indent);
+		sbHeader.append(System.getProperty("line.separator")).append(indent);
 		int rowCounter = 1;
+
+		StringBuilder sb = new StringBuilder();
 		for (int i=0; i<words.length; i++) 
 		{
 			int length = sb.length() + words[i].length() + 2 
@@ -70,7 +72,8 @@ public class ConfigItem
 			}	
 		}
 		sb.append(System.getProperty("line.separator"));
-		return sb.toString();
+		sbHeader.append(sb.toString());
+		return sbHeader.toString();
 	}
 
 //------------------------------------------------------------------------------

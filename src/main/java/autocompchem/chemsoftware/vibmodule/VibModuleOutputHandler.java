@@ -135,6 +135,16 @@ public class VibModuleOutputHandler extends Worker
 
 //------------------------------------------------------------------------------
 
+    /**
+     * Constructor.
+     */
+    public VibModuleOutputHandler()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
+
     //TODO move to class doc
     
     /**

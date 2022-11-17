@@ -162,6 +162,16 @@ public class GaussianInputWriter extends Worker
 //-----------------------------------------------------------------------------
 
     /**
+     * Constructor.
+     */
+    public GaussianInputWriter()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
+
+    /**
      * Initialise the worker according to the parameters loaded by constructor.
      */
 

@@ -1,0 +1,17 @@
+[
+  {
+    "key": "INFILE",
+    "type": "<String>",
+    "doc": "The pathname to the output file to analyze. This is the input for any task analyzing the output of a generic application."
+  },
+  {
+    "key": "GENERICERRORSROOT",
+    "type": "<String>",
+    "doc": "The pathname to the root folder hosting a collection of known errors."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

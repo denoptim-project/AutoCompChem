@@ -132,6 +132,16 @@ public abstract class ChemSoftOutputHandler extends Worker
 //------------------------------------------------------------------------------
 
     /**
+     * Constructor.
+     */
+    public ChemSoftOutputHandler()
+    {
+        super("inputdefinition/ChemSoftOutputHandler.json");
+    }
+
+//-----------------------------------------------------------------------------
+
+    /**
      * Initialise the worker according to the parameters given to the 
      * constructor.
      */

@@ -1,0 +1,52 @@
+[
+  {
+    "key": "JOBOUTPUTFILE",
+    "type": "<String>",
+    "doc": "The pathname to the output file that should be analyzed (i.e., the input for a task aiming to analyze the output of a job)."
+  },
+  {
+    "key": "ROOTPATHNAMEOUTPUT",
+    "type": "<String>",
+    "doc": "The pathname's root of all output files that should be analyzed  (i.e., the input for a task aiming to analyze the output of a job)."
+  },
+  {
+    "key": "PRINTLASTGEOMETRY",
+    "type": "<Format> [<String>]",
+    "doc": "Requires extraction of the last geometry found in the output to analyze and specifies the format and (optionally) pathname of the file where to save such geometry."
+  },
+  {
+    "key": "PRINTLASTGEOMETRYOFEACHSTEP",
+    "type": "<Format> [<String>]",
+    "doc": "Requires extraction of the last geometry of each step found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved."
+  },
+  {
+    "key": "PRINTALLGEOMETRIES",
+    "type": "<Format> [<String>]",
+    "doc": "Requires extraction ofall geometries found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved."
+  },
+  {
+    "key": "TEMPLATECONNECTIVITY",
+    "type": "<String> [TOLERANCE=<float>]",
+    "doc": "Requires assignation to the geometry found in the output to analyze of the connectivity table found in the pathname given as value (must be an SDF file). Optionally, a tolerance (in Å) can be given to trigger the comparison of the interatomic distances between the geometries in the output to analyze and in the template connectivity file. The distances considered are those that correspond to bonds in the connectivity table. The tolerance value (t) defined the amount of acceptable distance change relative to the distance (refDist) in the template connectivity file (i.e., maxAllowedDeviation = |refDist * t|)."
+  },
+  {
+    "key": "PRINTVIBMODES",
+    "type": "<int> [<int> [<int> ...]] <String>",
+    "doc": "Requires extraction of vibrational modes from the output to analyze. The modes are specified by the list of 0-based indexes (any number of indexes). The last string defines the pathname where the modes are saved."
+  },
+  {
+    "key": "CALCULATEENERGY",
+    "type": "[QHTHRESHOLD <int>]",
+    "doc": "Requires extraction of the energy values. Optionally, the presence of QHTHRESHOLD option triggers the calculation of free energy with the quasi-harmonic approximation where all frequencies below a given threshold (the integer value, in 1/cm) are considered for the calculation of the vibrational entropy as if their frequency was the value of the threshold."
+  },
+  {
+    "key": "DETECTKINDOFCRITICALPOINT",
+    "type": "[LOWESTFREQ <int>]",
+    "doc": "Requires analysis of the curvature to determine the nature pf the critical point: minimum (all real frequencies), transition state (one imaginary frequency), of saddle point (more than one imaginary frequency). Optionally, the LOWESTFREQ value allows to set the threshold (in 1/cm) for ignoring very soft imaginary modes."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

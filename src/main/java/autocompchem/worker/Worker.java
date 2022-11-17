@@ -108,12 +108,6 @@ public abstract class Worker implements IOutputExposer
      * Verbosity level
      */
     protected int verbosity = 0;
-
-    //TODO-gg remove this one!!!
-    public Worker()
-    {
-    	this.knownInputDefinition = "UNDEFINED_PATHNAME_TO_JSON";
-    }
     
 //------------------------------------------------------------------------------
 

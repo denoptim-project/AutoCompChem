@@ -81,18 +81,18 @@ public class JobEvaluator extends Worker
      * The job being evaluated
      */
     private Job job;
+
     
 //-----------------------------------------------------------------------------
     
     /**
-     * Constructor defining the knowledge base and source of information.
-     * @param sitsDB the collection of known situations.
-     * @param icDB the collection of information channels.
+     * Constructor.
      */
     public JobEvaluator()
     {
+        super("inputdefinition/JobEvaluator.json");
     }
-    
+
 //-----------------------------------------------------------------------------
     
     /**
@@ -103,6 +103,7 @@ public class JobEvaluator extends Worker
      */
     public JobEvaluator(SituationBase sitsDB, InfoChannelBase icDB, Job job)
     {
+    	this();
         this.sitsDB = sitsDB;
         this.icDB = icDB;
         this.job = job;

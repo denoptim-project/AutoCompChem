@@ -196,6 +196,16 @@ public class NWChemOutputHandler extends Worker
     private boolean useTemplateConnectivity = false;
 
 //------------------------------------------------------------------------------
+    /**
+     * Constructor.
+     */
+    public NWChemOutputHandler()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
+
 //TODO move to class doc
     /**
      * Constructs an NWChemOutputHandler specifying the parameters taken from 

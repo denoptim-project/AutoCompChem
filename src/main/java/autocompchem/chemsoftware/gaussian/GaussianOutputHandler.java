@@ -188,6 +188,15 @@ public class GaussianOutputHandler extends Worker
     private boolean useTemplateConnectivity = false;
 
 //------------------------------------------------------------------------------
+    /**
+     * Constructor.
+     */
+    public GaussianOutputHandler()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Constructs a GaussianOutputHandler specifying the parameters taken from 

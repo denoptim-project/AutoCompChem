@@ -1,0 +1,22 @@
+[
+  {
+    "key": "INFILE",
+    "type": "<String>",
+    "doc": "The pathname to the SDF file containing the chemical system to work with."
+  },
+  {
+    "key": "OUTFILE",
+    "type": "<String>",
+    "doc": "The pathname to the file where to print the results."
+  },
+  {
+    "key": "TARGETSMARTS",
+    "type": "<String>",
+    "doc": "Single or multi line argument providing the list of SMARTS that identify the atoms to be included in the analysis. If no target atom is given, all D-block elements are considered as potentially chelated target atoms."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

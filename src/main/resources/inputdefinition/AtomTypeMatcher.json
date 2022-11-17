@@ -1,0 +1,27 @@
+[
+  {
+    "key": "INFILE",
+    "type": "<String>",
+    "doc": "The pathname to a SDF file containing the chemical system for which the atom types should be generated."
+  },
+  {
+    "key": "ATOMTYPESMAP",
+    "type": "<String>",
+    "doc": "The pathname to a file defining the atom types. This is a text file where each line respects the following syntax: <int> <String> <String> where the integer is the atom type, the first string is currently not used, and the last string is a SMARTS query used to identify the atoms belonging to the type."
+  },
+  {
+    "key": "OUTFILE",
+    "type": "<String>",
+    "doc": "The pathname to the file where to print the assigned atom types."
+  },
+  {
+    "key": "FORMAT",
+    "type": "<String>",
+    "doc": "The format for writing basis set. Possible values are 'TXYZ' for Tinker-XYZ format, or 'List'."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

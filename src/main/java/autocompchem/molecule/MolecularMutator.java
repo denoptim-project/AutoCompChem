@@ -96,42 +96,15 @@ public class MolecularMutator extends Worker
      */
     private int verbosity = 0;
 
-
-//------------------------------------------------------------------------------
-
-   //TODO move to class doc
+//-----------------------------------------------------------------------------
+    
     /**
-     * Constructs a MolecularMutator specifying the parameters with a
-     * {@link ParameterStorage}.
-     * <ul>
-     * <li>
-     * <b>INFILE</b> path or name of the SDF file containing the structures to
-     * reorder
-     * (only SDF files with ONE molecule are acceptable!).
-     * </li>
-     * <li>
-     * <b>OUTFILE</b> path or name of the SDF file where results are to be
-     * written.
-     * </li>
-     * <li>
-     * <b>SMARTSMAP</b> the map of pairs of SMARTS queries and new elemental 
-     * symbol.
-     * Insert a pairs of SMARTS+element in a single line (i.e., use a multiline
-     * block). For example:
-     * <pre>
-     * [single-atom-SMARTS-query-1] H
-     * [single-atom-SMARTS-query-2] Si
-     * [single-atom-SMARTS-query-3] C
-     * </pre>
-     * </li>
-     * <li>
-     * <b>VERBOSITY</b> (optional) verbosity level.
-     * </li>
-     * </ul>
-     *
-     * @param params object <code>ParameterStorage</code> containing all the
-     * parameters needed
+     * Constructor.
      */
+    public MolecularMutator()
+    {
+        super("inputdefinition/MolecularMutator.json");
+    }
 
 //-----------------------------------------------------------------------------
 

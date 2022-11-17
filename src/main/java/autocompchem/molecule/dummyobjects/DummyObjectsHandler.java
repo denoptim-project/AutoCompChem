@@ -51,45 +51,6 @@ import autocompchem.worker.Worker;
 /**
  * DummyObjectsHandler is a tool to handle dummy objects, such as, dummy atoms 
  * and bonds, within molecular representations. 
- * Parameters to initialise this worker 
- * <ul>
- * <li>
- * <b>INFILE</b>: pathname of the SDF file containing the structure.
- * </li>
- * <li>
- * (optional)
- * <b>LINEARITIES</b>: makes the tool remove dummy atoms used to represent
- * linear arrangements of atoms with internal coordinates. It is assumed
- * that such dummy atom are explicitly bonded to only one other atom.
- * </li>
- * <li>
- * (optional)
- * <b>PLANARITIES</b>: makes the tool remove dummy atoms used to heal
- * planar systems of atoms in internal coordinates. It is assumed
- * that such dummy atom are explicitly bonded to only one other atom.
- * </li>
- * <li>
- * (optional)
- * <b>MULTIHAPTO</b>: makes the tool remove dummy atoms used to describe
- * multihapto systems. It is assumed that a dummy atom is places somewhere
- * in the ligands (i.e., the centroid, usually) and connected to the 
- * other end of the multihapto connection,
- * and all the atoms contributing to the metal-ligand bond. For instance,
- * one dummy atom connected to the 5 carbon atoms of a cyclopentadienyl 
- * ligand and to the metal atom.
- * </li>
- * <li>
- * (optional)
- * <b>DUSYMBOL</b>: the symbol to be used to identify a specific type
- * of dummy atom to remove. Compatible with both LINEARITIES and MULTIHAPTO.
- * </li>
- * <li>
- * <b>OUTFILE</b>: pathname of the SDF file where the results are written
- * </li>
- * <li>
- * <b>VERBOSITY</b>: verbosity level
- * </li>
- * </ul>
  * 
  * @author Marco Foscato
  */
@@ -157,6 +118,16 @@ public class DummyObjectsHandler extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Constructor.
+     */
+    public DummyObjectsHandler()
+    {
+        super("inputdefinition/DummyObjectsHandler.json");
+    }
 
 //-----------------------------------------------------------------------------
 
