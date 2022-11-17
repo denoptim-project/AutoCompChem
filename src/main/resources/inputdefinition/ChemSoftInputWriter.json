@@ -1,0 +1,45 @@
+[
+  {
+    "key": "INPUTGEOMETRIESFILE",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input."
+  },
+  {
+    "key": "MULTIGEOMMODE",
+    "type": "<String>",
+    "doc": "Defines how to interprete an input file containing multiple geometries. Possible values are SingleGeom, ReactProd, ReactTSProd, and Path."
+  },
+  {
+    "key": "JOBDETAILSFILE",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "The pathname to a file defining the details of the job for which we are going to generate the input file/s."
+  },
+  {
+    "key": "JOBDETAILS",
+    "type": "<String>",
+    "doc": "The definition of the job for which we are going to generate the input file/s."
+  },
+  {
+    "key": "ROOTPATHNAMEOUTPUT",
+    "type": "<String>",
+    "doc": "The path+rootname of any input file for the job for which we are going to generate the input file/s."
+  },
+  {
+    "key": "CHARGE",
+    "type": "<int>",
+    "doc": "Defines the charge of the chemical system/s given as input."
+  },
+  {
+    "key": "SPIN_MULTIPLICITY",
+    "type": "<int>",
+    "doc": "Defines the spin multiplicity of the chemical system/s given as input."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "isForStandalone": true,
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

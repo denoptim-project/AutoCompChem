@@ -330,6 +330,15 @@ public class NWChemInputWriter extends Worker
     private int verbosity = 1;
 
 //-----------------------------------------------------------------------------
+    /**
+     * Constructor.
+     */
+    public NWChemInputWriter()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.

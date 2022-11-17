@@ -152,6 +152,16 @@ public class NWChemReStarter extends Worker
     private ParameterStorage paramsLoc;
 
 //------------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public NWChemReStarter()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.

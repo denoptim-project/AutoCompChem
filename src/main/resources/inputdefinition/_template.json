@@ -1,0 +1,52 @@
+[
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "",
+    "type": "<String>",
+    "doc": ""
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

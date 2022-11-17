@@ -138,7 +138,7 @@ public class WorkerFactory
     {    	
     	return createWorker(params,null);
     }
-
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -154,13 +154,38 @@ public class WorkerFactory
 
     public static Worker createWorker(ParameterStorage params, Job masterJob)
     {
+    	return createWorker(params, masterJob, true);
+    }
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Create a new worker capable of performing the task given in the 
+     * parameters storage unit. This method initialised the worker, i.e., 
+     * it make the worker read the parameters and load the corresponding input
+     * and configurations.
+     * @param params the parameters that define the task and all related 
+     * settings and input data.
+     * @param masterJob the job that is creating a worker to perform a task.
+     * @param initializeIt if <code>true</code> the worker is also initialized.
+     * This requires that the parameters are consistent with the requirements
+     * of the worker.
+     * @return a suitable worker for the task.
+     */ 
+
+    public static Worker createWorker(ParameterStorage params, Job masterJob, 
+    		boolean initializeIt)
+    {
     	String taskStr = params.getParameter(
     			WorkerConstants.PARTASK).getValueAsString();
     	TaskID taskID = TaskID.getFromString(taskStr);
     	
     	Worker worker = createWorker(taskID, masterJob);
     	worker.setParameters(params);
-    	worker.initialize();
+    	if (initializeIt)
+    	{
+    		worker.initialize();
+    	}
     	
     	return worker;
     }

@@ -47,40 +47,6 @@ import autocompchem.worker.Worker;
  * specific atom types according to a
  * given list of matching rules. The type of implemented rules and their
  * syntax is defined in the {@link BSMatchingRule} documentation page.
- * Parameters:
- * <ul>
- * <li>
- * <b>{@value autocompchem.modeling.basisset.BasisSetConstants#ATMSPECBS}</b> 
- * is used to define the 
- * atom-matching rules for assigning a specific basis set to one or more
- * atoms in the system. One rule for each line. 
- * The syntax of each line is defined in the
- * {@link autocompchem.modeling.basisset.BSMatchingRule}, and that for defining
- * a multi line {@link autocompchem.datacollections.Parameter} in the
- * {@link autocompchem.datacollections.ParameterStorage}.
- * </li>
- * <li> (optional)
- * <b>{@value autocompchem.modeling.basisset.BasisSetConstants#ALLOWPARTIALMATCH}</b>
- * allows to tolerate partial basis set that do not cover all atoms in the
- * molecular structure. Any value other than <code>true</code> 
- * will forbid partial matches.
- * </li>
- * <li>
- * (optional) <b>VERBOSITY</b> verbosity level.
- * </li>
- * <li>
- * (optional) <b>INFILE</b> name of a molecular structure file containing
- * molecule/s to be processed.
- * </li>
- * <li>
- * (optional) <b>OUTFILE</b> name of the output file on which the basis set
- * will be written.
- * </li>
- * <li>
- * (optional) <b>FORMAT</b> is used to specify the format used when
- * returning or writing the resulting basis set.
- * </li>
- * </ul>
  * @author Marco Foscato
  */
 
@@ -110,7 +76,7 @@ public class BasisSetGenerator extends Worker
     private String format = "GAUSSIAN";
 
     /**
-     * List of atom-matching rules for assignation of the basis sets
+     * List of atom-matching rules for assigning the basis sets
      */
     private Map<String,BSMatchingRule> rules = 
                                            new HashMap<String,BSMatchingRule>();
@@ -135,6 +101,16 @@ public class BasisSetGenerator extends Worker
      */
     private int verbosity = 0;
 
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public BasisSetGenerator()
+    {
+        super("inputdefinition/BasisSetGenerator.json");
+    }
 
 //-----------------------------------------------------------------------------
 

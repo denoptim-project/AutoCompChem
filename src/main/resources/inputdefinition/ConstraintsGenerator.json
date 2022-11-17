@@ -1,0 +1,24 @@
+[
+  {
+    "key": "INFILE",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "The pathname to a SDF file containing the chemical system for which constraints should be generated."
+  },
+  {
+    "key": "SMARTS",
+    "type": "<String>",
+    "doc": "Each line should adhere to the following syntax: <int> [<String> [<String> [<String>]]] [<float>] [onlyBonded] [notAnIC] [...] where the initial strings are up to four SMARTS queries to identify atoms. These define the type of entity to constrain: one for freezing an atom, two for constraining a distance, three for an angle, four for a torsion. The <float> is an optional value usually used to define the value of the internal coordinate to constrain (in Å) or the strength of a constraint, depending on the software applying the constraints. Last, the option 'onlyBonded' limits the application of the constraint to tuples of atoms that are connected as defined by the order of indexes (i.e., 1-2, 2-3, 3-4), while the 'notAnIC' option decouples the list of atoms from the definition of internal coordinate and apply the constraint to all the atoms matched by the listed SMARTS instead of the corresponding internal coordinate. Any other following string is treated as plain text that is appended after the definition of the constrain and is expected to have a meaning only for the specific software reading the constraint definition (e.g., the 'A'/'F'/'S' used in Gaussian)."
+  },
+  {
+    "key": "ATOMIDS",
+    "type": "<String>",
+    "doc": "Lines defining Atom index-based rules for generating constraints. Each line should adhere to the following syntax: <int> [<int> [<int> [<int>]]] [<float>] [onlyBonded] [notAnIC] [...] where the initial integers are up to four atom indexes. These define the type of entity to constrain: one for freezing an atom, two for constraining a distance, three for an angle, four for a torsion. The <float> is an optional value usually used to define the value of the internal coordinate to constrain (in Å) or the strength of a constraint, depending on the software applying the constraints. Last, the option 'onlyBonded' limits the application of the constraint to tuples of atoms that are connected as defined by the order of indexes (i.e., 1-2, 2-3, 3-4), while the 'notAnIC' option decouples the list of atoms from the definition of internal coordinate and apply the constraint to all the listed atom indexes instead of the corresponding internal coordinate. Any other following string is treated as plain text that is appended after the definition of the constrain and is expected to have a meaning only for the specific software reading the constraint definition (e.g., the 'A'/'F'/'S' used in Gaussian)."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "isForStandalone": true,
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

@@ -326,7 +326,7 @@ public class ConnectivityUtils
      * @param mol the atom container under evaluation.
      * @param ref the reference atom container .
      * @param tolerance the tolerance applied when comparing interatomic 
-     * distances.
+     * distances. The value is a factor applied to the reference distance.
      * @param verbosity about of log in stdout.
      * @param log a string with the log from this analysis.
      * @return <code>true</code> if the two interatomic distances are compatible

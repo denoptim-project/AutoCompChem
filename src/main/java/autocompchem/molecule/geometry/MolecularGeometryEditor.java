@@ -51,57 +51,8 @@ import autocompchem.worker.WorkerFactory;
 
 
 /**
- * Tool for editing molecular geometries. 
- * HEre are the parameters that can be given to constructor:
- * <ul>
- * <li>
- * <b>INFILE</b> pathname of the SDF file containing the molecular
- * structure.
- * (only SDF files with ONE molecule are acceptable!).
- * </li>
- * <li>
- * <b>OUTFILE</b> pathname of the SDF file where results are to be
- * written.
- * </li>
- * <li>
- * <b>OUTFORMAT</b> format of the output file.
- * </li>
- * <li>
- * <b>CARTESIANMOVE</b> (optional) pathname to a file defining 
- * the Cartesian components of the geometric change. The file format
- * consists of a list of translation vectors in Cartesian coordinates, 
- * where each vector is reported as a space-separated  (X Y Z) tupla.
- * The Cartesian move is orientation-dependent. Unless a
- * reference substructure is also provided (see keyword 
- * REFERENCESUBSTRUCTURE), it is assumed that the 1-to-N vectors refer to
- * the 1-to-N atoms in the molecular system provided as input and that the
- * orientation of the molecule is consistent with that of the Cartesian 
- * move. When a reference substructure is provided (see parameter
- * REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed
- * to be consistent with that of the reference substructure.
- * </li>
- * <li>
- * <b>OPTIMIZESCALINGFACTORS</b> (optional) requests the optimisation of 
- * scaling factors to Cartesian mode and specifies i) the kind of distribution
- * to be produced (one string - acceptable kinds are <code>EVEN</code> and 
- * <code>BALANCED</code>), and ii) the number of scaling factors to generate
- * (one integer), iii) the percent of the possible negative path to consider, 
- * and iv) the percent of the possible positive path to consider.</li>
- * <li>
- * <b>CARTESIANSCALINGFACTORS</b> (optional) one or more scaling factors
- * (real numbers) to be applied to the Cartesian move. The Cartesian
- * move is applies on the initial structure per each given scaling factor.
- * The default is 1.0).
- * <li>
- * <b>REFERENCESUBSTRUCTUREFILE</b> (optional) pathname to SDF file with 
- * the definition of the substructure to which the geometric change has 
- * to be applied. The atom list is used to assign the Cartesian moves to
- * the atoms of the molecular system given via the INFILE keyword.
- * </li>
- * <li>
- * <b>VERBOSITY</b> (optional) verbosity level.
- * </li>
- * </ul>
+ * Tool for editing molecular geometries along direction in multidimensional 
+ * space.
  *
  * @author Marco Foscato
  */
@@ -248,6 +199,16 @@ public class MolecularGeometryEditor extends Worker
 
     
 //-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public MolecularGeometryEditor()
+    {
+        super("inputdefinition/MolecularGeometryEditor.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.
@@ -279,7 +240,7 @@ public class MolecularGeometryEditor extends Worker
             if (inMols.size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "
-                        + "requires  SDF files with only one structure. "
+                        + "requires SDF files with only one structure. "
                         + "Check file " + inFile, -1);
             }
             this.inMol = inMols.get(0);

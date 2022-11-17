@@ -179,6 +179,16 @@ public class SpartanInputWriter extends Worker
 
 //------------------------------------------------------------------------------
 
+    /**
+     * Constructor.
+     */
+    public SpartanInputWriter()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
+
     //TODO move to class doc
     
     /**

@@ -41,44 +41,6 @@ import autocompchem.worker.Worker;
  * Tool generating molecular connectivity from Cartesian coordinates by
  * comparing the interatomic distances with the sum of van der Waals
  * radii.
- * Parameters needed by methods of this class include:
- * <ul>
- * <li>
- * <b>INFILE</b>: path/name of the SDF file containing the structure
- * (only SDF files with ONE molecule are acceptable for the moment)
- * </li>
- * <li>
- * <b>TOLERANCE</b>: a new bond is added only when the distance between 
- *  two atoms is below the sum of their v.d.W. radii
- * minus the tolerance (as percentage). Values between 0.0 and 1.0 should 
- * be used.
- * </li>
- * <li>
- * <b>OUTFILE</b>: path or name of the SDF file where the result is to be written
- * </li>
- * <li>
- * <b>VERBOSITY</b>: verbosity level.
- * </li>
- * </ul>
- * Optional parameters used by some method are:
- * <ul>
- * <li>
- * <b>TOLERANCE2NDSHELL</b>: additional contribution to the 
- * tollerance
- * of atoms in 1-3 relation (i.e., when evaluating the distance r_AC 
- * in A-B-C) 
- * </li>
- * <li>
- * <b>TARGETELEMENT</b>: element symbol of atoms to which 
- * bonds are to be 
- * added
- * </li>
- * <li>
- * <b>TEMPLATE</b>: a complete definition of connectivity that is meant to be 
- * imposed to the molecule/s in the INFILE. When this is used, all the others
- * parameters are ignored (apart from INFILE and OUTFILE).
- * </li>
- * </ul>
  *          
  * @author Marco Foscato
  */
@@ -118,9 +80,18 @@ public class ConnectivityGenerator extends Worker
     private String targetEl = "";
     
     private String templatePathName = "";
-    private boolean useTemplate = false;
 
 //------------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public ConnectivityGenerator()
+    {
+        super("inputdefinition/ConnectivityGenerator.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.
@@ -169,7 +140,6 @@ public class ConnectivityGenerator extends Worker
             String templatePathName =
                     params.getParameter("TEMPLATE").getValue().toString();
             this.templatePathName = templatePathName;
-            this.useTemplate = true;
         }
         
         if (params.contains("REFERENCE"))

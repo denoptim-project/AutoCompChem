@@ -43,52 +43,7 @@ import autocompchem.worker.Worker;
 /**
  * AtomTypeMatcher implements the facility to assign atom types according to a
  * given list of matching rules (SMARTS queries).
- * The parameters needed by <code>AtomTypeMatcher</code> are:
- * <ul>
- * <li>
- * <b>INFILE</b> path or name of the input (only SDF file are acceptable!).
- * </li>
- * <li>
- * <b>VERBOSITY</b> verbosity level.
- * </li>
- * <li>
- * <b>ATOMTYPESMAP</b> formatted text file (format defined below).
- * </li>
- * </ul>
- * <br>
- * Optional Parameters:
- * <ul>
- * <li>
- * <b>OUTFILE</b> path or name of the output where to write the results.
- * </li>
- * <li>
- * <b>OUTFORMAT</b>  format of the output file. The following two are implemented
- *   <ul>
- *   <li> 
- *   <b>TXYZ</b> for Tinker Cartesian coordinates files;
- *   </li>
- *   <li>
- *   <b>LIST</b> for a simple list of atom number and corresponding
- *     atom type.
- *   </li>
- *   </ul>
- * </li>
- * </ul>
- * <br>
- * The file containing the atom types matching rules as SMARTS queries should
- * respect the following format:
- * <br><br> 
- * <code>AtomTypeLabel match 'SMARTS' #comment</code>
- * <br><br>
- * where 
- * <code>AtomTypeLabel</code> is a label like C,N,NH,C2, and Csp3; 
- * <code>match</code> is exactly the word match (NOTE: this field is not 
- * used now);
- * <code>'SMARTS'</code> is the query encapsilated between single quotes.
- * An optional comment can be written at the end of the line using
- * <code>#</code>. In general, <code>#</code>
- * is also used as first character to comment out lines.
- *
+ * 
  * @author Marco Foscato
  */
 
@@ -136,6 +91,16 @@ public class AtomTypeMatcher extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public AtomTypeMatcher()
+    {
+        super("inputdefinition/AtomTypeMatcher.json");
+    }
 
 //-----------------------------------------------------------------------------
 

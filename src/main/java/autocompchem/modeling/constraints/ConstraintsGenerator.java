@@ -88,6 +88,16 @@ public class ConstraintsGenerator extends Worker
 
 
 //-----------------------------------------------------------------------------
+	
+    /**
+     * Constructor.
+     */
+    public ConstraintsGenerator()
+    {
+        super("inputdefinition/ConstraintsGenerator.json");
+    }
+
+//-----------------------------------------------------------------------------
 
     /**
      * Initialise the worker according to the parameters loaded by constructor.

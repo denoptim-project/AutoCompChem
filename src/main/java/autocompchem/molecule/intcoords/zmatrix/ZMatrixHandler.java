@@ -155,34 +155,15 @@ public class ZMatrixHandler extends Worker
      */
     private int verbosity = 0;
 
-//------------------------------------------------------------------------------
-
-    //TODO move to class doc
+//-----------------------------------------------------------------------------
+    
     /**
-     * Constructs a ZMatrixHandler from parameter storage.
-     * Parameters controlling the handler
-     * <ul>
-     * <li>
-     * <b>VERBOSITY</b>  verbosity level
-     * </li>
-     * <li>
-     * (optional) <b>INFILE</b>: pathname of the input file containig a the 
-     * chemical entity to work with (SDF or ACC's ZMatrix)
-     * </li>
-     * <li>
-     * (optional) <b>INFILE2</b>: pathname of the input file containig a the
-     * second chemical entity to work with (SDF or ACC's ZMatrix)
-     * </li>
-     * <li>
-     * (optional) <b>TEMPLATEZMAT</b>: ACCs ZMatrix used as template when
-     * generating ZMAtrix for other, consistent molecular systems.
-     * </li>
-     * <li>
-     * (optional) <b>OUTFILE</b>: pathname of the output file.
-     * </li>
-     * </ul>
-     * @param params the parameters collected in an parameter storage object
+     * Constructor.
      */
+    public ZMatrixHandler()
+    {
+        super("inputdefinition/ZMatrixHandler.json");
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -238,7 +219,6 @@ public class ZMatrixHandler extends Worker
             {
                 Terminator.withMsgAndStatus("ERROR! Inconsistent request to "
                              + "use only torsions AND a template ZMatrix.", -1);
-                
             }
         }
 
@@ -620,10 +600,6 @@ public class ZMatrixHandler extends Worker
             }
 
             String zatmName = AtomUtils.getSymbolOrLabel(atmC);
-            
-            //TODO del
-            System.out.println("ATOM: "+atmC);
-            System.out.println("HERE: "+zatmName);
             
             // build object and store it
             ZMatrixAtom zatm = new ZMatrixAtom(zatmName, idI, idJ, idK,

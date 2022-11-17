@@ -48,48 +48,6 @@ import autocompchem.worker.Worker;
  * according to given criteria. If no optional setting is given the list of
  * atoms will be reorganized starting from the first atom and 
  * following the connectivity.
- * Parameters needed by this class:
- * <ul>
- * <li>
- * <b>INFILE</b> path or name of the SDF file containing the structures to 
- * reorder
- * (only SDF files with ONE molecule are acceptable!).
- * </li>
- * <li>
- * <b>OUTFILE</b> path or name of the SDF file where results are to be
- * written.
- * </li>
- * <li>
- * <b>REFFILE</b> path or name of the SDF file containing the reference 
- * structures: the atom list we'll try to match to 
- * (only SDF files with ONE molecule are acceptable!).
- * </li>
- * <li>
- * <b>SOURCESMARTS</b> (optional)
- * list of SMARTS queries (strings, blank space separated or multiline block)
- * defining the source atoms: the first atoms in the reordered system.
- * Use of this option implies that for each continuously connected networks
- * of atoms (e.g., typically a signle molecule)
- * there is at least one source atom.
- * If no source atom is found for one or more networks
- * the reordering cannot be performed according to the request of the user
- * and the task is terminated with an error message.
- * If more than one atom matches a single SMARTS query, and these candidate
- * source atoms belong to the same network of covalently bonded atoms,
- * the reorganization of the atoms list
- * will start from the atom that, among the candidates, has the lowest index
- * in the original list.
- * If the matched atoms belong to different networks, then they are use each for
- * reorganizing the network (i.e., molecule) they belong to.
- * In case multiple SMARTS queries match atoms of the same molecule,
- * the priority is given according to the order of SMARTS queries specified
- * by the used in this option
- * (i.e., decreasing priority is assumed).
- * </li>
- * <li>
- * <b>VERBOSITY</b> (optional) verbosity level.
- * </li>
- * </ul>
  * 
  * @author Marco Foscato
  */
@@ -165,52 +123,13 @@ public class MolecularReorderer extends Worker
 
 //------------------------------------------------------------------------------
 
-    //TODO move to class doc
     /**
-     * Constructs a MolecularReorderer specifying the parameters with a
-     * {@link ParameterStorage}. 
-     * <ul>
-     * <li>
-     * <b>INFILE</b> path or name of the SDF file containing the structures to
-     * reorder
-     * (only SDF files with ONE molecule are acceptable!).
-     * </li>
-     * <li>
-     * <b>OUTFILE</b> path or name of the SDF file where results are to be
-     * written.
-     * </li>
-     * <li>
-     * <b>SOURCESMARTS</b> (optional)
-     * list of SMARTS queries (strings, blank space separated or multiline 
-     * block)
-     * defining the source atoms: the first atoms in the reordered system.
-     * Use of this option implies that for each continuously connected networks
-     * of atoms (e.g., typically a signle molecule)
-     * there is at least one source atom.
-     * If no source atom is found for one or more networks
-     * the reordering cannot be performed according to the request of the user
-     * and the task is terminated with an error message.
-     * If more than one atom matches a single SMARTS query, and these candidate
-     * source atoms belong to the same network of covalently bonded atoms,
-     * the reorganization of the atoms list
-     * will start from the atom that, among the candidates, has the lowest index
-     * in the original list.
-     * If the matched atoms belong to different networks, then they are use 
-     * each for
-     * reorganizing the network (i.e., molecule) they belong to.
-     * In case multiple SMARTS queries match atoms of the same molecule,
-     * the priority is given according to the order of SMARTS queriest specified
-     * by the used in this option
-     * (i.e., decreasing priority is assumed).
-     * </li>
-     * <li>
-     * <b>VERBOSITY</b> (optional) verbosity level.
-     * </li>
-     * </ul>
-     *
-     * @param params object <code>ParameterStorage</code> containing all the
-     * parameters needed
+     * Constructor.
      */
+    public MolecularReorderer()
+    {
+        super("inputdefinition/MolecularReorderer.json");
+    }
 
 //-----------------------------------------------------------------------------
 

@@ -17,11 +17,23 @@ package autocompchem.worker;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
+import autocompchem.datacollections.ACCJson;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
@@ -71,6 +83,12 @@ public abstract class Worker implements IOutputExposer
     protected TaskID task = TaskID.UNSET;
     
     /**
+     * The pathname of the resource collecting the documentation of any
+     * setting that this worker can take as input.
+     */
+    final String knownInputDefinition;
+    
+    /**
      * Flag notifying that worker had completed its work.
      */
     protected boolean workIsDone = false;
@@ -90,43 +108,19 @@ public abstract class Worker implements IOutputExposer
      * Verbosity level
      */
     protected int verbosity = 0;
-
+    
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for an empty worker.
+     * @param knownInputDefinition the pathname to the JSON file in the 
+     * package resources that contains the definition of the input settings
+     * as {@link ConfigItem}s.
      */
 
-    public Worker()
+    public Worker(String knownInputDefinition)
     {
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for a worker with a specific task, but no further 
-     * settings/parameters.
-     * @param task the task for this worker
-     */
-
-    public Worker(TaskID task)
-    {
-    	this.task = task;
-    	initialize();
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an worker with specific settings. Settings must include
-     * a 'TASK' parameter.
-     * @param params the given collection of settings/parameters.
-     */
-
-    public Worker(ParameterStorage params)
-    {
-    	setParameters(params);
-    	initialize();
+    	this.knownInputDefinition = knownInputDefinition;
     }
     
 //------------------------------------------------------------------------------
@@ -161,7 +155,97 @@ public abstract class Worker implements IOutputExposer
     	}
         return false;
     }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Reads the list on known parameters that a worker can take as 
+     * input settings.
+     * @return the list of input settings.
+     */
+    public List<ConfigItem> getKnownParameters()
+    {
+    	Gson reader = ACCJson.getReader();
+    	List<ConfigItem> knownParams = new ArrayList<ConfigItem>();
+        InputStream ins = Worker.class.getClassLoader()
+        	 .getResourceAsStream(knownInputDefinition);
+        BufferedReader br = null;
+        try
+        {
+        	br = new BufferedReader(new InputStreamReader(ins));
+            knownParams = reader.fromJson(br, 
+                    new TypeToken<List<ConfigItem>>(){}.getType());
+        }
+        catch (JsonSyntaxException jse)
+        {
+        	throw new Error("Format of '" + knownInputDefinition + "' is "
+           		+ "corrupted. Please report this to the authors.", jse);
+        }
+        finally 
+        {
+            try {
+                if (br != null)
+                {
+                    br.close();
+                }
+            } catch (IOException ioe) {
+                throw new Error(ioe);
+            }
+        }
+        return knownParams;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Creates a string defining all configuration items related to the task
+     * this worker is expected to perform. The string is formatted to print
+     * CLI's help messages.
+     */
+    public String getTaskSpecificHelp()
+    {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("Settings available for task '" + task + "':");
+    	sb.append(System.getProperty("line.separator"));
+    	return getFormattedHelpString(sb, false);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Creates a string defining the configuration items that are compatible to 
+     * running this worker from within another worker (i.e., non stand alone).
+     * The string is formatted to print
+     * CLI's help messages.
+     */
+    public String getEmbeddedTaskSpecificHelp()
+    {
+    	StringBuilder sb = new StringBuilder();
+    	return getFormattedHelpString(sb, true);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Creates a string defining all configuration items related to the task
+     * this worker is expected to perform when run from within another worker.
+     * The string is formatted to print CLI's help messages.
+     */
+    private String getFormattedHelpString(StringBuilder sb, 
+    		boolean ignoreNonStandalone)
+    {
+    	for (ConfigItem ci : getKnownParameters())
+    	{
+    		if (ci.isForStandalone() && ignoreNonStandalone)
+    		{
+	    		continue;
+    		}
+    		sb.append(System.getProperty("line.separator"));
+    		sb.append(ci.getStringForHelpMsg());
+    	}
+    	return sb.toString();
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

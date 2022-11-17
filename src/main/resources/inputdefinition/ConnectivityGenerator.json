@@ -1,0 +1,46 @@
+[
+  {
+    "key": "INFILE",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "The pathname to the SDF file containing the chemical system to work with."
+  },
+  {
+    "key": "OUTFILE",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "The pathname to the SDF file where to store the resulting chemical system with connectivity."
+  },
+  {
+    "key": "TOLERANCE",
+    "type": "<float>",
+    "doc": "A new bond is added only when the distance between two atoms is below the sum of their v.d.W. radii minus the tolerance (as percentage). Values between 0.0 and 1.0 should be used."
+  },
+  {
+    "key": "TOLERANCE2NDSHELL",
+    "type": "<float>",
+    "doc": "Additional contribution to the tolerance value of atoms in 1-3 relation (i.e., when evaluating the distance r_AC in A-B-C)."
+  },
+  {
+    "key": "TARGETELEMENT",
+    "type": "<String>",
+    "doc": "Elemental symbol of atoms to which bonds have to be added."
+  },
+  {
+    "key": "TEMPLATE",
+    "type": "<String>",
+    "doc": "Pathname to an SDF file defining a connectivity table that should be imposed in the input chemical system to generate the output (All tolerances are ignores)."
+  },
+  {
+    "key": "REFERENCE",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "Pathname to an SDF file defining a connectivity table that should be used as reference for bond lengths. Prints a warning if the bond lengths in the input chemical system differ from the value in the reference geometry by more than the tolerance."
+  },
+  {
+    "key": "VERBOSITY",
+    "type": "<int>",
+    "isForStandalone": true,
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

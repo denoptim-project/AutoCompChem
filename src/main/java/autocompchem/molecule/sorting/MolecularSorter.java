@@ -34,24 +34,6 @@ import autocompchem.worker.Worker;
 
 /**
  * MolecularSorter is a tool to sort molecules.
- * Parameters needed by the MolecularSorter:
- * TODO
- * <ul>
- * <li> 
- * <b>INFILE</b> path or name of the SDF file containing the structures
- * Multiple structures can be provided (better if mols have different 
- * name/title)
- * </li>
- * <li>
- * <b>OUTFILE</b> name of SDF output file
- * </li>
- * <li>
- * <b>SDFPROPERTY</b> name of the SDF property to be used to sort
- * </li>
- * <li>
- * <b>VERBOSITY</b>  verbosity level
- * </li>
- * </ul>
  * 
  * @author Marco Foscato
  */
@@ -75,6 +57,16 @@ public class MolecularSorter extends Worker
 
     //Verbosity level
     private int verbosity = 1;
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Constructor.
+     */
+    public MolecularSorter()
+    {
+        super("inputdefinition/MolecularSorter.json");
+    }
 
 //-----------------------------------------------------------------------------
 

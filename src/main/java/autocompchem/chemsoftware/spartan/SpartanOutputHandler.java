@@ -117,6 +117,17 @@ public class SpartanOutputHandler extends Worker
 
 //------------------------------------------------------------------------------
 
+
+    /**
+     * Constructor.
+     */
+    public SpartanOutputHandler()
+    {
+        super("inputdefinition/todo.json");
+    }
+
+//-----------------------------------------------------------------------------
+
     //TODO move to class doc
     /**
      * Constructs an SpartanOutputHandler specifying the parameterso
