@@ -2,16 +2,19 @@
   {
     "key": "INFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the (SDF) file with the chemical system to work with."
   },
   {
     "key": "REFERENCE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the file with the reference chemical system. Only SDF files with ONE molecule are acceptable."
   },
   {
     "key": "OUTFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the file where to print results."
   },
   {
@@ -27,6 +30,7 @@
   {
     "key": "VERBOSITY",
     "type": "<int>",
+    "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }
 ]

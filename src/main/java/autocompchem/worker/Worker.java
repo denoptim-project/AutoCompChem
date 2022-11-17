@@ -207,8 +207,39 @@ public abstract class Worker implements IOutputExposer
     	StringBuilder sb = new StringBuilder();
     	sb.append("Settings available for task '" + task + "':");
     	sb.append(System.getProperty("line.separator"));
+    	return getFormattedHelpString(sb, false);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Creates a string defining the configuration items that are compatible to 
+     * running this worker from within another worker (i.e., non stand alone).
+     * The string is formatted to print
+     * CLI's help messages.
+     */
+    public String getEmbeddedTaskSpecificHelp()
+    {
+    	StringBuilder sb = new StringBuilder();
+    	return getFormattedHelpString(sb, true);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Creates a string defining all configuration items related to the task
+     * this worker is expected to perform when run from within another worker.
+     * The string is formatted to print CLI's help messages.
+     */
+    private String getFormattedHelpString(StringBuilder sb, 
+    		boolean ignoreNonStandalone)
+    {
     	for (ConfigItem ci : getKnownParameters())
     	{
+    		if (ci.isForStandalone() && ignoreNonStandalone)
+    		{
+	    		continue;
+    		}
     		sb.append(System.getProperty("line.separator"));
     		sb.append(ci.getStringForHelpMsg());
     	}

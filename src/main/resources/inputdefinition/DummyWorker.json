@@ -7,11 +7,16 @@
   {
     "key": "PARAM1",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "Doc of parameter 1"
   },
   {
     "key": "PARAM2",
     "type": "<String>",
     "doc": "Doc\nof\nparameter 2"
+  },
+  {
+    "embeddedWorker": "ZMatrixHandler",
+    "tag": "generation of ZMatrix"
   }
 ]

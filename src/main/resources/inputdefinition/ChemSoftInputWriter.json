@@ -2,6 +2,7 @@
   {
     "key": "INPUTGEOMETRIESFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the file containing the geometries of the chemical system/s given as input."
   },
   {
@@ -12,6 +13,7 @@
   {
     "key": "JOBDETAILSFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to a file defining the details of the job for which we are going to generate the input file/s."
   },
   {
@@ -37,6 +39,7 @@
   {
     "key": "VERBOSITY",
     "type": "<int>",
+    "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }
 ]

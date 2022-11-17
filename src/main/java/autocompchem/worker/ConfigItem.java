@@ -30,16 +30,48 @@ public class ConfigItem
 	final String key;
 	final String type;
 	final String doc;
+	private Boolean isForStandalone = false;
+	final String embeddedWorker;
+	final String tag;
 
 //------------------------------------------------------------------------------
 	  
-	public ConfigItem(String key, String type, String doc)
+	public ConfigItem(String key, String type, String doc, 
+			boolean isForStandalone, String embeddedWorker, String tag)
 	{
 		this.key = key;
 		this.type = type;
 		this.doc = doc;
+		this.isForStandalone = isForStandalone;
+		this.embeddedWorker = embeddedWorker;
+		this.tag = tag;
 	}
-
+//------------------------------------------------------------------------------
+  
+	/**
+	 * Creates a string that is formatted to be printed on a command line 
+	 * interface, thus with a max line length of 76 characters and using 
+	 * list item identifier and indentation to facilitate reading of this
+	 * item in a list of items.
+	 * @return a string formatted to optimize printing in CLI's help message.
+	 */
+	public Object getStringForHelpMsg() {
+		if (embeddedWorker!=null)
+		{
+			// When we have the embeddedWorker it means this configuration item 
+			// is a container for items that control the embedded worker.
+			StringBuilder sb = new StringBuilder();
+			sb.append(" Settings pertaining ").append(tag).append(": ");
+			sb.append(System.getProperty("line.separator"));
+			Worker w = WorkerFactory.getNewWorkerInstance(WorkerID.valueOf(
+					embeddedWorker));
+			sb.append(w.getEmbeddedTaskSpecificHelp());
+			return sb.toString();
+		} else {
+			return getStringThisKey();
+		}
+	}
+	
 //------------------------------------------------------------------------------
 	  
 	/**
@@ -49,7 +81,7 @@ public class ConfigItem
 	 * item in a list of items.
 	 * @return a string formatted to optimize printing in CLI's help message.
 	 */
-	public Object getStringForHelpMsg() {
+	private String getStringThisKey() {
 		String[] words = doc.split("\\s+");
 		StringBuilder sbHeader = new StringBuilder();
 		sbHeader.append(" -> ").append(key).append(" ").append(type);
@@ -74,6 +106,19 @@ public class ConfigItem
 		sb.append(System.getProperty("line.separator"));
 		sbHeader.append(sb.toString());
 		return sbHeader.toString();
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * @return <code>true<code> if this item is meant to configure stand alone 
+	 * instances of this worker.
+	 */
+	public boolean isForStandalone()
+	{
+		if (isForStandalone==null)
+			return false;
+		return isForStandalone;
 	}
 
 //------------------------------------------------------------------------------

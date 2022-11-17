@@ -2,11 +2,13 @@
   {
     "key": "INFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the SDF file containing the chemical systems to work sort."
   },
   {
     "key": "OUTFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the SDF file where to print the reordered list of chemical systems."
   },
   {
@@ -17,6 +19,7 @@
   {
     "key": "VERBOSITY",
     "type": "<int>",
+    "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }
 ]

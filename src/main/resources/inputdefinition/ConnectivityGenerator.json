@@ -2,11 +2,13 @@
   {
     "key": "INFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the SDF file containing the chemical system to work with."
   },
   {
     "key": "OUTFILE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "The pathname to the SDF file where to store the resulting chemical system with connectivity."
   },
   {
@@ -32,11 +34,13 @@
   {
     "key": "REFERENCE",
     "type": "<String>",
+    "isForStandalone": true,
     "doc": "Pathname to an SDF file defining a connectivity table that should be used as reference for bond lengths. Prints a warning if the bond lengths in the input chemical system differ from the value in the reference geometry by more than the tolerance."
   },
   {
     "key": "VERBOSITY",
     "type": "<int>",
+    "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }
 ]

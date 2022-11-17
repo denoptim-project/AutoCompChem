@@ -47,15 +47,16 @@ public class WorkerTest
 //-----------------------------------------------------------------------------
     
     @Test
-    public void testGetNewWorkerInstance() throws Exception
+    public void testGetKnownSettings() throws Exception
     {
     	DummyWorker w = new DummyWorker();
     	
     	List<ConfigItem> knownInput = w.getKnownParameters();
     	
-    	assertEquals(3, knownInput.size());
+    	assertEquals(4, knownInput.size());
     	
     	assertEquals(1, knownInput.stream()
+    			.filter(i -> i.key != null)
     			.filter(i -> i.key.equals("INFILE"))
     			.count());
     	
@@ -64,6 +65,8 @@ public class WorkerTest
     	ci = knownInput.get(2);
     	assertEquals(3, ci.doc.split("\\n").length);
     	
+    	ConfigItem ci_standalone = knownInput.get(1);
+    	assertTrue(ci_standalone.isForStandalone());
     }
 
 //------------------------------------------------------------------------------
