@@ -914,11 +914,11 @@ public class Job implements Runnable
         {
             JsonObject jsonObject = new JsonObject();
 
-            jsonObject.addProperty("trgAPID", "HERE");
-            /*
-            jsonObject.addProperty("trgAPID", edge.getTrgAP().getID());
-            jsonObject.add("bondType", context.serialize(edge.getBondType()));
-            */
+            if (!job.params.isEmpty())
+            	jsonObject.add("params", context.serialize(job.params));
+            if (!job.steps.isEmpty())
+            	jsonObject.add("steps", context.serialize(job.steps));
+
             return jsonObject;
         }
     }

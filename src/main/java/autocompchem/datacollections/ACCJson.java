@@ -50,6 +50,7 @@ public class ACCJson
     	writer = new GsonBuilder()
     			.setPrettyPrinting()
     	        .registerTypeAdapter(Job.class, new JobSerializer())
+    	        .registerTypeAdapter(ACCJob.class, new JobSerializer())
     	       //TODO-gg del .registerTypeAdapter(Directive.class, new DirectiveSerializer())
     			.create();
     	
