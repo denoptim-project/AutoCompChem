@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,10 @@ import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.io.XYZReader;
 import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.MolecularUtils;
@@ -170,6 +175,35 @@ public class IOtools
             }
         }
         return allLines;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Reads a JSON file
+     * @param fileName the pathname to the file to read
+     * @param type the expected type
+     * @return
+     * @throws IOException
+     */
+    public static Object readJsonFile(String fileName, Type type) throws IOException
+    {
+    	Object result;
+    	Gson reader = ACCJson.getReader();
+    	BufferedReader br = null;
+        try
+        {
+            br = new BufferedReader(new FileReader(fileName));
+            result = reader.fromJson(br, type);
+        }
+        finally 
+        {
+            if (br != null)
+            {
+                br.close();
+            }
+        }
+        return result;
     }
 
 //------------------------------------------------------------------------------

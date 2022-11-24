@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirectiveFactory;
 import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;

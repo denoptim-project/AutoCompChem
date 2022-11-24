@@ -397,6 +397,24 @@ public class NamedData implements Cloneable
     }
     
 //------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (!(o instanceof NamedData))
+     		return false;
+ 	   
+ 	   NamedData other = (NamedData) o;
+ 	   
+ 	    return this.reference.equals(other.reference)
+ 	    		&& this.type == other.type
+ 	    		&& this.value.equals(other.value);
+    }
+    
+//------------------------------------------------------------------------------
 
     /**
      * String representation.

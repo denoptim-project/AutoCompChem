@@ -1046,21 +1046,31 @@ public class Directive implements IDirectiveComponent
 
 //------------------------------------------------------------------------------
 
-    //TODO-gg del
     public static class DirectiveSerializer 
     implements JsonSerializer<Directive>
     {
         @Override
-        public JsonElement serialize(Directive d, Type typeOfSrc,
+        public JsonElement serialize(Directive dir, Type typeOfSrc,
               JsonSerializationContext context)
         {
             JsonObject jsonObject = new JsonObject();
 
-            jsonObject.addProperty("directive", "HERE");
-            /*
-            jsonObject.addProperty("trgAPID", edge.getTrgAP().getID());
-            jsonObject.add("bondType", context.serialize(edge.getBondType()));
-            */
+            jsonObject.addProperty("name", dir.name);
+            
+            if (dir.keywords!=null && dir.keywords.size()>0)
+                jsonObject.add("keywords", context.serialize(dir.keywords));
+            
+            if (dir.subDirectives!=null && dir.subDirectives.size()>0)
+                jsonObject.add("subDirectives", 
+                		context.serialize(dir.subDirectives));
+            
+            if (dir.dirData!=null && dir.dirData.size()>0)
+                jsonObject.add("dirData", context.serialize(dir.dirData));
+
+            if (dir.accTaskParams!=null)
+                jsonObject.add("accTaskParams", 
+                		context.serialize(dir.accTaskParams));
+           
             return jsonObject;
         }
     }

@@ -27,6 +27,7 @@ import java.util.Set;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
@@ -388,7 +389,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 			}
     	}
     	return newPar;
-    }
+    }  
     
 //------------------------------------------------------------------------------
     

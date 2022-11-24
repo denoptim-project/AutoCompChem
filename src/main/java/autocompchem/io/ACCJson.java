@@ -1,13 +1,20 @@
-package autocompchem.datacollections;
+package autocompchem.io;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.CompChemJob.CompChemJobSerializer;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
 import autocompchem.run.ACCJob;
+import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
+import autocompchem.run.Job.JobDeSerializer;
 import autocompchem.run.Job.JobSerializer;
+import autocompchem.run.MonitoringJob;
+import autocompchem.run.ShellJob;
+import autocompchem.run.ShellJob.ShellJobSerializer;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -43,7 +50,7 @@ public class ACCJson
 //------------------------------------------------------------------------------
 
     /**
-     * Construct the singleton instance. This is run only once
+     * Construct the singleton instance. This is run only once.
      */
     private ACCJson()
     {
@@ -51,11 +58,16 @@ public class ACCJson
     			.setPrettyPrinting()
     	        .registerTypeAdapter(Job.class, new JobSerializer())
     	        .registerTypeAdapter(ACCJob.class, new JobSerializer())
-    	       //TODO-gg del .registerTypeAdapter(Directive.class, new DirectiveSerializer())
+    	        .registerTypeAdapter(MonitoringJob.class, new JobSerializer())
+    	        .registerTypeAdapter(EvaluationJob.class, new JobSerializer())
+    	        .registerTypeAdapter(ShellJob.class, new ShellJobSerializer())
+    	        .registerTypeAdapter(CompChemJob.class, new CompChemJobSerializer())
+    	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
     			.create();
     	
     	reader = new GsonBuilder()
     			.setPrettyPrinting()
+    	        .registerTypeAdapter(Job.class, new JobDeSerializer())
     			.create();
     }
 

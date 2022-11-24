@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.chemsoftware.CompChemJob;
+
 
 /**
  * Unit Test for the Job. 
@@ -219,6 +221,24 @@ public class JobTest
             t.printStackTrace();
             assertFalse(true, "Unable to work with tmp files.");
         } 
+    }
+    
+//------------------------------------------------------------------------------
+    
+    //TODO-gg keep or trash?
+    public static Job createTestJob() 
+    {
+    	Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+        job.setVerbosity(0);
+        job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));
+        job.addStep(new ACCJob());
+        job.addStep(new MonitoringJob());
+        job.addStep(new EvaluationJob());
+        job.addStep(new Job());
+        job.addStep(new CompChemJob());
+        
+        
+        return job;
     }
     
 //------------------------------------------------------------------------------
