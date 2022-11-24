@@ -211,7 +211,7 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * @return the string representation of this NamedData Collector
+     * @return the string representation of this collector
      */
 
     public String toString()
@@ -225,6 +225,16 @@ public class NamedDataCollector implements Cloneable
         sb.append("]]");
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Removes the data with the given reference name, if present.
+     * @param ref
+     */
+  	public void removeData(String ref) {
+  		allData.remove(ref);
+  	}
 
 //------------------------------------------------------------------------------
 

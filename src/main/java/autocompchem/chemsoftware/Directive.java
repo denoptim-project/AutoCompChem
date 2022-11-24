@@ -1,6 +1,8 @@
 package autocompchem.chemsoftware;
 
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -25,6 +27,11 @@ import java.util.Comparator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
@@ -36,6 +43,7 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
@@ -74,6 +82,11 @@ public class Directive implements IDirectiveComponent
      * Data attached directly to this directive.
      */
     private ArrayList<DirectiveData> dirData;
+
+    /**
+     * Parameters defining task embedded in this directive.
+     */
+    private ParameterStorage accTaskParams;
 
 //-----------------------------------------------------------------------------
 
@@ -517,6 +530,9 @@ public class Directive implements IDirectiveComponent
     
     public boolean hasACCTask()
     {
+    	if (accTaskParams!=null)
+    		return true;
+    	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
@@ -554,6 +570,7 @@ public class Directive implements IDirectiveComponent
      * Tasks are performed serially, one after the other, according to this
      * ordering scheme:
      * <ol>
+     * <li>task found in this directive</li>
      * <li>tasks found in Keywords,</li>
      * <li>tasks found in DirectiveData,</li>
      * <li>tasks found in sub Directives,</li>
@@ -566,6 +583,8 @@ public class Directive implements IDirectiveComponent
     
     public void performACCTasks(IAtomContainer mol, Job job)
     {
+    	//TODO-gg performACCTask(mol, accTaskParams, this, job);
+    	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
@@ -605,12 +624,24 @@ public class Directive implements IDirectiveComponent
     	for (Directive d : subDirectives)
     	{
     		// This is effectively a recursion into nested directives
-    		// Also note that ACC tasks are effectively defined only in 
-    		// Keywords and DirectiveData.
     		d.performACCTasks(mol, job);
     	}
     }
 
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Parses a line as to find parameters defining an ACC tasks.
+     * @param line to parse.
+     * @return the parameters
+     */
+    
+    public static ParameterStorage getACCTaskParams(String line)
+    {	
+    	return getACCTaskParams(new ArrayList<String>(Arrays.asList(line)),null)
+    			.get(0);
+    }
+    
 //-----------------------------------------------------------------------------
     
     /**
@@ -619,7 +650,21 @@ public class Directive implements IDirectiveComponent
      * @return the list of parameter storage units.
      */
     
-    private ArrayList<ParameterStorage> getACCTaskParams(
+    public static ArrayList<ParameterStorage> getACCTaskParams(
+    		ArrayList<String> lines)
+    {	
+    	return getACCTaskParams(lines, null);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Parses the block of lines as to find parameters defining an ACC tasks.
+     * @param lines to parse.
+     * @return the list of parameter storage units.
+     */
+    
+    private static ArrayList<ParameterStorage> getACCTaskParams(
     		ArrayList<String> lines, IDirectiveComponent dirComp)
     {	
     	// This takes care of any $START/$END label needed to make all JD lines
@@ -658,9 +703,15 @@ public class Directive implements IDirectiveComponent
     				Arrays.asList(lineForOneTask.split(
     						System.getProperty("line.separator"))));
 			ParameterStorage ps = new ParameterStorage();
-			ps.importParametersFromLines("Directive " 
-	    			+ dirComp.getComponentType() + " " + dirComp.getName(),
-	    			taskSpecificLines);
+			if (dirComp!=null)
+			{
+				ps.importParametersFromLines("Directive " 
+		    			+ dirComp.getComponentType() + " " + dirComp.getName(),
+		    			taskSpecificLines);
+			} else {
+				ps.importParametersFromLines("noFile",
+		    			taskSpecificLines);
+			}
 			psList.add(ps);
     	}
 		return psList;
@@ -993,6 +1044,39 @@ public class Directive implements IDirectiveComponent
         return lines;
     }
 
+//------------------------------------------------------------------------------
+
+    //TODO-gg del
+    public static class DirectiveSerializer 
+    implements JsonSerializer<Directive>
+    {
+        @Override
+        public JsonElement serialize(Directive d, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty("directive", "HERE");
+            /*
+            jsonObject.addProperty("trgAPID", edge.getTrgAP().getID());
+            jsonObject.add("bondType", context.serialize(edge.getBondType()));
+            */
+            return jsonObject;
+        }
+    }
+    
 //-----------------------------------------------------------------------------
+
+    /**
+     * Sets the parameters defining the ACC task embedded in this directive.
+     * @param params
+     */
+	public void setTaskParams(ParameterStorage params) 
+	{
+		accTaskParams=params;
+	}
  
+//-----------------------------------------------------------------------------
+
+	
 }

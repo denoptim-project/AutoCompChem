@@ -1,0 +1,27 @@
+$DIR_# $MT_comment=just a comment
+$DIR_set $KV_runtyp=opt
+$DIR_opt $KV_logfile=trajectory.xyz
+#The 'constrain' block defined a constrain potential
+$DIR_constrain $DATA_constraints=$START$ACCTASK: GenerateConstraints
+VERBOSITY: 2
+SMARTS:$START[#6] [#8] onlybonded
+[#8] notAnIC$END
+AtomIDS:$START 1
+2 3 1.234
+2 3 4
+2 3 4 5 -0.123
+1 2 3 4 5 notAnIC
+12$END
+$END
+$DIR_constrain $KV_force constant=1.2345
+$DIR_constrain $KV_elements=C,O,1
+#The 'fix' block is actual freezeing of atoms/elements
+$DIR_fix $KV_elements=O,P,S
+$DIR_fix $DATA_freeze=$START$ACCTASK: GenerateConstraints
+VERBOSITY: 2
+SMARTS:[#6] [#7] onlybonded
+AtomIDS:$START 10
+11 7
+10 11 9 12 13 notAnIC
+12$END
+$END

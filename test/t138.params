@@ -1,0 +1,13 @@
+JOBSTART
+APP: ACC
+TASK: convertJobDetails
+INFILE: ../t138_jd_XTB
+INPUTFORMAT: directives
+OUTFILE: t138_jd_XTB.json
+JOBEND
+#JOBSTART
+#APP: ACC
+#TASK: convertJobDetails
+#INFILE: ../t138_jd_singleJob
+#OUTFILE: t138_jd_singleJob.json
+#JOBEND

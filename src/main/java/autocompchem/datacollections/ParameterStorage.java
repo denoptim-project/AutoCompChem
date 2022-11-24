@@ -64,6 +64,8 @@ import autocompchem.text.TextBlockIndexed;
  * @author Marco Foscato
  */
 
+//TODO: is the map needed or should we just use the data structure of super?
+
 public class ParameterStorage extends NamedDataCollector implements Cloneable
 {
 
@@ -324,7 +326,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     /**
      * Read a formatted text and import all parameters
      * @param filename pseudo file name used only for reporting errors, does
-     * not need to be an existing file.
+     * not need to be an existing file. Used only for logging errors.
      * @param lines the block of lines to read
      */
 

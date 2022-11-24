@@ -18,12 +18,18 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -170,11 +176,11 @@ public class Job implements Runnable
     /**
      * File separator on this OS
      */
-    private final String SEP = System.getProperty("file.separator");
+    private static final String SEP = System.getProperty("file.separator");
     
     /**
      * Container for any kind of output that is made available to the outside
-     * world /w.r.t. this job) via the {@Link #getOutput} method. 
+     * world /w.r.t. this job) via the {@link #getOutput} method. 
      * We say these data is "exposed".
      */
     protected NamedDataCollector exposedOutput = new NamedDataCollector();
@@ -895,6 +901,26 @@ public class Job implements Runnable
         }
         lines.add(ParameterConstants.ENDJOB);
         return lines;
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class JobSerializer 
+    implements JsonSerializer<Job>
+    {
+        @Override
+        public JsonElement serialize(Job job, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty("trgAPID", "HERE");
+            /*
+            jsonObject.addProperty("trgAPID", edge.getTrgAP().getID());
+            jsonObject.add("bondType", context.serialize(edge.getBondType()));
+            */
+            return jsonObject;
+        }
     }
     
 //------------------------------------------------------------------------------

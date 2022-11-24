@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.ACCJob;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -33,6 +37,10 @@ import autocompchem.text.TextBlock;
 
 public class DirectiveData extends NamedData implements IDirectiveComponent
 {
+    /**
+     * Parameters defining task embedded in this directive.
+     */
+    private ParameterStorage accTaskParams;
 
 //-----------------------------------------------------------------------------
 
@@ -79,6 +87,27 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         String[] dataLines = block.split(System.getProperty("line.separator"));
         
         super.setValue(new TextBlock(Arrays.asList(dataLines)));
+        
+        if (hasACCTask())
+        {
+	        ArrayList<String> lines = new ArrayList<String>(Arrays.asList(dataLines));
+			// WARNING! Here we assume that the entire content of the 
+			// directive data, is about the ACC task. Thus, we add the 
+			// multiline start/end labels so that the getACCTaskParams
+			// method will keep read all the lines as one.
+			if (lines.size()>1)
+			{
+				lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+				lines.set(lines.size()-1, lines.get(lines.size()-1) 
+						+ ChemSoftConstants.JDCLOSEBLOCK);
+			}
+			ArrayList<ParameterStorage> psLst = Directive.getACCTaskParams(lines);
+			accTaskParams = psLst.get(0);
+			accTaskParams.setParameter(new Parameter("TASK",
+					accTaskParams.getParameterValue(
+							ChemSoftConstants.JDLABACCTASK)));
+			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
+        }
     }
 
 //-----------------------------------------------------------------------------
@@ -147,12 +176,15 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 //-----------------------------------------------------------------------------
     
     /**
-     * Checks if there is any ACC task definition within this directive.
+     * Checks if there is any ACC task definition within this directive data.
      * @return <code>true</code> if there is at least one ACC task definition.
      */
     
 	public boolean hasACCTask() 
 	{
+    	if (accTaskParams!=null)
+    		return true;
+    	
 		if (this.getType().equals(NamedDataType.TEXTBLOCK))
 		{
 			for (String l : (TextBlock) this.getValue())

@@ -20,6 +20,9 @@ package autocompchem.chemsoftware;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.ACCJob;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 
 /**
@@ -55,6 +58,11 @@ public class Keyword implements IDirectiveComponent
      * Keyword value.
      */
     private ArrayList<String> value;
+
+    /**
+     * Parameters defining task embedded in this directive.
+     */
+    private ParameterStorage accTaskParams;
 
 
 //-----------------------------------------------------------------------------
@@ -227,12 +235,15 @@ public class Keyword implements IDirectiveComponent
 //-----------------------------------------------------------------------------
     
     /**
-     * Checks if there is any ACC task definition within this directive.
+     * Checks if there is any ACC task definition within this keyword.
      * @return <code>true</code> if there is at least one ACC task definition.
      */
     
     public boolean hasACCTask()
     {
+    	if (accTaskParams!=null)
+    		return true;
+    	
     	for (String l : value)
     	{
     		if (l.contains(ChemSoftConstants.JDLABACCTASK))

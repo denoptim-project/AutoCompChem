@@ -3,6 +3,12 @@ package autocompchem.datacollections;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.Directive.DirectiveSerializer;
+import autocompchem.run.ACCJob;
+import autocompchem.run.Job;
+import autocompchem.run.Job.JobSerializer;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -43,6 +49,8 @@ public class ACCJson
     {
     	writer = new GsonBuilder()
     			.setPrettyPrinting()
+    	        .registerTypeAdapter(Job.class, new JobSerializer())
+    	       //TODO-gg del .registerTypeAdapter(Directive.class, new DirectiveSerializer())
     			.create();
     	
     	reader = new GsonBuilder()

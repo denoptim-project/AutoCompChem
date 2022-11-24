@@ -73,7 +73,8 @@ public enum TaskID
     SUBTRACTZMATRICES, 
     IMPOSECONNECTIONTABLE,
     CHECKBONDLENGTHS,
-    FINDATOMSETS;   //TODO check: is it implemented?     
+    FINDATOMSETS,   //TODO check: is it implemented?    
+    CONVERTJOBDETAILS;
 	
 //-----------------------------------------------------------------------------
 	
