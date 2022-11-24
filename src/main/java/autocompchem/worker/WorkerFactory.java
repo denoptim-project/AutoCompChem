@@ -20,7 +20,7 @@ package autocompchem.worker;
 import java.util.ArrayList;
 import java.util.Set;
 
-import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
+import autocompchem.chemsoftware.gaussian2.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;

@@ -125,7 +125,9 @@ public class GaussianInputWriter extends Worker
      */
     public static final Set<TaskID> capabilities =
             Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.PREPAREINPUTGAUSSIAN)));
+                    Arrays.asList(
+                    		//TODO-gg TaskID.PREPAREINPUTGAUSSIAN
+                    		)));
 
     //Input filename
     private String inFile;

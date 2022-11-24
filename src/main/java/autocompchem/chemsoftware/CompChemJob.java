@@ -218,12 +218,27 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Adds directive to this job or, if the a directive with such name already
+     * Adds directive to this job or, if a directive with such name already
      * exists, replaces the existing one with the given one.
      * @param d the given directive
      */
     
     public void setDirective(Directive d)
+    {
+    	setDirective(d, false);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds directive to this job or, if a directive with such name already
+     * exists, replaces the existing one with the given one.
+     * @param d the given directive
+     * @param recursive use <code>true</code> to set the directive in all 
+     * embedded jobs or steps.
+     */
+    
+    public void setDirective(Directive d, boolean recursive)
     {
     	if (directives.contains(d))
     	{
@@ -232,53 +247,15 @@ public class CompChemJob extends Job implements Cloneable
     	} else {
     	    directives.add(d);
     	}
+    	
+    	if (getNumberOfSteps()>0 && recursive)
+        {
+	        for (int step = 0; step<steps.size(); step++)
+	        {
+	        	setDirective(d, recursive);
+	        }
+        }
     }
-
-////------------------------------------------------------------------------------
-//
-//    /**
-//     * Change the charge in all steps
-//     * @param newCharge new value of the charge for all steps
-//     */
-//
-//    public void setAllCharge(int newCharge)
-//    {
-//        for (int i=0; i<steps.size(); i++)
-//        {
-//        	//TODO
-////            getStep(i).setCharge(newCharge);
-//        }
-//    }
-//
-////------------------------------------------------------------------------------
-//
-//    /**
-//     * Change spin multiplicity in all steps
-//     * @param newSpinMult new value of the spin multiplicity for all steps
-//     */
-//
-//    public void setAllSpinMultiplicity(int newSpinMult)
-//    {
-//        for (int i=0; i<steps.size(); i++)
-//        {
-//           //TODO getStep(i).setSpinMultiplicity(newSpinMult);
-//        }
-//    }
-//
-////------------------------------------------------------------------------------
-//
-//    /**
-//     * Change the title in all steps
-//     * @param title string to be used as title in all steps
-//     */
-//
-//    public void setAllTitle(String title)
-//    {
-//        for (int i=0; i<steps.size(); i++)
-//        {
-//           //TODO getStep(i).setTitle(title);
-//        }
-//    }
 
 //------------------------------------------------------------------------------
 

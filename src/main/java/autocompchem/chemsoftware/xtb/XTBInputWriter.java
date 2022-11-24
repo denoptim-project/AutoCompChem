@@ -95,9 +95,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 		Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
 		if (pCharge != null)
 		{
-			int charge;
 			try {
-				charge = Integer.valueOf(pCharge.toString());
+				Integer.valueOf(pCharge.toString());
 			} catch (NumberFormatException e) {
 				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
 						+ pCharge.toString() + "' as charge. Check "

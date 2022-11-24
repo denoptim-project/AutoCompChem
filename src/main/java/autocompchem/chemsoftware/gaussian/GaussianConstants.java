@@ -34,6 +34,11 @@ public class GaussianConstants
      * Extension of Gaussian input files
      */
     public final static String GAUINPEXTENSION = ".inp";
+    
+    /**
+     * Extension for Gaussian output files (i.e., log files from Gaussian)
+     */
+	public static final String OUTEXTENSION = ".out";
 
     /**
      * Extension of Gaussian job details file

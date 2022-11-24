@@ -92,7 +92,7 @@ public class Directive implements IDirectiveComponent
 
     /**
      * Constructor for an empty directive with a name.
-     * @param name the name if the directive.
+     * @param name the name of the directive.
      */
 
     public Directive(String name)
