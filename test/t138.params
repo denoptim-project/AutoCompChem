@@ -1,20 +1,27 @@
+#JOBSTART
+#APP: ACC
+#TASK: convertJobDetails
+#INFILE: ../t138_jd_XTB
+#INPUTFORMAT: directives
+#OUTFILE: t138_jd_XTB.json
+#JOBEND
+#JOBSTART
+#APP: ACC
+#TASK: convertJobDetails
+#INFILE: ../t138_jd_manyJobs
+#OUTFILE: t138_jd_manyJobs.json
+#JOBEND
+#JOBSTART
+#APP: ACC
+#TASK: convertJobDetails
+#INFILE: ../t138_jd_Gaussian
+#INPUTFORMAT: gaussianJD
+#OUTFILE: t138_jd_Gaussian.json
+#JOBEND
 JOBSTART
 APP: ACC
 TASK: convertJobDetails
-INFILE: ../t138_jd_XTB
-INPUTFORMAT: directives
-OUTFILE: t138_jd_XTB.json
-JOBEND
-JOBSTART
-APP: ACC
-TASK: convertJobDetails
-INFILE: ../t138_jd_manyJobs
-OUTFILE: t138_jd_manyJobs.json
-JOBEND
-JOBSTART
-APP: ACC
-TASK: convertJobDetails
-INFILE: ../t138_jd_Gaussian
-INPUTFORMAT: gaussianJD
-OUTFILE: t138_jd_Gaussian.json
+INFILE: ../t138_jd_NWChem
+INPUTFORMAT: NWChemJD
+OUTFILE: t138_jd_NWChem.json
 JOBEND

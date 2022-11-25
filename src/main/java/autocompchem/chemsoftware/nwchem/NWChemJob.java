@@ -18,7 +18,13 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.gaussian.GaussianOptionsSection;
+import autocompchem.chemsoftware.gaussian.GaussianStep;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.run.Terminator;
@@ -316,6 +322,28 @@ public class NWChemJob
         }
         return lines;
     }
+    
+//------------------------------------------------------------------------------
+
+	public CompChemJob convertToCompChemJob() 
+	{
+		CompChemJob ccj = new CompChemJob();
+		for (NWChemTask nwcStep : steps)
+		{
+			CompChemJob ccjStep = new CompChemJob();
+			
+			ccjStep.setParameters(nwcStep.getTaskSpecificParams());
+			
+			for (NWChemDirective nwcDir : nwcStep.getAllDirectives())
+			{
+				Directive optDir = nwcDir.convertToACCDirective();
+				ccjStep.setDirective(optDir);
+			}
+			
+			ccj.addStep(ccjStep);
+		}
+		return ccj;
+	}
 
 //------------------------------------------------------------------------------
 

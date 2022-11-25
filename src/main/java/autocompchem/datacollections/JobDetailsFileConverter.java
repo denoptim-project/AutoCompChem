@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirectiveFactory;
 import autocompchem.chemsoftware.gaussian.GaussianJob;
+import autocompchem.chemsoftware.nwchem.NWChemJob;
 import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
@@ -128,12 +129,14 @@ public class JobDetailsFileConverter extends Worker
     		obj = gJob.convertToCompChemJob();
     		break;
     	}
-    	/*
-    	case "":
+    	
+    	case "NWCHEMJD":
     	{
+    		NWChemJob nwcJob = new NWChemJob(inFile);
+    		obj = nwcJob.convertToCompChemJob();
     		break;
     	}
-    	 */
+    	
     	default:
     		obj = JobFactory.buildFromFile(inFile);
     	}
