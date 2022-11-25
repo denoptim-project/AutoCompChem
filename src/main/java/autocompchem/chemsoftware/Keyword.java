@@ -254,6 +254,17 @@ public class Keyword implements IDirectiveComponent
     	}
     	return false;
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Sets the parameters defining the ACC task embedded in this directive.
+     * @param params
+     */
+	public void setTaskParams(ParameterStorage params) 
+	{
+		accTaskParams=params;
+	}
 
 //-----------------------------------------------------------------------------
 

@@ -18,10 +18,21 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.Keyword;
+import autocompchem.chemsoftware.gaussian.GaussianOptionsSection;
+import autocompchem.chemsoftware.gaussian.GaussianStep;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.Parameter;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
 
 /**
  * Object representing a complete NWChem job and may include one or more tasks 
@@ -316,6 +327,102 @@ public class NWChemJob
         }
         return lines;
     }
+    
+//------------------------------------------------------------------------------
+
+	public CompChemJob convertToCompChemJob() 
+	{
+		CompChemJob ccj = new CompChemJob();
+		for (NWChemTask nwcStep : steps)
+		{
+			CompChemJob ccjStep = new CompChemJob();
+			
+			for (NWChemDirective nwcDir : nwcStep.getAllDirectives())
+			{
+				Directive optDir = nwcDir.convertToACCDirective();
+				ccjStep.setDirective(optDir);
+			}
+			
+			// Translate parameters into tasks
+			ParameterStorage ps = nwcStep.getTaskSpecificParams();
+			for (String pKey : ps.getAllNamedData().keySet())
+			{
+				NamedData nd = ps.getNamedData(pKey);
+				switch (nd.getReference().toUpperCase())
+				{
+				case BasisSetConstants.ATMSPECBS:
+					{
+						Directive basisDir = ccjStep.getDirective("basis");
+						if (basisDir==null)
+							new Directive("basis");
+						ParameterStorage taskPs = new ParameterStorage();
+						taskPs.setParameter(new Parameter("TASK",
+								TaskID.GENERATEBASISSET.toString()));
+						taskPs.setParameter(new Parameter(nd.getReference(),
+								nd.getValueAsString()));
+						basisDir.setTaskParams(taskPs);
+						ccjStep.setDirective(basisDir);
+						break;
+					}
+					
+				case NWChemConstants.ZCRDDIR:
+				{
+					Directive geomDir = ccjStep.getDirective(
+							NWChemConstants.GEOMDIR);
+					if (geomDir==null)
+						geomDir = new Directive(NWChemConstants.GEOMDIR);
+					Directive zcoordDir = geomDir.getSubDirective(
+							NWChemConstants.ZCRDDIR);
+					if (zcoordDir==null)
+					{	
+						zcoordDir = new Directive(NWChemConstants.ZCRDDIR);
+						geomDir.addSubDirective(zcoordDir);
+					}
+					ParameterStorage taskPs = new ParameterStorage();
+					taskPs.setParameter(new Parameter("TASK",
+							TaskID.GENERATECONSTRAINTS.toString()));
+					taskPs.setParameter(new Parameter("SMARTS",
+							nd.getValueAsString()));
+					zcoordDir.setTaskParams(taskPs);
+					ccjStep.setDirective(geomDir);
+					break;
+				}
+				
+				//FREEZEIC would be possible but is not present in legacy examples
+				
+				case "FREEZEATM":
+				{	
+					ParameterStorage taskPs = new ParameterStorage();
+					taskPs.setParameter(new Parameter("TASK",
+							TaskID.GENERATECONSTRAINTS.toString()));
+					taskPs.setParameter(new Parameter("SMARTS",
+							nd.getValueAsString()));
+					
+					Keyword activeSetKey = new Keyword(NWChemConstants.ACTIVEATOMS, 
+							true, new ArrayList<String>());
+					activeSetKey.setTaskParams(taskPs);
+					
+					Directive setDir = ccjStep.getDirective("SET");
+					if (setDir==null)
+						setDir = new Directive("SET");
+					setDir.addKeyword(activeSetKey);
+					ccjStep.setDirective(setDir);
+					break;
+				}
+				
+				default:
+					// Not translating the parameter storage into a task
+					ccjStep.setParameter(new Parameter(nd.getReference(), 
+							nd.getType(), nd.getValue()));
+					break;
+				}
+				
+			}
+			
+			ccj.addStep(ccjStep);
+		}
+		return ccj;
+	}
 
 //------------------------------------------------------------------------------
 

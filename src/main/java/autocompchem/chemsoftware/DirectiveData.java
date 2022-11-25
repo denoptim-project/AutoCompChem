@@ -180,6 +180,17 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     	list.add("Could not get lines out of " + this.getType().toString());
         return list;
     }
+	
+//-----------------------------------------------------------------------------
+
+    /**
+     * Sets the parameters defining the ACC task embedded in this directive.
+     * @param params
+     */
+	public void setTaskParams(ParameterStorage params) 
+	{
+		accTaskParams=params;
+	}
 
 //-----------------------------------------------------------------------------
     

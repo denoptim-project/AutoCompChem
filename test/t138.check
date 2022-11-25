@@ -60,6 +60,25 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 23 ; exit -1 ; fi
 n=0;n=$(grep -A 4 -i "\"CHARGE\"," t138_jd_Gaussian.json  | grep -A 1 value | grep -c "\-222")
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 24 ; exit -1 ; fi
 
+if [ ! -f t138_jd_NWChem.json ] ; then
+    echo NOT Passed ERROR 25
+    exit -1
+fi
+
+n=0;n=$(grep -c " *\"jobType\": \"CompChemJob\",$" t138_jd_NWChem.json)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 26 ; exit -1 ; fi
+n=0;n=$(grep -c " *\"accTaskParams\": {$" t138_jd_NWChem.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 27 ; exit -1 ; fi
+n=0;n=$(grep -c -i " *\"TASK\": {$" t138_jd_NWChem.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 28 ; exit -1 ; fi
+n=0;n=$(grep -c " *\"SMARTS\": {$" t138_jd_NWChem.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 29 ; exit -1 ; fi
+n=0;n=$(grep -c " *\"ATOMSPECIFICBASISSET\": {$" t138_jd_NWChem.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 30 ; exit -1 ; fi
+
+
+
+
 
 grep -q 'Termination status: 0' t138.log
 if [ $? == 0 ] ; then 
