@@ -24,6 +24,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 
 /**
  * This object represents a keyword with an associated value to be used in
@@ -291,6 +292,18 @@ public class Keyword implements IDirectiveComponent
         	sb.append(ChemSoftConstants.JDCLOSEBLOCK);
         }
         return sb.toString();
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Produced a string representation of this keyword
+     */
+    
+    public String toString()
+    {
+    	return "[Keyword: '" + name + "', " + isLoud + ", '" 
+    			 + StringUtils.mergeListToString(value, " ") + "']";
     }
 
 //-----------------------------------------------------------------------------

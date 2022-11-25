@@ -11,3 +11,10 @@ TASK: convertJobDetails
 INFILE: ../t138_jd_manyJobs
 OUTFILE: t138_jd_manyJobs.json
 JOBEND
+JOBSTART
+APP: ACC
+TASK: convertJobDetails
+INFILE: ../t138_jd_Gaussian
+INPUTFORMAT: gaussianJD
+OUTFILE: t138_jd_Gaussian.json
+JOBEND

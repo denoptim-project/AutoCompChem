@@ -372,9 +372,9 @@ public class CompChemJob extends Job implements Cloneable
             	jsonObject.add(JSONPARAMS, context.serialize(job.params));
             if (!job.steps.isEmpty())
             	jsonObject.add(JSONSUBJOBS, context.serialize(job.steps));
-        	jsonObject.add("directives", context.serialize(job.directives));
+            if (!job.directives.isEmpty())
+            	jsonObject.add("directives", context.serialize(job.directives));
             
-
             return jsonObject;
         }
     }

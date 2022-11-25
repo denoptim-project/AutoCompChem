@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirectiveFactory;
+import autocompchem.chemsoftware.gaussian.GaussianJob;
 import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
@@ -109,17 +110,29 @@ public class JobDetailsFileConverter extends Worker
     	switch (inFormat)
     	{
     	case "CCJ":
+    	{
     		obj = new CompChemJob(inFile);
     		break;
-    		
+    	}
+    	
     	case "DIRECTIVES":
+    	{
     		ArrayList<String> lines = IOtools.readTXT(inFile);
     		obj = DirectiveFactory.buildAllFromJDText(lines);
     		break;
-    		
+    	}
+    	
+    	case "GAUSSIANJD":
+    	{
+    		GaussianJob gJob = new GaussianJob(inFile);
+    		obj = gJob.convertToCompChemJob();
+    		break;
+    	}
     	/*
     	case "":
+    	{
     		break;
+    	}
     	 */
     	default:
     		obj = JobFactory.buildFromFile(inFile);

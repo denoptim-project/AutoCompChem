@@ -20,7 +20,9 @@ import java.util.ArrayList;
  */
 
 import java.util.Arrays;
+import java.util.List;
 
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
@@ -88,26 +90,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         
         super.setValue(new TextBlock(Arrays.asList(dataLines)));
         
-        if (hasACCTask())
-        {
-	        ArrayList<String> lines = new ArrayList<String>(Arrays.asList(dataLines));
-			// WARNING! Here we assume that the entire content of the 
-			// directive data, is about the ACC task. Thus, we add the 
-			// multiline start/end labels so that the getACCTaskParams
-			// method will keep read all the lines as one.
-			if (lines.size()>1)
-			{
-				lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
-				lines.set(lines.size()-1, lines.get(lines.size()-1) 
-						+ ChemSoftConstants.JDCLOSEBLOCK);
-			}
-			ArrayList<ParameterStorage> psLst = Directive.getACCTaskParams(lines);
-			accTaskParams = psLst.get(0);
-			accTaskParams.setParameter(new Parameter("TASK",
-					accTaskParams.getParameterValue(
-							ChemSoftConstants.JDLABACCTASK)));
-			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
-        }
+        extractTask(new ArrayList<String>(Arrays.asList(dataLines)));
     }
 
 //-----------------------------------------------------------------------------
@@ -122,7 +105,32 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     {
     	super();
     	super.setReference(name);
-    	super.setValue(new TextBlock(lines));        
+    	super.setValue(new TextBlock(lines)); 
+        extractTask(lines);       
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    private void extractTask(ArrayList<String> lines)
+    {
+	    if (hasACCTask())
+	    {
+			// WARNING! Here we assume that the entire content of the 
+			// directive data, is about the ACC task. Thus, we add the 
+			// multiline start/end labels so that the getACCTaskParams
+			// method will keep read all the lines as one.
+			if (lines.size()>1)
+			{
+				lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+				lines.set(lines.size()-1, lines.get(lines.size()-1) 
+						+ ChemSoftConstants.JDCLOSEBLOCK);
+			}
+			accTaskParams = Directive.getACCTaskParams(lines);
+			accTaskParams.setParameter(new Parameter("TASK",
+					accTaskParams.getParameterValue(
+							ChemSoftConstants.JDLABACCTASK)));
+			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
+	    }
     }
 
 //-----------------------------------------------------------------------------
@@ -189,7 +197,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 		{
 			for (String l : (TextBlock) this.getValue())
 			{
-				if (l.contains(ChemSoftConstants.JDLABACCTASK))
+				if (l.contains(ChemSoftConstants.JDLABACCTASK)
+						|| l.contains(GaussianConstants.LABPARAMS))
 					return true;
 			}
 		}

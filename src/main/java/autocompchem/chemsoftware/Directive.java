@@ -33,6 +33,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
@@ -589,12 +590,8 @@ public class Directive implements IDirectiveComponent
     	{
     		if (k.hasACCTask())
     		{
-	    		ArrayList<ParameterStorage> psLst = 
-	    				getACCTaskParams(k.getValue(), k);
-	    		for (ParameterStorage ps : psLst)
-	    		{
-	        		performACCTask(mol,ps,k,job);
-	    		}
+	    		ParameterStorage ps = getACCTaskParams(k.getValue(), k);
+	    		performACCTask(mol,ps,k,job);
     		}
     	}
     	for (DirectiveData dd : dirData)
@@ -613,12 +610,8 @@ public class Directive implements IDirectiveComponent
 	    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
 	    					+ ChemSoftConstants.JDCLOSEBLOCK);
     			}
-    			ArrayList<ParameterStorage> psLst = 
-	    				getACCTaskParams(lines, dd);
-	    		for (ParameterStorage ps : psLst)
-	    		{
-	        		performACCTask(mol,ps,dd,job);
-	    		}
+    			ParameterStorage ps = getACCTaskParams(lines, dd);
+	        	performACCTask(mol,ps,dd,job);
     		}
     	}
     	for (Directive d : subDirectives)
@@ -638,8 +631,7 @@ public class Directive implements IDirectiveComponent
     
     public static ParameterStorage getACCTaskParams(String line)
     {	
-    	return getACCTaskParams(new ArrayList<String>(Arrays.asList(line)),null)
-    			.get(0);
+    	return getACCTaskParams(new ArrayList<String>(Arrays.asList(line)),null);
     }
     
 //-----------------------------------------------------------------------------
@@ -650,7 +642,7 @@ public class Directive implements IDirectiveComponent
      * @return the list of parameter storage units.
      */
     
-    public static ArrayList<ParameterStorage> getACCTaskParams(
+    public static ParameterStorage getACCTaskParams(
     		ArrayList<String> lines)
     {	
     	return getACCTaskParams(lines, null);
@@ -664,7 +656,7 @@ public class Directive implements IDirectiveComponent
      * @return the list of parameter storage units.
      */
     
-    private static ArrayList<ParameterStorage> getACCTaskParams(
+    private static ParameterStorage getACCTaskParams(
     		ArrayList<String> lines, IDirectiveComponent dirComp)
     {	
     	// This takes care of any $START/$END label needed to make all JD lines
@@ -675,46 +667,124 @@ public class Directive implements IDirectiveComponent
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	
     	// Then we take away any line that does not contain ACC tasks
-    	ArrayList<String> linesWithACCTasks = new ArrayList<String>();
-    	for (String line : linesPack)
+    	int numOfLinesWithTask = 0;
+    	boolean fixObsoleteSytax = false;
+    	String task = "";
+    	for (int iLine=0; iLine<linesPack.size(); iLine++)
     	{
+    		String line = linesPack.get(iLine);
     		if (line.toUpperCase().contains(ChemSoftConstants.JDLABACCTASK))
     		{
-    			linesWithACCTasks.add(line);
+    			numOfLinesWithTask++;
+    		} else if (line.toUpperCase().contains(GaussianConstants.LABPARAMS))
+        	// Due to legacy code using a different convention (the Gaussian stuff)
+        	// We need to check for the possibility of a different keyword, and
+    	    // we need to adapt the obsolete syntax.
+    		{
+    			String lineMod = line.replace(GaussianConstants.LABPARAMS,"");
+    			linesPack.set(iLine, lineMod);
+    			fixObsoleteSytax=true;
+    			if (lineMod.toUpperCase().contains(BasisSetConstants.ATMSPECBS))
+    				task = TaskID.GENERATEBASISSET.toString();
+    			else if (lineMod.toUpperCase().contains(
+    					TaskID.GENERATECONSTRAINTS.toString()))
+    				task = TaskID.GENERATECONSTRAINTS.toString();
+    			numOfLinesWithTask++;
     		}
     	}
     	
-    	if (linesWithACCTasks.size()==0)
+    	if (numOfLinesWithTask==0)
 		{
     		// Nothing to do
-			return new ArrayList<ParameterStorage>();
+			return new ParameterStorage();
 		} 
-    	else if (linesWithACCTasks.size()>1)
+    	else if (numOfLinesWithTask>1)
     	{
     		Terminator.withMsgAndStatus("ERROR! Unexpected format of "
     				+ "the directive component containing this value: '" 
     				+ lines + "'", -1);
     	}
-
-    	ArrayList<ParameterStorage> psList = new ArrayList<ParameterStorage>();
-    	for (String lineForOneTask : linesPack)
-    	{    		
-    		ArrayList<String> taskSpecificLines = new ArrayList<String>(
-    				Arrays.asList(lineForOneTask.split(
-    						System.getProperty("line.separator"))));
-			ParameterStorage ps = new ParameterStorage();
-			if (dirComp!=null)
+    	// Warning: because of the above the rest is assuming there is only one
+    	// task, even if the return value is a list.
+    	
+		ArrayList<String> taskSpecificLines = new ArrayList<String>(
+				Arrays.asList(linesPack.get(0).split(
+						System.getProperty("line.separator"))));
+		ParameterStorage ps = new ParameterStorage();
+		if (dirComp!=null)
+		{
+			ps.importParametersFromLines("Directive " 
+	    			+ dirComp.getComponentType() + " " + dirComp.getName(),
+	    			taskSpecificLines);
+		} else {
+			ps.importParametersFromLines("noFile",
+	    			taskSpecificLines);
+		}
+		
+		//TODO: much of this will eventually be removed or moved to a dedicated 
+		// class for converting job details files
+		
+		//Another fix of the obsolete syntax
+		if (task.equals(TaskID.GENERATECONSTRAINTS.toString()))
+		{
+			taskSpecificLines = new ArrayList<String>(
+					Arrays.asList(ps.getParameter(
+							TaskID.GENERATECONSTRAINTS.toString()).getValue()
+							.toString().split(
+									System.getProperty("line.separator"))));
+			ps = new ParameterStorage();
+			String smarts = "";
+            String atomIDs ="";
+            for (String line : taskSpecificLines)
+            {
+            	//WARNING! this is very hardcoded!!! 
+            	// Takes from GaussianInputWriter
+            	String key = line.substring(0, line.indexOf(":"));
+            	String value = line.substring(line.indexOf(":")+1).trim();
+            	switch (key.toUpperCase())
+            	{
+            		case "SMARTS":
+            			if (smarts.isBlank())
+            			{
+            				smarts = value;
+            			} else {
+            				smarts = smarts 
+            						+ System.getProperty("line.separator") 
+            						+ value;
+            			}
+            			break;
+            		case "ATOMIDS":
+            			if (atomIDs.isBlank())
+            			{
+            				atomIDs = value;
+            			} else {
+            				atomIDs = atomIDs 
+            						+ System.getProperty("line.separator") 
+            						+ value;
+            			}
+            			break;
+            		case "GENERATECONSTRAINTS":
+            			break;
+            		default:
+            			ps.setParameter(new Parameter(key,
+            					line.substring(line.indexOf(":")+1).trim()));
+            	}
+            }
+            if (!smarts.isBlank())
 			{
-				ps.importParametersFromLines("Directive " 
-		    			+ dirComp.getComponentType() + " " + dirComp.getName(),
-		    			taskSpecificLines);
-			} else {
-				ps.importParametersFromLines("noFile",
-		    			taskSpecificLines);
+            	ps.setParameter(new Parameter("SMARTS",smarts));
 			}
-			psList.add(ps);
+            if (!atomIDs.isBlank())
+			{
+            	ps.setParameter(new Parameter("ATOMIDS",atomIDs));
+			}
+		}
+
+    	if (fixObsoleteSytax)
+    	{
+    		ps.setParameter(new Parameter(ChemSoftConstants.JDLABACCTASK, task));
     	}
-		return psList;
+    	return ps;
     }
     
 //-----------------------------------------------------------------------------
