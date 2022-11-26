@@ -154,6 +154,17 @@ public class NamedData implements Cloneable
     	this.type = detectType(value);
         this.value = value;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Erases the value and type of this NamedData.
+     */
+    public void removeValue()
+    {
+    	value = null;
+    	type = NamedDataType.UNDEFINED;
+    }
 
 //------------------------------------------------------------------------------
 

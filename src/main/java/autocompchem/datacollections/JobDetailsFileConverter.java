@@ -69,7 +69,7 @@ public class JobDetailsFileConverter extends Worker
      */
     public JobDetailsFileConverter()
     {
-        super("inputdefinition/JobDetailConverter.json");
+        super("inputdefinition/JobDetailsFileConverter.json");
     }
 
 //-----------------------------------------------------------------------------
@@ -145,6 +145,8 @@ public class JobDetailsFileConverter extends Worker
     	
     	IOtools.writeTXTAppend(outFile, writer.toJson(obj), false);
     	
+    	//TODO-log
+    	System.out.println("Writing file '" + outFile + "'");
     }
 
 //-----------------------------------------------------------------------------

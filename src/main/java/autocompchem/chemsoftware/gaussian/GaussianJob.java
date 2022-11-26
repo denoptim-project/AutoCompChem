@@ -416,10 +416,13 @@ public class GaussianJob
 			GaussianOptionsSection optSec = step.getOptionSection();
 			for (String key : optSec.getRefNames())
 			{
-				optDir.addDirectiveData(new DirectiveData(key.substring(3),
+				DirectiveData dd = new DirectiveData(key.substring(3),
 						new ArrayList<String>(Arrays.asList(
 								optSec.getValue(key).split(
-										System.getProperty("line.separator"))))));
+										System.getProperty("line.separator")))));
+				if (dd.hasACCTask())
+					dd.removeValue();
+				optDir.addDirectiveData(dd);
 			}
 			ccjStep.setDirective(optDir);
 			

@@ -354,7 +354,7 @@ public class NWChemJob
 					{
 						Directive basisDir = ccjStep.getDirective("basis");
 						if (basisDir==null)
-							new Directive("basis");
+							basisDir = new Directive("basis");
 						ParameterStorage taskPs = new ParameterStorage();
 						taskPs.setParameter(new Parameter("TASK",
 								TaskID.GENERATEBASISSET.toString()));
