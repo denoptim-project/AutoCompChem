@@ -12,7 +12,7 @@ echo NOT Passed 2
 exit -1
 fi
 
-n=$(grep -c '%MEM=29000MB' t41.inp)
+n=$(grep -c -i '%MEM=29000MB' t41.inp)
 if [[ $n != 5 ]] ; then
 echo NOT Passed 3
 exit -1
