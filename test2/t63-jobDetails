@@ -1,0 +1,223 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "name": "functional",
+                  "isLoud": false,
+                  "value": [
+                    "pbe0"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "dft"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "optimize"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "name": "maxiter",
+                  "isLoud": false,
+                  "value": [
+                    "200"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Step",
+                "started",
+                "from",
+                "NWChem",
+                "output\""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "H library lanl2dz_ecp",
+                "C library lanl2dz_ecp",
+                "N library lanl2dz_ecp",
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "name": "finess",
+                  "isLoud": false,
+                  "value": [
+                    "fine"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "name": "energy",
+                  "isLoud": true,
+                  "value": [
+                    "1e-6"
+                  ]
+                },
+                {
+                  "name": "density",
+                  "isLoud": true,
+                  "value": [
+                    "1e-5"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "name": "functional",
+                  "isLoud": false,
+                  "value": [
+                    "pbe0"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "dft"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "frequencies"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Last",
+                "step:",
+                "frequencies\""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "H library lanl2dz_ecp",
+                "C library lanl2dz_ecp",
+                "N library lanl2dz_ecp",
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

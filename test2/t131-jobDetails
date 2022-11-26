@@ -1,0 +1,494 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "HF"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "GEN 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " SP+PCM(benzene)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "SMARTS [#6] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#1] name STO-3G\nSMARTS [#17] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASIS",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "CHKBASIS 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "GEN 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "Element C link ../data/basisset/gaussian/C_6-31G.gbs\nElement H link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASIS",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "GEN 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "SMARTS [#6] link ../data/basisset/gaussian/C_aug-cc-pVTZ.gbs\nSMARTS [#1] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASIS",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

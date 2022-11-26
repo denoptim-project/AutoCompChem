@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ ! -f "t92-mol.nw" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+n=0;n=$(grep -c "GEOMETRY first_G" t92-mol.nw) 
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c "GEOMETRY second_G" t92-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep "Ru[0-9]" t92-mol.nw | awk '{print $1}' | sort --unique | wc -l)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t92.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 5
+exit -1
+fi
+

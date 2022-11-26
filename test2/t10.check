@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ ! -f 10byhand.inp ]
+then 
+echo NOT Passed
+exit -1
+fi
+
+grep -q "Termination status: 0" t10.log
+if [ $? == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi
+
+

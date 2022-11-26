@@ -1,0 +1,104 @@
+#!/bin/bash
+
+if [ ! -f "t80-mol.nw" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+ n=0;n=$(grep -c -i "2\.5650000E+00 * -1\.0431056E+00" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,4 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "1\.5080000E+00 * 1\.3314786E+00" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,5 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "5\.129000E-01 * 5\.613065E-01" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,6 ; exit -1 ; fi
+n=0;n=$(grep -c  "Ru *D" t80-mol.nw)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 2,23 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "4\.1950000E+00 * 4\.85729E-02" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,24 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "1\.501000E-01 * 1\.0000000E+00" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,28 ; exit -1 ; fi
+n=0;n=$(grep -c  "Cl *S" t80-mol.nw )
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,29 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "2\.2310000E+00 * -4\.900589E-01" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,30 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "4\.720000E-01 * 1\.2542684E+00" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,31 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "6\.480000E-01 * 1\.0000000E+00" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,42 ; exit -1 ; fi
+n=0;n=$(grep -c -i "N *library *lanl2dz_ecp" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,43 ; exit -1 ; fi
+n=0;n=$(grep -c -i "C *library *lanl2dz_ecp" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,44 ; exit -1 ; fi
+n=0;n=$(grep -c -i "H *library *lanl2dz_ecp" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,45 ; exit -1 ; fi
+n=0;n=$(grep -c -i "ECP *spherical" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,48 ; exit -1 ; fi
+n=0;n=$(grep -c -i "Ru *nelec *28" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,49 ; exit -1 ; fi
+n=0;n=$(grep -c -i "Ru *ul" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,50 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "0 *5\.543796303E+02 * -5\.15270E-02" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,51 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "2 *5\.2077363E+00 * -3\.7675024E+00" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,55 ; exit -1 ; fi
+n=0;n=$(grep -c  "Ru *s" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,56 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "0 *6\.67118060E+01 * 2\.9578344E+00" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,57 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "2 *8\.1179479E+00 * 3\.813816943E+02" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,61 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "0 *6\.03444595E+01 * 3\.0352988E+00" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,69 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "2 *4\.2712090E+00 * 2\.89129770E+01" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,72 ; exit -1 ; fi
+n=0;n=$(grep -c -i "Cl *nelec *10" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,73 ; exit -1 ; fi
+n=0;n=$(grep -c -i "Cl *ul" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,74 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "1 *9\.48130000E+01 * -1\.00000000E+01" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,75 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "2 *3\.7704000E+00 * -1\.7102170E+00" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,79 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "0 *2\.165263000E+02 * 5\.0000000E+00" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,87 ; exit -1 ; fi
+ n=0;n=$(grep -c -i "2 *3\.1831000E+00 * 1\.53439560E+01" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,92 ; exit -1 ; fi
+n=0;n=$(grep -c -i "ZCOORD" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,183 ; exit -1 ; fi
+n=0;n=$(grep -c -i "BOND *2 *77 *constant" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,184 ; exit -1 ; fi
+n=0;n=$(grep -c -i "ANGLE *1 *2 *6 *constant" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,185 ; exit -1 ; fi
+n=0;n=$(grep -c  "C1 *S" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,226 ; exit -1 ; fi
+n=0;n=$(grep -c  "Cl4 *P" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,258 ; exit -1 ; fi
+n=0;n=$(grep -c  "Cl5 *S" t80-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2,264 ; exit -1 ; fi
+n=0;n=$(grep -c  "C6 *S" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,278 ; exit -1 ; fi
+n=0;n=$(grep -c  "C6 *D" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,300 ; exit -1 ; fi
+n=0;n=$(grep -c  "C56 *S" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,302 ; exit -1 ; fi
+n=0;n=$(grep -c  "C57 *S" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,326 ; exit -1 ; fi
+n=0;n=$(grep -c  "C58 *S" t80-mol.nw)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 2,350 ; exit -1 ; fi
+n=0;n=$(grep -c  "H77 *P" t80-mol.nw)
+if [ $n -ne 1 ]; then echo NOT Passes ERROR 2,382 ; exit -1 ; fi
+n=0;n=$(grep -c -i "Cl4 *ul" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,417 ; exit -1 ; fi
+n=0;n=$(grep -c -i "Cl5 *nelec *10" t80-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2,436 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t80.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 3
+exit -1
+fi
+

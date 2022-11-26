@@ -1,0 +1,102 @@
+#!/bin/bash
+
+grep -q -i "NWChem Error Recognized: Step 2 returned Error Message: test1_ONLY_FOR_TEST" t56.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+grep -i -q "NWChem output file contains: 2 steps" t56.log
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+# Excluding test depedent on command bc
+if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" == MSYS* ]]
+then
+    echo Skipping UNIX-only checks
+else
+    n=$(echo $(wc -l restart-t56.pro.nw | awk '{print $1}') - $(grep -n -i TOTEST restart-t56.pro.nw | awk -F":" '{print $1}') | bc)
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4a
+        exit -1
+    fi
+
+    m=$(tail -n $n restart-t56.pro.nw | grep -n -i -m1 "^END" | awk -F":" '{print $1}')
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4b
+        exit -1
+    fi
+    tail -n $n restart-t56.pro.nw | head -n $m > tmp-t56.res
+    if [ $? != 0 ] ; then
+        echo NOT Passed ERROR 4c
+        exit -1
+    fi
+
+    cat<<EOF>tmp-t56.ori
+  2ND 
+    1st line in block
+    2nd line in block
+    
+    3rd line after empty line
+    single_line_block
+    3RD loudKey lval  mval 
+      EMPTYDIR 
+    END
+  END
+END
+EOF
+    #
+    # WARNING: this comparison considers also whitespace characters.
+    # Otherwise equal output might have different indentation for NWChem directives
+    # and trailing whitespaces. This check script is meant to spot also such 
+    # differences.
+    #
+    diff tmp-t56.ori tmp-t56.res
+    if [ $? != 0 ] ; then
+    echo NOT Passed ERROR 4
+    exit -1
+    fi
+    rm tmp-t56.ori
+    rm tmp-t56.res
+fi
+
+n=$(grep -c -i "RESTART[[:space:]]*restart-t56.pro " restart-t56.pro.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 5
+exit -1
+fi
+
+n=$(grep -c -i "START" restart-t56.pro.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 6
+exit -1
+fi
+
+grep -i -q "TITLE[[:space:]]*This is the new title imposed by error fixing action" restart-t56.pro.nw
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 7
+exit -1
+fi
+
+n=$(grep -c -i "END-OF-TASK" restart-t56.pro.jd)
+if [ $n != 3 ] ; then
+echo NOT Passed ERROR 8
+exit -1
+fi
+
+n=$(grep -c -i "DIR_TOTEST" restart-t56.pro.jd)
+if [ $n != 5 ] ; then
+echo NOT Passed ERROR 9
+exit -1
+fi
+
+grep -q 'Termination status: 0' t56.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 10
+exit -1
+fi

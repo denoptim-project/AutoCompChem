@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 1
+TASK: PrepareInputGaussian
+INFILE: ../t84-mol.sdf
+JOBDETAILSFILE: ../t84-jobDetails

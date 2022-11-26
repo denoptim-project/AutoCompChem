@@ -1,0 +1,12 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Note that '#' defines the commented out lines, but when a line belongs 
+# to a multiline block, '#' is treated as a normal character.
+#
+# Charge and spin multiplicity from default value
+#
+VERBOSITY: 2
+TASK: PrepareInputGaussian
+INFILE: ../t94-mol.sdf
+JOBDETAILSFILE: ../t94-jobDetails

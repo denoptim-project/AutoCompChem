@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 4
+TASK: FixAndRestartNWChem
+INFILE: ../t87-nwc.out
+NewNwFile: restart-t87.nw
+JOBDETAILSFILE: ../t87-jobDetails

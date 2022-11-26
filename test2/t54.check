@@ -1,0 +1,64 @@
+#!/bin/bash
+
+n=$(grep -c -i "CHARGE[[:space:]]*0" t54.nw)
+if [ $n != 5 ] ; then
+echo NOT Passed ERROR 1
+exit -1
+fi
+
+n=$(grep -c -i "CHARGE[[:space:]]*-26" t54.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -q -i "SET[[:space:]]*geometry:actlist[[:space:]]*1:20[[:space:]]*22:25[[:space:]]*29:55" t54.nw
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+grep -q -i "SET[[:space:]]*geometry:actlist[[:space:]]*1:25[[:space:]]*27[[:space:]]*29:79" t54.nw
+if [ $? != 0 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+n=$(grep -c -i "mult[[:space:]]*1" t54.nw)
+if [ $n != 4 ] ; then
+echo NOT Passed ERROR 5
+exit -1
+fi
+
+n=$(grep -c -i "SINGLET" t54.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 6
+exit -1
+fi
+
+n=$(grep -c -i "mult[[:space:]]*2" t54.nw)
+if [ $n != 1 ] ; then
+echo NOT Passed ERROR 7
+exit -1
+fi
+
+n=$(grep -c -i "Processing task-specific ACC parameters" t54.log)
+if [ $n != 2 ] ; then
+echo NOT Passed ERROR 8
+exit -1
+fi
+
+n=$(grep -c -i "Found.*option.*in one step" t54.log)
+if [ $n != 2 ] ; then
+echo NOT Passed ERROR 9
+exit -1
+fi
+
+grep -q 'Termination status: 0' t54.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 10
+exit -1
+fi

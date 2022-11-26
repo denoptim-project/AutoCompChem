@@ -1,0 +1,754 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "HF"
+              ]
+            },
+            {
+              "name": "SYMMETRY",
+              "isLoud": false,
+              "value": [
+                "NOSYM"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "GENECP 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "1000"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " Step 1 - PBEPBE-D3 protocol_1"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "SMARTS [*] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [$([*]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs\nSMARTS [$([#1]~[#6]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASISSET",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "EMPIRICALDISPERSION",
+              "isLoud": true,
+              "value": [
+                "GD3"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "PBEPBE"
+              ]
+            },
+            {
+              "name": "SYMMETRY",
+              "isLoud": false,
+              "value": [
+                "NOSYM"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "INT",
+              "isLoud": true,
+              "value": [
+                "ULTRAFINE"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "CHKBASIS 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "800"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " Step 2 - PBEPBE-D3 protocol_1"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "EMPIRICALDISPERSION",
+              "isLoud": true,
+              "value": [
+                "GD3"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "PBEPBE"
+              ]
+            },
+            {
+              "name": "SYMMETRY",
+              "isLoud": false,
+              "value": [
+                "NOSYM"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "INT",
+              "isLoud": true,
+              "value": [
+                "ULTRAFINE"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "CHKBASIS 5D 7F"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "500"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "name": "GENERAL",
+                  "isLoud": false,
+                  "value": [
+                    "RRHF"
+                  ]
+                },
+                {
+                  "name": "WFREOPT",
+                  "isLoud": false,
+                  "value": [
+                    "OPT"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " Step 3 - PBEPBE-D3 protocol_1"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "EMPIRICALDISPERSION",
+              "isLoud": true,
+              "value": [
+                "GD3"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "PBEPBE"
+              ]
+            },
+            {
+              "name": "SYMMETRY",
+              "isLoud": false,
+              "value": [
+                "NOSYM"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "INT",
+              "isLoud": true,
+              "value": [
+                "ULTRAFINE"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "CHKBASIS 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "OPT"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                },
+                {
+                  "name": "FORCECONSTANTS",
+                  "isLoud": false,
+                  "value": [
+                    "CALCFC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "200"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " Step 4 - PBEPBE-D3 protocol_1"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "EMPIRICALDISPERSION",
+              "isLoud": true,
+              "value": [
+                "GD3"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "PBEPBE"
+              ]
+            },
+            {
+              "name": "SYMMETRY",
+              "isLoud": false,
+              "value": [
+                "NOSYM"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK "
+              ]
+            },
+            {
+              "name": "INT",
+              "isLoud": true,
+              "value": [
+                "ULTRAFINE"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "CHKBASIS 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "FREQ"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "200"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " Step 5 - PBEPBE-D3 protocol_1"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

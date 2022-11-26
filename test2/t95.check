@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ ! -f "t95-mol.inp" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+n=0;n=$(grep -c "^\$NBO" t95-mol.inp) 
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\$END$" t95-mol.inp)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^3rd row \$END$" t95-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^\$NBO ARCHIVE \$END$" t95-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+grep -q 'Termination status: 0' "t95.log"
+if [ "$?" == 0 ] ; then
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 6
+exit -1
+fi
+
