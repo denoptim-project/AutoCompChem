@@ -337,6 +337,8 @@ public class NWChemJob
 		{
 			CompChemJob ccjStep = new CompChemJob();
 			
+			ccjStep.setParameters(nwcStep.getTaskSpecificParams());
+			
 			for (NWChemDirective nwcDir : nwcStep.getAllDirectives())
 			{
 				Directive optDir = nwcDir.convertToACCDirective();
