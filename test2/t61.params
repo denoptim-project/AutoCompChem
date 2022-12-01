@@ -1,0 +1,26 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+#
+VERBOSITY: 1
+TASK: PrepareInputNWChem
+INFILE: ../t61-mol.sdf
+JOBDETAILSFILE: ../t61-jobDetails
+CoordinatesType: Cartesian
+$STARTZCOORD: 
+[*] [$(C(~[Ru])~C)] constant
+[*] [$(C~C~[Ru])] constant
+[*] [$(C~C~C~[Ru])] constant
+
+[$(C(~[Ru])~C)] [Ru] [$(C(~[Ru])~C)] constant
+[*] [$(C(~[Ru])~C)] [*] constant
+[*] [$(C~C~[Ru])] [*] constant
+[*] [$(C~C~C~[Ru])] [*] constant
+
+[*] [Ru] [$(C(~[Ru])~C)] [$(C(~[Ru])~C)] constant
+[*] [$(C(~[Ru])~C)] [$(C~C~[Ru])] [*] constant
+[*] [$(C~C~[Ru])] [$(C~C~C~[Ru])] [*] constant
+$END 
+CHARGE: 0
+SPIN_MULTIPLICITY: 1

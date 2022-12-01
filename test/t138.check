@@ -1,0 +1,90 @@
+#!/bin/bash
+
+if [ ! -f t138_jd_manyJobs.json ] ; then
+    echo NOT Passed ERROR 1
+    exit -1
+fi
+
+n=0;n=$(grep -c "^.* \"ACCJob\",$" t138_jd_manyJobs.json)
+if [ $n -ne 7 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+n=0;n=$(grep -c "^.* \"MeasureGeomDescriptors\",$" t138_jd_manyJobs.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+n=0;n=$(grep -c "^.* \"PruneMolecules\",$" t138_jd_manyJobs.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"SMARTS\": " t138_jd_manyJobs.json)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+if [ ! -f t138_jd_XTB.json ] ; then
+    echo NOT Passed ERROR 2
+    exit -1
+fi
+n=0;n=$(grep -c "^ *\"accTaskParams\": " t138_jd_XTB.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"ATOMIDS\": " t138_jd_XTB.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"isLoud\": " t138_jd_XTB.json)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+if [ ! -f t138_jd_Gaussian.json ] ; then
+    echo NOT Passed ERROR 10
+    exit -1
+fi
+n=0;n=$(grep -c " *\"jobType\": \"CompChemJob\",$" t138_jd_Gaussian.json)
+if [ $n -ne 5 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"name\": \"chk\",$" t138_jd_Gaussian.json)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"RuAsH3\"$" t138_jd_Gaussian.json)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"GEN 5D 7F\"$" t138_jd_Gaussian.json)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"name\": \"SCF\",$" t138_jd_Gaussian.json)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 15 ; exit -1 ; fi
+n=0;n=$(grep -A 4 -i VSHIFT t138_jd_Gaussian.json  | grep -A 1 value | grep -c 600)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 16 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"name\": \"OPT\",$" t138_jd_Gaussian.json)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 17 ; exit -1 ; fi
+n=0;n=$(grep -A 4 -i FORCECONSTANTS t138_jd_Gaussian.json  | grep -A 1 value | grep -c -i calcFC)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 18 ; exit -1 ; fi
+n=0;n=$(grep -c "^ *\"name\": \"title\",$" t138_jd_Gaussian.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 19 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^ *\"accTaskParams\": {$" t138_jd_Gaussian.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 20 ; exit -1 ; fi
+n=0;n=$(grep -A 4 -i "\"TASK\"" t138_jd_Gaussian.json | grep value | grep -c -i GENERATEBASISSET)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 21 ; exit -1 ; fi
+n=0;n=$(grep -A 4 -i "\"TASK\"" t138_jd_Gaussian.json | grep value | grep -c -i GENERATECONSTRAINTS)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 22 ; exit -1 ; fi
+
+n=0;n=$(grep -A 4 -i "\"SPIN_MULTIPLICITY\"," t138_jd_Gaussian.json  | grep -A 1 value | grep -c 111)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 23 ; exit -1 ; fi
+n=0;n=$(grep -A 4 -i "\"CHARGE\"," t138_jd_Gaussian.json  | grep -A 1 value | grep -c "\-222")
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 24 ; exit -1 ; fi
+
+if [ ! -f t138_jd_NWChem.json ] ; then
+    echo NOT Passed ERROR 25
+    exit -1
+fi
+
+n=0;n=$(grep -c " *\"jobType\": \"CompChemJob\",$" t138_jd_NWChem.json)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 26 ; exit -1 ; fi
+n=0;n=$(grep -c " *\"accTaskParams\": {$" t138_jd_NWChem.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 27 ; exit -1 ; fi
+n=0;n=$(grep -c -i " *\"TASK\": {$" t138_jd_NWChem.json)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 28 ; exit -1 ; fi
+n=0;n=$(grep -c " *\"SMARTS\": {$" t138_jd_NWChem.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 29 ; exit -1 ; fi
+n=0;n=$(grep -c " *\"ATOMSPECIFICBASISSET\": {$" t138_jd_NWChem.json)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 30 ; exit -1 ; fi
+
+
+
+
+
+grep -q 'Termination status: 0' t138.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 99
+exit -1
+fi

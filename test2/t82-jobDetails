@@ -1,0 +1,348 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "scf"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "energy"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "scf",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "name": "maxiter",
+                  "isLoud": false,
+                  "value": [
+                    "3"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "VECTORS",
+              "keywords": [
+                {
+                  "name": "output",
+                  "isLoud": true,
+                  "value": [
+                    "t82.hf.movecs"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "ecce_print",
+          "keywords": [
+            {
+              "name": "eccefile",
+              "isLoud": false,
+              "value": [
+                "ecce.out"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "name": "units",
+              "isLoud": true,
+              "value": [
+                "angstrom"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "name": "pointgroup",
+                  "isLoud": false,
+                  "value": [
+                    "c1"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Step1:",
+                "SP",
+                "with",
+                "HF\""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "accTaskParams": {
+            "allPars": {},
+            "allData": {
+              "ATOMSPECIFICBASISSET": {
+                "reference": "ATOMSPECIFICBASISSET",
+                "value": "Element H Link  somepath/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nElement C Link  somepath/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs",
+                "type": "STRING"
+              },
+              "TASK": {
+                "reference": "TASK",
+                "value": "GENERATEBASISSET",
+                "type": "STRING"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "DISP",
+              "keywords": [
+                {
+                  "name": "vdw",
+                  "isLoud": true,
+                  "value": [
+                    "3"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "TOLERANCES",
+              "keywords": [
+                {
+                  "name": "tight",
+                  "isLoud": false,
+                  "value": [
+                    "tight"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "name": "finess",
+                  "isLoud": false,
+                  "value": [
+                    "xfine"
+                  ]
+                },
+                {
+                  "name": "disk",
+                  "isLoud": false,
+                  "value": [
+                    "nodisk"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "name": "energy",
+                  "isLoud": true,
+                  "value": [
+                    "1e-8"
+                  ]
+                },
+                {
+                  "name": "density",
+                  "isLoud": true,
+                  "value": [
+                    "1e-7"
+                  ]
+                },
+                {
+                  "name": "gradient",
+                  "isLoud": true,
+                  "value": [
+                    "1e-6"
+                  ]
+                },
+                {
+                  "name": "ncyds",
+                  "isLoud": true,
+                  "value": [
+                    "150"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "name": "functional",
+                  "isLoud": false,
+                  "value": [
+                    "pbe0"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "DIRECT"
+            },
+            {
+              "name": "VECTORS",
+              "keywords": [
+                {
+                  "name": "input",
+                  "isLoud": true,
+                  "value": [
+                    "t82.hf.movecs"
+                  ]
+                },
+                {
+                  "name": "output",
+                  "isLoud": true,
+                  "value": [
+                    "t82.movecs"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "dft"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "energy"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Step2:",
+                "SP",
+                "with",
+                "DFT\""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "VECTORS",
+              "keywords": [
+                {
+                  "name": "input",
+                  "isLoud": true,
+                  "value": [
+                    "t82.movecs"
+                  ]
+                },
+                {
+                  "name": "output",
+                  "isLoud": true,
+                  "value": [
+                    "t82.movecs"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "dft"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "frequencies"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Step3:",
+                "hessian+freq",
+                "I\""
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

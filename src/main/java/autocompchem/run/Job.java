@@ -18,15 +18,31 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.io.ACCJson;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
@@ -170,11 +186,11 @@ public class Job implements Runnable
     /**
      * File separator on this OS
      */
-    private final String SEP = System.getProperty("file.separator");
+    private static final String SEP = System.getProperty("file.separator");
     
     /**
      * Container for any kind of output that is made available to the outside
-     * world /w.r.t. this job) via the {@Link #getOutput} method. 
+     * world /w.r.t. this job) via the {@link #getOutput} method. 
      * We say these data is "exposed".
      */
     protected NamedDataCollector exposedOutput = new NamedDataCollector();
@@ -197,6 +213,23 @@ public class Job implements Runnable
 	 */
 	public static final String SUBJOBREQUESTINGACTION = 
 			"SubJobRequestingAction";
+	
+	/**
+	 * Name of JSON element used to discriminate among implementations of 
+	 * {@link Job}.
+	 */
+	public static final String JSONJOVTYPE = "jobType"; 
+	
+	/**
+	 * Name of JSON element collecting the parameters given to this job.
+	 */
+	public static final String JSONPARAMS = "params";
+	
+	/**
+	 * Name of JSON property collecting the jobs embedded in this one, i.e.,
+	 * the steps or child jobs.
+	 */
+	public static final String JSONSUBJOBS = "steps";
     
 //------------------------------------------------------------------------------
 
@@ -895,6 +928,152 @@ public class Job implements Runnable
         }
         lines.add(ParameterConstants.ENDJOB);
         return lines;
+    }
+    
+//------------------------------------------------------------------------------
+    
+   @Override
+   public boolean equals(Object o) 
+   {
+	   if (o == this)
+		   return true;
+	   
+	   if (!(o instanceof Job))
+    		return false;
+	   
+	   Job other = (Job) o;
+	   
+	   return this.jobId == other.jobId 
+			   && this.appID == other.appID
+			   && this.parallelizable == other.parallelizable
+			   && this.nThreads == other.nThreads
+			   && this.isInterrupted == other.isInterrupted 
+			   && this.hasException == other.hasException 
+			   && this.completed == other.completed 
+			   && Objects.equals(this.customUserDir, other.customUserDir)
+			   && this.redirectOutErr == other.redirectOutErr
+			   && Objects.equals(this.stdout, other.stdout)
+			   && Objects.equals(this.stderr, other.stderr)
+			   && this.verbosity == other.verbosity
+			   && Objects.equals(this.params, other.params)
+			   && Objects.equals(this.steps, other.steps)
+			   && Objects.equals(this.exposedOutput, other.exposedOutput);
+   }
+    
+//------------------------------------------------------------------------------
+
+    public static class JobSerializer 
+    implements JsonSerializer<Job>
+    {
+        @Override
+        public JsonElement serialize(Job job, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONJOVTYPE, job.getClass().getSimpleName());
+            
+            if (!job.params.isEmpty())
+            	jsonObject.add(JSONPARAMS, context.serialize(job.params));
+            if (!job.steps.isEmpty())
+            	jsonObject.add(JSONSUBJOBS, context.serialize(job.steps));
+
+            return jsonObject;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class JobDeSerializer 
+    implements JsonDeserializer<Job>
+    {
+        @Override
+        public Job deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            if (!jsonObject.has(JSONJOVTYPE))
+            {
+                String msg = "Missing '" + JSONJOVTYPE + "': found a "
+                        + "JSON string that cannot be converted into a Job "
+                        + "subclass.";
+                throw new JsonParseException(msg);
+            }       
+
+            String typ = context.deserialize(jsonObject.get(JSONJOVTYPE),
+                    String.class);
+            
+            Job job = null;
+            switch (typ)
+            {
+                case "Job":
+                {
+                	job = new Job();
+                	break;
+                }
+                
+                case "ACCJob":
+                {
+                	job = new ACCJob();
+                	break;
+                }
+                
+                case "EvaluationJob":
+                {
+                	job = new EvaluationJob();
+                	break;
+                }
+                
+                case "MonitoringJob":
+                {
+                	job = new MonitoringJob();
+                	break;
+                }
+                
+                case "ShellJob":
+                {
+                	if (jsonObject.has("command"))
+                	{
+                		List<String> cmd = context.deserialize(
+                				jsonObject.get("command"), 
+                				new TypeToken<ArrayList<String>>(){}.getType());
+                		job = new ShellJob(cmd.toArray(new String[0]));
+                	} else {
+                		job = new ShellJob();
+                	}
+                	break;
+                }
+                
+                case "CompChemJob":
+                {
+                	job = new CompChemJob();
+                	if (jsonObject.has("directives"))
+                	{
+                		((CompChemJob)job).setDirectives(context.deserialize(
+                    			jsonObject.get("directives"),
+                    			new TypeToken<ArrayList<Directive>>(){}.getType()));
+                	}
+                	break;
+                }
+            }
+            
+        	if (jsonObject.has(JSONSUBJOBS))
+        		job.steps = context.deserialize(jsonObject.get(JSONSUBJOBS),
+                    new TypeToken<ArrayList<Job>>(){}.getType());
+        	if (jsonObject.has(JSONPARAMS))
+        		job.params = context.deserialize(jsonObject.get(JSONPARAMS),
+        			ParameterStorage.class);
+        	
+        	// Reconstruct references to parent/child job
+            for (Job step : job.steps)
+            {
+            	step.setParent(job);
+            	step.setId(job.idSubJob);
+            }
+        	
+        	return job;
+        }
     }
     
 //------------------------------------------------------------------------------

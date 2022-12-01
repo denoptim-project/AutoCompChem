@@ -1,0 +1,298 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "keywords": [
+            {
+              "name": "type",
+              "isLoud": false,
+              "value": [
+                "spherical"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "scf"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "energy"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "name": "units",
+              "isLoud": true,
+              "value": [
+                "angstrom"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "name": "pointgroup",
+                  "isLoud": false,
+                  "value": [
+                    "c1"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATECONSTRAINTS",
+                    "type": "STRING"
+                  },
+                  "SMARTS": {
+                    "reference": "SMARTS",
+                    "value": "[#1] [Ru] constant\n[$([#6]~[#7])] [Ru] [#1] constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] constant",
+                    "type": "STRING"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Step:1",
+                "SP",
+                "with",
+                "HF\""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "name": "name",
+              "isLoud": false,
+              "value": [
+                "\"ao",
+                "basis\""
+              ]
+            },
+            {
+              "name": "type",
+              "isLoud": false,
+              "value": [
+                "spherical"
+              ]
+            }
+          ],
+          "accTaskParams": {
+            "allPars": {},
+            "allData": {
+              "ATOMSPECIFICBASISSET": {
+                "reference": "ATOMSPECIFICBASISSET",
+                "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement Cl Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs",
+                "type": "STRING"
+              },
+              "TASK": {
+                "reference": "TASK",
+                "value": "GENERATEBASISSET",
+                "type": "STRING"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "keywords": [
+            {
+              "name": "type",
+              "isLoud": false,
+              "value": [
+                "spherical"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "name": "finess",
+                  "isLoud": false,
+                  "value": [
+                    "xfine"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "name": "energy",
+                  "isLoud": true,
+                  "value": [
+                    "1e-6"
+                  ]
+                },
+                {
+                  "name": "density",
+                  "isLoud": true,
+                  "value": [
+                    "1e-5"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "name": "functional",
+                  "isLoud": false,
+                  "value": [
+                    "pbe0"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "dft"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "energy"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "name": "adjust",
+              "isLoud": false,
+              "value": [
+                "adjust"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "name": "pointgroup",
+                  "isLoud": false,
+                  "value": [
+                    "S6"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "\"Step:2",
+                "SP",
+                "with",
+                "DFT\""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "name": "name",
+              "isLoud": false,
+              "value": [
+                "\"ao",
+                "basis\""
+              ]
+            },
+            {
+              "name": "type",
+              "isLoud": false,
+              "value": [
+                "spherical"
+              ]
+            }
+          ],
+          "accTaskParams": {
+            "allPars": {},
+            "allData": {
+              "ATOMSPECIFICBASISSET": {
+                "reference": "ATOMSPECIFICBASISSET",
+                "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nSMARTS [$([#1,#6,#17]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [$([#6]~[#6,#1]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs",
+                "type": "STRING"
+              },
+              "TASK": {
+                "reference": "TASK",
+                "value": "GENERATEBASISSET",
+                "type": "STRING"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

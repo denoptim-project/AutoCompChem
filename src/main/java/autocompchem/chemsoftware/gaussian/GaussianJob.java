@@ -18,7 +18,13 @@ package autocompchem.chemsoftware.gaussian;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
@@ -311,6 +317,119 @@ public class GaussianJob
         }
         return lines;
     }
+
+//------------------------------------------------------------------------------
+
+	public CompChemJob convertToCompChemJob() 
+	{
+		CompChemJob ccj = new CompChemJob();
+		for (GaussianStep step : steps)
+		{
+			CompChemJob ccjStep = new CompChemJob();
+			
+			// Link0
+			Directive lnk0Dir = new Directive("Link0");
+			GaussianLinkCommandsSection lnk0 = step.getLinkCommand();
+			for (String link0Key : lnk0.keySet())
+			{
+				lnk0Dir.addKeyword(new Keyword(link0Key, true, 
+						lnk0.getValue(link0Key)));
+			}
+			ccjStep.setDirective(lnk0Dir);
+			
+			
+			// Route
+			Directive routeDir = new Directive("Route");
+			GaussianRouteSection route = step.getRouteSection();
+			int iFree = 0;
+			for (String rKey : route.keySet())
+			{
+				String uKey = rKey.toUpperCase();
+				if (uKey.startsWith(GaussianConstants.LABMUTEKEY))
+				{
+					routeDir.addKeyword(new Keyword(rKey.substring(3), false, 
+							route.getValue(rKey)));
+				} else if (uKey.startsWith(GaussianConstants.LABLOUDKEY))
+				{
+					if (uKey.contains("_$"))
+					{
+						String subDirName = rKey.substring(3, rKey.indexOf("_$"));
+						String subkeyWLabel = rKey.substring(
+								rKey.indexOf("_$") + 1);
+	                    Directive outerDir = routeDir.getSubDirective(subDirName);
+	                    boolean existed = true;
+	                    if (outerDir==null)
+	                    {
+	                    	existed = false;
+	                    	outerDir = new Directive(subDirName);
+	                    }
+	                    
+	                    if (subkeyWLabel.toUpperCase().startsWith(
+	                    		GaussianConstants.LABLOUDKEY))
+	                    {
+	                        outerDir.addKeyword(new Keyword(
+	                        		subkeyWLabel.substring(3), 
+	                        		true, route.getValue(rKey)));
+	                    } 
+	                    else if (subkeyWLabel.toUpperCase().startsWith(
+	                    		GaussianConstants.LABMUTEKEY)) 
+	                    {
+	                        outerDir.addKeyword(new Keyword(
+	                        		subkeyWLabel.substring(3), 
+	                        		false, route.getValue(rKey)));
+	                    }
+	                    if (!existed)
+	                    {
+	                    	routeDir.addSubDirective(outerDir);
+	                    }
+					} else {
+						routeDir.addKeyword(new Keyword(rKey.substring(3), true, 
+								route.getValue(rKey)));
+					}
+				} else if (uKey.startsWith(GaussianConstants.LABFREE))
+				{
+					iFree++;
+					routeDir.addKeyword(new Keyword("Free"+iFree, false, 
+							route.getValue(rKey)));
+				}
+			}
+			ccjStep.setDirective(routeDir);
+			
+			// Title
+			Directive titleDir = new Directive("Title");
+			titleDir.addKeyword(new Keyword("title", false, step.getComment()));
+			ccjStep.setDirective(titleDir);
+			
+			// MolSpec
+			Directive molSpecDir = new Directive("MolSpec");
+			GaussianMolSpecification molSpec = step.getMolSpec();
+			molSpecDir.addKeyword(new Keyword(ChemSoftConstants.PARSPINMULT,
+					false, molSpec.getSpinMultiplicity()+""));
+			molSpecDir.addKeyword(new Keyword(ChemSoftConstants.PARCHARGE,
+					false, molSpec.getCharge()+""));
+			// WARNING: it is highly unlikely that we need to translate any other 
+			// component of the molSpec data, but this is where it should be!
+			ccjStep.setDirective(molSpecDir);
+			
+			//Opts
+			Directive optDir = new Directive("Options");
+			GaussianOptionsSection optSec = step.getOptionSection();
+			for (String key : optSec.getRefNames())
+			{
+				DirectiveData dd = new DirectiveData(key.substring(3),
+						new ArrayList<String>(Arrays.asList(
+								optSec.getValue(key).split(
+										System.getProperty("line.separator")))));
+				if (dd.hasACCTask())
+					dd.removeValue();
+				optDir.addDirectiveData(dd);
+			}
+			ccjStep.setDirective(optDir);
+			
+			ccj.addStep(ccjStep);
+		}
+		return ccj;
+	}
 
 //------------------------------------------------------------------------------
 

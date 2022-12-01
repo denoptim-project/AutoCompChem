@@ -1,0 +1,152 @@
+[
+  {
+    "name": "#",
+    "keywords": [
+      {
+        "name": "comment",
+        "isLoud": false,
+        "value": [
+          "just a comment"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "constrain",
+    "keywords": [
+      {
+        "name": "force constant",
+        "isLoud": true,
+        "value": [
+          "1.2345"
+        ]
+      },
+      {
+        "name": "elements",
+        "isLoud": true,
+        "value": [
+          "C,O,1"
+        ]
+      }
+    ],
+    "dirData": [
+      {
+        "accTaskParams": {
+          "allPars": {},
+          "allData": {
+            "TASK": {
+              "reference": "TASK",
+              "value": "GenerateConstraints",
+              "type": "STRING"
+            },
+            "SMARTS": {
+              "reference": "SMARTS",
+              "value": "[#6] [#8] onlybonded\n[#8] notAnIC",
+              "type": "STRING"
+            },
+            "VERBOSITY": {
+              "reference": "VERBOSITY",
+              "value": "2",
+              "type": "STRING"
+            },
+            "ATOMIDS": {
+              "reference": "ATOMIDS",
+              "value": "1\n2 3 1.234\n2 3 4\n2 3 4 5 -0.123\n1 2 3 4 5 notAnIC\n12",
+              "type": "STRING"
+            }
+          }
+        },
+        "reference": "constraints",
+        "value": [
+          "$ACCTASK: GenerateConstraints",
+          "VERBOSITY: 2",
+          "SMARTS:$START[#6] [#8] onlybonded",
+          "[#8] notAnIC$END",
+          "AtomIDS:$START 1",
+          "2 3 1.234",
+          "2 3 4",
+          "2 3 4 5 -0.123",
+          "1 2 3 4 5 notAnIC",
+          "12$END"
+        ],
+        "type": "TEXTBLOCK"
+      }
+    ]
+  },
+  {
+    "name": "fix",
+    "keywords": [
+      {
+        "name": "elements",
+        "isLoud": true,
+        "value": [
+          "O,P,S"
+        ]
+      }
+    ],
+    "dirData": [
+      {
+        "accTaskParams": {
+          "allPars": {},
+          "allData": {
+            "TASK": {
+              "reference": "TASK",
+              "value": "GenerateConstraints",
+              "type": "STRING"
+            },
+            "SMARTS": {
+              "reference": "SMARTS",
+              "value": "[#6] [#7] onlybonded",
+              "type": "STRING"
+            },
+            "VERBOSITY": {
+              "reference": "VERBOSITY",
+              "value": "2",
+              "type": "STRING"
+            },
+            "ATOMIDS": {
+              "reference": "ATOMIDS",
+              "value": "10\n11 7\n10 11 9 12 13 notAnIC\n12",
+              "type": "STRING"
+            }
+          }
+        },
+        "reference": "freeze",
+        "value": [
+          "$ACCTASK: GenerateConstraints",
+          "VERBOSITY: 2",
+          "SMARTS:[#6] [#7] onlybonded",
+          "AtomIDS:$START 10",
+          "11 7",
+          "10 11 9 12 13 notAnIC",
+          "12$END"
+        ],
+        "type": "TEXTBLOCK"
+      }
+    ]
+  },
+  {
+    "name": "opt",
+    "keywords": [
+      {
+        "name": "logfile",
+        "isLoud": true,
+        "value": [
+          "trajectory.xyz"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "set",
+    "keywords": [
+      {
+        "name": "runtyp",
+        "isLoud": true,
+        "value": [
+          "opt"
+        ]
+      }
+    ]
+  }
+]

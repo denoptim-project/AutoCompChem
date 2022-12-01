@@ -33,10 +33,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import autocompchem.datacollections.ACCJson;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.ACCJson;
 import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
 

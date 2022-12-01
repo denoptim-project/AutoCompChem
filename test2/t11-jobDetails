@@ -1,0 +1,2256 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "Free1",
+              "isLoud": false,
+              "value": [
+                "WITH NOTHING"
+              ]
+            },
+            {
+              "name": "Free2",
+              "isLoud": false,
+              "value": [
+                "WHIT FREE LABEL"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "HF"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "1000"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "180"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 1 Protocol from Vidar - 22 Nov 2013"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "800"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 2"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "name": "WFREOPT",
+                  "isLoud": false,
+                  "value": [
+                    "OPT"
+                  ]
+                },
+                {
+                  "name": "GENERAL",
+                  "isLoud": false,
+                  "value": [
+                    "RRHF"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "200"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "ALGORITHM",
+                  "isLoud": false,
+                  "value": [
+                    "QC"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 4"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "FREQ"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "200"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "ALGORITHM",
+                  "isLoud": false,
+                  "value": [
+                    "QC"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 5"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "INTEGRAL",
+              "isLoud": false,
+              "value": [
+                "INT(GRID\u003dSG1)"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "IOP",
+              "isLoud": false,
+              "value": [
+                "IOP(1/19\u003d5)"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "OPT"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "320"
+                  ]
+                },
+                {
+                  "name": "CONVERGENCE",
+                  "isLoud": false,
+                  "value": [
+                    "LOOSE"
+                  ]
+                },
+                {
+                  "name": "FORCECONSTANTS",
+                  "isLoud": false,
+                  "value": [
+                    "READFC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "380"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "200"
+                  ]
+                },
+                {
+                  "name": "ALGORITHM",
+                  "isLoud": false,
+                  "value": [
+                    "QC"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 6"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "800"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 7"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 8"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "name": "WFREOPT",
+                  "isLoud": false,
+                  "value": [
+                    "OPT"
+                  ]
+                },
+                {
+                  "name": "GENERAL",
+                  "isLoud": false,
+                  "value": [
+                    "RRHF"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "500"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "ALGORITHM",
+                  "isLoud": false,
+                  "value": [
+                    "QC"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 9"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "FREQ"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "980"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 10"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "INTEGRAL",
+              "isLoud": false,
+              "value": [
+                "INT(GRID\u003dSG1)"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "IOP",
+              "isLoud": false,
+              "value": [
+                "IOP(1/19\u003d5)"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ/AUTO 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "OPT"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "320"
+                  ]
+                },
+                {
+                  "name": "CONVERGENCE",
+                  "isLoud": false,
+                  "value": [
+                    "LOOSE"
+                  ]
+                },
+                {
+                  "name": "FORCECONSTANTS",
+                  "isLoud": false,
+                  "value": [
+                    "READFC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "980"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 11"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "FREQ"
+              ]
+            },
+            {
+              "name": "IOP",
+              "isLoud": false,
+              "value": [
+                "IOP(1/19\u003d5)"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "500"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "980"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 12"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "IOP",
+              "isLoud": false,
+              "value": [
+                "IOP(1/19\u003d11)"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "OPT"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "320"
+                  ]
+                },
+                {
+                  "name": "FORCECONSTANTS",
+                  "isLoud": false,
+                  "value": [
+                    "READFC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "980"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "500"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 13"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "name": "Nprocshared",
+              "isLoud": true,
+              "value": [
+                "8"
+              ]
+            },
+            {
+              "name": "mem",
+              "isLoud": true,
+              "value": [
+                "28GB"
+              ]
+            },
+            {
+              "name": "chk",
+              "isLoud": true,
+              "value": [
+                "RuAsH3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK "
+              ]
+            },
+            {
+              "name": "PUNCH",
+              "isLoud": true,
+              "value": [
+                "DERIVATIVES"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2DZ 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "OPT"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "500"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "980"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " STEP 14"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 2
-TASK: FixAndRestartGaussian 
+TASK: FixAndRestartGaussian
 INFILE: ../t40.out
 NEWINPFILE: t41.inp
 JOBDETAILSFILE: ../t41-jobDetails

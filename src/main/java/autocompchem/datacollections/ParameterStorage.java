@@ -27,6 +27,7 @@ import java.util.Set;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
@@ -63,6 +64,8 @@ import autocompchem.text.TextBlockIndexed;
  *
  * @author Marco Foscato
  */
+
+//TODO: is the map needed or should we just use the data structure of super?
 
 public class ParameterStorage extends NamedDataCollector implements Cloneable
 {
@@ -324,7 +327,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     /**
      * Read a formatted text and import all parameters
      * @param filename pseudo file name used only for reporting errors, does
-     * not need to be an existing file.
+     * not need to be an existing file. Used only for logging errors.
      * @param lines the block of lines to read
      */
 
@@ -386,7 +389,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 			}
     	}
     	return newPar;
-    }
+    }  
     
 //------------------------------------------------------------------------------
     

@@ -154,6 +154,17 @@ public class NamedData implements Cloneable
     	this.type = detectType(value);
         this.value = value;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Erases the value and type of this NamedData.
+     */
+    public void removeValue()
+    {
+    	value = null;
+    	type = NamedDataType.UNDEFINED;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -394,6 +405,24 @@ public class NamedData implements Cloneable
         }
     	NamedData nd = new NamedData(this.getReference(),type, cVal);
     	return nd;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (!(o instanceof NamedData))
+     		return false;
+ 	   
+ 	   NamedData other = (NamedData) o;
+ 	   
+ 	    return this.reference.equals(other.reference)
+ 	    		&& this.type == other.type
+ 	    		&& this.value.equals(other.value);
     }
     
 //------------------------------------------------------------------------------

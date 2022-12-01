@@ -187,6 +187,17 @@ public class NWChemKeyword
         }
         return sb.toString();
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Returns true if this keyword is supposed to be reported with the 
+     * "key|separator|value" format or as "value" alone.
+     */
+    public boolean isLoud()
+    {
+    	return loudType;
+    }
 
 //-----------------------------------------------------------------------------
 

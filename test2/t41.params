@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: FixAndRestartGaussian 
+INFILE: ../t40.out
+NEWINPFILE: t41.inp
+JOBDETAILSFILE: ../t41-jobDetails
+GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian09/

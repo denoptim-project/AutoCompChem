@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware;
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -23,6 +25,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
@@ -256,6 +263,18 @@ public class CompChemJob extends Job implements Cloneable
 	        }
         }
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Overwrites all directives of this job with the given ones.
+     * @param directives the new directives
+     */
+    
+    public void setDirectives(ArrayList<Directive> directives)
+    {
+    	this.directives = directives;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -312,7 +331,30 @@ public class CompChemJob extends Job implements Cloneable
         }
         return lines;
     }
+    
+//------------------------------------------------------------------------------
 
+    public static class CompChemJobSerializer 
+    implements JsonSerializer<CompChemJob>
+    {
+        @Override
+        public JsonElement serialize(CompChemJob job, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONJOVTYPE, job.getClass().getSimpleName());
+            
+            if (!job.params.isEmpty())
+            	jsonObject.add(JSONPARAMS, context.serialize(job.params));
+            if (!job.steps.isEmpty())
+            	jsonObject.add(JSONSUBJOBS, context.serialize(job.steps));
+            if (!job.directives.isEmpty())
+            	jsonObject.add("directives", context.serialize(job.directives));
+            
+            return jsonObject;
+        }
+    }
 //------------------------------------------------------------------------------
 
 }

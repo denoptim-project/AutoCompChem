@@ -1,0 +1,94 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "scf"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "energy"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "restart",
+          "keywords": [
+            {
+              "name": "name",
+              "isLoud": false,
+              "value": [
+                "name_of_the_runtime_database"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "* library cc-pvdz"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "name": "functional",
+                  "isLoud": false,
+                  "value": [
+                    "pbe0"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "name": "theory",
+              "isLoud": false,
+              "value": [
+                "dft"
+              ]
+            },
+            {
+              "name": "tasktype",
+              "isLoud": false,
+              "value": [
+                "energy"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

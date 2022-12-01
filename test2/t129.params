@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: PrepareInputGaussian
+INFILE: ../t129-mol.sdf
+JOBDETAILSFILE: ../t129-jobDetails

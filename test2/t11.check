@@ -1,0 +1,16 @@
+#!/bin/bash
+grep -q 'Step 7 returned Error Message: e0010-QCNoLowerPoint' t11.log
+if [ $? != 0 ] ; then 
+echo NOT Passed
+exit -1
+fi
+
+
+grep -q 'Termination status: 0' t11.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

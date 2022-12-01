@@ -1,0 +1,11 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Just evaluate the output and identify the error (if any)
+#
+VERBOSITY: 2
+TASK: FixAndRestartGaussian
+INFILE: ../t12.out
+NEWINPFILE: t12.inp
+JOBDETAILSFILE: ../t12.jd
+GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03

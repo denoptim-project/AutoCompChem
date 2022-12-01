@@ -1,4 +1,4 @@
-lnkSection# mem=30000MB
+lnkSection# MEM=30000MB
 rutSection# $MTprint=P
 rutSection# $MTmodel_Method=HF
 rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
@@ -11,7 +11,7 @@ rutSection# $KVscf_$KVMaxCycle=180
 rutSection# $KVscf_$KVConver=5
 titSection# Step 1 - Protocol Denoptim_1.0, 6 Nov 2014
 --Link1--
-lnkSection# mem=30000MB
+lnkSection# MEM=30000MB
 rutSection# $MTprint=P
 rutSection# $MTmodel_Method=OLYP
 rutSection# $MTmodel_BasisSet=LANL2MB 5d 7f
@@ -26,7 +26,7 @@ rutSection# $KVscf_$KVMaxCycle=280
 rutSection# $KVscf_$KVConver=5
 titSection# Step 2 - Protocol Denoptim_1.0, 6 Nov 2014
 --Link1--
-lnkSection# mem=30000MB
+lnkSection# MEM=30000MB
 rutSection# $MTprint=P
 rutSection# $MTmodel_Method=OLYP
 rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
@@ -41,7 +41,7 @@ rutSection# $KVscf_$KVMaxCycle=280
 rutSection# $KVscf_$KVConver=5
 titSection# Step 3 - Protocol Denoptim_1.0, 6 Nov 2014
 --Link1--
-lnkSection# mem=30000MB
+lnkSection# MEM=30000MB
 rutSection# $MTprint=P
 rutSection# $MTmodel_Method=OLYP
 rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f
@@ -58,7 +58,7 @@ rutSection# $KVopt_$MTconvergence=loose
 rutSection# $KVopt_$KVMaxCycles=320
 titSection# Step 4 (first opt: DZ-LOOSE) - Protocol Denoptim_1.0, 6 Nov 2014
 --Link1--
-lnkSection# mem=30000MB
+lnkSection# MEM=30000MB
 rutSection# $MTprint=P
 rutSection# $MTmodel_Method=OLYP
 rutSection# $MTmodel_BasisSet=LANL2DZ 5d 7f

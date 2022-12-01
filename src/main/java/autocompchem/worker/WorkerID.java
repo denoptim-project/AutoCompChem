@@ -57,7 +57,8 @@ public enum WorkerID
     SpartanInputWriter,
     SpartanOutputHandler,
     VibModuleOutputHandler,
-    ZMatrixHandler;
+    ZMatrixHandler,
+    JobDetailsConverter;
     
 //-----------------------------------------------------------------------------
 

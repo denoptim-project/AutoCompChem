@@ -1,0 +1,367 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "HF"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "GEN 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "800"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCRF",
+              "keywords": [
+                {
+                  "name": "MODEL",
+                  "isLoud": false,
+                  "value": [
+                    "PCM"
+                  ]
+                },
+                {
+                  "name": "SOLVENT",
+                  "isLoud": true,
+                  "value": [
+                    "BENZENE"
+                  ]
+                },
+                {
+                  "name": "OPTS",
+                  "isLoud": false,
+                  "value": [
+                    "READ"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "POP",
+              "keywords": [
+                {
+                  "name": "NBO",
+                  "isLoud": false,
+                  "value": [
+                    "NBO6READ"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " SP+PCM(benzene)"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "111"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "-222"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "Element C name STO-3G\nElement H name STO-3G\nElement N link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASIS",
+              "type": "UNDEFINED"
+            },
+            {
+              "reference": "NBO",
+              "value": [
+                "$STARTACCEscapedDollarNBO 1st row",
+                "2nd row ",
+                "3rd row ACCEscapedDollarEND$END"
+              ],
+              "type": "TEXTBLOCK"
+            },
+            {
+              "reference": "PCM",
+              "value": [
+                "$STARTradii\u003dUAHF",
+                "pcmdoc",
+                "Dis",
+                "Rep",
+                "Cav$END"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "POP",
+              "keywords": [
+                {
+                  "name": "NBO",
+                  "isLoud": false,
+                  "value": [
+                    "NBO6READ"
+                  ]
+                },
+                {
+                  "name": "SPACE",
+                  "isLoud": false,
+                  "value": [
+                    "FULL"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "333"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "-444"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "reference": "NBO",
+              "value": [
+                "ACCEscapedDollarNBO ARCHIVE ACCEscapedDollarEND"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

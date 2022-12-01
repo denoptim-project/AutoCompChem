@@ -1,0 +1,56 @@
+#!/bin/bash
+
+if [ ! -f "t73-mol.inp" ]
+then
+echo NOT Passes ERROR 1
+exit -1
+fi
+
+grep -q "HF/GENECP 5D 7F" t73-mol.inp
+if [ "$?" != 0 ] ; then
+echo NOT Passed ERROR 2
+exit -1
+fi
+
+grep -q "OLYP/GENECP 5D 7F" t73-mol.inp
+if [ "$?" != 0 ] ; then
+echo NOT Passed ERROR 3
+exit -1
+fi
+
+n=0
+n=$(grep -c " 7\.5624429E+00 * 5\.059375147E+02" t73-mol.inp)
+if [ "$n" != 2 ] ; then
+echo NOT Passed ERROR 4
+exit -1
+fi
+
+n=0
+n=$(grep -c "PD-ECP * 3 * 28" t73-mol.inp)
+if [ "$n" != 2 ] ; then
+echo NOT Passed ERROR 5
+exit -1
+fi
+
+n=0
+n=$(grep -c " 6.4220000E+00 * -3.*927882E-01" t73-mol.inp)
+if [ "$n" != 2 ] ; then
+echo NOT Passed ERROR 6
+exit -1
+fi
+
+n=0
+n=$(grep -c " 9\.628000E-01 * 5\.876361E-01" t73-mol.inp)
+if [ "$n" != 2 ] ; then
+echo NOT Passed ERROR 7
+exit -1
+fi
+
+grep -q 'Termination status: 0' "t73.log"
+if [ "$?" == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed ERROR 8
+exit -1
+fi

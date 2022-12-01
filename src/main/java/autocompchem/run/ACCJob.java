@@ -1,5 +1,7 @@
 package autocompchem.run;
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,6 +20,11 @@ package autocompchem.run;
  */
 
 import java.util.Date;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -103,7 +110,7 @@ public class ACCJob extends Job
     	}
        return WorkerFactory.createWorker(params,this,false);
     }
-
+    
 //------------------------------------------------------------------------------
 
 }
