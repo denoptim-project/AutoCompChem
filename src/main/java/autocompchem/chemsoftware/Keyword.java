@@ -176,6 +176,19 @@ public class Keyword implements IDirectiveComponent
     }
     
 //-----------------------------------------------------------------------------
+
+    /**
+     * Returns the value associated to this keyword after merging each item 
+     * using space as a delimiter.
+     * @return the string-like value of the keywords.
+     */
+
+    public String getValueStr()
+    {
+        return StringUtils.mergeListToString(value, " ", true);
+    }
+    
+//-----------------------------------------------------------------------------
     
     /**
      * @return <code>true</code> if this keyword is loud, meaning that it is 

@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware;
 
+import java.io.IOException;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -22,6 +24,8 @@ import java.util.Arrays;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.files.ACCFileType;
+import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
@@ -36,7 +40,6 @@ import autocompchem.worker.Worker;
 
 public abstract class ChemSoftInputWriter extends Worker
 {
-    
     /**
      * Molecular geometries input file. One or more geometries depending on the
      * kind of computational chemistry job. 
@@ -222,7 +225,18 @@ public abstract class ChemSoftInputWriter extends Worker
                         + jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
-            this.ccJob = new CompChemJob(jdFile);
+            if (FileAnalyzer.getFileTypeByProbeContentType(jdFile) ==
+            		ACCFileType.JSON)
+            {
+            	try {
+					this.ccJob = CompChemJob.fromJSONFile(jdFile);
+				} catch (IOException e) {
+					// TODO-gg Auto-generated catch block
+					e.printStackTrace();
+				}	
+            } else {
+            	this.ccJob = new CompChemJob(jdFile);
+            }
         }
         else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
@@ -252,7 +266,7 @@ public abstract class ChemSoftInputWriter extends Worker
             outJDFile = outFileName + ChemSoftConstants.JDEXTENSION;
         } else {
             outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
-            outFileName = outFileNameRoot + outExtension;
+            outFileName = outFileNameRoot + inpExtrension;
             outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
             if (verbosity > 0)
             {

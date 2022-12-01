@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -642,8 +643,7 @@ public class Directive implements IDirectiveComponent
      * @return the list of parameter storage units.
      */
     
-    public static ParameterStorage getACCTaskParams(
-    		ArrayList<String> lines)
+    public static ParameterStorage getACCTaskParams(List<String> lines)
     {	
     	return getACCTaskParams(lines, null);
     }
@@ -656,14 +656,14 @@ public class Directive implements IDirectiveComponent
      * @return the list of parameter storage units.
      */
     
-    private static ParameterStorage getACCTaskParams(
-    		ArrayList<String> lines, IDirectiveComponent dirComp)
+    private static ParameterStorage getACCTaskParams(List<String> lines, 
+    		IDirectiveComponent dirComp)
     {	
     	// This takes care of any $START/$END label needed to make all JD lines
     	// fit into a single line for the purpose of making the 
     	// directive component line.
     	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
-    			lines, ChemSoftConstants.JDCOMMENT, 
+    			new ArrayList<String>(lines), ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	
     	// Then we take away any line that does not contain ACC tasks

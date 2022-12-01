@@ -101,7 +101,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
      * @param lines the list of lines representing the contained data
      */
 
-    public DirectiveData(String name, ArrayList<String> lines)
+    public DirectiveData(String name, List<String> lines)
     {
     	super();
     	super.setReference(name);
@@ -111,7 +111,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     
 //-----------------------------------------------------------------------------
     
-    private void extractTask(ArrayList<String> lines)
+    private void extractTask(List<String> lines)
     {
 	    if (hasACCTask())
 	    {

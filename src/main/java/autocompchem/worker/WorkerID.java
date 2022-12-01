@@ -35,6 +35,7 @@ public enum WorkerID
     DummyObjectsHandler,
     ForceFieldEditor,
 	GaussianInputWriter,
+	GaussianInputWriter2,
     GaussianOutputHandler,
     GaussianReStarter,
     //GenericToolOutputHandler,

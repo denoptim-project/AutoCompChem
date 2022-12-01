@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.gaussian2;
+package autocompchem.chemsoftware.gaussian;
 
 
 /*   
@@ -18,7 +18,6 @@ package autocompchem.chemsoftware.gaussian2;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -34,16 +33,12 @@ import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import com.google.gson.Gson;
-
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
-import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.ACCJson;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
@@ -69,7 +64,7 @@ public class GaussianInputWriterTest
     
 //-----------------------------------------------------------------------------
 
-    @Test
+    //TODO-gg update or remove @Test
     public void testJobDetailsSource() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory");
@@ -93,7 +88,7 @@ public class GaussianInputWriterTest
     	
     	ArrayList<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-        		+ TaskID.PREPAREINPUTGAUSSIAN);
+        		+ TaskID.PREPAREINPUTGAUSSIAN2);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR + molFile.getAbsolutePath());
     	parLines.add(ChemSoftConstants.PAROUTFILEROOT
@@ -124,13 +119,16 @@ public class GaussianInputWriterTest
         
         ArrayList<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
  
-        //TODO-gg
+        //TODO-gg this test is not finished: finish it!
     }
     
 //------------------------------------------------------------------------------
     
     public CompChemJob createTestJob()
     {
+    	//TODO-gg obsolete: tries to reproduce old JobDetails syntax in directives!
+    	
+    	
     	//
     	// Start definition of first step
     	//

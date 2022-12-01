@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 /*
@@ -31,6 +32,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -132,6 +134,20 @@ public class CompChemJob extends Job implements Cloneable
     	} else {
     		directives = DirectiveFactory.buildAllFromJDText(lines);
     	}
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for an empty job
+     * @throws IOException 
+     */
+
+    public static CompChemJob fromJSONFile(String pathname) throws IOException
+    {
+    	CompChemJob ccj = (CompChemJob) IOtools.readJsonFile(pathname, 
+    			Job.class);
+    	return ccj;
     }
     
 //-----------------------------------------------------------------------------
@@ -257,9 +273,10 @@ public class CompChemJob extends Job implements Cloneable
     	
     	if (getNumberOfSteps()>0 && recursive)
         {
-	        for (int step = 0; step<steps.size(); step++)
+	        for (Job  step : steps)
 	        {
-	        	setDirective(d, recursive);
+	        	if (step instanceof CompChemJob)
+	        		((CompChemJob) step).setDirective(d, recursive);
 	        }
         }
     }

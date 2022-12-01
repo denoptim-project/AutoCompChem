@@ -328,7 +328,7 @@ public class GaussianJob
 			CompChemJob ccjStep = new CompChemJob();
 			
 			// Link0
-			Directive lnk0Dir = new Directive("Link0");
+			Directive lnk0Dir = new Directive(GaussianConstants.DIRECTIVELINK0);
 			GaussianLinkCommandsSection lnk0 = step.getLinkCommand();
 			for (String link0Key : lnk0.keySet())
 			{
@@ -339,7 +339,7 @@ public class GaussianJob
 			
 			
 			// Route
-			Directive routeDir = new Directive("Route");
+			Directive routeDir = new Directive(GaussianConstants.DIRECTIVEROUTE);
 			GaussianRouteSection route = step.getRouteSection();
 			int iFree = 0;
 			for (String rKey : route.keySet())
@@ -396,12 +396,12 @@ public class GaussianJob
 			ccjStep.setDirective(routeDir);
 			
 			// Title
-			Directive titleDir = new Directive("Title");
+			Directive titleDir = new Directive(GaussianConstants.DIRECTIVETITLE);
 			titleDir.addKeyword(new Keyword("title", false, step.getComment()));
 			ccjStep.setDirective(titleDir);
 			
 			// MolSpec
-			Directive molSpecDir = new Directive("MolSpec");
+			Directive molSpecDir = new Directive(GaussianConstants.DIRECTIVEMOLSPEC);
 			GaussianMolSpecification molSpec = step.getMolSpec();
 			molSpecDir.addKeyword(new Keyword(ChemSoftConstants.PARSPINMULT,
 					false, molSpec.getSpinMultiplicity()+""));
@@ -412,7 +412,7 @@ public class GaussianJob
 			ccjStep.setDirective(molSpecDir);
 			
 			//Opts
-			Directive optDir = new Directive("Options");
+			Directive optDir = new Directive(GaussianConstants.DIRECTIVEOPTS);
 			GaussianOptionsSection optSec = step.getOptionSection();
 			for (String key : optSec.getRefNames())
 			{

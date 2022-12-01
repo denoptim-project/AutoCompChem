@@ -125,25 +125,6 @@
           ]
         },
         {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
-            },
-            {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
-            }
-          ]
-        },
-        {
           "name": "Options"
         }
       ]
@@ -278,14 +259,14 @@
               "name": "SPIN_MULTIPLICITY",
               "isLoud": false,
               "value": [
-                "1"
+                "333"
               ]
             },
             {
               "name": "CHARGE",
               "isLoud": false,
               "value": [
-                "0"
+                "222"
               ]
             }
           ]
@@ -432,14 +413,7 @@
               "name": "SPIN_MULTIPLICITY",
               "isLoud": false,
               "value": [
-                "1"
-              ]
-            },
-            {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
+                "1111"
               ]
             }
           ]
@@ -595,17 +569,10 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
-            },
-            {
               "name": "CHARGE",
               "isLoud": false,
               "value": [
-                "0"
+                "-5555"
               ]
             }
           ]

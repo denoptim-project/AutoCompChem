@@ -20,7 +20,8 @@ package autocompchem.worker;
 import java.util.ArrayList;
 import java.util.Set;
 
-import autocompchem.chemsoftware.gaussian2.GaussianInputWriter;
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter2;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
@@ -293,6 +294,8 @@ public class WorkerFactory
             return ForceFieldEditor.capabilities;
 		case GaussianInputWriter:
 			return GaussianInputWriter.capabilities;
+		case GaussianInputWriter2:
+			return GaussianInputWriter2.capabilities;
         case GaussianOutputHandler:
             return GaussianOutputHandler.capabilities;
         case GaussianReStarter:
@@ -382,6 +385,8 @@ public class WorkerFactory
             return new ForceFieldEditor();
 		case GaussianInputWriter:
 			return new GaussianInputWriter();
+		case GaussianInputWriter2:
+			return new GaussianInputWriter2();
         case GaussianOutputHandler:
             return new GaussianOutputHandler();
         case GaussianReStarter:

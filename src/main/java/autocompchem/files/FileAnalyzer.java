@@ -18,8 +18,10 @@ package autocompchem.files;
  */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -617,7 +619,45 @@ public class FileAnalyzer
             Terminator.withMsgAndStatus("ERROR! " + msg, -1);
         
         return matches;
-    }    
+    }   
+    
+//------------------------------------------------------------------------------
+    
+    public static ACCFileType getFileTypeByProbeContentType(String fileName)
+    {
+    	/*
+//TODO-gg use Tika
+<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+<dependency>
+    <groupId>org.apache.tika</groupId>
+    <artifactId>tika-core</artifactId>
+    <version>2.6.0</version>
+</dependency>
+    	 */
+    	ACCFileType type = ACCFileType.UNSPECIFIED;
+        final File file = new File(fileName);
+        
+        //TODO-gg remove this is hardcoded for now
+    	String typ = "UNSPECIFIED";
+    	if (fileName.toUpperCase().endsWith(".JSON"))
+    	{
+    		typ = "JSON";
+    	} else if (fileName.toUpperCase().endsWith(".TXT"))
+    	{
+    		typ = "TXT";
+    	/*
+    	} else if (fileName.toUpperCase().endsWith("JOBDETAILS"))
+    	{	
+    		typ = "JSON";
+    	*/
+    	} else if (fileName.toUpperCase().endsWith("SDF"))
+    	{	
+    		typ = "SDF";
+    	}
+	    type = ACCFileType.valueOf(typ);
+	    
+        return type;
+    }   
 
 //------------------------------------------------------------------------------
 
