@@ -1,0 +1,36 @@
+#
+# Definition of Gaussian Error Message
+#
+# Reference Name identifying this error
+ReferenceName: e0010-QCNoLowerPoint
+# String/s to be searched in Gaussian .out file (only in the last job/step section)
+ErrorMessage: Search did not lower the energy significantly.
+ErrorMessage: No lower point found -- run aborted.
+#
+#
+# Definition of Action to be taken when this error occours
+#
+# Type of action 
+Action: Redo_step_after_extra_steps_keeping_selected_options
+#The details of the extra steps
+$STARTextra_step:
+rutSection# $MTprint=P
+rutSection# $KVgeom=check
+rutSection# $MTjobType=sp
+rutSection# $KVscf_$KVVShift=1000
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTrestart=restart
+rutSection# $KVscf_$MTalgorithm=XQC
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxConventionalCycles=1
+titSection# Step trying to fix error e0010-QCNoLowerPoint
+$END
+$STARTkeep_options:
+lnkSection# Nprocshared
+lnkSection# mem
+rutSection# $MTmodel_Method
+rutSection# $MTmodel_BasisSet
+molSection# charge
+molSection# spin
+$END
+#

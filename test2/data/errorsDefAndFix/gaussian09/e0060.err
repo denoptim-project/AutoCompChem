@@ -1,0 +1,14 @@
+#
+# Definition of Gaussian Error Message
+#
+# Reference Name 
+ReferenceName: e0060-MemoryAllocationFailure
+# String/s to be searched in Gaussian .out file (only in the last step section)
+ErrorMessage: galloc:  could not allocate memory
+#
+# Definition of Action to be taken when this error occours
+#
+# Type of action 
+Action: REDO_STEP_ALTERING_LINK_0_SECTION
+#The details of the extra steps
+REDUCE_MEMORY_DEMADS: 1GB

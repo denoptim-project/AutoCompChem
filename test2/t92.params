@@ -5,7 +5,7 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputNWChem
-INFILE: ../t92-mol.sdf
+INPUTGEOMETRIESFILE: ../t92-mol.sdf
 MULTIGEOMNWCHEM: first_G second_G
 USESAMETAGSFORMULTIGEOM: the value doesn't have any effect
-JOBDETAILSFILE: ../t92-jobDetails
+JOBDETAILSFILE: ../t92-jobDetails.json

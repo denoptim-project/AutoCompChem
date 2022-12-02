@@ -204,6 +204,18 @@ public class NamedData implements Cloneable
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Sets the type of this data.
+     * @param type the type to specify.
+     */
+
+    public void setType(NamedDataType type)
+    {
+        this.type = type;
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * Looks at the object and find out what class it is an instance of.

@@ -7,6 +7,8 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.CompChemJob.CompChemJobSerializer;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.DirectiveData.DirectiveDataSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -68,6 +70,8 @@ public class ACCJson
     	reader = new GsonBuilder()
     			.setPrettyPrinting()
     	        .registerTypeAdapter(Job.class, new JobDeSerializer())
+    	        .registerTypeAdapter(DirectiveData.class, 
+    	        		new DirectiveDataSerializer())
     			.create();
     }
 

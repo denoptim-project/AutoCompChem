@@ -74,10 +74,11 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     private String inFileFormat = "nd";
 
+    //TODO-gg make these be File
     /**
      * Pathname root for output files (input for comp.chem. software).
      */
-    private String outFileNameRoot;
+    protected String outFileNameRoot;
     
     /**
      * Output name (input for comp.chem. software).
@@ -263,15 +264,23 @@ public abstract class ChemSoftInputWriter extends Worker
             outFileNameRoot = params.getParameter(
                     ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
             outFileName = outFileNameRoot + inpExtrension;
-            outJDFile = outFileName + ChemSoftConstants.JDEXTENSION;
+            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
+        } else if (params.contains(ChemSoftConstants.PAROUTFILE))
+        {
+        	outFileName = params.getParameter(
+        			ChemSoftConstants.PAROUTFILE).getValueAsString();
+            outFileNameRoot = FileUtils.getRootOfFileName(outFileName);
+            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
         } else {
             outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
             outFileName = outFileNameRoot + inpExtrension;
             outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
             if (verbosity > 0)
             {
-                System.out.println(" No '" + ChemSoftConstants.PAROUTFILEROOT
-                        + "' parameter found. " + NL
+                System.out.println(" Neither '" 
+                		+ ChemSoftConstants.PAROUTFILEROOT + "' nor '"
+                		+ ChemSoftConstants.PAROUTFILE 
+                		+ "' parameter found. " + NL
                         + "Root of any output file name set to '" 
                         + outFileNameRoot + "'.");
             }

@@ -95,6 +95,11 @@ public class ChemSoftConstants
 	 * Label identifying a definition of a task for ACC in job details files
 	 */
 	public static final String JDLABACCTASK = "$ACCTASK";
+	
+	/**
+	 * Name of parameter defining a task  for ACC.
+	 */
+	public static final String JDACCTASK = "TASK";
     
     /**
      * Lowest non-zero frequency (absolute value)
@@ -153,6 +158,12 @@ public class ChemSoftConstants
 	 * the input for the computational chemistry software).
 	 */
 	public static final String PAROUTFILEROOT = "ROOTPATHNAMEOUTPUT";
+	
+	/**
+	 * Key for parameter defining the pathname of the main output file (i.e.,
+	 * the input for the computational chemistry software).
+	 */
+	public static final String PAROUTFILE = "PATHNAMEOUTPUT";
 	
 	/**
 	 * Key for parameter defining the charge of the system.

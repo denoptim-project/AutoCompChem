@@ -5,6 +5,6 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputNWChem
-INFILE: ../t91-mol.sdf
+INPUTGEOMETRIESFILE: ../t91-mol.sdf
 MULTIGEOMNWCHEM: first_G second_G
-JOBDETAILSFILE: ../t91-jobDetails
+JOBDETAILSFILE: ../t91-jobDetails.json

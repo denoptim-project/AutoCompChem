@@ -1,0 +1,27 @@
+#
+# Definition of Gaussian Error Message
+#
+# Reference Name identifying this error
+ReferenceName: e0050-InteralCoordFailure
+# String/s to be searched in Gaussian .out file (only in the last job/step section)
+ErrorMessage: Error in internal coordinate system.
+ErrorMessage: Error termination via Lnk1e in
+# Error fix valid only for geometry optimization jobs
+Condition: match_routeKeyword $MTjobType=opt
+#
+#
+# Definition of Action to be taken when this error occours
+#
+# Type of action 
+Action: REDO_STEP_ALTERING_ROUTE_OPTION
+#The route options to be altered in the step to redo
+$STARTImpose_route_params:
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $KVopt_$MTCoordSystem=Cartesian
+titSection# Redo step trying to fix error e0050-InteralCoordFailure
+$END
+#
+# We use geom=check and guess=read to gain as much as possible 
+# from the calculation that did not converge. 
+#

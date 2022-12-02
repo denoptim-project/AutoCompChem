@@ -141,14 +141,14 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @return the parameter with the given reference string.
      */
 
-    public Parameter getParameter(String ref)
+    public NamedData getParameter(String ref)
     {
         if (!this.contains(ref))
         {
             Terminator.withMsgAndStatus("ERROR! Key '" + ref + "' not found in "
                         + "ParameterStorage!",-1);
         }
-        return (Parameter) allData.get(ref.toUpperCase());
+        return allData.get(ref.toUpperCase());
     }
 
 //------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param par the new parameter to be stores.
      */
 
-    public void setParameter(Parameter par)
+    public void setParameter(NamedData par)
     {
         allData.put(par.getReference(),par); 
     }
@@ -380,7 +380,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     	for (String ref : this.getRefNamesSet())
     	{
     		try {
-				Parameter p = this.getParameter(ref).clone();
+    			NamedData p = this.getParameter(ref).clone();
 				newPar.setParameter(p);
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
@@ -405,7 +405,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
         ArrayList<String> lines = new ArrayList<String>();
         for (String ref : getRefNamesSet())
         {
-        	Parameter par = getParameter(ref);
+        	NamedData par = getParameter(ref);
         	String parStr = par.getReference() + ParameterConstants.SEPARATOR 
         			+ par.getValueAsString();
             lines.add(parStr);

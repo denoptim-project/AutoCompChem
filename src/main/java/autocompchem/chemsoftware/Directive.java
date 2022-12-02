@@ -599,21 +599,31 @@ public class Directive implements IDirectiveComponent
     	{
     		if (dd.hasACCTask())
     		{
-    			ArrayList<String> lines = dd.getLines();
-    			
-    			// WARNING! Here we assume that the entire content of the 
-    			// directive data, is about the ACC task. Thus, we add the 
-    			// multiline start/end labels so that the getACCTaskParams
-    			// method will keep read all the lines as one.
-    			if (lines.size()>1)
+    			if (dd.getValue()!=null)
     			{
-	    			lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
-	    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
-	    					+ ChemSoftConstants.JDCLOSEBLOCK);
+	    			// This is legacy code: deals with cases where the parameters 
+	    			//defining the task are still listed in the 'value' of dd
+	    			ArrayList<String> lines = dd.getLines();
+	    			
+	    			// WARNING! Here we assume that the entire content of the 
+	    			// directive data, is about the ACC task. Thus, we add the 
+	    			// multiline start/end labels so that the getACCTaskParams
+	    			// method will keep read all the lines as one.
+	    			if (lines.size()>1)
+	    			{
+		    			lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+		    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
+		    					+ ChemSoftConstants.JDCLOSEBLOCK);
+	    			}
+	    			ParameterStorage ps = getACCTaskParams(lines, dd);
+		        	performACCTask(mol,ps,dd,job);
+    			} else {
+    				// The task is defined in parameters that are already 
+    				// well collected in the DirectiveData data structure
+    				performACCTask(mol,dd.getTaskParams(),dd,job);
     			}
-    			ParameterStorage ps = getACCTaskParams(lines, dd);
-	        	performACCTask(mol,ps,dd,job);
     		}
+    		
     	}
     	for (Directive d : subDirectives)
     	{
@@ -804,13 +814,25 @@ public class Directive implements IDirectiveComponent
     private void performACCTask(IAtomContainer mol, ParameterStorage params, 
     		IDirectiveComponent dirComp, Job job)
     {	
-        if (!params.contains(ChemSoftConstants.JDLABACCTASK))
+    	String task = "none";
+    	if (params.contains(ChemSoftConstants.JDLABACCTASK))
         {
+    		task = params.getParameter(
+            		ChemSoftConstants.JDLABACCTASK).getValueAsString();
+        } else if (params.contains(ChemSoftConstants.JDACCTASK))
+        {
+    		task = params.getParameter(
+            		ChemSoftConstants.JDACCTASK).getValueAsString();
+        } else {
         	return;
         }
-        
-        String task = params.getParameter(
-        		ChemSoftConstants.JDLABACCTASK).getValueAsString();
+    	
+    	// TODO-gg this mess is all because the tasks are not all in TaskID
+    	// TODO-gg Need to clean up this part!!!
+    	if (task.toUpperCase().equals(TaskID.GENERATEBASISSET.toString()))
+    	{
+    		task = BasisSetConstants.ATMSPECBS;
+    	}
         
         switch (task.toUpperCase()) 
         {   
@@ -949,6 +971,7 @@ public class Directive implements IDirectiveComponent
                 ParameterStorage bsGenParams = new ParameterStorage();
                 bsGenParams.setParameter(params.getParameter(task));
                 
+                //TODO-gg this simplifies if we use TaskID as it should 
                 bsGenParams.setParameter(new Parameter("TASK",
             		NamedDataType.STRING, "GENERATEBASISSET"));
             	Worker w = WorkerFactory.createWorker(bsGenParams);

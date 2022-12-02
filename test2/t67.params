@@ -5,8 +5,8 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputNWChem
-INFILE: ../t67-mol.sdf
-JOBDETAILSFILE: ../t67-jobDetails
+INPUTGEOMETRIESFILE: ../t67-mol.sdf
+JOBDETAILSFILE: ../t67-jobDetails.json
 CoordinatesType: Cartesian
 $STARTZCOORD:
 [C] [N] 1.2 key1

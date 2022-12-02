@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2021  Marco Foscato
  *
@@ -40,6 +42,7 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
@@ -95,6 +98,10 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 		// Here we add atom coordinates to the so-far molecule-agnostic job
 		setChemicalSystem(molSpecJob, mol);
 		
+		// Here we add strings/pathnames that are molecular specific (e.g., the 
+		// name of Gaussian checkpoint)
+		setSystemSpecificNames(molSpecJob);
+		
 		Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
 		if (pCharge != null)
 		{
@@ -143,7 +150,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      */
     private void setChargeDirective(CompChemJob ccj, String charge)
     {
-    	setDirectiveIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC, 
+    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC, 
     			GaussianConstants.MSCHARGEKEY, charge);
     }
     
@@ -158,7 +165,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      */
     private void setSpinMultiplicityDirective(CompChemJob ccj, String sm)
     {
-    	setDirectiveIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC,
+    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC,
     			GaussianConstants.MSSPINMLTKEY, sm);
     }
     
@@ -183,6 +190,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     		list.add(el+"  "+p.x+" "+p.y+" "+p.z);
     	}
 
+    	//TODO-gg what about 
     	DirectiveData dd = new DirectiveData("coordinates", list);
     	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
     			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
@@ -193,7 +201,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     private void setDirectiveDataIfNotAlreadyThere(CompChemJob ccj, String dirName,
     		String dirDataName, DirectiveData dd)
     {
-    	//TODO-gg use directivecomponent path
+    	//TODO-gg use directive component path
     	if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())
@@ -237,6 +245,17 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
     
     /**
+     * Sets the names of checkpoint files
+     */
+    private void setSystemSpecificNames(CompChemJob ccj)
+    {
+    	File pathnameRoot = new File(outFileNameRoot);
+    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVELINK0,
+    			"chk", true, pathnameRoot.getName());
+    }
+//------------------------------------------------------------------------------
+    
+    /**
      * Sets a keyword in a directive with the given name to any step where it is
      * not already defined. 
      * This means that this method does not overwrite existing charge settings
@@ -245,8 +264,25 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      * @param keyName the name of the keywords
      * @param value the value of the keyword to specify.
      */
-    private void setDirectiveIfNotAlreadyThere(CompChemJob ccj, String dirName, 
+    private void setKeywordIfNotAlreadyThere(CompChemJob ccj, String dirName, 
     		String keyName, String value)
+    {
+    	setKeywordIfNotAlreadyThere(ccj, dirName, keyName, false, value);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a keyword in a directive with the given name to any step where it is
+     * not already defined. 
+     * This means that this method does not overwrite existing charge settings
+     * @param ccj the job to customize.
+     * @param dirName the name of the directive
+     * @param keyName the name of the keywords
+     * @param value the value of the keyword to specify.
+     */
+    private void setKeywordIfNotAlreadyThere(CompChemJob ccj, String dirName, 
+    		String keyName, boolean isLoud, String value)
     {
     	if (ccj.getNumberOfSteps()>0)
     	{
@@ -257,11 +293,11 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     			if (dir==null)
         		{
         			dir = new Directive(dirName);
-            		dir.addKeyword(new Keyword(keyName, false, value));
+            		dir.addKeyword(new Keyword(keyName, isLoud, value));
             		stepCcj.setDirective(dir);
         		} else {
         			if (dir.getKeyword(keyName)==null)
-        				dir.addKeyword(new Keyword(keyName, false, value));
+        				dir.addKeyword(new Keyword(keyName, isLoud, value));
         		}
     		}
     	} else {
@@ -269,11 +305,11 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     		if (dir==null)
     		{
     			dir = new Directive(dirName);
-        		dir.addKeyword(new Keyword(keyName, false, value));
+        		dir.addKeyword(new Keyword(keyName, isLoud, value));
     			ccj.setDirective(dir);
     		} else {
     			if (dir.getKeyword(keyName)==null)
-    				dir.addKeyword(new Keyword(keyName, false, value));
+    				dir.addKeyword(new Keyword(keyName, isLoud, value));
     		}
     	}
     }
@@ -310,6 +346,10 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     {	
     	ArrayList<String> lines = new ArrayList<String>();
     	
+    	//
+    	// Building lines of Link0 section
+    	// 
+    	
     	Directive lnkDir = step.getDirective(GaussianConstants.DIRECTIVELINK0);
     	if (lnkDir != null)
     	{
@@ -337,6 +377,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     		}
     	} // No default link0 section
     	
+    	//
+    	// Building lines of Route section
+    	//
     	Directive rouDir = step.getDirective(GaussianConstants.DIRECTIVEROUTE);
     	if (rouDir != null)
     	{
@@ -381,9 +424,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
         			lines.add("# " + k.getValueStr());
     			}
     		}
-    		String directiveLine = "# ";
     		for (Directive subDir : rouDir.getAllSubDirectives())
     		{
+        		String directiveLine = "# ";
     			// Gaussian uses only one nesting level!
     			if (subDir.getAllSubDirectives().size()>0)
     			{
@@ -421,7 +464,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     				first = false;
     			}
     			directiveLine = directiveLine + ")";
+        		lines.add(directiveLine);
     		}
+    		
     		if (rouDir.getAllDirectiveDataBlocks().size()>0)
     		{
     			throw new IllegalArgumentException(
@@ -434,6 +479,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	}
 		lines.add(""); // Empty line terminating route section
     	
+		//
+		// Building line of Title section (well, one line plus blank line)
+		//
     	Directive titDir = step.getDirective(GaussianConstants.DIRECTIVETITLE);
     	if (titDir != null)
     	{
@@ -467,6 +515,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	}
 		lines.add(""); // Empty line terminating title section
 		
+		//
+		// Building lines of Molecular Specification Section
+		//
 		Directive molDir = step.getDirective(GaussianConstants.DIRECTIVEMOLSPEC);
     	if (molDir != null)
     	{
@@ -502,6 +553,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	} // Since we always define charge and spin this directive is never null
 		lines.add(""); // Empty line terminating molecular specification section
     	
+		//
+		// Building lines of Options section
+		//
     	Directive optDir = step.getDirective(GaussianConstants.DIRECTIVEOPTS);
     	if (optDir != null)
     	{
@@ -512,7 +566,26 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     		List<String> sortedOptNames = sortOpts(optNames);
     		for (String ddName : sortedOptNames)
     		{
-    			lines.addAll(optDir.getDirectiveData(ddName).getLines());
+    			DirectiveData dd = optDir.getDirectiveData(ddName);
+    			// Some of the directivedata blocks need to be interpreted to
+    			// convert the agnostic data into Gaussian slang
+    			switch (ddName.toUpperCase())
+    			{
+	    			case "BASIS":
+	    			{
+	    				BasisSet bs = (BasisSet) dd.getValue();
+	    				lines.add(bs.toInputFileString("Gaussian"));
+	    				break;
+	    			}
+	    			
+	    			//TODO-gg others may need Gaussian specific formatting
+	    			//TODO constraints
+    			
+	    			default:
+	    			{
+	    				lines.addAll(optDir.getDirectiveData(ddName).getLines());
+	    			}
+    			}
     		}
     		
     		// Dealing with keywords even if we now do not expect them to be
@@ -529,9 +602,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     		// Dealing with subdirective even if we now do not expect them to be
     		// present. They might result from the attempt to achieve special 
     		//results
-    		String directiveLine = "";
     		for (Directive subDir : rouDir.getAllSubDirectives())
     		{
+    			String directiveLine = "";
     			// Gaussian uses only one nesting level!
     			if (subDir.getAllSubDirectives().size()>0)
     			{
@@ -569,6 +642,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     				first = false;
     			}
     			directiveLine = directiveLine + ")";
+    			lines.add(directiveLine);
     		}
     	} // No default Option section
     	lines.add(""); // Empty line terminating option section
@@ -588,23 +662,23 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     private List<String> sortOpts(Set<String> keySet)
     {
         List<String> sortedKeys = new ArrayList<String>();
-        if (keySet.contains(GaussianConstants.MODREDUNDANTKEY))
+        if (keySet.contains(GaussianConstants.DDMODREDUNDANT))
         {
-            sortedKeys.add(GaussianConstants.MODREDUNDANTKEY);
+            sortedKeys.add(GaussianConstants.DDMODREDUNDANT);
         }
-        if (keySet.contains(GaussianConstants.BASISOPTKEY))
+        if (keySet.contains(GaussianConstants.DDBASISSET))
         {
-            sortedKeys.add(GaussianConstants.BASISOPTKEY);
+            sortedKeys.add(GaussianConstants.DDBASISSET);
         }
-        if (keySet.contains(GaussianConstants.PCMOPTKEY))
+        if (keySet.contains(GaussianConstants.DDPCM))
         {
-            sortedKeys.add(GaussianConstants.PCMOPTKEY);
+            sortedKeys.add(GaussianConstants.DDPCM);
         }
         for (String key : keySet)
         {
-            if (key.equals(GaussianConstants.PCMOPTKEY) 
-                || key.equals(GaussianConstants.BASISOPTKEY)
-                || key.equals(GaussianConstants.MODREDUNDANTKEY))
+            if (key.equals(GaussianConstants.DDPCM) 
+                || key.equals(GaussianConstants.DDBASISSET)
+                || key.equals(GaussianConstants.DDMODREDUNDANT))
             {
                 continue;
             }

@@ -7,9 +7,7 @@ then
 fi
 
 n=0;n=$(grep -c "^%Nprocshared=8$" 10byhand.inp)
-if [ $n -ne 14 ] ; then echo NOT Passed - ERROR 2 ; exit -1 ; fi
-n=0;n=$(grep -c "^ *\"name\": \"chk\",$" 10byhand.inp)
-if [ $n -ne 1 ] ; then echo NOT Passed - ERROR 12 ; exit -1 ; fi
+if [ $n -ne 3 ] ; then echo NOT Passed - ERROR 2 ; exit -1 ; fi
 
 grep -q "Termination status: 0" t10.log
 if [ $? == 0 ] ; then

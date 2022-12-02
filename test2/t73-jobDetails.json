@@ -1,0 +1,566 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "HF"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "1000"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "180"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                " protocol MF06"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/Pd__LANL2DZ_ECP.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASIS",
+              "type": "UNDEFINED"
+            },
+            {
+              "reference": "FREETEXTOPT",
+              "value": [
+                "first line",
+                "second line",
+                "",
+                "third line after gap",
+                "last line"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "GENECP 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "800"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": {
+                "allPars": {},
+                "allData": {
+                  "ATOMSPECIFICBASISSET": {
+                    "reference": "ATOMSPECIFICBASISSET",
+                    "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/PD__LANL2DZ_ECPonly.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs\nSMARTS [$([#6]~[Fe])] link ../data/basisset/gaussian/C__Stuttgart_RCL_ECP.gbs\nSMARTS [$([*]~[Pd])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#7] name LANL2DZ",
+                    "type": "STRING"
+                  },
+                  "TASK": {
+                    "reference": "TASK",
+                    "value": "GENERATEBASISSET",
+                    "type": "STRING"
+                  }
+                }
+              },
+              "reference": "BASIS",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            },
+            {
+              "name": "JOBTYPE",
+              "isLoud": false,
+              "value": [
+                "SP"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "600"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "CONVER",
+                  "isLoud": true,
+                  "value": [
+                    "5"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "name": "GEOM",
+              "isLoud": true,
+              "value": [
+                "CHECK"
+              ]
+            },
+            {
+              "name": "MODEL_METHOD",
+              "isLoud": false,
+              "value": [
+                "OLYP"
+              ]
+            },
+            {
+              "name": "GUESS",
+              "isLoud": true,
+              "value": [
+                "READ"
+              ]
+            },
+            {
+              "name": "MODEL_BASISSET",
+              "isLoud": false,
+              "value": [
+                "LANL2MB 5D 7F"
+              ]
+            },
+            {
+              "name": "PRINT",
+              "isLoud": false,
+              "value": [
+                "P"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "name": "WFREOPT",
+                  "isLoud": false,
+                  "value": [
+                    "OPT"
+                  ]
+                },
+                {
+                  "name": "GENERAL",
+                  "isLoud": false,
+                  "value": [
+                    "RRHF"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "name": "VSHIFT",
+                  "isLoud": true,
+                  "value": [
+                    "200"
+                  ]
+                },
+                {
+                  "name": "SYMM",
+                  "isLoud": false,
+                  "value": [
+                    "NOSYM"
+                  ]
+                },
+                {
+                  "name": "ALGORITHM",
+                  "isLoud": false,
+                  "value": [
+                    "QC"
+                  ]
+                },
+                {
+                  "name": "MAXCYCLE",
+                  "isLoud": true,
+                  "value": [
+                    "280"
+                  ]
+                },
+                {
+                  "name": "VARACC",
+                  "isLoud": false,
+                  "value": [
+                    "NOVARACC"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "name": "title",
+              "isLoud": false,
+              "value": [
+                "No comment"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "name": "SPIN_MULTIPLICITY",
+              "isLoud": false,
+              "value": [
+                "1"
+              ]
+            },
+            {
+              "name": "CHARGE",
+              "isLoud": false,
+              "value": [
+                "0"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

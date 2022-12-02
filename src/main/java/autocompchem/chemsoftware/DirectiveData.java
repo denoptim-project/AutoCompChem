@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /*
@@ -22,12 +23,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
+
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.ACCJob;
+import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
+import autocompchem.run.MonitoringJob;
+import autocompchem.run.ShellJob;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -126,7 +137,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 						+ ChemSoftConstants.JDCLOSEBLOCK);
 			}
 			accTaskParams = Directive.getACCTaskParams(lines);
-			accTaskParams.setParameter(new Parameter("TASK",
+			accTaskParams.setParameter(new Parameter(ChemSoftConstants.JDACCTASK,
 					accTaskParams.getParameterValue(
 							ChemSoftConstants.JDLABACCTASK)));
 			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
@@ -171,6 +182,14 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     	// TODO: improve. This is done to retain compatibility with legacy code
     	if (this.getType().equals(NamedDataType.TEXTBLOCK))
     	{
+    		if (super.getValue() instanceof TextBlock)
+    		{
+    			return (ArrayList<String>) 
+        				((TextBlock) super.getValue());
+    		} else if (super.getValue() instanceof ArrayList)
+    		{
+    			return (ArrayList<String>) super.getValue();
+    		}
     		return (ArrayList<String>) 
     				((TextBlock) super.getValue());
     	} 
@@ -182,6 +201,16 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     	list.add("Could not get lines out of " + this.getType().toString());
         return list;
     }
+	
+//-----------------------------------------------------------------------------
+
+    /**
+     * @return the parameters defining the ACC task embedded in this directive.
+     */
+	public ParameterStorage getTaskParams() 
+	{
+		return accTaskParams;
+	}
 	
 //-----------------------------------------------------------------------------
 
@@ -201,6 +230,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
      * @return <code>true</code> if there is at least one ACC task definition.
      */
     
+	@SuppressWarnings("unchecked")
 	public boolean hasACCTask() 
 	{
     	if (accTaskParams!=null)
@@ -208,7 +238,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
     	
 		if (this.getType().equals(NamedDataType.TEXTBLOCK))
 		{
-			for (String l : (TextBlock) this.getValue())
+			for (String l : (Iterable<String>) this.getValue())
 			{
 				if (l.contains(ChemSoftConstants.JDLABACCTASK)
 						|| l.contains(GaussianConstants.LABPARAMS))
@@ -232,7 +262,17 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
       	
       	if (this.getType().equals(NamedDataType.TEXTBLOCK))
 		{
-      		TextBlock lines = (TextBlock) this.getValue();
+      		Object value = this.getValue();
+      		TextBlock lines = null;
+      		if (value instanceof TextBlock)
+      		{
+      			lines= (TextBlock) this.getValue();
+      		} else if (value instanceof ArrayList){
+      			lines= new TextBlock((ArrayList<String>) this.getValue());
+      		} else {
+      			throw new IllegalStateException("DirectiveData contains a value "
+      					+ "with unexpected type: " + value.getClass());
+      		}
 	        if (lines.size() > 1)
 	        {
 	        	toJD.add(ChemSoftConstants.JDLABDATA + getReference() 
@@ -260,6 +300,55 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         return toJD;
     }
 
+//-----------------------------------------------------------------------------
+
+    public static class DirectiveDataSerializer 
+    implements JsonDeserializer<DirectiveData>
+    {
+        @Override
+        public DirectiveData deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+        	 JsonObject jsonObject = json.getAsJsonObject();
+             
+             if (!jsonObject.has("type"))
+             {
+                 String msg = "Missing NamedDataType: found a "
+                         + "JSON string that cannot be converted into a "
+                         + "DirectiveData.";
+                 throw new JsonParseException(msg);
+             }       
+
+
+             DirectiveData dd = new DirectiveData();
+             String reference = context.deserialize(jsonObject.get("reference"),
+            		 String.class);
+             dd.setReference(reference);
+             
+             NamedDataType typ = context.deserialize(jsonObject.get("type"),
+            		 NamedDataType.class);
+             dd.setType(typ);
+             
+             if (jsonObject.has("value") && typ==NamedDataType.TEXTBLOCK)
+             { 
+            	 ArrayList<String> lines = context.deserialize(
+ 						jsonObject.get("value"),
+ 	                    new TypeToken<ArrayList<String>>(){}.getType());
+            	 dd = new DirectiveData(reference, lines);
+             }
+
+             if (jsonObject.has("accTaskParams"))
+             { 
+            	 ParameterStorage ps = context.deserialize(
+                		 jsonObject.get("accTaskParams"), 
+                		 ParameterStorage.class);
+				dd.accTaskParams = ps;
+             }
+         	
+         	return dd;
+        	
+        }
+    }
 //-----------------------------------------------------------------------------
 
 }

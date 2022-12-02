@@ -2,6 +2,6 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 1
-TASK: PrepareInputGaussian
-INFILE: ../t73-mol.sdf
-JOBDETAILSFILE: ../t73-jobDetails
+TASK: PrepareInputGaussian2
+INPUTGEOMETRIESFILE: ../t73-mol.sdf
+JOBDETAILSFILE: ../t73-jobDetails.json

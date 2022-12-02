@@ -24,6 +24,8 @@ import java.util.List;
 
 import java.util.Set;
 
+import autocompchem.chemsoftware.DirectiveData;
+
 /**
  * Storage of predefined constants for Gaussian related tools
  *
@@ -299,5 +301,23 @@ public class GaussianConstants
      */
 	public static final List<String> SPECIALKEYWORDS = new ArrayList<String>(
 			Arrays.asList(KEYPRINT, KEYMODELMETHOD, KEYMODELBASISET, KEYJOBTYPE));
+
+	/**
+	 * Name of the {@link DirectiveData} holding a molecule specific basis set
+	 * in agnostic format.
+	 */
+	public static final String DDBASISSET = "BASIS";
+	
+	/**
+	 * Name of the {@link DirectiveData} holding a molecule specific set of
+	 * constraints or coordinates.
+	 */
+	public static final String DDMODREDUNDANT = "MODREDUNDANT";
+	
+	/**
+	 * Name of the {@link DirectiveData} holding a molecule specific set of
+	 * PCM options and settings.
+	 */
+	public static final String DDPCM = "PCM";
 
 }

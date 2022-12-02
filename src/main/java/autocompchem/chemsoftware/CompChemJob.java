@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -304,7 +305,10 @@ public class CompChemJob extends Job implements Cloneable
     
     public CompChemJob clone()
     {
-    	CompChemJob clone = new CompChemJob(this.toLinesJobDetails());
+    	Gson writer = ACCJson.getWriter();
+    	Gson reader = ACCJson.getReader();
+    	CompChemJob clone = (CompChemJob) reader.fromJson(
+    			writer.toJson(this), Job.class);
     	return clone;
     }
 

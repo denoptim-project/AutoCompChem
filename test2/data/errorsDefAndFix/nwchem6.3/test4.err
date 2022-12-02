@@ -1,0 +1,23 @@
+#
+# Definition of NWChem Error Message
+#
+# Reference Name identifying this error
+ReferenceName: test4_ONLY_FOR_TEST
+# String/s to be searched in NWChem output file (only in the last task)
+ErrorMessage: FAKE ERROR MESSAGE 4 - USED ONLY TO TEST AutoCompChem
+#
+#
+# Definition of Action to be taken when this error occours
+#
+# Type of action
+Action: REDO_STEP_ALTERING_DIRECTIVES
+#Details of this action:
+$STARTimpose_directives:
+$DIR_restart
+$DIR_TITLE $MT_title=Error fix for SCF convergence failure
+$END
+$STARTremove_directives:
+$DIR_geometry 
+$DIR_SCF $DIR_VECTORS
+$DIR_DFT $DIR_VECTORS
+$END
