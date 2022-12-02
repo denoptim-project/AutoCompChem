@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
@@ -190,13 +191,23 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	{
     		Point3d p = atm.getPoint3d();
     		String el = AtomUtils.getSymbolOrLabel(atm);
-    		list.add(el+"  "+p.x+" "+p.y+" "+p.z);
+    		list.add(el + "  " 
+    				+ String.format(Locale.ENGLISH,"%17.12f",p.x) + " "
+    	    		+ String.format(Locale.ENGLISH,"%17.12f",p.y) + " "
+    	    	    + String.format(Locale.ENGLISH,"%17.12f",p.z));
     	}
 
-    	//TODO-gg what about 
-    	DirectiveData dd = new DirectiveData("coordinates", list);
-    	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
-    			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+        	DirectiveData dd = new DirectiveData("coordinates", list);
+        	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
+        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    	} else {
+
+        	DirectiveData dd = new DirectiveData("coordinates", list);
+        	setDirectiveDataIfNotAlreadyThere(ccj, 
+        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    	}
     }
     
 //------------------------------------------------------------------------------

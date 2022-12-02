@@ -24,13 +24,13 @@ if [ $n -ne 10 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 n=0;n=$(grep -c "^\-\-Link1\-\-$" t6-mol.inp)
 if [ $n -ne 13 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^H  5\.143" t6-mol.inp)
+n=0;n=$(grep -c "^H * 5\.143" t6-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^Ru  5\.097" t6-mol.inp)
+n=0;n=$(grep -c "^Ru * 5\.097" t6-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^H  3\.470" t6-mol.inp)
+n=0;n=$(grep -c "^H * 3\.470" t6-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
 
 if grep -q 'Termination status: 0' t6.log ; then
