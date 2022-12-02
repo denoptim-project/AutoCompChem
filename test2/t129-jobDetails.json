@@ -90,7 +90,7 @@
                   }
                 }
               },
-              "reference": "BASIS",
+              "reference": "BASISSET",
               "type": "UNDEFINED"
             }
           ]
@@ -345,7 +345,7 @@
                   }
                 }
               },
-              "reference": "BASIS",
+              "reference": "BASISSET",
               "type": "UNDEFINED"
             }
           ]
@@ -483,7 +483,7 @@
                   }
                 }
               },
-              "reference": "BASIS",
+              "reference": "BASISSET",
               "type": "UNDEFINED"
             }
           ]

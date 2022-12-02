@@ -164,7 +164,6 @@ public class BasisSet
                 {
                     sb.append(cbs.toInputFileStringBS(format));
                 }
-                sb.append(nl);
                 break;
 
             case "NWCHEM":
@@ -207,7 +206,6 @@ public class BasisSet
                 {
                     sb.append(cbs.toInputFileStringECP(format));
                 }
-                sb.append(nl);
                 break;
 
             case "NWCHEM":

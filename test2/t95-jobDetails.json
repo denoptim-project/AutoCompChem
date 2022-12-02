@@ -177,26 +177,26 @@
                   }
                 }
               },
-              "reference": "BASIS",
+              "reference": "BASISSET",
               "type": "UNDEFINED"
             },
             {
               "reference": "NBO",
               "value": [
-                "$STARTACCEscapedDollarNBO 1st row",
+                "$NBO 1st row",
                 "2nd row ",
-                "3rd row ACCEscapedDollarEND$END"
+                "3rd row $END"
               ],
               "type": "TEXTBLOCK"
             },
             {
               "reference": "PCM",
               "value": [
-                "$STARTradii\u003dUAHF",
+                "radii\u003dUAHF",
                 "pcmdoc",
                 "Dis",
                 "Rep",
-                "Cav$END"
+                "Cav"
               ],
               "type": "TEXTBLOCK"
             }
@@ -355,7 +355,7 @@
             {
               "reference": "NBO",
               "value": [
-                "ACCEscapedDollarNBO ARCHIVE ACCEscapedDollarEND"
+                "$NBO ARCHIVE $END"
               ],
               "type": "TEXTBLOCK"
             }

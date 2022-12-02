@@ -182,6 +182,9 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      */
     private void setChemicalSystem(CompChemJob ccj, IAtomContainer iac)
     {
+    	if (!needsGeometry(ccj))
+    		return;
+    		
     	ArrayList<String> list = new ArrayList<String>();
     	for (IAtom atm : iac.atoms())
     	{
@@ -194,6 +197,51 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	DirectiveData dd = new DirectiveData("coordinates", list);
     	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
     			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if a job needs to specify the geometry of the chemical system in
+     * its input file of if it takes it from the checkpoint file.
+     * @param ccj the job to analyze
+     * @return <code>true</code> if the geometry should be in the input file.
+     */
+    public static boolean needsGeometry(CompChemJob ccj)
+    {
+
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+			CompChemJob stepCcj = (CompChemJob) ccj.getStep(0);
+			Directive routeDir = stepCcj.getDirective(
+    				GaussianConstants.DIRECTIVEROUTE);
+			return needsGeometry(routeDir);
+    	} else {
+    		return needsGeometry(ccj.getDirective(
+    				GaussianConstants.DIRECTIVEROUTE));
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private static boolean needsGeometry(Directive routeDir)
+    {
+    	Keyword geomKey = routeDir.getKeyword(GaussianConstants.GAUKEYGEOM);
+		if (geomKey!=null)
+		{
+			String value = geomKey.getValueStr().toUpperCase();
+			if (value.startsWith(GaussianConstants.GAUKEYGEOMCHK) ||
+					value.startsWith(GaussianConstants.GAUKEYGEOMCHECK) ||
+					value.startsWith(GaussianConstants.GAUKEYGEOMALLCHK) ||
+					value.startsWith(GaussianConstants.GAUKEYGEOMSTEP) ||
+					value.startsWith(GaussianConstants.GAUKEYGEOMNGEOM) ||
+					value.startsWith(GaussianConstants.GAUKEYGEOMMOD))
+	        {
+				// Geometry will be teken from checkpoint file.
+				return false;
+	        }
+		}
+		return true;
     }
     
 //------------------------------------------------------------------------------
@@ -571,10 +619,11 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     			// convert the agnostic data into Gaussian slang
     			switch (ddName.toUpperCase())
     			{
-	    			case "BASIS":
+	    			case "BASISSET":
 	    			{
 	    				BasisSet bs = (BasisSet) dd.getValue();
 	    				lines.add(bs.toInputFileString("Gaussian"));
+	    				//No additional newline: it comes already from bs
 	    				break;
 	    			}
 	    			
@@ -584,6 +633,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 	    			default:
 	    			{
 	    				lines.addAll(optDir.getDirectiveData(ddName).getLines());
+	        			lines.add(""); //empty line that terminates this part of option section
 	    			}
     			}
     		}
@@ -597,12 +647,13 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     				lines.add(k.getName() + "=" + k.getValueStr());
     			else
         			lines.add(k.getValueStr());
+    			lines.add(""); //empty line that terminates this part of option section
     		}
     		
     		// Dealing with subdirective even if we now do not expect them to be
     		// present. They might result from the attempt to achieve special 
     		//results
-    		for (Directive subDir : rouDir.getAllSubDirectives())
+    		for (Directive subDir : optDir.getAllSubDirectives())
     		{
     			String directiveLine = "";
     			// Gaussian uses only one nesting level!
@@ -643,9 +694,10 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     			}
     			directiveLine = directiveLine + ")";
     			lines.add(directiveLine);
+    			lines.add(""); //empty line that terminates this part of option section
     		}
+			lines.add(""); //empty line that terminates the option section
     	} // No default Option section
-    	lines.add(""); // Empty line terminating option section
     	
     	return lines;
     }

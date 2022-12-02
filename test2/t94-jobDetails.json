@@ -100,28 +100,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
-            },
-            {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -231,28 +209,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
-            },
-            {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     }

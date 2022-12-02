@@ -306,7 +306,7 @@ public class GaussianConstants
 	 * Name of the {@link DirectiveData} holding a molecule specific basis set
 	 * in agnostic format.
 	 */
-	public static final String DDBASISSET = "BASIS";
+	public static final String DDBASISSET = "BASISSET";
 	
 	/**
 	 * Name of the {@link DirectiveData} holding a molecule specific set of

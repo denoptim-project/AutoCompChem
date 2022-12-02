@@ -329,10 +329,11 @@ public class CenterBasisSet
     /**
      * Returns a string representation for deployment in the preparation of 
      * input files for a specific software package.
-     * Known formats include: "Gaussian".
+     * Known formats include: "Gaussian" and "NWChem".
      * @param format defined the software syntax to follow in the generation of
      * the string
-     * @return a single string that contains all lines (newline charactrs)
+     * @return a single string that contains all lines (newline characters). 
+     * Note it contains a newline character also at the end.
      */
 
     public String toInputFileStringBS(String format)

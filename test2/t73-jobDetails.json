@@ -21,7 +21,7 @@
               "name": "MODEL_BASISSET",
               "isLoud": false,
               "value": [
-                "LANL2MB 5D 7F"
+                "GENECP 5D 7F"
               ]
             },
             {
@@ -125,7 +125,7 @@
                   }
                 }
               },
-              "reference": "BASIS",
+              "reference": "BASISSET",
               "type": "UNDEFINED"
             },
             {
@@ -281,7 +281,7 @@
                   }
                 }
               },
-              "reference": "BASIS",
+              "reference": "BASISSET",
               "type": "UNDEFINED"
             }
           ]
