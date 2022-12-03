@@ -217,7 +217,6 @@
     {
       "jobType": "CompChemJob",
       "params": {
-        "allPars": {},
         "allData": {
           "SPIN_MULTIPLICITY": {
             "reference": "SPIN_MULTIPLICITY",
@@ -350,7 +349,6 @@
               "isLoud": true,
               "value": [],
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",
@@ -372,7 +370,6 @@
     {
       "jobType": "CompChemJob",
       "params": {
-        "allPars": {},
         "allData": {
           "CHARGE": {
             "reference": "CHARGE",
@@ -506,7 +503,6 @@
               "isLoud": true,
               "value": [],
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",

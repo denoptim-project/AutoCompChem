@@ -29,8 +29,6 @@ import java.util.Set;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -380,9 +378,8 @@ public class NWChemReStarter extends Worker
     {
     	// We take most of the parameters of the present worker
     	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
-    	paramsForOutputHandler.setParameter(new Parameter(
-    			WorkerConstants.PARTASK,
-    		NamedDataType.STRING, "EVALUATENWCHEMOUTPUT"));
+    	paramsForOutputHandler.setParameter(WorkerConstants.PARTASK,
+    			"EVALUATENWCHEMOUTPUT");
     	
         //Gather information on the error job
     	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);

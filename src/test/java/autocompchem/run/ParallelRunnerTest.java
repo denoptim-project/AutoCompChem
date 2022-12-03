@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.datacollections.Parameter;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -186,7 +185,7 @@ public class ParallelRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
-        master.setParameter(new Parameter("WALLTIME", "10"));
+        master.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
         	master.addStep(new TestJob(roothName+i,3));
@@ -218,7 +217,7 @@ public class ParallelRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
-        master.setParameter(new Parameter("WALLTIME", "3"));
+        master.setParameter("WALLTIME", "3");
         for (int i=0; i<3; i++)
         {
         	master.addStep(new TestJob(roothName+i,5));
@@ -254,7 +253,7 @@ public class ParallelRunnerTest
         
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
-        master.setParameter(new Parameter("WALLTIME", "10"));
+        master.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
         {
         	master.addStep(new TestJob(roothName+i,3));
@@ -290,7 +289,7 @@ public class ParallelRunnerTest
         
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
-        master.setParameter(new Parameter("WALLTIME", "5"));
+        master.setParameter("WALLTIME", "5");
         for (int i=0; i<6; i++)
         {
         	master.addStep(new TestJob(roothName+i,3));
@@ -332,7 +331,7 @@ public class ParallelRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
-        master.setParameter(new Parameter("WALLTIME", "6"));
+        master.setParameter("WALLTIME", "6");
         
         // A "long-lasting" job that will be evaluated
         Job jobToEvaluate = new TestJob(roothName+0,3,0,490);
@@ -380,8 +379,8 @@ public class ParallelRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
-        master.setParameter(new Parameter("WALLTIME", "6"));
-        master.setParameter(new Parameter("WAITSTEP", "7"));
+        master.setParameter("WALLTIME", "6");
+        master.setParameter("WAITSTEP", "7");
         // Basically the waiting step is much longer than the time it 
         // will take to do the actual jobs, and also to the time given to the
         // ParallelRunner as a wall time. So, check for completion

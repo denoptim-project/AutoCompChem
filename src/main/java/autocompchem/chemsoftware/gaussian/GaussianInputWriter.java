@@ -32,8 +32,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -586,12 +584,11 @@ public class GaussianInputWriter extends Worker
                 case BasisSetConstants.ATMSPECBS:                	
                     ParameterStorage locPars = new ParameterStorage();
                     locPars.setParameter(params.getParameter(action));
-                    locPars.setParameter(new Parameter(verbKey,
-                    		NamedDataType.INTEGER, verbosity));
+                    locPars.setParameter(verbKey, verbosity+"");
                     
                 	// Get a worker to deal with the basis set generation task
-                    locPars.setParameter(new Parameter(WorkerConstants.PARTASK,
-                		NamedDataType.STRING, "GENERATEBASISSET"));
+                    locPars.setParameter(WorkerConstants.PARTASK, 
+                    		"GENERATEBASISSET");
                 	Worker w = WorkerFactory.createWorker(locPars);
                     BasisSetGenerator bsg = (BasisSetGenerator) w;
                     
@@ -623,8 +620,8 @@ public class GaussianInputWriter extends Worker
                     
                     ParameterStorage cnstrParams = new ParameterStorage();
                     //TODO: this should be avoided by using TASK instead of ACCTASK
-                    cnstrParams.setParameter(new Parameter("TASK",
-                		NamedDataType.STRING, TaskID.GENERATECONSTRAINTS));
+                    cnstrParams.setParameter("TASK", 
+                    		TaskID.GENERATECONSTRAINTS.toString());
                     
                     //TODO:change here we translate the syntax to get the 
                     // parameters for the internal task. This is shit that will
@@ -664,17 +661,17 @@ public class GaussianInputWriter extends Worker
                     		case "GENERATECONSTRAINTS":
                     			break;
                     		default:
-                    			cnstrParams.setParameter(new Parameter(key,
-                    					line.substring(line.indexOf(":")+1).trim()));
+                    			cnstrParams.setParameter(key,
+                    					line.substring(line.indexOf(":")+1).trim());
                     	}
                     }
                     if (!smarts.isBlank())
         			{
-                    	cnstrParams.setParameter(new Parameter("SMARTS",smarts));
+                    	cnstrParams.setParameter("SMARTS",smarts);
         			}
                     if (!atomIDs.isBlank())
         			{
-                    	cnstrParams.setParameter(new Parameter("ATOMIDS",atomIDs));
+                    	cnstrParams.setParameter("ATOMIDS",atomIDs);
         			}
                     
                 	Worker wrkr = WorkerFactory.createWorker(cnstrParams);

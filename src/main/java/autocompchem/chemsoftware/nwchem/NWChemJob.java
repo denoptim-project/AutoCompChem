@@ -18,16 +18,12 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.chemsoftware.gaussian.GaussianOptionsSection;
-import autocompchem.chemsoftware.gaussian.GaussianStep;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSetConstants;
@@ -347,6 +343,7 @@ public class NWChemJob
 			
 			// Translate parameters into tasks
 			ParameterStorage ps = nwcStep.getTaskSpecificParams();
+			List<NamedData> toRemove = new ArrayList<NamedData>();
 			for (String pKey : ps.getAllNamedData().keySet())
 			{
 				NamedData nd = ps.getNamedData(pKey);
@@ -358,12 +355,13 @@ public class NWChemJob
 						if (basisDir==null)
 							basisDir = new Directive("basis");
 						ParameterStorage taskPs = new ParameterStorage();
-						taskPs.setParameter(new Parameter("TASK",
-								TaskID.GENERATEBASISSET.toString()));
-						taskPs.setParameter(new Parameter(nd.getReference(),
-								nd.getValueAsString()));
+						taskPs.setParameter("TASK",
+								TaskID.GENERATEBASISSET.toString());
+						taskPs.setParameter(nd.getReference(),
+								nd.getValueAsString());
 						basisDir.setTaskParams(taskPs);
 						ccjStep.setDirective(basisDir);
+						toRemove.add(nd);
 						break;
 					}
 					
@@ -381,12 +379,13 @@ public class NWChemJob
 						geomDir.addSubDirective(zcoordDir);
 					}
 					ParameterStorage taskPs = new ParameterStorage();
-					taskPs.setParameter(new Parameter("TASK",
-							TaskID.GENERATECONSTRAINTS.toString()));
-					taskPs.setParameter(new Parameter("SMARTS",
-							nd.getValueAsString()));
+					taskPs.setParameter("TASK",
+							TaskID.GENERATECONSTRAINTS.toString());
+					taskPs.setParameter("SMARTS",
+							nd.getValueAsString());
 					zcoordDir.setTaskParams(taskPs);
 					ccjStep.setDirective(geomDir);
+					toRemove.add(nd);
 					break;
 				}
 				
@@ -395,10 +394,10 @@ public class NWChemJob
 				case "FREEZEATM":
 				{	
 					ParameterStorage taskPs = new ParameterStorage();
-					taskPs.setParameter(new Parameter("TASK",
-							TaskID.GENERATECONSTRAINTS.toString()));
-					taskPs.setParameter(new Parameter("SMARTS",
-							nd.getValueAsString()));
+					taskPs.setParameter("TASK",
+							TaskID.GENERATECONSTRAINTS.toString());
+					taskPs.setParameter("SMARTS",
+							nd.getValueAsString());
 					
 					Keyword activeSetKey = new Keyword(NWChemConstants.ACTIVEATOMS, 
 							true, new ArrayList<String>());
@@ -409,16 +408,20 @@ public class NWChemJob
 						setDir = new Directive("SET");
 					setDir.addKeyword(activeSetKey);
 					ccjStep.setDirective(setDir);
+					toRemove.add(nd);
 					break;
 				}
 				
 				default:
 					// Not translating the parameter storage into a task
-					ccjStep.setParameter(new Parameter(nd.getReference(), 
-							nd.getType(), nd.getValue()));
+					ccjStep.setParameter(nd.getReference(), 
+							nd.getType(), nd.getValue());
 					break;
 				}
-				
+			}
+			for (NamedData dat : toRemove)
+			{
+				ps.removeData(dat.getReference());
 			}
 			
 			ccj.addStep(ccjStep);

@@ -340,7 +340,6 @@
               "isLoud": true,
               "value": [],
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",
@@ -486,7 +485,6 @@
               "isLoud": true,
               "value": [],
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",

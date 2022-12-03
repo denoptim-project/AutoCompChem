@@ -17,8 +17,6 @@ package autocompchem.ui;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
@@ -244,10 +242,7 @@ public class ACCMain
 			// the given string does not correspond to a registered 
 			// task.
 			TaskID.getFromString(task);
-			
-			Parameter par = new Parameter(WorkerConstants.PARTASK, 
-					NamedDataType.STRING,task);
-			params.setParameter(par);
+			params.setParameter(WorkerConstants.PARTASK, task);
     	}
     	
     	if (foundParams)
@@ -287,15 +282,12 @@ public class ACCMain
     		if ((iarg+1 >= args.length) || args[iarg+1].startsWith("-"))
 			{
     			// A value-less parameter
-    			Parameter par = new Parameter(arg, NamedDataType.STRING, 
-    					"none");
-	    		
     	    	if (foundTask && !foundParams)
     	    	{
-    	    		params.setParameter(par);
+    	    		params.setParameter(arg);
     	    	} else if (!foundTask && foundParams)
     	    	{
-    	    		job.setParameter(par);
+    	    		job.setParameter(arg);
     	    	}
 			}
     		else
@@ -322,14 +314,13 @@ public class ACCMain
     				value = args[iarg+1];
     				iarg++;
     			}
-    			Parameter par = new Parameter(arg, NamedDataType.STRING, value);
-	    		
+    			
     			if (foundTask && !foundParams)
     	    	{
-    	    		params.setParameter(par);
+    	    		params.setParameter(arg, value);
     	    	} else if (!foundTask && foundParams)
     	    	{
-    	    		job.setParameter(par);
+    	    		job.setParameter(arg, value);
     	    	}
     		}
 	    }

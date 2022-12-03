@@ -27,7 +27,6 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.run.Job;
 import autocompchem.text.TextBlock;
@@ -138,8 +137,7 @@ public class DirectiveTest
     	d.addDirectiveData(new DirectiveData(ddString));
     	
     	Job j = new Job();
-    	j.setParameter(new Parameter(ChemSoftConstants.PAROUTFILEROOT, "/path "
-    			+ "/to/filenameRoot"));
+    	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
     	d.performACCTasks(null, j);
     	
@@ -150,13 +148,11 @@ public class DirectiveTest
     	Directive d2 = new Directive("testDirective");
     	d2.addKeyword(new Keyword("key1", true, 
     			new ArrayList<String>(Arrays.asList(
-    					ChemSoftConstants.JDOPENBLOCK
-    					+ ChemSoftConstants.JDLABACCTASK
+    					ChemSoftConstants.JDLABACCTASK
     					+ ParameterConstants.SEPARATOR
     					+ ChemSoftConstants.PARGETFILENAMEROOT,
     					ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
-    					+ ParameterConstants.SEPARATOR + "_job2.xyz"
-    					+ ChemSoftConstants.JDCLOSEBLOCK))));
+    					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
 
     	d2.performACCTasks(null, j);
     	

@@ -1,10 +1,23 @@
 package autocompchem.datacollections;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
@@ -75,6 +88,21 @@ public class NamedData implements Cloneable
         NORMALMODE,
         NORMALMODESET, 
         ACTION};
+        
+    /**
+     * List of types that can be serilized to JSON
+     */
+    public static final Set<NamedDataType> jsonable = new HashSet<NamedDataType>(
+            Arrays.asList(NamedDataType.STRING,
+            		NamedDataType.INTEGER,
+            		NamedDataType.DOUBLE,
+            		NamedDataType.BOOLEAN,
+            		NamedDataType.TEXTBLOCK));
+    
+    /**
+     * String use to not that a type could not be serialized to JSON
+     */
+    public static final String NONJSONABLE = "Type is not JSON-able";
 
 //------------------------------------------------------------------------------
 
@@ -188,6 +216,8 @@ public class NamedData implements Cloneable
 
     public String getValueAsString()
     {
+    	if (value==null)
+    		return "null";
         return value.toString();
     }
 
@@ -424,13 +454,14 @@ public class NamedData implements Cloneable
     @Override
     public boolean equals(Object o) 
     {
+    	
  	    if (o == this)
  		    return true;
  	   
  	    if (!(o instanceof NamedData))
      		return false;
  	   
- 	   NamedData other = (NamedData) o;
+ 	    NamedData other = (NamedData) o;
  	   
  	    return this.reference.equals(other.reference)
  	    		&& this.type == other.type
@@ -452,5 +483,77 @@ public class NamedData implements Cloneable
 
 //------------------------------------------------------------------------------
 
+    public static class NamedDataSerializer 
+      implements JsonSerializer<NamedData>
+    {
+
+		@Override
+		public JsonElement serialize(NamedData src, Type typeOfSrc, 
+				JsonSerializationContext context) 
+		{
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("reference", src.reference);
+            jsonObject.addProperty("type", src.type.toString());
+			if (!jsonable.contains(src.getType()))
+			{
+	            jsonObject.addProperty("value", NONJSONABLE);
+			} else {
+				jsonObject.add("value", context.serialize(src.value));
+			}
+            return jsonObject;
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+
+    public static class NamedDataDeserializer 
+      implements JsonDeserializer<NamedData>
+    {
+
+		@Override
+		public NamedData deserialize(JsonElement json, Type typeOfT, 
+				JsonDeserializationContext context)
+				throws JsonParseException 
+		{
+			JsonObject jo = json.getAsJsonObject();
+			Object joValue = null;
+			NamedDataType joType = NamedDataType.valueOf(
+					jo.get("type").getAsString());
+			
+			JsonElement je = jo.get("value");
+			if (!jsonable.contains(joType))
+			{
+				return new NamedData(jo.get("reference").getAsString(),
+						joType, NONJSONABLE);
+			}
+			
+			switch (joType)
+			{
+			case BOOLEAN:
+				joValue = context.deserialize(je, Boolean.class);
+				break;
+			case DOUBLE:
+				joValue = context.deserialize(je, Double.class);
+				break;
+			case INTEGER:
+				joValue = context.deserialize(je, Integer.class);
+				break;
+			case STRING:
+				joValue = context.deserialize(je, String.class);
+				break;
+			case TEXTBLOCK:
+				joValue = new TextBlock(context.deserialize(je,
+						new TypeToken<ArrayList<String>>(){}.getType()));
+				break;
+			default:
+				break;
+			}
+			
+			return new NamedData(jo.get("reference").getAsString(),
+					joType, joValue);
+		}
+    }
+    
+//-----------------------------------------------------------------------------
 }
 

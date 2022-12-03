@@ -45,8 +45,6 @@ import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.MolecularUtils;

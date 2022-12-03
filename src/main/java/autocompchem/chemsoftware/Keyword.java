@@ -19,10 +19,9 @@ package autocompchem.chemsoftware;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.ACCJob;
-import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 
@@ -92,6 +91,7 @@ public class Keyword implements IDirectiveComponent
         this.name = name;
         this.isLoud = isLoud;
         this.value = value;
+        extractTask();
     }
     
 //-----------------------------------------------------------------------------
@@ -109,6 +109,7 @@ public class Keyword implements IDirectiveComponent
         this.name = name;
         this.isLoud = isLoud;
         this.value = new ArrayList<String>(Arrays.asList(value));
+        extractTask();
     } 
 
 //-----------------------------------------------------------------------------
@@ -138,6 +139,34 @@ public class Keyword implements IDirectiveComponent
             		+ ChemSoftConstants.JDLABMUTEKEY + "' in front of key"
             		+ " name '" + line + "'.",-1);
         }
+        extractTask();
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    private void extractTask()
+    {
+	    if (hasACCTask())
+	    {
+	    	ArrayList<String> lines = new ArrayList<String>(value);
+			// WARNING! Here we assume that the entire content of the 
+			// keyward value, is about the ACC task. Thus, we add the 
+			// multiline start/end labels so that the getACCTaskParams
+			// method will keep read all the lines as one.
+			if (lines.size()>1)
+			{
+				lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+				lines.set(lines.size()-1, lines.get(lines.size()-1) 
+						+ ChemSoftConstants.JDCLOSEBLOCK);
+			}
+			accTaskParams = Directive.getACCTaskParams(lines);
+			accTaskParams.setParameter(ChemSoftConstants.JDACCTASK,
+					accTaskParams.getParameterValue(
+							ChemSoftConstants.JDLABACCTASK));
+			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
+			//TODO-gg uncomment once handling of tasks is finished
+			//super.removeValue();
+	    }
     }
 
 //-----------------------------------------------------------------------------
@@ -267,7 +296,17 @@ public class Keyword implements IDirectiveComponent
     	}
     	return false;
     }
-    
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Gets the parameters defining the ACC task embedded in this directive.
+     */
+	public ParameterStorage getTaskParams() 
+	{
+		return accTaskParams;
+	}
+	
 //-----------------------------------------------------------------------------
 
     /**

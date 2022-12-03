@@ -4,7 +4,6 @@
     {
       "jobType": "CompChemJob",
       "params": {
-        "allPars": {},
         "allData": {
           "MULTIGEOMNWCHEM": {
             "reference": "MULTIGEOMNWCHEM",
@@ -80,7 +79,6 @@
             {
               "name": "ZCOORD",
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",
@@ -132,7 +130,6 @@
             }
           ],
           "accTaskParams": {
-            "allPars": {},
             "allData": {
               "ATOMSPECIFICBASISSET": {
                 "reference": "ATOMSPECIFICBASISSET",
@@ -292,7 +289,6 @@
             }
           ],
           "accTaskParams": {
-            "allPars": {},
             "allData": {
               "ATOMSPECIFICBASISSET": {
                 "reference": "ATOMSPECIFICBASISSET",

@@ -309,7 +309,6 @@ public abstract class ChemSoftInputWriter extends Worker
     @Override
     public void performTask()
     {
-
         if (multiGeomMode.equals(MultiGeomMode.SingleGeom))
         {
             printInputForEachMol();

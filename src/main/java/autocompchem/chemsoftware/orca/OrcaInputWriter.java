@@ -38,7 +38,6 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.Parameter;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
@@ -86,13 +85,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     {		
 		CompChemJob molSpecJob = ccJob.clone();
 
-		Parameter pathnamePar = new Parameter(
-				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		molSpecJob.setParameter(pathnamePar);
+		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
 		
 		for (Job subJob : molSpecJob.getSteps())
 		{
-			subJob.setParameter(pathnamePar);
+			subJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
 		}
 		
 		// These calls take care also of the sub-jobs/directives

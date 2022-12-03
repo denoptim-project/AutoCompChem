@@ -30,8 +30,6 @@ import org.openscience.cdk.AtomType;
 
 import autocompchem.chemsoftware.tinker.TinkerForceFieldHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.run.Terminator;
@@ -401,10 +399,8 @@ public class ForceFieldEditor extends Worker
                 for (int imol=0; imol<molFiles.size(); imol++)
                 {
                 	ParameterStorage ps = new ParameterStorage();
-                	ps.setParameter(new Parameter("MOLFILE", 
-                			NamedDataType.STRING, molFiles.get(imol)));
-                	ps.setParameter(new Parameter("VMFILE", 
-                			NamedDataType.STRING, vaFiles.get(imol)));
+                	ps.setParameter("MOLFILE", molFiles.get(imol));
+                	ps.setParameter("VMFILE", vaFiles.get(imol));
                 	ps.setParameter( 
                 			params.getParameter("INTCOORDBYSMARTS"));
                 	ps.setParameter( 

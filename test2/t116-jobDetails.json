@@ -76,7 +76,6 @@
     "dirData": [
       {
         "accTaskParams": {
-          "allPars": {},
           "allData": {
             "TASK": {
               "reference": "TASK",
@@ -181,7 +180,6 @@
         "dirData": [
           {
             "accTaskParams": {
-              "allPars": {},
               "allData": {
                 "TASK": {
                   "reference": "TASK",

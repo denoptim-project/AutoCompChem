@@ -111,7 +111,6 @@
         {
           "name": "basis",
           "accTaskParams": {
-            "allPars": {},
             "allData": {
               "ATOMSPECIFICBASISSET": {
                 "reference": "ATOMSPECIFICBASISSET",

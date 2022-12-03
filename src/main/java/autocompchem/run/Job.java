@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -42,9 +41,7 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.io.ACCJson;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.text.TextBlockIndexed;
@@ -288,7 +285,7 @@ public class Job implements Runnable
      * @return the parameter
      */
 
-    public Parameter getParameter(String paramId)
+    public NamedData getParameter(String paramId)
     {
         return params.getParameterOrNull(paramId);
     }
@@ -296,13 +293,53 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Sets a parameters.
-     * @param par the parameter to add/set.
+     * Get the value of a specific parameters
+     * @param paramId the parameter identified
+     * @return the parameter's value
      */
 
-    public void setParameter(Parameter par)
+    public Object getParameterValue(String paramId)
     {
-        params.setParameter(par);
+        return params.getParameterOrNull(paramId);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a value-less parameters (i.e., a keyword)
+     * @param ref the reference name of the parameter to add/set.
+     */
+
+    public void setParameter(String ref)
+    {
+        params.setParameter(ref, NamedDataType.UNDEFINED, null);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameters.
+     * @param ref the reference name of the parameter to add/set.
+     * @param value the value of the parameter.
+     */
+
+    public void setParameter(String ref, String value)
+    {
+        params.setParameter(ref, NamedDataType.STRING, value);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameters.
+     * @param ref the reference name of the parameter to add/set.
+     * @param type the type of the parameter
+     * @param value the value of the parameter.
+     */
+
+    public void setParameter(String ref, NamedDataType type, Object value)
+    {
+        params.setParameter(ref, type, value);
     }
     
 //------------------------------------------------------------------------------

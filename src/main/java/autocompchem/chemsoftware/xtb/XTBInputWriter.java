@@ -32,7 +32,6 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
@@ -80,9 +79,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
     {		
 		CompChemJob molSpecJob = ccJob.clone();
 
-		Parameter pathnamePar = new Parameter(
-				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		molSpecJob.setParameter(pathnamePar);
+		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
 		
     	// WARNING: at this time XTB is not capable of running a multi-step jobs
 /*		

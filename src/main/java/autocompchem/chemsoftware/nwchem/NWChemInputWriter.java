@@ -32,8 +32,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -125,7 +125,7 @@ import autocompchem.worker.WorkerFactory;
  * (optional) <b>FREEZEIC</b> define frozen internal coordinates 
  * (i.e., constants).
  * To identify the IC to freeze, SMARTS queries are used.
- * A multi line block (see {@link autocompchem.datacollections.Parameter}) 
+ * A multi line block (see {@link autocompchem.datacollections.ParameterStorage}) 
  * can be used defining one 
  * SMARTS query per line.
  * </li>
@@ -153,7 +153,8 @@ import autocompchem.worker.WorkerFactory;
  * the user can add one numerical value and/or the <code>constant</code>
  * keyword that will apply to all ICs matched by the combination of
  * single-atom SMARTS.
- * A multi line block (see {@link autocompchem.datacollections.Parameter}) is used to
+ * A multi line block (see {@link autocompchem.datacollections.ParameterStorage}
+ * ) is used to
  * define one set of SMARTS queries (plus additional keywords-
  * related to that
  * class of IC) per each line.
@@ -1306,8 +1307,7 @@ public class NWChemInputWriter extends Worker
             //The locPars are the params that we'll use to create the basis set
             ParameterStorage locPars = new ParameterStorage();
             
-            Parameter atmSpecBSParam = new Parameter(
-                params.getParameter(BasisSetConstants.ATMSPECBS).getReference(),
+            NamedData atmSpecBSParam = new NamedData(BasisSetConstants.ATMSPECBS,
                 params.getParameter(BasisSetConstants.ATMSPECBS).getType(),
                 params.getParameter(BasisSetConstants.ATMSPECBS).getValue());
             if (repetition > 0)
@@ -1346,22 +1346,22 @@ public class NWChemInputWriter extends Worker
                 // Allow some partial assignation of basis set
                 // this because we might have removed some redundant rule 
                 // and this can lead to a partial match
-                locPars.setParameter(new Parameter(
+                locPars.setParameter(
                 		BasisSetConstants.ALLOWPARTIALMATCH,
-                            		 NamedDataType.BOOLEAN, "true"));
+                            		 NamedDataType.BOOLEAN, "true");
+                
             }
-            locPars.setParameter(atmSpecBSParam);
-            locPars.setParameter(new Parameter(ACCConstants.VERBOSITYPAR,
-                          NamedDataType.INTEGER, verbosity));
+            locPars.setParameter(atmSpecBSParam.getReference(),
+            		atmSpecBSParam.getType(),
+            		atmSpecBSParam.getValue());
             
             // Do it only if there is something to do...
             if (goon)
             {
             	// Get a worker to deal with the basis set generation task
             	ParameterStorage paramsForBasisSetGen = locPars.clone();
-            	paramsForBasisSetGen.setParameter(new Parameter(
-            			WorkerConstants.PARTASK,
-            		NamedDataType.STRING, TaskID.GENERATEBASISSET));
+            	paramsForBasisSetGen.setParameter(WorkerConstants.PARTASK, 
+            			TaskID.GENERATEBASISSET.toString());
             	
             	Worker w = WorkerFactory.createWorker(paramsForBasisSetGen);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
@@ -1943,12 +1943,10 @@ public class NWChemInputWriter extends Worker
 
         //Build the Z-Matrix from cartesian coordinates and connectivity
         ParameterStorage locPar = new ParameterStorage();
-        locPar.setParameter(new Parameter(
-        		WorkerConstants.PARTASK,NamedDataType.STRING,
-        		"PRINTZMATRIX"));
+        locPar.setParameter(WorkerConstants.PARTASK, "PRINTZMATRIX");
         locPar.setParameter(params.getParameter("VERBOSITY"));
-        locPar.setParameter(new Parameter("MOL",
-        		NamedDataType.IATOMCONTAINER,mol));
+        locPar.setParameter("MOL", NamedDataType.IATOMCONTAINER, 
+        		mol);
         Worker w = WorkerFactory.createWorker(locPar);
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         

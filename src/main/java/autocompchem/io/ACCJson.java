@@ -8,7 +8,13 @@ import autocompchem.chemsoftware.CompChemJob.CompChemJobSerializer;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
 import autocompchem.chemsoftware.DirectiveData;
-import autocompchem.chemsoftware.DirectiveData.DirectiveDataSerializer;
+import autocompchem.chemsoftware.DirectiveData.DirectiveDataDeserializer;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataDeserializer;
+import autocompchem.datacollections.NamedData.NamedDataSerializer;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserializer;
+import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -63,7 +69,12 @@ public class ACCJson
     	        .registerTypeAdapter(MonitoringJob.class, new JobSerializer())
     	        .registerTypeAdapter(EvaluationJob.class, new JobSerializer())
     	        .registerTypeAdapter(ShellJob.class, new ShellJobSerializer())
-    	        .registerTypeAdapter(CompChemJob.class, new CompChemJobSerializer())
+    	        .registerTypeAdapter(CompChemJob.class, 
+    	        		new CompChemJobSerializer())
+    	        .registerTypeAdapter(NamedData.class, 
+    	        		new NamedDataSerializer())
+    	        .registerTypeAdapter(ParameterStorage.class, 
+    	        		new ParameterStorageSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
     			.create();
     	
@@ -71,7 +82,11 @@ public class ACCJson
     			.setPrettyPrinting()
     	        .registerTypeAdapter(Job.class, new JobDeSerializer())
     	        .registerTypeAdapter(DirectiveData.class, 
-    	        		new DirectiveDataSerializer())
+    	        		new DirectiveDataDeserializer())
+    	        .registerTypeAdapter(NamedData.class, 
+    	        		new NamedDataDeserializer())
+    	        .registerTypeAdapter(ParameterStorage.class, 
+    	        		new ParameterStorageDeserializer())
     			.create();
     }
 

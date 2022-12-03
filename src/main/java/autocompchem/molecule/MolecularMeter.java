@@ -130,7 +130,8 @@ public class MolecularMeter extends Worker
 	public void initialize() 
 	{    	
         //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
+        String vStr = params.getParameterOrDefault("VERBOSITY",
+        		NamedDataType.STRING, "1").getValueAsString();
         this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)

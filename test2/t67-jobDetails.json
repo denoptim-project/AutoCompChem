@@ -173,7 +173,6 @@
             {
               "name": "ZCOORD",
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",
@@ -386,7 +385,6 @@
             {
               "name": "ZCOORD",
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",

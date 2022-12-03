@@ -30,8 +30,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -376,9 +374,8 @@ public class GaussianReStarter extends Worker
     {
     	// We take most of the parameters of the present worker
     	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
-    	paramsForOutputHandler.setParameter(new Parameter(
-    			WorkerConstants.PARTASK,
-    		NamedDataType.STRING, "EVALUATEGAUSSIANOUTPUT"));
+    	paramsForOutputHandler.setParameter(
+    			WorkerConstants.PARTASK, "EVALUATEGAUSSIANOUTPUT");
     	
         //Gather information on the error job
     	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);

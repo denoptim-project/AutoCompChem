@@ -76,7 +76,6 @@
           "dirData": [
             {
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "ATOMSPECIFICBASISSET": {
                     "reference": "ATOMSPECIFICBASISSET",
@@ -331,7 +330,6 @@
           "dirData": [
             {
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "ATOMSPECIFICBASISSET": {
                     "reference": "ATOMSPECIFICBASISSET",
@@ -469,7 +467,6 @@
           "dirData": [
             {
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "ATOMSPECIFICBASISSET": {
                     "reference": "ATOMSPECIFICBASISSET",

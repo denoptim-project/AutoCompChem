@@ -32,13 +32,7 @@ import com.google.gson.reflect.TypeToken;
 
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.ACCJob;
-import autocompchem.run.EvaluationJob;
-import autocompchem.run.Job;
-import autocompchem.run.MonitoringJob;
-import autocompchem.run.ShellJob;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -137,9 +131,9 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 						+ ChemSoftConstants.JDCLOSEBLOCK);
 			}
 			accTaskParams = Directive.getACCTaskParams(lines);
-			accTaskParams.setParameter(new Parameter(ChemSoftConstants.JDACCTASK,
+			accTaskParams.setParameter(ChemSoftConstants.JDACCTASK,
 					accTaskParams.getParameterValue(
-							ChemSoftConstants.JDLABACCTASK)));
+							ChemSoftConstants.JDLABACCTASK));
 			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
 			//TODO-gg uncomment once handling of tasks is finished
 			//super.removeValue();
@@ -302,53 +296,53 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 
 //-----------------------------------------------------------------------------
 
-    public static class DirectiveDataSerializer 
+    public static class DirectiveDataDeserializer 
     implements JsonDeserializer<DirectiveData>
     {
         @Override
         public DirectiveData deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException
         {
-        	 JsonObject jsonObject = json.getAsJsonObject();
+        	
+        	JsonObject jsonObject = json.getAsJsonObject();
              
-             if (!jsonObject.has("type"))
-             {
-                 String msg = "Missing NamedDataType: found a "
+            if (!jsonObject.has("type"))
+            {
+                String msg = "Missing NamedDataType: found a "
                          + "JSON string that cannot be converted into a "
                          + "DirectiveData.";
-                 throw new JsonParseException(msg);
-             }       
+                throw new JsonParseException(msg);
+            }       
 
-
-             DirectiveData dd = new DirectiveData();
-             String reference = context.deserialize(jsonObject.get("reference"),
+            DirectiveData dd = new DirectiveData();
+            String reference = context.deserialize(jsonObject.get("reference"),
             		 String.class);
-             dd.setReference(reference);
+            dd.setReference(reference);
              
-             NamedDataType typ = context.deserialize(jsonObject.get("type"),
+            NamedDataType typ = context.deserialize(jsonObject.get("type"),
             		 NamedDataType.class);
-             dd.setType(typ);
+            dd.setType(typ);
              
-             if (jsonObject.has("value") && typ==NamedDataType.TEXTBLOCK)
-             { 
-            	 ArrayList<String> lines = context.deserialize(
+            if (jsonObject.has("value") && typ==NamedDataType.TEXTBLOCK)
+            { 
+           	    ArrayList<String> lines = context.deserialize(
  						jsonObject.get("value"),
  	                    new TypeToken<ArrayList<String>>(){}.getType());
-            	 dd = new DirectiveData(reference, lines);
-             }
+            	dd = new DirectiveData(reference, lines);
+            }
 
-             if (jsonObject.has("accTaskParams"))
-             { 
-            	 ParameterStorage ps = context.deserialize(
+            if (jsonObject.has("accTaskParams"))
+            { 
+                ParameterStorage ps = context.deserialize(
                 		 jsonObject.get("accTaskParams"), 
                 		 ParameterStorage.class);
 				dd.accTaskParams = ps;
-             }
+            }
          	
          	return dd;
-        	
         }
     }
+    
 //-----------------------------------------------------------------------------
 
 }

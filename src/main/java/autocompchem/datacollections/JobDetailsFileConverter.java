@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openscience.cdk.interfaces.IAtomContainer;
-
 import com.google.gson.Gson;
 
 import autocompchem.chemsoftware.CompChemJob;
@@ -34,10 +32,7 @@ import autocompchem.chemsoftware.nwchem.NWChemJob;
 import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 

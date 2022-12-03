@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -40,18 +39,12 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.Parameter;
-import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.text.TextBlock;
-import autocompchem.utils.NumberAwareStringComparator;
-import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -92,9 +85,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 		//TODO-gg all of this is general enough to be in ChemSoftInputWriter
 		// (once the setCharge/Spin are made abstract)
 		
-		Parameter pathnamePar = new Parameter(
-				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		molSpecJob.setParameter(pathnamePar);
+		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, outFileNameRoot);
 		
 		// Here we add atom coordinates to the so-far molecule-agnostic job
 		setChemicalSystem(molSpecJob, mol);

@@ -111,7 +111,6 @@
           "dirData": [
             {
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "ATOMSPECIFICBASISSET": {
                     "reference": "ATOMSPECIFICBASISSET",
@@ -130,7 +129,6 @@
             },
             {
               "accTaskParams": {
-                "allPars": {},
                 "allData": {
                   "TASK": {
                     "reference": "TASK",

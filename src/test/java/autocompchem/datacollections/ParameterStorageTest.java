@@ -24,7 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
+
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.io.ACCJson;
 
 
 /**
@@ -40,15 +43,11 @@ public class ParameterStorageTest
     @Test
     public void testCaseInsensitivity() throws Exception
     {
-        Parameter p1 = new Parameter("Key1", NamedDataType.STRING,"1.123");
-        
-        assertEquals("KEY1",p1.getReference(),"Upper case ref name");
-        
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter(p1);
+    	ps.setParameter("Key1", NamedDataType.STRING, "1.123");
     	
     	assertTrue(ps.contains("KEY1"),"Case insensitive contains method (A)");
-    	assertTrue(ps.contains("key1"),"Case insensitive contains method (B)");
+    	assertTrue(ps.contains("kEy1"),"Case insensitive contains method (B)");
     }
     
 //------------------------------------------------------------------------------
@@ -56,37 +55,61 @@ public class ParameterStorageTest
     @Test
     public void testGetRefNamesSet() throws Exception
     {
-        Parameter p1 = new Parameter("KEY1", NamedDataType.STRING,"1.123"); 
-        Parameter p2 = new Parameter("KEY2", NamedDataType.DOUBLE,1.123);
-        Parameter p3 = new Parameter("KEY3", NamedDataType.INTEGER,206);
-        
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter(p1);
-    	ps.setParameter(p2);
-    	ps.setParameter(p3);
+    	ps.setParameter("KEY1", NamedDataType.STRING,"1.123");
+    	ps.setParameter("KEY2", NamedDataType.DOUBLE,1.123);
+    	ps.setParameter("KEY3", NamedDataType.INTEGER,206);
     	
-    	NamedData nd1 = new NamedData("ND1", NamedDataType.STRING, "val1");
-    	NamedData nd2 = new NamedData("ND2", NamedDataType.INTEGER, 23);
-    	NamedDataCollector dc = (NamedDataCollector) ps;
-    	dc.putNamedData("N1", nd1);
-    	dc.putNamedData("N2", nd2);
-    	
-    	assertEquals(5, dc.getAllNamedData().size(), 
-    			"Number of items from getAllNamedData");
-    	assertEquals(3, ps.getRefNamesSet().size(), 
-    			"Number of items from getAllParameters");
-    	
-    	Parameter rp1 = ps.getParameterOrNull("key1");
-    	Parameter rp2 = ps.getParameterOrNull("key2");
-    	Parameter rp3 = ps.getParameterOrNull("key3");
-    	
-    	assertTrue(rp1.getValue() instanceof String, 
-    			"Verify type p1"); 
-        assertTrue(rp2.getValue() instanceof Double, 
-        		"Verify type p2");
-        assertTrue(rp3.getValue() instanceof Integer, 
-        		"Verify type p3");
+    	assertEquals(3, ps.getRefNamesSet().size());
+    	assertTrue(ps.getRefNamesSet().contains("KEY1"));
+    	assertTrue(ps.getRefNamesSet().contains("KEY2"));
+    	assertTrue(ps.getRefNamesSet().contains("KEY3"));
+    }
+    
+//------------------------------------------------------------------------------
 
+    @Test
+    public void testGetParameterOrNull() throws Exception
+    {
+    	ParameterStorage ps = new ParameterStorage();
+    	ps.setParameter("KEY1", NamedDataType.STRING, "1.123");
+    	ps.setParameter("KEY2", NamedDataType.DOUBLE, 1.123);
+    	ps.setParameter("KEY3", NamedDataType.INTEGER, 206);
+    	NamedData rp1 = ps.getParameterOrNull("key1");
+    	NamedData rp2 = ps.getParameterOrNull("key2");
+    	NamedData rp3 = ps.getParameterOrNull("key3");
+    	NamedData rp4 = ps.getParameterOrNull("key4");
+    	
+    	assertTrue(rp1.getValue() instanceof String); 
+        assertTrue(rp2.getValue() instanceof Double);
+        assertTrue(rp3.getValue() instanceof Integer);
+        assertTrue(rp4==null);
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testJsonRoundTrip() throws Exception
+    {
+    	ParameterStorage ps = new ParameterStorage();
+    	ps.setParameter("KEY1", NamedDataType.STRING, "1.123");
+    	ps.setParameter("KEY2", NamedDataType.DOUBLE, 1.123);
+    	ps.setParameter("KEY3", NamedDataType.INTEGER, 206);
+    	
+    	Gson writer = ACCJson.getWriter();
+    	Gson reader = ACCJson.getReader();
+    	
+    	String jsonStr = writer.toJson(ps);
+    	ParameterStorage ps2 = reader.fromJson(jsonStr, ParameterStorage.class);
+    	
+    	assertEquals(3, ps.getRefNamesSet().size());
+    	assertEquals(ps.getRefNamesSet().size(), ps2.getRefNamesSet().size());
+    	for (String key : ps.getRefNamesSet())
+    	{
+    		assertTrue(ps2.contains(key));
+    		assertEquals(ps.getParameter(key).getValueAsString(), 
+    				ps2.getParameter(key).getValueAsString());
+    	}
     }
 
 //------------------------------------------------------------------------------

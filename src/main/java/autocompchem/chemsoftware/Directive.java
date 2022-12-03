@@ -35,8 +35,6 @@ import com.google.gson.JsonSerializer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
@@ -45,7 +43,6 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
-import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
@@ -591,16 +588,25 @@ public class Directive implements IDirectiveComponent
     	{
     		if (k.hasACCTask())
     		{
-	    		ParameterStorage ps = getACCTaskParams(k.getValue(), k);
-	    		performACCTask(mol,ps,k,job);
+	    		ParameterStorage ps;
+    			if (k.getTaskParams()!=null)
+    			{
+    				ps = k.getTaskParams();
+    			} else {
+    				ps = getACCTaskParams(k.getValue(), k);
+    			}
+	    		performACCTask(mol, ps, k, job);
     		}
     	}
     	for (DirectiveData dd : dirData)
     	{
     		if (dd.hasACCTask())
     		{
-    			if (dd.getValue()!=null)
+	    		ParameterStorage ps;
+    			if (dd.getTaskParams()!=null)
     			{
+    				ps = dd.getTaskParams();
+    			} else {
 	    			// This is legacy code: deals with cases where the parameters 
 	    			//defining the task are still listed in the 'value' of dd
 	    			ArrayList<String> lines = dd.getLines();
@@ -615,13 +621,9 @@ public class Directive implements IDirectiveComponent
 		    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
 		    					+ ChemSoftConstants.JDCLOSEBLOCK);
 	    			}
-	    			ParameterStorage ps = getACCTaskParams(lines, dd);
-		        	performACCTask(mol,ps,dd,job);
-    			} else {
-    				// The task is defined in parameters that are already 
-    				// well collected in the DirectiveData data structure
-    				performACCTask(mol,dd.getTaskParams(),dd,job);
+	    			ps = getACCTaskParams(lines, dd);
     			}
+				performACCTask(mol, ps, dd, job);
     		}	
     	}
     	for (Directive d : subDirectives)
@@ -775,23 +777,23 @@ public class Directive implements IDirectiveComponent
             		case "GENERATECONSTRAINTS":
             			break;
             		default:
-            			ps.setParameter(new Parameter(key,
-            					line.substring(line.indexOf(":")+1).trim()));
+            			ps.setParameter(key,
+            					line.substring(line.indexOf(":")+1).trim());
             	}
             }
             if (!smarts.isBlank())
 			{
-            	ps.setParameter(new Parameter("SMARTS",smarts));
+            	ps.setParameter("SMARTS",smarts);
 			}
             if (!atomIDs.isBlank())
 			{
-            	ps.setParameter(new Parameter("ATOMIDS",atomIDs));
+            	ps.setParameter("ATOMIDS",atomIDs);
 			}
 		}
 
     	if (fixObsoleteSytax)
     	{
-    		ps.setParameter(new Parameter(ChemSoftConstants.JDLABACCTASK, task));
+    		ps.setParameter(ChemSoftConstants.JDLABACCTASK, task);
     	}
     	return ps;
     }
@@ -800,13 +802,11 @@ public class Directive implements IDirectiveComponent
 
     /**
      * Performs the task that is specified in the given set of parameters. Note
-     * the given parameters are all meant of a single task that is defined by 
-     * the {@link ChemSoftConstants.JDLABACCTASK} parameter. Other
-     * parameters are given to complement the information the task might need.
+     * the given parameters are all meant to pertain a single task.
      * @param mol the molecular representation given to mol-dependent tasks.
-     * @param ps the collection of parameters defining one single task (though 
-     * this can certainly require more than one parameter).
-     * @param dirComp the component that contained the definition of the task.
+     * @param params the collection of parameters defining one single task 
+     * (though this can certainly require more than one parameter).
+     * @param dirComp the directive component that required to perform the task.
      * @param job the job containing the directive component
      */
     
@@ -971,8 +971,7 @@ public class Directive implements IDirectiveComponent
                 bsGenParams.setParameter(params.getParameter(task));
                 
                 //TODO-gg this simplifies if we use TaskID as it should 
-                bsGenParams.setParameter(new Parameter("TASK",
-            		NamedDataType.STRING, "GENERATEBASISSET"));
+                bsGenParams.setParameter("TASK", "GENERATEBASISSET");
             	Worker w = WorkerFactory.createWorker(bsGenParams);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
@@ -998,8 +997,9 @@ public class Directive implements IDirectiveComponent
                 ParameterStorage cnstrParams = params.clone();
                 
                 //TODO: this should be avoided by using TASK instead of ACCTASK
-                cnstrParams.setParameter(new Parameter("TASK",
-            		NamedDataType.STRING, TaskID.GENERATECONSTRAINTS));
+                //TODO-gg use WorkerConstant.TASK
+                cnstrParams.setParameter("TASK", 
+                		TaskID.GENERATECONSTRAINTS.toString());
                 
             	Worker w = WorkerFactory.createWorker(cnstrParams);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
