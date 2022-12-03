@@ -56,7 +56,6 @@ public class ParameterStorageTest
     @Test
     public void testGetRefNamesSet() throws Exception
     {
-
         Parameter p1 = new Parameter("KEY1", NamedDataType.STRING,"1.123"); 
         Parameter p2 = new Parameter("KEY2", NamedDataType.DOUBLE,1.123);
         Parameter p3 = new Parameter("KEY3", NamedDataType.INTEGER,206);
