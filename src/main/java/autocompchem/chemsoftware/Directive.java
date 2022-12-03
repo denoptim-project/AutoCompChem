@@ -622,8 +622,7 @@ public class Directive implements IDirectiveComponent
     				// well collected in the DirectiveData data structure
     				performACCTask(mol,dd.getTaskParams(),dd,job);
     			}
-    		}
-    		
+    		}	
     	}
     	for (Directive d : subDirectives)
     	{

@@ -380,11 +380,15 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
         ArrayList<String> lines= new ArrayList<String>();
         for (int step = 0; step<job.getNumberOfSteps(); step++)
         {
+        	CompChemJob stepCcj = (CompChemJob)job.getStep(step);
+        	//TODO log
+        	System.out.println("Preparing input for step " + stepCcj.getId());
+        	
             if (step != 0)
             {
                 lines.add(GaussianConstants.STEPSEPARATOR);
             }
-            lines.addAll(getTextForStep((CompChemJob)job.getStep(step)));
+            lines.addAll(getTextForStep(stepCcj));
         }
         return lines;
     }
@@ -630,7 +634,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     			// convert the agnostic data into Gaussian slang
     			switch (ddName.toUpperCase())
     			{
-	    			case "BASISSET":
+	    			case GaussianConstants.DDBASISSET:
 	    			{
 	    				BasisSet bs = (BasisSet) dd.getValue();
 	    				lines.add(bs.toInputFileString("Gaussian"));
@@ -638,9 +642,49 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 	    				break;
 	    			}
 	    			
-	    			//TODO-gg others may need Gaussian specific formatting
-	    			//TODO constraints
-    			
+	    			case GaussianConstants.DDMODREDUNDANT:
+	    			{
+	    				ConstraintsSet cs = (ConstraintsSet) dd.getValue();
+	                    for (Constraint cns : cs)
+	                    {
+	                    	String str = "";
+	                    	switch (cns.getType())
+	                    	{
+								case ANGLE:
+									str = "A " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1) + " "
+											+ (cns.getAtomIDs()[2]+1);
+									
+									break;
+								case DIHEDRAL:
+									str = "D " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1) + " "
+											+ (cns.getAtomIDs()[2]+1) + " "
+											+ (cns.getAtomIDs()[3]+1);
+									break;
+								case DISTANCE:
+									str = "B " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1);
+									break;
+								case FROZENATM:
+									str = "X " + (cns.getAtomIDs()[0]+1);
+									break;
+								case UNDEFINED:
+									break;
+								default:
+									break;
+	                    	}
+	                    	
+	                    	if (cns.hasOpt())
+	                    	{
+	                    		str = str + " " + cns.getOpt();
+	                    	}
+	                    	lines.add(str);
+	                    }
+	        			lines.add(""); //empty line that terminates this part of option section
+	    				break;
+	    			}
+	    		
 	    			default:
 	    			{
 	    				lines.addAll(optDir.getDirectiveData(ddName).getLines());
