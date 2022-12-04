@@ -110,20 +110,16 @@
           "name": "Options",
           "dirData": [
             {
-              "accTaskParams": {
-                "allData": {
-                  "ATOMSPECIFICBASISSET": {
-                    "reference": "ATOMSPECIFICBASISSET",
-                    "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/Pd__LANL2DZ_ECP.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs",
-                    "type": "STRING"
-                  },
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATEBASISSET",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/Pd__LANL2DZ_ECP.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
                 }
-              },
+              ],
               "reference": "BASISSET",
               "type": "UNDEFINED"
             },
@@ -265,20 +261,16 @@
           "name": "Options",
           "dirData": [
             {
-              "accTaskParams": {
-                "allData": {
-                  "ATOMSPECIFICBASISSET": {
-                    "reference": "ATOMSPECIFICBASISSET",
-                    "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/PD__LANL2DZ_ECPonly.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs\nSMARTS [$([#6]~[Fe])] link ../data/basisset/gaussian/C__Stuttgart_RCL_ECP.gbs\nSMARTS [$([*]~[Pd])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#7] name LANL2DZ",
-                    "type": "STRING"
-                  },
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATEBASISSET",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/PD__LANL2DZ_ECPonly.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs\nSMARTS [$([#6]~[Fe])] link ../data/basisset/gaussian/C__Stuttgart_RCL_ECP.gbs\nSMARTS [$([*]~[Pd])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#7] name LANL2DZ"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
                 }
-              },
+              ],
               "reference": "BASISSET",
               "type": "UNDEFINED"
             }

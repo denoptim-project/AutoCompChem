@@ -249,11 +249,15 @@ public class DirectiveFactory
                      || uLine.startsWith(ChemSoftConstants.JDLABMUTEKEY))
             {
                 Keyword kw = new Keyword(line);
+                if (kw.hasACCTask())
+                	kw.removeValue();
                 d.addKeyword(kw);
             }
             else if (uLine.startsWith(ChemSoftConstants.JDLABDATA))
             {
                 DirectiveData data = new DirectiveData(line);
+                if (data.hasACCTask())
+                	data.removeValue();
                 d.addDirectiveData(data);
             }
             else if (uLine.startsWith(ChemSoftConstants.JDLABDIRECTIVE))

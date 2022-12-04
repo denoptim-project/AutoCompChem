@@ -172,20 +172,16 @@
           "subDirectives": [
             {
               "name": "ZCOORD",
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[Cl] [Ru] 2.5 BondRuCl constant\n[C] [N]\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 constant\n[C] [Ru] [C] [N] constant",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[Cl] [Ru] 2.5 BondRuCl constant\n[C] [N]\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 constant\n[C] [Ru] [C] [N] constant"
                 }
-              }
+              ]
             }
           ]
         },
@@ -384,20 +380,16 @@
           "subDirectives": [
             {
               "name": "ZCOORD",
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[Cl] [Ru]\n[C] [N]\n[C] [Ru] [$(C(~[Ru])~C)]\n[C] [Ru] [C] [N]",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[Cl] [Ru]\n[C] [N]\n[C] [Ru] [$(C(~[Ru])~C)]\n[C] [Ru] [C] [N]"
                 }
-              }
+              ]
             }
           ]
         },

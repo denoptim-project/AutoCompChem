@@ -64,9 +64,15 @@
       {
         "name": "filename",
         "isLoud": false,
-        "value": [
-          "$ACCTASK: GET_FILENAME ",
-          "SUFFIX: .xyz"
+        "accTaskParams": [
+          {
+            "reference": "SUFFIX",
+            "value": ".xyz"
+          },
+          {
+            "reference": "TASK",
+            "value": "GET_FILENAME"
+          }
         ]
       }
     ]
@@ -75,20 +81,14 @@
     "name": "coords",
     "dirData": [
       {
-        "accTaskParams": {
-          "allData": {
-            "TASK": {
-              "reference": "TASK",
-              "value": "ADD_GEOMETRY",
-              "type": "STRING"
-            }
+        "accTaskParams": [
+          {
+            "reference": "TASK",
+            "value": "ADD_GEOMETRY"
           }
-        },
-        "reference": "tmp",
-        "value": [
-          "$ACCTASK: ADD_GEOMETRY"
         ],
-        "type": "TEXTBLOCK"
+        "reference": "tmp",
+        "type": "UNDEFINED"
       }
     ]
   },
@@ -167,10 +167,19 @@
           {
             "name": "filename",
             "isLoud": false,
-            "value": [
-              "$ACCTASK: GET_FILENAME",
-              "SUFFIX: .hess",
-              "QUOTATION: \""
+            "accTaskParams": [
+              {
+                "reference": "SUFFIX",
+                "value": ".hess"
+              },
+              {
+                "reference": "TASK",
+                "value": "GET_FILENAME"
+              },
+              {
+                "reference": "QUOTATION",
+                "value": "\""
+              }
             ]
           }
         ]
@@ -179,45 +188,26 @@
         "name": "constraints",
         "dirData": [
           {
-            "accTaskParams": {
-              "allData": {
-                "TASK": {
-                  "reference": "TASK",
-                  "value": "GenerateConstraints",
-                  "type": "STRING"
-                },
-                "SMARTS": {
-                  "reference": "SMARTS",
-                  "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded",
-                  "type": "STRING"
-                },
-                "VERBOSITY": {
-                  "reference": "VERBOSITY",
-                  "value": "2",
-                  "type": "STRING"
-                },
-                "ATOMIDS": {
-                  "reference": "ATOMIDS",
-                  "value": "1\n2 3 1.234\n2 3 4 126.0\n2 3 4 5 -0.123\n12",
-                  "type": "STRING"
-                }
+            "accTaskParams": [
+              {
+                "reference": "TASK",
+                "value": "GenerateConstraints"
+              },
+              {
+                "reference": "SMARTS",
+                "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded"
+              },
+              {
+                "reference": "VERBOSITY",
+                "value": "2"
+              },
+              {
+                "reference": "ATOMIDS",
+                "value": "1\n2 3 1.234\n2 3 4 126.0\n2 3 4 5 -0.123\n12"
               }
-            },
-            "reference": "constraints",
-            "value": [
-              "$ACCTASK: GenerateConstraints",
-              "VERBOSITY: 2",
-              "SMARTS:$START[#8]",
-              "[$([#6](~[#1])(~[#1])~[#1])]",
-              "[#6] [#8] [#6] onlybonded",
-              "$END",
-              "AtomIDS:$START 1",
-              "2 3 1.234",
-              "2 3 4 126.0",
-              "2 3 4 5 -0.123",
-              "12$END"
             ],
-            "type": "TEXTBLOCK"
+            "reference": "constraints",
+            "type": "UNDEFINED"
           }
         ]
       }

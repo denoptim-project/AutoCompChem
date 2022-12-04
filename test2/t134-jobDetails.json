@@ -31,44 +31,26 @@
     ],
     "dirData": [
       {
-        "accTaskParams": {
-          "allData": {
-            "TASK": {
-              "reference": "TASK",
-              "value": "GenerateConstraints",
-              "type": "STRING"
-            },
-            "SMARTS": {
-              "reference": "SMARTS",
-              "value": "[#6] [#8] onlybonded\n[#8] notAnIC",
-              "type": "STRING"
-            },
-            "VERBOSITY": {
-              "reference": "VERBOSITY",
-              "value": "2",
-              "type": "STRING"
-            },
-            "ATOMIDS": {
-              "reference": "ATOMIDS",
-              "value": "1\n2 3 1.234\n2 3 4\n2 3 4 5 -0.123\n1 2 3 4 5 notAnIC\n12",
-              "type": "STRING"
-            }
+        "accTaskParams": [
+          {
+            "reference": "TASK",
+            "value": "GenerateConstraints"
+          },
+          {
+            "reference": "SMARTS",
+            "value": "[#6] [#8] onlybonded\n[#8] notAnIC"
+          },
+          {
+            "reference": "VERBOSITY",
+            "value": "2"
+          },
+          {
+            "reference": "ATOMIDS",
+            "value": "1\n2 3 1.234\n2 3 4\n2 3 4 5 -0.123\n1 2 3 4 5 notAnIC\n12"
           }
-        },
-        "reference": "constraints",
-        "value": [
-          "$ACCTASK: GenerateConstraints",
-          "VERBOSITY: 2",
-          "SMARTS:$START[#6] [#8] onlybonded",
-          "[#8] notAnIC$END",
-          "AtomIDS:$START 1",
-          "2 3 1.234",
-          "2 3 4",
-          "2 3 4 5 -0.123",
-          "1 2 3 4 5 notAnIC",
-          "12$END"
         ],
-        "type": "TEXTBLOCK"
+        "reference": "constraints",
+        "type": "UNDEFINED"
       }
     ]
   },
@@ -85,41 +67,26 @@
     ],
     "dirData": [
       {
-        "accTaskParams": {
-          "allData": {
-            "TASK": {
-              "reference": "TASK",
-              "value": "GenerateConstraints",
-              "type": "STRING"
-            },
-            "SMARTS": {
-              "reference": "SMARTS",
-              "value": "[#6] [#7] onlybonded",
-              "type": "STRING"
-            },
-            "VERBOSITY": {
-              "reference": "VERBOSITY",
-              "value": "2",
-              "type": "STRING"
-            },
-            "ATOMIDS": {
-              "reference": "ATOMIDS",
-              "value": "10\n11 7\n10 11 9 12 13 notAnIC\n12",
-              "type": "STRING"
-            }
+        "accTaskParams": [
+          {
+            "reference": "TASK",
+            "value": "GenerateConstraints"
+          },
+          {
+            "reference": "SMARTS",
+            "value": "[#6] [#7] onlybonded"
+          },
+          {
+            "reference": "VERBOSITY",
+            "value": "2"
+          },
+          {
+            "reference": "ATOMIDS",
+            "value": "10\n11 7\n10 11 9 12 13 notAnIC\n12"
           }
-        },
-        "reference": "freeze",
-        "value": [
-          "$ACCTASK: GenerateConstraints",
-          "VERBOSITY: 2",
-          "SMARTS:[#6] [#7] onlybonded",
-          "AtomIDS:$START 10",
-          "11 7",
-          "10 11 9 12 13 notAnIC",
-          "12$END"
         ],
-        "type": "TEXTBLOCK"
+        "reference": "freeze",
+        "type": "UNDEFINED"
       }
     ]
   },

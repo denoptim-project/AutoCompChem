@@ -493,7 +493,10 @@ public class NamedData implements Cloneable
 		{
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("reference", src.reference);
-            jsonObject.addProperty("type", src.type.toString());
+            if (src.type != NamedDataType.STRING)
+            {
+                jsonObject.addProperty("type", src.type.toString());	
+            }
 			if (!jsonable.contains(src.getType()))
 			{
 	            jsonObject.addProperty("value", NONJSONABLE);
@@ -509,7 +512,6 @@ public class NamedData implements Cloneable
     public static class NamedDataDeserializer 
       implements JsonDeserializer<NamedData>
     {
-
 		@Override
 		public NamedData deserialize(JsonElement json, Type typeOfT, 
 				JsonDeserializationContext context)
@@ -517,9 +519,11 @@ public class NamedData implements Cloneable
 		{
 			JsonObject jo = json.getAsJsonObject();
 			Object joValue = null;
-			NamedDataType joType = NamedDataType.valueOf(
-					jo.get("type").getAsString());
-			
+			NamedDataType joType = NamedDataType.STRING;
+			if (jo.has("type"))
+			{
+				joType = NamedDataType.valueOf(jo.get("type").getAsString());
+			}
 			JsonElement je = jo.get("value");
 			if (!jsonable.contains(joType))
 			{

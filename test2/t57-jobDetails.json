@@ -338,21 +338,16 @@
             {
               "name": "geometry:actlist",
               "isLoud": true,
-              "value": [],
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[#1][#6,#14][Ru]\n[#1][#6][#6,#14][Ru]\n[#1][#6][#6][#14][Ru]",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1][#6,#14][Ru]\n[#1][#6][#6,#14][Ru]\n[#1][#6][#6][#14][Ru]"
                 }
-              }
+              ]
             }
           ]
         }
@@ -483,21 +478,16 @@
             {
               "name": "geometry:actlist",
               "isLoud": true,
-              "value": [],
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[#6]@[#14]",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#6]@[#14]"
                 }
-              }
+              ]
             }
           ]
         }

@@ -362,12 +362,21 @@ public class Keyword implements IDirectiveComponent
     /**
      * Produced a string representation of this keyword
      */
-    
     public String toString()
     {
     	return "[Keyword: '" + name + "', " + isLoud + ", '" 
     			 + StringUtils.mergeListToString(value, " ") + "']";
     }
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Changed the value to <code>null</code>
+     */
+	public void removeValue() 
+	{
+		value = null;
+	}
 
 //-----------------------------------------------------------------------------
  

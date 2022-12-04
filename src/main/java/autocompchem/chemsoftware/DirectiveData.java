@@ -303,24 +303,19 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         public DirectiveData deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException
         {
-        	
-        	JsonObject jsonObject = json.getAsJsonObject();
-             
-            if (!jsonObject.has("type"))
-            {
-                String msg = "Missing NamedDataType: found a "
-                         + "JSON string that cannot be converted into a "
-                         + "DirectiveData.";
-                throw new JsonParseException(msg);
-            }       
+        	JsonObject jsonObject = json.getAsJsonObject();      
 
             DirectiveData dd = new DirectiveData();
             String reference = context.deserialize(jsonObject.get("reference"),
             		 String.class);
             dd.setReference(reference);
              
-            NamedDataType typ = context.deserialize(jsonObject.get("type"),
+            NamedDataType typ = NamedDataType.UNDEFINED;
+            if (jsonObject.has("type"))
+            {
+            	typ = context.deserialize(jsonObject.get("type"),
             		 NamedDataType.class);
+            }
             dd.setType(typ);
              
             if (jsonObject.has("value") && typ==NamedDataType.TEXTBLOCK)

@@ -64,20 +64,16 @@
             },
             {
               "name": "ZCOORD",
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[#1] [Ru] constant\n[$([#6]~[#7])] [Ru] [#1] constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] constant",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [Ru] constant\n[$([#6]~[#7])] [Ru] [#1] constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] constant"
                 }
-              }
+              ]
             }
           ]
         },
@@ -115,20 +111,16 @@
               ]
             }
           ],
-          "accTaskParams": {
-            "allData": {
-              "ATOMSPECIFICBASISSET": {
-                "reference": "ATOMSPECIFICBASISSET",
-                "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement Cl Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs",
-                "type": "STRING"
-              },
-              "TASK": {
-                "reference": "TASK",
-                "value": "GENERATEBASISSET",
-                "type": "STRING"
-              }
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement Cl Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
             }
-          }
+          ]
         }
       ]
     },
@@ -248,20 +240,16 @@
               ]
             }
           ],
-          "accTaskParams": {
-            "allData": {
-              "ATOMSPECIFICBASISSET": {
-                "reference": "ATOMSPECIFICBASISSET",
-                "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nSMARTS [$([#1,#6,#17]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [$([#6]~[#6,#1]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs",
-                "type": "STRING"
-              },
-              "TASK": {
-                "reference": "TASK",
-                "value": "GENERATEBASISSET",
-                "type": "STRING"
-              }
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nSMARTS [$([#1,#6,#17]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [$([#6]~[#6,#1]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
             }
-          }
+          ]
         }
       ]
     }

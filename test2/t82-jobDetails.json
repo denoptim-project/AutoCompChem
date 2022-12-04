@@ -110,20 +110,16 @@
         },
         {
           "name": "basis",
-          "accTaskParams": {
-            "allData": {
-              "ATOMSPECIFICBASISSET": {
-                "reference": "ATOMSPECIFICBASISSET",
-                "value": "Element H Link  somepath/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nElement C Link  somepath/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs",
-                "type": "STRING"
-              },
-              "TASK": {
-                "reference": "TASK",
-                "value": "GENERATEBASISSET",
-                "type": "STRING"
-              }
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "Element H Link  somepath/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nElement C Link  somepath/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
             }
-          }
+          ]
         }
       ]
     },

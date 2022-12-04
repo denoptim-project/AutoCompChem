@@ -110,48 +110,38 @@
           "name": "Options",
           "dirData": [
             {
-              "accTaskParams": {
-                "allData": {
-                  "ATOMSPECIFICBASISSET": {
-                    "reference": "ATOMSPECIFICBASISSET",
-                    "value": "SMARTS [#6] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#1] name STO-3G\nSMARTS [#7] name STO-3G\nSMARTS [#17] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs",
-                    "type": "STRING"
-                  },
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATEBASISSET",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "SMARTS [#6] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#1] name STO-3G\nSMARTS [#7] name STO-3G\nSMARTS [#17] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
                 }
-              },
+              ],
               "reference": "BASISSET",
               "type": "UNDEFINED"
             },
             {
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded\n[#6] [#8] options:F more",
-                    "type": "STRING"
-                  },
-                  "VERBOSITY": {
-                    "reference": "VERBOSITY",
-                    "value": "2",
-                    "type": "STRING"
-                  },
-                  "ATOMIDS": {
-                    "reference": "ATOMIDS",
-                    "value": "1\n2 3 A\n2 3 4 126.0 F\n2 3 4 5 -0.123 options:A b c d",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded\n[#6] [#8] options:F more"
+                },
+                {
+                  "reference": "VERBOSITY",
+                  "value": "2"
+                },
+                {
+                  "reference": "ATOMIDS",
+                  "value": "1\n2 3 A\n2 3 4 126.0 F\n2 3 4 5 -0.123 options:A b c d"
                 }
-              },
+              ],
               "reference": "MODREDUNDANT",
               "type": "UNDEFINED"
             }

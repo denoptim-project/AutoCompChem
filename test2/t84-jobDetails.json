@@ -117,20 +117,16 @@
           "name": "Options",
           "dirData": [
             {
-              "accTaskParams": {
-                "allData": {
-                  "ATOMSPECIFICBASISSET": {
-                    "reference": "ATOMSPECIFICBASISSET",
-                    "value": "SMARTS [*] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [$([*]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs\nSMARTS [$([#1]~[#6]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs",
-                    "type": "STRING"
-                  },
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATEBASISSET",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "SMARTS [*] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [$([*]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs\nSMARTS [$([#1]~[#6]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
                 }
-              },
+              ],
               "reference": "BASISSET",
               "type": "UNDEFINED"
             }

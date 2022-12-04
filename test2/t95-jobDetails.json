@@ -162,20 +162,16 @@
           "name": "Options",
           "dirData": [
             {
-              "accTaskParams": {
-                "allData": {
-                  "ATOMSPECIFICBASISSET": {
-                    "reference": "ATOMSPECIFICBASISSET",
-                    "value": "Element C name STO-3G\nElement H name STO-3G\nElement N link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs",
-                    "type": "STRING"
-                  },
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATEBASISSET",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element C name STO-3G\nElement H name STO-3G\nElement N link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
                 }
-              },
+              ],
               "reference": "BASISSET",
               "type": "UNDEFINED"
             },

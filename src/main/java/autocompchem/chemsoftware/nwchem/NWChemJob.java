@@ -402,6 +402,7 @@ public class NWChemJob
 					Keyword activeSetKey = new Keyword(NWChemConstants.ACTIVEATOMS, 
 							true, new ArrayList<String>());
 					activeSetKey.setTaskParams(taskPs);
+					activeSetKey.removeValue();
 					
 					Directive setDir = ccjStep.getDirective("SET");
 					if (setDir==null)

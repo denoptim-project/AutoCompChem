@@ -332,8 +332,10 @@ public class GaussianJob
 			GaussianLinkCommandsSection lnk0 = step.getLinkCommand();
 			for (String link0Key : lnk0.keySet())
 			{
-				lnk0Dir.addKeyword(new Keyword(link0Key, true, 
-						lnk0.getValue(link0Key)));
+				Keyword k = new Keyword(link0Key, true, lnk0.getValue(link0Key));
+				if (k.hasACCTask())
+					k.removeValue();
+				lnk0Dir.addKeyword(k);
 			}
 			ccjStep.setDirective(lnk0Dir);
 			
@@ -367,24 +369,31 @@ public class GaussianJob
 	                    if (subkeyWLabel.toUpperCase().startsWith(
 	                    		GaussianConstants.LABLOUDKEY))
 	                    {
-	                        outerDir.addKeyword(new Keyword(
-	                        		subkeyWLabel.substring(3), 
-	                        		true, route.getValue(rKey)));
+	                    	Keyword k = new Keyword(subkeyWLabel.substring(3),
+	                    			true, route.getValue(rKey));
+	                    	if (k.hasACCTask())
+	        					k.removeValue();
+	                        outerDir.addKeyword(k);
 	                    } 
 	                    else if (subkeyWLabel.toUpperCase().startsWith(
 	                    		GaussianConstants.LABMUTEKEY)) 
 	                    {
-	                        outerDir.addKeyword(new Keyword(
-	                        		subkeyWLabel.substring(3), 
-	                        		false, route.getValue(rKey)));
+	                    	Keyword k = new Keyword(subkeyWLabel.substring(3), 
+	                        		false, route.getValue(rKey));
+	                    	if (k.hasACCTask())
+	        					k.removeValue();
+	                        outerDir.addKeyword(k);
 	                    }
 	                    if (!existed)
 	                    {
 	                    	routeDir.addSubDirective(outerDir);
 	                    }
 					} else {
-						routeDir.addKeyword(new Keyword(rKey.substring(3), true, 
-								route.getValue(rKey)));
+						Keyword k = new Keyword(rKey.substring(3), true, 
+								route.getValue(rKey));
+                    	if (k.hasACCTask())
+        					k.removeValue();
+						routeDir.addKeyword(k);
 					}
 				} else if (uKey.startsWith(GaussianConstants.LABFREE))
 				{
@@ -416,7 +425,10 @@ public class GaussianJob
 			GaussianOptionsSection optSec = step.getOptionSection();
 			for (String key : optSec.getRefNames())
 			{
-				DirectiveData dd = new DirectiveData(key.substring(3),
+				String ddName = key.substring(3);
+				if (ddName.toUpperCase().equals("BASIS"))
+					ddName = "BASISSET";
+				DirectiveData dd = new DirectiveData(ddName,
 						new ArrayList<String>(Arrays.asList(
 								optSec.getValue(key).split(
 										System.getProperty("line.separator")))));

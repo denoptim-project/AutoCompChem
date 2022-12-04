@@ -119,15 +119,12 @@
     },
     {
       "jobType": "CompChemJob",
-      "params": {
-        "allData": {
-          "SPIN_MULTIPLICITY": {
-            "reference": "SPIN_MULTIPLICITY",
-            "value": "2",
-            "type": "STRING"
-          }
+      "params": [
+        {
+          "reference": "SPIN_MULTIPLICITY",
+          "value": "2"
         }
-      },
+      ],
       "directives": [
         {
           "name": "ecp",
@@ -250,21 +247,16 @@
             {
               "name": "geometry:actlist",
               "isLoud": true,
-              "value": [],
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[#1][#6,#14][Ru]\n[#1][#6][#6,#14][Ru]\n[#1][#6][#6][#14][Ru]",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1][#6,#14][Ru]\n[#1][#6][#6,#14][Ru]\n[#1][#6][#6][#14][Ru]"
                 }
-              }
+              ]
             }
           ]
         }
@@ -272,15 +264,12 @@
     },
     {
       "jobType": "CompChemJob",
-      "params": {
-        "allData": {
-          "CHARGE": {
-            "reference": "CHARGE",
-            "value": "-26",
-            "type": "STRING"
-          }
+      "params": [
+        {
+          "reference": "CHARGE",
+          "value": "-26"
         }
-      },
+      ],
       "directives": [
         {
           "name": "ecp",
@@ -404,21 +393,16 @@
             {
               "name": "geometry:actlist",
               "isLoud": true,
-              "value": [],
-              "accTaskParams": {
-                "allData": {
-                  "TASK": {
-                    "reference": "TASK",
-                    "value": "GENERATECONSTRAINTS",
-                    "type": "STRING"
-                  },
-                  "SMARTS": {
-                    "reference": "SMARTS",
-                    "value": "[#6]@[#14]",
-                    "type": "STRING"
-                  }
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#6]@[#14]"
                 }
-              }
+              ]
             }
           ]
         }
