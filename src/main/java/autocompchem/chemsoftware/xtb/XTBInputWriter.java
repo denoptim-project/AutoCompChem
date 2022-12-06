@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -49,8 +50,6 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-//TODO: write doc
-
 public class XTBInputWriter extends ChemSoftInputWriter
 {
     /**
@@ -74,20 +73,13 @@ public class XTBInputWriter extends ChemSoftInputWriter
     
 //------------------------------------------------------------------------------
     
+    @Deprecated
     protected void printInputForOneMol(IAtomContainer mol, 
     		String outFileName, String outFileNameRoot)
     {		
 		CompChemJob molSpecJob = ccJob.clone();
 
 		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		
-    	// WARNING: at this time XTB is not capable of running a multi-step jobs
-/*		
-		for (Job subJob : molSpecJob.getSteps())
-		{
-			subJob.setParameter(pathnamePar);
-		}
-*/
 		
 		Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
 		if (pCharge != null)
@@ -124,7 +116,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 		}
 		
 		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(mol);
+		molSpecJob.processDirectives(new ArrayList<IAtomContainer>(Arrays.asList(
+				mol)));
 		//molSpecJob.sortDirectivesBy(new XTBDirectiveComparator());
 		
     	// WARNING: at this time XTB is not capable of running a multi-step jobs
@@ -142,21 +135,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 		}
 		IOtools.writeTXTAppend(outFileName, lines, true);
     }
-    
-//------------------------------------------------------------------------------
-    
-    private ArrayList<String> getTextForInput(CompChemJob job)
-    {
-    	ArrayList<String> lines = new ArrayList<String>();
-		Iterator<Directive> it = job.directiveIterator();
-		while (it.hasNext())
-		{
-			Directive d = it.next();
-			lines.addAll(getTextForInput(d,true));
-		}
-    	return lines;
-    }
-    
+
 //------------------------------------------------------------------------------
     
     /**
@@ -527,7 +506,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
             if (c.hasValue())
             {
                 frozenAngleStr = frozenAngleStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) + ", " 
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", " 
                 		+ c.getValue();
             } else {
                 frozenAngleStr = frozenAngleStr + (c.getAtomIDs()[0]+1) + ", "
@@ -543,11 +523,13 @@ public class XTBInputWriter extends ChemSoftInputWriter
             if (c.hasValue())
             {
                 frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
                         + (c.getAtomIDs()[3]+1) + ", " + c.getValue();
             } else {
                 frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
                         + (c.getAtomIDs()[3]+1)
                         + ", auto";
             }
@@ -569,6 +551,89 @@ public class XTBInputWriter extends ChemSoftInputWriter
         }
     	return lines;
     }
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     * 
+     * This method is not doing anything in XTB job's main input file. No usage
+     * case requiring such functionality.
+     */
+	@Override
+	protected void setSystemSpecificNames(CompChemJob ccj) 
+	{}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * In XTB the charge is defined in a {@link Keyword} of the
+	 * 'charge' {@link Directive}.
+	 */
+	@Override
+	protected void setChargeIfUnset(CompChemJob ccj, String charge) 
+	{
+		//TODO-gg use constant for directive name.
+		setKeywordIfNotAlreadyThere(ccj, "charge", "value", false, charge);
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * In XTB the spin multiplicity is defined in a {@link Keyword} of the
+	 * 'spin' {@link Directive} as number of unpaired electrons.
+	 */
+	@Override
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm) 
+	{
+		int numUnpairedEls = Integer.parseInt(sm) - 1;
+		//TODO-gg use constant for directive name.
+		setKeywordIfNotAlreadyThere(ccj, "spin", "value", false, 
+				numUnpairedEls + "");
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * XTB allows for reading the chemical system in an external file. This
+	 * method is, therefore, not writing any molecular specification to the
+	 * job's main input file.
+	 */
+	@Override
+	protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs) 
+	{}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * At this time, XTB does not run multi-step jobs. Therefore, an exception is
+	 * triggered if you try to feed a multi-step job as argument to this method.
+	 */
+	@Override
+	protected ArrayList<String> getTextForInput(CompChemJob job) 
+	{
+		if (job.getNumberOfSteps()>1)
+			throw new IllegalArgumentException("ERROR! XTB does not run "
+					+ "multi-step jobs, but your input contains more than one "
+					+ "step.");
+		
+    	ArrayList<String> lines = new ArrayList<String>();
+		Iterator<Directive> it = job.directiveIterator();
+		while (it.hasNext())
+		{
+			Directive d = it.next();
+			lines.addAll(getTextForInput(d,true));
+		}
+    	return lines;
+	}
     
 //------------------------------------------------------------------------------
 

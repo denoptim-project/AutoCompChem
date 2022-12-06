@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -157,12 +158,12 @@ public class CompChemJob extends Job implements Cloneable
      * Looks into the existing directives for ACC tasks, and performs them.
      * Depending on the task, some directives may be changed as a result of the
      * ACC tasks. 
-     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param mols the molecular representation given to mol-dependent tasks.
      */
     
     //TODO rename so that it is clear that this makes the job mol-dependent
     
-    public void processDirectives(IAtomContainer mol)
+    public void processDirectives(List<IAtomContainer> mols)
     {
     	for (Directive d : directives)
     	{
@@ -170,11 +171,11 @@ public class CompChemJob extends Job implements Cloneable
     		{
     			continue;
     		}
-    		d.performACCTasks(mol,this);
+    		d.performACCTasks(mols, this);
     	}
     	for (Job step : steps)
     	{
-    		((CompChemJob) step).processDirectives(mol);
+    		((CompChemJob) step).processDirectives(mols);
     	}
     }
 

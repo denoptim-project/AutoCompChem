@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware;
 
+import java.io.File;
 import java.io.IOException;
 
 /*
@@ -21,14 +22,22 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
+import javax.vecmath.Point3d;
+
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Worker;
 
@@ -309,31 +318,9 @@ public abstract class ChemSoftInputWriter extends Worker
     @Override
     public void performTask()
     {
-        if (multiGeomMode.equals(MultiGeomMode.SingleGeom))
-        {
-            printInputForEachMol();
-        } else {
-            printInputWithMultipleGeometry();
-        }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
-        }
-    }
-    
-//------------------------------------------------------------------------------
-    
-    private void printInputForEachMol()
-    {
     	if (inpGeom.size() == 1)
     	{
-    		printInputForOneMol(inpGeom.get(0), outFileName, outFileNameRoot);
+    		produceSingleJobInputFiles(inpGeom, outFileName, outFileNameRoot);
     	} else {
     		
             // TODO: what about files other than the .inp?
@@ -352,13 +339,264 @@ public abstract class ChemSoftInputWriter extends Worker
 	                        + (molId+1) + ": " 
 	                		+ MolecularUtils.getNameOrID(mol));
 	            }
-	            
-	            printInputForOneMol(mol,outFileNameRoot + "-" + molId + 
-	            		inpExtrension, outFileNameRoot + "-" + molId);
+	            List<IAtomContainer> set = new ArrayList<IAtomContainer>();
+	            set.add(mol);
+	            produceSingleJobInputFiles(set, 
+	            		outFileNameRoot + "-" + molId + inpExtrension, 
+	            		outFileNameRoot + "-" + molId);
 	        }
     	}
+    	
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Prepares the set of input files of a single job, which may or may not 
+     * consist of multiple steps within the comp.chem. software.
+     * @param mols the set of geometries that pertain this single job. Note that
+     * in the vast majority of cases there will be only one geometry. However,
+     * some kinds of jobs do use multiple input geometries within the same job
+     * (e.g., transition state searches that start from the geometries of the
+     * reactant and product). Changes in the number of electrons or in spin 
+     * multiplicity are not supported (yet).
+     * @param outFileName the pathname of the job's main input file.
+     * @param outFileNameRoot the root of the 
+     * pathname to any job input file that will be
+     * produced. Extensions and suffixed are defined by software specific 
+     * constants.
+     */
+    public void produceSingleJobInputFiles(List<IAtomContainer> mols, 
+    		String outFileName,	String outFileNameRoot)
+    {
+    	// We customize a copy of the master job
+		CompChemJob molSpecJob = ccJob.clone();
+		
+		// Define the name's root for any input file created
+		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, outFileNameRoot);
+		
+		// Add atom coordinates to the so-far molecule-agnostic job
+		setChemicalSystem(molSpecJob, mols);
+		
+		// Add strings/pathnames that are molecular specific. e.g., pathnames or
+		// links that are explicitly defined in any part of any input file.
+		setSystemSpecificNames(molSpecJob);
+		
+		// WARNING: for now we do not expect any change of #eletrons or spin
+		Object pCharge = mols.get(0).getProperty(ChemSoftConstants.PARCHARGE);
+		if (pCharge != null)
+		{
+			try {
+				Integer.valueOf(pCharge.toString());
+			} catch (NumberFormatException e) {
+				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+						+ pCharge.toString() + "' as charge. Check "
+						+ "value of property '" + ChemSoftConstants.PARCHARGE
+						+ "'.", -1);
+			}
+			setChargeIfUnset(molSpecJob, pCharge.toString());
+		}
+		
+		Object pSpin = mols.get(0).getProperty(ChemSoftConstants.PARSPINMULT);
+		if (pSpin != null)
+		{
+			try {
+				Integer.valueOf(pSpin.toString());
+			} catch (NumberFormatException e) {
+				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+						+ pSpin.toString() + "' as spin multiplicity. Check "
+						+ "value of property '" + ChemSoftConstants.PARSPINMULT
+						+ "'.", -1);
+			}
+			setSpinMultiplicityIfUnset(molSpecJob, pSpin.toString());
+		}
+		
+		// These calls take care also of the sub-jobs/directives
+		molSpecJob.processDirectives(mols);
+		
+		// Ensure a value of charge and spin has been defined
+		setChargeIfUnset(molSpecJob, "0");
+		setSpinMultiplicityIfUnset(molSpecJob, "1");
+		
+		// Produce the actual files
+		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), true);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the strings that the given job needs to become specific.
+     */
+    protected abstract void setSystemSpecificNames(CompChemJob ccj);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the charge definition to any step where it is not already defined. 
+     * This means that this method must not overwrite existing charge settings
+     * @param ccj the job to customize.
+     * @param charge the value of the charge to specify.
+     */
+    protected abstract void setChargeIfUnset(CompChemJob ccj, String charge);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the spin multiplicity definition to any step where it is not already 
+     * defined. 
+     * This means that this method must not overwrite existing settings.
+     * @param ccj the job to customize.
+     * @param sm the value of the spin multiplicity to specify.
+     */
+    protected abstract void setSpinMultiplicityIfUnset(CompChemJob ccj, 
+    		String sm);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a definition of the chemical system/s to
+     * work with. Note we here only consider the atoms and their coordinates,
+     * not the charge of the spin multiplicity, for which there are dedicated 
+     * methods.
+     * @param ccj the job to customize.
+     * @param iacs the atom containers to translate into one or more 
+     * chemical system representation suitable for the comp.chem. software.
+     */
+    protected abstract void setChemicalSystem(CompChemJob ccj, 
+    		List<IAtomContainer> iacs);
 
+//------------------------------------------------------------------------------
+    
+    /**
+     * Produced the text that will be printed in the job's main input file, 
+     * the one defining what kind of setting the comp.chem. software should use
+     * and what exactly to do. Other input needed by the comp.chem. software, 
+     * such as the definition of the chemical system's geometry, may or may not 
+     * be part of the main input file.
+     */
+    //TODO: make this word with a StringBuilder
+    protected abstract ArrayList<String> getTextForInput(CompChemJob job);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a keyword in a directive with the given name to any step where it is
+     * not already defined. 
+     * This means that this method does not overwrite existing charge settings
+     * @param ccj the job to customize.
+     * @param dirName the name of the directive
+     * @param keyName the name of the keywords
+     * @param value the value of the keyword to specify.
+     */
+    public static void setKeywordIfNotAlreadyThere(CompChemJob ccj, 
+    		String dirName, String keyName, String value)
+    {
+    	setKeywordIfNotAlreadyThere(ccj, dirName, keyName, false, value);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a keyword in a directive with the given name to any step where it is
+     * not already defined. 
+     * This means that this method does not overwrite existing charge settings
+     * @param ccj the job to customize.
+     * @param dirName the name of the directive
+     * @param keyName the name of the keywords
+     * @param isLoud use <code>true</code> if the keyword should be set to be
+     * a loud keyword, meaning that conversion to text used the syntax 
+     * <code>key|separator|value</code> (for loud keywords) instead of just
+     * <code>value</code> (for non-loud, or silent keywords).
+     * @param value the value of the keyword to specify.
+     */
+    public static void setKeywordIfNotAlreadyThere(CompChemJob ccj, 
+    		String dirName, String keyName, boolean isLoud, String value)
+    {
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+    		for (Job stepJob : ccj.getSteps())
+    		{
+    			CompChemJob stepCcj = (CompChemJob) stepJob;
+    			Directive dir = stepCcj.getDirective(dirName);
+    			if (dir==null)
+        		{
+        			dir = new Directive(dirName);
+            		dir.addKeyword(new Keyword(keyName, isLoud, value));
+            		stepCcj.setDirective(dir);
+        		} else {
+        			if (dir.getKeyword(keyName)==null)
+        				dir.addKeyword(new Keyword(keyName, isLoud, value));
+        		}
+    		}
+    	} else {
+    		Directive dir = ccj.getDirective(dirName);
+    		if (dir==null)
+    		{
+    			dir = new Directive(dirName);
+        		dir.addKeyword(new Keyword(keyName, isLoud, value));
+    			ccj.setDirective(dir);
+    		} else {
+    			if (dir.getKeyword(keyName)==null)
+    				dir.addKeyword(new Keyword(keyName, isLoud, value));
+    		}
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    public static void setDirectiveDataIfNotAlreadyThere(CompChemJob ccj, 
+    		String dirName, String dirDataName, DirectiveData dd)
+    {
+    	//TODO-gg use directive component path
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+    		for (Job stepJob : ccj.getSteps())
+    		{
+    			CompChemJob stepCcj = (CompChemJob) stepJob;
+    			Directive dir = stepCcj.getDirective(dirName);
+    			if (dir==null)
+        		{
+        			dir = new Directive(dirName);
+            		dir.addDirectiveData(dd);
+            		stepCcj.setDirective(dir);
+        		} else {
+        			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
+        			if (oldDd==null)
+        			{
+                		dir.addDirectiveData(dd);
+                	} else {
+                		oldDd.setValue(dd.getValue());
+                	}
+        		}
+    		}
+    	} else {
+    		Directive dir = ccj.getDirective(dirName);
+    		if (dir==null)
+    		{
+    			dir = new Directive(dirName);
+        		dir.addDirectiveData(dd);
+    			ccj.setDirective(dir);
+    		} else {
+    			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
+    			if (oldDd==null)
+    			{
+            		dir.addDirectiveData(dd);
+            	} else {
+            		oldDd.setValue(dd.getValue());
+            	}
+    		}
+    	}
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -366,21 +604,9 @@ public abstract class ChemSoftInputWriter extends Worker
      * @param mol the chemical entity.
      * @param outFileName the pathname where to write.
      */
+    @Deprecated
     protected abstract void printInputForOneMol(IAtomContainer mol, 
     		String outFileName, String outFileNameRoot);
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Writes the input file meant to deal with a collection of chemical 
-     * entities.
-     */
-    private void printInputWithMultipleGeometry()
-    {
-        Terminator.withMsgAndStatus(" ERROR! Running "
-                + "printInputWithMultipleGeometry, which should have been"
-                + " overwritten by devellpers.",-1);
-    }
 
 //------------------------------------------------------------------------------
 

@@ -26,6 +26,7 @@ import java.util.Set;
 import com.google.gson.Gson;
 
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveFactory;
 import autocompchem.chemsoftware.gaussian.GaussianJob;
 import autocompchem.chemsoftware.nwchem.NWChemJob;
@@ -99,7 +100,8 @@ public class JobDetailsFileConverter extends Worker
      * has been initialised.
      */
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void performTask()
     {
     	Object obj = null;
@@ -113,8 +115,10 @@ public class JobDetailsFileConverter extends Worker
     	
     	case "DIRECTIVES":
     	{
-    		ArrayList<String> lines = IOtools.readTXT(inFile);
-    		obj = DirectiveFactory.buildAllFromJDText(lines);
+    		ArrayList<Directive> dirs = DirectiveFactory.buildAllFromJDText(
+    				IOtools.readTXT(inFile));
+    		obj = new CompChemJob();
+    		((CompChemJob) obj).setDirectives(dirs);
     		break;
     	}
     	

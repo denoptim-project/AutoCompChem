@@ -74,73 +74,17 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 		inpExtrension = GaussianConstants.GAUINPEXTENSION;
 		outExtension = GaussianConstants.OUTEXTENSION;
 	}
-    
-//------------------------------------------------------------------------------
-    
-    protected void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot)
-    {		
-		CompChemJob molSpecJob = ccJob.clone();
-
-		//TODO-gg all of this is general enough to be in ChemSoftInputWriter
-		// (once the setCharge/Spin are made abstract)
-		
-		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, outFileNameRoot);
-		
-		// Here we add atom coordinates to the so-far molecule-agnostic job
-		setChemicalSystem(molSpecJob, mol);
-		
-		// Here we add strings/pathnames that are molecular specific (e.g., the 
-		// name of Gaussian checkpoint)
-		setSystemSpecificNames(molSpecJob);
-		
-		Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
-		if (pCharge != null)
-		{
-			try {
-				Integer.valueOf(pCharge.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pCharge.toString() + "' as charge. Check "
-						+ "value of property '" + ChemSoftConstants.PARCHARGE
-						+ "'.", -1);
-			}
-			setChargeDirective(molSpecJob, pCharge.toString());
-		}
-		
-		Object pSpin = mol.getProperty(ChemSoftConstants.PARSPINMULT);
-		if (pSpin != null)
-		{
-			try {
-				Integer.valueOf(pSpin.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pSpin.toString() + "' as spin multiplicity. Check "
-						+ "value of property '" + ChemSoftConstants.PARSPINMULT
-						+ "'.", -1);
-			}
-			setSpinMultiplicityDirective(molSpecJob, pSpin.toString());
-		}
-		
-		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(mol);
-		
-		// Ensure a value of charge and spin has been defined
-		setChargeDirective(molSpecJob, "0");
-		setSpinMultiplicityDirective(molSpecJob, "1");
-		
-		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), true);
-    }
 
 //------------------------------------------------------------------------------
     
     /**
-     * Sets the charge directive to any step where it is not already defined. 
-     * This means that this method does not overwrite existing charge settings
-     * @param ccj the job to customize.
-     * @param charge the value of the charge to specify.
+     * {@inheritDoc}
+     * 
+     * In Gaussian the charge is defined in a {@link Keyword} named 
+     * {@value GaussianConstants.MSCHARGEKEY} of the 
+     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
      */
-    private void setChargeDirective(CompChemJob ccj, String charge)
+    protected void setChargeIfUnset(CompChemJob ccj, String charge)
     {
     	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC, 
     			GaussianConstants.MSCHARGEKEY, charge);
@@ -149,13 +93,13 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
     
     /**
-     * Sets the spin multiplicity directive to any step where it is not already 
-     * defined. 
-     * This means that this method does not overwrite existing settings.
-     * @param ccj the job to customize.
-     * @param sm the value of the spin multiplicity to specify.
+     * {@inheritDoc}
+     * 
+     * In Gaussian the spin multiplicity is defined in a {@link Keyword} named 
+     * {@value GaussianConstants.MSSPINMLTKEY} of the 
+     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
      */
-    private void setSpinMultiplicityDirective(CompChemJob ccj, String sm)
+    protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm)
     {
     	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC,
     			GaussianConstants.MSSPINMLTKEY, sm);
@@ -164,19 +108,21 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
     
     /**
-     * Sets a directive data with the representation of the chemical system to
-     * work with. Note we here only consider the atoms and their coordinates,
-     * not the charge of the spin multiplicity, for which there are dedicated 
-     * methods.
-     * @param ccj the job to customize.
-     * @param iac the atom container to translate into a chemical system 
-     * representation suitable for this software.
+     * {@inheritDoc}
+     * 
+     * In Gaussian, a chemical system is defined in the {@link DirectiveData} of
+     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * 
+     * WARNING: so far it works with only one molecule.
      */
-    private void setChemicalSystem(CompChemJob ccj, IAtomContainer iac)
+    protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs)
     {
     	if (!needsGeometry(ccj))
     		return;
-    		
+    	
+    	//WARNING so far works with only one chemical system
+    	IAtomContainer iac = iacs.get(0);
+    	
     	ArrayList<String> list = new ArrayList<String>();
     	for (IAtom atm : iac.atoms())
     	{
@@ -248,125 +194,22 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     
 //------------------------------------------------------------------------------
     
-    private void setDirectiveDataIfNotAlreadyThere(CompChemJob ccj, String dirName,
-    		String dirDataName, DirectiveData dd)
-    {
-    	//TODO-gg use directive component path
-    	if (ccj.getNumberOfSteps()>0)
-    	{
-    		for (Job stepJob : ccj.getSteps())
-    		{
-    			CompChemJob stepCcj = (CompChemJob) stepJob;
-    			Directive dir = stepCcj.getDirective(dirName);
-    			if (dir==null)
-        		{
-        			dir = new Directive(dirName);
-            		dir.addDirectiveData(dd);
-            		stepCcj.setDirective(dir);
-        		} else {
-        			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
-        			if (oldDd==null)
-        			{
-                		dir.addDirectiveData(dd);
-                	} else {
-                		oldDd.setValue(dd.getValue());
-                	}
-        		}
-    		}
-    	} else {
-    		Directive dir = ccj.getDirective(dirName);
-    		if (dir==null)
-    		{
-    			dir = new Directive(dirName);
-        		dir.addDirectiveData(dd);
-    			ccj.setDirective(dir);
-    		} else {
-    			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
-    			if (oldDd==null)
-    			{
-            		dir.addDirectiveData(dd);
-            	} else {
-            		oldDd.setValue(dd.getValue());
-            	}
-    		}
-    	}
-    }
-    
-//------------------------------------------------------------------------------
-    
     /**
-     * Sets the names of checkpoint files
+     * {@inheritDoc}
      */
-    private void setSystemSpecificNames(CompChemJob ccj)
+    protected void setSystemSpecificNames(CompChemJob ccj)
     {
     	File pathnameRoot = new File(outFileNameRoot);
     	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVELINK0,
     			"chk", true, pathnameRoot.getName());
     }
-//------------------------------------------------------------------------------
-    
-    /**
-     * Sets a keyword in a directive with the given name to any step where it is
-     * not already defined. 
-     * This means that this method does not overwrite existing charge settings
-     * @param ccj the job to customize.
-     * @param dirName the name of the directive
-     * @param keyName the name of the keywords
-     * @param value the value of the keyword to specify.
-     */
-    private void setKeywordIfNotAlreadyThere(CompChemJob ccj, String dirName, 
-    		String keyName, String value)
-    {
-    	setKeywordIfNotAlreadyThere(ccj, dirName, keyName, false, value);
-    }
     
 //------------------------------------------------------------------------------
     
     /**
-     * Sets a keyword in a directive with the given name to any step where it is
-     * not already defined. 
-     * This means that this method does not overwrite existing charge settings
-     * @param ccj the job to customize.
-     * @param dirName the name of the directive
-     * @param keyName the name of the keywords
-     * @param value the value of the keyword to specify.
+     * {@inheritDoc}
      */
-    private void setKeywordIfNotAlreadyThere(CompChemJob ccj, String dirName, 
-    		String keyName, boolean isLoud, String value)
-    {
-    	if (ccj.getNumberOfSteps()>0)
-    	{
-    		for (Job stepJob : ccj.getSteps())
-    		{
-    			CompChemJob stepCcj = (CompChemJob) stepJob;
-    			Directive dir = stepCcj.getDirective(dirName);
-    			if (dir==null)
-        		{
-        			dir = new Directive(dirName);
-            		dir.addKeyword(new Keyword(keyName, isLoud, value));
-            		stepCcj.setDirective(dir);
-        		} else {
-        			if (dir.getKeyword(keyName)==null)
-        				dir.addKeyword(new Keyword(keyName, isLoud, value));
-        		}
-    		}
-    	} else {
-    		Directive dir = ccj.getDirective(dirName);
-    		if (dir==null)
-    		{
-    			dir = new Directive(dirName);
-        		dir.addKeyword(new Keyword(keyName, isLoud, value));
-    			ccj.setDirective(dir);
-    		} else {
-    			if (dir.getKeyword(keyName)==null)
-    				dir.addKeyword(new Keyword(keyName, isLoud, value));
-    		}
-    	}
-    }
-    
-//------------------------------------------------------------------------------
-    
-    private ArrayList<String> getTextForInput(CompChemJob job)
+    protected ArrayList<String> getTextForInput(CompChemJob job)
     {	
         ArrayList<String> lines= new ArrayList<String>();
         for (int step = 0; step<job.getNumberOfSteps(); step++)
@@ -684,7 +527,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     			}
     		}
     		
-    		// Dealing with keywords even if we now do not expect them to be
+    		// Dealing with keywords even if we do not (yet) expect them to be
     		// present. They might result from the attempt to achieve special 
     		//results
     		for (Keyword k : optDir.getAllKeywords())
@@ -784,6 +627,15 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
         }
         return sortedKeys;
     }
+    
 //------------------------------------------------------------------------------
+
+    //TODO-det
+    @Deprecated
+	@Override
+	protected void printInputForOneMol(IAtomContainer mol, String outFileName, String outFileNameRoot) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

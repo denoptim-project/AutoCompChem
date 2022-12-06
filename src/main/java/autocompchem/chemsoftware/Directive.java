@@ -576,11 +576,11 @@ public class Directive implements IDirectiveComponent
      * </ol>
      * In each case, when multiple components are present, the ordering of 
      * components is respected when searching and performing tasks.
-     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param mols the molecular representation given to mol-dependent tasks.
      * @param job the job that called this method.
      */
     
-    public void performACCTasks(IAtomContainer mol, Job job)
+    public void performACCTasks(List<IAtomContainer> mols, Job job)
     {
     	//TODO-gg performACCTask(mol, accTaskParams, this, job);
     	
@@ -595,7 +595,7 @@ public class Directive implements IDirectiveComponent
     			} else {
     				ps = getACCTaskParams(k.getValue(), k);
     			}
-	    		performACCTask(mol, ps, k, job);
+	    		performACCTask(mols, ps, k, job);
     		}
     	}
     	for (DirectiveData dd : dirData)
@@ -623,13 +623,13 @@ public class Directive implements IDirectiveComponent
 	    			}
 	    			ps = getACCTaskParams(lines, dd);
     			}
-				performACCTask(mol, ps, dd, job);
+				performACCTask(mols, ps, dd, job);
     		}	
     	}
     	for (Directive d : subDirectives)
     	{
     		// This is effectively a recursion into nested directives
-    		d.performACCTasks(mol, job);
+    		d.performACCTasks(mols, job);
     	}
     }
 
@@ -810,7 +810,7 @@ public class Directive implements IDirectiveComponent
      * @param job the job containing the directive component
      */
     
-    private void performACCTask(IAtomContainer mol, ParameterStorage params, 
+    private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
     		IDirectiveComponent dirComp, Job job)
     {	
     	String task = "none";
@@ -922,6 +922,8 @@ public class Directive implements IDirectiveComponent
                 	case XYZ:
                 	default:
                 	{
+                		// WARNING: uses oinly the first molecule
+                		IAtomContainer mol = mols.get(0);
                 		dirDataWithGeom.setValue(mol);
                         if (MolecularUtils.hasProperty(mol, 
                         		ChemSoftConstants.PARCHARGE))
@@ -953,6 +955,9 @@ public class Directive implements IDirectiveComponent
             	
             case BasisSetConstants.ATMSPECBS:
             {
+        		// WARNING: uses oinly the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
             	//TODO verbosity/logging
                 System.out.println("ACC starts creating atom-specific "
                 		+ "Basis Set");
@@ -990,6 +995,9 @@ public class Directive implements IDirectiveComponent
             //case TaskID.GENERATECONSTRAINTS:
             case "GENERATECONSTRAINTS":
             {
+        		// WARNING: uses oinly the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
             	String s = TaskID.GENERATECONSTRAINTS.toString();
             	//TODO verbosity/logging
                 System.out.println("ACC starts creating geometric constraints");
