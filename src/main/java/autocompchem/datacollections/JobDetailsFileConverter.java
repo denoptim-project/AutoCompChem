@@ -115,10 +115,7 @@ public class JobDetailsFileConverter extends Worker
     	
     	case "DIRECTIVES":
     	{
-    		ArrayList<Directive> dirs = DirectiveFactory.buildAllFromJDText(
-    				IOtools.readTXT(inFile));
-    		obj = new CompChemJob();
-    		((CompChemJob) obj).setDirectives(dirs);
+    		obj = new CompChemJob(IOtools.readTXT(inFile));
     		break;
     	}
     	

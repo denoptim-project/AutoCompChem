@@ -382,7 +382,8 @@ public abstract class ChemSoftInputWriter extends Worker
 		CompChemJob molSpecJob = ccJob.clone();
 		
 		// Define the name's root for any input file created
-		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, outFileNameRoot);
+		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, 
+				outFileNameRoot, true);
 		
 		// Add atom coordinates to the so-far molecule-agnostic job
 		setChemicalSystem(molSpecJob, mols);
@@ -391,7 +392,7 @@ public abstract class ChemSoftInputWriter extends Worker
 		// links that are explicitly defined in any part of any input file.
 		setSystemSpecificNames(molSpecJob);
 		
-		// WARNING: for now we do not expect any change of #eletrons or spin
+		// WARNING: for now we do not expect any change of #electrons or spin
 		Object pCharge = mols.get(0).getProperty(ChemSoftConstants.PARCHARGE);
 		if (pCharge != null)
 		{
@@ -508,7 +509,9 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Sets a keyword in a directive with the given name to any step where it is
      * not already defined. 
-     * This means that this method does not overwrite existing charge settings
+     * This means that this method does not overwrite existing charge settings.
+     * This method can alter only the given job and its steps, but does not 
+     * consider the possibility of having further levels of nested jobs.
      * @param ccj the job to customize.
      * @param dirName the name of the directive
      * @param keyName the name of the keywords
@@ -525,29 +528,11 @@ public abstract class ChemSoftInputWriter extends Worker
     	{
     		for (Job stepJob : ccj.getSteps())
     		{
-    			CompChemJob stepCcj = (CompChemJob) stepJob;
-    			Directive dir = stepCcj.getDirective(dirName);
-    			if (dir==null)
-        		{
-        			dir = new Directive(dirName);
-            		dir.addKeyword(new Keyword(keyName, isLoud, value));
-            		stepCcj.setDirective(dir);
-        		} else {
-        			if (dir.getKeyword(keyName)==null)
-        				dir.addKeyword(new Keyword(keyName, isLoud, value));
-        		}
+    			((CompChemJob)stepJob).setKeywordIfUnset(dirName, keyName, 
+    					isLoud, value);
     		}
     	} else {
-    		Directive dir = ccj.getDirective(dirName);
-    		if (dir==null)
-    		{
-    			dir = new Directive(dirName);
-        		dir.addKeyword(new Keyword(keyName, isLoud, value));
-    			ccj.setDirective(dir);
-    		} else {
-    			if (dir.getKeyword(keyName)==null)
-    				dir.addKeyword(new Keyword(keyName, isLoud, value));
-    		}
+    		ccj.setKeywordIfUnset(dirName, keyName, isLoud, value);
     	}
     }
     
@@ -561,39 +546,11 @@ public abstract class ChemSoftInputWriter extends Worker
     	{
     		for (Job stepJob : ccj.getSteps())
     		{
-    			CompChemJob stepCcj = (CompChemJob) stepJob;
-    			Directive dir = stepCcj.getDirective(dirName);
-    			if (dir==null)
-        		{
-        			dir = new Directive(dirName);
-            		dir.addDirectiveData(dd);
-            		stepCcj.setDirective(dir);
-        		} else {
-        			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
-        			if (oldDd==null)
-        			{
-                		dir.addDirectiveData(dd);
-                	} else {
-                		oldDd.setValue(dd.getValue());
-                	}
-        		}
+    			((CompChemJob)stepJob).setDirectiveDataIfUnset(dirName, 
+    					dirDataName, dd);
     		}
     	} else {
-    		Directive dir = ccj.getDirective(dirName);
-    		if (dir==null)
-    		{
-    			dir = new Directive(dirName);
-        		dir.addDirectiveData(dd);
-    			ccj.setDirective(dir);
-    		} else {
-    			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
-    			if (oldDd==null)
-    			{
-            		dir.addDirectiveData(dd);
-            	} else {
-            		oldDd.setValue(dd.getValue());
-            	}
-    		}
+    		ccj.setDirectiveDataIfUnset(dirName, dirDataName, dd);
     	}
     }
     

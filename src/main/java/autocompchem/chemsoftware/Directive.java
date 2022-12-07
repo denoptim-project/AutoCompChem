@@ -922,9 +922,12 @@ public class Directive implements IDirectiveComponent
                 	case XYZ:
                 	default:
                 	{
-                		// WARNING: uses oinly the first molecule
+                		// WARNING: uses only the first molecule
                 		IAtomContainer mol = mols.get(0);
                 		dirDataWithGeom.setValue(mol);
+                		
+                		//TODO-gg we should not be doing this here!!!
+                		// charge and spin are managed by the chemsoftinputwriter
                         if (MolecularUtils.hasProperty(mol, 
                         		ChemSoftConstants.PARCHARGE))
                         {

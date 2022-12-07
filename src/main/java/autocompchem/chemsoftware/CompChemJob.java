@@ -198,12 +198,30 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Finds and return a specified directive.
+     * Finds and return a specified directive. This method looks only at the 
+     * directives of this very job, not at the content of any embedded job.
      * @param name of the directive to return (case insensitive).
      * @return the directive or null if none is found with that name.
      */
     
     public Directive getDirective(String name)
+    {
+    	return getDirective(name, false);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return a specified directive. This method looks also at the 
+     * content of any embedded job, if recursion is required. Note that we 
+     * return the first-encountered directive with the given name.
+     * @param name of the directive to return (case insensitive).
+     * @param recursive use <code>true</code> to allow recursion into embedded
+     * jobs.
+     * @return the directive or null if none is found with that name.
+     */
+    
+    public Directive getDirective(String name, boolean recursive)
     {
     	for (Directive d : directives)
     	{
@@ -211,6 +229,16 @@ public class CompChemJob extends Job implements Cloneable
     		{
     			return d;
     		}
+    	}
+    	if (recursive)
+    	{
+    		Directive d = null;
+	    	for (Job step : steps)
+	    	{
+	    		d= ((CompChemJob)step).getDirective(name, true);
+	    		if (d!=null)
+	    			return d;
+	    	}
     	}
     	return null;
     }
@@ -281,6 +309,64 @@ public class CompChemJob extends Job implements Cloneable
 	        		((CompChemJob) step).setDirective(d, recursive);
 	        }
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Sets a {@link Keyword} in a {@link Directive} with the given name
+     * if it is not already present. 
+     * @param dirName the name of the directive.
+     * @param keyName the name of the {@link Keyword}.
+     * @param isLoud use <code>true</code> if the keyword should be set to be
+     * a loud keyword, meaning that conversion to text used the syntax 
+     * <code>key|separator|value</code> (for loud keywords) instead of just
+     * <code>value</code> (for non-loud, or silent keywords).
+     * @param value the value of the keyword to specify.
+     */
+    public void setKeywordIfUnset(String dirName, String keyName, 
+    		boolean isLoud, String value)
+    {
+		Directive dir = getDirective(dirName);
+		if (dir==null)
+		{
+			dir = new Directive(dirName);
+    		dir.addKeyword(new Keyword(keyName, isLoud, value));
+			setDirective(dir);
+		} else {
+			if (dir.getKeyword(keyName)==null)
+				dir.addKeyword(new Keyword(keyName, isLoud, value));
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Sets a {@link DirectiveData} in a {@link Directive} with the given name
+     * if it is not already present. 
+     * @param dirName the name of the directive.
+     * @param dirDataName the name of the {@link DirectiveData}.
+     * @param dd a source of data. We'll take the value from this instance to
+     * make a new {@link directiveData}.
+     */
+    public void setDirectiveDataIfUnset(String dirName, String dirDataName, 
+    		DirectiveData dd)
+    {
+    	Directive dir = getDirective(dirName);
+		if (dir==null)
+		{
+			dir = new Directive(dirName);
+    		dir.addDirectiveData(dd);
+			setDirective(dir);
+		} else {
+			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
+			if (oldDd==null)
+			{
+        		dir.addDirectiveData(dd);
+        	} else {
+        		oldDd.setValue(dd.getValue());
+        	}
+		}
     }
     
 //-----------------------------------------------------------------------------

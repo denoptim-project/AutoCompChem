@@ -312,7 +312,22 @@ public class Job implements Runnable
 
     public void setParameter(String ref)
     {
-        params.setParameter(ref, NamedDataType.UNDEFINED, null);
+        setParameter(ref, NamedDataType.UNDEFINED, null);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a value-less parameters (i.e., a keyword)
+     * @param ref the reference name of the parameter to add/set.
+     * @param recursive use <code>true</code> to set the parameter in this job
+     * and in any of its steps (i.e., first layer or embedded jobs) or any
+     * further embedding level recursively.
+     */
+
+    public void setParameter(String ref, boolean recursive)
+    {
+        setParameter(ref, NamedDataType.UNDEFINED, null, recursive);
     }
     
 //------------------------------------------------------------------------------
@@ -325,7 +340,23 @@ public class Job implements Runnable
 
     public void setParameter(String ref, String value)
     {
-        params.setParameter(ref, NamedDataType.STRING, value);
+        setParameter(ref, NamedDataType.STRING, value);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameters.
+     * @param ref the reference name of the parameter to add/set.
+     * @param value the value of the parameter.
+     * @param recursive use <code>true</code> to set the parameter in this job
+     * and in any of its steps (i.e., first layer or embedded jobs) or any
+     * further embedding level recursively.
+     */
+
+    public void setParameter(String ref, String value, boolean recursive)
+    {
+        setParameter(ref, NamedDataType.STRING, value, recursive);
     }
     
 //------------------------------------------------------------------------------
@@ -339,7 +370,32 @@ public class Job implements Runnable
 
     public void setParameter(String ref, NamedDataType type, Object value)
     {
+        setParameter(ref, type, value, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameters.
+     * @param ref the reference name of the parameter to add/set.
+     * @param type the type of the parameter
+     * @param value the value of the parameter.
+     * @param recursive use <code>true</code> to set the parameter in this job
+     * and in any of its steps (i.e., first layer or embedded jobs) or any
+     * further embedding level recursively.
+     */
+
+    public void setParameter(String ref, NamedDataType type, Object value, 
+    		boolean recursive)
+    {
         params.setParameter(ref, type, value);
+        if (recursive)
+        {
+	        for (Job step : steps)
+	        {
+	        	step.setParameter(ref, type, value, true);
+	        }
+        }
     }
     
 //------------------------------------------------------------------------------

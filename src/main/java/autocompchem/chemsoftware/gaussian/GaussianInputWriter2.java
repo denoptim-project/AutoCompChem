@@ -72,7 +72,6 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     public GaussianInputWriter2() 
     {
 		inpExtrension = GaussianConstants.GAUINPEXTENSION;
-		outExtension = GaussianConstants.OUTEXTENSION;
 	}
 
 //------------------------------------------------------------------------------

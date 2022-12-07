@@ -68,7 +68,6 @@ public class XTBInputWriter extends ChemSoftInputWriter
     public XTBInputWriter() 
     {
 		inpExtrension = XTBConstants.INPEXTENSION;
-		outExtension = XTBConstants.INPEXTENSION;
 	}
     
 //------------------------------------------------------------------------------
@@ -569,7 +568,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * In XTB the charge is defined in a {@link Keyword} of the
+	 * In XTB's main input file the charge is defined in a
+	 *  {@link Keyword} of the
 	 * 'charge' {@link Directive}.
 	 */
 	@Override
@@ -584,7 +584,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * In XTB the spin multiplicity is defined in a {@link Keyword} of the
+	 * In XTB's main input file the spin multiplicity is defined in a 
+	 * {@link Keyword} of the
 	 * 'spin' {@link Directive} as number of unpaired electrons.
 	 */
 	@Override
@@ -607,7 +608,12 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	 */
 	@Override
 	protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs) 
-	{}
+	{
+    	//TODO: check for consistency between the two methods for setting the geometry
+    	// - one is this method
+    	// - the other is using the "ADD_GEOMETRY" task in a directive
+    	
+	}
 
 //-----------------------------------------------------------------------------
 
