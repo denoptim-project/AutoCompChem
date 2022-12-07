@@ -75,7 +75,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         {
             jdLine = jdLine.substring(ChemSoftConstants.JDLABDATA.length());
         }
-        String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR,2);
+        String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR, 2);
         super.setReference(parts[0]);
         
         if (parts.length < 2)

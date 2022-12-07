@@ -117,7 +117,7 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
             {
             	kStr = k.getName() + " ";
             }
-            kStr = kStr + StringUtils.mergeListToString(k.getValue(), " ", true);
+            kStr = kStr + k.getValueAsString();
             
             // We must check that the line does not grow too long. When it gets 
             // too long use backslash to concatenate lines.
@@ -377,9 +377,9 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 						+ NWChemConstants.THEORYKW + ". Unable to guess where "
 						+ "to define spin multiplicity.");
 			}
-			if (theory.getValueStr().toUpperCase().startsWith("SCF"))
+			if (theory.getValueAsString().toUpperCase().startsWith("SCF"))
 				useSCF = true;
-			else if (theory.getValueStr().toUpperCase().startsWith("DFT"))
+			else if (theory.getValueAsString().toUpperCase().startsWith("DFT"))
 				useDFT = true;
 		} else if (dSCF!=null && dDFT==null)
 		{

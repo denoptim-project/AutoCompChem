@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.AtomContainerSet;
@@ -24,6 +25,7 @@ import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Action;
 import autocompchem.text.TextBlock;
+import autocompchem.utils.StringUtils;
 
 /*
  *   Copyright (C) 2014  Marco Foscato
@@ -111,8 +113,7 @@ public class NamedData implements Cloneable
      */
 
     public NamedData()
-    {
-    }
+    {}
     
 //------------------------------------------------------------------------------
 
@@ -210,7 +211,8 @@ public class NamedData implements Cloneable
 
     /**
      * Return the string representation of the value of this data.
-     * Corresponds to getValue().toString().
+     * Corresponds to getValue().toString() or to merging any list of items
+     * using the space as separator.
      * @return the value of this data.
      */
 
@@ -218,7 +220,50 @@ public class NamedData implements Cloneable
     {
     	if (value==null)
     		return "null";
+    	if (type == NamedDataType.LISTOFDOUBLES 
+    			|| type == NamedDataType.LISTOFINTEGERS
+    			|| type == NamedDataType.TEXTBLOCK)
+    		return StringUtils.mergeListToString(getValueAsLines(), " ", true);
+    	
         return value.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the representation of the value of this data as a text block.
+     * @return the value of this data.
+     */
+
+    @SuppressWarnings("unchecked")
+	public List<String> getValueAsLines()
+    {
+    	if (value==null)
+    		return null;
+
+    	List<String> lines = new ArrayList<String>();
+    	switch (type)
+    	{
+		case LISTOFDOUBLES:
+			for (Double d : (ListOfDoubles) value)
+				lines.add(d.toString());
+			break;
+		case LISTOFINTEGERS:
+			for (Integer d : (ListOfIntegers) value)
+				lines.add(d.toString());
+			break;
+		case STRING:
+			lines.addAll(Arrays.asList(((String)value).split(
+					System.getProperty("line.separator"))));
+			break;
+		case TEXTBLOCK:
+			for (String l : (ArrayList<String>) value)
+				lines.add(l);
+			break;
+		default:
+			return null;
+    	}
+        return lines;
     }
 
 //------------------------------------------------------------------------------

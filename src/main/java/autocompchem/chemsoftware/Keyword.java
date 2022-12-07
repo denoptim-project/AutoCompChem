@@ -22,59 +22,40 @@ import java.util.Arrays;
 import java.util.List;
 
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Terminator;
+import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 
 /**
- * This object represents a keyword with an associated value to be used in
- * constructing {@link Directive}s for computational chemistry software. 
- * Note that the value can be an ordered sequence of items (string, numbers).
+ * A keyword is a string with an associated value. Keywords, together with
+ * {@link DirectiveData} provide specifics to a @link Directive}.
+ * Keywords differ from {@link DirectiveData} in two aspects. Firstly,
  * Keyword can be either "mute" or "loud". A "loud" keyword is written in 
  * the software's input file as <code>KEY&lt;SEPARATOR&gt;VALUE</code> while 
  * a "mute" keyword is given to the designated software using only its 
  * <code>VALUE</code>. In other words,
  * the <code>KEY</code> part (i.e., the name) of a "mute" keyword is omitted 
  * when preparing the input file for the designated software.
+ * Secondly, regardless of whether it is loud or mute, a Keyword is expected to 
+ * generate a strings that fits in one line (contains no newline characters) 
+ * and can often be appended to the corresponding string from other keywords
+ * thus building a line that contains multiple keywords. Instead, 
+ * {@link DirectiveData} can often generate multiple
+ * lines of text upon conversion into an input file for a third party software. 
+ * Note that the value can be any {@link Object}, which may need to be be
+ * converted into a string when translating a keyword into a string for 
+ * preparation of an input file.
  *
  * @author Marco Foscato
  */
 
-public class Keyword implements IDirectiveComponent
+public class Keyword extends DirectiveData
 {
-    private static final String newLineSep = 
-    		System.getProperty("line.separator");
-
-	/**
-     * Keyword name.
-     */
-    private String name = "#nokeyword";
-
     /**
      * Keyword type: either "mute" (false), or "loud" (true).
      */
     private boolean isLoud = false;
-
-    /**
-     * Keyword value.
-     */
-    private ArrayList<String> value;
-
-    /**
-     * Parameters defining task embedded in this directive.
-     */
-    private ParameterStorage accTaskParams;
-
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Constructor for empty keyword
-     */
-
-    public Keyword()
-    {
-        value = new ArrayList<String>();
-    }
 
 //-----------------------------------------------------------------------------
 
@@ -86,12 +67,13 @@ public class Keyword implements IDirectiveComponent
      * @param value the value of the keywords.
      */
 
-    public Keyword(String name, boolean isLoud, ArrayList<String> value)
+    public Keyword(String name, boolean isLoud, Object value)
     {
-        this.name = name;
+        this.setReference(name);
         this.isLoud = isLoud;
-        this.value = value;
-        extractTask();
+        this.setValue(value);
+        if (value instanceof ArrayList)
+        	extractTask();
     }
     
 //-----------------------------------------------------------------------------
@@ -106,10 +88,7 @@ public class Keyword implements IDirectiveComponent
 
     public Keyword(String name, boolean isLoud, String value)
     {
-        this.name = name;
-        this.isLoud = isLoud;
-        this.value = new ArrayList<String>(Arrays.asList(value));
-        extractTask();
+        this(name, isLoud, new ArrayList<String>(Arrays.asList(value)));
     } 
 
 //-----------------------------------------------------------------------------
@@ -148,7 +127,8 @@ public class Keyword implements IDirectiveComponent
     {
 	    if (hasACCTask())
 	    {
-	    	ArrayList<String> lines = new ArrayList<String>(value);
+	    	@SuppressWarnings("unchecked")
+			ArrayList<String> lines = (ArrayList<String>) getValue();
 			// WARNING! Here we assume that the entire content of the 
 			// keyward value, is about the ACC task. Thus, we add the 
 			// multiline start/end labels so that the getACCTaskParams
@@ -159,13 +139,13 @@ public class Keyword implements IDirectiveComponent
 				lines.set(lines.size()-1, lines.get(lines.size()-1) 
 						+ ChemSoftConstants.JDCLOSEBLOCK);
 			}
-			accTaskParams = Directive.getACCTaskParams(lines);
-			accTaskParams.setParameter(ChemSoftConstants.JDACCTASK,
-					accTaskParams.getParameterValue(
+			ParameterStorage ps = Directive.getACCTaskParams(lines);
+			ps.setParameter(ChemSoftConstants.JDACCTASK,
+					ps.getParameterValue(
 							ChemSoftConstants.JDLABACCTASK));
-			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
-			//TODO-gg uncomment once handling of tasks is finished
-			//super.removeValue();
+			ps.removeData(ChemSoftConstants.JDLABACCTASK);
+			setTaskParams(ps);
+			removeValue();
 	    }
     }
 
@@ -175,10 +155,10 @@ public class Keyword implements IDirectiveComponent
      * Returns the name (i.e., the actual keyword) of this keyword.
      * @return the name of this keyword.
      */
-
+//TODO-gg change to getReference
     public String getName()
     {
-        return name;
+        return getReference();
     }
 
 //-----------------------------------------------------------------------------
@@ -186,36 +166,11 @@ public class Keyword implements IDirectiveComponent
     /**
      * @return the kind of directive component this is.
      */
-    
+    //TODO-gg needed?
 	public DirectiveComponentType getComponentType() 
 	{
 		return DirectiveComponentType.KEYWORD;
 	}
-	
-//-----------------------------------------------------------------------------
-
-    /**
-     * Returns the value associated to  this keyword.
-     * @return the value of the keywords.
-     */
-
-    public ArrayList<String> getValue()
-    {
-        return value;
-    }
-    
-//-----------------------------------------------------------------------------
-
-    /**
-     * Returns the value associated to this keyword after merging each item 
-     * using space as a delimiter.
-     * @return the string-like value of the keywords.
-     */
-
-    public String getValueStr()
-    {
-        return StringUtils.mergeListToString(value, " ", true);
-    }
     
 //-----------------------------------------------------------------------------
     
@@ -226,30 +181,6 @@ public class Keyword implements IDirectiveComponent
     public boolean isLoud()
     {
     	return isLoud;
-    }
-    
-//-----------------------------------------------------------------------------
-
-    /**
-     * Overwrites the value corresponding to this keyword.
-     * @param value the value of the keywords.
-     */
-
-    public void setValue(String value)
-    {
-        this.value = new ArrayList<String>(Arrays.asList(value));
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Overwrites the value corresponding to this keyword.
-     * @param value the value of the keywords.
-     */
-
-    public void setValue(ArrayList<String> value)
-    {
-        this.value = value;
     }
 
 //-----------------------------------------------------------------------------
@@ -263,61 +194,21 @@ public class Keyword implements IDirectiveComponent
     private void parseLine(String line, String label)
     {   
         String[] p = line.split(ChemSoftConstants.JDKEYVALSEPARATOR,2);
-        name = p[0].substring(label.length()).trim();
+        String name = p[0].substring(label.length()).trim();
+        Object val = "";
         if (p.length > 1)
         {
-            value = new ArrayList<String>(Arrays.asList(p[1].split(
-            		newLineSep)));
+            val = new ArrayList<String>(Arrays.asList(p[1].split(
+            		System.getProperty("line.separator"))));
         }
         else
         {
-            value = new ArrayList<String>(0);
+            val = new ArrayList<String>(0);
         }
+        setReference(name);
+        setValue(val);
     }
     
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Checks if there is any ACC task definition within this keyword.
-     * @return <code>true</code> if there is at least one ACC task definition.
-     */
-    
-    public boolean hasACCTask()
-    {
-    	if (accTaskParams!=null)
-    		return true;
-    	
-    	for (String l : value)
-    	{
-    		if (l.contains(ChemSoftConstants.JDLABACCTASK))
-    		{
-    			return true;
-    		}
-    	}
-    	return false;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Gets the parameters defining the ACC task embedded in this directive.
-     */
-	public ParameterStorage getTaskParams() 
-	{
-		return accTaskParams;
-	}
-	
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the parameters defining the ACC task embedded in this directive.
-     * @param params
-     */
-	public void setTaskParams(ParameterStorage params) 
-	{
-		accTaskParams=params;
-	}
-
 //-----------------------------------------------------------------------------
 
     /**
@@ -337,23 +228,28 @@ public class Keyword implements IDirectiveComponent
         {
             sb.append(ChemSoftConstants.JDLABMUTEKEY);
         }
-        sb.append(name).append(ChemSoftConstants.JDKEYVALSEPARATOR);
-        if (value.size()>1)
-        {
-        	sb.append(ChemSoftConstants.JDOPENBLOCK);
-        }
+        sb.append(getReference()).append(ChemSoftConstants.JDKEYVALSEPARATOR);
         
-        for (int i=0;i<value.size(); i++)
+        if (getType().equals(NamedDataType.TEXTBLOCK))
         {
-        	String v = value.get(i);
-            sb.append(v);
-            if (i<(value.size()-1))
-            	sb.append(newLineSep);
-        }
-        if (value.size()>1)
-        {
-        	sb.append(ChemSoftConstants.JDCLOSEBLOCK);
-        }
+        	TextBlock tb = new TextBlock((ArrayList<String>) getValue());
+	        if (tb.size()>1)
+	        {
+	        	sb.append(ChemSoftConstants.JDOPENBLOCK);
+	        }
+	        
+	        for (int i=0;i<tb.size(); i++)
+	        {
+	        	String v = tb.get(i);
+	            sb.append(v);
+	            if (i<(tb.size()-1))
+	            	sb.append(System.getProperty("line.separator"));
+	        }
+	        if (tb.size()>1)
+	        {
+	        	sb.append(ChemSoftConstants.JDCLOSEBLOCK);
+	        }
+    	}
         return sb.toString();
     }
     
@@ -364,19 +260,9 @@ public class Keyword implements IDirectiveComponent
      */
     public String toString()
     {
-    	return "[Keyword: '" + name + "', " + isLoud + ", '" 
-    			 + StringUtils.mergeListToString(value, " ") + "']";
+    	return "[Keyword: '" + getReference() + "', " + isLoud + ", '" 
+    			 + getValueAsString() + "']";
     }
-
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Changed the value to <code>null</code>
-     */
-	public void removeValue() 
-	{
-		value = null;
-	}
 
 //-----------------------------------------------------------------------------
  

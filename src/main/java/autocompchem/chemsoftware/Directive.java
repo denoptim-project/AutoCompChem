@@ -593,7 +593,7 @@ public class Directive implements IDirectiveComponent
     			{
     				ps = k.getTaskParams();
     			} else {
-    				ps = getACCTaskParams(k.getValue(), k);
+    				ps = getACCTaskParams(k.getValueAsLines(), k);
     			}
 	    		performACCTask(mols, ps, k, job);
     		}

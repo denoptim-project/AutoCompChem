@@ -190,7 +190,7 @@ public class DirectiveTest
     	
     	IDirectiveComponent c = d.getComponent("key2", 
     			DirectiveComponentType.KEYWORD);
-    	assertEquals("c",((Keyword) c).getValue().get(0),"Retrieve Keyword");
+    	assertEquals("c d",((Keyword) c).getValueAsString(),"Retrieve Keyword");
     	
 
     	IDirectiveComponent dd = d.getComponent("data", 

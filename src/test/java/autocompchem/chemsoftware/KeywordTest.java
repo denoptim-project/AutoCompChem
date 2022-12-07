@@ -48,10 +48,10 @@ public class KeywordTest
     	
     	assertEquals("LoudKey",k.getName(),"Keyword name(A)");
     	assertTrue(k.isLoud(),"Kind of keyword (A)");
-    	assertEquals(3,k.getValue().size(),"Keyword value size(A)");
-    	assertEquals("my value has 3 lines",k.getValue().get(0),
+    	assertEquals(3,k.getValueAsLines().size(),"Keyword value size(A)");
+    	assertEquals("my value has 3 lines",k.getValueAsLines().get(0),
     			"Keyword value(1A)");
-    	assertEquals("third line",k.getValue().get(2),"Keyword value(5A)");
+    	assertEquals("third line",k.getValueAsLines().get(2),"Keyword value(5A)");
     	
     	str = ChemSoftConstants.JDLABMUTEKEY + "MuteKey "
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "value";
@@ -60,9 +60,8 @@ public class KeywordTest
     	
     	assertEquals("MuteKey",k.getName(),"Keyword name(B)");
     	assertTrue(!k.isLoud(),"Kind of keyword (B)");
-    	assertEquals(1,k.getValue().size(),"Keyword value size(B)");
-    	assertEquals("value",k.getValue().get(0),"Keyword value(1B)");
-    	
+    	assertEquals(1,k.getValueAsLines().size(),"Keyword value size(B)");
+    	assertEquals("value",k.getValueAsLines().get(0),"Keyword value(1B)");
     }
     
 //------------------------------------------------------------------------------

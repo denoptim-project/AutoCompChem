@@ -161,12 +161,10 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			{
 				if (k.isLoud())
 				{
-					lines.add("#" + k.getName() + " "
-						+ StringUtils.mergeListToString(k.getValue()," "));
+					lines.add("#" + k.getName() + " " + k.getValueAsString());
 				} else
 				{
-					lines.add("#" + StringUtils.mergeListToString(
-							k.getValue()," "));	
+					lines.add("#" + k.getValueAsString());
 				}
 			}
 			// Sub directives and DirectiveData are not suitable for XTB's
@@ -214,8 +212,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			{
 				if (d.getAllKeywords().size() == 1)
 				{
-					lines.add("$chrg " + d.getAllKeywords().get(0).getValue()
-							.get(0));
+					lines.add("$chrg " 
+							+ d.getAllKeywords().get(0).getValueAsString());
 				} else {
 					Terminator.withMsgAndStatus("ERROR! Expecting one keyword "
 							+ "in $chrg/$charge directive.",-1);
@@ -227,8 +225,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			{
 				if (d.getAllKeywords().size() == 1)
 				{
-					lines.add("$spin " + d.getAllKeywords().get(0).getValue()
-							.get(0));
+					lines.add("$spin " 
+							+ d.getAllKeywords().get(0).getValueAsString());
 				} else {
 					Terminator.withMsgAndStatus("ERROR! Expecting one keyword "
 							+ "in $spin directive.",-1);
@@ -255,7 +253,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					{
 						l = l + getKeyAndSeparator(dirName,k.getName());
 					}
-					String v = StringUtils.mergeListToString(k.getValue(),",",true);
+					String v = StringUtils.mergeListToString(k.getValueAsLines(),
+							",",true);
 					while (v.contains(ParameterConstants.STARTMULTILINE))
 					{
 						v = v.replace(ParameterConstants.STARTMULTILINE, "");
@@ -308,7 +307,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					{
 						l = l + getKeyAndSeparator(dirName,k.getName());
 					}
-					String v = StringUtils.mergeListToString(k.getValue(),",",true);
+					String v = StringUtils.mergeListToString(k.getValueAsLines(),
+							",",true);
 					while (v.contains(ParameterConstants.STARTMULTILINE))
 					{
 						v = v.replace(ParameterConstants.STARTMULTILINE, "");
@@ -361,7 +361,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					{
 						l = l + getKeyAndSeparator(dirName,k.getName());
 					}
-					String v = StringUtils.mergeListToString(k.getValue(),",",true);
+					String v = StringUtils.mergeListToString(k.getValueAsLines(),
+							",",true);
 					while (v.contains(ParameterConstants.STARTMULTILINE))
 					{
 						v = v.replace(ParameterConstants.STARTMULTILINE, "");
