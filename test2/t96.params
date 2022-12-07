@@ -4,7 +4,7 @@
 # Using parameter file to prevent setting charge and spin (i.e., when these are
 # to be read from runtime database)
 VERBOSITY: 1
-TASK: PrepareInputNWChem
+TASK: PrepareInputNWChem2
 INPUTGEOMETRIESFILE: ../t96-mol.sdf
 JOBDETAILSFILE: ../t96-jobDetails.json
 NOCHARGE: whatever... doesn't matter what

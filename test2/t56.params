@@ -5,5 +5,5 @@ VERBOSITY: 1
 TASK: FixAndRestartNWChem
 INFILE: ../t56-nwc.out
 NewNwFile: restart-t56.pro.nw
-JOBDETAILSFILE: ../t56.jobDetails.json
+JOBDETAILSFILE: ../t56-jobDetails.json
 NWChemERRORS: ../data/errorsDefAndFix/nwchem6.3

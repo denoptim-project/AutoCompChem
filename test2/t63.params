@@ -4,7 +4,7 @@
 # Using parameter file to set charge and spin, but spin is overwritten by the SDF property
 #
 VERBOSITY: 1
-TASK: PrepareInputNWChem
+TASK: PrepareInputNWChem2
 INFILE: ../t63-nwc.out
 JOBDETAILSFILE: ../t63-jobDetails.json
 CoordinatesType: Cartesian

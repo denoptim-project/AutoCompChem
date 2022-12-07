@@ -675,8 +675,7 @@ public class NWChemInputWriter extends Worker
      * get the sorted list of master names 
      */
 
-    private ArrayList<String> getSortedSMARTSRefNames(
-                                                      Map<String,String> smarts)
+    private ArrayList<String> getSortedSMARTSRefNames(Map<String,String> smarts)
     {
         ArrayList<String> sortedMasterNames = new ArrayList<String>();
         for (String k : smarts.keySet())

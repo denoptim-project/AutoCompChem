@@ -6,5 +6,5 @@
 VERBOSITY: 2
 TASK: EvaluateNWChemOutput
 INFILE: ../t55-nwc.out 
-JOBDETAILSFILE: ../t55.jobDetails.json
+JOBDETAILSFILE: ../t55-jobDetails.json
 NWCHEMERRORS: ../data/errorsDefAndFix/nwchem6.3

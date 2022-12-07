@@ -1025,7 +1025,8 @@ public class Directive implements IDirectiveComponent
 							+ "ConstraintGenerator.", -1);
 				}
             	
-            	//Replace DirectiveData with the constraints container
+            	//Replace value of component that triggered this task
+            	
                 DirectiveData dd = new DirectiveData();
                 dd.setReference(dirComp.getName());
                 dd.setValue(cs);

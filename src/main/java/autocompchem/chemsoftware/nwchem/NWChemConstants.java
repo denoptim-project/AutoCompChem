@@ -139,6 +139,16 @@ public class NWChemConstants
     public final static String ECPDIR = "ECP";
 
     /**
+     * Name of directive controlling SCF calculations
+     */
+    public final static String SCFDIR = "SCF";
+    
+    /**
+     * Name of directive controlling DFT calculations
+     */
+    public final static String DFTDIR = "DFT";
+
+    /**
      * Name and header of the data block with variable internal coordinates
      */
     public final static String VARIABLEICBLOCK = "VARIABLES";

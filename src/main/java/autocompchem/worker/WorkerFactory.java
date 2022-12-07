@@ -25,6 +25,7 @@ import autocompchem.chemsoftware.gaussian.GaussianInputWriter2;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
+import autocompchem.chemsoftware.nwchem.NWChemInputWriter2;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
@@ -251,7 +252,8 @@ public class WorkerFactory
 				Terminator.withMsgAndStatus("ERROR! Worker '" + wid + "' "
 	    		 		+ "did not return capabilities. This is most "
 						+ "likely a bug in '" + wid + "' or in "
-						+ "the WorkerFactory. Please, report this "
+						+ "the WorkerFactory. Make sure you added case '" + wid 
+						+ "' in getWorkerCapabilities(). Please, report this "
 						+ "to the authors.",-1);
 			}
     		if (workerCapabilities.contains(task))
@@ -293,9 +295,11 @@ public class WorkerFactory
         case ForceFieldEditor:
             return ForceFieldEditor.capabilities;
 		case GaussianInputWriter:
-			return GaussianInputWriter.capabilities;
-		case GaussianInputWriter2:
+			return GaussianInputWriter.capabilities; 
+			
+		case GaussianInputWriter2: //TODO-gg rename to replace old
 			return GaussianInputWriter2.capabilities;
+			
         case GaussianOutputHandler:
             return GaussianOutputHandler.capabilities;
         case GaussianReStarter:
@@ -322,6 +326,10 @@ public class WorkerFactory
             return MolecularSorter.capabilities;
         case NWChemInputWriter:
             return NWChemInputWriter.capabilities;
+            
+        case NWChemInputWriter2: //TODO-gg rename to replace old
+			return NWChemInputWriter2.capabilities; 
+        
         case NWChemOutputHandler:
             return NWChemOutputHandler.capabilities;
         case NWChemReStarter:
@@ -385,8 +393,10 @@ public class WorkerFactory
             return new ForceFieldEditor();
 		case GaussianInputWriter:
 			return new GaussianInputWriter();
-		case GaussianInputWriter2:
+			
+		case GaussianInputWriter2: //TODO-gg rename to replace old
 			return new GaussianInputWriter2();
+			
         case GaussianOutputHandler:
             return new GaussianOutputHandler();
         case GaussianReStarter:
@@ -413,6 +423,10 @@ public class WorkerFactory
             return new MolecularSorter();
         case NWChemInputWriter:
             return new NWChemInputWriter();
+            
+		case NWChemInputWriter2: //TODO-gg rename to replace old
+			return new NWChemInputWriter2();
+			
         case NWChemOutputHandler:
             return new NWChemOutputHandler();
         case NWChemReStarter:

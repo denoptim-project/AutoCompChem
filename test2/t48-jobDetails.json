@@ -114,6 +114,18 @@
                 }
               ]
             }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry",
+              "type": "UNDEFINED"
+            }
           ]
         },
         {

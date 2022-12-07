@@ -523,44 +523,33 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	{
     		for (Job stepJob : ccj.getSteps())
     		{
-    			CompChemJob ccjStep = (CompChemJob)stepJob;
-    			Directive dCoords = ccjStep.getDirective(
-    					OrcaConstants.COORDSDIRNAME);
-        		Directive dStar = ccjStep.getDirective(
-        				OrcaConstants.STARDIRNAME);
-        		if (dCoords==null && dStar==null)
-        		{
-        			ccjStep.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-    				ChemSoftConstants.PARCHARGE, false, charge);
-        		} else if (dCoords!=null && dStar==null)
-        		{
-        			ccjStep.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-    				ChemSoftConstants.PARCHARGE, false, charge);
-        		} else if (dCoords==null && dStar!=null)
-        		{
-        			ccjStep.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-    				ChemSoftConstants.PARCHARGE, false, charge);
-        		}
-        		//One or the other directive must be present!
+        		setCharge((CompChemJob) stepJob, charge);
     		}
     	} else {
-    		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
-    		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
-    		if (dCoords==null && dStar==null)
-    		{
-    			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-				ChemSoftConstants.PARCHARGE, false, charge);
-    		} else if (dCoords!=null && dStar==null)
-    		{
-    			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-				ChemSoftConstants.PARCHARGE, false, charge);
-    		} else if (dCoords==null && dStar!=null)
-    		{
-    			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-				ChemSoftConstants.PARCHARGE, false, charge);
-    		}
-    		//One or the other directive must be present!
+    		setCharge(ccj, charge);
     	}
+	}
+	
+//------------------------------------------------------------------------------
+	
+	private static void setCharge(CompChemJob ccj, String charge)
+	{
+		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
+		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
+		if (dCoords==null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARCHARGE, false, charge);
+		} else if (dCoords!=null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARCHARGE, false, charge);
+		} else if (dCoords==null && dStar!=null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
+			ChemSoftConstants.PARCHARGE, false, charge);
+		}
+		//One or the other directive must be present!
 	}
 
 //------------------------------------------------------------------------------
@@ -579,46 +568,34 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	{
     		for (Job stepJob : ccj.getSteps())
     		{
-    			CompChemJob ccjStep = (CompChemJob)stepJob;
-    			Directive dCoords = ccjStep.getDirective(
-    					OrcaConstants.COORDSDIRNAME);
-        		Directive dStar = ccjStep.getDirective(
-        				OrcaConstants.STARDIRNAME);
-        		if (dCoords==null && dStar==null)
-        		{
-        			ccjStep.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-    				ChemSoftConstants.PARSPINMULT, false, sm);
-        		} else if (dCoords!=null && dStar==null)
-        		{
-        			ccjStep.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-    				ChemSoftConstants.PARSPINMULT, false, sm);
-        		} else if (dCoords==null && dStar!=null)
-        		{
-        			ccjStep.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-    				ChemSoftConstants.PARSPINMULT, false, sm);
-        		}
-        		//One or the other directive must be present!
+    			setSpinMultiplicity((CompChemJob) stepJob, sm);
     		}
     	} else {
-    		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
-    		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
-    		if (dCoords==null && dStar==null)
-    		{
-    			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-				ChemSoftConstants.PARSPINMULT, false, sm);
-    		} else if (dCoords!=null && dStar==null)
-    		{
-    			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-				ChemSoftConstants.PARSPINMULT, false, sm);
-    		} else if (dCoords==null && dStar!=null)
-    		{
-    			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-				ChemSoftConstants.PARSPINMULT, false, sm);
-    		}
-    		//One or the other directive must be present!
+    		setSpinMultiplicity(ccj, sm);
     	}
 	}
+	
+//------------------------------------------------------------------------------
 
+	public static void setSpinMultiplicity(CompChemJob ccj, String sm)
+	{
+		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
+		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
+		if (dCoords==null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARSPINMULT, false, sm);
+		} else if (dCoords!=null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARSPINMULT, false, sm);
+		} else if (dCoords==null && dStar!=null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
+			ChemSoftConstants.PARSPINMULT, false, sm);
+		}
+	}
+	
 //------------------------------------------------------------------------------
 
 	/**

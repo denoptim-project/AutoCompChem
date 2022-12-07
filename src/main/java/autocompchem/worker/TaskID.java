@@ -79,7 +79,8 @@ public enum TaskID
     //TODO-gg from here is the new implementations
     // TODO-gg rename new to remove obsolete
     
-    PREPAREINPUTGAUSSIAN2
+    PREPAREINPUTGAUSSIAN2,
+    PREPAREINPUTNWCHEM2
     
     ;
 	
