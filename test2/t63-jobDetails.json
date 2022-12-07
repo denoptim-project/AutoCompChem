@@ -24,11 +24,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -38,18 +39,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "optimize"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -60,11 +63,12 @@
               "name": "MAXITER",
               "keywords": [
                 {
-                  "name": "maxiter",
-                  "isLoud": false,
+                  "reference": "maxiter",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "200"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -74,15 +78,16 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step",
                 "started",
                 "from",
                 "NWChem",
                 "output\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -127,11 +132,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "fine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -139,15 +145,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -158,11 +164,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -172,18 +179,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "frequencies"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -191,13 +200,14 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Last",
                 "step:",
                 "frequencies\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },

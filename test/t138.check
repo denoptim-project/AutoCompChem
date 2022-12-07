@@ -23,7 +23,7 @@ if [ $n -ne 2 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 n=0;n=$(grep -c " \"ATOMIDS\"" t138_jd_XTB.json)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 n=0;n=$(grep -c " \"isLoud\"" t138_jd_XTB.json)
-if [ $n -ne 6 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
 
 if [ ! -f t138_jd_Gaussian.json ] ; then
     echo NOT Passed ERROR 10
@@ -31,11 +31,11 @@ if [ ! -f t138_jd_Gaussian.json ] ; then
 fi
 n=0;n=$(grep -c " *\"jobType\": \"CompChemJob\",$" t138_jd_Gaussian.json)
 if [ $n -ne 5 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
-n=0;n=$(grep -c "^ *\"name\": \"chk\",$" t138_jd_Gaussian.json)
+n=0;n=$(grep -c "^ *\"reference\": \"chk\",$" t138_jd_Gaussian.json)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
-n=0;n=$(grep -c "^ *\"RuAsH3\"$" t138_jd_Gaussian.json)
+n=0;n=$(grep -c "^ *\"value\": \"RuAsH3\"$" t138_jd_Gaussian.json)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
-n=0;n=$(grep -c "^ *\"GEN 5D 7F\"$" t138_jd_Gaussian.json)
+n=0;n=$(grep -c "^ *\"value\": \"GEN 5D 7F\",$" t138_jd_Gaussian.json)
 if [ $n -ne 3 ] ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
 n=0;n=$(grep -c "^ *\"name\": \"SCF\",$" t138_jd_Gaussian.json)
 if [ $n -ne 3 ] ; then echo NOT Passes ERROR 15 ; exit -1 ; fi
@@ -45,7 +45,7 @@ n=0;n=$(grep -c "^ *\"name\": \"OPT\",$" t138_jd_Gaussian.json)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 17 ; exit -1 ; fi
 n=0;n=$(grep -A 4 -i FORCECONSTANTS t138_jd_Gaussian.json  | grep -A 1 value | grep -c -i calcFC)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 18 ; exit -1 ; fi
-n=0;n=$(grep -c "^ *\"name\": \"title\",$" t138_jd_Gaussian.json)
+n=0;n=$(grep -c "^ *\"reference\": \"title\",$" t138_jd_Gaussian.json)
 if [ $n -ne 4 ] ; then echo NOT Passes ERROR 19 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^ *\"accTaskParams\": \[$" t138_jd_Gaussian.json)

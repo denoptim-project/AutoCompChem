@@ -8,18 +8,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "scf"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "energy"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -30,11 +32,12 @@
           "name": "ecce_print",
           "keywords": [
             {
-              "name": "eccefile",
-              "isLoud": false,
+              "reference": "eccefile",
+              "type": "TEXTBLOCK",
               "value": [
                 "ecce.out"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -42,8 +45,8 @@
           "name": "geometry",
           "keywords": [
             {
-              "name": "units",
-              "isLoud": true,
+              "reference": "units",
+              "type": "TEXTBLOCK",
               "value": [
                 "angstrom"
               ]
@@ -54,11 +57,12 @@
               "name": "SYMMETRY",
               "keywords": [
                 {
-                  "name": "pointgroup",
-                  "isLoud": false,
+                  "reference": "pointgroup",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "c1"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -68,14 +72,15 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step1:",
                 "SP",
                 "with",
                 "HF\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         }
@@ -91,8 +96,8 @@
               "name": "DISP",
               "keywords": [
                 {
-                  "name": "vdw",
-                  "isLoud": true,
+                  "reference": "vdw",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "3"
                   ]
@@ -103,11 +108,12 @@
               "name": "TOLERANCES",
               "keywords": [
                 {
-                  "name": "tight",
-                  "isLoud": false,
+                  "reference": "tight",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "tight"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -115,18 +121,20 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "xfine"
-                  ]
+                  ],
+                  "isLoud": false
                 },
                 {
-                  "name": "disk",
-                  "isLoud": false,
+                  "reference": "disk",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "nodisk"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -134,29 +142,29 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-8"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-7"
                   ]
                 },
                 {
-                  "name": "gradient",
-                  "isLoud": true,
+                  "reference": "gradient",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "ncyds",
-                  "isLoud": true,
+                  "reference": "ncyds",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "150"
                   ]
@@ -167,11 +175,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -184,18 +193,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "energy"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -203,14 +214,15 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step2:",
                 "SP",
                 "with",
                 "DFT\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         }
@@ -223,18 +235,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "optimize"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -242,12 +256,13 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step3:",
                 "opt\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         }
@@ -260,18 +275,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "frequencies"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -279,13 +296,14 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step4:",
                 "hessian+freq",
                 "I\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         }

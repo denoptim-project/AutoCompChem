@@ -10,7 +10,7 @@ Writing file '../test2/t10-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:27 CET 2022
+ Fri Dec 09 10:49:10 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -30,7 +30,7 @@ Writing file '../test2/t11-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:28 CET 2022
+ Fri Dec 09 10:49:10 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -50,7 +50,7 @@ Writing file '../test2/t112-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:28 CET 2022
+ Fri Dec 09 10:49:11 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -66,12 +66,11 @@ Writing file '../test2/t112-jobDetails'
                               Version: 2.0
 ***************************************************************************
 
-WARNING! The following line is not part or any definition of Directive, but is found while parsing text into Directives. Ignoring line '----NEW-STEP----'.
 Writing file '../test2/t116-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:29 CET 2022
+ Fri Dec 09 10:49:11 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -91,7 +90,7 @@ Writing file '../test2/t12-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:29 CET 2022
+ Fri Dec 09 10:49:12 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -111,7 +110,7 @@ Writing file '../test2/t129-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:30 CET 2022
+ Fri Dec 09 10:49:12 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -131,7 +130,7 @@ Writing file '../test2/t131-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:30 CET 2022
+ Fri Dec 09 10:49:12 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -151,7 +150,7 @@ Writing file '../test2/t134-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:30 CET 2022
+ Fri Dec 09 10:49:13 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -171,7 +170,7 @@ Writing file '../test2/t137-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:31 CET 2022
+ Fri Dec 09 10:49:13 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -191,7 +190,7 @@ Writing file '../test2/t40-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:31 CET 2022
+ Fri Dec 09 10:49:14 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -211,7 +210,7 @@ Writing file '../test2/t41-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:32 CET 2022
+ Fri Dec 09 10:49:14 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -231,7 +230,7 @@ Writing file '../test2/t48-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:32 CET 2022
+ Fri Dec 09 10:49:15 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -273,7 +272,7 @@ Writing file '../test2/t53-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:33 CET 2022
+ Fri Dec 09 10:49:15 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -293,7 +292,7 @@ Writing file '../test2/t54-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:33 CET 2022
+ Fri Dec 09 10:49:15 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -313,7 +312,7 @@ Writing file '../test2/t55-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:34 CET 2022
+ Fri Dec 09 10:49:16 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -333,7 +332,7 @@ Writing file '../test2/t56-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:34 CET 2022
+ Fri Dec 09 10:49:16 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -353,7 +352,7 @@ Writing file '../test2/t57-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:35 CET 2022
+ Fri Dec 09 10:49:17 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -373,7 +372,7 @@ Writing file '../test2/t6-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:35 CET 2022
+ Fri Dec 09 10:49:17 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -393,7 +392,7 @@ Writing file '../test2/t61-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:35 CET 2022
+ Fri Dec 09 10:49:18 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -413,7 +412,7 @@ Writing file '../test2/t63-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:36 CET 2022
+ Fri Dec 09 10:49:18 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -433,7 +432,7 @@ Writing file '../test2/t67-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:36 CET 2022
+ Fri Dec 09 10:49:18 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -453,7 +452,7 @@ Writing file '../test2/t73-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:37 CET 2022
+ Fri Dec 09 10:49:19 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -473,7 +472,7 @@ Writing file '../test2/t80-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:37 CET 2022
+ Fri Dec 09 10:49:19 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -493,7 +492,7 @@ Writing file '../test2/t82-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:38 CET 2022
+ Fri Dec 09 10:49:20 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -513,7 +512,7 @@ Writing file '../test2/t84-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:39 CET 2022
+ Fri Dec 09 10:49:20 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -533,7 +532,7 @@ Writing file '../test2/t87-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:39 CET 2022
+ Fri Dec 09 10:49:20 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -553,7 +552,7 @@ Writing file '../test2/t91-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:39 CET 2022
+ Fri Dec 09 10:49:21 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -573,7 +572,7 @@ Writing file '../test2/t92-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:40 CET 2022
+ Fri Dec 09 10:49:21 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -593,7 +592,7 @@ Writing file '../test2/t93-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:40 CET 2022
+ Fri Dec 09 10:49:22 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -613,7 +612,7 @@ Writing file '../test2/t94-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:41 CET 2022
+ Fri Dec 09 10:49:22 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -633,7 +632,7 @@ Writing file '../test2/t95-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:41 CET 2022
+ Fri Dec 09 10:49:23 CET 2022
 
  Termination status: 0
  Final message: Normal Termination
@@ -653,7 +652,7 @@ Writing file '../test2/t96-jobDetails'
 
 
 ***************************************************************************
- Sun Dec 04 18:32:42 CET 2022
+ Fri Dec 09 10:49:23 CET 2022
 
  Termination status: 0
  Final message: Normal Termination

@@ -62,7 +62,6 @@ public class XTBInputWriterTest
     File tempDir;
     
 //-----------------------------------------------------------------------------
-
     
     @Test
     public void testJobDetailsSources() throws Exception

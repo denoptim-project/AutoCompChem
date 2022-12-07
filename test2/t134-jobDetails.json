@@ -5,11 +5,9 @@
       "name": "#",
       "keywords": [
         {
-          "name": "comment",
-          "isLoud": false,
-          "value": [
-            "just a comment"
-          ]
+          "reference": "comment",
+          "value": "just a comment",
+          "isLoud": false
         }
       ]
     },
@@ -17,18 +15,12 @@
       "name": "constrain",
       "keywords": [
         {
-          "name": "force constant",
-          "isLoud": true,
-          "value": [
-            "1.2345"
-          ]
+          "reference": "force constant",
+          "value": "1.2345"
         },
         {
-          "name": "elements",
-          "isLoud": true,
-          "value": [
-            "C,O,1"
-          ]
+          "reference": "elements",
+          "value": "C,O,1"
         }
       ],
       "dirData": [
@@ -60,11 +52,8 @@
       "name": "fix",
       "keywords": [
         {
-          "name": "elements",
-          "isLoud": true,
-          "value": [
-            "O,P,S"
-          ]
+          "reference": "elements",
+          "value": "O,P,S"
         }
       ],
       "dirData": [
@@ -96,11 +85,8 @@
       "name": "opt",
       "keywords": [
         {
-          "name": "logfile",
-          "isLoud": true,
-          "value": [
-            "trajectory.xyz"
-          ]
+          "reference": "logfile",
+          "value": "trajectory.xyz"
         }
       ]
     },
@@ -108,11 +94,8 @@
       "name": "set",
       "keywords": [
         {
-          "name": "runtyp",
-          "isLoud": true,
-          "value": [
-            "opt"
-          ]
+          "reference": "runtyp",
+          "value": "opt"
         }
       ]
     }

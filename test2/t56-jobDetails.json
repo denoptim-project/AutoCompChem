@@ -24,11 +24,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "fine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -36,15 +37,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -55,11 +56,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -69,18 +71,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "energy"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -88,14 +92,15 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step:2",
                 "SP",
                 "with",
                 "DFT\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -146,11 +151,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "fine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -158,15 +164,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -177,11 +183,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -191,18 +198,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "optimize"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -210,8 +219,8 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step3:",
                 "geometry",
@@ -221,7 +230,8 @@
                 "-",
                 "frozen",
                 "core\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -245,8 +255,9 @@
           "name": "SET",
           "keywords": [
             {
-              "name": "geometry:actlist",
-              "isLoud": true,
+              "reference": "geometry:actlist",
+              "type": "UNDEFINED",
+              "value": "Type is not JSON-able",
               "accTaskParams": [
                 {
                   "reference": "TASK",
@@ -291,11 +302,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "fine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -303,15 +315,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -322,11 +334,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -336,18 +349,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "optimize"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -355,8 +370,8 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step4:",
                 "geometry",
@@ -367,7 +382,8 @@
                 "frozen",
                 "C-C",
                 "bond\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -391,8 +407,9 @@
           "name": "SET",
           "keywords": [
             {
-              "name": "geometry:actlist",
-              "isLoud": true,
+              "reference": "geometry:actlist",
+              "type": "UNDEFINED",
+              "value": "Type is not JSON-able",
               "accTaskParams": [
                 {
                   "reference": "TASK",
@@ -431,11 +448,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "fine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -443,15 +461,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -462,11 +480,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -476,18 +495,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "saddle"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -495,15 +516,16 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step5:",
                 "TS",
                 "optimization",
                 "with",
                 "DFT\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -527,11 +549,12 @@
           "name": "unset",
           "keywords": [
             {
-              "name": "defreeze",
-              "isLoud": false,
+              "reference": "defreeze",
+              "type": "TEXTBLOCK",
               "value": [
                 "geometry:actlist"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         }
@@ -560,11 +583,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "fine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -572,15 +596,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -591,11 +615,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -605,18 +630,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "frequencies"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -632,12 +659,13 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step6:",
                 "frequencies\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },

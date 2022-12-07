@@ -8,11 +8,12 @@
           "name": "ecp",
           "keywords": [
             {
-              "name": "type",
-              "isLoud": false,
+              "reference": "type",
+              "type": "TEXTBLOCK",
               "value": [
                 "spherical"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -20,18 +21,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "scf"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "energy"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -42,8 +45,8 @@
           "name": "geometry",
           "keywords": [
             {
-              "name": "units",
-              "isLoud": true,
+              "reference": "units",
+              "type": "TEXTBLOCK",
               "value": [
                 "angstrom"
               ]
@@ -54,11 +57,12 @@
               "name": "SYMMETRY",
               "keywords": [
                 {
-                  "name": "pointgroup",
-                  "isLoud": false,
+                  "reference": "pointgroup",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "c1"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -81,14 +85,15 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step:1",
                 "SP",
                 "with",
                 "HF\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -96,19 +101,21 @@
           "name": "basis",
           "keywords": [
             {
-              "name": "name",
-              "isLoud": false,
+              "reference": "name",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"ao",
                 "basis\""
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "type",
-              "isLoud": false,
+              "reference": "type",
+              "type": "TEXTBLOCK",
               "value": [
                 "spherical"
-              ]
+              ],
+              "isLoud": false
             }
           ],
           "accTaskParams": [
@@ -131,11 +138,12 @@
           "name": "ecp",
           "keywords": [
             {
-              "name": "type",
-              "isLoud": false,
+              "reference": "type",
+              "type": "TEXTBLOCK",
               "value": [
                 "spherical"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -146,11 +154,12 @@
               "name": "GRID",
               "keywords": [
                 {
-                  "name": "finess",
-                  "isLoud": false,
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "xfine"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             },
@@ -158,15 +167,15 @@
               "name": "CONVERGENCE",
               "keywords": [
                 {
-                  "name": "energy",
-                  "isLoud": true,
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-6"
                   ]
                 },
                 {
-                  "name": "density",
-                  "isLoud": true,
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "1e-5"
                   ]
@@ -177,11 +186,12 @@
               "name": "XC",
               "keywords": [
                 {
-                  "name": "functional",
-                  "isLoud": false,
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
                   "value": [
                     "pbe0"
-                  ]
+                  ],
+                  "isLoud": false
                 }
               ]
             }
@@ -191,18 +201,20 @@
           "name": "task",
           "keywords": [
             {
-              "name": "theory",
-              "isLoud": false,
+              "reference": "theory",
+              "type": "TEXTBLOCK",
               "value": [
                 "dft"
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "tasktype",
-              "isLoud": false,
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
               "value": [
                 "energy"
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -210,14 +222,15 @@
           "name": "title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
+              "reference": "title",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"Step:2",
                 "SP",
                 "with",
                 "DFT\""
-              ]
+              ],
+              "isLoud": false
             }
           ]
         },
@@ -225,19 +238,21 @@
           "name": "basis",
           "keywords": [
             {
-              "name": "name",
-              "isLoud": false,
+              "reference": "name",
+              "type": "TEXTBLOCK",
               "value": [
                 "\"ao",
                 "basis\""
-              ]
+              ],
+              "isLoud": false
             },
             {
-              "name": "type",
-              "isLoud": false,
+              "reference": "type",
+              "type": "TEXTBLOCK",
               "value": [
                 "spherical"
-              ]
+              ],
+              "isLoud": false
             }
           ],
           "accTaskParams": [

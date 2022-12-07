@@ -33,6 +33,7 @@ import com.google.gson.reflect.TypeToken;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 
@@ -75,7 +76,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         {
             jdLine = jdLine.substring(ChemSoftConstants.JDLABDATA.length());
         }
-        String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR,2);
+        String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR, 2);
         super.setReference(parts[0]);
         
         if (parts.length < 2)
@@ -238,6 +239,11 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
 						|| l.contains(GaussianConstants.LABPARAMS))
 					return true;
 			}
+		} else if (this.getType().equals(NamedDataType.STRING))
+		{
+			String str = ((String) getValue());
+			return str.contains(ChemSoftConstants.JDLABACCTASK)
+					|| str.contains(GaussianConstants.LABPARAMS);
 		}
 		return false;
 	}
@@ -303,9 +309,44 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
         public DirectiveData deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException
         {
-        	JsonObject jsonObject = json.getAsJsonObject();      
+        	JsonObject jsonObjSrc = json.getAsJsonObject();      
+            
+        	// To simplify json files some fields are omitted
+        	JsonObject jsonNamedData = new JsonObject();
+        	jsonNamedData.add("reference", jsonObjSrc.get("reference"));
+        	NamedDataType typ = NamedDataType.UNDEFINED;
+            if (jsonObjSrc.has("type"))
+            {
+            	jsonNamedData.add("type", jsonObjSrc.get("type"));
+            } else {
+            	jsonNamedData.addProperty("type", typ.toString());
+            }
+            if (jsonObjSrc.has("value"))
+            {
+            	jsonNamedData.add("value", jsonObjSrc.get("value"));
+            }
 
-            DirectiveData dd = new DirectiveData();
+        	// Exploit deserialization of super class
+        	NamedData nd = context.deserialize(jsonNamedData, NamedData.class);
+        	DirectiveData dd = new DirectiveData();
+        	dd.setReference(nd.getReference());
+        	dd.setType(nd.getType());
+        	dd.setValue(nd.getValue());
+        	// Then deserialize what this class add on top of the fields of the
+        	// superclass.
+        	if (jsonObjSrc.has("accTaskParams"))
+            { 
+                ParameterStorage ps = context.deserialize(
+                		jsonObjSrc.get("accTaskParams"), 
+                		 ParameterStorage.class);
+				dd.accTaskParams = ps;
+            }
+        	
+            
+            
+            
+            /*
+            
             String reference = context.deserialize(jsonObject.get("reference"),
             		 String.class);
             dd.setReference(reference);
@@ -317,7 +358,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
             		 NamedDataType.class);
             }
             dd.setType(typ);
-             
+            
+            //TODO: what about other types? We should use the NAmedData deserializer
             if (jsonObject.has("value") && typ==NamedDataType.TEXTBLOCK)
             { 
            	    ArrayList<String> lines = context.deserialize(
@@ -333,6 +375,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent
                 		 ParameterStorage.class);
 				dd.accTaskParams = ps;
             }
+            */
          	
          	return dd;
         }

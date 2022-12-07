@@ -8,25 +8,16 @@
           "name": "Link0",
           "keywords": [
             {
-              "name": "Nprocshared",
-              "isLoud": true,
-              "value": [
-                "8"
-              ]
+              "reference": "Nprocshared",
+              "value": "8"
             },
             {
-              "name": "mem",
-              "isLoud": true,
-              "value": [
-                "28GB"
-              ]
+              "reference": "mem",
+              "value": "28GB"
             },
             {
-              "name": "chk",
-              "isLoud": true,
-              "value": [
-                "RuAsH3"
-              ]
+              "reference": "chk",
+              "value": "RuAsH3"
             }
           ]
         },
@@ -34,46 +25,34 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "Free1",
-              "isLoud": false,
-              "value": [
-                "WITH NOTHING"
-              ]
+              "reference": "Free1",
+              "value": "WITH NOTHING",
+              "isLoud": false
             },
             {
-              "name": "Free2",
-              "isLoud": false,
-              "value": [
-                "WHIT FREE LABEL"
-              ]
+              "reference": "Free2",
+              "value": "WHIT FREE LABEL",
+              "isLoud": false
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "HF"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -81,32 +60,22 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "1000"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "1000"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "180"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "180"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -116,11 +85,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " Protocol from Vidar - 22 Nov 2013"
-              ]
+              "reference": "title",
+              "value": " Protocol from Vidar - 22 Nov 2013",
+              "isLoud": false
             }
           ]
         },
@@ -128,18 +95,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -155,25 +118,16 @@
           "name": "Link0",
           "keywords": [
             {
-              "name": "Nprocshared",
-              "isLoud": true,
-              "value": [
-                "8"
-              ]
+              "reference": "Nprocshared",
+              "value": "8"
             },
             {
-              "name": "mem",
-              "isLoud": true,
-              "value": [
-                "28GB"
-              ]
+              "reference": "mem",
+              "value": "28GB"
             },
             {
-              "name": "chk",
-              "isLoud": true,
-              "value": [
-                "RuAsH3"
-              ]
+              "reference": "chk",
+              "value": "RuAsH3"
             }
           ]
         },
@@ -181,46 +135,32 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -228,32 +168,22 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "800"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "800"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "280"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "280"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -263,11 +193,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         },
@@ -275,18 +203,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -302,25 +226,16 @@
           "name": "Link0",
           "keywords": [
             {
-              "name": "Nprocshared",
-              "isLoud": true,
-              "value": [
-                "8"
-              ]
+              "reference": "Nprocshared",
+              "value": "8"
             },
             {
-              "name": "mem",
-              "isLoud": true,
-              "value": [
-                "28GB"
-              ]
+              "reference": "mem",
+              "value": "28GB"
             },
             {
-              "name": "chk",
-              "isLoud": true,
-              "value": [
-                "RuAsH3"
-              ]
+              "reference": "chk",
+              "value": "RuAsH3"
             }
           ]
         },
@@ -328,46 +243,32 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -375,39 +276,26 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "600"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "600"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "280"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "280"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -417,11 +305,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         },
@@ -429,18 +315,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },

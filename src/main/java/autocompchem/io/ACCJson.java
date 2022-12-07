@@ -9,6 +9,9 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.DirectiveData.DirectiveDataDeserializer;
+import autocompchem.chemsoftware.Keyword;
+import autocompchem.chemsoftware.Keyword.KeywordDeserializer;
+import autocompchem.chemsoftware.Keyword.KeywordSerializer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataDeserializer;
 import autocompchem.datacollections.NamedData.NamedDataSerializer;
@@ -73,6 +76,8 @@ public class ACCJson
     	        		new CompChemJobSerializer())
     	        .registerTypeAdapter(NamedData.class, 
     	        		new NamedDataSerializer())
+    	        .registerTypeAdapter(Keyword.class, 
+    	        		new KeywordSerializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
@@ -85,6 +90,8 @@ public class ACCJson
     	        		new DirectiveDataDeserializer())
     	        .registerTypeAdapter(NamedData.class, 
     	        		new NamedDataDeserializer())
+    	        .registerTypeAdapter(Keyword.class, 
+    	        		new KeywordDeserializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageDeserializer())
     			.create();

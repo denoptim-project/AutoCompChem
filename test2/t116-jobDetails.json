@@ -8,18 +8,13 @@
           "name": "!",
           "keywords": [
             {
-              "name": "functional",
-              "isLoud": false,
-              "value": [
-                "BP86"
-              ]
+              "reference": "functional",
+              "value": "BP86",
+              "isLoud": false
             },
             {
-              "name": "key",
-              "isLoud": true,
-              "value": [
-                "value"
-              ]
+              "reference": "key",
+              "value": "value"
             }
           ]
         },
@@ -27,18 +22,13 @@
           "name": "#",
           "keywords": [
             {
-              "name": "comment",
-              "isLoud": false,
-              "value": [
-                "just a comment"
-              ]
+              "reference": "comment",
+              "value": "just a comment",
+              "isLoud": false
             },
             {
-              "name": "commentKey",
-              "isLoud": true,
-              "value": [
-                "this is a dummy input file"
-              ]
+              "reference": "commentKey",
+              "value": "this is a dummy input file"
             }
           ]
         },
@@ -64,11 +54,9 @@
               "name": "InHess",
               "keywords": [
                 {
-                  "name": "hessSource",
-                  "isLoud": false,
-                  "value": [
-                    "Read"
-                  ]
+                  "reference": "hessSource",
+                  "value": "Read",
+                  "isLoud": false
                 }
               ]
             },
@@ -76,7 +64,9 @@
               "name": "InHessName",
               "keywords": [
                 {
-                  "name": "filename",
+                  "reference": "filename",
+                  "type": "UNDEFINED",
+                  "value": "Type is not JSON-able",
                   "isLoud": false,
                   "accTaskParams": [
                     {
@@ -133,28 +123,24 @@
           "name": "*",
           "keywords": [
             {
-              "name": "charge",
-              "isLoud": false,
-              "value": [
-                "-10"
-              ]
+              "reference": "charge",
+              "value": "-10",
+              "isLoud": false
             },
             {
-              "name": "spin_multiplicity",
-              "isLoud": false,
-              "value": [
-                "5"
-              ]
+              "reference": "spin_multiplicity",
+              "value": "5",
+              "isLoud": false
             },
             {
-              "name": "coordtype",
-              "isLoud": false,
-              "value": [
-                "xyzfile"
-              ]
+              "reference": "coordtype",
+              "value": "xyzfile",
+              "isLoud": false
             },
             {
-              "name": "filename",
+              "reference": "filename",
+              "type": "UNDEFINED",
+              "value": "Type is not JSON-able",
               "isLoud": false,
               "accTaskParams": [
                 {
@@ -176,11 +162,8 @@
               "name": "nestOne",
               "keywords": [
                 {
-                  "name": "key1",
-                  "isLoud": true,
-                  "value": [
-                    "value1"
-                  ]
+                  "reference": "key1",
+                  "value": "value1"
                 }
               ],
               "subDirectives": [
@@ -188,11 +171,8 @@
                   "name": "nestTwo",
                   "keywords": [
                     {
-                      "name": "key2",
-                      "isLoud": true,
-                      "value": [
-                        "value2"
-                      ]
+                      "reference": "key2",
+                      "value": "value2"
                     }
                   ],
                   "dirData": [

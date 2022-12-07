@@ -251,7 +251,6 @@ public class ParallelRunnerTest
         //Job master = JobFactory.createJob(RunnableAppID.ACC);
         //master.addStep(new TestJob(roothName+"A"));
         
-        
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
         master.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
@@ -286,7 +285,6 @@ public class ParallelRunnerTest
 
         //Job master = JobFactory.createJob(RunnableAppID.ACC);
         //master.addStep(new TestJob(roothName+"A"));
-        
         
         Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
         master.setParameter("WALLTIME", "5");
@@ -341,7 +339,7 @@ public class ParallelRunnerTest
         SituationBase sitsDB = new SituationBase();
         sitsDB.addSituation(s);
         InfoChannelBase icDB = new InfoChannelBase();
-        icDB.addChannel(new FileAsSource(roothName+0,InfoChannelType.LOGFEED));
+        icDB.addChannel(new FileAsSource(roothName+0, InfoChannelType.LOGFEED));
         
         // Make the job that will monitor the ongoing job and trigger an action
         Job monitoringJob = new MonitoringJob(jobToEvaluate, sitsDB, icDB, 

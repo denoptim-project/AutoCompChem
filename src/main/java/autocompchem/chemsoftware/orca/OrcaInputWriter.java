@@ -143,12 +143,10 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			{
 				if (k.isLoud())
 				{
-					lines.add("#" + k.getName() + " "
-						+ StringUtils.mergeListToString(k.getValue()," "));
+					lines.add("#" + k.getName() + " " + k.getValueAsString());
 				} else
 				{
-					lines.add("#" + StringUtils.mergeListToString(
-							k.getValue()," "));	
+					lines.add("#" + k.getValueAsString());	
 				}
 			}
 			// Sub directives and DirectiveData are not suitable for Orca's
@@ -193,12 +191,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				{
 					if (k.isLoud())
 					{
-						line = line + " " + k.getName() + " "
-							+ StringUtils.mergeListToString(k.getValue()," ");
+						line = line + " " + k.getName() + " " 
+								+ k.getValueAsString();
 					} else
 					{
-						line = line + " " + StringUtils.mergeListToString(
-								k.getValue()," ");
+						line = line + " " + k.getValueAsString();
 					}
 				}
 				// Sub directives and DirectiveData are not suitable for Orca's
@@ -265,10 +262,9 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					if (k.isLoud())
 					{
 						line = line + " " + k.getName() + " "
-							+ StringUtils.mergeListToString(k.getValue()," ");
+								+ k.getValueAsString();
 					} else {
-						line = line + " "
-							+ StringUtils.mergeListToString(k.getValue()," ");
+						line = line + " " + k.getValueAsString();
 					}
 				}
 				lines.add(line);
@@ -416,13 +412,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		d.sortKeywordsBy(new CoordsKeywordsComparator());
 		for (Keyword k : d.getAllKeywords())
 		{
+			//TODO-gg this is what the toString() method of Keyword should do!
 			if (k.isLoud())
 			{
-				line = line + " " + k.getName() + " "
-					+ StringUtils.mergeListToString(k.getValue()," ");
+				line = line + " " + k.getName() + " " + k.getValueAsString();
 			} else {
-				line = line + " "
-					+ StringUtils.mergeListToString(k.getValue()," ");
+				line = line + " " + k.getValueAsString();
 			}
 		}
 		lines.add(line);

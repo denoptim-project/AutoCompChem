@@ -132,13 +132,13 @@ public class CompChemJobTest
     	
     	assertEquals(3,job.getNumberOfSteps(),"Number of Orca steps");
     	assertEquals("NumFreq",((CompChemJob)job.getStep(0)).getDirective("!")
-    			.getKeyword("jobType").getValue().get(0),
+    			.getKeyword("jobType").getValueAsString(),
     			"Check imported dir (A)");
     	assertEquals("0",((CompChemJob)job.getStep(1)).getDirective("*")
-    			.getKeyword("charge").getValue().get(0),
+    			.getKeyword("charge").getValueAsString(),
     			"Check imported dir (B)");
     	assertEquals("Opt",((CompChemJob)job.getStep(2)).getDirective("!")
-    	    			.getKeyword("jobType").getValue().get(0),
+    	    			.getKeyword("jobType").getValueAsString(),
     	    			"Check imported dir (C)");
     	assertTrue(((CompChemJob)job.getStep(0)).getDirective("*")
     			.hasComponent("geom-0",DirectiveComponentType.DIRECTIVEDATA),

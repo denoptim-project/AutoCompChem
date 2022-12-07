@@ -101,20 +101,23 @@ public class StringUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Appends all entries of a list to obtain a single string.
+     * Appends all entries of a list to obtain a single string that uses the 
+     * given separator.
      * @param list the entries to append.
      * @param sep separator to use between entries.
      * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
      */
     
-    public static String mergeListToString(List<String> list, String sep)
+    public static String mergeListToString(List<? extends Object> list, String sep)
     {
     	return mergeListToString(list,sep,false);
     }
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Appends all entries of a list to obtain a single string.
+     * Appends all entries of a list to obtain a single string that uses the 
+     * given separator.
      * @param list the entries to append.
      * @param sep separator to use between entries.
      * @param trim if <code>true</code> avoids to write separator after the
@@ -122,13 +125,13 @@ public class StringUtils
      * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
      */
     
-    public static String mergeListToString(List<String> list, String sep,
-    		boolean trim)
+    public static String mergeListToString(List<? extends Object> list, 
+    		String sep, boolean trim)
     {
     	StringBuilder sb = new StringBuilder();
     	for (int i=0; i<list.size(); i++)
     	{
-    		sb.append(list.get(i));
+    		sb.append(list.get(i).toString());
     		if (i<(list.size()-1))
     			sb.append(sep);
     		else
@@ -140,8 +143,6 @@ public class StringUtils
     
 //------------------------------------------------------------------------------
 
-    
-    
     public static int countMatches(String str, String regex)
     {
         Matcher m = Pattern.compile(regex).matcher(str);

@@ -11,32 +11,24 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "HF"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "GEN 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "GEN 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ]
         },
@@ -44,11 +36,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " SP+PCM(benzene)"
-              ]
+              "reference": "title",
+              "value": " SP+PCM(benzene)",
+              "isLoud": false
             }
           ]
         },
@@ -56,18 +46,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -102,46 +88,32 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "CHKBASIS 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -149,25 +121,17 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "600"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "600"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 }
               ]
             }
@@ -177,11 +141,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         },
@@ -189,18 +151,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -219,46 +177,32 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "GEN 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "GEN 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -266,25 +210,17 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "600"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "600"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 }
               ]
             }
@@ -294,11 +230,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         },
@@ -306,18 +240,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -352,46 +282,32 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "GEN 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "GEN 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -399,25 +315,17 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "600"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "600"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 }
               ]
             }
@@ -427,11 +335,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         },
@@ -439,18 +345,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },

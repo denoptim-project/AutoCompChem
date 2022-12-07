@@ -593,7 +593,7 @@ public class Directive implements IDirectiveComponent
     			{
     				ps = k.getTaskParams();
     			} else {
-    				ps = getACCTaskParams(k.getValue(), k);
+    				ps = getACCTaskParams(k.getValueAsLines(), k);
     			}
 	    		performACCTask(mols, ps, k, job);
     		}
@@ -1026,7 +1026,7 @@ public class Directive implements IDirectiveComponent
 				}
             	
             	//Replace value of component that triggered this task
-            	
+            	//TODO-NOW have a set value method in directive component
                 DirectiveData dd = new DirectiveData();
                 dd.setReference(dirComp.getName());
                 dd.setValue(cs);

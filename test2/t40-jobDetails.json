@@ -11,39 +11,29 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "HF"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
             },
             {
-              "name": "SYMMETRY",
-              "isLoud": false,
-              "value": [
-                "NOSYM"
-              ]
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -51,39 +41,26 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "1000"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "1000"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "180"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "180"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -93,11 +70,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " Step 1 - Protocol Denoptim_1.0, 6 Nov 2014"
-              ]
+              "reference": "title",
+              "value": " Step 1 - Protocol Denoptim_1.0, 6 Nov 2014",
+              "isLoud": false
             }
           ]
         },
@@ -105,18 +80,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -135,53 +106,37 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "SYMMETRY",
-              "isLoud": false,
-              "value": [
-                "NOSYM"
-              ]
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -189,39 +144,26 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "1000"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "1000"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "280"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "280"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -231,11 +173,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " Step 2 - Protocol Denoptim_1.0, 6 Nov 2014"
-              ]
+              "reference": "title",
+              "value": " Step 2 - Protocol Denoptim_1.0, 6 Nov 2014",
+              "isLoud": false
             }
           ]
         },
@@ -243,18 +183,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -273,53 +209,37 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "SYMMETRY",
-              "isLoud": false,
-              "value": [
-                "NOSYM"
-              ]
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2DZ 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2DZ 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -327,39 +247,26 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "600"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "600"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "280"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "280"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -369,11 +276,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " Step 3 - Protocol Denoptim_1.0, 6 Nov 2014"
-              ]
+              "reference": "title",
+              "value": " Step 3 - Protocol Denoptim_1.0, 6 Nov 2014",
+              "isLoud": false
             }
           ]
         },
@@ -381,18 +286,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -411,53 +312,37 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "SYMMETRY",
-              "isLoud": false,
-              "value": [
-                "NOSYM"
-              ]
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2DZ 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2DZ 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "OPT"
-              ]
+              "reference": "JOBTYPE",
+              "value": "OPT",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -465,32 +350,22 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "980"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "980"
                 },
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "200"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "200"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             },
@@ -498,25 +373,18 @@
               "name": "OPT",
               "keywords": [
                 {
-                  "name": "CONVERGENCE",
-                  "isLoud": false,
-                  "value": [
-                    "LOOSE"
-                  ]
+                  "reference": "CONVERGENCE",
+                  "value": "LOOSE",
+                  "isLoud": false
                 },
                 {
-                  "name": "FORCECONSTANTS",
-                  "isLoud": false,
-                  "value": [
-                    "CALCFC"
-                  ]
+                  "reference": "FORCECONSTANTS",
+                  "value": "CALCFC",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLES",
-                  "isLoud": true,
-                  "value": [
-                    "320"
-                  ]
+                  "reference": "MAXCYCLES",
+                  "value": "320"
                 }
               ]
             }
@@ -526,11 +394,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " Step 4 (first opt: DZ-LOOSE) - Protocol Denoptim_1.0, 6 Nov 2014"
-              ]
+              "reference": "title",
+              "value": " Step 4 (first opt: DZ-LOOSE) - Protocol Denoptim_1.0, 6 Nov 2014",
+              "isLoud": false
             }
           ]
         },
@@ -538,18 +404,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },
@@ -568,53 +430,37 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "SYMMETRY",
-              "isLoud": false,
-              "value": [
-                "NOSYM"
-              ]
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2DZ 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2DZ 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "OPT"
-              ]
+              "reference": "JOBTYPE",
+              "value": "OPT",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -622,32 +468,22 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "980"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "980"
                 },
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "200"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "200"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             },
@@ -655,18 +491,13 @@
               "name": "OPT",
               "keywords": [
                 {
-                  "name": "FORCECONSTANTS",
-                  "isLoud": false,
-                  "value": [
-                    "CALCFC"
-                  ]
+                  "reference": "FORCECONSTANTS",
+                  "value": "CALCFC",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLES",
-                  "isLoud": true,
-                  "value": [
-                    "320"
-                  ]
+                  "reference": "MAXCYCLES",
+                  "value": "320"
                 }
               ]
             }
@@ -676,11 +507,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                " Step 5 (second opt: DZ) - Protocol Denoptim_1.0, 6 Nov 2014"
-              ]
+              "reference": "title",
+              "value": " Step 5 (second opt: DZ) - Protocol Denoptim_1.0, 6 Nov 2014",
+              "isLoud": false
             }
           ]
         },
@@ -688,18 +517,14 @@
           "name": "MolSpec",
           "keywords": [
             {
-              "name": "SPIN_MULTIPLICITY",
-              "isLoud": false,
-              "value": [
-                "1"
-              ]
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
             },
             {
-              "name": "CHARGE",
-              "isLoud": false,
-              "value": [
-                "0"
-              ]
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
             }
           ]
         },

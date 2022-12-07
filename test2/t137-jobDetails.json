@@ -11,39 +11,27 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "HF"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -51,32 +39,22 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "800"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "800"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "280"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "280"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             },
@@ -84,11 +62,9 @@
               "name": "OPT",
               "keywords": [
                 {
-                  "name": "MODREDUDANT",
-                  "isLoud": false,
-                  "value": [
-                    "MODREDUNDANT"
-                  ]
+                  "reference": "MODREDUDANT",
+                  "value": "MODREDUNDANT",
+                  "isLoud": false
                 }
               ]
             }
@@ -98,11 +74,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         },
@@ -159,46 +133,32 @@
           "name": "Route",
           "keywords": [
             {
-              "name": "GEOM",
-              "isLoud": true,
-              "value": [
-                "CHECK"
-              ]
+              "reference": "GEOM",
+              "value": "CHECK"
             },
             {
-              "name": "MODEL_METHOD",
-              "isLoud": false,
-              "value": [
-                "OLYP"
-              ]
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
             },
             {
-              "name": "GUESS",
-              "isLoud": true,
-              "value": [
-                "READ"
-              ]
+              "reference": "GUESS",
+              "value": "READ"
             },
             {
-              "name": "MODEL_BASISSET",
-              "isLoud": false,
-              "value": [
-                "LANL2MB 5D 7F"
-              ]
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
             },
             {
-              "name": "PRINT",
-              "isLoud": false,
-              "value": [
-                "P"
-              ]
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
             },
             {
-              "name": "JOBTYPE",
-              "isLoud": false,
-              "value": [
-                "SP"
-              ]
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
             }
           ],
           "subDirectives": [
@@ -206,39 +166,26 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "name": "VSHIFT",
-                  "isLoud": true,
-                  "value": [
-                    "600"
-                  ]
+                  "reference": "VSHIFT",
+                  "value": "600"
                 },
                 {
-                  "name": "SYMM",
-                  "isLoud": false,
-                  "value": [
-                    "NOSYM"
-                  ]
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
                 },
                 {
-                  "name": "CONVER",
-                  "isLoud": true,
-                  "value": [
-                    "5"
-                  ]
+                  "reference": "CONVER",
+                  "value": "5"
                 },
                 {
-                  "name": "MAXCYCLE",
-                  "isLoud": true,
-                  "value": [
-                    "280"
-                  ]
+                  "reference": "MAXCYCLE",
+                  "value": "280"
                 },
                 {
-                  "name": "VARACC",
-                  "isLoud": false,
-                  "value": [
-                    "NOVARACC"
-                  ]
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
                 }
               ]
             }
@@ -248,11 +195,9 @@
           "name": "Title",
           "keywords": [
             {
-              "name": "title",
-              "isLoud": false,
-              "value": [
-                "No comment"
-              ]
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
             }
           ]
         }
