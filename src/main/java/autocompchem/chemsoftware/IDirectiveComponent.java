@@ -48,10 +48,7 @@ public interface IDirectiveComponent {
      */
     
     public boolean hasACCTask();
-    
+
 //-----------------------------------------------------------------------------
     
-    /**
-     * 
-     */
 }

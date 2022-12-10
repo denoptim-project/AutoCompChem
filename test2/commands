@@ -4,3 +4,5 @@ ls *jobDet* | while read f ; do tid=${f%-*}; tid=${tid%.*}; echo "-------- $tid 
 
 ls *jobDetails | while read f ; do mv $f $f.json ; done
 
+
+grep -l -i prepareinputnwchem *params  | while read f ; do tid=${f%-*}; tid=${tid%.*}; echo "-------- $tid --------" ; kind=$(grep -i task $tid.params | sed 's/TASK: PrepareInput//' | sed 's/TASK: FixAndRestart//' | sed 's/TASK: Evaluate//' | sed 's/Output//'); format="DIRECTIVES"; if [[ $kind == NWChem ]]; then format="NWCHEMJD"; elif [[ $kind == Gaussian ]]; then format="GaussianJD"; fi ; java -jar ../target/autocompchem-2.0-jar-with-dependencies.jar -t CONVERTJOBDETAILS -INFILE $f -OUTFILE ../test2/${tid}-jobDetails  -INPUTFORMAT $format ; done > ../test2/conversionLog

@@ -24,8 +24,34 @@ import autocompchem.modeling.constraints.Constraint.ConstraintType;
 public class ConstraintsSet extends TreeSet<Constraint>
 {
 
+	/**
+	 * total number of atoms in the system.
+	 */
+	private int numAtoms = 0;
+	
 //-----------------------------------------------------------------------------
 	
+	/**
+	 * @return the number of atoms in the system from which these constraints
+	 * are generated.
+	 */
+	public int getNumAtoms() {
+		return numAtoms;
+	}
+	
+//-----------------------------------------------------------------------------
+
+	/**
+	 * Sets the  number of atoms in the system from which these constraints
+	 * are generated.
+	 * @param numAtoms the number of atoms.
+	 */
+	protected void setNumAtoms(int numAtoms) {
+		this.numAtoms = numAtoms;
+	}
+
+//-----------------------------------------------------------------------------
+
 	/**
 	 * Prints all the constraints into stdout.
 	 */

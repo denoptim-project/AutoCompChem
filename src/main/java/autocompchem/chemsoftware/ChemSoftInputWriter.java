@@ -98,21 +98,26 @@ public abstract class ChemSoftInputWriter extends Worker
      * Output job details name.
      */
     private String outJDFile;
-    
-    /**
-     * Default value for integers
-     */
-    private final int def = -999999;
 
     /**
-     * charge of the whole system
+     * Charge of the whole system.
      */
-    private int charge = def;
+    private int charge = 0;
     
     /**
-     * Spin multiplicity of the whole system
+     * Spin multiplicity of the whole system.
      */
-    private int spinMult = def;
+    private int spinMult = 1;
+    
+    /**
+     * Flag requiring to omit charge specification.
+     */
+    private boolean omitCharge = false;
+    
+    /**
+     * Flag requiring to omit spin multiplicity specification.
+     */
+    private boolean omitSpinMult = false;
     
     /**
      * The computational chemistry job we want to prepare the input for.
@@ -306,6 +311,16 @@ public abstract class ChemSoftInputWriter extends Worker
             spinMult = Integer.parseInt(params.getParameter(
                     ChemSoftConstants.PARSPINMULT).getValueAsString());
         }
+        
+        if (params.contains(ChemSoftConstants.PARNOCHARGE))
+        {
+            omitCharge = true;
+        }
+        
+        if (params.contains(ChemSoftConstants.PARNOSPIN))
+        {
+            omitSpinMult = true;
+        }
     }
     
 //-----------------------------------------------------------------------------
@@ -404,7 +419,7 @@ public abstract class ChemSoftInputWriter extends Worker
 						+ "value of property '" + ChemSoftConstants.PARCHARGE
 						+ "'.", -1);
 			}
-			setChargeIfUnset(molSpecJob, pCharge.toString());
+			setChargeIfUnset(molSpecJob, pCharge.toString(), omitCharge);
 		}
 		
 		Object pSpin = mols.get(0).getProperty(ChemSoftConstants.PARSPINMULT);
@@ -418,15 +433,15 @@ public abstract class ChemSoftInputWriter extends Worker
 						+ "value of property '" + ChemSoftConstants.PARSPINMULT
 						+ "'.", -1);
 			}
-			setSpinMultiplicityIfUnset(molSpecJob, pSpin.toString());
+			setSpinMultiplicityIfUnset(molSpecJob, pSpin.toString(), omitSpinMult);
 		}
 		
 		// These calls take care also of the sub-jobs/directives
 		molSpecJob.processDirectives(mols);
 		
 		// Ensure a value of charge and spin has been defined
-		setChargeIfUnset(molSpecJob, "0");
-		setSpinMultiplicityIfUnset(molSpecJob, "1");
+		setChargeIfUnset(molSpecJob, charge+"", omitCharge);
+		setSpinMultiplicityIfUnset(molSpecJob, spinMult+"", omitSpinMult);
 		
 		// Produce the actual files
 		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), true);
@@ -443,11 +458,18 @@ public abstract class ChemSoftInputWriter extends Worker
     
     /**
      * Sets the charge definition to any step where it is not already defined. 
-     * This means that this method must not overwrite existing charge settings
+     * This means that this method must not overwrite existing charge settings.
+     * Moreover, this method must deal with the requests to omit charge 
+     * specification.
      * @param ccj the job to customize.
      * @param charge the value of the charge to specify.
+     * @param omitIfPossible if <code>true</code> we are asked to omit the 
+     * specification and leave the job use pre-existing information
+     * coming from previous steps or from some sort
+     * of input external to the job's main input file, e.g., checkpoint files)
      */
-    protected abstract void setChargeIfUnset(CompChemJob ccj, String charge);
+    protected abstract void setChargeIfUnset(CompChemJob ccj, String charge, 
+    		boolean omitIfPossible);
     
 //------------------------------------------------------------------------------
     
@@ -455,11 +477,17 @@ public abstract class ChemSoftInputWriter extends Worker
      * Sets the spin multiplicity definition to any step where it is not already 
      * defined. 
      * This means that this method must not overwrite existing settings.
+     * Moreover, this method must deal with the requests to omit spin 
+     * specification.
      * @param ccj the job to customize.
      * @param sm the value of the spin multiplicity to specify.
+     * @param omitIfPossible if <code>true</code> we are asked to omit the 
+     * specification and leave the job use pre-existing information
+     * coming from previous steps or from some sort
+     * of input external to the job's main input file, e.g., checkpoint files)
      */
     protected abstract void setSpinMultiplicityIfUnset(CompChemJob ccj, 
-    		String sm);
+    		String sm, boolean omitIfPossible);
     
 //------------------------------------------------------------------------------
     

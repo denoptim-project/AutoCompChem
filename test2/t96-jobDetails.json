@@ -9,18 +9,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "scf"
-              ],
+              "value": "scf",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -30,10 +24,7 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "name_of_the_runtime_database"
-              ],
+              "value": "name_of_the_runtime_database",
               "isLoud": false
             }
           ]
@@ -63,10 +54,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -78,18 +66,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]

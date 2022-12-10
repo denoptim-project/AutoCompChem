@@ -176,6 +176,16 @@ public class ChemSoftConstants
 	public static final String PARSPINMULT = "SPIN_MULTIPLICITY";
 	
 	/**
+	 * Value-less parameter requiring to omit charge specification.
+	 */
+	public static final String PARNOCHARGE = "NOCHARGE";
+	
+	/**
+	 * Value-less parameter requiring to omit spin multiplicity.
+	 */
+	public static final String PARNOSPIN = "NOSPIN";
+	
+	/**
 	 * Key for the parameter defining where and how and what geometry to add  
 	 * (i.e., what actual chemical system to consider). This is used inside
 	 * the DirectiveData object that will later contain the actual coordinates.

@@ -21,7 +21,10 @@ import java.text.DecimalFormat;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -256,5 +259,25 @@ public class NumberUtils
         return getEnglishFormattedDecimal(pattern,4,value);
     }
 
+//------------------------------------------------------------------------------
+    
+    /**
+     * Produces the list of indexes complementary to the given ones. Considers
+     * only 0-based positive indexes.
+     * @param ids the list of ids for which we want the complementary ones.
+     * @param size defines the maximum index in an indirect way: it is the
+     * size of the complete list of indexes.
+     * @return the set of complementary indexes.
+     */
+    public static Set<Integer> getComplementaryIndexes(Collection<Integer> ids,
+    		int size)
+    {
+    	Set<Integer> chosenIDs = new HashSet<Integer>();
+    	for (int i=0; i<size; i++)
+    		chosenIDs.add(i);
+    	chosenIDs.removeAll(ids);
+    	return chosenIDs;
+    } 
+    
 //------------------------------------------------------------------------------     
 }

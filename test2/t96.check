@@ -1,10 +1,15 @@
 #!/bin/bash
 
-if [ ! -f "t96-mol.nw" ]
-then
-echo NOT Passes ERROR 1
-exit -1
+if [ ! -f "t96-mol.nw" ]; then
+  echo NOT Passes ERROR 1
+  exit -1
 fi
+
+if [ ! -f "t96-mol.jd.json" ]; then
+  echo NOT Passes ERROR 1
+  exit -1
+fi
+
 
 n=1;n=$(grep -c -i "charge" t96-mol.nw) 
 if [ $n -ne 0 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi

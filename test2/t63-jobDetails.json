@@ -25,10 +25,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -40,18 +37,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -64,10 +55,7 @@
               "keywords": [
                 {
                   "reference": "maxiter",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "200"
-                  ],
+                  "value": "200",
                   "isLoud": false
                 }
               ]
@@ -79,14 +67,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step",
-                "started",
-                "from",
-                "NWChem",
-                "output\""
-              ],
+              "value": "\"Step started from NWChem output\"",
               "isLoud": false
             }
           ]
@@ -133,10 +114,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -146,17 +124,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -165,10 +137,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -180,18 +149,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "frequencies"
-              ],
+              "value": "frequencies",
               "isLoud": false
             }
           ]
@@ -201,12 +164,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Last",
-                "step:",
-                "frequencies\""
-              ],
+              "value": "\"Last step: frequencies\"",
               "isLoud": false
             }
           ]

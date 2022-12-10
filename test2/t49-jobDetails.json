@@ -1,0 +1,8 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob"
+    }
+  ]
+}

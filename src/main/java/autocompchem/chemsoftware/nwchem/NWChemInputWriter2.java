@@ -34,6 +34,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.orca.OrcaConstants;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
@@ -47,6 +48,7 @@ import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -117,60 +119,56 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
             {
             	kStr = k.getName() + " ";
             }
-            kStr = kStr + k.getValueAsString();
             
-            // We must check that the line does not grow too long. When it gets 
-            // too long use backslash to concatenate lines.
-            int totalLength = sb.length() + kStr.length() + 1;
-            if (totalLength > NWChemConstants.MAXLINELENGTH) 
+            //TODO-gg del
+            //if (dirName.equals("SET") && k.getName().equals("geometry:actlist"))
+            //	System.out.println("");
+            
+            switch (k.getType())
             {
-                // WARNING!
-                // Here we assume the deepest possible directive is in layer
-                // ten, but there is no actual limit to the number of layers.
-                // The assumption is bases on the most common NWChem input files
-                // not having more than 3-4 layers of directives, so a maximum
-                // estimate of 10 should be safe.
-                int singleKeyLenght = kStr.length() + 10; 
-                if (singleKeyLenght > NWChemConstants.MAXLINELENGTH)
+            case STRING:
+            	appendToKeywordLine(lines, dirName, sb, 
+            			kStr + k.getValueAsString());
+            	break;
+            	
+            case CONSTRAINTSSET:
+            	// We expect this only as a way to specify atom lists
+            	ConstraintsSet cs = (ConstraintsSet) k.getValue();
+        		Set<Integer> ids = new HashSet<Integer>();
+            	for (Constraint cns : cs)
                 {
-                    String[] words = kStr.split("\\s+");
-                    for (int i=0; i<words.length; i++)
-                    {
-                        String word = words[i];
-                        int expectedLength = sb.length() + word.length() + 1;
-                        if (expectedLength > NWChemConstants.MAXLINELENGTH) 
-                        {
-                            // store the line up to this point
-                            String arcLine = sb.toString() + "\\";
-                            lines.add(arcLine);
-                            // start a new line from scratch
-                            sb.delete(0,sb.length());
-                            // append indent due to this directive's name
-                            for (int j=0; j<dirName.length(); j++)
-                            {
-                                sb.append(" ");
-                            }
-                        }
-                        sb.append(word).append(" ");
-                    }
-                } else {
-                    // store the line up to this point
-                    String arcLine = sb.toString() + "\\";
-                    lines.add(arcLine);
-                    // start a new line from scratch
-                    sb.delete(0,sb.length());
-                    // append indent due to this directive's name
-                    for (int i=0; i<dirName.length(); i++)
-                    {
-                        sb.append(" ");
-                    }
-                    // append the whole keyword+value string 
-                    sb.append(kStr).append(" ");
+            		if (cns.getType()==ConstraintType.FROZENATM)
+            		{
+            			int[] arr = cns.getAtomIDs();
+            			for (int i=0; i<arr.length; i++)
+            				ids.add(arr[i]);
+            		}
                 }
-            } else {
-                sb.append(kStr).append(" ");
+            	List<String> ranges = StringUtils.makeStringForIndexes(
+            			NumberUtils.getComplementaryIndexes(ids, 
+            					cs.getNumAtoms()), ":", 
+            			1); // From 0-based to 1-based
+            	boolean first = true;
+            	for (String range : ranges)
+            	{
+            		String str = "";
+            		if (first)
+            		{
+                		str = kStr + " " + range;
+                    	appendToKeywordLine(lines, dirName, sb, str);
+                    	first = false;
+            		} else {
+	            		str = " " + range;
+	                	appendToKeywordLine(lines, dirName, sb, str);
+            		}
+            	}
+            	break;
+            	
+			default:
+				break;
             }
-
+           
+            // TODO-gg verify this
             // Deal with inconsistent syntax of SET and UNSET directives
             // Yes, for some reason these two directives are written differently.
             if (ik < d.getAllKeywords().size()  &&
@@ -282,8 +280,75 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
                 lines.add("END");
             }
         }
-
         return lines;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Method to append text for keywords so that the length does not 
+     * grow above the max allowed value for NWChem.
+     * @param lines the collector of lines that populate the keywords section
+     * of a single directive
+     * @param dirName the name of the directive for which we are printing the 
+     * keywords.
+     * @param sb the builder of the current line of keywords.
+     * @param appendix the additional text we are trying to append.
+     */
+    private void appendToKeywordLine(ArrayList<String> lines, String dirName, 
+    		StringBuilder sb, String appendix)
+    {        
+        // We must check that the line does not grow too long. When it gets 
+        // too long use backslash to concatenate lines.
+        int totalLength = sb.length() + appendix.length() + 1;
+        if (totalLength > NWChemConstants.MAXLINELENGTH) 
+        {
+            // WARNING!
+            // Here we assume the deepest possible directive is in layer
+            // ten, but there is no actual limit to the number of layers.
+            // The assumption is bases on the most common NWChem input files
+            // not having more than 3-4 layers of directives, so a maximum
+            // estimate of 10 should be safe.
+            int singleKeyLenght = appendix.length() + 10; 
+            if (singleKeyLenght > NWChemConstants.MAXLINELENGTH)
+            {
+                String[] words = appendix.split("\\s+");
+                for (int i=0; i<words.length; i++)
+                {
+                    String word = words[i];
+                    int expectedLength = sb.length() + word.length() + 1;
+                    if (expectedLength > NWChemConstants.MAXLINELENGTH) 
+                    {
+                        // store the line up to this point
+                        String arcLine = sb.toString() + "\\";
+                        lines.add(arcLine);
+                        // start a new line from scratch
+                        sb.delete(0,sb.length());
+                        // append indent due to this directive's name
+                        for (int j=0; j<dirName.length(); j++)
+                        {
+                            sb.append(" ");
+                        }
+                    }
+                    sb.append(word).append(" ");
+                }
+            } else {
+                // store the line up to this point
+                String arcLine = sb.toString() + "\\";
+                lines.add(arcLine);
+                // start a new line from scratch
+                sb.delete(0,sb.length());
+                // append indent due to this directive's name
+                for (int i=0; i<dirName.length(); i++)
+                {
+                    sb.append(" ");
+                }
+                // append the whole keyword+value string 
+                sb.append(appendix).append(" ");
+            }
+        } else {
+            sb.append(appendix).append(" ");
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -308,8 +373,12 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 	 * {@value NWChemConstants#CHARGEDIR} {@link Directive}.
 	 */
 	@Override
-	protected void setChargeIfUnset(CompChemJob ccj, String charge) 
+	protected void setChargeIfUnset(CompChemJob ccj, String charge, 
+			boolean omitIfPossible) 
 	{
+		if (omitIfPossible)
+			return;
+		
 		if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())
@@ -336,8 +405,12 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 	 * {@value NWChemConstants#DFTDIR} {@link Directive}.
 	 */
 	@Override
-	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm) 
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm,
+			boolean omitIfPossible) 
 	{
+		if (omitIfPossible)
+			return;
+		
 		if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())
@@ -397,9 +470,19 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 			if (dirSCF==null)
 			{
 				dirSCF = new Directive(NWChemConstants.SCFDIR);
-				dirSCF.addSubDirective(new Directive(
-						NWChemConstants.SCFSPINMULT.get(
-								Integer.parseInt(sm)-1)));
+				if (Integer.parseInt(sm)-1 < 7)
+				{
+					// NB: here sm-1 is to get the index in the list!
+					dirSCF.addSubDirective(new Directive(
+							NWChemConstants.SCFSPINMULT.get(
+									Integer.parseInt(sm)-1)));
+				} else {
+					// NB: here sm-1 because we need the number of singly occupied orbitals
+					Directive nopenDir = new Directive(NWChemConstants.NOPENDIR);
+					nopenDir.addKeyword(new Keyword("value", false, 
+							Integer.parseInt(sm)-1));
+					dirSCF.addSubDirective(nopenDir);
+				}
 				ccjStep.setDirective(dirSCF);
 			} else {
 				Directive smDir = null;

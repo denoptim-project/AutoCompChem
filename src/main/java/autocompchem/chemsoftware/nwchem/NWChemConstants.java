@@ -147,6 +147,12 @@ public class NWChemConstants
      * Name of directive controlling DFT calculations
      */
     public final static String DFTDIR = "DFT";
+    
+    /**
+     * Directive defining the number of singly occupied orbitals (i.e., the 
+     * number of unpaird electrons);
+     */
+	public static final String NOPENDIR = "NOPEN";
 
     /**
      * Name and header of the data block with variable internal coordinates
@@ -360,5 +366,6 @@ public class NWChemConstants
      * Lowest non-zero frequency (absolute value)
      */
     public final static double MINFREQ = 0.1;
+
     
 }

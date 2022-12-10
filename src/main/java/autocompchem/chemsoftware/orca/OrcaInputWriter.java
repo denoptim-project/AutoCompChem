@@ -512,8 +512,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	 * {@value OrcaConstants#COORDSDIRNAME} {@link Directive}.
 	 */
 	@Override
-	protected void setChargeIfUnset(CompChemJob ccj, String charge) 
+	protected void setChargeIfUnset(CompChemJob ccj, String charge, 
+			boolean omitIfPossible) 
 	{
+		if (omitIfPossible)
+			return;
+		
 		if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())
@@ -557,8 +561,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	 * {@value OrcaConstants#COORDSDIRNAME} {@link Directive} 
 	 */
 	@Override
-	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm) 
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm,
+			boolean omitIfPossible) 
 	{
+		if (omitIfPossible)
+			return;
+		
 		if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())

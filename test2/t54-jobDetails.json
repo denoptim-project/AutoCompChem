@@ -22,18 +22,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "scf"
-              ],
+              "value": "scf",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -46,10 +40,7 @@
           "keywords": [
             {
               "reference": "units",
-              "type": "TEXTBLOCK",
-              "value": [
-                "angstrom"
-              ]
+              "value": "angstrom"
             }
           ],
           "subDirectives": [
@@ -58,13 +49,22 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "c1"
-                  ],
+                  "value": "c1",
                   "isLoud": false
                 }
               ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry",
+              "type": "UNDEFINED"
             }
           ]
         },
@@ -73,13 +73,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:1",
-                "SP",
-                "with",
-                "HF\""
-              ],
+              "value": "\"Step:1 SP with HF\"",
               "isLoud": false
             }
           ]
@@ -126,10 +120,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -139,17 +130,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -158,10 +143,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -173,18 +155,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -194,13 +170,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:2",
-                "SP",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step:2 SP with DFT\"",
               "isLoud": false
             }
           ]
@@ -225,12 +195,6 @@
     },
     {
       "jobType": "CompChemJob",
-      "params": [
-        {
-          "reference": "SPIN_MULTIPLICITY",
-          "value": "2"
-        }
-      ],
       "directives": [
         {
           "name": "ecp",
@@ -247,16 +211,19 @@
         },
         {
           "name": "dft",
+          "keywords": [
+            {
+              "reference": "mult",
+              "value": "2"
+            }
+          ],
           "subDirectives": [
             {
               "name": "GRID",
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -266,17 +233,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -285,10 +246,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -300,18 +258,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -321,17 +273,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step3:",
-                "geometry",
-                "optimization",
-                "with",
-                "DFT",
-                "-",
-                "frozen",
-                "core\""
-              ],
+              "value": "\"Step3: geometry optimization with DFT - frozen core\"",
               "isLoud": false
             }
           ]
@@ -357,8 +299,7 @@
           "keywords": [
             {
               "reference": "geometry:actlist",
-              "type": "UNDEFINED",
-              "value": "Type is not JSON-able",
+              "isLoud": true,
               "accTaskParams": [
                 {
                   "reference": "TASK",
@@ -376,12 +317,6 @@
     },
     {
       "jobType": "CompChemJob",
-      "params": [
-        {
-          "reference": "CHARGE",
-          "value": "-26"
-        }
-      ],
       "directives": [
         {
           "name": "ecp",
@@ -404,10 +339,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -417,17 +349,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -436,10 +362,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -451,18 +374,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -472,18 +389,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step4:",
-                "geometry",
-                "optimization",
-                "with",
-                "DFT",
-                "-",
-                "frozen",
-                "C-C",
-                "bond\""
-              ],
+              "value": "\"Step4: geometry optimization with DFT - frozen C-C bond\"",
               "isLoud": false
             }
           ]
@@ -550,10 +456,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -563,17 +466,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -582,10 +479,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -597,18 +491,22 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "saddle"
-              ],
+              "value": "saddle",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "charge",
+          "keywords": [
+            {
+              "reference": "value",
+              "value": "-26",
               "isLoud": false
             }
           ]
@@ -618,14 +516,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step5:",
-                "TS",
-                "optimization",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step5: TS optimization with DFT\"",
               "isLoud": false
             }
           ]
@@ -651,10 +542,7 @@
           "keywords": [
             {
               "reference": "defreeze",
-              "type": "TEXTBLOCK",
-              "value": [
-                "geometry:actlist"
-              ],
+              "value": "geometry:actlist",
               "isLoud": false
             }
           ]
@@ -685,10 +573,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -698,17 +583,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -717,10 +596,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -732,18 +608,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "frequencies"
-              ],
+              "value": "frequencies",
               "isLoud": false
             }
           ]
@@ -761,11 +631,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step6:",
-                "frequencies\""
-              ],
+              "value": "\"Step6: frequencies\"",
               "isLoud": false
             }
           ]

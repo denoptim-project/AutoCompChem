@@ -22,18 +22,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "scf"
-              ],
+              "value": "scf",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -46,10 +40,7 @@
           "keywords": [
             {
               "reference": "eccefile",
-              "type": "TEXTBLOCK",
-              "value": [
-                "ecce.out"
-              ],
+              "value": "ecce.out",
               "isLoud": false
             }
           ]
@@ -59,10 +50,7 @@
           "keywords": [
             {
               "reference": "units",
-              "type": "TEXTBLOCK",
-              "value": [
-                "angstrom"
-              ]
+              "value": "angstrom"
             }
           ],
           "subDirectives": [
@@ -71,10 +59,7 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "c1"
-                  ],
+                  "value": "c1",
                   "isLoud": false
                 }
               ]
@@ -86,13 +71,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step1:",
-                "SP",
-                "with",
-                "HF\""
-              ],
+              "value": "\"Step1: SP with HF\"",
               "isLoud": false
             }
           ]
@@ -135,10 +114,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -150,18 +126,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -171,10 +141,7 @@
           "keywords": [
             {
               "reference": "adjust",
-              "type": "TEXTBLOCK",
-              "value": [
-                "adjust"
-              ],
+              "value": "adjust",
               "isLoud": false
             }
           ],
@@ -199,13 +166,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step2:",
-                "SP",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step2: SP with DFT\"",
               "isLoud": false
             }
           ]
@@ -248,10 +209,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -263,18 +221,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -287,10 +239,7 @@
               "keywords": [
                 {
                   "reference": "maxiter",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "200"
-                  ],
+                  "value": "200",
                   "isLoud": false
                 }
               ]
@@ -305,12 +254,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step3:",
-                "pre-opt.",
-                "loose\""
-              ],
+              "value": "\"Step3: pre-opt. loose\"",
               "isLoud": false
             }
           ]
@@ -353,10 +297,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -368,18 +309,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "hessian"
-              ],
+              "value": "hessian",
               "isLoud": false
             }
           ]
@@ -389,10 +324,7 @@
           "keywords": [
             {
               "reference": "adjust",
-              "type": "TEXTBLOCK",
-              "value": [
-                "adjust"
-              ],
+              "value": "adjust",
               "isLoud": false
             }
           ],
@@ -417,11 +349,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step4:",
-                "hessian\""
-              ],
+              "value": "\"Step4: hessian\"",
               "isLoud": false
             }
           ]
@@ -464,17 +392,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -483,10 +405,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -498,18 +417,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -522,10 +435,7 @@
               "keywords": [
                 {
                   "reference": "maxiter",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "200"
-                  ],
+                  "value": "200",
                   "isLoud": false
                 }
               ]
@@ -535,10 +445,7 @@
               "keywords": [
                 {
                   "reference": "inhess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "0"
-                  ],
+                  "value": "0",
                   "isLoud": false
                 }
               ]
@@ -550,10 +457,7 @@
           "keywords": [
             {
               "reference": "adjust",
-              "type": "TEXTBLOCK",
-              "value": [
-                "adjust"
-              ],
+              "value": "adjust",
               "isLoud": false
             }
           ],
@@ -577,11 +481,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step5:",
-                "pre-opt.\""
-              ],
+              "value": "\"Step5: pre-opt.\"",
               "isLoud": false
             }
           ]
@@ -624,11 +524,7 @@
               "keywords": [
                 {
                   "reference": "lebedev",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "99",
-                    "14"
-                  ]
+                  "value": "99 14"
                 }
               ]
             },
@@ -637,17 +533,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -656,10 +546,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -671,18 +558,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -695,10 +576,7 @@
               "keywords": [
                 {
                   "reference": "maxiter",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "200"
-                  ],
+                  "value": "200",
                   "isLoud": false
                 }
               ]
@@ -708,10 +586,7 @@
               "keywords": [
                 {
                   "reference": "inhess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "0"
-                  ],
+                  "value": "0",
                   "isLoud": false
                 }
               ]
@@ -726,10 +601,7 @@
           "keywords": [
             {
               "reference": "adjust",
-              "type": "TEXTBLOCK",
-              "value": [
-                "adjust"
-              ],
+              "value": "adjust",
               "isLoud": false
             }
           ],
@@ -753,12 +625,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step6:",
-                "opt.",
-                "grid\u003d(99,590)\""
-              ],
+              "value": "\"Step6: opt. grid\u003d(99,590)\"",
               "isLoud": false
             }
           ]
@@ -801,11 +668,7 @@
               "keywords": [
                 {
                   "reference": "lebedev",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "99",
-                    "14"
-                  ]
+                  "value": "99 14"
                 }
               ]
             },
@@ -814,17 +677,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -833,10 +690,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -848,18 +702,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "frequencies"
-              ],
+              "value": "frequencies",
               "isLoud": false
             }
           ]
@@ -869,10 +717,7 @@
           "keywords": [
             {
               "reference": "adjust",
-              "type": "TEXTBLOCK",
-              "value": [
-                "adjust"
-              ],
+              "value": "adjust",
               "isLoud": false
             }
           ],
@@ -896,12 +741,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step7:",
-                "freq",
-                "grid\u003d(99,590)\""
-              ],
+              "value": "\"Step7: freq grid\u003d(99,590)\"",
               "isLoud": false
             }
           ]
@@ -944,11 +784,7 @@
               "keywords": [
                 {
                   "reference": "lebedev",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "99",
-                    "14"
-                  ]
+                  "value": "99 14"
                 }
               ]
             },
@@ -957,17 +793,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -976,10 +806,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -991,18 +818,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "saddle"
-              ],
+              "value": "saddle",
               "isLoud": false
             }
           ]
@@ -1015,10 +836,7 @@
               "keywords": [
                 {
                   "reference": "maxiter",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "200"
-                  ],
+                  "value": "200",
                   "isLoud": false
                 }
               ]
@@ -1033,12 +851,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step8:",
-                "sabble",
-                "opt.\""
-              ],
+              "value": "\"Step8: sabble opt.\"",
               "isLoud": false
             }
           ]
@@ -1081,11 +894,7 @@
               "keywords": [
                 {
                   "reference": "lebedev",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "99",
-                    "14"
-                  ]
+                  "value": "99 14"
                 }
               ]
             },
@@ -1094,17 +903,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -1113,10 +916,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -1128,18 +928,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "frequencies"
-              ],
+              "value": "frequencies",
               "isLoud": false
             }
           ]
@@ -1149,12 +943,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step9:",
-                "final",
-                "frequencies\""
-              ],
+              "value": "\"Step9: final frequencies\"",
               "isLoud": false
             }
           ]

@@ -43,7 +43,8 @@ import autocompchem.text.TextBlock;
  * @author Marco Foscato
  */
 
-public class DirectiveData extends NamedData implements IDirectiveComponent
+public class DirectiveData extends NamedData implements IDirectiveComponent, 
+	IValueContainer
 {
     /**
      * Parameters defining task embedded in this directive.

@@ -9,31 +9,19 @@
           "keywords": [
             {
               "reference": "total",
-              "type": "TEXTBLOCK",
-              "value": [
-                "8mb"
-              ]
+              "value": "8mb"
             },
             {
               "reference": "stack",
-              "type": "TEXTBLOCK",
-              "value": [
-                "2"
-              ]
+              "value": "2"
             },
             {
               "reference": "heap",
-              "type": "TEXTBLOCK",
-              "value": [
-                "2"
-              ]
+              "value": "2"
             },
             {
               "reference": "global",
-              "type": "TEXTBLOCK",
-              "value": [
-                "4mb"
-              ]
+              "value": "4mb"
             }
           ]
         },
@@ -42,18 +30,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "scf"
-              ],
+              "value": "scf",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -66,42 +48,20 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"geometry",
-                "name",
-                "is",
-                "long",
-                "and",
-                "contains",
-                "spaces\""
-              ],
+              "value": "\"geometry name is long and contains spaces\"",
               "isLoud": false
             },
             {
               "reference": "units",
-              "type": "TEXTBLOCK",
-              "value": [
-                "angstrom"
-              ]
+              "value": "angstrom"
             },
             {
               "reference": "anotherkeyword",
-              "type": "TEXTBLOCK",
-              "value": [
-                "2ndKeyword",
-                "valueLoooooooooooooooooooong"
-              ]
+              "value": "2ndKeyword valueLoooooooooooooooooooong"
             },
             {
               "reference": "3rd key",
-              "type": "TEXTBLOCK",
-              "value": [
-                "trd",
-                "and",
-                "last",
-                "value"
-              ]
+              "value": "trd and last value"
             }
           ],
           "subDirectives": [
@@ -110,13 +70,22 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "c1"
-                  ],
+                  "value": "c1",
                   "isLoud": false
                 }
               ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry",
+              "type": "UNDEFINED"
             }
           ]
         },
@@ -125,13 +94,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:1",
-                "SP",
-                "with",
-                "HF\""
-              ],
+              "value": "\"Step:1 SP with HF\"",
               "isLoud": false
             }
           ]
@@ -161,10 +124,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -174,17 +134,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -193,10 +147,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -208,27 +159,16 @@
           "keywords": [
             {
               "reference": "variable",
-              "type": "TEXTBLOCK",
-              "value": [
-                "123"
-              ]
+              "value": "123"
             },
             {
               "reference": "blabla",
-              "type": "TEXTBLOCK",
-              "value": [
-                "ribla",
-                "bla"
-              ],
+              "value": "ribla bla",
               "isLoud": false
             },
             {
               "reference": "blabla",
-              "type": "TEXTBLOCK",
-              "value": [
-                "ribla",
-                "riribla"
-              ]
+              "value": "ribla riribla"
             }
           ]
         },
@@ -237,18 +177,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -258,21 +192,12 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"same",
-                "geometry",
-                "as",
-                "before\""
-              ],
+              "value": "\"same geometry as before\"",
               "isLoud": false
             },
             {
               "reference": "units",
-              "type": "TEXTBLOCK",
-              "value": [
-                "angstrom"
-              ]
+              "value": "angstrom"
             }
           ],
           "subDirectives": [
@@ -281,10 +206,7 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "c1"
-                  ],
+                  "value": "c1",
                   "isLoud": false
                 }
               ]
@@ -296,13 +218,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:2",
-                "SP",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step:2 SP with DFT\"",
               "isLoud": false
             }
           ]
@@ -312,11 +228,7 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"ao",
-                "basis\""
-              ],
+              "value": "\"ao basis\"",
               "isLoud": false
             }
           ],
@@ -339,16 +251,19 @@
       "directives": [
         {
           "name": "dft",
+          "keywords": [
+            {
+              "reference": "mult",
+              "value": "3"
+            }
+          ],
           "subDirectives": [
             {
               "name": "GRID",
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -358,17 +273,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -377,10 +286,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -392,18 +298,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
@@ -413,19 +313,12 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"initial",
-                "geometry\""
-              ],
+              "value": "\"initial geometry\"",
               "isLoud": false
             },
             {
               "reference": "units",
-              "type": "TEXTBLOCK",
-              "value": [
-                "angstrom"
-              ]
+              "value": "angstrom"
             }
           ],
           "subDirectives": [
@@ -434,10 +327,7 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "c1"
-                  ],
+                  "value": "c1",
                   "isLoud": false
                 }
               ]
@@ -449,14 +339,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step3:",
-                "geometry",
-                "optimization",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step3: geometry optimization with DFT\"",
               "isLoud": false
             }
           ]
@@ -466,11 +349,7 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"ao",
-                "basis\""
-              ],
+              "value": "\"ao basis\"",
               "isLoud": false
             }
           ],
@@ -490,27 +369,16 @@
           "keywords": [
             {
               "reference": "variable",
-              "type": "TEXTBLOCK",
-              "value": [
-                "123"
-              ]
+              "value": "123"
             },
             {
               "reference": "blabla",
-              "type": "TEXTBLOCK",
-              "value": [
-                "ribla",
-                "bla"
-              ],
+              "value": "ribla bla",
               "isLoud": false
             },
             {
               "reference": "blabla",
-              "type": "TEXTBLOCK",
-              "value": [
-                "ribla",
-                "riribla"
-              ]
+              "value": "ribla riribla"
             }
           ]
         }

@@ -82,8 +82,12 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      * In Gaussian the charge is defined in a {@link Keyword} named 
      * {@value GaussianConstants.MSCHARGEKEY} of the 
      * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * Moreover, the specification of the charge cannot be omitted, so the
+     * <code>omitIfPossible</code> parameter does not take effect.
      */
-    protected void setChargeIfUnset(CompChemJob ccj, String charge)
+    @Override
+    protected void setChargeIfUnset(CompChemJob ccj, String charge, 
+    		boolean omitIfPossible)
     {
     	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC, 
     			GaussianConstants.MSCHARGEKEY, charge);
@@ -97,8 +101,12 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      * In Gaussian the spin multiplicity is defined in a {@link Keyword} named 
      * {@value GaussianConstants.MSSPINMLTKEY} of the 
      * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * Moreover, the specification of the spin cannot be omitted, so the
+     * <code>omitIfPossible</code> parameter does not take effect.
      */
-    protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm)
+    @Override
+    protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm, 
+    		boolean omitIfPossible)
     {
     	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC,
     			GaussianConstants.MSSPINMLTKEY, sm);

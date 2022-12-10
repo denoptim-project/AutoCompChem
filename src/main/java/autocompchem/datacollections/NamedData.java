@@ -20,6 +20,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
@@ -90,7 +91,8 @@ public class NamedData implements Cloneable
         NORMALMODE,
         NORMALMODESET, 
         ACTION,
-        PARAMETERSTORAGE};
+        PARAMETERSTORAGE, 
+        CONSTRAINTSSET};
         
     /**
      * List of types that can be serilized to JSON
@@ -303,6 +305,9 @@ public class NamedData implements Cloneable
     private static NamedDataType detectType(Object o)
     {
     	NamedDataType tp = NamedDataType.UNDEFINED;
+    	if (o==null)
+    		return tp;
+    	
        	String className = o.getClass().getName();
     	className = className.substring(className.lastIndexOf(".")+1);
 
@@ -388,6 +393,10 @@ public class NamedData implements Cloneable
     		
     		case ("ParameterStorage"):
     			tp = NamedDataType.PARAMETERSTORAGE;
+    			break;
+    			
+    		case ("ConstraintsSet"):
+    			tp = NamedDataType.CONSTRAINTSSET;
     			break;
     		
     		default:
@@ -496,6 +505,10 @@ public class NamedData implements Cloneable
         case PARAMETERSTORAGE:
             cVal = ((ParameterStorage) value).clone();
             break;
+            
+        case CONSTRAINTSSET:
+        	cVal = ((ConstraintsSet) value).clone();
+        	break;
         	
         default:
             cVal = value.toString();

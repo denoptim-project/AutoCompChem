@@ -28,6 +28,7 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 
 /**
  * This object represents a single NWChem directive that consists of
@@ -729,7 +730,9 @@ public class NWChemDirective
 		for (NWChemKeyword nwcKey : keywords)
 		{
 			dir.addKeyword(new Keyword(nwcKey.getName(), nwcKey.isLoud(), 
-					nwcKey.getValue()));
+					StringUtils.mergeListToString(nwcKey.getValue(), 
+					//System.getProperty("line.separator"),
+					" ", true)));
 		}
 		for (NWChemDirective nwcDir : subDirectives)
 		{

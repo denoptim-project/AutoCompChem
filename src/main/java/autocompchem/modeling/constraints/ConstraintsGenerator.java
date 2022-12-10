@@ -248,6 +248,7 @@ public class ConstraintsGenerator extends Worker
     public ConstraintsSet createConstraints(IAtomContainer mol) throws Exception 
     {
     	ConstraintsSet cLst = new ConstraintsSet();
+    	cLst.setNumAtoms(mol.getAtomCount());
     	
         //Collect all SMARTS queries
     	Set<String> sortedKeys = new TreeSet<String>();

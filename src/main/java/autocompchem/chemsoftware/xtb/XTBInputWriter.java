@@ -574,8 +574,12 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	 * 'charge' {@link Directive}.
 	 */
 	@Override
-	protected void setChargeIfUnset(CompChemJob ccj, String charge) 
+	protected void setChargeIfUnset(CompChemJob ccj, String charge,
+			boolean omitIfPossible) 
 	{
+		if (omitIfPossible)
+			return;
+		
 		//TODO-gg use constant for directive name.
 		setKeywordIfNotAlreadyThere(ccj, "charge", "value", false, charge);
 	}
@@ -590,8 +594,12 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	 * 'spin' {@link Directive} as number of unpaired electrons.
 	 */
 	@Override
-	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm) 
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm,
+			boolean omitIfPossible) 
 	{
+		if (omitIfPossible)
+			return;
+		
 		int numUnpairedEls = Integer.parseInt(sm) - 1;
 		//TODO-gg use constant for directive name.
 		setKeywordIfNotAlreadyThere(ccj, "spin", "value", false, 

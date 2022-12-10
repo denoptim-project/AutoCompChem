@@ -9,10 +9,7 @@
           "keywords": [
             {
               "reference": "type",
-              "type": "TEXTBLOCK",
-              "value": [
-                "spherical"
-              ],
+              "value": "spherical",
               "isLoud": false
             }
           ]
@@ -22,18 +19,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "scf"
-              ],
+              "value": "scf",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -46,10 +37,7 @@
           "keywords": [
             {
               "reference": "units",
-              "type": "TEXTBLOCK",
-              "value": [
-                "angstrom"
-              ]
+              "value": "angstrom"
             }
           ],
           "subDirectives": [
@@ -58,10 +46,7 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "c1"
-                  ],
+                  "value": "c1",
                   "isLoud": false
                 }
               ]
@@ -86,13 +71,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:1",
-                "SP",
-                "with",
-                "HF\""
-              ],
+              "value": "\"Step:1 SP with HF\"",
               "isLoud": false
             }
           ]
@@ -102,19 +81,12 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"ao",
-                "basis\""
-              ],
+              "value": "\"ao basis\"",
               "isLoud": false
             },
             {
               "reference": "type",
-              "type": "TEXTBLOCK",
-              "value": [
-                "spherical"
-              ],
+              "value": "spherical",
               "isLoud": false
             }
           ],
@@ -139,10 +111,7 @@
           "keywords": [
             {
               "reference": "type",
-              "type": "TEXTBLOCK",
-              "value": [
-                "spherical"
-              ],
+              "value": "spherical",
               "isLoud": false
             }
           ]
@@ -155,10 +124,7 @@
               "keywords": [
                 {
                   "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "xfine"
-                  ],
+                  "value": "xfine",
                   "isLoud": false
                 }
               ]
@@ -168,17 +134,11 @@
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
@@ -187,10 +147,7 @@
               "keywords": [
                 {
                   "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
@@ -202,18 +159,12 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
             }
           ]
@@ -223,10 +174,7 @@
           "keywords": [
             {
               "reference": "adjust",
-              "type": "TEXTBLOCK",
-              "value": [
-                "adjust"
-              ],
+              "value": "adjust",
               "isLoud": false
             }
           ],
@@ -236,10 +184,7 @@
               "keywords": [
                 {
                   "reference": "pointgroup",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "S6"
-                  ],
+                  "value": "S6",
                   "isLoud": false
                 }
               ]
@@ -251,13 +196,7 @@
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:2",
-                "SP",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step:2 SP with DFT\"",
               "isLoud": false
             }
           ]
@@ -267,19 +206,12 @@
           "keywords": [
             {
               "reference": "name",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"ao",
-                "basis\""
-              ],
+              "value": "\"ao basis\"",
               "isLoud": false
             },
             {
               "reference": "type",
-              "type": "TEXTBLOCK",
-              "value": [
-                "spherical"
-              ],
+              "value": "spherical",
               "isLoud": false
             }
           ],

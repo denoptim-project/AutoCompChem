@@ -62,7 +62,7 @@ import autocompchem.utils.StringUtils;
  * @author Marco Foscato
  */
 
-public class Keyword extends DirectiveData
+public class Keyword extends DirectiveData implements IValueContainer
 {
     /**
      * Keyword type: either "mute" (false), or "loud" (true).

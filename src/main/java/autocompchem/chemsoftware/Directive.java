@@ -87,6 +87,7 @@ public class Directive implements IDirectiveComponent
      */
     private ParameterStorage accTaskParams;
 
+
 //-----------------------------------------------------------------------------
 
     /**
@@ -856,20 +857,14 @@ public class Directive implements IDirectiveComponent
             		pathname = q + pathname + q;
             	}
             	
-            	switch (dirComp.getComponentType())
+            	if (dirComp instanceof IValueContainer)
             	{
-                	case DIRECTIVEDATA:
-                	{
-                		((DirectiveData) dirComp).setValue(pathname);
-                		break;
-                	}
-                	case KEYWORD:
-                	{
-                		((Keyword) dirComp).setValue(pathname);
-                		break;
-                	}
-					case DIRECTIVE:
-						break;
+            		((IValueContainer) dirComp).setValue(pathname);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
             	}
             	break;
             }
@@ -953,12 +948,25 @@ public class Directive implements IDirectiveComponent
             	}
             	setDataDirective(dirDataWithGeom);
             	deleteComponent(dirComp);
+            	
+            	//TODO-NOW
+            	/*
+            	if (dirComp instanceof IValueContainer)
+            	{
+            		((IValueContainer) dirComp).setValue(pathname);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
+            	}
+            	*/
             	break;
             }
             	
             case BasisSetConstants.ATMSPECBS:
             {
-        		// WARNING: uses oinly the first molecule
+        		// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
             	//TODO verbosity/logging
@@ -986,11 +994,15 @@ public class Directive implements IDirectiveComponent
                 bsg.setAtmIdxAsId(true);
                 BasisSet bs = bsg.assignBasisSet(mol);
                 
-                //Replace DirectiveData with one with the BS object
-                DirectiveData dd = new DirectiveData();
-                dd.setReference(dirComp.getName());
-                dd.setValue(bs);
-                setDataDirective(dd);
+                if (dirComp instanceof IValueContainer)
+            	{
+            		((IValueContainer) dirComp).setValue(bs);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
+            	}
                 break;
             }
             
@@ -1025,14 +1037,18 @@ public class Directive implements IDirectiveComponent
 							+ "ConstraintGenerator.", -1);
 				}
             	
-            	//Replace value of component that triggered this task
-            	//TODO-NOW have a set value method in directive component
-                DirectiveData dd = new DirectiveData();
-                dd.setReference(dirComp.getName());
-                dd.setValue(cs);
-                setDataDirective(dd);
+            	// Replace value of component that triggered this task
+            	if (dirComp instanceof IValueContainer)
+            	{
+            		((IValueContainer) dirComp).setValue(cs);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
+            	}
                 
-                //TODO verbosity/logging
+                //TODO-gg verbosity/logging
                 cs.printAll();
             	break;
             }
