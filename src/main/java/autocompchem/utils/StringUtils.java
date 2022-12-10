@@ -1,5 +1,9 @@
 package autocompchem.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -143,6 +147,12 @@ public class StringUtils
     
 //------------------------------------------------------------------------------
 
+    /**
+     * Counts the number of occurrences of the given regex in the given string.
+     * @param str the string to look into.
+     * @param regex the reagex to find in the string.
+     * @return the number of matches.
+     */
     public static int countMatches(String str, String regex)
     {
         Matcher m = Pattern.compile(regex).matcher(str);
@@ -151,6 +161,74 @@ public class StringUtils
     		n++;
     	
     	return n;
+    }
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Condenses a list of indexes to define the shortest list of strings
+     * where each string represents either a single index of a range of indexes.
+     * For example for the list [1,2,3,5,6,7] this
+     * method returns "1-3,5-7".
+     * @param indexes the list of indexes. The list sill be sorted.
+     * @param rangeSep the separator to use when writing a range. 
+     * E.g., "-" in "5-7".
+     */ 
+    public static List<String> makeStringForIndexes(Collection<Integer> indexes, 
+    		String rangeSep)
+    {
+    	return makeStringForIndexes(indexes, rangeSep, 0);
+    }
+//------------------------------------------------------------------------------
+    
+    /**
+     * Condenses a list of indexes to define the shortest list of strings
+     * where each string represents either a single index of a range of indexes.
+     * For example for the list [1,2,3,5,6,7] this
+     * method returns "1-3,5-7".
+     * @param indexes the list of indexes. The list sill be sorted.
+     * @param rangeSep the separator to use when writing a range. 
+     * E.g., "-" in "5-7".
+     * @param offSet use to add a constant to each index. This can be used to
+     * change from 0-based to 1-based (using +1) or vice versa using (-1);
+     */ 
+    public static List<String> makeStringForIndexes(Collection<Integer> indexes, 
+    		String rangeSep, int offSet)
+    {
+    	List<Integer> sortedIds = new ArrayList<Integer>();
+    	sortedIds.addAll(indexes);
+    	Collections.sort(sortedIds);
+        List<String> list = new ArrayList<String>();
+        int prevId = sortedIds.get(0);
+        int rangeStart = prevId;
+        for (int i=1; i<(sortedIds.size()+1); i++)
+        {
+            int currentId;
+            if (i<sortedIds.size())
+            {
+                currentId = sortedIds.get(i);
+            }
+            else
+            {
+                currentId = prevId;
+            }
+            if (currentId != (prevId+1))
+            {
+            	String str = "";
+                if (rangeStart != prevId)
+                {	
+                    str = (rangeStart+offSet) + rangeSep + (prevId+offSet);
+                }
+                else 
+                {
+                	str = (prevId+offSet)+"";
+                }
+                list.add(str);
+                rangeStart = currentId;
+            }
+            prevId = currentId;
+        }
+        return list;
     }
     
 //------------------------------------------------------------------------------
