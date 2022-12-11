@@ -154,5 +154,41 @@ public class StringUtilsTest
     }
     
 //------------------------------------------------------------------------------
+    
+    @Test
+    public void testSplitCharactersAndNumber() throws Exception
+    {
+    	String s = "abc123";
+    	String[] parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("123", parts[1]);
+    	
+    	s = "abc";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("", parts[1]);
+    	
+    	s = "123";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("", parts[0]);
+    	assertEquals("123", parts[1]);
+    	
+    	s = "abc123cfr";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("123cfr", parts[1]);
+    	
+    	s = "abc123cfr567";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("123cfr567", parts[1]);
+    }
+    
+//------------------------------------------------------------------------------
 
 }

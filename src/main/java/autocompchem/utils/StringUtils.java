@@ -230,6 +230,37 @@ public class StringUtils
         }
         return list;
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Splits a string into two parts where the first part contains all
+     * characters up to and excluding the first character that can be converted 
+     * into a number.
+     * @param s string to parse
+     * @return the pair of strings: first the one containing only alphabetical
+     * characters, then the rest.
+     */
+    public static String[] splitCharactersAndNumber(String s)
+    {
+    	String[] result = new String[2];
+    	result[0] = "";
+    	result[1] = ""; 
+    	boolean stillChars = true;
+    	for (int i = 0; i < s.length(); i++) 
+    	{
+    		Character c = s.charAt(i);
+    		if (NumberUtils.isNumber(c+""))
+    			stillChars = false;
+    		if (stillChars)
+    		{
+    			result[0] = result[0] + c;
+    		} else {
+    			result[1] = result[1] + c;
+    		}
+    	}
+    	return result;
+    }
     
 //------------------------------------------------------------------------------
 
