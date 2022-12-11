@@ -53,6 +53,37 @@
                   "isLoud": false
                 }
               ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[*] [$(C(~[Ru])~C)] onlybonded options:constant\n[*] [$(C~C~[Ru])] onlybonded options:constant\n[*] [$(C~C~C~[Ru])] onlybonded options:constant\n[$(C(~[Ru])~C)] [Ru] [$(C(~[Ru])~C)] onlybonded options:constant\n[*] [$(C(~[Ru])~C)] [*] onlybonded options:constant\n[*] [$(C~C~[Ru])] [*] onlybonded options:constant\n[*] [$(C~C~C~[Ru])] [*] onlybonded options:constant\n[*] [Ru] [$(C(~[Ru])~C)] [$(C(~[Ru])~C)] onlybonded options:constant\n[*] [$(C(~[Ru])~C)] [$(C~C~[Ru])] [*] onlybonded options:constant\n[*] [$(C~C~[Ru])] [$(C~C~C~[Ru])] [*] onlybonded options:constant"
+                    }
+                  ],
+                  "reference": "zcoordconstraints",
+                  "type": "UNDEFINED"
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry",
+              "type": "UNDEFINED"
             }
           ]
         },

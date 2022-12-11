@@ -179,7 +179,8 @@ public class NamedDataTest
         	NamedData nd2 = reader.fromJson(jsonStr, NamedData.class);
         	if (!NamedData.jsonable.contains(nd.getType()))
         	{
-        		assertEquals(NamedData.NONJSONABLE,nd2.getValueAsString());
+        		assertEquals("null", nd2.getValueAsString());
+        		assertEquals(null, nd2.getValue());
         	} else {
 	        	jsonStr = writer.toJson(nd2);
 	        	assertEquals(nd.getReference(), nd2.getReference());

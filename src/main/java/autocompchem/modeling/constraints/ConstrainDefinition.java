@@ -267,14 +267,25 @@ public class ConstrainDefinition
 
 //------------------------------------------------------------------------------
 
-  	public Constraint makeConstraint() throws Exception 
+  	public Constraint makeConstraint(boolean areLinearlyConnected) throws Exception 
   	{
-  		return makeConstraintFromIDs(idsQry);
+  		return makeConstraintFromIDs(idsQry, areLinearlyConnected);
   	}
   	
 //------------------------------------------------------------------------------
 
-  	public Constraint makeConstraintFromIDs(ArrayList<Integer> arrayList) 
+  	/**
+  	 * Creates a constraint from atom ids.
+  	 * @param ids the list of indexes
+  	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
+	 * represent a set of centers that are connected in the order given, e.g.
+	 * i-j-k-l.
+  	 * @return
+  	 * @throws Exception
+  	 */
+  	//TODO-gg private?
+  	public Constraint makeConstraintFromIDs(ArrayList<Integer> idsList, 
+  			boolean areLinearlyConnected) 
   			throws Exception 
   	{
   		if (notAnIC)
@@ -282,18 +293,20 @@ public class ConstrainDefinition
   			// NB: we do not expect a value for constraints that do not 
   			// correspond to and internal coordinate.
   			Constraint c = new Constraint();
-  			int[] ids = new int[arrayList.size()];
-  			for (int i=0; i<arrayList.size(); i++)
+  			int[] ids = new int[idsList.size()];
+  			for (int i=0; i<idsList.size(); i++)
   			{
-  				ids[i] = arrayList.get(i);
+  				ids[i] = idsList.get(i);
   			}
   			c.setAtomIDs(ids);
   			return c;
   		} else {
 	  		if (!hasValue)
-	  			return Constraint.buildConstraint(arrayList, null, options);
+	  			return Constraint.buildConstraint(idsList, null, options,
+	  					areLinearlyConnected);
 	  		else 
-	  			return Constraint.buildConstraint(arrayList, value, options);
+	  			return Constraint.buildConstraint(idsList, value, options,
+	  					areLinearlyConnected);
   		}
   	}
 

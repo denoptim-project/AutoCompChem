@@ -594,10 +594,11 @@ public class NamedData implements Cloneable
 				joType = NamedDataType.valueOf(jo.get("type").getAsString());
 			}
 			JsonElement je = jo.get("value");
+			
 			if (!jsonable.contains(joType))
 			{
 				return new NamedData(jo.get("reference").getAsString(),
-						joType, NONJSONABLE);
+						joType, joValue);
 			}
 			
 			switch (joType)

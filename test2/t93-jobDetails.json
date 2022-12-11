@@ -70,7 +70,7 @@
                 },
                 {
                   "reference": "SMARTS",
-                  "value": "[#1] [Ru] constant\n[$([#6]~[#7])] [Ru] [#1] constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] constant"
+                  "value": "[#1] [Ru] options:constant\n[$([#6]~[#7])] [Ru] [#1] options:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] options:constant"
                 }
               ]
             }

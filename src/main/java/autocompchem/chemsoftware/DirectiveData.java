@@ -332,7 +332,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
         	DirectiveData dd = new DirectiveData();
         	dd.setReference(nd.getReference());
         	dd.setType(nd.getType());
-        	dd.setValue(nd.getValue());
+        	if (nd.getValue()!=null)
+        		dd.setValue(nd.getValue());
         	// Then deserialize what this class add on top of the fields of the
         	// superclass.
         	if (jsonObjSrc.has("accTaskParams"))
@@ -342,41 +343,6 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
                 		 ParameterStorage.class);
 				dd.accTaskParams = ps;
             }
-        	
-            
-            
-            
-            /*
-            
-            String reference = context.deserialize(jsonObject.get("reference"),
-            		 String.class);
-            dd.setReference(reference);
-             
-            NamedDataType typ = NamedDataType.UNDEFINED;
-            if (jsonObject.has("type"))
-            {
-            	typ = context.deserialize(jsonObject.get("type"),
-            		 NamedDataType.class);
-            }
-            dd.setType(typ);
-            
-            //TODO: what about other types? We should use the NAmedData deserializer
-            if (jsonObject.has("value") && typ==NamedDataType.TEXTBLOCK)
-            { 
-           	    ArrayList<String> lines = context.deserialize(
- 						jsonObject.get("value"),
- 	                    new TypeToken<ArrayList<String>>(){}.getType());
-            	dd = new DirectiveData(reference, lines);
-            }
-
-            if (jsonObject.has("accTaskParams"))
-            { 
-                ParameterStorage ps = context.deserialize(
-                		 jsonObject.get("accTaskParams"), 
-                		 ParameterStorage.class);
-				dd.accTaskParams = ps;
-            }
-            */
          	
          	return dd;
         }

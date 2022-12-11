@@ -1,5 +1,6 @@
 package autocompchem.modeling.constraints;
 
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *

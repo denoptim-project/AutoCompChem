@@ -63,6 +63,35 @@
                   "isLoud": false
                 }
               ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[C] [N] 1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry"
             }
           ]
         },
@@ -148,14 +177,19 @@
           "subDirectives": [
             {
               "name": "ZCOORD",
-              "accTaskParams": [
+              "dirData": [
                 {
-                  "reference": "TASK",
-                  "value": "GENERATECONSTRAINTS"
-                },
-                {
-                  "reference": "SMARTS",
-                  "value": "[Cl] [Ru] 2.5 BondRuCl constant\n[C] [N]\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 constant\n[C] [Ru] [C] [N] constant"
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[Cl] [Ru] 2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
                 }
               ]
             }
@@ -331,14 +365,19 @@
           "subDirectives": [
             {
               "name": "ZCOORD",
-              "accTaskParams": [
+              "dirData": [
                 {
-                  "reference": "TASK",
-                  "value": "GENERATECONSTRAINTS"
-                },
-                {
-                  "reference": "SMARTS",
-                  "value": "[Cl] [Ru]\n[C] [N]\n[C] [Ru] [$(C(~[Ru])~C)]\n[C] [Ru] [C] [N]"
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[Cl] [Ru] 2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant\n[C] [N] 1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
                 }
               ]
             }
@@ -467,10 +506,8 @@
               "dirData": [
                 {
                   "reference": "zcoord",
-                  "value": [
-                    "BOND 1 2 constant"
-                  ],
-                  "type": "TEXTBLOCK"
+                  "value": "BOND 1 2 constant",
+                  "type": "STRING"
                 }
               ]
             }
@@ -611,10 +648,8 @@
               "dirData": [
                 {
                   "reference": "zcoord",
-                  "value": [
-                    "BOND 1 2 constant"
-                  ],
-                  "type": "TEXTBLOCK"
+                  "value": "BOND 1 2 constant",
+                  "type": "STRING"
                 }
               ]
             }
@@ -727,10 +762,8 @@
               "dirData": [
                 {
                   "reference": "zcoord",
-                  "value": [
-                    "BOND 1 2"
-                  ],
-                  "type": "TEXTBLOCK"
+                  "value": "BOND 1 2",
+                  "type": "STRING"
                 }
               ]
             }

@@ -269,7 +269,15 @@ public class ConstraintsGenerator extends Worker
             }
             else if (r.getType() == RuleType.ID)
             {
-            	cLst.add(r.makeConstraint());
+            	ArrayList<Integer> ids = r.getAtomIDs();
+            	boolean areLinearlyConnected = 
+            			mol.getConnectedAtomsList(mol.getAtom(ids.get(0))).contains(
+            					mol.getAtom(ids.get(1))) &&
+            			mol.getConnectedAtomsList(mol.getAtom(ids.get(1))).contains(
+            					mol.getAtom(ids.get(2))) &&
+            			mol.getConnectedAtomsList(mol.getAtom(ids.get(2))).contains(
+            					mol.getAtom(ids.get(3)));
+            	cLst.add(r.makeConstraint(areLinearlyConnected));
             }
         }
         
@@ -399,7 +407,7 @@ public class ConstraintsGenerator extends Worker
                 	if (atmsForCD.size() == 1)
                 	{
                 		cLst.add(r.makeConstraintFromIDs(new ArrayList<Integer>(
-                				Arrays.asList(mol.indexOf(atmA)))));
+                				Arrays.asList(mol.indexOf(atmA))), false));
                 		continue;
                 	}
                 	
@@ -407,10 +415,11 @@ public class ConstraintsGenerator extends Worker
                     {
                         if (atmA.equals(atmB))
                             continue;
+                        
+                        boolean areLinearlyConnected = 
+                        		mol.getConnectedAtomsList(atmA).contains(atmB);
 
-                        if (r.limitToBonded() 
-                        		&& !mol.getConnectedAtomsList(atmA)
-                        		.contains(atmB))
+                        if (r.limitToBonded() && !areLinearlyConnected)
                         {
                             continue;
                         }
@@ -420,7 +429,8 @@ public class ConstraintsGenerator extends Worker
                     		cLst.add(r.makeConstraintFromIDs(
                     				new ArrayList<Integer>(Arrays.asList(
                     						mol.indexOf(atmA),
-                    						mol.indexOf(atmB)))));
+                    						mol.indexOf(atmB))), 
+                    				areLinearlyConnected));
                     		continue;
                     	}
                         
@@ -432,9 +442,12 @@ public class ConstraintsGenerator extends Worker
                             if (atmA.equals(atmC))
                                 continue;
 
-                            if (r.limitToBonded() 
-                            		&& !mol.getConnectedAtomsList(atmB)
-                            		.contains(atmC))
+                            areLinearlyConnected = 
+                            		mol.getConnectedAtomsList(atmA).contains(atmB)
+                            		&& mol.getConnectedAtomsList(atmB)
+                            		.contains(atmC);
+                            
+                            if (r.limitToBonded() && !areLinearlyConnected)
                             {
                                 continue;
                             }
@@ -445,7 +458,8 @@ public class ConstraintsGenerator extends Worker
                         				new ArrayList<Integer>(Arrays.asList(
                         						mol.indexOf(atmA),
                         						mol.indexOf(atmB),
-                        						mol.indexOf(atmC)))));
+                        						mol.indexOf(atmC))), 
+                        				areLinearlyConnected));
                         		continue;
                         	}
                             
@@ -457,10 +471,15 @@ public class ConstraintsGenerator extends Worker
                                     continue;
                                 if (atmA.equals(atmD))
                                     continue;
+                                
+                                areLinearlyConnected = 
+                                		mol.getConnectedAtomsList(atmA).contains(atmB)
+                                		&& mol.getConnectedAtomsList(atmB)
+                                		.contains(atmC)
+                                		&& mol.getConnectedAtomsList(atmC)
+                                		.contains(atmD);
 
-                                if (r.limitToBonded() 
-                                		&& !mol.getConnectedAtomsList(atmC)
-                                		.contains(atmD))
+                                if (r.limitToBonded() && !areLinearlyConnected)
                                 {
                                     continue;
                                 }
@@ -473,7 +492,8 @@ public class ConstraintsGenerator extends Worker
                             						mol.indexOf(atmA),
                             						mol.indexOf(atmB),
                             						mol.indexOf(atmC),
-                            						mol.indexOf(atmD)))));
+                            						mol.indexOf(atmD))), 
+                            				areLinearlyConnected));
                             		continue;
                             	} else {
                             		throw new Exception("Unexpectedly long "

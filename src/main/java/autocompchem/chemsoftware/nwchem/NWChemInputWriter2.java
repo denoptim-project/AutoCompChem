@@ -32,16 +32,11 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
-import autocompchem.chemsoftware.orca.OrcaConstants;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
@@ -218,14 +213,27 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.z));
 				}
 				break;
+				
 			//case NORMALMODE:
 			//	break;
-			case ZMATRIX:
-				break;
-				
-			//TODO-gg make this possible
-			//case ConstraintsSet:
+			//case ZMATRIX:
 			//	break;
+				
+			case CONSTRAINTSSET:
+				ConstraintsSet cSet = (ConstraintsSet) data.getValue();
+				switch (d.getName().toUpperCase())
+				{
+				case NWChemConstants.ZCRDDIR:
+					ddLines.addAll(getLinesForZCOORDData(cSet));
+					break;
+					
+				default:
+					Terminator.withMsgAndStatus("Found set of constraints"
+							+ "in a ditective that is unexpected. Please, "
+							+ "contact the authors and present your case.", -1); 
+					break;
+				}
+				break;
 
         	default:
         		ddLines = data.getLines();
@@ -281,6 +289,63 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
             }
         }
         return lines;
+    }
+    
+//------------------------------------------------------------------------------
+   
+    private List<String> getLinesForZCOORDData(ConstraintsSet cs)
+    {
+    	// Now we prepare the actual lines of text
+    	// NB: NWChem used 1-based indexing 
+    	List<String> lines = new ArrayList<String>();
+    	for (Constraint c : cs.getConstrainsWithType(ConstraintType.DISTANCE))
+        {
+    		int[] ids = c.getSortedAtomIDs();
+        	String str = "BOND " + (ids[0]+1) + " " + (ids[1]+1);
+        	if (c.hasValue())
+        	{
+        		str = str + " " + c.getValue();
+        	}
+        	if (c.hasOpt())
+        	{
+        		str = str + " " + c.getOpt();
+        	}
+        	lines.add(str);
+        }
+        
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.ANGLE))
+        {
+    		int[] ids = c.getSortedAtomIDs();
+        	String str = "ANGLE " + (ids[0]+1) + " " + (ids[1]+1) + " " 
+        			+ (ids[2]+1);
+        	if (c.hasValue())
+        	{
+        		str = str + " " + c.getValue();
+        	}
+        	if (c.hasOpt())
+        	{
+        		str = str + " " + c.getOpt();
+        	}
+        	lines.add(str);
+        }
+        
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.DIHEDRAL))
+        {
+    		int[] ids = c.getSortedAtomIDs();
+        	String str = "TORSION " + (ids[0]+1) + " " + (ids[1]+1) + " " 
+        			+ (ids[2]+1) + " " + (ids[3]+1);
+        	if (c.hasValue())
+        	{
+        		str = str + " " + c.getValue();
+        	}
+        	if (c.hasOpt())
+        	{
+        		str = str + " " + c.getOpt();
+        	}
+        	lines.add(str);
+        }
+    	
+    	return lines;
     }
     
 //------------------------------------------------------------------------------

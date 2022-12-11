@@ -1010,7 +1010,7 @@ public class Directive implements IDirectiveComponent
             //case TaskID.GENERATECONSTRAINTS:
             case "GENERATECONSTRAINTS":
             {
-        		// WARNING: uses oinly the first molecule
+        		// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
             	String s = TaskID.GENERATECONSTRAINTS.toString();

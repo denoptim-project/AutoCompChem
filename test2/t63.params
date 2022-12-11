@@ -5,8 +5,7 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputNWChem2
-INFILE: ../t63-nwc.out
+INPUTGEOMETRIESFILE: ../t63-nwc.out
 JOBDETAILSFILE: ../t63-jobDetails.json
-CoordinatesType: Cartesian
 CHARGE: 0
 SPIN_MULTIPLICITY: 1
