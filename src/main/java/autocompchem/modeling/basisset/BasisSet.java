@@ -46,8 +46,7 @@ public class BasisSet
      */
 
     public BasisSet()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -98,7 +97,7 @@ public class BasisSet
     {
         for (CenterBasisSet cbs : centerBSs)
         {
-            if (cbs.getCenterIndex()==id 
+            if (cbs.getCenterIndex()!=null && cbs.getCenterIndex()==id 
             		&& cbs.getElement().toUpperCase().equals(
             				elSymbol.toUpperCase()))
             {

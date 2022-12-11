@@ -368,14 +368,16 @@ public class CenterBasisSet
                 {
                     for (String n : namedComponents)
                     {
-                        sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId)).append(nl);
+                        sb.append(String.format(Locale.ENGLISH,"%-6s 0", atmId))
+                        	.append(nl);
                         sb.append(n).append(nl);
                         sb.append("****").append(nl);
                     } 
                 }
                 if (shells.size() > 0)
                 {
-                    sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId)).append(nl);
+                    sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId))
+                    	.append(nl);
                     for (Shell s : shells)
                     {
                         sb.append(s.toInputFileString(format,"notUsed"));
@@ -385,18 +387,19 @@ public class CenterBasisSet
                 break;
 
             case "NWCHEM":
-                String atmStr = Character.toUpperCase(atmId.charAt(0)) 
-                                             + atmId.toLowerCase().substring(1);
+                String atmStr = Character.toUpperCase(atmId.charAt(0))
+                	+ atmId.toLowerCase().substring(1);
                 for (String n : namedComponents)
                 {
                     if (n.contains(" "))
                     {
-                        sb.append(
-                                 String.format(Locale.ENGLISH,"  %s library \"%s\"",atmStr,n));
+                        sb.append(String.format(Locale.ENGLISH,
+                        		"  %s library \"%s\"",atmStr,n));
                     }
                     else
                     {
-                        sb.append(String.format(Locale.ENGLISH,"  %s library %s",atmStr,n));
+                        sb.append(String.format(Locale.ENGLISH, 
+                        		"  %s library %s",atmStr,n));
                     }
                     sb.append(nl);
                 }

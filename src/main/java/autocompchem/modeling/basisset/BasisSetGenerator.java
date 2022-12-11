@@ -234,13 +234,25 @@ public class BasisSetGenerator extends Worker
      * @param lines the lines of text to be parsed into {@link BSMatchingRule}s
      */
 
-    public void setBSMatchingRules(ArrayList<String> lines)
+    public void setBSMatchingRules(List<String> lines)
     {
         for (int i=0; i<lines.size(); i++)
         {
             BSMatchingRule bsr = new BSMatchingRule(lines.get(i),i);
-            this.rules.put(bsr.getRefName(),bsr);
+            this.rules.put(bsr.getRefName(), bsr);
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Adds a center-matching rule to assign a basis set to centers matching
+     * the given rule.
+     * @param bsr the rule to add.
+     */
+    public void addBSMatchingRule(BSMatchingRule bsr)
+    {
+    	this.rules.put(bsr.getRefName(), bsr);
     }
 
 //------------------------------------------------------------------------------
