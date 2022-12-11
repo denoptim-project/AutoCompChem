@@ -50,8 +50,7 @@ public class ECPShell
      */
 
     public ECPShell()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -162,8 +161,9 @@ public class ECPShell
 
             case "NWCHEM":
                 // The header is printed by the CenterBasisSet class.
-                for (Primitive p : primitives)
+            	for (Primitive p : primitives)
                 {
+                	sb.append(nl); // we are always writing after the header
                     sb.append(String.format(Locale.ENGLISH,
                     		"  %d ",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
@@ -178,7 +178,6 @@ public class ECPShell
 					    sb.append(String.format(Locale.ENGLISH,
 					    		cForm,c));
 					}
-                    sb.append(nl);
                 }
                 break;
 

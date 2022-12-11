@@ -387,25 +387,42 @@ public class CenterBasisSet
                 break;
 
             case "NWCHEM":
-                String atmStr = Character.toUpperCase(atmId.charAt(0))
+                String atmStr = "";
+                if (id!=null)
+                {
+                	atmStr = Character.toUpperCase(element.charAt(0))
+                        	+ element.toLowerCase().substring(1) + (id+1);
+                } else {
+                	atmStr = Character.toUpperCase(atmId.charAt(0))
                 	+ atmId.toLowerCase().substring(1);
+                }
+                boolean first = true;
                 for (String n : namedComponents)
                 {
+                	if (first)
+                		first = false;
+                	else
+                		sb.append(nl);
+                	
                     if (n.contains(" "))
                     {
                         sb.append(String.format(Locale.ENGLISH,
-                        		"  %s library \"%s\"",atmStr,n));
+                        		"  %s library \"%s\"", atmStr, n));
                     }
                     else
                     {
                         sb.append(String.format(Locale.ENGLISH, 
-                        		"  %s library %s",atmStr,n));
+                        		"  %s library %s", atmStr, n));
                     }
-                    sb.append(nl);
                 }
+                first = true;
                 for (Shell s : shells)
                 {
-                    sb.append(s.toInputFileString(format,atmId));
+                	if (first)
+                		first = false;
+                	else
+                		sb.append(nl);
+                    sb.append(s.toInputFileString(format, atmStr));
                 }
                 break;
 
@@ -454,8 +471,15 @@ public class CenterBasisSet
                 break;
 
             case "NWCHEM":
-                String atmStr = Character.toUpperCase(atmId.charAt(0)) 
-                                             + atmId.toLowerCase().substring(1);
+                String atmStr = "";
+                if (id!=null)
+                {
+                	atmStr = Character.toUpperCase(element.charAt(0))
+                        	+ element.toLowerCase().substring(1) + (id+1);
+                } else {
+                	atmStr = Character.toUpperCase(atmId.charAt(0))
+                	+ atmId.toLowerCase().substring(1);
+                }
                 sb.append(String.format(Locale.ENGLISH,
                 		"  %s nelec %s",atmStr,ne)).append(nl);
                 boolean first = true;
@@ -466,16 +490,16 @@ public class CenterBasisSet
                                 BasisSetConstants.ANGMOMINTTOSTR.get(maxl)))
                     {
                         ecpsType = "ul";
-                        first = false;
-                    }
-                    else
-                    {
+                    } else {
                         String[] parts = ecpsType.split("-");
                         ecpsType = parts[0]; 
                     }
-                    sb.append(String.format(Locale.ENGLISH,
-                    		"  %s %s",atmStr,ecpsType));
-                    sb.append(nl);
+                    if (first)
+                    	first = false;
+                    else
+                        sb.append(nl);
+                    sb.append(String.format(Locale.ENGLISH, "  %s %s", atmStr, 
+                    		ecpsType));
                     sb.append(s.toInputFileString(format));
                 }
                 break;

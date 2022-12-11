@@ -178,22 +178,23 @@ public class Shell
 
             case "NWCHEM":
                 String atmStr = Character.toUpperCase(atomId.charAt(0)) 
-                                            + atomId.toLowerCase().substring(1);
+                	+ atomId.toLowerCase().substring(1);
                 sb.append(String.format(Locale.ENGLISH, 
-                		"  %s %s",atmStr,type)).append(nl);
+                		"  %s %s", atmStr, type));
                 for (Primitive p : primitives)
                 {
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                           + (p.getExpPrecision()-1) + "E      ";
-                    sb.append(String.format(Locale.ENGLISH, eForm,p.getExp()));
+                    sb.append(nl).append(String.format(Locale.ENGLISH, 
+                    		eForm,p.getExp()));
                     
                     String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
                             + (p.getCoeffPrecision()-1) + "E";
 					for (Double c : p.getCoeff())
 					{
-						sb.append(String.format(Locale.ENGLISH, cForm, c));
+						sb.append(String.format(Locale.ENGLISH, 
+								cForm, c));
 					}
-                    sb.append(nl);
                 }
                 break;
 

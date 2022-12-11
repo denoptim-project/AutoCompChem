@@ -218,12 +218,24 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 				break;
 				
 			case IATOMCONTAINER:
+            	boolean useTags = false;
+            	if (data.getTaskParams()!=null 
+            			&& data.getTaskParams().contains(
+            					ChemSoftConstants.PARUSEATMTAGS))
+            	{
+            		useTags = true;
+            	}
 				IAtomContainer mol = (IAtomContainer) data.getValue();
 				for (IAtom atm : mol.atoms())
 				{
+					String atmId = atm.getSymbol();
+					if (useTags)
+					{
+						// Convention is to use 1-based indexing here
+						atmId = atmId + (mol.indexOf(atm)+1);
+					}
 					Point3d p3d = MolecularUtils.getCoords3d(atm);
-					ddLines.add(String.format(Locale.ENGLISH," %3s", 
-							atm.getSymbol())
+					ddLines.add(String.format(Locale.ENGLISH," %3s", atmId)
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.x)
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.y)
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.z));
@@ -253,6 +265,9 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
         	
             for (String dataLine : ddLines)
             {
+            	dataLine = dataLine.replace(System.getProperty("line.separator"),
+            			System.getProperty("line.separator") 
+            			+ NWChemConstants.SUBDIRECTIVEINDENT);
                 lines.add(NWChemConstants.SUBDIRECTIVEINDENT + dataLine);
             }
 
@@ -272,6 +287,9 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
         	List<String> subDirLines = getTextForInput(subDir);
             for (String dirLine : subDirLines)
             {
+            	dirLine = dirLine.replace(System.getProperty("line.separator"),
+            			System.getProperty("line.separator") 
+            			+ NWChemConstants.SUBDIRECTIVEINDENT);
                 lines.add(NWChemConstants.SUBDIRECTIVEINDENT + dirLine);
             }
             

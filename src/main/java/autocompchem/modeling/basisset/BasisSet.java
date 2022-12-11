@@ -219,8 +219,13 @@ public class BasisSet
                 break;
 
             case "NWCHEM":
+            	boolean first = true;
                 for (CenterBasisSet cbs : centerBSs)
                 {
+                	if (first)
+                		first = false;
+                	else
+                		sb.append(System.getProperty("line.separator"));
                     sb.append(cbs.toInputFileStringBS(format));
                 }
                 break;
@@ -258,9 +263,17 @@ public class BasisSet
                 break;
 
             case "NWCHEM":
+            	boolean first = true;
                 for (CenterBasisSet cbs : centerBSs)
                 {
-                    sb.append(cbs.toInputFileStringECP(format));
+                	String block = cbs.toInputFileStringECP(format);
+                	if (block.isBlank())
+                		continue;
+                	if (first)
+                		first = false;
+                	else
+                		sb.append(System.getProperty("line.separator"));
+                    sb.append(block);
                 }
                 break;
 

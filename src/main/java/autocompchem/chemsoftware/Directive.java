@@ -874,9 +874,6 @@ public class Directive implements IDirectiveComponent
             	//TODO verbosity/logging
                 System.out.println("ACC adds geometry to job");
                 
-            	DirectiveData dirDataWithGeom = new DirectiveData();
-            	dirDataWithGeom.setReference(ChemSoftConstants.DIRDATAGEOMETRY);
-            	
             	CoordsType coordsType = CoordsType.XYZ;
             	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
             	{
@@ -901,7 +898,7 @@ public class Directive implements IDirectiveComponent
                 		
                 		//TODO: get the actual zmat for mol
                 		
-                        dirDataWithGeom.setValue(zmat);
+                		((IValueContainer) dirComp).setValue(zmat);
                 		break;
                 	}
                 	
@@ -919,7 +916,7 @@ public class Directive implements IDirectiveComponent
                 	{
                 		// WARNING: uses only the first molecule
                 		IAtomContainer mol = mols.get(0);
-                		dirDataWithGeom.setValue(mol);
+                		((IValueContainer) dirComp).setValue(mol);
                 		
                 		//TODO-gg we should not be doing this here!!!
                 		// charge and spin are managed by the chemsoftinputwriter
@@ -946,21 +943,6 @@ public class Directive implements IDirectiveComponent
                 		break;
                 	}
             	}
-            	setDataDirective(dirDataWithGeom);
-            	deleteComponent(dirComp);
-            	
-            	//TODO-NOW
-            	/*
-            	if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(pathname);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
-            	*/
             	break;
             }
             	

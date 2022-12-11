@@ -200,6 +200,14 @@ public class ChemSoftConstants
 	public static enum CoordsType {XYZ, ZMAT, INTERNAL};
 	
 	/**
+	 * Parameter requiring to print atom tags when reporting a geometry.
+	 * Atom tags are built from the elemental symbol and the 1-based index
+	 * of the atom in the atom list. E.g., tag "C5" will be used for the 
+	 * fifth atom in the list, which is a carbon atom.
+	 */
+	public static final String PARUSEATMTAGS = "USEATOMTAGS";
+	
+	/**
 	 * Key for the parameter defining where to add filename that is dependent 
 	 * on the specifics of the molecular system calculated. This string can be 
 	 * followed (space separated by a string to be appended to the pathname 

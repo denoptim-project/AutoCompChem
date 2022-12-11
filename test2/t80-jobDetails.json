@@ -91,6 +91,9 @@
                 {
                   "reference": "TASK",
                   "value": "ADD_GEOMETRY"
+                },
+                {
+                  "reference": "USEATOMTAGS"
                 }
               ],
               "reference": "geometry"
