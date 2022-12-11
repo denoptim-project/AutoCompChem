@@ -18,6 +18,8 @@ package autocompchem.utils;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,6 +153,25 @@ public class StringUtilsTest
     			"7-9",
     			"22"));
     	assertEquals(expected, StringUtils.makeStringForIndexes(set,"-",0));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testIsAtomID() throws Exception
+    {
+    	String s = "H1";
+    	assertTrue(StringUtils.isAtomID(s));
+    	s = "Any134";
+    	assertTrue(StringUtils.isAtomID(s));
+    	s = "Any0";
+    	assertTrue(StringUtils.isAtomID(s));
+    	s = "Any134ade";
+    	assertFalse(StringUtils.isAtomID(s));
+    	s = "134ade";
+    	assertFalse(StringUtils.isAtomID(s));
+    	s = "123";
+    	assertFalse(StringUtils.isAtomID(s));
     }
     
 //------------------------------------------------------------------------------

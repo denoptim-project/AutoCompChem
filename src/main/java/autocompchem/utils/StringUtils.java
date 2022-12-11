@@ -230,6 +230,20 @@ public class StringUtils
         }
         return list;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks is the given string can be an atom identifier of the form
+     * "StringIndex" where the Index is an integer and the String is any
+     * alphabetical string.
+     * @param s
+     * @return
+     */
+    public static boolean isAtomID(String s)
+    {
+    	return s.matches("[a-z,A-Z]+[0-9]+");
+    }
 
 //------------------------------------------------------------------------------
 
