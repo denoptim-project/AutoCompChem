@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 
 
 /**
@@ -43,7 +44,7 @@ public class BasisSetUtils
      */
 
     public static BasisSet importBasisSetFromGBSFile(String inFile, 
-                                                                  int verbosity)
+    		int verbosity)
     {
         String msg = "";
         BasisSet bs = new BasisSet();
@@ -111,7 +112,15 @@ public class BasisSetUtils
             {
                 foundBSSection = true;
                 String atmId = wrds[0].toUpperCase();
-                cbs = bs.getCenterBasisSetForCenter(atmId);
+                if (StringUtils.isAtomID(msg))
+                {
+                	String[] elInt = StringUtils.splitCharactersAndNumber(atmId);
+                	String el = elInt[0];
+                	int id = Integer.parseInt(elInt[1]);
+                	cbs = bs.getCenterBasisSetForCenter(id, el);
+                } else {
+                	cbs = bs.getCenterBasisSetForElement(atmId);
+                }
                 if (verbosity > 2)
                 {
                     System.out.println("Importing basis set for center '" 
@@ -232,12 +241,11 @@ public class BasisSetUtils
             else if (wrds.length == 2 && wrds[0].matches("\\w+\\.?") 
                                         && wrds[1].equals("0") && isECPSection)
             {
-                String atmId = wrds[0].toUpperCase();
-                cbs = bs.getCenterBasisSetForCenter(atmId);
-                cbs.setElement(atmId);
+                String elSymbol = wrds[0].toUpperCase();
+                cbs = bs.getCenterBasisSetForElement(elSymbol);
                 if (verbosity > 2)
                 {
-                    System.out.println("Importing ECP for '" + atmId+ "' "
+                    System.out.println("Importing ECP for '" + elSymbol+ "' "
                                        + " element:'" + cbs.getElement()+ "'.");
                 }
                 boolean keepReadingECP = true;
@@ -272,8 +280,7 @@ public class BasisSetUtils
                             cbs.addECPShell(ecps.clone());
                         }
 
-                        cbs = bs.getCenterBasisSetForCenter(wrds[0]);
-                        cbs.setElement(wrds[0]);
+                        cbs = bs.getCenterBasisSetForElement(wrds[0]);
                         addIntECCP = false;
 
                         if (verbosity > 2)

@@ -38,6 +38,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -340,7 +341,7 @@ public class BasisSetGenerator extends Worker
         }
 
         // Apply SMARTS-bases ruled 
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -359,18 +360,19 @@ public class BasisSetGenerator extends Worker
                 importBasisSetFromFile(rulRef,rules.get(rulRef).getSource());
             }
 
+            //TODO-gg use getMappingOfSMARTS
             List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(rulRef);
             for (List<Integer> innerList : allMatches)
             {
                 for (Integer iAtm : innerList)
                 {
                     IAtom atm = mol.getAtom(iAtm);
-                    addBSAssignationRuleReferenceToAtom(atm,rulRef,mol);
+                    addBSAssignationRuleReferenceToAtom(atm, rulRef, mol);
                 }
             }
         }
 
-        //Verify that all atoms have got a basis set based on SMARTS, if an
+        // Verify that all atoms have got a basis set based on SMARTS, if an
         // atom does not have one, then try to use elemental symbol rules.
         for (IAtom atm : mol.atoms())
         {
@@ -410,7 +412,8 @@ public class BasisSetGenerator extends Worker
 
         //Build the global basis set by combining all atm-specific pieces
         BasisSet globBS = new BasisSet();
-        // Elemental symbol-based rules as wildcards
+        
+        // Elemental symbol-based rules
         for (String rulRef : elmnts.keySet())
         {
             if (verbosity > 1)
@@ -425,48 +428,45 @@ public class BasisSetGenerator extends Worker
                 case BasisSetConstants.BSSOURCELINK:
                     if (!importedBSs.keySet().contains(rulRef))
                     {
-                        importBasisSetFromFile(rulRef,rule.getSource());
+                        importBasisSetFromFile(rulRef, rule.getSource());
                     }
                     BasisSet impBS = importedBSs.get(rulRef);
     
-                    if (rule.getKey().equals("*"))
+                    if (elSymb.equals("*"))
                     {
                         for (CenterBasisSet c : impBS.getAllCenterBSs())
-                        {        
+                        {
                             // NB: the center Id is case insensitive: use upper!
-                            if (MolecularUtils.containsElement(mol,
-                                                               c.getCenterId()))
+                            if (MolecularUtils.containsElement(mol, c.getElement()))
                             {
-                                globBS.getCenterBasisSetForCenter(
-                                           c.getCenterId()).appendComponents(c);
+                                globBS.getCenterBasisSetForElement(
+                                		c.getElement().toUpperCase())
+                                	.appendComponents(c);
                             }
                         }
-                    }
-                    else
-                    {
-                        // NB: the center Id is case insensitive: use upper!
-                        if (!impBS.hasCenter(elSymb.toUpperCase()))
+                    } else {
+                        if (!impBS.hasElement(elSymb))
                         {
                             String msg = "ERROR! Basis set file imported for "
                                          + "rule '" + rulRef 
                                          + "' does not contains element '"
                                          + elSymb + "'. Exiting.";
-                        Terminator.withMsgAndStatus(msg,-1);
+                            Terminator.withMsgAndStatus(msg,-1);
                         }
     
-                        // NB: the center Id is case insensitive: use upper!
-                        CenterBasisSet cbs = impBS.getCenterBasisSetForCenter(
-                                                          elSymb.toUpperCase());
-                        globBS.getCenterBasisSetForCenter(
-                                       cbs.getCenterId()).appendComponents(cbs);
+                        CenterBasisSet cbs = impBS.getCenterBasisSetForElement(
+                        		elSymb.toUpperCase());
+                     // NB: the center Id is case insensitive: use upper!
+                        globBS.getCenterBasisSetForElement(
+                        		elSymb.toUpperCase()).appendComponents(cbs);
                     }
                     break;
 
                 case BasisSetConstants.BSSOURCENAME:
                     CenterBasisSet cbs = new CenterBasisSet(elSymb);
                     cbs.addNamedComponent(rule.getSource());
-                    globBS.getCenterBasisSetForCenter(
-                                       cbs.getCenterId()).appendComponents(cbs);
+                    globBS.getCenterBasisSetForElement(
+                    		elSymb).appendComponents(cbs);
                     break;
             }
         }
@@ -477,22 +477,21 @@ public class BasisSetGenerator extends Worker
             IAtom atm = mol.getAtom(i);
             // Generate atom tag
             String elSymb = atm.getSymbol();
-            String atmId = elSymb + (i+1);
-            if (atmIdxAsId)
-            {
-                atmId = String.valueOf(i+1);
-            }
+            int atmId = i;
+            
             // Use previously set atom tag, if any
             if (AtomUtils.hasProperty(atm,ACCConstants.ATMTAGPROP))
             {
-                atmId = 
-                       atm.getProperty(ACCConstants.ATMTAGPROP).toString();
+            	String sid = atm.getProperty(ACCConstants.ATMTAGPROP).toString();
+            	String[] parts = StringUtils.splitCharactersAndNumber(sid);
+            	elSymb = parts[0];
+            	atmId = Integer.parseInt(parts[1]);
             }
 
             CenterBasisSet globCBS = new CenterBasisSet();
             if (atm.getProperty(BasisSetConstants.BSATMPROP+"0") != null)
             {
-                globCBS = globBS.getCenterBasisSetForCenter(atmId);
+            	globCBS = globBS.getCenterBasisSetForCenter(atmId, elSymb);
             }
 
             Map<Object,Object> allProps = atm.getProperties();
@@ -501,6 +500,7 @@ public class BasisSetGenerator extends Worker
                 String ks = key.toString();
                 if (!ks.toUpperCase().startsWith(BasisSetConstants.BSATMPROP))
                 {
+                	// this property is not one that defines basis set
                     continue;
                 }
                 String rulRef = allProps.get(key).toString();
@@ -509,7 +509,7 @@ public class BasisSetGenerator extends Worker
                     case BasisSetConstants.BSSOURCELINK:
                         BasisSet impBS = importedBSs.get(rulRef);
                         // NB: the center Id is case insensitive: use upper!
-                        if (!impBS.hasCenter(elSymb.toUpperCase()))
+                        if (!impBS.hasElement(elSymb))
                         {
                             String msg = "ERROR! Basis set file imported for "
                                          + "rule '" + rulRef 
@@ -517,14 +517,13 @@ public class BasisSetGenerator extends Worker
                                          + elSymb + "'. Exiting.";
                             Terminator.withMsgAndStatus(msg,-1);
                         }
-                        CenterBasisSet locCBS = 
-                         impBS.getCenterBasisSetForCenter(elSymb.toUpperCase());
+                        CenterBasisSet locCBS = impBS.getCenterBasisSetForElement(
+                        		elSymb.toUpperCase());
                         globCBS.appendComponents(locCBS);
                         break;
 
                     case BasisSetConstants.BSSOURCENAME:
-                        globCBS.addNamedComponent(rules.get(
-                                                           rulRef).getSource());
+                        globCBS.addNamedComponent(rules.get(rulRef).getSource());
                         break;
                 }
             }

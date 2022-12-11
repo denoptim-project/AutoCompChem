@@ -37,6 +37,7 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
@@ -197,10 +198,25 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
         	List<String> ddLines = new ArrayList<String>();
         	switch (data.getType())
         	{
-			//case ATOMCONTAINERSET:
-			//	break;
 			case BASISSET:
+				BasisSet bs = (BasisSet) data.getValue();
+				switch (d.getName().toUpperCase())
+				{
+				case "BASIS":
+					ddLines.add(bs.toInputFileStringBS("NWChem"));
+					break;
+					
+				case "ECP":
+					ddLines.add(bs.toInputFileStringECP("NWChem"));
+					break;
+					
+				default:
+					Terminator.withMsgAndStatus("ERROR! Found basis set as "
+							+ "value of a Directive data that is neither ECP "
+							+ "nor BASIS, but is '" + d.getName() + "'.",-1);
+				}
 				break;
+				
 			case IATOMCONTAINER:
 				IAtomContainer mol = (IAtomContainer) data.getValue();
 				for (IAtom atm : mol.atoms())
@@ -213,11 +229,6 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.z));
 				}
 				break;
-				
-			//case NORMALMODE:
-			//	break;
-			//case ZMATRIX:
-			//	break;
 				
 			case CONSTRAINTSSET:
 				ConstraintsSet cSet = (ConstraintsSet) data.getValue();

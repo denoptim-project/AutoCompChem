@@ -64,47 +64,101 @@ public class BasisSet
 //------------------------------------------------------------------------------
 
     /**
-     * Checks if this bais set contains a center with the given reference name
-     * @param centerId the reference name of the center (i.e., atom)
-     * @return <code>true</code> if this basis set containg a center with the 
-     * given reference string
+     * Checks if this basis set contains an element-specific basis set.
+     * @param elSymbol the elemental symbol (case insensitive).
+     * @return <code>true</code> if this basis set contains for the specified
+     * elemental symbol.
      */
 
-    public boolean hasCenter(String centerId)
+    public boolean hasElement(String elSymbol)
     {
         for (CenterBasisSet cbs : centerBSs)
         {
-            if (cbs.getCenterId().equals(centerId))
+            if (cbs.getCenterIndex()==null 
+            		&& cbs.getElement().toUpperCase().equals(
+            				elSymbol.toUpperCase()))
             {
                 return true;
             }
         }
         return false;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the basis set fo the specified center ID. If no center-specific
-     * basis set is assigned to such center ID, then it creates a new one within
-     * this basis set object.
-     * @param centerId the ID of the center
-     * @return the center-specific basis set associated with the given center ID
-     * ID. If there is no such center ID in this BAsis set, then a new 
-     * {@link autocompchem.modeling.basisset.CenterBasisSet} is created, added to
-     * this basis set, and returned.
+     * Checks if this basis set contains a center with the given reference name
+     * @param centerId the reference name of the center (i.e., atom)
+     * @param elSymbol the elemental symbol (case insensitive).
+     * @return <code>true</code> if this basis set contains a center with the 
+     * given reference string.
      */
 
-    public CenterBasisSet getCenterBasisSetForCenter(String centerId)
+    public boolean hasCenter(int id, String elSymbol)
     {
         for (CenterBasisSet cbs : centerBSs)
         {
-            if (cbs.getCenterId().equals(centerId))
+            if (cbs.getCenterIndex()==id 
+            		&& cbs.getElement().toUpperCase().equals(
+            				elSymbol.toUpperCase()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the basis set for the specified element. If no center-specific
+     * basis set is assigned to such element, then it creates a new one within
+     * this object.
+     * @param elSymbol the elemental symbol to search for.
+     * @return the center-specific basis set associated with the given elemental
+     * symbol. If none is found a new 
+     * {@link autocompchem.modeling.basisset.CenterBasisSet} is created, added to
+     * this basis set, and returned.
+     */
+    public CenterBasisSet getCenterBasisSetForElement(String elSymbol)
+    {
+    	for (CenterBasisSet cbs : centerBSs)
+        {
+            if (cbs.getCenterIndex()==null && cbs.getElement().equals(elSymbol))
             {
                 return cbs;
             }
         }
-        CenterBasisSet newCbs = new CenterBasisSet(centerId);
+        CenterBasisSet newCbs = new CenterBasisSet(elSymbol);
+        centerBSs.add(newCbs);
+        return newCbs;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the basis set for the specified center ID. If no center-specific
+     * basis set is assigned to such center ID, then it creates a new one within
+     * this object.
+     * @param id the index of the center.
+     * @param elSymb the elemental symbol of the center.
+     * @return the center-specific basis set associated with the given center ID
+     * ID. If there is no such center ID in this Basis set, then a new 
+     * {@link autocompchem.modeling.basisset.CenterBasisSet} is created, added to
+     * this basis set, and returned.
+     */
+
+    public CenterBasisSet getCenterBasisSetForCenter(int id, String elSymb)
+    {
+        for (CenterBasisSet cbs : centerBSs)
+        {
+            if (cbs.getElement().equals(elSymb) && cbs.getCenterIndex()!=null
+            		&& cbs.getCenterIndex()==id)
+            {
+                return cbs;
+            }
+        }
+        CenterBasisSet newCbs = new CenterBasisSet(id, elSymb);
         centerBSs.add(newCbs);
         return newCbs;
     }
@@ -156,7 +210,6 @@ public class BasisSet
     public String toInputFileStringBS(String format)
     {
         StringBuilder sb = new StringBuilder();
-        String nl = System.getProperty("line.separator");
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
@@ -167,12 +220,10 @@ public class BasisSet
                 break;
 
             case "NWCHEM":
-                sb.append("BASIS \"ao basis\" print").append(nl);
                 for (CenterBasisSet cbs : centerBSs)
                 {
                     sb.append(cbs.toInputFileStringBS(format));
                 }
-                sb.append("END").append(nl);
                 break;
 
             default:
@@ -198,7 +249,6 @@ public class BasisSet
     public String toInputFileStringECP(String format)
     {
         StringBuilder sb = new StringBuilder();
-        String nl = System.getProperty("line.separator");
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
@@ -209,12 +259,10 @@ public class BasisSet
                 break;
 
             case "NWCHEM":
-                sb.append("ECP").append(nl);
                 for (CenterBasisSet cbs : centerBSs)
                 {
                     sb.append(cbs.toInputFileStringECP(format));
                 }
-                sb.append("END").append(nl);
                 break;
 
             default:

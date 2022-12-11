@@ -26,7 +26,7 @@ import autocompchem.run.Terminator;
 
 
 /**
- * Object representing an enseble of shells used as basis set for a center 
+ * Object representing an ensemble of shells used as basis set for a center 
  * (i.e., atom or pseudo-atom). The ensemble may be a portion of the entire 
  * basis set for the specific center. ECP may be included in this basis set.
  *
@@ -36,14 +36,20 @@ import autocompchem.run.Terminator;
 public class CenterBasisSet
 {
     /**
-     * Center (i.e., atom) reference name.
+     * Center's (i.e., atom) reference name.
      */
     private String atmId = "noAtomId";
+    
+    /**
+     * Center's (i.e., atom) index.
+     */
+    private Integer id;
 
     /**
-     * Elemental symbol
+     * Center's (i.e., atom) elemental symbol.
      */
-    private String element = "noElSymb";    
+    private String element;   
+    
     /**
      * Basis set components by name. 
      * Names are independent from the list of shells and ECP components.
@@ -75,32 +81,47 @@ public class CenterBasisSet
      */
     private int ne = 0;
 
-
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty object
+     * Constructor for an empty CenterBasisSet that does not even specify which 
+     * center it applies to.
+     */
+    public CenterBasisSet() 
+    {}
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Constructor for a CenterBasisSet and define the ID of the center
+     * @param atmId the index of the center.
+     * @param elSymb the elemental symbol.
      */
 
-    public CenterBasisSet()
+    public CenterBasisSet(String elSymb)
     {
+        this.atmId = elSymb;
+        this.element = elSymb;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for a CenterBasisSet and define the ID of the center
-     * @param atmId reference identified of the center (i.e., atom)
+     * @param atmId the index of the center.
+     * @param elSymb the elemental symbol.
      */
 
-    public CenterBasisSet(String atmId)
+    public CenterBasisSet(int atmId, String elSymb)
     {
-        this.atmId = atmId;
+        this.atmId = elSymb+atmId;
+        this.id = atmId;
+        this.element = elSymb;
     }
 
 //------------------------------------------------------------------------------
 
-    /**
+	/**
      * Add a named components, that is, a basis set that is widely recognized
      * by its name. Note that the name is not interpreted, but is treated as
      * a string.
@@ -204,7 +225,7 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
 
     /**
-     * Set the maximum angular momentun for ECP 
+     * Set the maximum angular momentum for ECP 
      * @param maxl the maximum angular momentum
      */
 
@@ -236,17 +257,17 @@ public class CenterBasisSet
     {
         return element;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the referance name of the center
-     * @return the reference name of the center
+     * Returns the index of the center.
+     * @return the index of the center or null if not defined.
      */
 
-    public String getCenterId()
+    public Integer getCenterIndex()
     {
-        return atmId;
+        return id;
     }
 
 //------------------------------------------------------------------------------
