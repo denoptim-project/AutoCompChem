@@ -44,7 +44,7 @@ import autocompchem.text.TextBlock;
  */
 
 public class DirectiveData extends NamedData implements IDirectiveComponent, 
-	IValueContainer
+	IValueContainer, Cloneable
 {
     /**
      * Parameters defining task embedded in this directive.
@@ -69,6 +69,9 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
      * @param jdLine the text to parse
      */
 
+    //TODO: get rid of this and replace it with a maker method while make new method 
+    // that initializes only the name of the DirectiveData
+    @Deprecated
     public DirectiveData(String jdLine)
     {
     	super();
@@ -346,6 +349,24 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
          	
          	return dd;
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public DirectiveData clone() throws CloneNotSupportedException
+    {
+    	NamedData nd = super.clone();
+    	DirectiveData dd = new DirectiveData();
+    	dd.setReference(nd.getReference());
+    	dd.setType(nd.getType());
+    	if (nd.getValue()!=null)
+    		dd.setValue(nd.getValue());
+    	if (accTaskParams!=null)
+        {
+			dd.accTaskParams = accTaskParams.clone();
+        }
+    	return dd;
     }
     
 //-----------------------------------------------------------------------------

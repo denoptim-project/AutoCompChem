@@ -311,6 +311,33 @@ public class CompChemJob extends Job implements Cloneable
         }
     }
     
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds directive to this job regardeless of whether another directive with 
+     * the same name exists.
+     * @param d the given directive
+     */
+    public void addDirective(Directive d)
+    {
+    	directives.add(d);
+    }
+        
+//------------------------------------------------------------------------------
+
+    /**
+     * Removes the first occurrence of the specified Directive from this list,
+     * if it is present. If the list does not contain the Directive, 
+     * it is unchanged.
+     * @param origiGeomDir
+     * @return <code>true</code> if the list of directives changes upon calling
+     * this method, i.e., the object has been removed.
+     */
+  	public boolean removeDirective(Directive d) 
+  	{
+  		return directives.remove(d);
+  	}
+    
 //-----------------------------------------------------------------------------
     
     /**
@@ -463,6 +490,7 @@ public class CompChemJob extends Job implements Cloneable
             return jsonObject;
         }
     }
+    
 //------------------------------------------------------------------------------
 
 }

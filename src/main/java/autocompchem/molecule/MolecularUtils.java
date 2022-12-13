@@ -429,32 +429,34 @@ public class MolecularUtils
 
     public static String getNameOrID(IAtomContainer mol)
     {
-        String name = "noname";
-
-        //ChEBI
-        try {
-            name = mol.getProperty("ChEBI ID").toString();
-        } catch (Throwable t1) {
-            //TTD
-            try {
-                name = mol.getProperty("DRUGID").toString();
-            } catch (Throwable t2) {
-                //CDK
-                try {
-                    name = mol.getProperty("cdk:Title").toString();
-                } catch (Throwable t3) {
-                    //General case using title
-                    try {
-                        name = mol.getProperty(CDKConstants.TITLE).toString();
-                    } catch (Throwable t) {
-                        if (repOnScreen >= 3)
-                            System.out.println("Molecule name not found. "
-                                                + "Set to '" + name + "'.");
-                    }
-                }
-            }
+    	String name = mol.getTitle();
+    	if (name==null || name.equals("") || name.isBlank())
+    	{
+    		name = "noname";
+	        //ChEBI
+	        try {
+	            name = mol.getProperty("ChEBI ID").toString();
+	        } catch (Throwable t1) {
+	            //TTD
+	            try {
+	                name = mol.getProperty("DRUGID").toString();
+	            } catch (Throwable t2) {
+	                //CDK
+	                try {
+	                    name = mol.getProperty("cdk:Title").toString();
+	                } catch (Throwable t3) {
+	                    //General case using title
+	                    try {
+	                        name = mol.getProperty(CDKConstants.TITLE).toString();
+	                    } catch (Throwable t) {
+	                        if (repOnScreen >= 3)
+	                            System.out.println("Molecule name not found. "
+	                                                + "Set to '" + name + "'.");
+	                    }
+	                }
+	            }
+	        }
         }
-
         return name;
     }
 

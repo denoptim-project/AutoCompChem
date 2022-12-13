@@ -597,6 +597,21 @@ public class Job implements Runnable
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Recursively searches for the innermost first step. At any level of 
+     * recursion it does not consider steps other than the first.
+     * @return the job that is innermost and that is the first step of a first
+     * N*(of a first step) with N from 0 to +infinite.
+     */
+  	public Job getInnermostFirstStep() 
+  	{
+  		if (this.getNumberOfSteps()>0)
+  			return steps.get(0).getInnermostFirstStep();
+  		return this;
+  	}
+    
+//------------------------------------------------------------------------------
     
     /**
      * Returns the identifier of this job. This identifier is unique only within
