@@ -199,7 +199,8 @@ public class NWChemConstants
 
     /**
      * Name of the keyword belonging to the TASK directive and that defines the 
-     * theory in use (i.e., SCF and DFT)
+     * theory in use (i.e., SCF and DFT), but can also be 'python' indicating 
+     * an embedded python jobb.
      */
     public final static String THEORYKW = "theory";
 

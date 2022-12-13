@@ -142,6 +142,11 @@ public class ChemSoftConstants
 	public static final String PARMULTIGEOMMODE = "MULTIGEOMMODE";
 	
 	/**
+	 * Key for parameter defining the names of all geometries given as input.
+	 */
+	public static final String PARGEOMNAMES = "MULTIGEOMNAMES";
+	
+	/**
 	 * Key for parameter defining the pathname to the file defining the details
 	 * of the computational chemistry job.
 	 */
@@ -199,6 +204,12 @@ public class ChemSoftConstants
 	 */
 	public static enum CoordsType {XYZ, ZMAT, INTERNAL};
 	
+	/**
+	 * Key for the parameter defining which geometry to use when dealing with
+	 * multiple geometries.
+	 */
+	public static final String PARMULTIGEOMID = "USEGEOMATINDEX";
+			
 	/**
 	 * Parameter requiring to print atom tags when reporting a geometry.
 	 * Atom tags are built from the elemental symbol and the 1-based index

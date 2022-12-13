@@ -22,6 +22,7 @@ import java.util.List;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
@@ -359,7 +360,9 @@ public class NWChemJob
 								TaskID.GENERATEBASISSET.toString());
 						taskPs.setParameter(nd.getReference(),
 								nd.getValueAsString());
-						basisDir.setTaskParams(taskPs);
+						DirectiveData dd = new DirectiveData("basissetdata");
+						dd.setTaskParams(taskPs);
+						basisDir.addDirectiveData(dd);
 						ccjStep.setDirective(basisDir);
 						toRemove.add(nd);
 						break;
@@ -383,7 +386,9 @@ public class NWChemJob
 							TaskID.GENERATECONSTRAINTS.toString());
 					taskPs.setParameter("SMARTS",
 							nd.getValueAsString());
-					zcoordDir.setTaskParams(taskPs);
+					DirectiveData dd = new DirectiveData("zcoorddata");
+					dd.setTaskParams(taskPs);
+					zcoordDir.addDirectiveData(dd);
 					ccjStep.setDirective(geomDir);
 					toRemove.add(nd);
 					break;

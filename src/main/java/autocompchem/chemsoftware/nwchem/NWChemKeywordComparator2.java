@@ -65,7 +65,18 @@ public class NWChemKeywordComparator2 implements Comparator<Keyword>
             }
             else
             {
-                res = nameA.compareTo(nameB);
+            	if (nameA.equals(NWChemConstants.GEOMNAMEKW.toUpperCase()))
+                {
+                    res = LAST;
+                }
+                else if (nameB.equals(NWChemConstants.GEOMNAMEKW.toUpperCase()))
+                {
+                    res = FIRST;
+                }
+                else
+                {
+                	res = nameA.compareTo(nameB);
+                }
             }
         }
         return res;

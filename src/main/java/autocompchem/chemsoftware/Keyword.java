@@ -62,7 +62,7 @@ import autocompchem.utils.StringUtils;
  * @author Marco Foscato
  */
 
-public class Keyword extends DirectiveData implements IValueContainer
+public class Keyword extends DirectiveData implements IValueContainer, Cloneable
 {
     /**
      * Keyword type: either "mute" (false), or "loud" (true).
@@ -378,6 +378,27 @@ public class Keyword extends DirectiveData implements IValueContainer
          	return k;
         }
     }
+
+//-----------------------------------------------------------------------------
+      
+    /**
+     * Creates a clone of this keyword.
+     * @param dirName the name of the directive to create.
+     * @return the new directive.
+     * @throws CloneNotSupportedException 
+     */
+    @Override
+  	public Keyword clone() throws CloneNotSupportedException 
+  	{
+    	DirectiveData dd = super.clone();
+    	Keyword k = new Keyword();
+    	k.setReference(dd.getReference());
+    	k.setType(dd.getType());
+    	k.setValue(dd.getValue());
+    	k.setTaskParams(dd.getTaskParams());
+    	k.isLoud = isLoud;
+  		return k;
+  	}
 
 //-----------------------------------------------------------------------------
  

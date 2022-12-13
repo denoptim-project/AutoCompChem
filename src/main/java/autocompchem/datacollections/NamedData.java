@@ -511,7 +511,10 @@ public class NamedData implements Cloneable
         	break;
         	
         default:
-            cVal = value.toString();
+        	if (value==null)
+        		cVal = null;
+        	else
+        		cVal = value.toString();
             break;
         }
     	NamedData nd = new NamedData(this.getReference(),type, cVal);

@@ -6,6 +6,5 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem2
 INPUTGEOMETRIESFILE: ../t92-mol.sdf
-MULTIGEOMNWCHEM: first_G second_G
-USESAMETAGSFORMULTIGEOM: the value doesn't have any effect
+MULTIGEOMMODE: path
 JOBDETAILSFILE: ../t92-jobDetails.json

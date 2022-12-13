@@ -60,7 +60,7 @@ import autocompchem.worker.WorkerFactory;
  * @author Marco Foscato
  */
 
-public class Directive implements IDirectiveComponent
+public class Directive implements IDirectiveComponent, Cloneable
 {
     /**
      * Directive name.
@@ -81,11 +81,6 @@ public class Directive implements IDirectiveComponent
      * Data attached directly to this directive.
      */
     private ArrayList<DirectiveData> dirData;
-
-    /**
-     * Parameters defining task embedded in this directive.
-     */
-    private ParameterStorage accTaskParams;
 
 
 //-----------------------------------------------------------------------------
@@ -150,6 +145,17 @@ public class Directive implements IDirectiveComponent
     
 //-----------------------------------------------------------------------------
     
+    /**
+     * Sets the name of this directive.
+     * @param name the new name.
+     */
+	private void setName(String name) 
+	{
+		this.name = name;
+	}
+ 
+//-----------------------------------------------------------------------------
+
     /**
      * @return the kind of directive component this is.
      */
@@ -431,8 +437,8 @@ public class Directive implements IDirectiveComponent
      * data of the existing directive. 
      */
 
-    public void setSubDirective(Directive dir, boolean owKeys, 
-                                              boolean owSubDirs, boolean owData)
+    public void setSubDirective(Directive dir, boolean owKeys,
+    		boolean owSubDirs, boolean owData)
     {
         Directive oldDir = getSubDirective(dir.getName());
         if (oldDir == null)
@@ -529,10 +535,7 @@ public class Directive implements IDirectiveComponent
      */
     
     public boolean hasACCTask()
-    {
-    	if (accTaskParams!=null)
-    		return true;
-    	
+    {	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
@@ -560,30 +563,32 @@ public class Directive implements IDirectiveComponent
 //-----------------------------------------------------------------------------
     
     /**
-     * Performs and ACC tasks that are defined within this directive. Such
-     * tasks are typically dependent on a specific atom container, and, by
-     * running this method, this job becomes molecule-specific. Moreover,
+     * Performs ACC tasks that are defined within this directive. Such
+     * tasks are typically dependent on the chemical system at hand, so, by
+     * running this method, this job becomes system-specific. Moreover,
      * ACC may 
-     * modify the content of this directive (or any of its components: 
-     * keywords, directive data, and sub directives) accordingly to the  
+     * modify the content of any of its components, i.e., 
+     * keywords, directive data, accordingly to the  
      * needs of the given tasks.
      * Tasks are performed serially, one after the other, according to this
      * ordering scheme:
      * <ol>
-     * <li>task found in this directive</li>
-     * <li>tasks found in Keywords,</li>
-     * <li>tasks found in DirectiveData,</li>
-     * <li>tasks found in sub Directives,</li>
+     * <li>tasks found in {@link Keyword}s,</li>
+     * <li>tasks found in {@link DirectiveData}s,</li>
+     * <li>recursion into embedded (sub){@link Directive}s,</li>
      * </ol>
      * In each case, when multiple components are present, the ordering of 
      * components is respected when searching and performing tasks.
-     * @param mols the molecular representation given to mol-dependent tasks.
+     * @param mols the chemical system/s given to any system-dependent tasks.
      * @param job the job that called this method.
      */
     
     public void performACCTasks(List<IAtomContainer> mols, Job job)
     {
-    	//TODO-gg performACCTask(mol, accTaskParams, this, job);
+    	// For now we do not see any use case for tasks in the directive itself.
+    	// This because the directive holds no data/value by itself, and thus
+    	// any task aiming to add/modify data/values should belong to a
+    	// component that implements IValueContainer
     	
     	for (Keyword k : keywords)
     	{
@@ -804,11 +809,12 @@ public class Directive implements IDirectiveComponent
     /**
      * Performs the task that is specified in the given set of parameters. Note
      * the given parameters are all meant to pertain a single task.
-     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param mols the molecular representation used in system-dependent tasks.
      * @param params the collection of parameters defining one single task 
      * (though this can certainly require more than one parameter).
-     * @param dirComp the directive component that required to perform the task.
-     * @param job the job containing the directive component
+     * @param dirComp the directive component that required performing the task.
+     * @param job the job containing the directive component that required 
+     * performing the task.
      */
     
     private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
@@ -870,10 +876,7 @@ public class Directive implements IDirectiveComponent
             }
             
             case ChemSoftConstants.PARGEOMETRY:
-            {
-            	//TODO verbosity/logging
-                System.out.println("ACC adds geometry to job");
-                
+            {   
             	CoordsType coordsType = CoordsType.XYZ;
             	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
             	{
@@ -884,19 +887,25 @@ public class Directive implements IDirectiveComponent
             		coordsType = CoordsType.valueOf(
             			value.trim().toUpperCase());
             	}
+            	int geometryId = 0;
+            	if (params.contains(ChemSoftConstants.PARMULTIGEOMID))
+            	{
+            		geometryId = Integer.parseInt(params.getParameter(
+            				ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
+            	}
             	
             	switch (coordsType)
             	{    
                 	case ZMAT:
                 	{
-                		//TODO
+                		//TODO-gg
                 		Terminator.withMsgAndStatus("ERROR! handling of "
                 				+ "internal coordinates not implemented "
                 				+ "yet... sorry!",-1);
                 		
                 		ZMatrix zmat = new ZMatrix();
                 		
-                		//TODO: get the actual zmat for mol
+                		//TODO-gg: get the actual zmat for mol
                 		
                 		((IValueContainer) dirComp).setValue(zmat);
                 		break;
@@ -914,32 +923,30 @@ public class Directive implements IDirectiveComponent
                 	case XYZ:
                 	default:
                 	{
-                		// WARNING: uses only the first molecule
-                		IAtomContainer mol = mols.get(0);
+                		IAtomContainer mol = mols.get(geometryId);
                 		((IValueContainer) dirComp).setValue(mol);
                 		
                 		//TODO-gg we should not be doing this here!!!
                 		// charge and spin are managed by the chemsoftinputwriter
-                        if (MolecularUtils.hasProperty(mol, 
+                        /*
+                		if (MolecularUtils.hasProperty(mol, 
                         		ChemSoftConstants.PARCHARGE))
                         {
                             String charge = mol.getProperty(
-                            		ChemSoftConstants.PARCHARGE)
-                            		.toString();
-                            setKeyword(new Keyword(
-                            		ChemSoftConstants.PARCHARGE,
+                            		ChemSoftConstants.PARCHARGE).toString();
+                            setKeyword(new Keyword(ChemSoftConstants.PARCHARGE,
                             		false, charge));
                         }
                         if (MolecularUtils.hasProperty(mol, 
                         		ChemSoftConstants.PARSPINMULT))
                         {
                             String spinMult = mol.getProperty(
-                            		ChemSoftConstants.PARSPINMULT)
-                            		.toString();
+                            		ChemSoftConstants.PARSPINMULT).toString();
                             setKeyword(new Keyword(
-                            		ChemSoftConstants.PARSPINMULT,
-                            		false, spinMult));
+                            		ChemSoftConstants.PARSPINMULT, false, 
+                            		spinMult));
                         }
+                        */
                 		break;
                 	}
             	}
@@ -1037,7 +1044,7 @@ public class Directive implements IDirectiveComponent
             
             case ChemSoftConstants.PARADDINTCOORDS:
             {
-            	//TODO
+            	//TODO: remove and use the add_geometry task instead
             	Terminator.withMsgAndStatus("ERROR! handling of "
         				+ "redundant internal coordinates not implemented "
         				+ "yet... sorry!",-1);
@@ -1168,24 +1175,39 @@ public class Directive implements IDirectiveComponent
             
             if (dir.dirData!=null && dir.dirData.size()>0)
                 jsonObject.add("dirData", context.serialize(dir.dirData));
-
-            if (dir.accTaskParams!=null)
-                jsonObject.add("accTaskParams", 
-                		context.serialize(dir.accTaskParams));
            
             return jsonObject;
         }
     }
-    
-//-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+    
     /**
-     * Sets the parameters defining the ACC task embedded in this directive.
-     * @param params
+     * Creates a new directive that contains all components of this one (to the
+     * extent the components' content is cloneable) and is named as specified
+     * in the given argument.
+     * @param dirName the name of the directive to create.
+     * @return the new directive.
+     * @throws CloneNotSupportedException 
      */
-	public void setTaskParams(ParameterStorage params) 
+    @Override
+	public Directive clone() throws CloneNotSupportedException 
 	{
-		accTaskParams=params;
+		Directive newDir = new Directive(name);
+
+		for (Keyword k : keywords)
+		{
+			newDir.addKeyword(k.clone());
+		}
+		for (DirectiveData dd : dirData)
+		{
+			newDir.addDirectiveData(dd.clone());
+		}
+		for (Directive d : subDirectives)
+		{
+			newDir.addSubDirective(d.clone());
+		}
+		return newDir;
 	}
  
 //-----------------------------------------------------------------------------

@@ -6,23 +6,25 @@ echo NOT Passes ERROR 1
 exit -1
 fi
 
-n=0;n=$(grep -c "GEOMETRY first_G" t91-mol.nw) 
+n=0;n=$(grep -c -i "GEOMETRY first_G" t91-mol.nw) 
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 
-n=0;n=$(grep -c "GEOMETRY second_G" t91-mol.nw)
+n=0;n=$(grep -c -i "GEOMETRY second_G" t91-mol.nw)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c "SYMMETRY * S6" t91-mol.nw)
+n=0;n=$(grep -c -i "SYMMETRY * S6" t91-mol.nw)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "SYMMETRY * c1" t91-mol.nw)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c " H94 *1\.9544.* -0\.6179.* -4\.6837" t91-mol.nw)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+# Is it really needed to have different tags on the atoms?
+# This seems to be obsolete requirement.
+#n=0;n=$(grep -c -i " H94 *1\.9544.* -0\.6179.* -4\.6837" t91-mol.nw)
+#if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
-n=0;n=$(grep -c " ANGLE .* constant" t91-mol.nw)
-if [ $n -ne 4 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+n=0;n=$(grep -c -i " ANGLE .* constant" t91-mol.nw)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
 n=0;n=$(grep -c "library * lanl2dz_ecp" t91-mol.nw)
 if [ $n -ne 6 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
@@ -31,19 +33,25 @@ n=0;n=$(grep -i -c "Ru nelec 28" t91-mol.nw)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
 
 n=0;n=$(grep -c " 4\.2330000000E+03 *1\.2200E-03" t91-mol.nw)
-if [ $n -ne 10 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "Cl.* nelec 10" t91-mol.nw)
-if [ $n -ne 5 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "CHARGE * -3" t91-mol.nw)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 12a ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "CHARGE * -2" t91-mol.nw)
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+if [ $n -ne 0 ] ; then echo NOT Passes ERROR 12b ; exit -1 ; fi
 
-n=0;n=$(grep -i -c "DFT mult 2" t91-mol.nw)
+n=0;n=$(grep -i -c "DFT mult 3" t91-mol.nw)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
 
 n=0;n=$(grep -i -c "task" t91-mol.nw)
 if [ $n -ne 3 ] ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "TRIPLET" t91-mol.nw)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 15 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' "t91.log"
 if [ "$?" == 0 ] ; then

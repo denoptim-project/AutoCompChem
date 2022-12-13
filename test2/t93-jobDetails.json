@@ -9,8 +9,7 @@
           "value": "first_G second_G"
         },
         {
-          "reference": "USESAMETAGSFORMULTIGEOM",
-          "value": "the value doesn\u0027t have any effect"
+          "reference": "USESAMETAGSFORMULTIGEOM"
         }
       ],
       "directives": [

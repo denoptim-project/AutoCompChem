@@ -35,8 +35,10 @@ import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
@@ -478,6 +480,10 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
     		for (Job stepJob : ccj.getSteps())
     		{
     			CompChemJob ccjStep = (CompChemJob)stepJob;
+    			if (isPhythonStep(ccjStep))
+    			{
+    				continue;
+    			}
     			ccjStep.setKeywordIfUnset(NWChemConstants.CHARGEDIR, 
     				"value", false, charge);
     		}
@@ -485,6 +491,18 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
     		ccj.setKeywordIfUnset(NWChemConstants.CHARGEDIR, 
     				"value", false, charge);
     	}
+	}
+	
+//------------------------------------------------------------------------------
+
+	private boolean isPhythonStep(CompChemJob ccjStep) 
+	{
+		return ccjStep.getDirective(NWChemConstants.TASKDIR)!=null &&
+				ccjStep.getDirective(NWChemConstants.TASKDIR).getKeyword(
+				NWChemConstants.THEORYKW)!=null &&
+						ccjStep.getDirective(NWChemConstants.TASKDIR)
+						.getKeyword(NWChemConstants.THEORYKW)
+						.getValueAsString().toUpperCase().equals("PYTHON");
 	}
 
 //------------------------------------------------------------------------------
@@ -602,12 +620,146 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * In NWChem jobs we exploit the ACC task resulting from 
-	 * {@link ChemSoftConstants.PARGEOMETRY}.
+	 * This method will add one or more geometries if there is no 
+	 * {@value ChemSoftConstants#PARGEOMETRY)} task in the innermost and first
+	 * {@value NWChemConstants#GEOMDIR} directive, and there is no 
+	 * {@value NWChemConstants#RESTARTDIR} directive,
+	 * i.e., if the seems to be no other specification of the geometry.
 	 */
 	@Override
 	protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs) 
-	{}
+	{
+		CompChemJob innermostJob = (CompChemJob) ccj.getInnermostFirstStep();
+		if (innermostJob.getDirective(NWChemConstants.RESTARTDIR)!=null)
+			return;
+		
+		Directive origiGeomDir = innermostJob.getDirective(
+				NWChemConstants.GEOMDIR);
+		if (origiGeomDir==null)
+		{
+			origiGeomDir = new Directive(NWChemConstants.GEOMDIR);
+			innermostJob.addDirective(origiGeomDir);
+		}
+		boolean removeOriginalDir = false;
+		boolean hasAddGeometryTask = false;
+		for (int id=0; id<iacs.size(); id++)
+		{
+			Directive geomDir = null;
+			if (iacs.size()==1)
+			{
+				geomDir = origiGeomDir;
+			} else {
+				removeOriginalDir = true;
+				try {
+					geomDir = origiGeomDir.clone();
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Unable to clone "
+							+ "directive: some value in not cloneable!", -1);
+				}
+			}
+	
+			DirectiveData dd = geomDir.getDirectiveData(NWChemConstants.GEOMDIR);
+			if (dd==null)
+			{
+				dd = new DirectiveData();
+				dd.setReference(NWChemConstants.GEOMDIR);
+				geomDir.addDirectiveData(dd);
+			}
+			
+			ParameterStorage taskParams = dd.getTaskParams();
+			hasAddGeometryTask = taskParams!=null 
+					&& taskParams.contains(ChemSoftConstants.JDACCTASK)
+					&& taskParams.getParameterValue(ChemSoftConstants.JDACCTASK)
+						.equals(ChemSoftConstants.PARGEOMETRY);
+			if (dd.getValue()==null && !hasAddGeometryTask)
+			{
+				taskParams = new ParameterStorage();
+				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
+						ChemSoftConstants.PARGEOMETRY);
+				taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
+				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, id);
+				dd.setTaskParams(taskParams);
+				
+				if (geomNames.size()==iacs.size())
+				{
+					geomDir.addKeyword(new Keyword(NWChemConstants.GEOMNAMEKW, 
+							false, geomNames.get(id)));
+				} else {
+					geomDir.addKeyword(new Keyword(NWChemConstants.GEOMNAMEKW, 
+							false, MolecularUtils.getNameOrID(iacs.get(id))));
+				}
+				innermostJob.addDirective(geomDir);
+			}
+		}
+		if (removeOriginalDir)
+		{
+			// It is executed only if we had more than one geometry AND did
+			// not have add_geometry task
+			innermostJob.removeDirective(origiGeomDir);
+		}
+		
+		if (hasAddGeometryTask)
+			return;
+		
+		// Redo any multiplication of directive and specification of geometry
+		// name in each step that follow the initial one.
+		
+		CompChemJob master = (CompChemJob) innermostJob.getParent();
+		for (int iStep=1; iStep<master.getNumberOfSteps(); iStep++)
+		{
+			CompChemJob stepJob = (CompChemJob) master.getStep(iStep);
+			if (isPhythonStep(stepJob))
+			{
+				continue;
+			}
+			Directive origiGeomDirStep = stepJob.getDirective(
+					NWChemConstants.GEOMDIR);
+			if (origiGeomDirStep==null)
+			{
+				origiGeomDirStep = new Directive(NWChemConstants.GEOMDIR);
+				stepJob.addDirective(origiGeomDirStep);
+			}
+			removeOriginalDir = false;
+			for (int id=0; id<iacs.size(); id++)
+			{
+				Directive geomDirStep = null;
+				if (iacs.size()==1)
+				{
+					geomDirStep = origiGeomDirStep;
+				} else {
+					removeOriginalDir = true;
+					try {
+						geomDirStep = origiGeomDirStep.clone();
+					} catch (CloneNotSupportedException e) {
+						e.printStackTrace();
+						Terminator.withMsgAndStatus("ERROR! Unable to clone "
+								+ "directive: some value in not cloneable!",-1);
+					}
+				}
+				
+				if (geomNames.size()==iacs.size())
+				{
+					geomDirStep.addKeyword(new Keyword(
+							NWChemConstants.GEOMNAMEKW, false, 
+							geomNames.get(id)));
+				} else {
+					geomDirStep.addKeyword(new Keyword(
+							NWChemConstants.GEOMNAMEKW, false, 
+							MolecularUtils.getNameOrID(iacs.get(id))));
+				}
+				
+				if (removeOriginalDir)
+				{
+					stepJob.addDirective(geomDirStep);
+				}
+			}
+			if (removeOriginalDir)
+			{
+				stepJob.removeDirective(origiGeomDirStep);
+			}
+		}
+	}
 
 //------------------------------------------------------------------------------
 

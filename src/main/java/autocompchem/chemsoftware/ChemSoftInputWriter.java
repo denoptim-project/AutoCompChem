@@ -65,18 +65,24 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Definition of how to use multiple geometries
      */
-    private enum MultiGeomMode {SingleGeom,ReactProd,ReactTSProd,Path};
+    private enum MultiGeomMode {INDEPENDENT, PATH};
     
     /**
      * Chosen mode of handling multiple geometries.
      */
-    private MultiGeomMode multiGeomMode = MultiGeomMode.SingleGeom;
+    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENT;
 
+    
+    /**
+     * Flaq requesting to overwrite geometry names
+     */
+    private boolean overwriteGeomNames = false;
+    
     /**
      * Geometry names
      */
-    private ArrayList<String> geomNames = new ArrayList<String>(
-                                                     Arrays.asList("geometry"));
+    protected ArrayList<String> geomNames = new ArrayList<String>(
+    		Arrays.asList("geometry"));
 
     /**
      * Input format identifier.
@@ -224,10 +230,34 @@ public abstract class ChemSoftInputWriter extends Worker
 
         if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
         {
-            String value = 
-                    params.getParameter(ChemSoftConstants.PARMULTIGEOMMODE)
-                    .getValueAsString();
-            this.multiGeomMode = MultiGeomMode.valueOf(value);
+            String value = params.getParameter(
+            		ChemSoftConstants.PARMULTIGEOMMODE).getValueAsString();
+            this.multiGeomMode = MultiGeomMode.valueOf(value.toUpperCase());
+        }
+        
+        if (params.contains(ChemSoftConstants.PARGEOMNAMES))
+        {
+            this.overwriteGeomNames = true;
+            this.geomNames.clear();
+            String line = params.getParameter(
+            		ChemSoftConstants.PARGEOMNAMES).getValue().toString();
+            String[] parts = line.trim().split("\\s+");
+            for (int i=0; i<parts.length; i++)
+            {
+                if (this.geomNames.contains(parts[i]))
+                {
+                    Terminator.withMsgAndStatus("ERROR! Geometry name '" 
+                                        + parts[i] + "' is used more than once."
+                                        + " Check line '" + line + "'.",-1);
+                }
+                this.geomNames.add(parts[i]);
+            }
+            if (geomNames.size()!=inpGeom.size())
+            {
+            	Terminator.withMsgAndStatus("ERROR! Found " + inpGeom.size() 
+            		+ " geometries, but " + geomNames.size() + " names. Check "
+            		+ "yout input.",-1); 
+            }
         }
 
         if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
@@ -246,8 +276,9 @@ public abstract class ChemSoftInputWriter extends Worker
             	try {
 					this.ccJob = CompChemJob.fromJSONFile(jdFile);
 				} catch (IOException e) {
-					// TODO-gg Auto-generated catch block
 					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Could not construct "
+							+ "job from file '" + jdFile + "'.",-1); 
 				}	
             } else {
             	this.ccJob = new CompChemJob(jdFile);
@@ -338,28 +369,63 @@ public abstract class ChemSoftInputWriter extends Worker
     		produceSingleJobInputFiles(inpGeom, outFileName, outFileNameRoot);
     	} else {
     		
-            // TODO: what about files other than the .inp?
-            // For instance, the XYZ file for neb-ts jobs.
-            // In some cases (i.e., Orca) we can just wrote their filename 
-    		// in input file, but in other cases we might need to give separate 
-    		// geom files
-        
-	        for (int molId = 0; molId<inpGeom.size(); molId++)
-	        {
-	            IAtomContainer mol = inpGeom.get(molId);
-	            
+    		switch (multiGeomMode)
+    		{
+			case INDEPENDENT:
+				// We simply repeat the same operation for each geometry.
+				for (int molId = 0; molId<inpGeom.size(); molId++)
+		        {
+		            IAtomContainer mol = inpGeom.get(molId);
+		            
+		            String fileRootName = outFileNameRoot + "-" + molId;
+		            if (overwriteGeomNames)
+		            {
+		            	String geomName = geomNames.get(molId);
+		            	mol.setTitle(geomName);
+		            	fileRootName = outFileNameRoot + "-" + geomName;
+		            }
+		            
+		            if (verbosity > 0)
+		            {
+		                System.out.println(" Writing input file for molecule #" 
+		                        + (molId+1) + ": " 
+		                		+ MolecularUtils.getNameOrID(mol));
+		            }
+		            
+		            List<IAtomContainer> set = new ArrayList<IAtomContainer>();
+		            set.add(mol);
+		            produceSingleJobInputFiles(set, fileRootName+inpExtrension,
+		            		fileRootName);
+		        }
+				break;
+				
+			case PATH:
+				// All geometries are included in a single input
 	            if (verbosity > 0)
 	            {
-	                System.out.println(" Writing input file for molecule #" 
-	                        + (molId+1) + ": " 
-	                		+ MolecularUtils.getNameOrID(mol));
+	                System.out.println(" Writing input file for " 
+	                		+ inpGeom.size() + " geometries");
 	            }
-	            List<IAtomContainer> set = new ArrayList<IAtomContainer>();
-	            set.add(mol);
-	            produceSingleJobInputFiles(set, 
-	            		outFileNameRoot + "-" + molId + inpExtrension, 
-	            		outFileNameRoot + "-" + molId);
-	        }
+	            
+				if (overwriteGeomNames)
+	            {
+					for (int molId = 0; molId<inpGeom.size(); molId++)
+			        {
+		            	String geomName = geomNames.get(molId);
+		            	inpGeom.get(molId).setTitle(geomName);
+			        }
+	            }
+	            
+	            produceSingleJobInputFiles(inpGeom, outFileNameRoot 
+	            		+ inpExtrension, outFileNameRoot);
+				break;
+				
+			default:
+				Terminator.withMsgAndStatus("ERROR! Multigeometry "
+						+ "mode '" + multiGeomMode + "' is not implemented. "
+						+ "Please, contact the authors.", -1);
+				break;
+    		}
     	}
     	
         if (exposedOutputCollector != null)
@@ -379,18 +445,22 @@ public abstract class ChemSoftInputWriter extends Worker
      * Prepares the set of input files of a single job, which may or may not 
      * consist of multiple steps within the comp.chem. software.
      * @param mols the set of geometries that pertain this single job. Note that
-     * in the vast majority of cases there will be only one geometry. However,
-     * some kinds of jobs do use multiple input geometries within the same job
+     * in the vast majority of cases there will be only one geometry. This
+     * corresponds to multi-geometry mode {@value MultiGeomMode#INDEPENDENT}.
+     * However, jobs do use multiple input geometries within the same job
      * (e.g., transition state searches that start from the geometries of the
-     * reactant and product). Changes in the number of electrons or in spin 
-     * multiplicity are not supported (yet).
+     * reactant and product). This is the case of multi-geometry mode 
+     * {@value MultiGeomMode#PATH}.
+     * <br>
+     * <b>WARNING</b>: Changes in the number of electrons or in spin 
+     * multiplicity among the geometries are not supported (yet).
      * @param outFileName the pathname of the job's main input file.
      * @param outFileNameRoot the root of the 
      * pathname to any job input file that will be
      * produced. Extensions and suffixed are defined by software specific 
      * constants.
      */
-    public void produceSingleJobInputFiles(List<IAtomContainer> mols, 
+    private void produceSingleJobInputFiles(List<IAtomContainer> mols, 
     		String outFileName,	String outFileNameRoot)
     {
     	// We customize a copy of the master job
@@ -492,10 +562,12 @@ public abstract class ChemSoftInputWriter extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * Sets a definition of the chemical system/s to
-     * work with. Note we here only consider the atoms and their coordinates,
-     * not the charge of the spin multiplicity, for which there are dedicated 
-     * methods.
+     * Sets the definitions of the chemical system/s is needed. This method
+     * handles multiple geometries according to the settings given upon 
+     * initializing this instance.
+     * Note that we here only consider the definition of the atoms and their 
+     * position, not the charge of the spin multiplicity, for which there are 
+     * dedicated methods.
      * @param ccj the job to customize.
      * @param iacs the atom containers to translate into one or more 
      * chemical system representation suitable for the comp.chem. software.
