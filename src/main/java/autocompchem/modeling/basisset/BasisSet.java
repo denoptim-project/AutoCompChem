@@ -194,6 +194,26 @@ public class BasisSet
         }
         return res;
     }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o)
+    {
+    	if (!(o instanceof BasisSet))
+    		return false;
+    	BasisSet other = (BasisSet) o;
+    	
+    	if (this.centerBSs.size()!=other.centerBSs.size())
+    		return false;
+    	
+    	for (int i=0; i<centerBSs.size(); i++)
+    	{
+    		if (!this.centerBSs.get(i).equals(other.centerBSs.get(i)))
+    			return false;
+    	}
+    	return true;
+    }
 
 //------------------------------------------------------------------------------
 

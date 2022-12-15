@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import autocompchem.utils.NumberUtils;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -73,13 +75,12 @@ public class Primitive
      */
 
     public Primitive()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a Primitive with defintition of all the fields
+     * Constructor for a Primitive with definition of all the fields
      * @param type the string-representation of the type of primitive
      * @param angMmnt the angular momentum
      * @param coeff the coefficient 
@@ -151,13 +152,25 @@ public class Primitive
 //------------------------------------------------------------------------------
  
     /**
-     * Sets the coefficient
-     * @param c the coefficient
+     * Sets the coefficient.
+     * @param c the coefficient.
      */
 
     public void setCoefficient(double c)
     {
         this.coefficient = new ArrayList<Double>(Arrays.asList(c));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the coefficients.
+     * @param c the coefficient.
+     */
+
+    public void setCoefficients(List<Double> coefs)
+    {
+        this.coefficient = coefs;
     }
     
 //------------------------------------------------------------------------------
@@ -280,7 +293,33 @@ public class Primitive
         return new Primitive(type, angMmnt, coefficient, exponent, precCoeff,
                                                                        precExp);
      }
+     
+//------------------------------------------------------------------------------
 
+     @Override
+     public boolean equals(Object o)
+     {
+    	 if (!(o instanceof Primitive))
+    		 return false;
+    	 Primitive other = (Primitive) o;
+    	 
+    	 if (this.coefficient.size() != other.coefficient.size())
+    		 return false;
+    				 
+		 for (int i=0; i<this.coefficient.size(); i++)
+		 {
+			 if (!NumberUtils.closeEnough(this.coefficient.get(i), 
+					 other.coefficient.get(i)))
+				 return false;
+		 }
+    	 
+    	 return this.type.equals(other.type) 
+    			 && this.angMmnt == other.angMmnt 
+    			 && this.exponent == other.exponent 
+    			 && this.precCoeff == other.precCoeff
+    			 && this.precExp == other.precExp;
+     }
+     
 //------------------------------------------------------------------------------
 
     /**

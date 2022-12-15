@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import autocompchem.constants.ACCConstants;
+
 /**
  * Toolbox for numbers
  * 
@@ -278,6 +280,35 @@ public class NumberUtils
     	chosenIDs.removeAll(ids);
     	return chosenIDs;
     } 
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Utility to compare two floating point values against the default
+     * threshold.
+     * @param v1 a value to compare.
+     * @param v2 another value to compare.
+     * @param thrld the threshold.
+     * @return
+     */
+    public static boolean closeEnough(Double v1, Double v2)
+    {
+    	return closeEnough(v1, v2, ACCConstants.DOUBLEPRECISION);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Utility to compare two floating point values against a threshold.
+     * @param v1 a value to compare.
+     * @param v2 another value to compare.
+     * @param thrld the threshold.
+     * @return
+     */
+    public static boolean closeEnough(Double v1, Double v2, Double thrld)
+    {
+    	return Math.abs(v1-v2) < thrld;
+    }
     
 //------------------------------------------------------------------------------     
 }

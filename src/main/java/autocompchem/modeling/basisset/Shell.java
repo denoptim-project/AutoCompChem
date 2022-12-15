@@ -36,28 +36,27 @@ public class Shell
     /**
      * Shell type (S, P, D, SP, SPD, F, G, ...)
      */
-    private String type = "";
+    protected String type = "";
 
     /**
      * List of primitive functions
      */
-    private List<Primitive> primitives = new ArrayList<Primitive>();
+    protected List<Primitive> primitives = new ArrayList<Primitive>();
 
     /**
      * Scale factor
      */
-    private double scaleFact = 1.0;
+    protected double scaleFact = 1.0;
 
-
+	
 //------------------------------------------------------------------------------
 
-    /**
+	/**
      * Constructor for an empty Shell
      */
 
     public Shell()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -97,12 +96,33 @@ public class Shell
     {
         primitives.add(p);
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the primitives in this shell.
+     */
+	public List<Primitive> getPrimitives() 
+	{
+		return primitives;
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Overwrites the list of primitives with the given list.
+	 * @param primitives the new primitives.
+	 */
+	public void setPrimitives(List<Primitive> primitives) 
+	{
+		this.primitives = primitives;
+	}
 
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the type of this shell
-     * @return the type
+     * Returns the type of this shell.
+     * @return the type.
      */
 
     public String getType()
@@ -113,8 +133,41 @@ public class Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the number of primitives
-     * @return the number of primitives
+     * Sets the type of this shell.
+     */
+
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the scaling factor of this shell.
+     */
+    public double getScaleFact() 
+    {
+		return scaleFact;
+	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the scaling factor of this shell.
+     * @param scaleFact the scaling factor to use.
+     */
+	public void setScaleFact(double scaleFact) 
+	{
+		this.scaleFact = scaleFact;
+	}
+
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the number of primitives.
+     * @return the number of primitives.
      */
 
     public int getSize()
@@ -125,20 +178,42 @@ public class Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Deep-clone this shell
-     * @return a new object with the same content as this one
+     * Deep-clone this shell.
+     * @return a new object with the same content as this one.
      */
 
      public Shell clone()
      {
-        Shell newShell = new Shell(type,scaleFact);
+        Shell newShell = new Shell(type, scaleFact);
         for (Primitive p : primitives)
         {
             newShell.add(p.clone());
         }
         return newShell;
      }
-
+     
+//------------------------------------------------------------------------------
+     
+     @Override
+     public boolean equals(Object o)
+     {
+    	 if (!(o instanceof Shell))
+    		 return false;
+    	 Shell other = (Shell) o;
+    	 
+    	 if (this.primitives.size() != other.primitives.size())
+    		 return false;
+    				 
+		 for (int i=0; i<this.primitives.size() ; i++)
+		 {
+			 if (!this.primitives.get(i).equals(other.primitives.get(i)))
+				 return false;
+		 }
+    	 
+    	 return this.type.equals(other.type) 
+    			 && this.scaleFact == other.scaleFact;
+     }
+     
 //------------------------------------------------------------------------------
 
     /**

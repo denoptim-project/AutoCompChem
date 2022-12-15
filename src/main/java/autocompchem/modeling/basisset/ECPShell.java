@@ -30,18 +30,8 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class ECPShell
+public class ECPShell extends Shell
 {
-    /**
-     * ECPShell type 
-     */
-    private String type = "";
-
-    /**
-     * List of primitive functions
-     */
-    private List<Primitive> primitives = new ArrayList<Primitive>();
-
 
 //------------------------------------------------------------------------------
 
@@ -50,7 +40,9 @@ public class ECPShell
      */
 
     public ECPShell()
-    {}
+    {
+    	super();
+    }
 
 //------------------------------------------------------------------------------
 
@@ -61,43 +53,7 @@ public class ECPShell
 
     public ECPShell(String type)
     {
-        this.type = type;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Add a primitive function
-     * @param p the primitive function to be added
-     */
-
-    public void add(Primitive p)
-    {
-        primitives.add(p);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return the type of this ECPShell
-     * @return the type of this ECPShell
-     */
-
-    public String getType()
-    {
-        return type;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns the number of primitives
-     * @return the number of primitives
-     */
-
-    public int getSize()
-    {
-        return primitives.size();
+    	super(type);
     }
 
 //------------------------------------------------------------------------------
@@ -109,12 +65,20 @@ public class ECPShell
 
      public ECPShell clone()
      {
-        ECPShell newShell = new ECPShell(type);
-        for (Primitive p : primitives)
-        {
-            newShell.add(p.clone());
-        }
+        ECPShell newShell = (ECPShell) super.clone();
         return newShell;
+     }
+     
+//------------------------------------------------------------------------------
+     
+     @Override
+     public boolean equals(Object o)
+     {
+    	 if (!(o instanceof ECPShell))
+    		 return false;
+    	 ECPShell other = (ECPShell) o;
+    	 
+    	 return super.equals(other);
      }
 
 //------------------------------------------------------------------------------

@@ -93,9 +93,10 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
     
     /**
-     * Constructor for a CenterBasisSet and define the ID of the center
+     * Constructor for a CenterBasisSet and define the elemental symbol of the
+     * ceter. This is usually used for element-specific basis sets, so the
+     * "center" is intended to be abstract.
      * @param atmId the index of the center.
-     * @param elSymb the elemental symbol.
      */
 
     public CenterBasisSet(String elSymb)
@@ -106,7 +107,7 @@ public class CenterBasisSet
     
 //------------------------------------------------------------------------------
 
-    /**
+	/**
      * Constructor for a CenterBasisSet and define the ID of the center
      * @param atmId the index of the center.
      * @param elSymb the elemental symbol.
@@ -198,6 +199,27 @@ public class CenterBasisSet
             this.setElectronsInECP(other.getElectronsInECP());
         }
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the identifier of the centers this basis set applies to.
+     */
+    public String getAtmId() 
+    {
+		return atmId;
+	}
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the identifier of the centers this basis set applies to.
+     * @param atmId the identifier of the centers this basis set applies to.
+     */
+	public void setAtmId(String atmId) 
+	{
+		this.atmId = atmId;
+	}
 
 //------------------------------------------------------------------------------
 
@@ -209,42 +231,6 @@ public class CenterBasisSet
     {
         this.element = el;
     }   
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the type of the ECP
-     * @param type the new type of ECP
-     */
-
-    public void setECPType(String type)
-    {
-        this.ecpType = type;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the maximum angular momentum for ECP 
-     * @param maxl the maximum angular momentum
-     */
-
-    public void setECPMaxAngMom(int maxl)
-    {
-        this.maxl = maxl;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the number of core electrons replaced by the potential
-     * @param ne the number of core electrons
-     */
-
-    public void setElectronsInECP(int ne)
-    {
-        this.ne = ne;
-    }
 
 //------------------------------------------------------------------------------
 
@@ -265,10 +251,35 @@ public class CenterBasisSet
      * @return the index of the center or null if not defined.
      */
 
+    public void setCenterIndex(int id)
+    {
+        this.id = id;
+    } 
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the index of the center.
+     * @return the index of the center or null if not defined.
+     */
+
     public Integer getCenterIndex()
     {
         return id;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Set the type of the ECP
+     * @param type the new type of ECP
+     */
+
+    public void setECPType(String type)
+    {
+        this.ecpType = type;
+    }
+    
 
 //------------------------------------------------------------------------------
 
@@ -285,6 +296,18 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
 
     /**
+     * Set the maximum angular momentum for ECP 
+     * @param maxl the maximum angular momentum
+     */
+
+    public void setECPMaxAngMom(int maxl)
+    {
+        this.maxl = maxl;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the maximum angular momentun for ECP
      * @return the maximum angular momentum in the ECP
      */
@@ -292,6 +315,18 @@ public class CenterBasisSet
     public int getECPMaxAngMom()
     {
         return maxl;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Set the number of core electrons replaced by the potential
+     * @param ne the number of core electrons
+     */
+
+    public void setElectronsInECP(int ne)
+    {
+        this.ne = ne;
     }
 
 //------------------------------------------------------------------------------
@@ -343,6 +378,56 @@ public class CenterBasisSet
     public List<ECPShell> getECPShells()
     {
         return ecps;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o)
+    {
+    	if (!(o instanceof CenterBasisSet))
+    		return false;
+    	CenterBasisSet other = (CenterBasisSet) o;
+    	
+    	if (!this.atmId.equals(other.atmId))
+    		return false;
+    	if (this.id!=null && other.id!=null && this.id!=other.id)
+    		return false;
+    	if (this.element!=null && other.element!=null 
+    			&& !this.element.equals(other.element))
+    		return false;
+    	if (!this.ecpType.equals(other.ecpType))
+    		return false;
+    	if (this.maxl!=other.maxl)
+    		return false;
+    	if (this.ne!=other.ne)
+    		return false;
+    	
+    	if (this.namedComponents.size()!=other.namedComponents.size())
+    		return false;
+    	for (int i=0; i<this.namedComponents.size(); i++)
+    	{
+    		if (!this.namedComponents.get(i).equals(
+    				other.namedComponents.get(i)))
+    			return false;
+    	}
+    	
+    	if (this.shells.size()!=other.shells.size())
+    		return false;
+    	for (int i=0; i<this.shells.size(); i++)
+    	{
+    		if (!this.shells.get(i).equals(other.shells.get(i)))
+    			return false;
+    	}
+
+    	if (this.ecps.size()!=other.ecps.size())
+    		return false;
+    	for (int i=0; i<this.ecps.size(); i++)
+    	{
+    		if (!this.ecps.get(i).equals(other.ecps.get(i)))
+    			return false;
+    	}
+    	return true;
     }
 
 //------------------------------------------------------------------------------
