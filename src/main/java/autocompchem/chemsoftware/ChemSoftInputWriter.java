@@ -30,11 +30,14 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.Gson;
+
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
@@ -99,6 +102,11 @@ public abstract class ChemSoftInputWriter extends Worker
      * Output name (input for comp.chem. software).
      */
     private String outFileName;
+    
+    /**
+     * Flag deciding if we wrote the specific job-details file or not.
+     */
+    private boolean noJonSpecificJDOutput = false;
 
     /**
      * Output job details name.
@@ -309,17 +317,17 @@ public abstract class ChemSoftInputWriter extends Worker
             outFileNameRoot = params.getParameter(
                     ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
             outFileName = outFileNameRoot + inpExtrension;
-            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
+            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
         } else if (params.contains(ChemSoftConstants.PAROUTFILE))
         {
         	outFileName = params.getParameter(
         			ChemSoftConstants.PAROUTFILE).getValueAsString();
             outFileNameRoot = FileUtils.getRootOfFileName(outFileName);
-            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
+            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
         } else {
             outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
             outFileName = outFileNameRoot + inpExtrension;
-            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
+            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
             if (verbosity > 0)
             {
                 System.out.println(" Neither '" 
@@ -329,6 +337,11 @@ public abstract class ChemSoftInputWriter extends Worker
                         + "Root of any output file name set to '" 
                         + outFileNameRoot + "'.");
             }
+        }
+        
+        if (params.contains(ChemSoftConstants.PARNOJSONOUTPUT))
+        {
+        	noJonSpecificJDOutput = true;
         }
 
         if (params.contains(ChemSoftConstants.PARCHARGE))
@@ -513,8 +526,22 @@ public abstract class ChemSoftInputWriter extends Worker
 		setChargeIfUnset(molSpecJob, charge+"", omitCharge);
 		setSpinMultiplicityIfUnset(molSpecJob, spinMult+"", omitSpinMult);
 		
-		// Produce the actual files
-		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), true);
+		// Produce the actual main input file
+		FileUtils.mustNotExist(outFileName);
+		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), false);
+		
+		// Produce a specific job-details file
+		if (noJonSpecificJDOutput)
+		{
+			CompChemJob cleanCCJ = molSpecJob.clone();
+			cleanCCJ.removeACCTasks();
+			FileUtils.mustNotExist(outFileNameRoot 
+					+ ChemSoftConstants.JSONJDEXTENSION);
+			Gson writer = ACCJson.getWriter();
+			IOtools.writeTXTAppend(outFileNameRoot 
+					+ ChemSoftConstants.JSONJDEXTENSION, 
+					writer.toJson(cleanCCJ), true);
+		}
     }
     
 //------------------------------------------------------------------------------

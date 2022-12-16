@@ -37,7 +37,10 @@ import com.google.gson.Gson;
 
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.ACCJson;
+import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainer;
+import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainerTest;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetTest;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
@@ -156,6 +159,7 @@ public class NamedDataTest
     public void testJsonRoundTrip() throws Exception
     {
     	List<NamedData> nds = new ArrayList<NamedData>();
+    	// first add JSON-able types
     	nds.add(new NamedData("String", NamedDataType.STRING, "s"));
     	nds.add(new NamedData("Boolean", NamedDataType.BOOLEAN, false));
     	nds.add(new NamedData("Integer", NamedDataType.INTEGER, 1));
@@ -164,10 +168,13 @@ public class NamedDataTest
     	nds.add(new NamedData("File", NamedDataType.FILE, new File("path")));
     	nds.add(new NamedData("TextBlock", NamedDataType.TEXTBLOCK, 
     			new ArrayList<String>(Arrays.asList("These","are","3 lines"))));
+    	nds.add(new NamedData("BasisSet", NamedDataType.BASISSET, 
+    			BasisSetTest.getTestBasisSet()));
+    	nds.add(new NamedData("IAtomContainer", NamedDataType.IATOMCONTAINER, 
+    			JSONableIAtomContainerTest.getTestIAtomContainer()));
+    	// The following ones are non-JSON-able
     	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 
     			new Situation()));
-    	nds.add(new NamedData("IAtomContainer", NamedDataType.IATOMCONTAINER, 
-    			new AtomContainer()));
     	nds.add(new NamedData("Undefined", NamedDataType.UNDEFINED, null));
 
     	Gson writer = ACCJson.getWriter();
@@ -182,10 +189,22 @@ public class NamedDataTest
         		assertEquals("null", nd2.getValueAsString());
         		assertEquals(null, nd2.getValue());
         	} else {
-	        	jsonStr = writer.toJson(nd2);
-	        	assertEquals(nd.getReference(), nd2.getReference());
-	        	assertEquals(nd.getType(), nd2.getType());
-	        	assertEquals(nd.getValue(), nd2.getValue());
+        		if (NamedDataType.IATOMCONTAINER == nd.getType())
+        		{
+        			// NB: cannot use equals() because we serialize only
+        			// part of the data in the IAtomContainer class.
+        			
+        			JSONableIAtomContainer jiac = new JSONableIAtomContainer(
+        					(IAtomContainer) nd.getValue());
+        			JSONableIAtomContainer jiac2 = new JSONableIAtomContainer(
+        					(IAtomContainer) nd2.getValue());
+        			assertTrue(jiac.equals(jiac2));
+        		} else {
+		        	jsonStr = writer.toJson(nd2);
+		        	assertEquals(nd.getReference(), nd2.getReference());
+		        	assertEquals(nd.getType(), nd2.getType());
+		        	assertEquals(nd.getValue(), nd2.getValue());
+        		}
         	}
     	}
     }

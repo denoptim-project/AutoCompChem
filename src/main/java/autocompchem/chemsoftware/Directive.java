@@ -563,6 +563,27 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
     
     /**
+     * Removes the ACC tasks from any directive's component.
+     */
+    public void removeACCTasks()
+    {
+    	for (Keyword k : keywords)
+    	{
+    		k.removeACCTasks();
+    	}
+    	for (DirectiveData dd : dirData)
+    	{
+    		dd.removeACCTasks();
+    	}
+    	for (Directive d : subDirectives)
+    	{
+    		d.removeACCTasks();
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
      * Performs ACC tasks that are defined within this directive. Such
      * tasks are typically dependent on the chemical system at hand, so, by
      * running this method, this job becomes system-specific. Moreover,
@@ -637,19 +658,6 @@ public class Directive implements IDirectiveComponent, Cloneable
     		// This is effectively a recursion into nested directives
     		d.performACCTasks(mols, job);
     	}
-    }
-
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Parses a line as to find parameters defining an ACC tasks.
-     * @param line to parse.
-     * @return the parameters
-     */
-    
-    public static ParameterStorage getACCTaskParams(String line)
-    {	
-    	return getACCTaskParams(new ArrayList<String>(Arrays.asList(line)),null);
     }
     
 //-----------------------------------------------------------------------------

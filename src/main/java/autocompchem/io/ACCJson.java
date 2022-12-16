@@ -1,5 +1,7 @@
 package autocompchem.io;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -9,6 +11,7 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.DirectiveData.DirectiveDataDeserializer;
+import autocompchem.chemsoftware.DirectiveData.DirectiveDataSerializer;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.chemsoftware.Keyword.KeywordDeserializer;
 import autocompchem.chemsoftware.Keyword.KeywordSerializer;
@@ -18,6 +21,8 @@ import autocompchem.datacollections.NamedData.NamedDataSerializer;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserializer;
 import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
+import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
+import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -74,6 +79,8 @@ public class ACCJson
     	        .registerTypeAdapter(ShellJob.class, new ShellJobSerializer())
     	        .registerTypeAdapter(CompChemJob.class, 
     	        		new CompChemJobSerializer())
+    	        .registerTypeAdapter(DirectiveData.class, 
+    	        		new DirectiveDataSerializer())
     	        .registerTypeAdapter(NamedData.class, 
     	        		new NamedDataSerializer())
     	        .registerTypeAdapter(Keyword.class, 
@@ -81,6 +88,8 @@ public class ACCJson
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
+    	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
+    	        		new IAtomContainerSerializer())
     			.create();
     	
     	reader = new GsonBuilder()
@@ -94,6 +103,8 @@ public class ACCJson
     	        		new KeywordDeserializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageDeserializer())
+    	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
+    	        		new IAtomContainerDeserializer())
     			.create();
     }
 

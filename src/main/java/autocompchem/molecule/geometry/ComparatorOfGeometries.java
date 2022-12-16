@@ -35,6 +35,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.smsd.Isomorphism;
 import org.openscience.cdk.smsd.interfaces.Algorithm;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
@@ -631,8 +632,8 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
                 }
 
                 //calculate the distance in the aligned orientation
-                Point3d pA = MolecularUtils.getCoords3d(qA);
-                Point3d pB = MolecularUtils.getCoords3d(candidateInB);
+                Point3d pA = AtomUtils.getCoords3d(qA);
+                Point3d pB = AtomUtils.getCoords3d(candidateInB);
                 double d = pA.distance(pB);
 
                 sortedCandidates.put(d,candidateInB);
@@ -774,14 +775,14 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         for (int i=0; i<lstA.length; i++)
         {
             //Get first point for both structures
-            Point3d pAi = MolecularUtils.getCoords3d(lstA[i]);
-            Point3d pBi = MolecularUtils.getCoords3d(lstB[i]);
+            Point3d pAi = AtomUtils.getCoords3d(lstA[i]);
+            Point3d pBi = AtomUtils.getCoords3d(lstB[i]);
 
             for (int j=i+1; j<lstA.length; j++)
             {
                 //Get second point for both structures
-                Point3d pAj = MolecularUtils.getCoords3d(lstA[j]);
-                Point3d pBj = MolecularUtils.getCoords3d(lstB[j]);
+                Point3d pAj = AtomUtils.getCoords3d(lstA[j]);
+                Point3d pBj = AtomUtils.getCoords3d(lstB[j]);
 
                 //Get distances
                 double dAij = pAi.distance(pAj);
@@ -962,7 +963,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
         for (int ia = 0; ia < molA.getAtomCount(); ia++)
         {
             IAtom a = molA.getAtom(ia);
-            Point3d oldPlace = MolecularUtils.getCoords3d(a);
+            Point3d oldPlace = AtomUtils.getCoords3d(a);
             Point3d newPlace = new Point3d(oldPlace.x - cm.x,
                                                oldPlace.y - cm.y,
                                                oldPlace.z - cm.z);

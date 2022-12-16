@@ -408,21 +408,40 @@ public class CompChemJob extends Job implements Cloneable
     	this.directives = directives;
     }
 
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Removes the ACC tasks from any directive's component in this job and in
+     * any embedded job.
+     */
+    public void removeACCTasks()
+    {
+    	for (Directive d : directives)
+    	{
+    		d.removeACCTasks();
+    	}
+    	
+    	for (Job j : steps)
+    	{
+    		((CompChemJob) j).removeACCTasks();
+    	}
+    }
+   
 //------------------------------------------------------------------------------
 
     /**
-     * Clones all information as to produce an independent deep copy of this
-     * object. This is achieved by exporting the object to string and 
+     * Copies most information from this jobs and its steps and builds a new job
+     * out of it. This is achieved by exporting the object to string and 
      * constructing a brand new object from that string.
-     * @return a deep copy.
+     * @return a new job.
      */
     
     public CompChemJob clone()
     {
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
-    	CompChemJob clone = (CompChemJob) reader.fromJson(
-    			writer.toJson(this), Job.class);
+    	CompChemJob clone = (CompChemJob) reader.fromJson(writer.toJson(this), 
+    			Job.class);
     	return clone;
     }
 

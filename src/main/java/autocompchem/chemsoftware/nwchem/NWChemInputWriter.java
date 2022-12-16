@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
@@ -1507,11 +1508,11 @@ public class NWChemInputWriter extends Worker
                 atm.setProperty(ACCConstants.ATMTAGPROP,sb.toString());
             }
             sb.append(" ").append(NumberUtils.getEnglishFormattedDecimal(
-            		"####.########", 8, MolecularUtils.getCoords3d(atm).x));
+            		"####.########", 8, AtomUtils.getCoords3d(atm).x));
             sb.append(" ").append(NumberUtils.getEnglishFormattedDecimal(
-            		"####.########", 8, MolecularUtils.getCoords3d(atm).y));
+            		"####.########", 8, AtomUtils.getCoords3d(atm).y));
             sb.append(" ").append(NumberUtils.getEnglishFormattedDecimal(
-            		"####.########", 8, MolecularUtils.getCoords3d(atm).z));
+            		"####.########", 8, AtomUtils.getCoords3d(atm).z));
             if (customCharge)
             {
                 sb.append(" ").append(atm.getCharge());

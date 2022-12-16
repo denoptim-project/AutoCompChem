@@ -294,10 +294,8 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
     
 //------------------------------------------------------------------------------
 
-    public static class KeywordSerializer 
-      implements JsonSerializer<Keyword>
+    public static class KeywordSerializer implements JsonSerializer<Keyword>
     {
-
 		@Override
 		public JsonElement serialize(Keyword src, Type typeOfSrc, 
 				JsonSerializationContext context) 

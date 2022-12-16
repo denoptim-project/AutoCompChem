@@ -31,6 +31,7 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
@@ -83,7 +84,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     		String outFileName, String outFileNameRoot)
     {		
 		CompChemJob molSpecJob = ccJob.clone();
-
+		
 		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
 		
 		for (Job subJob : molSpecJob.getSteps())
@@ -442,7 +443,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 						IAtomContainer mol = (IAtomContainer) o;
 						for (IAtom atm : mol.atoms())
 						{
-							Point3d p3d = MolecularUtils.getCoords3d(atm);
+							Point3d p3d = AtomUtils.getCoords3d(atm);
 							lines.add(OrcaConstants.INDENT 
 									+ String.format(Locale.ENGLISH," %3s",atm.getSymbol())
 									+ String.format(Locale.ENGLISH," %10.5f",p3d.x)

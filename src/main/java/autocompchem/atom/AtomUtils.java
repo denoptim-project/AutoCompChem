@@ -1,5 +1,8 @@
 package autocompchem.atom;
 
+import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
+
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomRef;
 import org.openscience.cdk.PseudoAtom;
@@ -403,6 +406,33 @@ public class AtomUtils
 		}
 		return nH;
 	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Get Cartesian coordinates in 3D space of an atom (even if this is in 2D)
+     * @param atom the target atom
+     * @return the point in 3D Cartesian coords
+     */
+
+    public static Point3d getCoords3d(IAtom atom)
+    {
+        Point3d p3d = new Point3d();
+        try {
+            Point2d atp2d = new Point2d();
+            atp2d = atom.getPoint2d();
+            p3d.x = atp2d.x;
+            p3d.y = atp2d.y;
+            p3d.z = 0.0000;
+        } catch (Throwable t) {
+            Point3d atp3d = new Point3d();
+            atp3d = atom.getPoint3d();
+            p3d.x = atp3d.x;
+            p3d.y = atp3d.y;
+            p3d.z = atp3d.z;            
+        }
+        return p3d;
+    }
 
 //------------------------------------------------------------------------------
 }

@@ -20,6 +20,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
@@ -95,7 +96,7 @@ public class NamedData implements Cloneable
         CONSTRAINTSSET};
         
     /**
-     * List of types that can be serilized to JSON
+     * List of types that can be serailized to JSON
      */
     public static final Set<NamedDataType> jsonable = new HashSet<NamedDataType>(
             Arrays.asList(NamedDataType.STRING,
@@ -103,7 +104,11 @@ public class NamedData implements Cloneable
             		NamedDataType.DOUBLE,
             		NamedDataType.BOOLEAN,
             		NamedDataType.TEXTBLOCK,
-            		NamedDataType.PARAMETERSTORAGE));
+            		NamedDataType.PARAMETERSTORAGE,
+            		NamedDataType.BASISSET,
+            		NamedDataType.IATOMCONTAINER));
+    // NB: when extending the above list, remember to add the corresponding case
+    // in the NamedDataDeserializer!
     
     /**
      * String use to not that a type could not be serialized to JSON
@@ -236,7 +241,8 @@ public class NamedData implements Cloneable
 
     /**
      * Return the representation of the value of this data as a text block.
-     * @return the value of this data.
+     * @return the value of this data or null it the value cannot be converted 
+     * to lines of text.
      */
 
     @SuppressWarnings("unchecked")
@@ -526,7 +532,6 @@ public class NamedData implements Cloneable
     @Override
     public boolean equals(Object o) 
     {
-    	
  	    if (o == this)
  		    return true;
  	   
@@ -555,10 +560,8 @@ public class NamedData implements Cloneable
 
 //------------------------------------------------------------------------------
 
-    public static class NamedDataSerializer 
-      implements JsonSerializer<NamedData>
+    public static class NamedDataSerializer implements JsonSerializer<NamedData>
     {
-
 		@Override
 		public JsonElement serialize(NamedData src, Type typeOfSrc, 
 				JsonSerializationContext context) 
@@ -604,6 +607,7 @@ public class NamedData implements Cloneable
 						joType, joValue);
 			}
 			
+			//NB: this list of cases must reflect the content of "jsonable"
 			switch (joType)
 			{
 			case BOOLEAN:
@@ -618,12 +622,18 @@ public class NamedData implements Cloneable
 			case STRING:
 				joValue = context.deserialize(je, String.class);
 				break;
-			case PARAMETERSTORAGE:
-				joValue = context.deserialize(je, ParameterStorage.class);
-				break;
 			case TEXTBLOCK:
 				joValue = new TextBlock(context.deserialize(je,
 						new TypeToken<ArrayList<String>>(){}.getType()));
+				break;
+			case PARAMETERSTORAGE:
+				joValue = context.deserialize(je, ParameterStorage.class);
+				break;
+			case BASISSET:
+				joValue = context.deserialize(je, BasisSet.class);
+				break;
+			case IATOMCONTAINER:
+				joValue = context.deserialize(je, IAtomContainer.class);
 				break;
 			default:
 				break;

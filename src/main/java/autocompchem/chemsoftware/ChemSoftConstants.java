@@ -125,6 +125,11 @@ public class ChemSoftConstants
      * Extension for computational chemistry job details file
      */
 	public static final String JDEXTENSION = ".jd";
+	
+	/**
+	 * Extension for computational chemistry job details file in JSON format
+	 */
+	public static final String JSONJDEXTENSION = ".jd.json";
 
 	/**
 	 * Key for parameter defining the verbosity level
@@ -169,6 +174,12 @@ public class ChemSoftConstants
 	 * the input for the computational chemistry software).
 	 */
 	public static final String PAROUTFILE = "PATHNAMEOUTPUT";
+	
+	/**
+	 * Key for parameter requiring to skip generation of the json file with 
+	 * the definition of a mol/s-specific job.
+	 */
+	public static final String PARNOJSONOUTPUT = "NOJSONOUTPUT";
 	
 	/**
 	 * Key for parameter defining the charge of the system.

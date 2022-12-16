@@ -31,6 +31,7 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
@@ -236,7 +237,7 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 						// Convention is to use 1-based indexing here
 						atmId = atmId + (mol.indexOf(atm)+1);
 					}
-					Point3d p3d = MolecularUtils.getCoords3d(atm);
+					Point3d p3d = AtomUtils.getCoords3d(atm);
 					ddLines.add(String.format(Locale.ENGLISH," %3s", atmId)
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.x)
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.y)

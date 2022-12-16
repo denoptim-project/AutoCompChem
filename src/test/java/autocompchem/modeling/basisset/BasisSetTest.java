@@ -134,7 +134,7 @@ public class BasisSetTest
      * @return a basis set that is filled with non-sense values, but allows
      * to test use of shells and ECPshells.
      */
-    public BasisSet getTestBasisSet()
+    public static BasisSet getTestBasisSet()
     {
     	BasisSet bs = new BasisSet();
 

@@ -133,7 +133,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	ArrayList<String> list = new ArrayList<String>();
     	for (IAtom atm : iac.atoms())
     	{
-    		Point3d p = atm.getPoint3d();
+    		Point3d p = AtomUtils.getCoords3d(atm);
     		String el = AtomUtils.getSymbolOrLabel(atm);
     		list.add(el + "  " 
     				+ String.format(Locale.ENGLISH,"%17.12f",p.x) + " "

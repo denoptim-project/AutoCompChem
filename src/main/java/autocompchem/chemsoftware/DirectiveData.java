@@ -28,6 +28,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
@@ -254,6 +256,16 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 	
 //-----------------------------------------------------------------------------
 
+	/**
+	 * Removes the task embedded in this component
+	 */
+	public void removeACCTasks() 
+	{
+		accTaskParams = null;
+	}
+	
+//-----------------------------------------------------------------------------
+
     /**
      * Produces a formatted block of text (i.e., list of lines)
      * according to the syntax of ACC's job details files.
@@ -304,6 +316,42 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
         return toJD;
     }
 
+    
+//------------------------------------------------------------------------------
+
+    public static class DirectiveDataSerializer 
+    implements JsonSerializer<DirectiveData>
+    {
+		@Override
+		public JsonElement serialize(DirectiveData src, Type typeOfSrc, 
+				JsonSerializationContext context) 
+		{
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("reference", src.getReference());
+            NamedDataType type = NamedDataType.UNDEFINED;
+            if (src.getType()!=null)
+            {
+            	type = src.getType();
+            }
+            if (type != NamedDataType.STRING)
+            {
+                jsonObject.addProperty("type", type.toString());	
+            }
+			if (!jsonable.contains(type))
+			{
+	            jsonObject.addProperty("value", NONJSONABLE);
+			} else {
+				jsonObject.add("value", context.serialize(src.getValue()));
+			}
+			if (src.getTaskParams()!=null)
+			{
+				jsonObject.add("accTaskParams", context.serialize(
+						src.getTaskParams()));
+			}
+            return jsonObject;
+		}
+    }
+    
 //-----------------------------------------------------------------------------
 
     public static class DirectiveDataDeserializer 
