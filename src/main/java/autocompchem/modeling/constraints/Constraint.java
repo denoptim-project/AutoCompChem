@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import autocompchem.modeling.basisset.Primitive;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.utils.NumberUtils;
 
 /**
  * This class represents the concept of a constraint that is applied on a list
@@ -474,6 +476,36 @@ public class Constraint implements Comparable<Constraint>
 		
 		// Type and IDs are equivalent
 		return 0;
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Constraint))
+			return false;
+		Constraint other = (Constraint) o;
+   	 
+	   	if (this.atmIDs.length != other.atmIDs.length)
+	   		 return false;
+	   				 
+		for (int i=0; i<this.atmIDs.length; i++)
+		{
+			if (this.atmIDs[i] != other.atmIDs[i])
+				return false;
+		}
+		
+		if (!NumberUtils.closeEnough(this.value, other.value))
+	   		 return false;
+		
+		if (this.options!=null && other.options!=null
+				&& !this.options.equals(other.options))
+			return false;
+	   	 
+	   	return this.type == other.type
+	   			&& this.hasValue == other.hasValue 
+	   			&& this.hasOpt == other.hasOpt;
 	}
 	
 //------------------------------------------------------------------------------

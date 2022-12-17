@@ -1,6 +1,10 @@
 package autocompchem.modeling.constraints;
 
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -20,7 +24,23 @@ package autocompchem.modeling.constraints;
 
 import java.util.TreeSet;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.text.TextBlock;
 
 public class ConstraintsSet extends TreeSet<Constraint>
 {
@@ -36,19 +56,47 @@ public class ConstraintsSet extends TreeSet<Constraint>
 	 * @return the number of atoms in the system from which these constraints
 	 * are generated.
 	 */
-	public int getNumAtoms() {
+	public int getNumAtoms() 
+	{
 		return numAtoms;
 	}
 	
 //-----------------------------------------------------------------------------
 
 	/**
-	 * Sets the  number of atoms in the system from which these constraints
+	 * Sets the number of atoms in the system from which these constraints
 	 * are generated.
 	 * @param numAtoms the number of atoms.
 	 */
-	protected void setNumAtoms(int numAtoms) {
+	protected void setNumAtoms(int numAtoms) 
+	{
 		this.numAtoms = numAtoms;
+	}
+	
+//------------------------------------------------------------------------------
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof ConstraintsSet))
+			return false;
+		ConstraintsSet other = (ConstraintsSet) o;
+   	 
+	   	if (this.numAtoms != other.numAtoms)
+	   		 return false;
+	   	
+	   	if (this.size() != other.size())
+	   		 return false;
+	   	
+	   	Iterator<Constraint> thisIter = this.iterator();
+	   	Iterator<Constraint> otherIter = other.iterator();
+	   	while (thisIter.hasNext())
+	   	{
+	   		if (!thisIter.next().equals(otherIter.next()))
+	   			return false;
+	   	}
+	   	
+	   	return true;
 	}
 
 //-----------------------------------------------------------------------------
@@ -88,4 +136,40 @@ public class ConstraintsSet extends TreeSet<Constraint>
 
 //-----------------------------------------------------------------------------
 
+    public static class ConstraintsSetSerializer 
+    implements JsonSerializer<ConstraintsSet>
+    {
+		@Override
+		public JsonElement serialize(ConstraintsSet src, Type typeOfSrc, 
+				JsonSerializationContext context) 
+		{
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("numAtoms", src.numAtoms);
+            jsonObject.add("constraints", context.serialize(src.toArray()));
+            return jsonObject;
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+
+    public static class ConstraintsSetDeserializer 
+      implements JsonDeserializer<ConstraintsSet>
+    {
+		@Override
+		public ConstraintsSet deserialize(JsonElement json, Type typeOfT, 
+				JsonDeserializationContext context)
+				throws JsonParseException 
+		{
+			JsonObject jo = json.getAsJsonObject();
+			ConstraintsSet cs = new ConstraintsSet();
+			cs.setNumAtoms(Integer.parseInt(jo.get("numAtoms").getAsString()));
+			for (JsonElement jel : jo.get("constraints").getAsJsonArray())
+			{
+				cs.add(context.deserialize(jel, Constraint.class));
+			}
+			return cs;
+		}
+    }
+    
+//-----------------------------------------------------------------------------
 }

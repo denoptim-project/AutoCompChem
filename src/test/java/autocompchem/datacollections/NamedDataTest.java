@@ -41,6 +41,7 @@ import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainer;
 import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainerTest;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetTest;
+import autocompchem.modeling.constraints.ConstraintsSetTest;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
@@ -159,6 +160,7 @@ public class NamedDataTest
     public void testJsonRoundTrip() throws Exception
     {
     	List<NamedData> nds = new ArrayList<NamedData>();
+    	
     	// first add JSON-able types
     	nds.add(new NamedData("String", NamedDataType.STRING, "s"));
     	nds.add(new NamedData("Boolean", NamedDataType.BOOLEAN, false));
@@ -172,6 +174,9 @@ public class NamedDataTest
     			BasisSetTest.getTestBasisSet()));
     	nds.add(new NamedData("IAtomContainer", NamedDataType.IATOMCONTAINER, 
     			JSONableIAtomContainerTest.getTestIAtomContainer()));
+    	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
+    			ConstraintsSetTest.getTestConstraintSet()));
+    	
     	// The following ones are non-JSON-able
     	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 
     			new Situation()));

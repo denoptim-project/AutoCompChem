@@ -106,7 +106,8 @@ public class NamedData implements Cloneable
             		NamedDataType.TEXTBLOCK,
             		NamedDataType.PARAMETERSTORAGE,
             		NamedDataType.BASISSET,
-            		NamedDataType.IATOMCONTAINER));
+            		NamedDataType.IATOMCONTAINER,
+            		NamedDataType.CONSTRAINTSSET));
     // NB: when extending the above list, remember to add the corresponding case
     // in the NamedDataDeserializer!
     
@@ -634,6 +635,9 @@ public class NamedData implements Cloneable
 				break;
 			case IATOMCONTAINER:
 				joValue = context.deserialize(je, IAtomContainer.class);
+				break;
+			case CONSTRAINTSSET:
+				joValue = context.deserialize(je, ConstraintsSet.class);
 				break;
 			default:
 				break;
