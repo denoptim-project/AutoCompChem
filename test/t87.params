@@ -5,4 +5,4 @@ VERBOSITY: 4
 TASK: FixAndRestartNWChem
 INFILE: ../t87-nwc.out
 NewNwFile: restart-t87.nw
-JOBDETAILSFILE: ../t87-jobDetails
+JOBDETAILSFILE: ../t87-jobDetails.json

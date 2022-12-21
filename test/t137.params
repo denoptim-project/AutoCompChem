@@ -7,6 +7,6 @@
 # Charge and spin multiplicity from default value
 #
 VERBOSITY: 2
-TASK: PrepareInputGaussian
-INFILE: ../t137-mol.sdf
-JOBDETAILSFILE: ../t137-jobDetails
+TASK: PrepareInputGaussian2
+INPUTGEOMETRIESFILE: ../t137-mol.sdf
+JOBDETAILSFILE: ../t137-jobDetails.json

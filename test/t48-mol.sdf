@@ -131,10 +131,4 @@ t48_mol_Multiplicity_in_sdf
  60 62  1  0  0  0  0 
  60 63  1  0  0  0  0 
 M  END
-> <cdk:Title>
-dn2mcompl_1_mview
-
-> <SPIN_MULTIPLICITY>
-3
-
 $$$$

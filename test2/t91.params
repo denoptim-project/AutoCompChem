@@ -1,9 +1,0 @@
-#
-# Parameters for Automated Computational Chemistry
-#
-VERBOSITY: 1
-TASK: PrepareInputNWChem2
-INPUTGEOMETRIESFILE: ../t91-mol.sdf
-MULTIGEOMNAMES: first_G second_G
-MULTIGEOMMODE: path
-JOBDETAILSFILE: ../t91-jobDetails.json

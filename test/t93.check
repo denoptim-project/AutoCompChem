@@ -6,10 +6,10 @@ echo NOT Passes ERROR 1
 exit -1
 fi
 
-n=0;n=$(grep -c "GEOMETRY first_G" t93-mol.nw) 
+n=0;n=$(grep -c -i "GEOMETRY first_G" t93-mol.nw) 
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 
-n=0;n=$(grep -c "GEOMETRY second_G" t93-mol.nw)
+n=0;n=$(grep -c -i "GEOMETRY second_G" t93-mol.nw)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
 n=0;n=$(grep "Ru[0-9]" t93-mol.nw | awk '{print $1}' | sort --unique | wc -l)

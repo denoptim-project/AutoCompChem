@@ -4,10 +4,9 @@
 # Using parameter file to set charge and spin, but spin is overwritten by the SDF property
 #
 VERBOSITY: 1
-TASK: PrepareInputNWChem
-INFILE: ../t54-mol.sdf 
+TASK: PrepareInputNWChem2
+INPUTGEOMETRIESFILE: ../t54-mol.sdf 
 OUTFILE: t54.nw
-JOBDETAILSFILE: ../t54-jobDetails
+JOBDETAILSFILE: ../t54-jobDetails.json
 CHARGE: 0
 SPIN_MULTIPLICITY: 1
-FREEZEATM: [#7]

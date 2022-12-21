@@ -6,4 +6,4 @@ TASK: FixAndRestartNWChem
 INFILE: ../t112-nwc.out
 NewNwFile: restart-t112.nw
 NWCHEMERRORS: ../t112-err
-JOBDETAILSFILE: ../t112-jobDetails
+JOBDETAILSFILE: ../t112-jobDetails.json

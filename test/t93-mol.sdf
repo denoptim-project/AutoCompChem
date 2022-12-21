@@ -1,4 +1,4 @@
-M00000017_C1_GOSE0
+first_G
   Mrv0541 03291717343D          
 
  47 48  0  0  0  0            999 V2000
@@ -101,9 +101,6 @@ M  END
 >  <FrozenCore-PM6_ENERGY>
 -187.100
 
->  <cdk:Title>
-M00000017_C1_GOSE0
-
 >  <CHARGE>
 -3
 
@@ -111,7 +108,7 @@ M00000017_C1_GOSE0
 3
 
 $$$$
-
+second_G
   Mrv0541 03291717343D          
 
  47 46  0  0  0  0            999 V2000
@@ -211,9 +208,6 @@ $$$$
 M  END
 >  <FrozenCore-PM6_ENERGY>
 -187.100
-
->  <cdk:Title>
-M00000017_C1_GOSE0
 
 >  <CHARGE>
 -2

@@ -2,8 +2,8 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 2
-TASK: FixAndRestartGaussian
+TASK: FixAndRestartGaussian 
 INFILE: ../t1-mol.out
 NEWINPFILE: restart-t11.inp
-JOBDETAILSFILE: ../t11-jobDetails
+JOBDETAILSFILE: ../t11-jobDetails.json
 GAUSSIANERRORS: ../data/errorsDefAndFix/

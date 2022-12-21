@@ -4,8 +4,8 @@
 # Using parameter file to set charge and spin, but spin is overwritten by the SDF property
 #
 VERBOSITY: 2
-TASK: PrepareInputNWChem
-INFILE: ../t80-mol.sdf
-JOBDETAILSFILE: ../t80-jobDetails
+TASK: PrepareInputNWChem2
+INPUTGEOMETRIESFILE: ../t80-mol.sdf
+JOBDETAILSFILE: ../t80-jobDetails.json
 CHARGE: 0
 SPIN_MULTIPLICITY: 1

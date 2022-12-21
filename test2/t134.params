@@ -1,7 +1,0 @@
-#
-# Parameters for Automated Computational Chemistry
-#
-VERBOSITY: 1
-TASK: PrepareInputXTB
-InputGeometriesFile: ../t134-mol.sdf
-JOBDETAILSFILE: ../t134-jobDetails.json

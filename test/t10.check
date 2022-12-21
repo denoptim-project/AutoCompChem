@@ -2,17 +2,20 @@
 
 if [ ! -f 10byhand.inp ]
 then 
-echo NOT Passed
-exit -1
+  echo NOT Passed - ERROR 1
+  exit -1
 fi
+
+n=0;n=$(grep -c "^%Nprocshared=8$" 10byhand.inp)
+if [ $n -ne 3 ] ; then echo NOT Passed - ERROR 2 ; exit -1 ; fi
 
 grep -q "Termination status: 0" t10.log
 if [ $? == 0 ] ; then
-echo Passed
-exit 0
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed
+  exit -1
 fi
 
 

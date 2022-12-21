@@ -5,8 +5,8 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputQMMM
-INFILE: ../t53-mol.sdf
-JOBDETAILSFILE: ../t53-jobDetails
+INPUTGEOMETRIESFILE: ../t53-mol.sdf
+JOBDETAILSFILE: ../t53-jobDetails.json
 #QMATOMS_ID: 10 22
 #$STARTFREEZEATM:
 #C[#1]
