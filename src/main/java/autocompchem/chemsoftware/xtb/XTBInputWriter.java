@@ -536,6 +536,26 @@ public class XTBInputWriter extends ChemSoftInputWriter
             lines.add(frozenTorsStr);
         }
         
+        for (Constraint c : cs.getConstrainsWithType(
+        		ConstraintType.IMPROPERTORSION))
+        {
+            String frozenTorsStr = XTBConstants.INDENT + "dihedral: ";
+            if (c.hasValue())
+            {
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[3]+1) + ", " + c.getValue();
+            } else {
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[3]+1)
+                        + ", auto";
+            }
+            lines.add(frozenTorsStr);
+        }
+        
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.UNDEFINED))
         {
             String frozenGroups = XTBConstants.INDENT + "atoms: ";

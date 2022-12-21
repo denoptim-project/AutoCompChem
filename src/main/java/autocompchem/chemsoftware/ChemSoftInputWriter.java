@@ -104,9 +104,9 @@ public abstract class ChemSoftInputWriter extends Worker
     private String outFileName;
     
     /**
-     * Flag deciding if we wrote the specific job-details file or not.
+     * Flag deciding if we write the specific job-details file or not.
      */
-    private boolean noJonSpecificJDOutput = false;
+    private boolean writeJobSpecificJDOutput = true;
 
     /**
      * Output job details name.
@@ -341,7 +341,7 @@ public abstract class ChemSoftInputWriter extends Worker
         
         if (params.contains(ChemSoftConstants.PARNOJSONOUTPUT))
         {
-        	noJonSpecificJDOutput = true;
+        	writeJobSpecificJDOutput = false;
         }
 
         if (params.contains(ChemSoftConstants.PARCHARGE))
@@ -531,7 +531,7 @@ public abstract class ChemSoftInputWriter extends Worker
 		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), false);
 		
 		// Produce a specific job-details file
-		if (noJonSpecificJDOutput)
+		if (writeJobSpecificJDOutput)
 		{
 			CompChemJob cleanCCJ = molSpecJob.clone();
 			cleanCCJ.removeACCTasks();

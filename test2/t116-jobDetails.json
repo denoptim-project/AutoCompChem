@@ -42,7 +42,7 @@
                   "value": "ADD_GEOMETRY"
                 }
               ],
-              "reference": "tmp",
+              "reference": "DirDataGeometry",
               "type": "UNDEFINED"
             }
           ]

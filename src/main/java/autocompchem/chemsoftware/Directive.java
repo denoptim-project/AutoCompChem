@@ -180,8 +180,8 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the sub directive with the given name. 
-     * @param name the name of the sub directive to get.
+     * Returns the first sub directive with the given name. 
+     * @param name the name of the sub directive to get (case-insensitive).
      * @return the sub directive with the given name or null it it doesn't 
      * exist.
      */
@@ -243,7 +243,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * Returns the keyword with the given name. Only keyword belonging to
      * this directive can be returned. Keywords of sub directives are ignored. 
-     * @param name the name of the keyword to get.
+     * @param name the name of the keyword to get (case-insensitive).
      * @return the keyword with the given name or null if such keyword
      * does not exist.
      */
@@ -277,7 +277,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * Returns the data block having the specified name. Data of subordinate
      * directives are ignored.
-     * @param name the name of the data block to get.
+     * @param name the name of the data block to get (case-insensitive).
      * @return the data blocks having the specified name or null if such data
      * block does not exist.
      */
@@ -296,6 +296,12 @@ public class Directive implements IDirectiveComponent, Cloneable
     
 //-----------------------------------------------------------------------------
 
+    /**
+     * Searched for a component on the given name and type.
+     * @param name the name to search for  (case-insensitive).
+     * @param type the type to search for.
+     * @return <code>true</code> if such component exists.
+     */
     public boolean hasComponent(String name, DirectiveComponentType type)
     {
     	IDirectiveComponent comp = getComponent(name, type);
@@ -342,7 +348,8 @@ public class Directive implements IDirectiveComponent, Cloneable
     
     /**
      * Looks for the component with the given reference name and type.
-     * @param name the reference name of the component to find.
+     * @param name the reference name of the component to find 
+     * (case-insensitive).
      * @param type the type of component to find.
      * @return the desired component.
      */
@@ -933,28 +940,6 @@ public class Directive implements IDirectiveComponent, Cloneable
                 	{
                 		IAtomContainer mol = mols.get(geometryId);
                 		((IValueContainer) dirComp).setValue(mol);
-                		
-                		//TODO-gg we should not be doing this here!!!
-                		// charge and spin are managed by the chemsoftinputwriter
-                        /*
-                		if (MolecularUtils.hasProperty(mol, 
-                        		ChemSoftConstants.PARCHARGE))
-                        {
-                            String charge = mol.getProperty(
-                            		ChemSoftConstants.PARCHARGE).toString();
-                            setKeyword(new Keyword(ChemSoftConstants.PARCHARGE,
-                            		false, charge));
-                        }
-                        if (MolecularUtils.hasProperty(mol, 
-                        		ChemSoftConstants.PARSPINMULT))
-                        {
-                            String spinMult = mol.getProperty(
-                            		ChemSoftConstants.PARSPINMULT).toString();
-                            setKeyword(new Keyword(
-                            		ChemSoftConstants.PARSPINMULT, false, 
-                            		spinMult));
-                        }
-                        */
                 		break;
                 	}
             	}

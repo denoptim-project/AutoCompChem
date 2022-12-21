@@ -485,7 +485,8 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		
 		for (DirectiveData dd : d.getAllDirectiveDataBlocks())
 		{
-			if (dd.getName().equals(ChemSoftConstants.DIRDATAGEOMETRY))
+			if (dd.getName().toUpperCase().equals(
+					ChemSoftConstants.DIRDATAGEOMETRY))
 			{
 				Object o = dd.getValue();
 				switch (dd.getType())

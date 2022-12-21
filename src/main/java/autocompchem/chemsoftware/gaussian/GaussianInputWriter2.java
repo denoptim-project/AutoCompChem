@@ -508,6 +508,12 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 											+ (cns.getAtomIDs()[2]+1) + " "
 											+ (cns.getAtomIDs()[3]+1);
 									break;
+								case IMPROPERTORSION:
+									str = "D " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1) + " "
+											+ (cns.getAtomIDs()[2]+1) + " "
+											+ (cns.getAtomIDs()[3]+1);
+									break;
 								case DISTANCE:
 									str = "B " + (cns.getAtomIDs()[0]+1) + " "
 											+ (cns.getAtomIDs()[1]+1);
@@ -516,6 +522,28 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 									str = "X " + (cns.getAtomIDs()[0]+1);
 									break;
 								case UNDEFINED:
+									switch (cns.getAtomIDs().length)
+									{
+									case 1:
+										str = "X " + (cns.getAtomIDs()[0]+1);
+										break;
+									case 2:
+										str = "B " + (cns.getAtomIDs()[0]+1) 
+											+ " " + (cns.getAtomIDs()[1]+1);
+										break;
+									case 3:
+										str = "A " + (cns.getAtomIDs()[0]+1) 
+											+ " " + (cns.getAtomIDs()[1]+1) 
+											+ " " + (cns.getAtomIDs()[2]+1);
+										break;
+									case 4:
+										str = "D " + (cns.getAtomIDs()[0]+1) 
+											+ " " + (cns.getAtomIDs()[1]+1) 
+											+ " " + (cns.getAtomIDs()[2]+1) 
+											+ " " + (cns.getAtomIDs()[3]+1);
+										break;
+										
+									}
 									break;
 								default:
 									break;
