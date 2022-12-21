@@ -21,6 +21,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,11 @@ import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.modeling.basisset.CenterBasisSet;
+import autocompchem.modeling.basisset.ECPShell;
+import autocompchem.modeling.basisset.Primitive;
+import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Job;
@@ -478,8 +484,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
 	    			case GaussianConstants.DDBASISSET:
 	    			{
 	    				BasisSet bs = (BasisSet) dd.getValue();
-	    				lines.add(bs.toInputFileString("Gaussian"));
-	    				//No additional newline: it comes already from bs
+	    				lines.addAll(formatBasisSetLines(bs));
 	    				break;
 	    			}
 	    			
@@ -598,6 +603,116 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     	return lines;
     }
     
+//------------------------------------------------------------------------------
+    
+    private static String getCenterIdentifier(CenterBasisSet cbs)
+    {
+    	String atmStr = "";
+		if (cbs.getCenterIndex()!=null)
+		{
+			atmStr = (cbs.getCenterIndex()+1) + "";
+		} else {
+			atmStr = Character.toUpperCase(cbs.getElement().charAt(0)) + "";
+			if (cbs.getElement().length()>1)
+				atmStr = atmStr + cbs.getElement().toLowerCase().substring(1);
+		}
+		return atmStr;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Prepares the lines of text hat are meant to define a basis set in 
+     * Gaussian's input files, i.e., in the Gaussian Basis Set (gbs) format
+     * used also for saving basis sets to files.
+     * @param bs the basis set to format to a list of strings.
+     * @return the list of strings where each string is a line (without new line
+     * character at the end).
+     */
+    public static List<String> formatBasisSetLines(BasisSet bs) 
+	{
+    	List<String> lines = new ArrayList<String>();
+    	for (CenterBasisSet cbs : bs.centerBSs)
+    	{
+	        String atmStr = getCenterIdentifier(cbs);
+	        if (cbs.getNamedComponents().size() > 0)
+	        {
+	            for (String n : cbs.getNamedComponents())
+	            {
+	                lines.add(String.format(Locale.ENGLISH,"%-6s 0", atmStr));
+	                lines.add(n);
+	                lines.add("****");
+	            } 
+	        }
+	        if (cbs.getShells().size() > 0)
+	        {
+	        	lines.add(String.format(Locale.ENGLISH,"%-6s 0", atmStr));
+	            for (Shell s : cbs.getShells())
+	            {
+	            	lines.add(String.format(Locale.ENGLISH, "%-3s %-3d %-7.3f",
+	            			s.getType(), s.getSize(), s.getScaleFact()));
+	                for (Primitive p : s.getPrimitives())
+	                {
+	                    String eForm = "%" + (p.getExpPrecision() + 6) + "." 
+	                    		+ (p.getExpPrecision()-1) + "E     ";
+	                    String line = String.format(Locale.ENGLISH,
+	                    		eForm,p.getExp());
+	                    
+	                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+	                    		+ (p.getCoeffPrecision()-1) + "E";
+	                    for (Double c : p.getCoeff())
+	                    {
+	                    	line = line + String.format(Locale.ENGLISH,cForm,c);
+	                    }
+	                    lines.add(line);
+	                }
+	            }
+	            lines.add("****");
+	        }
+    	}
+    	
+    	// This is where we add the empty line between basis set and ECP block
+    	lines.add("");
+    	
+    	for (CenterBasisSet cbs : bs.centerBSs)
+    	{
+	        if (cbs.getECPShells().size() == 0)
+	        {
+	            continue;
+	        }
+	        
+	        String atmStr = getCenterIdentifier(cbs);
+	        
+	        lines.add(String.format(Locale.ENGLISH, "%-6s 0", atmStr));
+	        lines.add(String.format(Locale.ENGLISH, "%s %2d %3d", 
+	        		cbs.getECPType(), cbs.getECPMaxAngMom(), 
+	        		cbs.getElectronsInECP()));
+            for (ECPShell s : cbs.getECPShells())
+            {
+            	lines.add(String.format(Locale.ENGLISH, "%-3s", s.getType()));
+            	lines.add(String.format(Locale.ENGLISH, " %2d", s.getSize()));
+                for (Primitive p : s.getPrimitives())
+                {
+                	String line = String.format(Locale.ENGLISH, "%-1d", 
+                			p.getAngMmnt());
+                    String eForm = "%" + (p.getExpPrecision() + 6) + "." 
+                    		+ (p.getExpPrecision()-1) + "E     ";
+                    line = line + String.format(Locale.ENGLISH,
+                    		eForm, p.getExp());
+                    
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                    		+ (p.getCoeffPrecision()-1) + "E";
+                    for (Double c : p.getCoeff())
+                    {
+                    	line = line + String.format(Locale.ENGLISH, cForm, c);
+                    }
+                    lines.add(line);
+                }
+            }
+    	}
+        return lines;
+    }
+
 //------------------------------------------------------------------------------
 
     /**

@@ -128,7 +128,7 @@ public class BasisSet
                 return cbs;
             }
         }
-        CenterBasisSet newCbs = new CenterBasisSet(elSymbol);
+        CenterBasisSet newCbs = new CenterBasisSet(null, null, elSymbol);
         centerBSs.add(newCbs);
         return newCbs;
     }
@@ -139,6 +139,8 @@ public class BasisSet
      * Returns the basis set for the specified center ID. If no center-specific
      * basis set is assigned to such center ID, then it creates a new one within
      * this object.
+     * @param tag the tag assigned to the center for which we want to get the 
+     * basis set.
      * @param id the index of the center.
      * @param elSymb the elemental symbol of the center.
      * @return the center-specific basis set associated with the given center ID
@@ -147,17 +149,24 @@ public class BasisSet
      * this basis set, and returned.
      */
 
-    public CenterBasisSet getCenterBasisSetForCenter(int id, String elSymb)
+    public CenterBasisSet getCenterBasisSetForCenter(String tag, Integer id, 
+    		String elSymb)
     {
         for (CenterBasisSet cbs : centerBSs)
         {
-            if (cbs.getElement().equals(elSymb) && cbs.getCenterIndex()!=null
+        	if (cbs.getCenterTag()!=null && tag!=null 
+        			&& cbs.getCenterTag().equals(tag))
+        	{
+        		return cbs;
+        	} else if (cbs.getElement()!=null && elSymb!=null 
+        			&& cbs.getCenterIndex()!=null
+        			&& cbs.getElement().equals(elSymb) 
             		&& cbs.getCenterIndex()==id)
             {
                 return cbs;
             }
         }
-        CenterBasisSet newCbs = new CenterBasisSet(id, elSymb);
+        CenterBasisSet newCbs = new CenterBasisSet(tag, id, elSymb);
         centerBSs.add(newCbs);
         return newCbs;
     }
@@ -226,7 +235,7 @@ public class BasisSet
      * @return a single string that contains all lines (with newline characters)
      */
 
-    public String toInputFileStringBS(String format)
+	public String toInputFileStringBS(String format)
     {
         StringBuilder sb = new StringBuilder();
         switch (format.toUpperCase())
@@ -314,14 +323,16 @@ public class BasisSet
      * Known formats: "Gaussian", "NWChem".
      * @param format defined the software syntax to follow in the generation of
      * the string
-     * @return a single string that contains all lines (newline charactrs)
+     * @return a single string that contains all lines (newline characters).
      */
 
+    @Deprecated
     public String toInputFileString(String format)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(toInputFileStringBS(format));
-//        sb.append(System.getProperty("line.separator"));
+        if (format.toUpperCase().equals("GAUSSIAN"))
+        	sb.append(System.getProperty("line.separator"));
         sb.append(toInputFileStringECP(format));
 /*
 //KEEP: we might need this if we encounter a format that does not split the bs and ECP sections.

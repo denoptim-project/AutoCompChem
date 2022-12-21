@@ -290,8 +290,7 @@ public class ConstrainDefinition
   	{
   		if (notAnIC)
   		{
-  			// NB: we do not expect a value for constraints that do not 
-  			// correspond to and internal coordinate.
+  			// type will be undefined
   			Constraint c = new Constraint();
   			int[] ids = new int[idsList.size()];
   			for (int i=0; i<idsList.size(); i++)
@@ -299,6 +298,8 @@ public class ConstrainDefinition
   				ids[i] = idsList.get(i);
   			}
   			c.setAtomIDs(ids);
+  			if (hasValue)
+  				c.setValue(value);
   			return c;
   		} else {
 	  		if (!hasValue)

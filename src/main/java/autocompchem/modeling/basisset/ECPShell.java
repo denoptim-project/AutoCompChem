@@ -1,7 +1,5 @@
 package autocompchem.modeling.basisset;
 
-import java.util.ArrayList;
-
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -19,7 +17,6 @@ import java.util.ArrayList;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
 import java.util.Locale;
 
 import autocompchem.run.Terminator;
@@ -30,13 +27,13 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class ECPShell extends Shell
+public class ECPShell extends Shell implements Cloneable
 {
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty ECPShell
+     * Constructor for an empty ECPShell.
      */
 
     public ECPShell()
@@ -47,25 +44,43 @@ public class ECPShell extends Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an ECPShell with type
-     * @param type the type of potential
+     * Constructor for an ECPShell with type.
+     * @param type the type of potential.
      */
 
     public ECPShell(String type)
     {
     	super(type);
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for an ECPShell with type and scale factor
+     * @param type the type of potential.
+     * @param scaleFact the scaling factor.
+     */
+
+    public ECPShell(String type, double scaleFact)
+    {
+    	super(type, scaleFact);
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Deep-clone this ECPShell
-     * @return a new object with the same content as this one
+     * Deep-clone this ECPShell.
+     * @return a new object with the same content as this one.
      */
 
+     @Override
      public ECPShell clone()
      {
-        ECPShell newShell = (ECPShell) super.clone();
+        ECPShell newShell = new ECPShell(type, scaleFact);
+        for (Primitive p : primitives)
+        {
+            newShell.add(p.clone());
+        }
         return newShell;
      }
      

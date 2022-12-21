@@ -36,12 +36,13 @@ import autocompchem.run.Terminator;
 public class CenterBasisSet
 {
     /**
-     * Center's (i.e., atom) reference name.
+     * The tag assigned to a center/atom. It may or may not be related with 
+     * the elements and/or the index of the center.
      */
-    private String atmId = "noAtomId";
+    private String tag;
     
     /**
-     * Center's (i.e., atom) index.
+     * Center's (i.e., atom) index (0-based).
      */
     private Integer id;
 
@@ -89,34 +90,22 @@ public class CenterBasisSet
      */
     public CenterBasisSet() 
     {}
-
-//------------------------------------------------------------------------------
-    
-    /**
-     * Constructor for a CenterBasisSet and define the elemental symbol of the
-     * ceter. This is usually used for element-specific basis sets, so the
-     * "center" is intended to be abstract.
-     * @param atmId the index of the center.
-     */
-
-    public CenterBasisSet(String elSymb)
-    {
-        this.atmId = elSymb;
-        this.element = elSymb;
-    }
     
 //------------------------------------------------------------------------------
 
 	/**
-     * Constructor for a CenterBasisSet and define the ID of the center
-     * @param atmId the index of the center.
+     * Constructor for a CenterBasisSet and define the ID of the center.
+     * @param centerTag the tag identifying the center/s the basis set is meant 
+     * for. Give null to signify that no tag is specified for the center.
+     * @param idx the index of the center (0-based).
      * @param elSymb the elemental symbol.
      */
 
-    public CenterBasisSet(int atmId, String elSymb)
+    public CenterBasisSet(String centerTag, Integer idx, String elSymb)
     {
-        this.atmId = elSymb+atmId;
-        this.id = atmId;
+        this.tag = centerTag;
+        if (idx!=null)
+        	this.id = Integer.valueOf(idx.toString());
         this.element = elSymb;
     }
 
@@ -203,22 +192,23 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
     
     /**
-     * @return the identifier of the centers this basis set applies to.
+     * @return the identifier of the centers this basis set applies to, or
+     * null if such tag has not been defined.
      */
-    public String getAtmId() 
+    public String getCenterTag() 
     {
-		return atmId;
+		return tag;
 	}
 
 //------------------------------------------------------------------------------
     
     /**
      * Sets the identifier of the centers this basis set applies to.
-     * @param atmId the identifier of the centers this basis set applies to.
+     * @param tag the identifier of the centers this basis set applies to.
      */
-	public void setAtmId(String atmId) 
+	public void setCenterTag(String tag) 
 	{
-		this.atmId = atmId;
+		this.tag = tag;
 	}
 
 //------------------------------------------------------------------------------
@@ -247,8 +237,7 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the index of the center.
-     * @return the index of the center or null if not defined.
+     * Sets the index of the center (0-based).
      */
 
     public void setCenterIndex(int id)
@@ -259,7 +248,7 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the index of the center.
+     * Returns the index of the center (0-based).
      * @return the index of the center or null if not defined.
      */
 
@@ -389,9 +378,20 @@ public class CenterBasisSet
     		return false;
     	CenterBasisSet other = (CenterBasisSet) o;
     	
-    	if (!this.atmId.equals(other.atmId))
+    	if ((this.tag==null && other.tag!=null)
+    			|| (this.tag!=null && other.tag==null))
+    		return false;
+    	if (this.tag!=null && other.tag!=null && !this.tag.equals(other.tag))
+    		return false;
+    	
+    	if ((this.id==null && other.id!=null)
+    			|| (this.id!=null && other.id==null))
     		return false;
     	if (this.id!=null && other.id!=null && this.id!=other.id)
+    		return false;
+
+    	if ((this.element==null && other.element!=null)
+    			|| (this.element!=null && other.element==null))
     		return false;
     	if (this.element!=null && other.element!=null 
     			&& !this.element.equals(other.element))
@@ -442,10 +442,24 @@ public class CenterBasisSet
      * Note it contains a newline character also at the end.
      */
 
+    @Deprecated
     public String toInputFileStringBS(String format)
     {
         StringBuilder sb = new StringBuilder();
         String nl = System.getProperty("line.separator");
+
+        //TODO-gg this is software specific and should be done in 
+        // software-specific classes
+        String atmStr = "";
+        if (id!=null)
+        {
+        	atmStr = Character.toUpperCase(element.charAt(0))
+                	+ element.toLowerCase().substring(1) + (id+1);
+        } else {
+        	atmStr = Character.toUpperCase(tag.charAt(0))
+        	+ tag.toLowerCase().substring(1);
+        }
+        
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
@@ -453,7 +467,7 @@ public class CenterBasisSet
                 {
                     for (String n : namedComponents)
                     {
-                        sb.append(String.format(Locale.ENGLISH,"%-6s 0", atmId))
+                        sb.append(String.format(Locale.ENGLISH,"%-6s 0", atmStr))
                         	.append(nl);
                         sb.append(n).append(nl);
                         sb.append("****").append(nl);
@@ -461,26 +475,17 @@ public class CenterBasisSet
                 }
                 if (shells.size() > 0)
                 {
-                    sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId))
+                    sb.append(String.format(Locale.ENGLISH,"%-6s 0", atmStr))
                     	.append(nl);
                     for (Shell s : shells)
                     {
-                        sb.append(s.toInputFileString(format,"notUsed"));
+                        sb.append(s.toInputFileString(format, "notUsed"));
                     }
                     sb.append("****").append(nl);
                 }
                 break;
 
             case "NWCHEM":
-                String atmStr = "";
-                if (id!=null)
-                {
-                	atmStr = Character.toUpperCase(element.charAt(0))
-                        	+ element.toLowerCase().substring(1) + (id+1);
-                } else {
-                	atmStr = Character.toUpperCase(atmId.charAt(0))
-                	+ atmId.toLowerCase().substring(1);
-                }
                 boolean first = true;
                 for (String n : namedComponents)
                 {
@@ -533,6 +538,7 @@ public class CenterBasisSet
      * @return a single string that contains all lines (newline charactrs)
      */
 
+    @Deprecated
     public String toInputFileStringECP(String format)
     {
         StringBuilder sb = new StringBuilder();
@@ -540,12 +546,25 @@ public class CenterBasisSet
         {
             return "";
         }
+      
+        //TODO-gg this is software specific and should be done in 
+        // software-specific classes
+        String atmStr = "";
+        if (id!=null)
+        {
+        	atmStr = Character.toUpperCase(element.charAt(0))
+                	+ element.toLowerCase().substring(1) + (id+1);
+        } else {
+        	atmStr = Character.toUpperCase(tag.charAt(0))
+        	+ tag.toLowerCase().substring(1);
+        }
+        
         String nl = System.getProperty("line.separator");
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
                 sb.append(String.format(Locale.ENGLISH,
-                		"%-6s 0",atmId)).append(nl);
+                		"%-6s 0", tag)).append(nl);
                 sb.append(String.format(Locale.ENGLISH,
                 		"%s %2d %3d",ecpType,maxl,ne));
                 sb.append(nl);
@@ -556,15 +575,6 @@ public class CenterBasisSet
                 break;
 
             case "NWCHEM":
-                String atmStr = "";
-                if (id!=null)
-                {
-                	atmStr = Character.toUpperCase(element.charAt(0))
-                        	+ element.toLowerCase().substring(1) + (id+1);
-                } else {
-                	atmStr = Character.toUpperCase(atmId.charAt(0))
-                	+ atmId.toLowerCase().substring(1);
-                }
                 sb.append(String.format(Locale.ENGLISH,
                 		"  %s nelec %s",atmStr,ne)).append(nl);
                 boolean first = true;

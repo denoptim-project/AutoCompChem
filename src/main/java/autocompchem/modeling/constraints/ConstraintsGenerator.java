@@ -270,13 +270,20 @@ public class ConstraintsGenerator extends Worker
             else if (r.getType() == RuleType.ID)
             {
             	ArrayList<Integer> ids = r.getAtomIDs();
-            	boolean areLinearlyConnected = 
-            			mol.getConnectedAtomsList(mol.getAtom(ids.get(0))).contains(
-            					mol.getAtom(ids.get(1))) &&
-            			mol.getConnectedAtomsList(mol.getAtom(ids.get(1))).contains(
-            					mol.getAtom(ids.get(2))) &&
-            			mol.getConnectedAtomsList(mol.getAtom(ids.get(2))).contains(
-            					mol.getAtom(ids.get(3)));
+            	
+            	boolean areLinearlyConnected = false;
+            	if (ids.size()>1)
+            		areLinearlyConnected = mol.getConnectedAtomsList(
+            				mol.getAtom(ids.get(0))).contains(
+            						mol.getAtom(ids.get(1)));
+            	if (ids.size()>2 && areLinearlyConnected)
+            		areLinearlyConnected = mol.getConnectedAtomsList(
+            				mol.getAtom(ids.get(1))).contains(
+            						mol.getAtom(ids.get(2)));
+            	if (ids.size()>3 && areLinearlyConnected)
+            		areLinearlyConnected = mol.getConnectedAtomsList(
+            				mol.getAtom(ids.get(2))).contains(
+        						mol.getAtom(ids.get(3)));
             	cLst.add(r.makeConstraint(areLinearlyConnected));
             }
         }

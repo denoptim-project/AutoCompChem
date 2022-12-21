@@ -51,6 +51,7 @@ import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -1370,12 +1371,8 @@ public class NWChemInputWriter extends Worker
                 BasisSet bs = bsg.assignBasisSet(mol);
     
                 //Report the basis function section as NWChem directive
-                String bsStr = bs.toInputFileStringBS("nwchem");
-                ArrayList<String> bsLin = new ArrayList<String>(Arrays.asList(
-                                                            bsStr.split("\n")));
-                // Get rid of the directive name and tail
-                bsLin.remove(0);
-                bsLin.remove(bsLin.size()-1);
+                ArrayList<String> bsLin = new ArrayList<String>(
+                		NWChemInputWriter2.formatBasisSetLines(bs));
     
                 NWChemDirective dBasis = new NWChemDirective(
                                                       NWChemConstants.BASISDIR);
@@ -1389,12 +1386,8 @@ public class NWChemInputWriter extends Worker
     
                 if (bs.hasECP())
                 {
-                    String eStr = bs.toInputFileStringECP("nwchem");
                     ArrayList<String> eLin = new ArrayList<String>(
-                                               Arrays.asList(eStr.split("\n")));
-                    // Get rid of the directive name and tail
-                    eLin.remove(0);
-                    eLin.remove(eLin.size()-1);
+                    		NWChemInputWriter2.formatECPLines(bs));
                     NWChemDirective dECP = new NWChemDirective(
                                                         NWChemConstants.ECPDIR);
                     NWChemDirectiveData dECPData = new NWChemDirectiveData(

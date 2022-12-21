@@ -273,6 +273,9 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 	
+	/**
+	 * @return the type of this constraint.
+	 */
 	public ConstraintType getType()
 	{
 		return type;
@@ -280,6 +283,9 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 	
+	/**
+	 * @return <code>true</code> if this constraint has an associated value.
+	 */
 	public boolean hasValue()
 	{
 		return hasValue;
@@ -287,9 +293,24 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * @return the value associated with this constraint.
+	 */
 	public double getValue()
 	{
 		return value;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Changes the value associated with this constraint.
+	 * @param value the new value.
+	 */
+	public void setValue(double value) 
+	{
+		this.hasValue = true;
+		this.value = value;
 	}
 	
 //------------------------------------------------------------------------------
@@ -314,6 +335,10 @@ public class Constraint implements Comparable<Constraint>
 
 //------------------------------------------------------------------------------
 
+	/**
+	 * Defines the atom indexes that define this constraint.
+	 * @param ids the list of 0-based indexes.
+	 */
 	public void setAtomIDs(int[] ids)
 	{
 		atmIDs = ids;
@@ -321,6 +346,9 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * @return the list of atom indexes that defines this constraint (0-based).
+	 */
 	public int[] getAtomIDs()
 	{
 		return atmIDs;
@@ -399,6 +427,16 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * Usually, 
+	 * one index is used to define a frozen atom, two for distances, 
+	 * three for angles, and four for dihedral of improper torsions. Yet, upon
+	 * demands from the user any number of indexes can be associated with an
+	 * {@value ConstraintType#UNDEFINED} type. So the number of indexes should
+	 * not be used as a replacement of the defined type. 
+	 * See {@link Constraint#getType()}
+	 * @return the number of indexes that define this constraint. 
+	 */
 	public int getNumberOfIDs()
 	{
 		int n = 0;
@@ -409,6 +447,7 @@ public class Constraint implements Comparable<Constraint>
 		}
 		return n;
 	}
+	
 //------------------------------------------------------------------------------
 	
 	@Override

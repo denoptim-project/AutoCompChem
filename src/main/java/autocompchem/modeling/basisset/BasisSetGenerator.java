@@ -80,7 +80,7 @@ public class BasisSetGenerator extends Worker
      * List of atom-matching rules for assigning the basis sets
      */
     private Map<String,BSMatchingRule> rules = 
-                                           new HashMap<String,BSMatchingRule>();
+    		new HashMap<String,BSMatchingRule>();
 
     /**
      * Storage of imported basis sets 
@@ -282,9 +282,7 @@ public class BasisSetGenerator extends Worker
                 BasisSet bs = assignBasisSet(mol);
 
                 //Write to output
-                BasisSetUtils.writeFormattedBS(bs,format,outFile);
-                //writeBSRefNamesToOut(mol);
-
+                BasisSetUtils.writeFormattedBS(bs, format, outFile);
             } //end loop over molecules
             sdfItr.close();
         } catch (Throwable t) {
@@ -475,7 +473,7 @@ public class BasisSetGenerator extends Worker
                     break;
 
                 case BasisSetConstants.BSSOURCENAME:
-                    CenterBasisSet cbs = new CenterBasisSet(elSymb);
+                    CenterBasisSet cbs = new CenterBasisSet(null, null, elSymb);
                     cbs.addNamedComponent(rule.getSource());
                     globBS.getCenterBasisSetForElement(
                     		elSymb).appendComponents(cbs);
@@ -490,20 +488,21 @@ public class BasisSetGenerator extends Worker
             // Generate atom tag
             String elSymb = atm.getSymbol();
             int atmId = i;
+            String tag = null;
             
             // Use previously set atom tag, if any
-            if (AtomUtils.hasProperty(atm,ACCConstants.ATMTAGPROP))
+            if (AtomUtils.hasProperty(atm, ACCConstants.ATMTAGPROP))
             {
-            	String sid = atm.getProperty(ACCConstants.ATMTAGPROP).toString();
-            	String[] parts = StringUtils.splitCharactersAndNumber(sid);
-            	elSymb = parts[0];
-            	atmId = Integer.parseInt(parts[1]);
+            	tag = atm.getProperty(ACCConstants.ATMTAGPROP).toString();
             }
 
             CenterBasisSet globCBS = new CenterBasisSet();
             if (atm.getProperty(BasisSetConstants.BSATMPROP+"0") != null)
             {
-            	globCBS = globBS.getCenterBasisSetForCenter(atmId, elSymb);
+            	if (tag!=null)
+                	globCBS = globBS.getCenterBasisSetForCenter(tag, null, null);
+            	else
+            		globCBS = globBS.getCenterBasisSetForCenter(null, atmId, elSymb);
             }
 
             Map<Object,Object> allProps = atm.getProperties();
@@ -599,7 +598,7 @@ public class BasisSetGenerator extends Worker
     private void importBasisSetFromFile(String bsName, String src)
     {
         //TODO for now only GBS files can be imported
-        BasisSet bs = BasisSetUtils.importBasisSetFromGBSFile(src,verbosity);
+        BasisSet bs = BasisSetUtils.importBasisSetFromGBSFile(src, verbosity);
         importedBSs.put(bsName,bs);
     }
 

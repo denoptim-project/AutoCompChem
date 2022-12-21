@@ -43,6 +43,7 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -610,7 +611,9 @@ public class GaussianInputWriter extends Worker
                         }
                     }
                     stepRoute.put(bsKeyRef,genBsKey);
-                    result = bs.toInputFileString("gaussian");
+                    result = StringUtils.mergeListToString(
+                    		GaussianInputWriter2.formatBasisSetLines(bs), 
+                    		System.getProperty("line.separator"));
                     break;
                     
                 case "GENERATECONSTRAINTS":

@@ -18,7 +18,10 @@ package autocompchem.modeling.basisset;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter2;
+import autocompchem.chemsoftware.nwchem.NWChemInputWriter2;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
@@ -117,7 +120,7 @@ public class BasisSetUtils
                 	String[] elInt = StringUtils.splitCharactersAndNumber(atmId);
                 	String el = elInt[0];
                 	int id = Integer.parseInt(elInt[1]);
-                	cbs = bs.getCenterBasisSetForCenter(id, el);
+                	cbs = bs.getCenterBasisSetForCenter(null, id, el);
                 } else {
                 	cbs = bs.getCenterBasisSetForElement(atmId);
                 }
@@ -399,7 +402,7 @@ public class BasisSetUtils
 
     /**
      * Writes a basis set to an output file according to the given format.
-     * Known formats are listed in the {@link BasisSet} documentation.
+     * Known formats are 'Gaussian' and 'NWChem'.
      * @param bs the basis set to be written
      * @param format the format of the basis set (i.e., the name of the software
      * package meant to read the basis set) 
@@ -408,7 +411,28 @@ public class BasisSetUtils
 
     public static void writeFormattedBS(BasisSet bs, String format, String out)
     {
-        IOtools.writeTXTAppend(out,bs.toInputFileString(format),true);
+    	List<String> lines = new ArrayList<String>();
+    	switch (format.toUpperCase())
+    	{
+    	case "GAUSSIAN":
+    		lines = GaussianInputWriter2.formatBasisSetLines(bs);
+    		lines.add(""); //Empty line terminating ECP section
+    		break;
+    		
+    	case "NWCHEM":
+    		lines.add("BASIS \"ao basis\" print");
+    		lines.addAll(NWChemInputWriter2.formatBasisSetLines(bs));
+    		lines.add("END");
+    		lines.add("ECP");
+    		lines.addAll(NWChemInputWriter2.formatECPLines(bs));
+    		lines.add("END");
+    		break;
+    		
+    	default:
+    		
+    	}
+        IOtools.writeTXTAppend(out, StringUtils.mergeListToString(lines, 
+        		System.getProperty("line.separator")), true);
     }
 
 //----------------------------------------------------------------------------- 

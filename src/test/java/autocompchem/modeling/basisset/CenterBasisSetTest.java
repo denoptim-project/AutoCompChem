@@ -23,7 +23,7 @@ public class CenterBasisSetTest
      */
     public static CenterBasisSet getTestCenterBasisSet()
     {	
-    	CenterBasisSet cbs = new CenterBasisSet(3, "W");
+    	CenterBasisSet cbs = new CenterBasisSet(null, 3, "W");
     	Shell s = new Shell("S");
     	s.add(new Primitive("S", 0, 12.34, 0.5678, 1, 2));
     	s.add(new Primitive("S", 0, Arrays.asList(7.6, 5.4), 0.089, 2, 3));
@@ -80,7 +80,7 @@ public class CenterBasisSetTest
     	assertFalse(cbsA.equals(cbsB));
 
     	cbsB = getTestCenterBasisSet();
-    	cbsB.setAtmId("blabl");
+    	cbsB.setCenterTag("blabla");
     	assertFalse(cbsA.equals(cbsB));
 
     	cbsB = getTestCenterBasisSet();
@@ -99,16 +99,7 @@ public class CenterBasisSetTest
     	cbsB.getECPShells().get(0).setType("blabla");
     	assertFalse(cbsA.equals(cbsB));
     }
-    
-//------------------------------------------------------------------------------
 
-    @Test
-    public void testJsonRoundTrip() throws Exception
-    {
-    	CenterBasisSet cbs = getTestCenterBasisSet();
-    	
-    }
-    	
 //------------------------------------------------------------------------------
 
 }

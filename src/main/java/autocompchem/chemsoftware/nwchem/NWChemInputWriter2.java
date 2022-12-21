@@ -41,6 +41,11 @@ import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.modeling.basisset.CenterBasisSet;
+import autocompchem.modeling.basisset.ECPShell;
+import autocompchem.modeling.basisset.Primitive;
+import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
@@ -206,11 +211,11 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 				switch (d.getName().toUpperCase())
 				{
 				case "BASIS":
-					ddLines.add(bs.toInputFileStringBS("NWChem"));
+					ddLines.addAll(formatBasisSetLines(bs));
 					break;
 					
 				case "ECP":
-					ddLines.add(bs.toInputFileStringECP("NWChem"));
+					ddLines.addAll(formatECPLines(bs));
 					break;
 					
 				default:
@@ -802,6 +807,140 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
     	}
     	return lines;
 	}
+	
+//------------------------------------------------------------------------------
+    
+    /**
+     * Prepares the lines of text that are meant to define a basis set in 
+     * NWChem's input files.
+     * @param bs the basis set to format to a list of strings.
+     * @return the list of strings where each string is a line (without new line
+     * character at the end).
+     */
+    public static List<String> formatBasisSetLines(BasisSet bs) 
+	{
+    	List<String> lines = new ArrayList<String>();
+    	for (CenterBasisSet cbs : bs.centerBSs)
+    	{
+    		String atmStr = "";
+    		if (cbs.getCenterTag()!=null)
+    		{
+    			atmStr = cbs.getCenterTag();
+    		} else if (cbs.getElement()!=null) {
+    			atmStr = Character.toUpperCase(cbs.getElement().charAt(0))+"";
+    			if (cbs.getElement().length()>1)
+    				atmStr = atmStr + cbs.getElement().toLowerCase().substring(1);
+		        if (cbs.getCenterIndex()!=null)
+		        	atmStr = atmStr + (cbs.getCenterIndex()+1);
+    		}
+            for (String n : cbs.getNamedComponents())
+            {
+                if (n.contains(" "))
+                {
+                	lines.add(String.format(Locale.ENGLISH,
+                    		"  %s library \"%s\"", atmStr, n));
+                } else {
+                	lines.add(String.format(Locale.ENGLISH, 
+                    		"  %s library %s", atmStr, n));
+                }
+            }
+            for (Shell s : cbs.getShells())
+            {
+            	lines.add(String.format(Locale.ENGLISH, "  %s %s", atmStr, 
+            			s.getType()));
+                for (Primitive p : s.getPrimitives())
+                {
+                	String line = "";
+                    String eForm = "%" + (p.getExpPrecision() + 6) + "."
+                    		+ (p.getExpPrecision()-1) + "E      ";
+                    line = String.format(Locale.ENGLISH, eForm, p.getExp());
+                    
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                            + (p.getCoeffPrecision()-1) + "E";
+					for (Double c : p.getCoeff())
+					{
+						line = line + String.format(Locale.ENGLISH, cForm, c);
+					}
+					lines.add(line);
+                }
+            }
+    	}
+    	return lines;
+	}
+	
+//------------------------------------------------------------------------------
+      
+    /**
+     * Prepares the lines of text that are meant to define the ECPs in 
+     * NWChem's input files.
+     * @param bs the basis set containing the ECPs to format to a list of 
+     * strings.
+     * @return the list of strings where each string is a line (without new line
+     * character at the end).
+     */
+    public static List<String> formatECPLines(BasisSet bs) 
+  	{
+      	List<String> lines = new ArrayList<String>();
+      	for (CenterBasisSet cbs : bs.getAllCenterBSs())
+        {
+    		if (cbs.getECPShells().size()==0)
+    			continue;
+    		
+      		String atmStr = "";
+    		if (cbs.getCenterTag()!=null)
+    		{
+    			atmStr = cbs.getCenterTag();
+    		} else if (cbs.getElement()!=null) {
+    			atmStr = Character.toUpperCase(cbs.getElement().charAt(0))+"";
+    			if (cbs.getElement().length()>1)
+    				atmStr = atmStr + cbs.getElement().toLowerCase().substring(1);
+		        if (cbs.getCenterIndex()!=null)
+		        	atmStr = atmStr + (cbs.getCenterIndex()+1);
+    		}
+    	
+  			lines.add(String.format(Locale.ENGLISH,
+            		"  %s nelec %s", atmStr, cbs.getElectronsInECP()));
+  			
+  			boolean first = true;
+      		for (ECPShell s : cbs.getECPShells())
+      		{
+                String ecpsType = s.getType();
+                if (first && ecpsType.substring(0,1).toUpperCase().equals(
+                            BasisSetConstants.ANGMOMINTTOSTR.get(
+                            		cbs.getECPMaxAngMom())))
+                {
+                    ecpsType = "ul";
+                } else {
+                    String[] parts = ecpsType.split("-");
+                    ecpsType = parts[0]; 
+                }
+                if (first)
+                	first = false;
+                lines.add(String.format(Locale.ENGLISH, "  %s %s", atmStr, 
+                		ecpsType));
+                for (Primitive p : s.getPrimitives())
+                {
+                	String line = String.format(Locale.ENGLISH, "  %d ", 
+                			p.getAngMmnt());
+                    
+                	String eForm = "%" + (p.getExpPrecision() + 6) + "."
+                                           + (p.getExpPrecision()-1) + "E     ";
+                    line = line + String.format(Locale.ENGLISH,
+                    		eForm,p.getExp());
+
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                            + (p.getCoeffPrecision()-1) + "E";
+					for (Double c : p.getCoeff())
+					{
+						line = line + String.format(Locale.ENGLISH, cForm, c);
+					}
+					lines.add(line);
+                }
+      		}
+        }
+      	
+      	return lines;
+  	}
     
 //------------------------------------------------------------------------------
 

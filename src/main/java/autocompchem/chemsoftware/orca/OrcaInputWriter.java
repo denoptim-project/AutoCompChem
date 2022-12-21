@@ -367,6 +367,58 @@ public class OrcaInputWriter extends ChemSoftInputWriter
             frozenTorsStr = frozenTorsStr + " C }";
             lines.add(frozenTorsStr);
         }
+        for (Constraint c : cs.getConstrainsWithType(
+        		ConstraintType.IMPROPERTORSION))
+        {
+            String frozenTorsStr = OrcaConstants.INDENT + "{ D";
+            if (c.hasValue())
+            {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
+                        + c.getAtomIDs()[3] + " " + c.getValue();
+            } else {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
+                        + c.getAtomIDs()[3];
+            }
+            frozenTorsStr = frozenTorsStr + " C }";
+            lines.add(frozenTorsStr);
+        }
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.UNDEFINED))
+        {
+            String cStr = OrcaConstants.INDENT;
+            switch (c.getAtomIDs().length)
+	            {
+	            case 1:
+	            	cStr = cStr + "{ C " + c.getAtomIDs()[0];
+	            	break;
+
+	            case 2:
+	            	cStr = cStr + "{ B " + c.getAtomIDs()[0] 
+	            			+ " "  + c.getAtomIDs()[1];
+	            	break;
+	            	
+	            case 3:
+	            	cStr = cStr + "{ A " + c.getAtomIDs()[0] 
+	            			+ " "  + c.getAtomIDs()[1]
+	    	            	+ " "  + c.getAtomIDs()[2];
+	            	break;
+
+	            case 4:
+	            	cStr = cStr + "{ D " + c.getAtomIDs()[0] 
+	            			+ " "  + c.getAtomIDs()[1]
+	    	            	+ " "  + c.getAtomIDs()[2]
+	    	    	        + " "  + c.getAtomIDs()[3];
+	            	break;
+            }
+            
+            if (c.hasValue())
+            {
+            	cStr = cStr + " " + c.getValue();
+            }
+            cStr = cStr + " C }";
+            lines.add(cStr);
+        }
         lines.add("end");
     	return lines;
     }

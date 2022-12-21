@@ -22,14 +22,14 @@ public class BasisSetTest
     public void testHasCenter() throws Exception
     {
     	BasisSet bs = new BasisSet();
-    	bs.addCenterSpecBSet(new CenterBasisSet(20, "Ca"));
-    	bs.addCenterSpecBSet(new CenterBasisSet(7, "C"));
-    	bs.addCenterSpecBSet(new CenterBasisSet(12, "Bla"));
-    	bs.addCenterSpecBSet(new CenterBasisSet(4, "h"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("Ca"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("C"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("Bla"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("h"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, 20, "Ca"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, 7, "C"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, 12, "Bla"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, 4, "h"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Ca"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "C"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Bla"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "h"));
 
     	assertTrue(bs.hasCenter(20, "ca"));
     	assertTrue(bs.hasCenter(7, "c"));
@@ -46,12 +46,12 @@ public class BasisSetTest
     public void testHasElement() throws Exception
     {
     	BasisSet bs = new BasisSet();
-    	bs.addCenterSpecBSet(new CenterBasisSet("Ca"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("C"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("Bla"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("h"));
-    	bs.addCenterSpecBSet(new CenterBasisSet(12, "B"));
-    	bs.addCenterSpecBSet(new CenterBasisSet(4, "N"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Ca"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "C"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Bla"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "h"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, 12, "B"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, 4, "N"));
 
     	assertTrue(bs.hasElement("cA"));
     	assertTrue(bs.hasElement("c"));
@@ -71,8 +71,8 @@ public class BasisSetTest
     public void testGetCenterBasisSetForElement() throws Exception
     {
     	BasisSet bs = new BasisSet();
-    	bs.addCenterSpecBSet(new CenterBasisSet("Ca"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("C"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Ca"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "C"));
     	
     	assertFalse(bs.hasElement("B"));
     	assertFalse(bs.hasCenter(6, "B"));
@@ -93,13 +93,13 @@ public class BasisSetTest
     public void testGetCenterBasisSetForCenter() throws Exception
     {
     	BasisSet bs = new BasisSet();
-    	bs.addCenterSpecBSet(new CenterBasisSet("Ca"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("C"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Ca"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "C"));
     	
     	assertFalse(bs.hasElement("B"));
     	assertFalse(bs.hasCenter(6, "B"));
     	
-    	CenterBasisSet cbs = bs.getCenterBasisSetForCenter(6, "B");
+    	CenterBasisSet cbs = bs.getCenterBasisSetForCenter(null, 6, "B");
     	
     	assertFalse(bs.hasElement("B"));
     	assertTrue(bs.hasCenter(6, "B"));
@@ -116,8 +116,8 @@ public class BasisSetTest
     public void testHasECP() throws Exception
     {
     	BasisSet bs = new BasisSet();
-    	bs.addCenterSpecBSet(new CenterBasisSet("Ca"));
-    	bs.addCenterSpecBSet(new CenterBasisSet("C"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "Ca"));
+    	bs.addCenterSpecBSet(new CenterBasisSet(null, null, "C"));
     	
     	assertFalse(bs.hasECP());
     
@@ -138,7 +138,7 @@ public class BasisSetTest
     {
     	BasisSet bs = new BasisSet();
 
-    	CenterBasisSet cbs0 = new CenterBasisSet("C");
+    	CenterBasisSet cbs0 = new CenterBasisSet(null, null, "C");
     	Shell s0 = new Shell("S");
     	s0.add(new Primitive("S", 0, 12.34, 0.5678, 1, 2));
     	s0.add(new Primitive("S", 0, Arrays.asList(7.6, 5.4), 0.089, 2, 3));
@@ -152,7 +152,7 @@ public class BasisSetTest
 
     	bs.addCenterSpecBSet(cbs0);
     	
-    	CenterBasisSet cbs1 = new CenterBasisSet(3, "W");
+    	CenterBasisSet cbs1 = new CenterBasisSet(null, 3, "W");
     	Shell s = new Shell("S");
     	s.add(new Primitive("S", 0, 12.34, 0.5678, 1, 2));
     	s.add(new Primitive("S", 0, Arrays.asList(7.6, 5.4), 0.089, 2, 3));
@@ -195,7 +195,7 @@ public class BasisSetTest
     	assertFalse(bsA.equals(bsB));
     	
     	bsB = getTestBasisSet();
-    	bsB.getAllCenterBSs().get(0).setAtmId("blabla");
+    	bsB.getAllCenterBSs().get(0).setCenterTag("blabla");
     	assertFalse(bsA.equals(bsB));
     }
     

@@ -1,6 +1,5 @@
 package autocompchem.modeling.basisset;
 
-import java.util.ArrayList;
 
 /*   
  *   Copyright (C) 2016  Marco Foscato 
@@ -19,6 +18,7 @@ import java.util.ArrayList;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,7 +31,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class Shell
+public class Shell implements Cloneable
 {
     /**
      * Shell type (S, P, D, SP, SPD, F, G, ...)
@@ -74,9 +74,9 @@ public class Shell
 
     /**
      * Constructor for a Shell with definition of the type of shell and the 
-     * scale factor
-     * @param type the type of shell
-     * @param scaleFact the scaling factor
+     * scale factor.
+     * @param type the type of shell.
+     * @param scaleFact the scaling factor.
      */
 
     public Shell(String type, double scaleFact)
@@ -88,8 +88,8 @@ public class Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Add a primitive function
-     * @param p the primitive function to be added
+     * Add a primitive function.
+     * @param p the primitive function to be added.
      */
 
     public void add(Primitive p)
@@ -226,6 +226,7 @@ public class Shell
      * software packages recognizing the given format.
      */
 
+     @Deprecated
     public String toInputFileString(String format, String atomId)
     {
         StringBuilder sb = new StringBuilder();
