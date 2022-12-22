@@ -134,7 +134,7 @@ public class DirectiveTest
 				+ ChemSoftConstants.PARGETFILENAMEROOT + NL
 				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
 				+ ParameterConstants.SEPARATOR + ".sfx";
-    	d.addDirectiveData(new DirectiveData(ddString));
+    	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
     	
     	Job j = new Job();
     	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");

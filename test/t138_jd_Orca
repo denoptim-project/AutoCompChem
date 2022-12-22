@@ -1,0 +1,40 @@
+$DIR_# $MT_comment=just a comment
+$DIR_! $MT_functional=BP86
+$DIR_! $KV_key=value
+$DIR_# $KV_commentKey=this is a dummy input file
+$DIR_geom $DIR_InHess $MT_hessSource=Read
+$DIR_geom $DIR_InHessName $MT_filename=$START$ACCTASK: GET_FILENAME
+SUFFIX: .hess
+QUOTATION: "
+$END
+$DIR_coords $DATA_tmp=$ACCTASK: ADD_GEOMETRY
+$DIR_geom $DIR_constraints $DATA_constraints=$START$ACCTASK: GenerateConstraints
+VERBOSITY: 2
+SMARTS:$START[#8]
+[$([#6](~[#1])(~[#1])~[#1])]
+[#6] [#8] [#6] onlybonded
+$END
+AtomIDS:$START 1
+2 3 1.234
+2 3 4 126.0
+2 3 4 5 -0.123
+12$END
+$END
+----NEW-STEP----
+$DIR_dummy $DIR_nestOne $DIR_nestTwo $KV_key2=value2
+$DIR_dummy $DIR_nestOne $DIR_nestTwo $DATA_data=$STARTfirst 2345
+second 2355i
+third 03940 
+$END
+$DIR_* $MT_charge=-10
+$DIR_* $MT_spin_multiplicity=5
+$DIR_* $MT_coordtype=xyzfile
+$DIR_* $MT_filename=$START$ACCTASK: GET_FILENAME 
+SUFFIX: .xyz
+$END
+$DIR_dummy $DIR_nestOne $KV_key1=value1
+$DIR_dummy $DIR_nestOne $DATA_data1=$STARTfff
+1 AAA
+2 BBB
+3 CCC
+$END

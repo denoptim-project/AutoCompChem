@@ -258,13 +258,18 @@ public class Constraint implements Comparable<Constraint>
 						ConstraintType.ANGLE, value, opts);
 			case 4:
 				if (areLinearlyConnected)
+				{
 					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
 						ids.get(3), ConstraintType.DIHEDRAL, value, opts);
-				else
+				} else {
+					//TODO-gg use connectivity matrix instead of 
+					// areLinearlyConnected so that we can distinguish the
+					// improper torsion from undefined 4-tuples.
+					// Also, add option to ignore the typing of the constraint.
 					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
 							ids.get(3), ConstraintType.IMPROPERTORSION, value, 
 							opts);
-				
+				}
 			default:
 				throw new Exception("Unexpected number of atom IDs (" 
 						+ ids.size() + "). Cannot construct a Constraint.");

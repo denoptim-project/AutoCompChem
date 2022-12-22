@@ -1,4 +1,10 @@
 #!/bin/bash
+
+
+#TODO-gg: upgrade
+echo "Skipped: to upgrade!"
+exit 0
+
 grep -q 'counter IDXE0041 not found' t15.log
 if [ $? != 0 ] ; then 
 echo NOT Passed

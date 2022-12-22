@@ -63,6 +63,18 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
     {
     	super();
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Constructor for an empty data block
+     */
+
+    public DirectiveData(String name)
+    {
+    	super();
+    	this.setReference(name);
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -71,19 +83,16 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
      * @param jdLine the text to parse
      */
 
-    //TODO: get rid of this and replace it with a maker method while make new method 
-    // that initializes only the name of the DirectiveData
-    @Deprecated
-    public DirectiveData(String jdLine)
+    public static DirectiveData makeFromJDLine(String jdLine)
     {
-    	super();
+    	DirectiveData dd = new DirectiveData();
     	
         if (jdLine.toUpperCase().startsWith(ChemSoftConstants.JDLABDATA))
         {
             jdLine = jdLine.substring(ChemSoftConstants.JDLABDATA.length());
         }
         String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR, 2);
-        super.setReference(parts[0]);
+        dd.setReference(parts[0]);
         
         if (parts.length < 2)
         {
@@ -100,9 +109,11 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
         }
         String[] dataLines = block.split(System.getProperty("line.separator"));
         
-        super.setValue(new TextBlock(Arrays.asList(dataLines)));
+        dd.setValue(new TextBlock(Arrays.asList(dataLines)));
         
-        extractTask(new ArrayList<String>(Arrays.asList(dataLines)));
+        dd.extractTask(new ArrayList<String>(Arrays.asList(dataLines)));
+        
+        return dd;
     }
 
 //-----------------------------------------------------------------------------

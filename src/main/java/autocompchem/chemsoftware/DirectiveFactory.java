@@ -255,7 +255,7 @@ public class DirectiveFactory
             }
             else if (uLine.startsWith(ChemSoftConstants.JDLABDATA))
             {
-                DirectiveData data = new DirectiveData(line);
+                DirectiveData data = DirectiveData.makeFromJDLine(line);
                 if (data.hasACCTask())
                 	data.removeValue();
                 d.addDirectiveData(data);
