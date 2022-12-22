@@ -162,6 +162,14 @@ public class ChemSoftConstants
 	 * of the computational chemistry job.
 	 */
 	public static final String PARJOBDETAILS = "JOBDETAILS";
+	
+	/**
+	 * Key for parameter providing the entire header of the job. A header is
+	 * expected to contain all details of a computational chemistry job, though
+	 * in a string-like fashion, i.e., without dividing the information into
+	 * directives, keywords, and data.
+	 */
+	public static final String PARHEADER = "HEADER";
 
 	/**
 	 * Key for parameter defining the pathname's root for any output file (i.e.,
@@ -256,7 +264,18 @@ public class ChemSoftConstants
 	public static final String PARCOORDTYPE = "COORDTYPE";
 	
 	/**
-	 * Key for directive data containing the geometry
+	 * Name of directive that should be printed without its name, thus behaving 
+	 * as a silent container.
+	 */
+	public static final String UNNAMEDDIRECTIVE = "UNNAMEDDIRECTIVE";
+	
+	/**
+	 * Name of directive meant to contain the geometry and related information.
+	 */
+	public static final String DIRGEOMETRY = "GEOMETRY";
+	
+	/**
+	 * Name of directive data meant to contain the geometry
 	 */
 	public static final String DIRDATAGEOMETRY = "DIRDATAGEOMETRY";
 

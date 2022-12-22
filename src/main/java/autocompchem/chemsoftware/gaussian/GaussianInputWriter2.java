@@ -169,8 +169,7 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
      * @return <code>true</code> if the geometry should be in the input file.
      */
     public static boolean needsGeometry(CompChemJob ccj)
-    {
-
+    {		
     	if (ccj.getNumberOfSteps()>0)
     	{
 			CompChemJob stepCcj = (CompChemJob) ccj.getStep(0);
@@ -187,21 +186,24 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     
     private static boolean needsGeometry(Directive routeDir)
     {
-    	Keyword geomKey = routeDir.getKeyword(GaussianConstants.GAUKEYGEOM);
-		if (geomKey!=null)
-		{
-			String value = geomKey.getValueAsString().toUpperCase();
-			if (value.startsWith(GaussianConstants.GAUKEYGEOMCHK) ||
-					value.startsWith(GaussianConstants.GAUKEYGEOMCHECK) ||
-					value.startsWith(GaussianConstants.GAUKEYGEOMALLCHK) ||
-					value.startsWith(GaussianConstants.GAUKEYGEOMSTEP) ||
-					value.startsWith(GaussianConstants.GAUKEYGEOMNGEOM) ||
-					value.startsWith(GaussianConstants.GAUKEYGEOMMOD))
-	        {
-				// Geometry will be teken from checkpoint file.
-				return false;
-	        }
-		}
+    	if (routeDir!=null)
+    	{
+	    	Keyword geomKey = routeDir.getKeyword(GaussianConstants.GAUKEYGEOM);
+			if (geomKey!=null)
+			{
+				String value = geomKey.getValueAsString().toUpperCase();
+				if (value.startsWith(GaussianConstants.GAUKEYGEOMCHK) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMCHECK) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMALLCHK) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMSTEP) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMNGEOM) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMMOD))
+		        {
+					// Geometry will be taken from checkpoint file.
+					return false;
+		        }
+			}
+    	}
 		return true;
     }
     
@@ -225,17 +227,19 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     protected ArrayList<String> getTextForInput(CompChemJob job)
     {	
         ArrayList<String> lines= new ArrayList<String>();
-        for (int step = 0; step<job.getNumberOfSteps(); step++)
+        if (job.getNumberOfSteps()>1)
         {
-        	CompChemJob stepCcj = (CompChemJob)job.getStep(step);
-        	//TODO log
-        	System.out.println("Preparing input for step " + stepCcj.getId());
-        	
-            if (step != 0)
-            {
-                lines.add(GaussianConstants.STEPSEPARATOR);
-            }
-            lines.addAll(getTextForStep(stepCcj));
+	        for (int step = 0; step<job.getNumberOfSteps(); step++)
+	        {
+	        	CompChemJob stepCcj = (CompChemJob)job.getStep(step);
+	            if (step != 0)
+	            {
+	                lines.add(GaussianConstants.STEPSEPARATOR);
+	            }
+	            lines.addAll(getTextForStep(stepCcj));
+	        }
+        } else {
+        	lines.addAll(getTextForStep(job));
         }
         return lines;
     }
@@ -286,6 +290,17 @@ public class GaussianInputWriter2 extends ChemSoftInputWriter
     					+ "expected. Check your input!");
     		}
     	} // No default link0 section
+    	
+
+    	// 
+    	// Convert header into route section
+    	//
+    	Directive textHeader = step.getDirective(ChemSoftConstants.PARHEADER);
+    	if (textHeader!=null)
+    	{
+    		lines.add(textHeader.getDirectiveData(ChemSoftConstants.PARHEADER)
+    				.getValueAsString());
+    	}
     	
     	//
     	// Building lines of Route section

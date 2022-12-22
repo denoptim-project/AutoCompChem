@@ -424,107 +424,109 @@ public class NamedData implements Cloneable
     public NamedData clone() throws CloneNotSupportedException
     {
     	Object cVal = null;
-        switch (type) 
-        {
-        case DOUBLE:
-            cVal = Double.parseDouble(value.toString());
-            break;
 
-        case INTEGER:
-            cVal = Integer.parseInt(value.toString());
-            break;
-
-        case STRING:
-            cVal = value.toString();
-            break;
-
-        case TEXTBLOCK:
-        {
-            @SuppressWarnings("unchecked") ArrayList<String> lines =
-            (ArrayList<String>) value;
-            cVal = new TextBlock(lines);
-            break;
-        }
+    	if (value!=null)
+    	{
+	        switch (type) 
+	        {
+	        case DOUBLE:
+	            cVal = Double.parseDouble(value.toString());
+	            break;
+	
+	        case INTEGER:
+	            cVal = Integer.parseInt(value.toString());
+	            break;
+	
+	        case STRING:
+	            cVal = value.toString();
+	            break;
+	
+	        case TEXTBLOCK:
+	        {
+	            @SuppressWarnings("unchecked") ArrayList<String> lines =
+	            (ArrayList<String>) value;
+	            cVal = new TextBlock(lines);
+	            break;
+	        }
+	        
+	        case LISTOFDOUBLES:
+	        {
+	            @SuppressWarnings("unchecked") ArrayList<Double> doubles =
+	            (ArrayList<Double>) value;
+	            ListOfDoubles l = new ListOfDoubles();
+	            for (Double d : doubles)
+	            {
+	            	l.add(d.doubleValue());
+	            }
+	            cVal = l;
+	            break;
+	        }
+	
+	        case LISTOFINTEGERS:
+	        {
+	            @SuppressWarnings("unchecked") ArrayList<Integer> ints =
+	            (ArrayList<Integer>) value;
+	            ListOfIntegers l = new ListOfIntegers();
+	            for (Integer i : ints)
+	            {
+	            	l.add(i.intValue());
+	            }
+	            cVal = l;
+	            break;
+	        }
+	
+	        case BOOLEAN:
+	            cVal = Boolean.parseBoolean(value.toString());
+	            break;
+	
+	        case IATOMCONTAINER:
+	            cVal = ((IAtomContainer) value).clone();
+	            break;
+	
+	        case ATOMCONTAINERSET:
+	        	AtomContainerSet cSet = new AtomContainerSet();
+	        	for (IAtomContainer iac : ((AtomContainerSet) value).atomContainers())
+	        	{
+	        		cSet.addAtomContainer(iac.clone());
+	        	}
+	            cVal = cSet;
+	            break;
+	
+	        case FILE:
+	            cVal = new File(((File) value).getAbsolutePath());
+	            break;
+	
+	        case ZMATRIX:
+	        	cVal = ((ZMatrix) value).clone();
+	            break;
+	                        
+	        case NORMALMODE:
+	        	cVal = ((NormalMode) value).clone();
+	        	break;
+	
+	        case NORMALMODESET:
+	        	cVal = ((NormalModeSet) value).clone();
+	        	break;
+	        	
+	        case ACTION:
+	        	cVal = ((Action) value).clone();
+	        	break;
+	        	
+	        case PARAMETERSTORAGE:
+	            cVal = ((ParameterStorage) value).clone();
+	            break;
+	            
+	        case CONSTRAINTSSET:
+	        	cVal = ((ConstraintsSet) value).clone();
+	        	break;
+	        	
+	        default:
+	        	cVal = value.toString();
+	            break;
+	        }
+    	}
         
-        case LISTOFDOUBLES:
-        {
-            @SuppressWarnings("unchecked") ArrayList<Double> doubles =
-            (ArrayList<Double>) value;
-            ListOfDoubles l = new ListOfDoubles();
-            for (Double d : doubles)
-            {
-            	l.add(d.doubleValue());
-            }
-            cVal = l;
-            break;
-        }
-
-        case LISTOFINTEGERS:
-        {
-            @SuppressWarnings("unchecked") ArrayList<Integer> ints =
-            (ArrayList<Integer>) value;
-            ListOfIntegers l = new ListOfIntegers();
-            for (Integer i : ints)
-            {
-            	l.add(i.intValue());
-            }
-            cVal = l;
-            break;
-        }
-
-        case BOOLEAN:
-            cVal = Boolean.parseBoolean(value.toString());
-            break;
-
-        case IATOMCONTAINER:
-            cVal = ((IAtomContainer) value).clone();
-            break;
-
-        case ATOMCONTAINERSET:
-        	AtomContainerSet cSet = new AtomContainerSet();
-        	for (IAtomContainer iac : ((AtomContainerSet) value).atomContainers())
-        	{
-        		cSet.addAtomContainer(iac.clone());
-        	}
-            cVal = cSet;
-            break;
-
-        case FILE:
-            cVal = new File(((File) value).getAbsolutePath());
-            break;
-
-        case ZMATRIX:
-        	cVal = ((ZMatrix) value).clone();
-            break;
-                        
-        case NORMALMODE:
-        	cVal = ((NormalMode) value).clone();
-        	break;
-
-        case NORMALMODESET:
-        	cVal = ((NormalModeSet) value).clone();
-        	break;
-        	
-        case ACTION:
-        	cVal = ((Action) value).clone();
-        	break;
-        	
-        case PARAMETERSTORAGE:
-            cVal = ((ParameterStorage) value).clone();
-            break;
-            
-        case CONSTRAINTSSET:
-        	cVal = ((ConstraintsSet) value).clone();
-        	break;
-        	
-        default:
-        	if (value==null)
-        		cVal = null;
-        	else
-        		cVal = value.toString();
-            break;
-        }
-    	NamedData nd = new NamedData(this.getReference(),type, cVal);
+    	NamedData nd = new NamedData(this.getReference(), type, cVal);
     	return nd;
     }
     

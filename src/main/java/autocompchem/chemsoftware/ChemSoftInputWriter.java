@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
@@ -303,6 +304,30 @@ public abstract class ChemSoftInputWriter extends Worker
             ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
                     jdLines.split("\\r?\\n")));
             this.ccJob = new CompChemJob(lines);
+        }
+        else if (params.contains(ChemSoftConstants.PARHEADER))
+        {
+        	this.ccJob = new CompChemJob();
+        	Directive header = new Directive(ChemSoftConstants.PARHEADER);
+        	DirectiveData ddHeader = new DirectiveData(
+        			ChemSoftConstants.PARHEADER);
+        	ddHeader.setValue(params.getParameter(
+                    ChemSoftConstants.PARHEADER).getValueAsString());
+        	header.addDirectiveData(ddHeader);
+        	this.ccJob.addDirective(header);
+        	
+        	//TODO.gg delete: this should not be needed
+        	/*
+        	Directive geometry = new Directive(ChemSoftConstants.DIRGEOMETRY);
+        	DirectiveData ddGeom = new DirectiveData(
+        			ChemSoftConstants.DIRDATAGEOMETRY);
+        	ParameterStorage ps = new ParameterStorage();
+        	ps.setParameter(ChemSoftConstants.JDACCTASK, 
+        			ChemSoftConstants.PARGEOMETRY);
+        	ddGeom.setTaskParams(ps);
+        	geometry.addDirectiveData(ddGeom);
+        	this.ccJob.addDirective(geometry);
+        	*/
         }
         else 
         {

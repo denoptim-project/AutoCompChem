@@ -248,7 +248,7 @@ public class DirectiveFactory
             else if (uLine.startsWith(ChemSoftConstants.JDLABLOUDKEY)
                      || uLine.startsWith(ChemSoftConstants.JDLABMUTEKEY))
             {
-                Keyword kw = new Keyword(line);
+                Keyword kw = Keyword.makeFromJDLine(line);
                 if (kw.hasACCTask())
                 	kw.removeValue();
                 d.addKeyword(kw);

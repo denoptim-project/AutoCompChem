@@ -47,7 +47,7 @@ public class KeywordTest
 //------------------------------------------------------------------------------
 
     @Test
-    public void testConstructorFromString() throws Exception
+    public void testMakeFromJDLineg() throws Exception
     {
     	
     	String str = ChemSoftConstants.JDLABLOUDKEY + "LoudKey "
@@ -55,7 +55,7 @@ public class KeywordTest
     			+ System.getProperty("line.separator") + "second line"
     			+ System.getProperty("line.separator") + "third line";
     	
-    	Keyword k = new Keyword(str);
+    	Keyword k = Keyword.makeFromJDLine(str);
     	
     	assertEquals("LoudKey",k.getName(),"Keyword name(A)");
     	assertTrue(k.isLoud(),"Kind of keyword (A)");
@@ -67,7 +67,7 @@ public class KeywordTest
     	str = ChemSoftConstants.JDLABMUTEKEY + "MuteKey "
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "value";
     	
-    	k = new Keyword(str);
+    	k = Keyword.makeFromJDLine(str);
     	
     	assertEquals("MuteKey",k.getName(),"Keyword name(B)");
     	assertTrue(!k.isLoud(),"Kind of keyword (B)");

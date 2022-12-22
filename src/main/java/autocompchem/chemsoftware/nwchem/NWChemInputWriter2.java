@@ -668,8 +668,7 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 			DirectiveData dd = geomDir.getDirectiveData(NWChemConstants.GEOMDIR);
 			if (dd==null)
 			{
-				dd = new DirectiveData();
-				dd.setReference(NWChemConstants.GEOMDIR);
+				dd = new DirectiveData(NWChemConstants.GEOMDIR);
 				geomDir.addDirectiveData(dd);
 			}
 			

@@ -59,17 +59,6 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
      * Constructor for an empty data block
      */
 
-    public DirectiveData()
-    {
-    	super();
-    }
-    
-//-----------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty data block
-     */
-
     public DirectiveData(String name)
     {
     	super();
@@ -85,14 +74,13 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 
     public static DirectiveData makeFromJDLine(String jdLine)
     {
-    	DirectiveData dd = new DirectiveData();
-    	
         if (jdLine.toUpperCase().startsWith(ChemSoftConstants.JDLABDATA))
         {
             jdLine = jdLine.substring(ChemSoftConstants.JDLABDATA.length());
         }
         String[] parts = jdLine.split(ChemSoftConstants.JDDATAVALSEPARATOR, 2);
-        dd.setReference(parts[0]);
+        
+        DirectiveData dd = new DirectiveData(parts[0]);
         
         if (parts.length < 2)
         {
@@ -377,7 +365,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
         	// To simplify json files some fields are omitted
         	JsonObject jsonNamedData = new JsonObject();
         	jsonNamedData.add("reference", jsonObjSrc.get("reference"));
-        	NamedDataType typ = NamedDataType.UNDEFINED;
+        	NamedDataType typ = NamedDataType.STRING;
             if (jsonObjSrc.has("type"))
             {
             	jsonNamedData.add("type", jsonObjSrc.get("type"));
@@ -391,8 +379,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 
         	// Exploit deserialization of super class
         	NamedData nd = context.deserialize(jsonNamedData, NamedData.class);
-        	DirectiveData dd = new DirectiveData();
-        	dd.setReference(nd.getReference());
+        	DirectiveData dd = new DirectiveData(nd.getReference());
         	dd.setType(nd.getType());
         	if (nd.getValue()!=null)
         		dd.setValue(nd.getValue());
@@ -416,8 +403,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
     public DirectiveData clone() throws CloneNotSupportedException
     {
     	NamedData nd = super.clone();
-    	DirectiveData dd = new DirectiveData();
-    	dd.setReference(nd.getReference());
+    	DirectiveData dd = new DirectiveData(nd.getReference());
     	dd.setType(nd.getType());
     	if (nd.getValue()!=null)
     		dd.setValue(nd.getValue());

@@ -1,16 +1,14 @@
 #!/bin/bash
 
-grep -q "Properties <SPIN_MULTIPLICITY> and <CHARGE> cannot be taken from SDF properties" t4.log
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
+if ! grep -q "^0 *1$" t4-mol.inp ; then
+  echo NOT Passed. ERROR 1
+  exit -1
 fi
 
-grep -q 'Termination status: -1' t4.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if grep -q 'Termination status: 0' t4.log ; then 
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed. ERROR 2
+  exit -1
 fi

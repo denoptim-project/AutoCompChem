@@ -68,15 +68,6 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
      * Keyword type: either "mute" (false), or "loud" (true).
      */
     private boolean isLoud = false;
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Constructor for an undefined keyword.
-     */
-
-    public Keyword()
-    {}
     
 //-----------------------------------------------------------------------------
 
@@ -90,32 +81,46 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
 
     public Keyword(String name, boolean isLoud, Object value)
     {
-        this.setReference(name);
+        this(name);
         this.isLoud = isLoud;
         this.setValue(value);
         if (value instanceof ArrayList || value instanceof String)
         	extractTask();
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Constructor for a keyword that has only its named defined.
+     * @param name the name of the keyword (i.e., the actual keyword).
+     */
+
+    public Keyword(String name)
+    {
+        super(name);
+    }
 
 //-----------------------------------------------------------------------------
 
     /**
-     * Constructor from formatted text (i.e., job details line).
+     * Maker for a keyword from formatted text (i.e., job details line).
      * @param line the formatted text to be parsed.
      */
 
-    public Keyword(String line)
-    {    	
+    public static Keyword makeFromJDLine(String line)
+    {
+    	boolean isLoud = false;
         String upLine = line.toUpperCase();
+        String[] nameAndValue = null;
         if (upLine.startsWith(ChemSoftConstants.JDLABLOUDKEY))
         {
             isLoud = true;
-            parseLine(line,ChemSoftConstants.JDLABLOUDKEY);
+            nameAndValue = parseLine(line,ChemSoftConstants.JDLABLOUDKEY);
         }
         else if (upLine.startsWith(ChemSoftConstants.JDLABMUTEKEY))
         {
             isLoud = false;
-            parseLine(line,ChemSoftConstants.JDLABMUTEKEY);
+            nameAndValue = parseLine(line,ChemSoftConstants.JDLABMUTEKEY);
         }
         else
         {
@@ -124,7 +129,9 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
             		+ ChemSoftConstants.JDLABMUTEKEY + "' in front of key"
             		+ " name '" + line + "'.",-1);
         }
-        extractTask();
+        Keyword k = new Keyword(nameAndValue[0], isLoud, nameAndValue[1]);
+        k.extractTask();
+        return k;
     }
     
 //-----------------------------------------------------------------------------
@@ -134,8 +141,10 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
 	    if (hasACCTask())
 	    {
 			List<String> lines = getValueAsLines();
+			if (lines==null)
+				return;
 			// WARNING! Here we assume that the entire content of the 
-			// keyward value, is about the ACC task. Thus, we add the 
+			// keyword value, is about the ACC task. Thus, we add the 
 			// multiline start/end labels so that the getACCTaskParams
 			// method will keep read all the lines as one.
 			if (lines.size()>1)
@@ -208,13 +217,17 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
      * Parse a job details line and get keyword name and value.
      * @param line the line to parse.
      * @param label the label identifying the type of keyword.
+     * @return a pair where the first entry is the keyword name and the second 
+     * its value.
      */
 
-    private void parseLine(String line, String label)
+    private static String[] parseLine(String line, String label)
     {   
         String[] p = line.split(ChemSoftConstants.JDKEYVALSEPARATOR,2);
-        setReference(p[0].substring(label.length()).trim());
-        setValue(p[1]);
+        String[] nameAndValue = new String[2];
+        nameAndValue[0] = p[0].substring(label.length()).trim();
+        nameAndValue[1] = p[1];
+        return nameAndValue;
     }
     
 //-----------------------------------------------------------------------------
@@ -367,8 +380,7 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
         		isLoud = context.deserialize(jsonObjSrc.get("isLoud"), 
         				Boolean.class);
         	}
-        	Keyword k = new Keyword();
-        	k.setReference(dd.getReference());
+        	Keyword k = new Keyword(dd.getReference());
         	k.setType(dd.getType());
         	k.setValue(dd.getValue());
         	k.setTaskParams(dd.getTaskParams());
@@ -389,8 +401,7 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
   	public Keyword clone() throws CloneNotSupportedException 
   	{
     	DirectiveData dd = super.clone();
-    	Keyword k = new Keyword();
-    	k.setReference(dd.getReference());
+    	Keyword k = new Keyword(dd.getReference());
     	k.setType(dd.getType());
     	k.setValue(dd.getValue());
     	k.setTaskParams(dd.getTaskParams());
