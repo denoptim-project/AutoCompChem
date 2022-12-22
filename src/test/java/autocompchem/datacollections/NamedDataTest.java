@@ -43,6 +43,7 @@ import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetTest;
 import autocompchem.modeling.constraints.ConstraintsSetTest;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixTest;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.situation.Situation;
@@ -176,6 +177,8 @@ public class NamedDataTest
     			JSONableIAtomContainerTest.getTestIAtomContainer()));
     	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
     			ConstraintsSetTest.getTestConstraintSet()));
+    	nds.add(new NamedData("ZMatrix", NamedDataType.ZMATRIX,
+    			ZMatrixTest.getTestZMatrix()));
     	
     	// The following ones are non-JSON-able
     	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 
@@ -198,7 +201,6 @@ public class NamedDataTest
         		{
         			// NB: cannot use equals() because we serialize only
         			// part of the data in the IAtomContainer class.
-        			
         			JSONableIAtomContainer jiac = new JSONableIAtomContainer(
         					(IAtomContainer) nd.getValue());
         			JSONableIAtomContainer jiac2 = new JSONableIAtomContainer(

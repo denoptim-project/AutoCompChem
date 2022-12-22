@@ -20,6 +20,9 @@ package autocompchem.molecule.intcoords;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.utils.NumberUtils;
+
 /**
  * Object representing a single internal coordinate with a name, a value, and 
  * an optional type.
@@ -57,15 +60,14 @@ public class InternalCoord implements Cloneable
      */
 
     public InternalCoord()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
     /**
-     * Construct an InternalCoord defining only the name ond the value
+     * Construct an InternalCoord defining only the name and the value
      * @param name the name of this coordinate
-     * @param value the numerical value assignet to this coordinate
+     * @param value the numerical value assigned to this coordinate
      * @param ids the list of indexes defining this coordinate
      */
 
@@ -83,12 +85,12 @@ public class InternalCoord implements Cloneable
      * @param name the name
      * @param value the value
      * @param ids the list of indexes defining this coordinate
-     * @param type the type as a string (Note that this should be convertable
-     * inot an integer)
+     * @param type the type as a string (Note that this should be convertible
+     * into an integer)
      */
 
     public InternalCoord(String name, double value, ArrayList<Integer> ids,
-                                                                    String type)
+    		String type)
     {
         this.name = name;
         this.value = value;
@@ -179,6 +181,46 @@ public class InternalCoord implements Cloneable
     {
         return type;
     }
+    
+//------------------------------------------------------------------------------
+
+  	@Override
+  	public boolean equals(Object o)
+  	{
+  		if (!(o instanceof InternalCoord))
+  			return false;
+  		InternalCoord other = (InternalCoord) o;
+  		
+  		if (!NumberUtils.closeEnough(this.value, other.value))
+  	   		 return false;
+  		
+  		if (this.name!=null && other.name!=null
+  				&& !this.name.equals(other.name))
+  			return false;
+  		if (this.name==null && other.name!=null)
+  			return false;
+  		if (this.name!=null && other.name==null)
+  			return false;
+  		
+  		if (this.type!=null && other.type!=null
+  				&& !this.type.equals(other.type))
+  			return false;
+  		if (this.type==null && other.type!=null)
+  			return false;
+  		if (this.type!=null && other.type==null)
+  			return false;
+
+  		if (this.ids.size() != other.ids.size())
+	   		 return false;
+	   				 
+  		for (int i=0; i<this.ids.size(); i++)
+  		{
+  			if (this.ids.get(i) != other.ids.get(i))
+  				return false;
+  		}
+  		
+  	   	return true;
+  	}
 
 //------------------------------------------------------------------------------
 
@@ -279,7 +321,7 @@ public class InternalCoord implements Cloneable
      * Produced a string for defining the value of this variable when the 
      * zmatrix has been produced using variables names.
      * @param separator the string to be used between the name and value
-     * @return string definitiong of this internal coordinate
+     * @return string definition of this internal coordinate
      */
  
     public String getVariabeDefLine(String separator)

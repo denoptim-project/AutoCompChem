@@ -36,6 +36,7 @@ import com.google.gson.JsonSerializer;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -43,11 +44,13 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -913,15 +916,15 @@ public class Directive implements IDirectiveComponent, Cloneable
             	{    
                 	case ZMAT:
                 	{
-                		//TODO-gg
-                		Terminator.withMsgAndStatus("ERROR! handling of "
-                				+ "internal coordinates not implemented "
-                				+ "yet... sorry!",-1);
-                		
-                		ZMatrix zmat = new ZMatrix();
-                		
-                		//TODO-gg: get the actual zmat for mol
-                		
+                		ParameterStorage zmatMakerTask = new ParameterStorage();
+                		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
+                				"PRINTZMATRIX");
+                		zmatMakerTask.setParameter("MOL", 
+                				NamedDataType.IATOMCONTAINER, 
+                				mols.get(geometryId));
+                        Worker w = WorkerFactory.createWorker(zmatMakerTask);
+                        ZMatrixHandler zmh = (ZMatrixHandler) w;
+                        ZMatrix zmat = zmh.makeZMatrix();
                 		((IValueContainer) dirComp).setValue(zmat);
                 		break;
                 	}

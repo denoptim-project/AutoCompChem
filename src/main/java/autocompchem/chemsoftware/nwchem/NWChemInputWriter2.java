@@ -175,6 +175,8 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
             // TODO-gg verify this
             // Deal with inconsistent syntax of SET and UNSET directives
             // Yes, for some reason these two directives are written differently.
+            // YEt, we now can have multiple directives with the same name ,so 
+            // there can be multiple SET directives.
             if (ik < d.getAllKeywords().size()  &&
                 (dirName.toUpperCase().equals("SET") || 
                 		dirName.toUpperCase().equals("UNSET"))) 
@@ -705,6 +707,11 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 		}
 		
 		if (hasAddGeometryTask)
+			return;
+		
+		if (innermostJob==ccj)
+			// Need this to handle simple jobs with single step that is the 
+			// outermost job. In that case there is no parent and no steps
 			return;
 		
 		// Redo any multiplication of directive and specification of geometry

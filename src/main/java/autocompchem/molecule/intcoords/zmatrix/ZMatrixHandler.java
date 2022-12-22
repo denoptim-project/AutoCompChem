@@ -174,14 +174,17 @@ public class ZMatrixHandler extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
+    	if (params.contains("VERBOSITY"))
+        {
+	        String vStr = params.getParameter("VERBOSITY").getValue().toString();
+	        this.verbosity = Integer.parseInt(vStr);
+        }
+    	
         if (verbosity > 0)
             System.out.println(" Adding parameters to ZMatrixHandler");
 
         //Get and check the input file (which has to be an SDF file)
+        //TODO-gg make it consistent to ChemSoftConstants
         if (params.contains("INFILE"))
         {
 	        this.inFile = params.getParameter("INFILE").getValue().toString();
