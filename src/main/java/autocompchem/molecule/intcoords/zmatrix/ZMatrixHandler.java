@@ -1695,7 +1695,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
 
     /**
      * Return a unique (within this object) name of a torsion-type internal
-     * coordinate
+     * coordinate.
      */
 
     private String getUnqTorName()
@@ -1707,8 +1707,8 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
 //------------------------------------------------------------------------------
 
     /**
-     * Return the list of internal coordinates defined in this ZMatrixHandler
-     * @return the list of internal coordinates defined in this handler
+     * Return the list of internal coordinates defined in this ZMatrixHandler.
+     * @return the list of internal coordinates defined in this handler.
      */
 
     public ArrayList<InternalCoord> getIntCoords()

@@ -929,15 +929,6 @@ public class Directive implements IDirectiveComponent, Cloneable
                 		break;
                 	}
                 	
-                	case INTERNAL:
-                	{
-                		//TODO
-                		Terminator.withMsgAndStatus("ERROR! handling of "
-                				+ "internal coordinates not implemented "
-                				+ "yet... sorry!",-1);
-                		break;
-                	}
-                	
                 	case XYZ:
                 	default:
                 	{

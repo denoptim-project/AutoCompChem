@@ -221,7 +221,7 @@ public class ChemSoftConstants
 	/**
 	 * Possible values for how a molecular geometry can be reported
 	 */
-	public static enum CoordsType {XYZ, ZMAT, INTERNAL};
+	public static enum CoordsType {XYZ, ZMAT};
 	
 	/**
 	 * Key for the parameter defining which geometry to use when dealing with

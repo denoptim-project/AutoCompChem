@@ -50,6 +50,9 @@ import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
@@ -263,9 +266,121 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 				default:
 					Terminator.withMsgAndStatus("Found set of constraints"
 							+ "in a ditective that is unexpected. Please, "
-							+ "contact the authors and present your case.", -1); 
+							+ "contact the authors and present your use "
+							+ "case.", -1); 
 					break;
 				}
+				break;
+				
+			case ZMATRIX:
+				if (!d.getName().toUpperCase().equals("ZMATRIX"))
+					ddLines.add("ZMATRIX");
+				
+				ZMatrix zmat = (ZMatrix) data.getValue();
+				
+				//TODO-gg
+				boolean thereAreConstants = false;
+				if (!thereAreConstants) 
+				{
+					for (int i=0; i<zmat.getZAtomCount(); i++)
+			        {
+			        	ZMatrixAtom atm = zmat.getZAtom(i);
+			        	StringBuilder sb2 = new StringBuilder();
+			        	sb2.append("  ");
+			        	sb2.append(atm.getName()).append(" ");
+			            int idI = atm.getIdRef(0);
+			            int idJ = atm.getIdRef(1);
+			            int idK = atm.getIdRef(2);
+			            InternalCoord icI = atm.getIC(0);
+			            InternalCoord icJ = atm.getIC(1);
+			            InternalCoord icK = atm.getIC(2);
+			            if (atm.getIdRef(0) != -1)
+			            {
+			                sb2.append(idI + 1).append(" ");
+			                sb2.append(String.format(Locale.ENGLISH, "%5.8f", 
+			                		icI.getValue())).append(" ");
+			                if (idJ != -1)
+			                {
+			                    sb2.append(idJ + 1).append(" ");
+			                    sb2.append(String.format(Locale.ENGLISH,
+			                    		"%5.8f", icJ.getValue())).append(" ");
+			                    if (idK != -1)
+			                    {
+			                        sb2.append(idK + 1).append(" ");
+			                        sb2.append(String.format(Locale.ENGLISH,
+			                        		"%5.8f", icK.getValue()))
+			                        .append(" ");
+			                        if (!icK.getType().equals(
+			                        		InternalCoord.NOTYPE))
+			                        {
+			                        	sb2.append(icK.getType());
+			                        }
+			                    }
+			                }
+			            }
+			            ddLines.add(sb2.toString());
+			        }
+				} else {
+					// First write the ZMatrix itself (with variable names)
+			        for (int i=0; i<zmat.getZAtomCount(); i++)
+			        {
+			        	ZMatrixAtom atm = zmat.getZAtom(i);
+			        	StringBuilder sb2 = new StringBuilder();
+			            sb.append(atm.getName()).append(" ");
+			            int idI = atm.getIdRef(0);
+			            int idJ = atm.getIdRef(1);
+			            int idK = atm.getIdRef(2);
+			            InternalCoord icI = atm.getIC(0);
+			            InternalCoord icJ = atm.getIC(1);
+			            InternalCoord icK = atm.getIC(2);
+			            if (atm.getIdRef(0) != -1)
+			            {
+			                sb2.append(idI + 1).append(" ");
+			                sb2.append(icI.getName()).append(" ");
+			                if (idJ != -1)
+			                {
+			                    sb2.append(idJ + 1).append(" ");
+			                    sb2.append(icJ.getName()).append(" ");
+			                    if (idK != -1)
+			                    {
+			                        sb2.append(idK + 1).append(" ");
+			                        sb2.append(icK.getName()).append(" ");
+			                    }
+			                }
+			            }
+			            ddLines.add(sb2.toString());
+			        }
+			        
+			        //TODO-gg split list into variables and constants
+			        
+			        // Then write the list of variables with initial value
+			        ddLines.add("VARIABLES");
+			        for (int i=0; i<zmat.getZAtomCount(); i++)
+			        {
+			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+			        	{
+			        		InternalCoord ic = zatm.getIC(iIC);
+			        		ddLines.add(ic.getName() + " " + String.format(
+			        				Locale.ENGLISH," %5.8f", ic.getValue()));
+			        	}
+			        }
+			        
+			        // And finally write the list of constants
+			        ddLines.add("CONSTANTS");
+			        for (int i=0; i<zmat.getZAtomCount(); i++)
+			        {
+			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+			        	{
+			        		InternalCoord ic = zatm.getIC(iIC);
+			        		ddLines.add(ic.getName() + " " + String.format(
+			        				Locale.ENGLISH," %5.8f", ic.getValue()));
+			        	}
+			        }
+				}
+				if (!d.getName().toUpperCase().equals("ZMATRIX"))
+					ddLines.add("END");
 				break;
 
         	default:

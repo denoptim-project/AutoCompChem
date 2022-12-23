@@ -50,9 +50,14 @@ public class InternalCoord implements Cloneable
     /**
      * Type of the coordinate
      */
-    protected String type = "notype";
+    protected String type = NOTYPE;
 
 
+    /**
+     * String used to indicate a type that has not been assigned.
+     */
+    public static final String NOTYPE = "notype";
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -308,7 +313,7 @@ public class InternalCoord implements Cloneable
         {
             s = String.format(Locale.ENGLISH," %5.8f",value);
         }
-        if (!type.equals("notype"))
+        if (!type.equals(NOTYPE))
         {
             s = s + " " + type;
         }
@@ -362,7 +367,7 @@ public class InternalCoord implements Cloneable
         {
             sb.append(id + " ");
         }
-        if (!type.equals("notype"))
+        if (!type.equals(NOTYPE))
         {
             sb.append(type);
         }
