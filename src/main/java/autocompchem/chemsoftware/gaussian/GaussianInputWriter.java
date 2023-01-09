@@ -49,6 +49,9 @@ import autocompchem.modeling.basisset.Primitive;
 import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -133,28 +136,17 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     	if (!needsGeometry(ccj))
     		return;
     	
+    	//TODO-gg fixme!
     	//WARNING so far works with only one chemical system
     	IAtomContainer iac = iacs.get(0);
-    	
-    	ArrayList<String> list = new ArrayList<String>();
-    	for (IAtom atm : iac.atoms())
-    	{
-    		Point3d p = AtomUtils.getCoords3d(atm);
-    		String el = AtomUtils.getSymbolOrLabel(atm);
-    		list.add(el + "  " 
-    				+ String.format(Locale.ENGLISH,"%17.12f",p.x) + " "
-    	    		+ String.format(Locale.ENGLISH,"%17.12f",p.y) + " "
-    	    	    + String.format(Locale.ENGLISH,"%17.12f",p.z));
-    	}
 
+    	DirectiveData dd = new DirectiveData("coordinates");
+    	dd.setValue(iac);
     	if (ccj.getNumberOfSteps()>0)
     	{
-        	DirectiveData dd = new DirectiveData("coordinates", list);
         	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
         			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
     	} else {
-
-        	DirectiveData dd = new DirectiveData("coordinates", list);
         	setDirectiveDataIfNotAlreadyThere(ccj, 
         			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
     	}
@@ -164,26 +156,43 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     
     /**
      * Checks if a job needs to specify the geometry of the chemical system in
-     * its input file of if it takes it from the checkpoint file.
+     * its input file or if it does not because it either takes it from the 
+     * checkpoint file or there is a task adding a geometry to the molecule
+     * specification section. We assume that any {@link DirectiveData} found in
+     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive} is
+     * about defining the geometry. Therefore, the existence of any such
+     * {@link DirectiveData} is sufficient to make this method return 
+     * <code>false</code>.
      * @param ccj the job to analyze
      * @return <code>true</code> if the geometry should be in the input file.
      */
     public static boolean needsGeometry(CompChemJob ccj)
-    {		
+    {
     	if (ccj.getNumberOfSteps()>0)
     	{
-			CompChemJob stepCcj = (CompChemJob) ccj.getStep(0);
-			Directive routeDir = stepCcj.getDirective(
-    				GaussianConstants.DIRECTIVEROUTE);
-			return needsGeometry(routeDir);
+			return needsGeometry((CompChemJob) ccj.getStep(0));
     	} else {
-    		return needsGeometry(ccj.getDirective(
-    				GaussianConstants.DIRECTIVEROUTE));
+    		Directive route = ccj.getDirective(GaussianConstants.DIRECTIVEROUTE);
+    		if (route!=null && !needsGeometry(route))
+    			return false;
+    		Directive geom = ccj.getDirective(GaussianConstants.DIRECTIVEMOLSPEC);
+    		//WARNING: we assume that any DirectiveData
+    		if (geom!=null && geom.getAllDirectiveDataBlocks().size()>0)
+    			return false;
     	}
+    	return true;
     }
     
 //------------------------------------------------------------------------------
     
+    /**
+     * Looks into the route section for keywords indicating the the geometry is 
+     * taken from the checkpoint file, in one of the many ways, so no geometry
+     * needs to be specified in the molecular section of the input.
+     * @param routeDir
+     * @return <code>true</code> if a geometry needs to be given in the 
+     * molecular specification section.
+     */
     private static boolean needsGeometry(Directive routeDir)
     {
     	if (routeDir!=null)
@@ -225,7 +234,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      */
     protected ArrayList<String> getTextForInput(CompChemJob job)
-    {	
+    {
         ArrayList<String> lines= new ArrayList<String>();
         if (job.getNumberOfSteps()>1)
         {
@@ -400,7 +409,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     					+ "expected. Check your input!");
     		}
     	} else {
-			lines.add("#P");
+    		if (textHeader==null)
+    			lines.add("#P");
     	}
 		lines.add(""); // Empty line terminating route section
     	
@@ -463,7 +473,149 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		{
     			for (DirectiveData dd : molDir.getAllDirectiveDataBlocks())
     			{
-    				lines.addAll(dd.getLines());
+    				switch (dd.getType())
+    	        	{
+	    			case IATOMCONTAINER:
+	    				IAtomContainer mol = (IAtomContainer) dd.getValue();
+	    				for (IAtom atm : mol.atoms())
+	    				{
+	    					Point3d p3d = AtomUtils.getCoords3d(atm);
+
+	    		    		String el = AtomUtils.getSymbolOrLabel(atm);
+	    					lines.add(String.format(Locale.ENGLISH,"%s", el)
+	    							+ String.format(Locale.ENGLISH," %17.12f",
+	    									p3d.x)
+	    							+ String.format(Locale.ENGLISH," %17.12f",
+	    									p3d.y)
+	    							+ String.format(Locale.ENGLISH," %17.12f",
+	    									p3d.z));
+	    				}
+	    				break;
+	    			
+	    			case ZMATRIX:
+	    				ZMatrix zmat = (ZMatrix) dd.getValue();
+	    				if (!zmat.hasConstants()) 
+	    				{
+	    					for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom atm = zmat.getZAtom(i);
+	    			        	StringBuilder sbAtom = new StringBuilder();
+	    			        	sbAtom.append("  ");
+	    			        	sbAtom.append(atm.getName()).append(" ");
+	    			            int idI = atm.getIdRef(0);
+	    			            int idJ = atm.getIdRef(1);
+	    			            int idK = atm.getIdRef(2);
+	    			            InternalCoord icI = atm.getIC(0);
+	    			            InternalCoord icJ = atm.getIC(1);
+	    			            InternalCoord icK = atm.getIC(2);
+	    			            if (atm.getIdRef(0) != -1)
+	    			            {
+	    			            	sbAtom.append(idI + 1).append(" ");
+	    			            	sbAtom.append(String.format(Locale.ENGLISH, 
+	    			                		"%5.8f", 
+	    			                		icI.getValue())).append(" ");
+	    			                if (idJ != -1)
+	    			                {
+	    			                	sbAtom.append(idJ + 1).append(" ");
+	    			                	sbAtom.append(String.format(
+	    			                			Locale.ENGLISH,
+	    			                    		"%5.8f", 
+	    			                    		icJ.getValue())).append(" ");
+	    			                    if (idK != -1)
+	    			                    {
+	    			                    	sbAtom.append(idK + 1).append(" ");
+	    			                    	sbAtom.append(String.format(
+	    			                        		Locale.ENGLISH,
+	    			                        		"%5.8f", 
+	    			                        		icK.getValue())).append(" ");
+	    			                        if (!icK.getType().equals(
+	    			                        		InternalCoord.NOTYPE))
+	    			                        {
+	    			                        	sbAtom.append(icK.getType());
+	    			                        }
+	    			                    }
+	    			                }
+	    			            }
+	    			            lines.add(sbAtom.toString());
+	    			        }
+	    				} else {
+	    					// First write the ZMatrix itself (with variable names)
+	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom atm = zmat.getZAtom(i);
+	    			        	StringBuilder sbAtom = new StringBuilder();
+	    			        	sbAtom.append(atm.getName()).append(" ");
+	    			            int idI = atm.getIdRef(0);
+	    			            int idJ = atm.getIdRef(1);
+	    			            int idK = atm.getIdRef(2);
+	    			            InternalCoord icI = atm.getIC(0);
+	    			            InternalCoord icJ = atm.getIC(1);
+	    			            InternalCoord icK = atm.getIC(2);
+	    			            if (atm.getIdRef(0) != -1)
+	    			            {
+	    			            	//NB: 1-based indexing!
+	    			            	sbAtom.append(idI + 1).append(" ");
+	    			            	sbAtom.append(icI.getName()).append(" ");
+	    			                if (idJ != -1)
+	    			                {
+	    			                	sbAtom.append(idJ + 1).append(" ");
+	    			                	sbAtom.append(
+	    			                			icJ.getName()).append(" ");
+	    			                    if (idK != -1)
+	    			                    {
+	    			                    	sbAtom.append(idK + 1).append(" ");
+	    			                    	sbAtom.append(
+	    			                    			icK.getName()).append(" ");
+	    			                    	if (!icK.getType().equals(
+	    			                        		InternalCoord.NOTYPE))
+	    			                        {
+	    			                    		sbAtom.append(icK.getType());
+	    			                        }
+	    			                    }
+	    			                }
+	    			            }
+	    			            lines.add(sbAtom.toString());
+	    			        }
+	    			        // Then write the list of variables with initial value
+	    			        lines.add("  Variables:");
+	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+	    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+	    			        	{
+	    			        		InternalCoord ic = zatm.getIC(iIC);
+	    			        		if (ic.isConstant())
+	    			        			continue;
+	    			        		lines.add(ic.getName() + " " 
+	    			        			+ String.format(Locale.ENGLISH, 
+	    			        					" %5.8f", ic.getValue()));
+	    			        	}
+	    			        }
+	    			        
+	    			        // And finally write the list of constants
+	    			        lines.add("  Constants:");
+	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+	    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+	    			        	{
+	    			        		InternalCoord ic = zatm.getIC(iIC);
+	    			        		if (!ic.isConstant())
+	    			        			continue;
+	    			        		lines.add(ic.getName() + " " 
+	    			        			+ String.format(Locale.ENGLISH,
+	    			        					" %5.8f", ic.getValue()));
+	    			        	}
+	    			        }
+	    				}
+	    				break;
+	    				
+	    				default:
+	    					throw new IllegalArgumentException("Unexpected "
+	    							+ "type of DirectiveData. Check '"  
+	    							+ dd.getName() + "' in directive '" 
+	    							+ molDir.getName() + "'.");
+    	        	}
     			}
     		}
     		if (molDir.getAllSubDirectives().size()>0)

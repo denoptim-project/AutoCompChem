@@ -92,8 +92,6 @@ public class NWChemInputWriter extends ChemSoftInputWriter
      * single job directive. Here we translate all chem.-software-agnostic 
      * components to NWChem-specific format.
      * @param d the directive to translate into text.
-     * @param outmost set <code>true</code> if the directive is the outermost 
-     * and, thus, must be decorated with the '%' character.
      * @return the list of lines for the input file
      */
     
