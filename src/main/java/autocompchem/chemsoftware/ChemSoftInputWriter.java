@@ -733,6 +733,7 @@ public abstract class ChemSoftInputWriter extends Worker
      * @param mol the chemical entity.
      * @param outFileName the pathname where to write.
      */
+    //TODO-gg get rid of these
     @Deprecated
     protected abstract void printInputForOneMol(IAtomContainer mol, 
     		String outFileName, String outFileNameRoot);

@@ -1092,7 +1092,7 @@ public class Job implements Runnable
     
 //------------------------------------------------------------------------------
 
-    public static class JobDeSerializer 
+    public static class JobDeserializer 
     implements JsonDeserializer<Job>
     {
         @Override

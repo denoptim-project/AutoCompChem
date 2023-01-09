@@ -11,40 +11,34 @@ if [ $? != 0 ] ; then
   exit -1
 fi
 
-echo here 99
 if [[ $(grep -A179 CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*CONSTANTS[[:space:]]*$") ]]; then
   echo NOT Passed ERROR 3
   exit -1
 fi
 
-echo here 98
 if [[ $(grep -A6 CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*end[[:space:]]*$") ]]; then
   echo NOT Passed ERROR 4
   exit -1
 fi
 
-echo here 97
 grep -q "^[[:space:]]*H[[:space:]]*$" t52-mol.nw
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 5
   exit -1
 fi
 
-echo here 2
 grep -q "^[[:space:]]*C[[:space:]]*1[[:space:]]*dst1[[:space:]]*$" t52-mol.nw
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 6
   exit -1
 fi
 
-echo here1
 grep -q "^[[:space:]]*H[[:space:]]*2[[:space:]]*dst2[[:space:]]*1[[:space:]]*ang1[[:space:]]*$" t52-mol.nw
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 7
   exit -1
 fi
 
-echo here
 grep -q "^[[:space:]]*Ru[[:space:]]*2[[:space:]]*dst3[[:space:]]*1[[:space:]]*ang2[[:space:]]*3[[:space:]]*ang3[[:space:]]*1[[:space:]]*$" t52-mol.nw
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 8

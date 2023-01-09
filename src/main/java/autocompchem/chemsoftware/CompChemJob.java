@@ -278,6 +278,8 @@ public class CompChemJob extends Job implements Cloneable
     
     public void setDirective(Directive d)
     {
+    	if (d==null)
+    		throw new IllegalArgumentException("Null directives not allowed!");
     	setDirective(d, false);
     }
     
@@ -314,7 +316,7 @@ public class CompChemJob extends Job implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
-     * Adds directive to this job regardeless of whether another directive with 
+     * Adds directive to this job regardless of whether another directive with 
      * the same name exists.
      * @param d the given directive
      */
@@ -405,6 +407,10 @@ public class CompChemJob extends Job implements Cloneable
     
     public void setDirectives(ArrayList<Directive> directives)
     {
+    	for (Directive d : directives)
+    		if (d==null)
+    			throw new IllegalArgumentException(
+    					"Null directives not allowed!");
     	this.directives = directives;
     }
 

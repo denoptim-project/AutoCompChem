@@ -1,21 +1,34 @@
 #!/bin/bash
-grep -q "^0 1" t42-mol.inp
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
+
+if [ ! -f t42-mol.inp ]; then
+  echo NOT Passed - Error 1
+  exit -1
 fi
 
-grep -q "^Fe       -0.000050000000        2.595354000000        3.772127000000" t42-mol.inp
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
+if ! grep -q "^0 1$" t42-mol.inp ; then
+  echo NOT Passed - Error 2
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t42.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if ! grep -q "^222 333$" t42-mol.inp ; then
+  echo NOT Passed - Error 3
+  exit -1
+fi
+
+if ! grep -q "^H * 1.50059200.* 1.29929200.* 0.85309100.*" t42-mol.inp ; then
+  echo NOT Passed - Error 4
+  exit -1
+fi
+
+if ! grep -q "^Fe * -0.0000500.* 2.59535400.* 3.77212700.*" t42-mol.inp ; then
+  echo NOT Passed - Error 5
+  exit -1
+fi
+
+if grep -q 'Termination status: 0' t42.log ; then 
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed - Error 6
+  exit -1
 fi
