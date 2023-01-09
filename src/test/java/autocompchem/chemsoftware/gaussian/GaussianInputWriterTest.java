@@ -88,7 +88,7 @@ public class GaussianInputWriterTest
     	
     	ArrayList<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-        		+ TaskID.PREPAREINPUTGAUSSIAN2);
+        		+ TaskID.PREPAREINPUTGAUSSIAN);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR + molFile.getAbsolutePath());
     	parLines.add(ChemSoftConstants.PAROUTFILEROOT

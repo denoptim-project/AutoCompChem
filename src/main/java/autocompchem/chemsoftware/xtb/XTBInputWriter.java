@@ -71,72 +71,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	}
     
 //------------------------------------------------------------------------------
-    
-    @Deprecated
-    protected void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot)
-    {		
-		CompChemJob molSpecJob = ccJob.clone();
-
-		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		
-		Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
-		if (pCharge != null)
-		{
-			try {
-				Integer.valueOf(pCharge.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pCharge.toString() + "' as charge. Check "
-						+ "value of property '" + ChemSoftConstants.PARCHARGE
-						+ "'.", -1);
-			}
-			Directive d = new Directive("charge");
-			d.addKeyword(new Keyword("value", false, pCharge.toString()));
-			molSpecJob.setDirective(d);
-		}
-		
-		Object pSpin = mol.getProperty(ChemSoftConstants.PARSPINMULT);
-		if (pSpin != null)
-		{
-			int spinMult = 0;
-			try {
-				spinMult = Integer.valueOf(pSpin.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pSpin.toString() + "' as spin multiplicity. Check "
-						+ "value of property '" + ChemSoftConstants.PARSPINMULT
-						+ "'.", -1);
-			}
-			int numUnpairedEls = spinMult - 1;
-			Directive d = new Directive("spin");
-			d.addKeyword(new Keyword("value", false, numUnpairedEls + ""));
-			molSpecJob.setDirective(d);
-		}
-		
-		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(new ArrayList<IAtomContainer>(Arrays.asList(
-				mol)));
-		//molSpecJob.sortDirectivesBy(new XTBDirectiveComparator());
-		
-    	// WARNING: at this time XTB is not capable of running a multi-step jobs
-		ArrayList<String> lines = new ArrayList<String>();
-		if (molSpecJob.getNumberOfSteps()>0)
-		{
-			// If one day XTB becomes able to run multiple steps this is where 
-			// we'll collect the input lines for each step and add the step 
-			// separator.
-			// For now we report the inconsistency.
-			Terminator.withMsgAndStatus("ERROR! XTB does not run multi-step "
-					+ "jobs, but your input contains more than one step.", -1);
-		} else {
-			lines.addAll(getTextForInput(molSpecJob));
-		}
-		IOtools.writeTXTAppend(outFileName, lines, true);
-    }
-
-//------------------------------------------------------------------------------
-    
+ 
     /**
      * This is the method the encodes the syntax of the XTB input file for a 
      * single job directive. Here we translate all comp.chem.-software agnostic 

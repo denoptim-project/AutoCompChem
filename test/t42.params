@@ -3,6 +3,6 @@
 #
 # Testing input geometry from XYZ file
 Verbosity: 2
-TASK: PrepareInputGaussian2
+TASK: PrepareInputGaussian
 INPUTGEOMETRIESFILE: ../t42-mol.xyz
 JOBDETAILSFILE: ../t42-jobDetails.json

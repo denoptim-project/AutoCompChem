@@ -20,8 +20,8 @@ package autocompchem.modeling.basisset;
 import java.util.ArrayList;
 import java.util.List;
 
-import autocompchem.chemsoftware.gaussian.GaussianInputWriter2;
-import autocompchem.chemsoftware.nwchem.NWChemInputWriter2;
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
+import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
@@ -415,16 +415,16 @@ public class BasisSetUtils
     	switch (format.toUpperCase())
     	{
     	case "GAUSSIAN":
-    		lines = GaussianInputWriter2.formatBasisSetLines(bs);
+    		lines = GaussianInputWriter.formatBasisSetLines(bs);
     		lines.add(""); //Empty line terminating ECP section
     		break;
     		
     	case "NWCHEM":
     		lines.add("BASIS \"ao basis\" print");
-    		lines.addAll(NWChemInputWriter2.formatBasisSetLines(bs));
+    		lines.addAll(NWChemInputWriter.formatBasisSetLines(bs));
     		lines.add("END");
     		lines.add("ECP");
-    		lines.addAll(NWChemInputWriter2.formatECPLines(bs));
+    		lines.addAll(NWChemInputWriter.formatECPLines(bs));
     		lines.add("END");
     		break;
     		

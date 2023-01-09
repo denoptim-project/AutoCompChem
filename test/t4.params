@@ -6,7 +6,7 @@
 #
 # Charge and spin multiplicity are from defaults as they are not in SDF.
 VERBOSITY: 0
-TASK: PrepareInputGaussian2
+TASK: PrepareInputGaussian
 INPUTGEOMETRIESFILE: ../t4-mol.sdf
 $STARTHEADER:
 %NPROCSHARED=16

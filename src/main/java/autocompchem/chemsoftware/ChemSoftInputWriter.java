@@ -321,19 +321,6 @@ public abstract class ChemSoftInputWriter extends Worker
                     ChemSoftConstants.PARHEADER).getValueAsString());
         	header.addDirectiveData(ddHeader);
         	this.ccJob.addDirective(header);
-        	
-        	//TODO.gg delete: this should not be needed
-        	/*
-        	Directive geometry = new Directive(ChemSoftConstants.DIRGEOMETRY);
-        	DirectiveData ddGeom = new DirectiveData(
-        			ChemSoftConstants.DIRDATAGEOMETRY);
-        	ParameterStorage ps = new ParameterStorage();
-        	ps.setParameter(ChemSoftConstants.JDACCTASK, 
-        			ChemSoftConstants.PARGEOMETRY);
-        	ddGeom.setTaskParams(ps);
-        	geometry.addDirectiveData(ddGeom);
-        	this.ccJob.addDirective(geometry);
-        	*/
         }
         else 
         {
@@ -500,8 +487,9 @@ public abstract class ChemSoftInputWriter extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * Prepares the set of input files of a single job, which may or may not 
-     * consist of multiple steps within the comp.chem. software.
+     * Prepare the set of input files of a single job, which may or may not 
+     * consist of multiple steps to be performed by a computational chemistry 
+     * software tool.
      * @param mols the set of geometries that pertain this single job. Note that
      * in the vast majority of cases there will be only one geometry. This
      * corresponds to multi-geometry mode {@value MultiGeomMode#INDEPENDENT}.
@@ -656,7 +644,7 @@ public abstract class ChemSoftInputWriter extends Worker
      * such as the definition of the chemical system's geometry, may or may not 
      * be part of the main input file.
      */
-    //TODO: make this word with a StringBuilder
+    //TODO: make this work with a StringBuilder
     protected abstract ArrayList<String> getTextForInput(CompChemJob job);
     
 //------------------------------------------------------------------------------
@@ -726,18 +714,6 @@ public abstract class ChemSoftInputWriter extends Worker
     	}
     }
     
-//------------------------------------------------------------------------------
-
-    /**
-     * Write the input for a single chemical entity.
-     * @param mol the chemical entity.
-     * @param outFileName the pathname where to write.
-     */
-    //TODO-gg get rid of these
-    @Deprecated
-    protected abstract void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot);
-
 //------------------------------------------------------------------------------
 
 }

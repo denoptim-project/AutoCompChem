@@ -4,7 +4,7 @@
 # Using parameter file to set charge and spin, but spin is overwritten by the SDF property
 #
 VERBOSITY: 1
-TASK: PrepareInputNWChem2
+TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t92-mol.sdf
 MULTIGEOMMODE: path
 JOBDETAILSFILE: ../t92-jobDetails.json

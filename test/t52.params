@@ -2,6 +2,6 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 1
-TASK: PrepareInputNWChem2
+TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t52-mol.sdf
 JOBDETAILSFILE: ../t52-jobDetails.json

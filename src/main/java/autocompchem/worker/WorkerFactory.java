@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
-import autocompchem.chemsoftware.gaussian.GaussianInputWriter2;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
-import autocompchem.chemsoftware.nwchem.NWChemInputWriter2;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
@@ -295,11 +293,7 @@ public class WorkerFactory
         case ForceFieldEditor:
             return ForceFieldEditor.capabilities;
 		case GaussianInputWriter:
-			return GaussianInputWriter.capabilities; 
-			
-		case GaussianInputWriter2: //TODO-gg rename to replace old
-			return GaussianInputWriter2.capabilities;
-			
+			return GaussianInputWriter.capabilities;
         case GaussianOutputHandler:
             return GaussianOutputHandler.capabilities;
         case GaussianReStarter:
@@ -325,11 +319,7 @@ public class WorkerFactory
         case MolecularSorter:
             return MolecularSorter.capabilities;
         case NWChemInputWriter:
-            return NWChemInputWriter.capabilities;
-            
-        case NWChemInputWriter2: //TODO-gg rename to replace old
-			return NWChemInputWriter2.capabilities; 
-        
+			return NWChemInputWriter.capabilities; 
         case NWChemOutputHandler:
             return NWChemOutputHandler.capabilities;
         case NWChemReStarter:
@@ -393,10 +383,6 @@ public class WorkerFactory
             return new ForceFieldEditor();
 		case GaussianInputWriter:
 			return new GaussianInputWriter();
-			
-		case GaussianInputWriter2: //TODO-gg rename to replace old
-			return new GaussianInputWriter2();
-			
         case GaussianOutputHandler:
             return new GaussianOutputHandler();
         case GaussianReStarter:
@@ -421,12 +407,8 @@ public class WorkerFactory
             return new MolecularReorderer();
         case MolecularSorter:
             return new MolecularSorter();
-        case NWChemInputWriter:
-            return new NWChemInputWriter();
-            
-		case NWChemInputWriter2: //TODO-gg rename to replace old
-			return new NWChemInputWriter2();
-			
+		case NWChemInputWriter:
+			return new NWChemInputWriter();
         case NWChemOutputHandler:
             return new NWChemOutputHandler();
         case NWChemReStarter:

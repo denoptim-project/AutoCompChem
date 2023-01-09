@@ -35,7 +35,6 @@ public enum WorkerID
     DummyObjectsHandler,
     ForceFieldEditor,
 	GaussianInputWriter,
-	GaussianInputWriter2, //TODO-gg rename to replace old
     GaussianOutputHandler,
     GaussianReStarter,
     //GenericToolOutputHandler,
@@ -48,7 +47,6 @@ public enum WorkerID
     MolecularReorderer,
     MolecularSorter,
     NWChemInputWriter,
-    NWChemInputWriter2, //TODO-gg rename to replace old
     NWChemOutputHandler,
     NWChemReStarter,
     OrcaInputWriter,

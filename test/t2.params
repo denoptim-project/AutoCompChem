@@ -8,7 +8,7 @@
 # multiplicity come from the properties of SDF file
 #
 VERBOSITY: 2
-TASK: PrepareInputGaussian2
+TASK: PrepareInputGaussian
 INPUTGEOMETRIESFILE: ../t2-mol.sdf
 $STARTHEADER:
 #P HF/LANL2MB   vshift=800   SP

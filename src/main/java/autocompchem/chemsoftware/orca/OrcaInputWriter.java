@@ -79,47 +79,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     
 //------------------------------------------------------------------------------
     
-    @Deprecated
-    protected void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot)
-    {		
-		CompChemJob molSpecJob = ccJob.clone();
-		
-		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		
-		for (Job subJob : molSpecJob.getSteps())
-		{
-			subJob.setParameter(ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		}
-		
-		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(new ArrayList<IAtomContainer>(Arrays.asList(
-				mol)));
-		molSpecJob.sortDirectivesBy(new OrcaDirectiveComparator());
-		
-    	// WARNING: for now we are not considering the possibility of having
-    	// both directives AND sub jobs. So it's either one or the other
-		
-		ArrayList<String> lines = new ArrayList<String>();
-		if (molSpecJob.getNumberOfSteps()>0)
-		{
-			for (int i=0; i<molSpecJob.getNumberOfSteps(); i++)
-			{
-				CompChemJob step = (CompChemJob) molSpecJob.getStep(i);
-				lines.addAll(getTextForInput(step));
-				if (i<(molSpecJob.getNumberOfSteps()-1))
-				{
-					lines.add(OrcaConstants.JOBSEPARATOR);
-				}
-			}
-		} else {
-			lines.addAll(getTextForInput(molSpecJob));
-		}
-		IOtools.writeTXTAppend(outFileName, lines, true);
-    }
-    
-//------------------------------------------------------------------------------
-    
     /**
      * This is the method the encodes the syntax of the Orca input file for a 
      * single job directive. Here we translate all chem.software agnostic 

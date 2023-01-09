@@ -74,15 +74,7 @@ public enum TaskID
     IMPOSECONNECTIONTABLE,
     CHECKBONDLENGTHS,
     FINDATOMSETS,   //TODO check: is it implemented?    
-    CONVERTJOBDETAILS,
-    
-    //TODO-gg from here is the new implementations
-    // TODO-gg rename new to remove obsolete
-    
-    PREPAREINPUTGAUSSIAN2,
-    PREPAREINPUTNWCHEM2
-    
-    ;
+    CONVERTJOBDETAILS;
 	
 //-----------------------------------------------------------------------------
 	
