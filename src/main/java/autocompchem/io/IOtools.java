@@ -45,6 +45,7 @@ import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.MolecularUtils;
@@ -186,15 +187,17 @@ public class IOtools
      */
     public static Object readJsonFile(String fileName, Type type) throws IOException
     {
-    	Object result;
+    	Object result = null;
     	Gson reader = ACCJson.getReader();
     	BufferedReader br = null;
         try
         {
             br = new BufferedReader(new FileReader(fileName));
             result = reader.fromJson(br, type);
-        }
-        finally 
+        } catch (JsonSyntaxException jse) {
+        	Terminator.withMsgAndStatus("ERROR! JSON file '" + fileName 
+        			+ "' has illegal syntax: " + jse.getMessage(), -1);
+        } finally 
         {
             if (br != null)
             {

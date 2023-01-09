@@ -29,7 +29,7 @@ import autocompchem.modeling.constraints.ConstraintsSet.ConstraintsSetSerializer
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
-import autocompchem.run.Job.JobDeSerializer;
+import autocompchem.run.Job.JobDeserializer;
 import autocompchem.run.Job.JobSerializer;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
@@ -99,7 +99,7 @@ public class ACCJson
     	
     	reader = new GsonBuilder()
     			.setPrettyPrinting()
-    	        .registerTypeAdapter(Job.class, new JobDeSerializer())
+    	        .registerTypeAdapter(Job.class, new JobDeserializer())
     	        .registerTypeAdapter(DirectiveData.class, 
     	        		new DirectiveDataDeserializer())
     	        .registerTypeAdapter(NamedData.class, 
