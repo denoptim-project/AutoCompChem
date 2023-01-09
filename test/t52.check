@@ -11,12 +11,12 @@ if [ $? != 0 ] ; then
   exit -1
 fi
 
-if [[ $(grep -A179 CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*CONSTANTS[[:space:]]*$") ]]; then
+if ! $(grep -A179 VARIABLES t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*CONSTANTS[[:space:]]*$"); then
   echo NOT Passed ERROR 3
   exit -1
 fi
 
-if [[ $(grep -A6 CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*end[[:space:]]*$") ]]; then
+if ! $(grep -A6 CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*end[[:space:]]*$"); then
   echo NOT Passed ERROR 4
   exit -1
 fi

@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# ZMatrix with selection of variables
+#
+VERBOSITY: 1
+TASK: PrepareInputGaussian
+INPUTGEOMETRIESFILE: ../t50-mol.sdf
+JOBDETAILSFILE: ../t50-jobDetails.json
