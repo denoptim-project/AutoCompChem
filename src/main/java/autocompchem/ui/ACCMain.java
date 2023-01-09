@@ -133,6 +133,9 @@ public class ACCMain
         // Do the task
         try {
             job.run();
+        } catch (IllegalArgumentException iae) {
+        	Terminator.withMsgAndStatus("ERROR! Input led to illegal argument. "
+        			+ NL + "Hint: " + iae.getMessage(), -1);
         } catch (Throwable t) {
             t.printStackTrace();
             String msg = t.getMessage();
@@ -145,7 +148,7 @@ public class ACCMain
 
             if (msg.startsWith("ERROR!"))
             {
-                Terminator.withMsgAndStatus(t.getMessage(),-1);
+                Terminator.withMsgAndStatus(t.getMessage(), -1);
             } else {
                 t.printStackTrace();
                 Terminator.withMsgAndStatus("Exception occurred! Please "

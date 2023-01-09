@@ -20,10 +20,9 @@ package autocompchem.run;
 import java.util.Date;
 
 /**
- * <code>Terminator</code> has the power to kill the execution of a running job
+ * Terminator has the power to kill the execution of a running job
  * usually returning an error message for the user and an exit status for the
  * machine.
- * @author Marco Foscato
  */
 
 public class Terminator
@@ -55,8 +54,6 @@ public class Terminator
 //TODO add check if stdout and stderr are not the same
         if (exitStatus != 0)
         {
-            Exception e = new Exception();
-            e.printStackTrace();
             System.err.println(line);
         }
 
