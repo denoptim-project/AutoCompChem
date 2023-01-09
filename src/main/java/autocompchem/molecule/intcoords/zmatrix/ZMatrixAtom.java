@@ -27,7 +27,7 @@ import autocompchem.utils.NumberUtils;
 /**
  * Object representing a single center (i.e., an atom) of which position is 
  * defined by means of internal coordinates. 
- * This object is a single line in a z-matrix.
+ * This object is a single line in a {@link ZMatrix}.
  *
  * @author Marco Foscato
  */ 
@@ -392,6 +392,32 @@ public class ZMatrixAtom implements Cloneable
         }
         return ic;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return <code>true</code> if any of the internal coordinates of this atom
+     * is flagged to be a constant.
+     */
+  	public boolean hasConstantIC() 
+  	{
+  		if (icI!=null)
+  		{
+  			if (icI.isConstant())
+  				return true;
+  			if (icJ!=null)
+  	  		{
+  	  			if (icJ.isConstant())
+  	  				return true;
+	  	  		if (icK!=null)
+	  	  		{
+	  	  			if (icK.isConstant())
+	  	  				return true;
+	  	  		}
+  	  		}
+  		}
+  		return false;
+  	}
 
 //------------------------------------------------------------------------------
 

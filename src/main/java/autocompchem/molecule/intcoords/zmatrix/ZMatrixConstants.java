@@ -29,5 +29,21 @@ public class ZMatrixConstants
      * Separator for multi-entity, ACC's format ZMatrix file
      */
     public final static String ZMATMOLSEP = "$$$$";
+    
+    /**
+     * The reference of the parameter defining is we use a selector
+     * for identifying constant or variable internal coordinates.
+     */
+	public static final String SELECTORMODE = "SELECTORMODE";
+	
+	/**
+	 * The selector mode used to define constants
+	 */
+	public static final String SELECTORMODE_CONSTANT = "CONSTANTS";
+			
+	/**
+	 * The selector mode used to define variables
+	 */
+	public static final String SELECTORMODE_VARIABLES = "VARIABLES";
 
 }

@@ -2,7 +2,87 @@
   "jobType": "CompChemJob",
   "steps": [
     {
-      "jobType": "CompChemJob"
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "scf",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "something_eomething",
+              "isLoud": false
+            },
+            {
+              "reference": "units",
+              "value": "angstrom"
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                },
+                {
+                  "reference": "COORDTYPE",
+                  "value": "ZMAT"
+                },
+                {
+                  "reference": "SELECTORMODE",
+                  "value": "CONSTANTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[Cl] [Ru] onlybonded \n[$([#6]~[#7])] [Ru] [Cl] onlybonded \n[#7] [$([#6]~[#7])] [Ru] [Cl] onlybonded"
+                }
+              ],
+              "reference": "geometry",
+              "type": "UNDEFINED"
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "first step",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "* library cc-pvdz"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -20,6 +20,7 @@ package autocompchem.modeling.constraints;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import autocompchem.modeling.basisset.Primitive;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
@@ -357,6 +358,22 @@ public class Constraint implements Comparable<Constraint>
 	public int[] getAtomIDs()
 	{
 		return atmIDs;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * @return the list of atom indexes that defines this constraint (0-based).
+	 */
+	public List<Integer> getAtomIDsList()
+	{
+		List<Integer> idList = new ArrayList<Integer>();
+		for(int i=0; i<atmIDs.length; i++)
+		{
+			if (atmIDs[i]>-1)
+				idList.add(atmIDs[i]);
+		}
+		return idList;
 	}
 	
 //------------------------------------------------------------------------------

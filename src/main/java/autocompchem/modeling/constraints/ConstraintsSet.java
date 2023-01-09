@@ -1,10 +1,6 @@
 package autocompchem.modeling.constraints;
 
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -23,8 +19,11 @@ import java.util.Iterator;
  */
 
 import java.util.TreeSet;
-
-import org.openscience.cdk.interfaces.IAtomContainer;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -33,15 +32,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
-
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.text.TextBlock;
+import autocompchem.molecule.intcoords.InternalCoord;
 
+/**
+ * An ordered collection of constraints.
+ */
 public class ConstraintsSet extends TreeSet<Constraint>
 {
 
@@ -170,6 +166,30 @@ public class ConstraintsSet extends TreeSet<Constraint>
 			return cs;
 		}
     }
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Searches for the tuple defining the given {@link InternalCoord}inate. 
+     * Ignores the type of internal coordinate (e.g., does not distinguish
+     * between proper or improper torsion), but considers different and
+     * equivalent ordering of the indexes (e.g., does not distinguish between 
+     * ABC and CBA).
+     * @param ic the internal coordinate to search for.
+     * @return <code>true</code> if the tuple of indexes defining the given
+     * internal coordinate is found in any constrain present in this set.
+     */
+    public boolean containsInternalCoord(InternalCoord ic) 
+    {
+    	Iterator<Constraint> iter = this.iterator();
+	   	while (iter.hasNext())
+	   	{
+	   		if (ic.compareIDs(iter.next().getAtomIDsList()))
+	   			return true;
+	   	}
+		return false;
+	}
     
 //-----------------------------------------------------------------------------
+	
 }

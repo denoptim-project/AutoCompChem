@@ -181,7 +181,7 @@ public class FileAnalyzer
      * @param pattern1 identifies the beginning of the target section.
      * @param pattern2 identifies the end of the target section
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing <code>pattern1</code> and <code>pattern2</code> into the
      * target section.
@@ -214,7 +214,7 @@ public class FileAnalyzer
      * @param endPattrns list of patterns that identify the end of a 
      * target section. Each entry must have a corresponding one in startPattrns
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the
      * target section.

@@ -36,7 +36,6 @@ import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterStorage;
@@ -278,9 +277,7 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 				
 				ZMatrix zmat = (ZMatrix) data.getValue();
 				
-				//TODO-gg
-				boolean thereAreConstants = false;
-				if (!thereAreConstants) 
+				if (!zmat.hasConstants()) 
 				{
 					for (int i=0; i<zmat.getZAtomCount(); i++)
 			        {
@@ -325,8 +322,8 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 			        for (int i=0; i<zmat.getZAtomCount(); i++)
 			        {
 			        	ZMatrixAtom atm = zmat.getZAtom(i);
-			        	StringBuilder sb2 = new StringBuilder();
-			            sb.append(atm.getName()).append(" ");
+			        	StringBuilder sbAtom = new StringBuilder();
+			        	sbAtom.append(atm.getName()).append(" ");
 			            int idI = atm.getIdRef(0);
 			            int idJ = atm.getIdRef(1);
 			            int idK = atm.getIdRef(2);
@@ -335,24 +332,27 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 			            InternalCoord icK = atm.getIC(2);
 			            if (atm.getIdRef(0) != -1)
 			            {
-			                sb2.append(idI + 1).append(" ");
-			                sb2.append(icI.getName()).append(" ");
+			            	//NB: 1-based indexing!
+			            	sbAtom.append(idI + 1).append(" ");
+			            	sbAtom.append(icI.getName()).append(" ");
 			                if (idJ != -1)
 			                {
-			                    sb2.append(idJ + 1).append(" ");
-			                    sb2.append(icJ.getName()).append(" ");
+			                	sbAtom.append(idJ + 1).append(" ");
+			                	sbAtom.append(icJ.getName()).append(" ");
 			                    if (idK != -1)
 			                    {
-			                        sb2.append(idK + 1).append(" ");
-			                        sb2.append(icK.getName()).append(" ");
+			                    	sbAtom.append(idK + 1).append(" ");
+			                    	sbAtom.append(icK.getName()).append(" ");
+			                    	if (!icK.getType().equals(
+			                        		InternalCoord.NOTYPE))
+			                        {
+			                    		sbAtom.append(icK.getType());
+			                        }
 			                    }
 			                }
 			            }
-			            ddLines.add(sb2.toString());
+			            ddLines.add(sbAtom.toString());
 			        }
-			        
-			        //TODO-gg split list into variables and constants
-			        
 			        // Then write the list of variables with initial value
 			        ddLines.add("VARIABLES");
 			        for (int i=0; i<zmat.getZAtomCount(); i++)
@@ -361,6 +361,8 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
 			        	{
 			        		InternalCoord ic = zatm.getIC(iIC);
+			        		if (ic.isConstant())
+			        			continue;
 			        		ddLines.add(ic.getName() + " " + String.format(
 			        				Locale.ENGLISH," %5.8f", ic.getValue()));
 			        	}
@@ -374,6 +376,8 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
 			        	{
 			        		InternalCoord ic = zatm.getIC(iIC);
+			        		if (!ic.isConstant())
+			        			continue;
 			        		ddLines.add(ic.getName() + " " + String.format(
 			        				Locale.ENGLISH," %5.8f", ic.getValue()));
 			        	}
@@ -900,7 +904,7 @@ public class NWChemInputWriter2 extends ChemSoftInputWriter
 	protected ArrayList<String> getTextForInput(CompChemJob job) 
 	{
     	ArrayList<String> lines = new ArrayList<String>();
-    	if (job.getNumberOfSteps()>1)
+    	if (job.getNumberOfSteps()>0)
     	{
 	    	for (int i=0; i<job.getNumberOfSteps(); i++)
 			{

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Terminator;
 
 /**
@@ -408,6 +409,108 @@ public class ZMatrix implements Cloneable
   		
   	   	return true;
   	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Sets constant any of the internal coordinates defined in the given set.
+  	 * Ignores any internal coordinate that is not used in this ZMatrix, 
+  	 * but is present in the given set. Any internal coordinate present in this
+  	 * ZMatrix and not found in the given set will be set to be a variable.
+  	 * @param cs the collection of internal coordinates to be set as constant, 
+  	 * if present in this ZMatrix.
+  	 */
+	public void setConstants(ConstraintsSet cs) 
+	{
+		setVariableOrConstants(cs, true);
+	}
+    
+//------------------------------------------------------------------------------
+
+	/**
+  	 * Sets non-constant any of the internal coordinates defined in the given set.
+  	 * Ignores any internal coordinate that is not used in this ZMatrix, 
+  	 * but is present in the given set. Any internal coordinate present in this
+  	 * ZMatrix and not found in the given set will be set to be constant.
+  	 * @param cs the collection of internal coordinates to be set as variable, 
+  	 * if present in this ZMatrix.
+  	 */
+	public void setVariables(ConstraintsSet cs) 
+	{
+		setVariableOrConstants(cs, false);
+	}
+	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Sets constant/variables any of the internal coordinates defined in the 
+  	 * given set.
+  	 * Ignores any internal coordinate that is not used in this ZMatrix, 
+  	 * but is present in the given set. Any internal coordinate present in this
+  	 * ZMatrix and not found in the given set will be set to be a 
+  	 * variable/constant.
+  	 * @param cs the collection of internal coordinates to be set as constant
+  	 * or variable, 
+  	 * if present in this ZMatrix.
+  	 * @param asConstant use <code>true</code> to flag matched internal
+  	 * coordinates as constants and flag all the others variable. 
+  	 * Use <code>false</code> to flag matched internal
+  	 * coordinates as variables and flag all the others constant. 
+  	 */
+	private void setVariableOrConstants(ConstraintsSet cs, boolean asConstant) 
+	{
+		for (ZMatrixAtom zma : zatoms)
+		{
+			if (zma.icI != null)
+			{
+				if (asConstant)
+				{
+					zma.icI.setAsConstant(cs.containsInternalCoord(zma.icI));
+				} else {
+					zma.icI.setAsConstant(!cs.containsInternalCoord(zma.icI));
+				}
+				
+				if (zma.icJ != null)
+				{
+					if (asConstant)
+					{
+						zma.icJ.setAsConstant(cs.containsInternalCoord(
+								zma.icJ));
+					} else {
+						zma.icJ.setAsConstant(!cs.containsInternalCoord(
+								zma.icJ));
+					}
+					if (zma.icK != null)
+					{
+						if (asConstant)
+						{
+							zma.icK.setAsConstant(cs.containsInternalCoord(
+									zma.icK));
+						} else {
+							zma.icK.setAsConstant(!cs.containsInternalCoord(
+									zma.icK));
+						}
+					}
+				}
+			}
+		}
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * @return <code>true</code> if this ZMatrix contains any internal 
+	 * coordinate that is flagged as constant.
+	 */
+	public boolean hasConstants() 
+	{
+		for (ZMatrixAtom zatm : zatoms)
+		{
+			if (zatm.hasConstantIC())
+				return true;
+		}
+		return false;
+	}
     
 //------------------------------------------------------------------------------
 

@@ -44,6 +44,7 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -925,6 +926,42 @@ public class Directive implements IDirectiveComponent, Cloneable
                         Worker w = WorkerFactory.createWorker(zmatMakerTask);
                         ZMatrixHandler zmh = (ZMatrixHandler) w;
                         ZMatrix zmat = zmh.makeZMatrix();
+                        if (params.contains(ZMatrixConstants.SELECTORMODE))
+                        {
+                        	ParameterStorage cnstMakerTask = params.clone();
+                        	cnstMakerTask.setParameter(
+                        			WorkerConstants.PARTASK, 
+                        			//TODO-gg this is a better way to avoid to
+                        			// many locations where constants are defined.
+                        			TaskID.GENERATECONSTRAINTS.toString());
+                        	
+                            ConstraintsGenerator cnstrg = (ConstraintsGenerator)
+                            		WorkerFactory.createWorker(cnstMakerTask);
+                        	ConstraintsSet cs = new ConstraintsSet();
+                        	try {
+            					cs = cnstrg.createConstraints(mols.get(
+            							geometryId));
+            				} catch (Exception e) {
+            					e.printStackTrace();
+            					Terminator.withMsgAndStatus("ERROR! "
+            							+ "Unable to create constraints. "
+            							+ "Exception from the "
+            							+ "ConstraintGenerator.", -1);
+            				}
+                        	String mode = params.getParameterValue(
+                        			ZMatrixConstants.SELECTORMODE);
+                        	switch (mode.toUpperCase())
+                        	{
+                        	case ZMatrixConstants.SELECTORMODE_CONSTANT:
+                            	zmat.setConstants(cs);
+                        		break;
+
+                        	case ZMatrixConstants.SELECTORMODE_VARIABLES:
+                            	zmat.setVariables(cs);
+                        		break;
+                        	}
+                        }
+                        
                 		((IValueContainer) dirComp).setValue(zmat);
                 		break;
                 	}

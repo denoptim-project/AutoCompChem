@@ -18,9 +18,9 @@ package autocompchem.molecule.intcoords;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-import autocompchem.modeling.constraints.Constraint;
 import autocompchem.utils.NumberUtils;
 
 /**
@@ -52,7 +52,11 @@ public class InternalCoord implements Cloneable
      */
     protected String type = NOTYPE;
 
-
+    /**
+     * Flag defining this as a constant
+     */
+    protected boolean isConstant = false;
+    
     /**
      * String used to indicate a type that has not been assigned.
      */
@@ -150,6 +154,28 @@ public class InternalCoord implements Cloneable
     {
         this.type = type;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the value of the field defining this coordinate as a constant.
+     * @param isConstant use <code>true</code> to set this coordinate as a 
+     * constant, or <code>false</code> to set it as a variable.
+     */
+  	public void setAsConstant(boolean isConstant) 
+  	{
+  		this.isConstant = isConstant;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * @return <code>true</code> if this coordinate is flagged as a constant.
+  	 */
+	public boolean isConstant() 
+	{
+		return isConstant;
+	}
 
 //------------------------------------------------------------------------------
 
@@ -238,7 +264,7 @@ public class InternalCoord implements Cloneable
      * the one defining this coordinate.
      */
 
-    public boolean compareIDs(ArrayList<Integer> otherIds)
+    public boolean compareIDs(List<Integer> otherIds)
     {
         boolean res = false;
         if (ids.size() == otherIds.size())

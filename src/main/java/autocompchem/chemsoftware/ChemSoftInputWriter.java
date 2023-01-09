@@ -235,6 +235,12 @@ public abstract class ChemSoftInputWriter extends Worker
                     + "sure file '" + inGeomFile + "' has proper "
                     + "format and extension.", -1);
             }
+        } 
+        //TODO: deal with stream-like input
+        if (inpGeom.size()==0)
+        {
+            Terminator.withMsgAndStatus("ERROR! No geometry provided. "
+            		+ "Nothing to do!",-1);
         }
 
         if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
@@ -350,18 +356,32 @@ public abstract class ChemSoftInputWriter extends Worker
             outFileNameRoot = FileUtils.getRootOfFileName(outFileName);
             outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
         } else {
-            outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
+        	if (inGeomFile==null)
+        	{
+        		outFileNameRoot = "accOutput";
+                if (verbosity > 0)
+                {
+	        		System.out.println(" Neither '" 
+	        				 + ChemSoftConstants.PAROUTFILE + "' nor '" 
+	        				 + ChemSoftConstants.PAROUTFILEROOT + "' found and no '"
+	        				 + ChemSoftConstants.PARGEOMFILE + "' found. " + NL
+	                         + " Root of any output file name set to '" 
+	                         + outFileNameRoot + "'.");
+                }
+        	} else {
+        		outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
+                if (verbosity > 0)
+                {
+                    System.out.println(" Neither '" 
+                    		+ ChemSoftConstants.PAROUTFILEROOT + "' nor '"
+                    		+ ChemSoftConstants.PAROUTFILE 
+                    		+ "' parameter found. " + NL
+                            + " Root of any output file name set to '" 
+                            + outFileNameRoot + "'.");
+                }
+        	}
             outFileName = outFileNameRoot + inpExtrension;
             outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
-            if (verbosity > 0)
-            {
-                System.out.println(" Neither '" 
-                		+ ChemSoftConstants.PAROUTFILEROOT + "' nor '"
-                		+ ChemSoftConstants.PAROUTFILE 
-                		+ "' parameter found. " + NL
-                        + "Root of any output file name set to '" 
-                        + outFileNameRoot + "'.");
-            }
         }
         
         if (params.contains(ChemSoftConstants.PARNOJSONOUTPUT))
@@ -396,7 +416,7 @@ public abstract class ChemSoftInputWriter extends Worker
 
     /**
      * Performs any of the registered tasks according to how this worker
-     * has been initialised.
+     * has been initialized.
      */
 
     @Override
