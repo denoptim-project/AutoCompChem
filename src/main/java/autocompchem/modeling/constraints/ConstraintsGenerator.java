@@ -199,8 +199,8 @@ public class ConstraintsGenerator extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Define constraints for all structures found in the input structures feed.
-     * method is meant for working on structures taken from an input file.
+     * Define constraints for all structures found in the structures
+     * from the input file.
      */
 
     public void createConstrains()

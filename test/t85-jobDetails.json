@@ -6,7 +6,7 @@
       "keywords": [
         {
           "reference": "JobType",
-          "value": "SCONFANAL",
+          "value": "DYNCON",
           "isLoud": false
         },
         {
@@ -15,54 +15,17 @@
           "isLoud": false
         },
         {
-          "reference": "CONSTRAIN",
-          "value": "CONSTRAIN",
-          "isLoud": false
+          "reference": "DYNCONMETHOD",
+          "value": "GRID"
         },
         {
-          "reference": "CONFSEXAMINED",
-          "value": "10"
-        },
-        {
-          "reference": "FFHINT",
-          "value": "Ru1~~210"
-        },
-        {
-          "reference": "FFHINT",
-          "value": "C1~~206"
-        },
-        {
-          "reference": "FFHINT",
-          "value": "N1~~211"
-        },
-        {
-          "reference": "Partial",
-          "value": "PARTIAL",
-          "isLoud": false
+          "reference": "PRINTLEV",
+          "value": "2"
         }
       ]
     },
     {
-      "name": "Title",
-      "keywords": [
-        {
-          "reference": "text",
-          "value": "t69-mol",
-          "isLoud": false
-        }
-      ]
-    },
-    {
-      "name": "Comment",
-      "dirData": [
-        {
-          "reference": "text",
-          "value": "This is my comment"
-        }
-      ]
-    },
-    {
-      "name": "Constraints",
+      "name": "DynConstraints",
       "dirData": [
         {
           "accTaskParams": [
@@ -72,7 +35,25 @@
             },
             {
               "reference": "SMARTS",
-              "value": "[C] [N] onlybonded \n[C] [Ru] [$(C(~[Ru])~C)] onlybonded 60.0\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+              "value": "[Ru] [$([#6]~[#7])] onlybonded options:1.7 0.0 2.7 3\n[$([#6](~[#1])~[Ru])] [Ru] [$([#6](~[#7])~[Ru])] onlybonded options:80.0 0.0 100.0 2\n[Ru] [$([#6](~[#7])~[Ru])] [$([#7]~[#6]~[Ru])] [$([#6]~[#7]~[#6]~[Ru])] onlybonded options:0.0 0.0 180.0 1"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    },
+    {
+      "name": "Frozen",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[#17,#8,#1]~[Ru]\n[$([#6]~[Ru]);!$([#6](~[Ru])~[#7])]\n[$([#6,#1]~[#6]~[Ru]);!$([#6,#1]~[#6](~[Ru])~[#7])]\n[$([*]~[*]~[#6]~[Ru]);!$([*]~[*]~[#6](~[Ru])~[#7]);!$([*]~[#7]~[#6](~[Ru])~[#6,#7])]\n[$([*]~[*]~[*]~[#6]~[Ru]);!$([*]~[*]~[*]~[#6]~[#7]);!$([*]~[*]~[#7]~[#6](~[Ru])~[#6,#7])]\n[#6]1~[#6]~[#6]~[#6]~[#6]~[#6]~1~[#8](~[Ru])~[#6]\n[#6]~[#8]~[Ru]"
             }
           ],
           "reference": "constrain-generation task"

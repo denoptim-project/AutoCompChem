@@ -37,6 +37,7 @@ import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.chemsoftware.xtb.XTBOutputHandler;
 import autocompchem.datacollections.JobDetailsFileConverter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
@@ -281,6 +282,8 @@ public class WorkerFactory
             return AtomClashAnalyzer.capabilities;
         case AtomTypeMatcher:
             return AtomTypeMatcher.capabilities;
+        case AtomLabelsGenerator:
+            return AtomLabelsGenerator.capabilities;
         case BasisSetGenerator:
             return BasisSetGenerator.capabilities;
         case ChelateAnalyzer:
@@ -372,6 +375,8 @@ public class WorkerFactory
             return new AtomClashAnalyzer();
         case AtomTypeMatcher:
             return new AtomTypeMatcher();
+        case AtomLabelsGenerator:
+            return new AtomLabelsGenerator();
         case BasisSetGenerator:
             return new BasisSetGenerator();
         case ChelateAnalyzer:

@@ -44,6 +44,7 @@ import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
@@ -62,6 +63,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.text.TextBlock;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -370,7 +372,10 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
             {
     			indexCounter++;
     			if (indexCounter>12)
+    			{
+    				indexCounter = 0;
     				sbFrz.append(NL).append(SpartanConstants.INDENT);
+    			}
     			sbFrz.append(String.format(Locale.ENGLISH, "%5d",
     					c.getAtomIDs()[0]+1));
             }
@@ -414,32 +419,23 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     		{
     			Constraint cstr = iter.next();
     			int[] ids = cstr.getAtomIDs();
+    			
+    			// Frozen atoms are specified in a dedicated directive.
+    			if (ids.length<2)
+    				continue;
+    			
     			StringBuilder sbLine = new StringBuilder();
+    			String[] cstrType = {"BOND ", "ANGL ", "TORS "};
     			sbLine.append(SpartanConstants.INDENT);
-    			switch (cstr.getNumberOfIDs())
+    			sbLine.append(cstrType[cstr.getNumberOfIDs()-2]);
+    			for (int i=0; i<4; i++)
     			{
-    				case 2:
-    					sbLine.append("BOND ")
-    						.append(formatConstrainIds(ids[0]+1))
-    						.append(formatConstrainIds(ids[1]+1))
-    						.append(formatConstrainValue(cstr.getValue()));
-    					break;
-    				case 3:
-    					sbLine.append("ANGL ")
-    						.append(formatConstrainIds(ids[0]+1))
-    						.append(formatConstrainIds(ids[1]+1))
-    						.append(formatConstrainIds(ids[2]+1))
-    						.append(formatConstrainValue(cstr.getValue()));
-    					break;
-    				case 4:
-    					sbLine.append("TORS ")
-    						.append(formatConstrainIds(ids[0]+1))
-    						.append(formatConstrainIds(ids[1]+1))
-    						.append(formatConstrainIds(ids[2]+1))
-    						.append(formatConstrainIds(ids[3]+1))
-    						.append(formatConstrainValue(cstr.getValue()));
+    				if (i<cstr.getNumberOfIDs())
+    					sbLine.append(formatConstrainIds(ids[i]+1));
+    				else
     					break;
     			}
+    			sbLine.append(formatConstrainValue(cstr.getValue()));
     			lines.add(sbLine.toString());
     		}
             lines.add(SpartanConstants.CSTRDIREND);
@@ -453,25 +449,141 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     	{
     		ensureSingleDirectiveData(dynDir);
     		
-    		lines.add(SpartanConstants.CSTRDIROPN);
+    		lines.add(SpartanConstants.DYNCDIROPN);
     		
     		ConstraintsSet cs = (ConstraintsSet) dynDir
     				.getAllDirectiveDataBlocks().get(0).getValue();
-    		
-    		//TODO-gg take loop from constraints and add 0s and details
-            lines.add(SpartanConstants.CSTRDIREND);
+
+    		// We need to remove any attempt to add multiple dynamic constraints
+    		// acting on the same internal coordinate. E.g., [1,2,3,4] and 
+    		// [6,2,3,7] are both acting on bond 2-3. We keep only one of them.
+    		Set<List<Integer>> unique = new HashSet<List<Integer>>();
+    		for (Iterator<Constraint> iter = cs.iterator(); iter.hasNext(); ) 
+    		{
+    			Constraint cstr = iter.next();
+    			int[] ids = cstr.getAtomIDs();
+    			
+    			// Here we get rid of redundant dynamic constraints
+    			if (!isNewDynamicConstraint(ids, unique))
+    				continue;
+    			
+    			StringBuilder sbLine = new StringBuilder();
+    			sbLine.append(SpartanConstants.INDENT);
+    			for (int i=0; i<4; i++)
+    			{
+    				if (i<cstr.getNumberOfIDs())
+    					sbLine.append(formatConstrainIds(ids[i]+1));
+    				else
+    					sbLine.append(formatConstrainIds(0));
+    			}
+    			if (cstr.hasOpt())
+    			{
+    				sbLine.append(" ").append(cstr.getOpt());
+    			}
+    			lines.add(sbLine.toString());
+    		}
+            lines.add(SpartanConstants.DYNCDIREND);
 
             ensureNoKeywords(dynDir);
             ensureNoSubdirectives(dynDir);
     	}
     	
+    	Directive atmLabelDir = job.getDirective(SpartanConstants.DIRATOMLABELS);
+    	if (atmLabelDir != null)
+    	{
+    		ensureSingleDirectiveData(atmLabelDir);
+    		
+    		lines.add(SpartanConstants.ATMLABELSOPN);
+    		
+    		TextBlock labels = (TextBlock) atmLabelDir
+    				.getAllDirectiveDataBlocks().get(0).getValue();
+    		for (String label : labels)
+    			lines.add(SpartanConstants.INDENT + "\"" + label + "\"");
+            lines.add(SpartanConstants.ATMLABELSEND);
+
+            ensureNoKeywords(atmLabelDir);
+            ensureNoSubdirectives(atmLabelDir);
+    	}
+    	
+
+    	// NB: some versions of Spartan require this directive, even if empty.
+		lines.add(SpartanConstants.PRODIROPN);
+    	Directive propinDir = job.getDirective(SpartanConstants.DIRPROPIN);
+    	if (propinDir != null)
+    	{
+    		for (DirectiveData dd : propinDir.getAllDirectiveDataBlocks())
+    		{
+    			if (dd.getType()!=NamedDataType.TEXTBLOCK)
+    			{
+    				throw new IllegalArgumentException("Unexpected type of "
+    						+ "data in directive '" 
+    						+ SpartanConstants.DIRPROPIN + "'. "
+    						+ "Check directive data '" + dd.getName() + "'.");
+    			}
+    			TextBlock txt = (TextBlock) dd.getValue();
+	    		lines.addAll(txt);
+    		}
+            ensureNoKeywords(atmLabelDir);
+            ensureNoSubdirectives(atmLabelDir);
+    	}
+    	lines.add(SpartanConstants.PRODIREND);
     	
         return lines;
     }
 
 //------------------------------------------------------------------------------
     
-    private Object formatConstrainIds(int i) 
+    private boolean isNewDynamicConstraint(int[] ids, Set<List<Integer>> unique) 
+    {
+    	List<Integer> candidate = new ArrayList<Integer>();
+    	switch (ids.length)
+    	{
+    		case 1:
+    			candidate.add(ids[0]);
+    			break;
+    			
+	    	case 2:
+	        	candidate.add(ids[0]);
+	        	candidate.add(ids[1]);
+	        	Collections.sort(candidate);
+	    		break;
+	
+	    	case 3:
+	    		if (ids[0]>ids[2])
+	    		{
+	            	candidate.add(ids[2]);
+	            	candidate.add(ids[1]);
+	            	candidate.add(ids[0]);
+	    		} else {
+	            	candidate.add(ids[0]);
+	            	candidate.add(ids[1]);
+	            	candidate.add(ids[2]);
+	    		}
+	    		break;
+	    		
+	    	case 4:
+	    		// NB: the identity of the first and last index is irrelevant
+	    		// Therefore, we set first and last index to -1.
+	    		if (ids[1]>ids[2])
+	    		{
+	            	candidate.add(-1);
+	            	candidate.add(ids[2]);
+	            	candidate.add(ids[1]);
+	            	candidate.add(-1);
+	    		} else {
+	            	candidate.add(-1);
+	            	candidate.add(ids[2]);
+	            	candidate.add(ids[1]);
+	            	candidate.add(-1);
+	    		}
+	    		break;
+    	}
+    	return unique.add(candidate);
+	}
+
+//------------------------------------------------------------------------------
+    
+	private Object formatConstrainIds(int i) 
     {
     	return String.format(Locale.ENGLISH, "%5d ", i);
 	}

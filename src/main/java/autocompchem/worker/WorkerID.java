@@ -28,6 +28,7 @@ public enum WorkerID
 	DummyWorker,
     AtomClashAnalyzer,
     AtomTypeMatcher,
+    AtomLabelsGenerator,
     BasisSetGenerator,
     ChelateAnalyzer,
     ConnectivityGenerator,

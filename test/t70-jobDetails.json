@@ -20,6 +20,11 @@
           "isLoud": false
         },
         {
+          "reference": "Partial",
+          "value": "PARTIAL",
+          "isLoud": false
+        },
+        {
           "reference": "CONFSEXAMINED",
           "value": "10"
         }
@@ -35,6 +40,24 @@
       ]
     },
     {
+      "name": "Frozens",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[Ru]\n[#17]\n[#6;X3](~[#7,#6])~[#7]\n[#6]~[#7]"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    },
+    {
       "name": "Constraints",
       "dirData": [
         {
@@ -45,7 +68,7 @@
             },
             {
               "reference": "SMARTS",
-              "value": "[C] [N] onlybonded useCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded 60.0\n[C] [Ru] [C] [N] onlybonded useCurrentValue options:key5 key6 key7"
+              "value": "[C] [N] onlybonded useCurrentValue\n[Cl] [Ru] onlybonded useCurrentValue\n[$([#6]~[#7])] [Ru] onlybonded useCurrentValue\n[$([#6]@~[Ru])] [Ru] onlybonded useCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded useCurrentValue\n[$([#6]@~[Ru])] [$([#1][#6]@~[Ru])] onlybonded useCurrentValue\n[$([#6]@~[#6]@~[Ru])] [#1] onlybonded useCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded useCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded useCurrentValue\n[#17] [Ru] [#17] onlybonded useCurrentValue\n[#17] [Ru] [#6] onlybonded useCurrentValue\n[#1] [$([#6]@~[Ru])] [#1] onlybonded useCurrentValue\n[#1] [$([#6]@~[Ru])] [Ru] onlybonded useCurrentValue\n[#1] [$([#6]@~[Ru])] [#6] onlybonded useCurrentValue\n[C] [Ru] [C] [N] onlybonded useCurrentValue"
             }
           ],
           "reference": "constrain-generation task"

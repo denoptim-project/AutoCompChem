@@ -144,24 +144,28 @@ public class ConstrainDefinition
         {
         	this.type = RuleType.ID;
         	this.idsQry = new ArrayList<Integer>();
+        	boolean readOpts = false;
             for (int j=0; j<p.length; j++)
             {
-            	if (NumberUtils.isParsableToInt(p[j]))
+            	if (NumberUtils.isParsableToInt(p[j]) && !readOpts)
             	{
             		// Reading atom IDs
             		this.idsQry.add(Integer.parseInt(p[j]));
             	} else {
-	            	if (NumberUtils.isParsableToDouble(p[j]))
+	            	if (NumberUtils.isParsableToDouble(p[j]) && !readOpts)
 	            	{
 	            		// Reading optional value
 	            		// WARNING! For now we expect only one double value
 	            		this.hasValue = true;
 	            		this.value = Double.parseDouble(p[j]);
-	            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
+	            	} else if (PARONLYBONDED.equals(p[j].toUpperCase()) 
+	            			&& !readOpts) {
 	            		this.onlyBonded = true;
-	            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
+	            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase()) 
+	            			&& !readOpts) {
 	            		this.notAnIC = true;
-	            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase())) {
+	            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase()) 
+	            			&& !readOpts) {
 	            		this.hasValue = true;
 	            		this.useCurrentValue = true;
 	            	} else {
@@ -186,20 +190,23 @@ public class ConstrainDefinition
         	boolean readOpts = false;
             for (int j=0; j<p.length; j++)
             {
-            	if (NumberUtils.isNumber(p[j]))
+            	if (NumberUtils.isNumber(p[j]) && !readOpts)
             	{
             		// WARNING! For now we expect only one numerical value
             		// So, the last numerical we find is going to be the value.
             		endOfSmarts = true;
             		this.hasValue = true;
             		this.value = Double.parseDouble(p[j]);
-            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
+            	} else if (PARONLYBONDED.equals(p[j].toUpperCase()) && !readOpts) 
+            	{
             		endOfSmarts = true;
             		this.onlyBonded = true;
-            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
+            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase()) && !readOpts) 
+            	{
             		endOfSmarts = true;
             		this.notAnIC = true;
-            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase())) {
+            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase()) && !readOpts) 
+            	{
             		endOfSmarts = true;
             		this.hasValue = true;
             		this.useCurrentValue = true;

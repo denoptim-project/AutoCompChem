@@ -196,7 +196,7 @@ public class SpartanConstants
     public final static String FREEZEEND = "ENDFROZEN";
     
     /**
-     * Name of directive defining conformational spac
+     * Name of directive defining conformational space
      */
     public final static String DIRCONFORMER = "CONFORMER";
 
@@ -209,6 +209,11 @@ public class SpartanConstants
      * End of conformer directive
      */
     public final static String CONFDIREND = "ENDCONFORMER";
+    
+    /**
+     * Name of directive collecting frozen atoms
+     */
+    public final static String DIRPROPIN = "PROPIN";
 
     /**
      * Begin of "propin" directive

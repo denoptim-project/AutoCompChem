@@ -37,6 +37,7 @@ import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -49,6 +50,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.text.TextBlock;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -1074,10 +1076,41 @@ public class Directive implements IDirectiveComponent, Cloneable
         				+ "yet... sorry!",-1);
             	break;
             }
+            
+            //TODO-gg use TaskID.GENERATEATOMLABELS
+            case "GENERATEATOMLABELS":
+            {
+            	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+                
+                ParameterStorage atmLabelsParams = params.clone();
+                
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                atmLabelsParams.setParameter("TASK", 
+                		TaskID.GENERATEATOMLABELS.toString());
+                
+            	Worker w = WorkerFactory.createWorker(atmLabelsParams);
+            	AtomLabelsGenerator labelsGenerator = (AtomLabelsGenerator) w;
             	
+            	TextBlock labels = new TextBlock(
+            			labelsGenerator.generateAtomLabels(mol));
+            	
+            	// Replace value of component that triggered this task
+            	if (dirComp instanceof IValueContainer)
+            	{
+            		((IValueContainer) dirComp).setValue(labels);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
+            	}
+            	break;
+            }
                 
             //TODO: add here other atom/molecule specific option
-
+            
                 
             default:
                 String msg = "WARNING! Task '" + task + "' is not a "
