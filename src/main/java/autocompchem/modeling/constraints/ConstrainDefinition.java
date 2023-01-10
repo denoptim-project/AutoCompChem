@@ -44,6 +44,12 @@ public class ConstrainDefinition
     private static final String PARNOINTCOORD = "NOTANIC";
     
     /**
+     * Keyword requiring to set the value of the constraint to the value 
+     * detected in the given system (i.e., the current value).
+     */
+    private static final String PARCURRENTVALUE = "USECURRENTVALUE";
+    
+    /**
      * Keyword used to flag the identification of options.
      */
     private static final String KEYOPTIONS = "OPTIONS:";
@@ -79,17 +85,23 @@ public class ConstrainDefinition
 	private double value;
 	
 	/**
-	 * Flag signalling that this rule defines value-based constraints
+	 * Flag signaling that this rule defines value-based constraints
 	 */
 	private boolean hasValue = false;
 	
 	/**
-	 * Flag specifying that the tupla of atoms must be a bonded set
+	 * Flag signaling that this rule used the value found in the system as the 
+	 * value of the constraint.
+	 */
+	private boolean useCurrentValue = false;
+	
+	/**
+	 * Flag specifying that the tuple of atoms must be a bonded set
 	 */
 	private boolean onlyBonded = false;
 	
 	/**
-	 * Flag specifying that this tupla in not really a tupla, but an unordered
+	 * Flag specifying that this tuple in not really a tuple, but an unordered
 	 * collection that does not define an internal coordinate.
 	 */
 	private boolean notAnIC = false;
@@ -132,7 +144,6 @@ public class ConstrainDefinition
         {
         	this.type = RuleType.ID;
         	this.idsQry = new ArrayList<Integer>();
-            boolean endOfIDs = false;
             for (int j=0; j<p.length; j++)
             {
             	if (NumberUtils.isParsableToInt(p[j]))
@@ -140,7 +151,6 @@ public class ConstrainDefinition
             		// Reading atom IDs
             		this.idsQry.add(Integer.parseInt(p[j]));
             	} else {
-            		endOfIDs = true;
 	            	if (NumberUtils.isParsableToDouble(p[j]))
 	            	{
 	            		// Reading optional value
@@ -148,11 +158,12 @@ public class ConstrainDefinition
 	            		this.hasValue = true;
 	            		this.value = Double.parseDouble(p[j]);
 	            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
-	            		// Parsing ACC option
 	            		this.onlyBonded = true;
 	            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
-	            		// Parsing ACC option
 	            		this.notAnIC = true;
+	            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase())) {
+	            		this.hasValue = true;
+	            		this.useCurrentValue = true;
 	            	} else {
 	            		// Anything else is interpreted as an additional option,
 	            		// i.e., the "A" or "F" of Gaussian constraints
@@ -188,6 +199,10 @@ public class ConstrainDefinition
             	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
             		endOfSmarts = true;
             		this.notAnIC = true;
+            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase())) {
+            		endOfSmarts = true;
+            		this.hasValue = true;
+            		this.useCurrentValue = true;
             	} else {
             		String s = p[j];
             		if (p[j].toUpperCase().startsWith(KEYOPTIONS) || readOpts)
@@ -260,34 +275,62 @@ public class ConstrainDefinition
     
 //------------------------------------------------------------------------------
 
+    /**
+     * Returns the flag defining if this rule applied only to linearly
+     * connected tuples of atoms.
+     * @return <code>true</code> if this constraints defined by this rule 
+     * are applied only to tuples of atoms that are linearly connected.
+     */
   	public boolean limitToBonded() 
   	{
   		return onlyBonded;
   	}
-
+    	
 //------------------------------------------------------------------------------
 
-  	public Constraint makeConstraint(boolean areLinearlyConnected) throws Exception 
+    /**
+     * Returns the flag defining if this rule makes use of the current value
+     * as the value set in the constraint.
+     * @return <code>true</code> if this constraints defined by this rule use
+     * as value of the generated constraints the value found in the system to 
+     * which this rule is applied.
+     */
+  	public boolean usesCurrentValue()
   	{
-  		return makeConstraintFromIDs(idsQry, areLinearlyConnected);
+  		return useCurrentValue;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+  	public Constraint makeConstraint(boolean areLinearlyConnected) 
+  			throws Exception 
+  	{
+  		return makeConstraintFromIDs(idsQry, areLinearlyConnected, null);
   	}
   	
 //------------------------------------------------------------------------------
 
   	/**
-  	 * Creates a constraint from atom ids.
+  	 * Creates a constraint from atom indexes.
   	 * @param ids the list of indexes
   	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
 	 * represent a set of centers that are connected in the order given, e.g.
 	 * i-j-k-l.
-  	 * @return
+  	 * @param currentValue the value of the internal coordinate defined by the
+  	 * given set of IDs. Use null to ignore this parameter.
+  	 * @return the constraint constructed from the given parameters and 
+  	 * according to the present constrain definition.
   	 * @throws Exception
   	 */
   	//TODO-gg private?
   	public Constraint makeConstraintFromIDs(ArrayList<Integer> idsList, 
-  			boolean areLinearlyConnected) 
+  			boolean areLinearlyConnected, Double currentValue) 
   			throws Exception 
   	{
+  		if (currentValue==null && useCurrentValue)
+  			throw new IllegalArgumentException("Request to use current value "
+  					+ "to make constraints, but given current value is null");
+  		
   		if (notAnIC)
   		{
   			// type will be undefined
@@ -299,15 +342,29 @@ public class ConstrainDefinition
   			}
   			c.setAtomIDs(ids);
   			if (hasValue)
-  				c.setValue(value);
+  			{
+  				if (useCurrentValue)
+  					c.setValue(currentValue.doubleValue());
+  				else
+  					c.setValue(value);
+  			}
   			return c;
   		} else {
 	  		if (!hasValue)
+	  		{
 	  			return Constraint.buildConstraint(idsList, null, options,
 	  					areLinearlyConnected);
-	  		else 
-	  			return Constraint.buildConstraint(idsList, value, options,
-	  					areLinearlyConnected);
+	  		} else {
+	  			if (useCurrentValue)
+	  			{
+	  				return Constraint.buildConstraint(idsList, 
+	  						currentValue.doubleValue(), options,
+	  						areLinearlyConnected);
+	  			} else {
+	  				return Constraint.buildConstraint(idsList, value, options,
+		  					areLinearlyConnected);
+	  			}
+	  		}
   		}
   	}
 

@@ -35,6 +35,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.constraints.ConstrainDefinition.RuleType;
+import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
@@ -414,7 +415,7 @@ public class ConstraintsGenerator extends Worker
                 	if (atmsForCD.size() == 1)
                 	{
                 		cLst.add(r.makeConstraintFromIDs(new ArrayList<Integer>(
-                				Arrays.asList(mol.indexOf(atmA))), false));
+                				Arrays.asList(mol.indexOf(atmA))), false, null));
                 		continue;
                 	}
                 	
@@ -433,11 +434,19 @@ public class ConstraintsGenerator extends Worker
                         
                         if (atmsForCD.size() == 2)
                     	{
+                        	Double currentValue = null;
+                            if (r.usesCurrentValue())
+                            {
+                            	currentValue = 
+                            			MolecularUtils.calculateInteratomicDistance(
+                                                atmA, atmB);
+                            }
                     		cLst.add(r.makeConstraintFromIDs(
                     				new ArrayList<Integer>(Arrays.asList(
                     						mol.indexOf(atmA),
                     						mol.indexOf(atmB))), 
-                    				areLinearlyConnected));
+                    				areLinearlyConnected,
+                    				currentValue));
                     		continue;
                     	}
                         
@@ -461,12 +470,20 @@ public class ConstraintsGenerator extends Worker
 
                             if (atmsForCD.size() == 3)
                         	{
+                            	Double currentValue = null;
+                                if (r.usesCurrentValue())
+                                {
+                                	currentValue = 
+                                			MolecularUtils.calculateBondAngle(
+                                                    atmA, atmB, atmC);
+                                }
                         		cLst.add(r.makeConstraintFromIDs(
                         				new ArrayList<Integer>(Arrays.asList(
                         						mol.indexOf(atmA),
                         						mol.indexOf(atmB),
                         						mol.indexOf(atmC))), 
-                        				areLinearlyConnected));
+                        				areLinearlyConnected,
+                        				currentValue));
                         		continue;
                         	}
                             
@@ -493,6 +510,13 @@ public class ConstraintsGenerator extends Worker
 
                                 if (atmsForCD.size() == 4)
                             	{
+                                	Double currentValue = null;
+                                    if (r.usesCurrentValue())
+                                    {
+                                    	currentValue = 
+                                    			MolecularUtils.calculateTorsionAngle(
+                                                atmA, atmB, atmC, atmD);
+                                    }
                             		cLst.add(r.makeConstraintFromIDs(
                             				new ArrayList<Integer>(
                             						Arrays.asList(
@@ -500,7 +524,8 @@ public class ConstraintsGenerator extends Worker
                             						mol.indexOf(atmB),
                             						mol.indexOf(atmC),
                             						mol.indexOf(atmD))), 
-                            				areLinearlyConnected));
+                            				areLinearlyConnected,
+                            				currentValue));
                             		continue;
                             	} else {
                             		throw new Exception("Unexpectedly long "
