@@ -1,6 +1,7 @@
 package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /*   
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
 import autocompchem.text.TextBlock;
 
@@ -40,12 +42,12 @@ import autocompchem.text.TextBlock;
 
 public class DirectiveTest 
 {
-	private final String NL = System.getProperty("line.separator");
+	private final static String NL = System.getProperty("line.separator");
 	
 //------------------------------------------------------------------------------
 
     @Test
-    public void testCustomEquals() throws Exception
+    public void testEqualsViaBuild() throws Exception
     {
     	ArrayList<String> lines = new ArrayList<String>();
     	lines.add(ChemSoftConstants.JDLABLOUDKEY + "key1"
@@ -74,7 +76,40 @@ public class DirectiveTest
     	Directive dA = DirectiveFactory.buildFromJDText("test",lines);
     	Directive dB = DirectiveFactory.buildFromJDText("test",linesB);
     	
-    	assertTrue(dA.equals(dB),"Custom Equality");
+    	assertTrue(dA.equals(dB));
+    }
+	
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testEquals() throws Exception
+    {   
+    	Directive dA = getTestDirective();
+    	Directive dB = getTestDirective();
+    	
+    	assertTrue(dA.equals(dA));
+    	assertTrue(dA.equals(dB));
+    	assertTrue(dB.equals(dA));
+    	assertFalse(dA.equals(null));
+    	
+    	dB.addKeyword(new Keyword("added", true, "changed"));
+    	assertFalse(dA.equals(dB));
+    	
+    	dB = getTestDirective();
+    	dB.addDirectiveData(new DirectiveData("data",  
+    			new ArrayList<String>(Arrays.asList("A1","A2","A3"))));
+    	assertFalse(dA.equals(dB));
+    	
+    	dB = getTestDirective();
+    	Directive sa = new Directive("subA");
+    	sa.addKeyword(new Keyword("sKey", false, 
+    			new ArrayList<String>(Arrays.asList("0","1"))));
+    	dB.addSubDirective(sa);
+    	assertFalse(dA.equals(dB));
+    	
+    	dB = getTestDirective();
+    	dB.setTaskParams(new ParameterStorage());
+    	assertFalse(dA.equals(dB));
     }
     
 //------------------------------------------------------------------------------
@@ -116,7 +151,51 @@ public class DirectiveTest
     	
     	assertTrue(d.equals(d2),"Equality of regenerated from JD string.");
     }
-    
+
+//------------------------------------------------------------------------------
+
+    public static Directive getTestDirective()
+    {    
+    	Directive d = new Directive("testDirective");
+    	
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key2", true, 
+    			new ArrayList<String>(Arrays.asList("c","d"))));
+    	
+    	String ddString = "data" 
+    			+ ChemSoftConstants.JDDATAVALSEPARATOR
+				+ ChemSoftConstants.JDLABACCTASK
+				+ ParameterConstants.SEPARATOR
+				+ ChemSoftConstants.PARGETFILENAMEROOT + NL
+				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
+				+ ParameterConstants.SEPARATOR + ".sfx";
+    	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
+    	
+    	Directive embedded = new Directive("embeddedDirective");
+    	embedded.addKeyword(new Keyword("key1EMB", true, 
+    			new ArrayList<String>(Arrays.asList("aEMB","bEMB"))));
+    	d.addSubDirective(embedded);
+    	
+    	ParameterStorage taskParams = new ParameterStorage();
+    	taskParams.setParameter("TASK", "DummyTask");
+    	taskParams.setParameter("Value1", 1);
+    	taskParams.setParameter("Value2", 1.23);
+    	taskParams.setParameter("Value3", "abc");
+    	d.setTaskParams(taskParams);
+    	
+    	return d;
+    }
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {    
+    	Directive original = getTestDirective();
+    	Directive cloned = original.clone();
+    	assertTrue(original.equals(cloned));
+    }
+    	
 //------------------------------------------------------------------------------
 
     @Test

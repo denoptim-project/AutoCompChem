@@ -24,6 +24,7 @@ public class ConstraintsTest
     	assertTrue(c1.equals(c2));
     	assertTrue(c2.equals(c1));
     	assertTrue(c1.equals(c1));
+    	assertFalse(c1.equals(null));
     	
     	c2 = new Constraint(4, 1, 2, 3, ConstraintType.DIHEDRAL, 0.1, "opt");
     	assertFalse(c1.equals(c2));

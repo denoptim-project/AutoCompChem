@@ -41,7 +41,7 @@ import autocompchem.utils.StringUtils;
 
 /**
  * A keyword is a string with an associated value. Keywords, together with
- * {@link DirectiveData} provide specifics to a @link Directive}.
+ * {@link DirectiveData} provide specifics to a {@link Directive}.
  * Keywords differ from {@link DirectiveData} in two aspects. Firstly,
  * Keyword can be either "mute" or "loud". A "loud" keyword is written in 
  * the software's input file as <code>KEY&lt;SEPARATOR&gt;VALUE</code> while 
@@ -50,7 +50,7 @@ import autocompchem.utils.StringUtils;
  * the <code>KEY</code> part (i.e., the name) of a "mute" keyword is omitted 
  * when preparing the input file for the designated software.
  * Secondly, regardless of whether it is loud or mute, a Keyword is expected to 
- * generate a strings that fits in one line (contains no newline characters) 
+ * generate a string that fits in one line (contains no newline characters) 
  * and can often be appended to the corresponding string from other keywords
  * thus building a line that contains multiple keywords. Instead, 
  * {@link DirectiveData} can often generate multiple
@@ -153,7 +153,7 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
 				lines.set(lines.size()-1, lines.get(lines.size()-1) 
 						+ ChemSoftConstants.JDCLOSEBLOCK);
 			}
-			ParameterStorage ps = Directive.getACCTaskParams(lines);
+			ParameterStorage ps = Directive.parseACCTaskParams(lines);
 			ps.setParameter(ChemSoftConstants.JDACCTASK,
 					ps.getParameterValue(
 							ChemSoftConstants.JDLABACCTASK));
@@ -292,17 +292,21 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
     @Override
     public boolean equals(Object o) 
     {
- 	    if (o == this)
- 		    return true;
+    	if ( o== null)
+    		return false;
+	
+	    if (o == this)
+		    return true;
+	   
+	    if (o.getClass() != getClass())
+	    	return false;
  	   
- 	    if (!(o instanceof Keyword))
-     		return false;
+ 	    Keyword other = (Keyword) o;
+ 	    
+ 	    if ((this.isLoud && !other.isLoud) || (!this.isLoud && other.isLoud))
+ 	    	return false;
  	   
- 	   Keyword other = (Keyword) o;
- 	   
- 	    return this.getReference().equals(other.getReference())
- 	    		&& this.getType() == other.getType()
- 	    		&& this.getValue().equals(other.getValue());
+ 	    return super.equals(o);
     }
     
 //------------------------------------------------------------------------------

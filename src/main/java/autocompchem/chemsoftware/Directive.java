@@ -1,7 +1,6 @@
 package autocompchem.chemsoftware;
 
 
-import java.lang.reflect.Type;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -25,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.lang.reflect.Type;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -87,7 +87,11 @@ public class Directive implements IDirectiveComponent, Cloneable
      * Data attached directly to this directive.
      */
     private ArrayList<DirectiveData> dirData;
-
+    
+    /**
+     * Parameters defining task embedded in this directive.
+     */
+    private ParameterStorage accTaskParams;
 
 //-----------------------------------------------------------------------------
 
@@ -541,14 +545,41 @@ public class Directive implements IDirectiveComponent, Cloneable
     }
     
 //-----------------------------------------------------------------------------
+
+    /**
+     * @return the parameters defining the ACC task embedded in this directive.
+     */
+   	public ParameterStorage getTaskParams() 
+   	{
+   		return accTaskParams;
+   	}
+   	
+//-----------------------------------------------------------------------------
+
+    /**
+     * Sets the parameters defining the ACC task embedded in this directive.
+     * @param params
+     */
+   	public void setTaskParams(ParameterStorage params) 
+   	{
+   		accTaskParams=params;
+   	}
+    
+//-----------------------------------------------------------------------------
     
     /**
-     * Checks if there is any ACC task definition within this directive.
+     * Checks if there is any ACC task definition within this directive. Does
+     * not distinguished whether the task is in this directive or in any of its 
+     * components (i.e., {@link keyword}s, {@link DirectiveData} or embedded 
+     * {@link Directive}s).
      * @return <code>true</code> if there is at least one ACC task definition.
      */
     
     public boolean hasACCTask()
-    {	
+    {
+    	if (accTaskParams!=null)
+    		return true;
+    	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
@@ -580,6 +611,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      */
     public void removeACCTasks()
     {
+    	accTaskParams = null;
     	for (Keyword k : keywords)
     	{
     		k.removeACCTasks();
@@ -633,7 +665,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     			{
     				ps = k.getTaskParams();
     			} else {
-    				ps = getACCTaskParams(k.getValueAsLines(), k);
+    				ps = parseACCTaskParams(k.getValueAsLines(), k);
     			}
 	    		performACCTask(mols, ps, k, job);
     		}
@@ -661,7 +693,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 		    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
 		    					+ ChemSoftConstants.JDCLOSEBLOCK);
 	    			}
-	    			ps = getACCTaskParams(lines, dd);
+	    			ps = parseACCTaskParams(lines, dd);
     			}
 				performACCTask(mols, ps, dd, job);
     		}	
@@ -681,9 +713,9 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of parameter storage units.
      */
     
-    public static ParameterStorage getACCTaskParams(List<String> lines)
+    public static ParameterStorage parseACCTaskParams(List<String> lines)
     {	
-    	return getACCTaskParams(lines, null);
+    	return parseACCTaskParams(lines, null);
     }
     
 //-----------------------------------------------------------------------------
@@ -691,10 +723,11 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * Parses the block of lines as to find parameters defining an ACC tasks.
      * @param lines to parse.
+     * @param dirComp source of the parameters (used only for logging).
      * @return the list of parameter storage units.
      */
     
-    private static ParameterStorage getACCTaskParams(List<String> lines, 
+    private static ParameterStorage parseACCTaskParams(List<String> lines, 
     		IDirectiveComponent dirComp)
     {	
     	// This takes care of any $START/$END label needed to make all JD lines
@@ -865,6 +898,8 @@ public class Directive implements IDirectiveComponent, Cloneable
         {   
             case ChemSoftConstants.PARGETFILENAMEROOT:
             {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	
             	String pathname = job.getParameter(
             			ChemSoftConstants.PAROUTFILEROOT)
             			.getValueAsString();
@@ -884,20 +919,14 @@ public class Directive implements IDirectiveComponent, Cloneable
             		pathname = q + pathname + q;
             	}
             	
-            	if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(pathname);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
+            	((IValueContainer) dirComp).setValue(pathname);
             	break;
             }
             
             case ChemSoftConstants.PARGEOMETRY:
-            {   
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	
             	CoordsType coordsType = CoordsType.XYZ;
             	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
             	{
@@ -981,6 +1010,8 @@ public class Directive implements IDirectiveComponent, Cloneable
             	
             case BasisSetConstants.ATMSPECBS:
             {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	
         		// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
@@ -1009,23 +1040,17 @@ public class Directive implements IDirectiveComponent, Cloneable
                 bsg.setAtmIdxAsId(true);
                 BasisSet bs = bsg.assignBasisSet(mol);
                 
-                if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(bs);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
-                break;
+                ((IValueContainer) dirComp).setValue(bs);
+            	break;
             }
             
             //TODO make this work on enum, and create TaskIDs for all other tasks
             //case TaskID.GENERATECONSTRAINTS:
             case "GENERATECONSTRAINTS":
             {
-        		// WARNING: uses only the first molecule
+            	ensureTaskIsInIValueContainer(task, dirComp);
+        	
+            	// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
             	String s = TaskID.GENERATECONSTRAINTS.toString();
@@ -1053,15 +1078,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 				}
             	
             	// Replace value of component that triggered this task
-            	if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(cs);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
+            	((IValueContainer) dirComp).setValue(cs);
                 
                 //TODO-gg verbosity/logging
                 cs.printAll();
@@ -1080,6 +1097,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             //TODO-gg use TaskID.GENERATEATOMLABELS
             case "GENERATEATOMLABELS":
             {
+            	ensureTaskIsInIValueContainer(task, dirComp);
             	// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
                 
@@ -1097,15 +1115,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             			labelsGenerator.generateAtomLabels(mol));
             	
             	// Replace value of component that triggered this task
-            	if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(labels);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
+            	((IValueContainer) dirComp).setValue(labels);
             	break;
             }
                 
@@ -1124,32 +1134,82 @@ public class Directive implements IDirectiveComponent, Cloneable
     }
     
 //-----------------------------------------------------------------------------
-
-    /**
-     * Custom equality method. Only checks the name of the directive and the
-     * size of the lists of keywords, sub directives, and data blocks.
-     * @param other the directive to compare with this one
-     * @return <code>true</code> if the two objects are equal
-     */
+    
+    private void ensureTaskIsInIValueContainer(String task, 
+    		IDirectiveComponent dirComp)
+    {
+    	if (! (dirComp instanceof IValueContainer))
+    	{
+    		throw new IllegalArgumentException("Task " + task 
+    				+ " can be performed only from within Keywords "
+    				+ "or DirectiveData. Not from " 
+    				+ dirComp.getClass().getName() + ".");
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
 
     @Override
-    public boolean equals(Object other)
+    public boolean equals(Object o)
     {
-        boolean res = false;
-        if (other instanceof Directive)
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	   
+ 	   Directive other = (Directive) o;
+ 	   
+        if (!this.getName().equals(other.getName()))
+        	return false;
+        
+        if ((this.accTaskParams!=null && other.accTaskParams==null)
+     		    || (this.accTaskParams==null && other.accTaskParams!=null))
         {
-            if (this.getName().equals(((Directive) other).getName()) 
-                && this.getAllKeywords().size() 
-                           == ((Directive) other).getAllKeywords().size()
-                && this.getAllSubDirectives().size()
-                      == ((Directive) other).getAllSubDirectives().size()
-                && this.getAllDirectiveDataBlocks().size() 
-                == ((Directive) other).getAllDirectiveDataBlocks().size())
-            {
-                res = true;
-            }
+        	return false;
         }
-        return res;
+ 	    if (this.accTaskParams!=null && other.accTaskParams!=null)
+ 	    {
+ 	    	if (!this.accTaskParams.equals(other.accTaskParams))
+ 	    		return false;
+ 	    }
+        
+        if (this.getAllKeywords().size() != other.getAllKeywords().size())
+        	return false;
+        for (int i=0; i<this.getAllKeywords().size(); i++)
+    	{
+    		Keyword tKey = this.getAllKeywords().get(i);
+    		Keyword oKey = other.getAllKeywords().get(i);
+    		if (!tKey.equals(oKey))
+    			return false;
+    	}
+        
+        if (this.getAllSubDirectives().size() 
+        		!= other.getAllSubDirectives().size())
+        	return false;
+        for (int i=0; i<this.getAllSubDirectives().size(); i++)
+    	{
+        	Directive tDir = this.getAllSubDirectives().get(i);
+        	Directive oDir = other.getAllSubDirectives().get(i);
+    		if (!tDir.equals(oDir))
+    			return false;
+    	}
+        
+        if (this.getAllDirectiveDataBlocks().size() != 
+        		other.getAllDirectiveDataBlocks().size())
+        	return false;
+        for (int i=0; i<this.getAllDirectiveDataBlocks().size(); i++)
+    	{
+        	DirectiveData tDd = this.getAllDirectiveDataBlocks().get(i);
+        	DirectiveData oDd = other.getAllDirectiveDataBlocks().get(i);
+    		if (!tDd.equals(oDd))
+    			return false;
+    	}
+        
+        return true;
     }
 
 //-----------------------------------------------------------------------------
@@ -1233,6 +1293,10 @@ public class Directive implements IDirectiveComponent, Cloneable
             if (dir.dirData!=null && dir.dirData.size()>0)
                 jsonObject.add("dirData", context.serialize(dir.dirData));
            
+			if (dir.getTaskParams()!=null)
+				jsonObject.add("accTaskParams", context.serialize(
+						dir.getTaskParams()));
+			
             return jsonObject;
         }
     }
@@ -1264,6 +1328,10 @@ public class Directive implements IDirectiveComponent, Cloneable
 		{
 			newDir.addSubDirective(d.clone());
 		}
+		if (accTaskParams!=null)
+        {
+			newDir.accTaskParams = accTaskParams.clone();
+        }
 		return newDir;
 	}
  

@@ -1,6 +1,7 @@
 package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -49,7 +50,6 @@ public class KeywordTest
     @Test
     public void testMakeFromJDLineg() throws Exception
     {
-    	
     	String str = ChemSoftConstants.JDLABLOUDKEY + "LoudKey "
     			+ ChemSoftConstants.JDKEYVALSEPARATOR + "my value has 3 lines"
     			+ System.getProperty("line.separator") + "second line"
@@ -73,6 +73,57 @@ public class KeywordTest
     	assertTrue(!k.isLoud(),"Kind of keyword (B)");
     	assertEquals(1,k.getValueAsLines().size(),"Keyword value size(B)");
     	assertEquals("value",k.getValueAsLines().get(0),"Keyword value(1B)");
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static Keyword getTestKeyword()
+    {
+    	Keyword key = new Keyword("keyString", true, (Object) "value");
+    	ParameterStorage ps = new ParameterStorage();
+    	ps.setParameter("ParKey1","ParValue1");
+    	ps.setParameter("ParKey2","ParValue2");
+    	key.setTaskParams(ps);
+    	return key;
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testEquals() throws Exception
+    {
+    	Keyword kA = getTestKeyword();
+    	Keyword kB = getTestKeyword();
+
+    	assertTrue(kA.equals(kA));
+    	assertTrue(kA.equals(kB));
+    	assertTrue(kB.equals(kA));
+    	assertFalse(kA.equals(null));
+    	
+    	kB.setReference("changed");
+    	assertFalse(kA.equals(kB));
+    	
+    	kB = getTestKeyword();
+    	kB.setValue("changed");
+    	assertFalse(kA.equals(kB));
+    	
+    	kB = getTestKeyword();
+    	kB.setLoud(false);
+    	assertFalse(kA.equals(kB));
+    	
+    	kB = getTestKeyword();
+    	kB.setTaskParams(new ParameterStorage());
+    	assertFalse(kA.equals(kB));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	Keyword original = getTestKeyword();
+    	Keyword cloned = original.clone();
+    	assertEquals(original, cloned);
     }
     
 //------------------------------------------------------------------------------

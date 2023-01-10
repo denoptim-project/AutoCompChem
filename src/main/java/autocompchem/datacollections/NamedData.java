@@ -536,10 +536,13 @@ public class NamedData implements Cloneable
     @Override
     public boolean equals(Object o) 
     {
+    	if (o == null)
+    		return false;
+    	
  	    if (o == this)
  		    return true;
  	   
- 	    if (!(o instanceof NamedData))
+ 	    if (o.getClass() != getClass())
      		return false;
  	   
  	    NamedData other = (NamedData) o;
