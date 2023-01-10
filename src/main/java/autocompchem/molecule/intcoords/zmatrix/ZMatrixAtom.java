@@ -27,7 +27,7 @@ import autocompchem.utils.NumberUtils;
 /**
  * Object representing a single center (i.e., an atom) of which position is 
  * defined by means of internal coordinates. 
- * This object is a single line in a z-matrix.
+ * This object is a single line in a {@link ZMatrix}.
  *
  * @author Marco Foscato
  */ 
@@ -77,8 +77,7 @@ public class ZMatrixAtom implements Cloneable
      */
 
     public ZMatrixAtom()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -276,9 +275,9 @@ public class ZMatrixAtom implements Cloneable
      * the first internal coordinate of this ZMatrixAtom
      * @param idJ the index of the previously defined ZMatrixAtom used to define
      * the second internal coordinate of this ZMatrixAtom
-     * @param icI the first internal coordinate wich defines the position of
+     * @param icI the first internal coordinate which defines the position of
      * this ZMatrixAtom with respect to the ZMatrixAtom with id=idI
-     * @param icJ the second internal coordinate wich defines the position of
+     * @param icJ the second internal coordinate which defines the position of
      * this ZMatrixAtom with respect to the ZMatrixAtoms idI and idJ
      */
 
@@ -303,11 +302,11 @@ public class ZMatrixAtom implements Cloneable
      * the second internal coordinate of this ZMatrixAtom
      * @param idK the index of the previously defined ZMatrixAtom used to define
      * the third internal coordinate of this ZMatrixAtom
-     * @param icI the first internal coordinate wich defines the position of
+     * @param icI the first internal coordinate which defines the position of
      * this ZMatrixAtom with respect to the ZMatrixAtom with id=idI
-     * @param icJ the second internal coordinate wich defines the position of
+     * @param icJ the second internal coordinate which defines the position of
      * this ZMatrixAtom with respect to the ZMatrixAtoms idI and idA
-     * @param icK the third internal coordinate wich defines the position of
+     * @param icK the third internal coordinate which defines the position of
      * this ZMatrixAtom
      */
 
@@ -393,6 +392,32 @@ public class ZMatrixAtom implements Cloneable
         }
         return ic;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return <code>true</code> if any of the internal coordinates of this atom
+     * is flagged to be a constant.
+     */
+  	public boolean hasConstantIC() 
+  	{
+  		if (icI!=null)
+  		{
+  			if (icI.isConstant())
+  				return true;
+  			if (icJ!=null)
+  	  		{
+  	  			if (icJ.isConstant())
+  	  				return true;
+	  	  		if (icK!=null)
+	  	  		{
+	  	  			if (icK.isConstant())
+	  	  				return true;
+	  	  		}
+  	  		}
+  		}
+  		return false;
+  	}
 
 //------------------------------------------------------------------------------
 
@@ -533,6 +558,57 @@ public class ZMatrixAtom implements Cloneable
     			icJ.clone(), icK.clone());
     	return zma;
     }
+    
+//------------------------------------------------------------------------------
+
+  	@Override
+  	public boolean equals(Object o)
+  	{
+  		if (!(o instanceof ZMatrixAtom))
+  			return false;
+  		ZMatrixAtom other = (ZMatrixAtom) o;
+  		
+  		if (this.name!=null && other.name!=null
+  				&& !this.name.equals(other.name))
+  			return false;
+  		if (this.name==null && other.name!=null)
+  			return false;
+  		if (this.name!=null && other.name==null)
+  			return false;
+  		
+  		if (this.idI != other.idI)
+  			return false;
+  		
+  		if (this.idJ != other.idJ)
+  			return false;
+  		
+  		if (this.idK != other.idK)
+  			return false;
+
+  		if (this.icI!=null && other.icI!=null && !this.icI.equals(other.icI))
+	   		 return false;
+  		if (this.icI!=null && other.icI==null)
+	   		 return false;
+  		if (this.icI==null && other.icI!=null)
+	   		 return false;
+
+  		if (this.icJ!=null && other.icK!=null && !this.icJ.equals(other.icJ))
+	   		 return false;
+  		if (this.icJ!=null && other.icJ==null)
+	   		 return false;
+ 		if (this.icJ==null && other.icJ!=null)
+	   		 return false;
+
+  		if (this.icK!=null && other.icK!=null && !this.icK.equals(other.icK))
+	   		 return false;
+  		if (this.icK!=null && other.icK==null)
+	   		 return false;
+ 		if (this.icK==null && other.icK!=null)
+	   		 return false;
+  		
+  	   	return true;
+  	}
+  	
 //------------------------------------------------------------------------------
 
 }

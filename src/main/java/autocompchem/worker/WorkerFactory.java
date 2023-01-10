@@ -34,6 +34,7 @@ import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.chemsoftware.xtb.XTBOutputHandler;
+import autocompchem.datacollections.JobDetailsFileConverter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
@@ -249,7 +250,8 @@ public class WorkerFactory
 				Terminator.withMsgAndStatus("ERROR! Worker '" + wid + "' "
 	    		 		+ "did not return capabilities. This is most "
 						+ "likely a bug in '" + wid + "' or in "
-						+ "the WorkerFactory. Please, report this "
+						+ "the WorkerFactory. Make sure you added case '" + wid 
+						+ "' in getWorkerCapabilities(). Please, report this "
 						+ "to the authors.",-1);
 			}
     		if (workerCapabilities.contains(task))
@@ -317,7 +319,7 @@ public class WorkerFactory
         case MolecularSorter:
             return MolecularSorter.capabilities;
         case NWChemInputWriter:
-            return NWChemInputWriter.capabilities;
+			return NWChemInputWriter.capabilities; 
         case NWChemOutputHandler:
             return NWChemOutputHandler.capabilities;
         case NWChemReStarter:
@@ -340,6 +342,8 @@ public class WorkerFactory
             return VibModuleOutputHandler.capabilities;
         case ZMatrixHandler:
             return ZMatrixHandler.capabilities;
+        case JobDetailsConverter:
+        	return JobDetailsFileConverter.capabilities;
 
 		//NB: add cases of new workers according to alphabetic order, please.
             
@@ -403,8 +407,8 @@ public class WorkerFactory
             return new MolecularReorderer();
         case MolecularSorter:
             return new MolecularSorter();
-        case NWChemInputWriter:
-            return new NWChemInputWriter();
+		case NWChemInputWriter:
+			return new NWChemInputWriter();
         case NWChemOutputHandler:
             return new NWChemOutputHandler();
         case NWChemReStarter:
@@ -427,6 +431,8 @@ public class WorkerFactory
             return new VibModuleOutputHandler();
         case ZMatrixHandler:
             return new ZMatrixHandler();
+        case JobDetailsConverter:
+            return new JobDetailsFileConverter();
             
 		//NB: add cases of new workers according to alphabetic order, please
             

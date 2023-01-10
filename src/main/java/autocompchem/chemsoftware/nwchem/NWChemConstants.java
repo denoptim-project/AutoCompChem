@@ -139,6 +139,22 @@ public class NWChemConstants
     public final static String ECPDIR = "ECP";
 
     /**
+     * Name of directive controlling SCF calculations
+     */
+    public final static String SCFDIR = "SCF";
+    
+    /**
+     * Name of directive controlling DFT calculations
+     */
+    public final static String DFTDIR = "DFT";
+    
+    /**
+     * Directive defining the number of singly occupied orbitals (i.e., the 
+     * number of unpaird electrons);
+     */
+	public static final String NOPENDIR = "NOPEN";
+
+    /**
      * Name and header of the data block with variable internal coordinates
      */
     public final static String VARIABLEICBLOCK = "VARIABLES";
@@ -183,7 +199,8 @@ public class NWChemConstants
 
     /**
      * Name of the keyword belonging to the TASK directive and that defines the 
-     * theory in use (i.e., SCF and DFT)
+     * theory in use (i.e., SCF and DFT), but can also be 'python' indicating 
+     * an embedded python jobb.
      */
     public final static String THEORYKW = "theory";
 
@@ -350,5 +367,6 @@ public class NWChemConstants
      * Lowest non-zero frequency (absolute value)
      */
     public final static double MINFREQ = 0.1;
+
     
 }

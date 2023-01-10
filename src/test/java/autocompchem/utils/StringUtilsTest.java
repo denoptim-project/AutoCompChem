@@ -18,8 +18,14 @@ package autocompchem.utils;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -76,6 +82,132 @@ public class StringUtilsTest
     {
     	String s = "TRGAadfTR_G sdg hjnujTRGk fhjx vbn xTRGvbx vbn xbn TRG";
     	assertEquals(4,StringUtils.countMatches(s, "TRG"),"Number of matches");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testMakeStringForIndexes() throws Exception
+    {
+    	List<Integer> ids = new ArrayList<Integer>(Arrays.asList(
+    			1,2,3,            // range A
+    			6,7,8,          // range B
+    			10, 
+    			22,23,24,25,26,   // range C
+    			77,
+    			56,
+    			32,   //In range D
+    			45,
+    			33,   //In range D
+    			67,
+    			34)); //In range D
+    	
+    	List<String> expected = new ArrayList<String>(Arrays.asList(
+    			"1-3",
+    			"6-8",
+    			"10",
+    			"22-26",
+    			"32-34",
+    			"45",
+    			"56",
+    			"67",
+    			"77"));
+    	assertEquals(expected, StringUtils.makeStringForIndexes(ids,"-"));
+    	
+    	expected = new ArrayList<String>(Arrays.asList(
+    			"-1:1",
+    			"4:6",
+    			"8",
+    			"20:24",
+    			"30:32",
+    			"43",
+    			"54",
+    			"65",
+    			"75"));
+    	assertEquals(expected, StringUtils.makeStringForIndexes(ids,":",-2));
+    	
+    	expected = new ArrayList<String>(Arrays.asList(
+    			"2-4",
+    			"7-9",
+    			"11",
+    			"23-27",
+    			"33-35",
+    			"46",
+    			"57",
+    			"68",
+    			"78"));
+    	assertEquals(expected, StringUtils.makeStringForIndexes(ids,"-",1));
+    	
+    	Set<Integer> set = new HashSet<Integer>();
+    	set.add(9);
+    	set.add(4);
+    	set.add(7);
+    	set.add(0);
+    	set.add(3);
+    	set.add(8);
+    	set.add(22);
+    	set.add(2);
+    	expected = new ArrayList<String>(Arrays.asList(
+    			"0",
+    			"2-4",
+    			"7-9",
+    			"22"));
+    	assertEquals(expected, StringUtils.makeStringForIndexes(set,"-",0));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testIsAtomID() throws Exception
+    {
+    	String s = "H1";
+    	assertTrue(StringUtils.isAtomID(s));
+    	s = "Any134";
+    	assertTrue(StringUtils.isAtomID(s));
+    	s = "Any0";
+    	assertTrue(StringUtils.isAtomID(s));
+    	s = "Any134ade";
+    	assertFalse(StringUtils.isAtomID(s));
+    	s = "134ade";
+    	assertFalse(StringUtils.isAtomID(s));
+    	s = "123";
+    	assertFalse(StringUtils.isAtomID(s));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testSplitCharactersAndNumber() throws Exception
+    {
+    	String s = "abc123";
+    	String[] parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("123", parts[1]);
+    	
+    	s = "abc";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("", parts[1]);
+    	
+    	s = "123";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("", parts[0]);
+    	assertEquals("123", parts[1]);
+    	
+    	s = "abc123cfr";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("123cfr", parts[1]);
+    	
+    	s = "abc123cfr567";
+    	parts = StringUtils.splitCharactersAndNumber(s);
+    	assertEquals(2, parts.length);
+    	assertEquals("abc", parts[0]);
+    	assertEquals("123cfr567", parts[1]);
     }
     
 //------------------------------------------------------------------------------

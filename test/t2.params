@@ -9,11 +9,8 @@
 #
 VERBOSITY: 2
 TASK: PrepareInputGaussian
-INFILE: ../t2-mol.sdf
+INPUTGEOMETRIESFILE: ../t2-mol.sdf
 $STARTHEADER:
-%NPROCSHARED=16
-%CHK=test2
-%MEM=28800MB
 #P HF/LANL2MB   vshift=800   SP
 #  SCFCyc=180 SCF=(novaracc) 5d 7f
 $END

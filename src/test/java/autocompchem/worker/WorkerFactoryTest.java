@@ -25,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
 import autocompchem.run.Job.RunnableAppID;
@@ -60,9 +58,8 @@ public class WorkerFactoryTest
     {
     	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	ParameterStorage params = new ParameterStorage();
-    	params.setParameter(new Parameter(WorkerConstants.PARTASK,
-    			NamedDataType.STRING, 
-    			TaskID.DummyTask.toString()));
+    	params.setParameter(WorkerConstants.PARTASK,
+    			TaskID.DummyTask);
     	job.setParameters(params);
     	job.run();
     	NamedData output = job.getOutput(DummyWorker.DATAREF);

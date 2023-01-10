@@ -1,15 +1,42 @@
 #!/bin/bash
-grep -q "From c = 0 and s.m. = 1 to c = 0 and s.m. = 3" t6.log
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
+if [ ! -f t6-mol.inp ] ; then echo NOT Passed Error 1 ; exit -1 ; fi
+
+if ! grep -q "WHIT FREE LABEL" t6-mol.inp ; then
+  echo NOT Passed - Error 2
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t6.log
-if [ $? == 0 ] ; then 
+n=0;n=$(grep -c "^222 333$" t6-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^0 3$" t6-mol.inp)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^0 1111$" t6-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^-5555 3$" t6-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^0 1$" t6-mol.inp)
+if [ $n -ne 9 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^\-\-Link1\-\-$" t6-mol.inp)
+if [ $n -ne 13 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^H * 5\.143" t6-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^Ru * 5\.097" t6-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^H * 3\.470" t6-mol.inp)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t6.log ; then
 echo Passed
 exit 0
 else
-echo NOT Passed
+echo NOT Passed - Error 99
 exit -1
 fi

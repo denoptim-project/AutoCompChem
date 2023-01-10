@@ -1,0 +1,181 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "Nprocshared",
+              "value": "8"
+            },
+            {
+              "reference": "mem",
+              "value": "28GB"
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "1000"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "180"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "Nprocshared",
+              "value": "8"
+            },
+            {
+              "reference": "mem",
+              "value": "28GB"
+            },
+            {
+              "reference": "chk",
+              "value": "RuAsH3"
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "333",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "222",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

@@ -95,6 +95,11 @@ public class ChemSoftConstants
 	 * Label identifying a definition of a task for ACC in job details files
 	 */
 	public static final String JDLABACCTASK = "$ACCTASK";
+	
+	/**
+	 * Name of parameter defining a task  for ACC.
+	 */
+	public static final String JDACCTASK = "TASK";
     
     /**
      * Lowest non-zero frequency (absolute value)
@@ -120,6 +125,11 @@ public class ChemSoftConstants
      * Extension for computational chemistry job details file
      */
 	public static final String JDEXTENSION = ".jd";
+	
+	/**
+	 * Extension for computational chemistry job details file in JSON format
+	 */
+	public static final String JSONJDEXTENSION = ".jd.json";
 
 	/**
 	 * Key for parameter defining the verbosity level
@@ -137,6 +147,11 @@ public class ChemSoftConstants
 	public static final String PARMULTIGEOMMODE = "MULTIGEOMMODE";
 	
 	/**
+	 * Key for parameter defining the names of all geometries given as input.
+	 */
+	public static final String PARGEOMNAMES = "MULTIGEOMNAMES";
+	
+	/**
 	 * Key for parameter defining the pathname to the file defining the details
 	 * of the computational chemistry job.
 	 */
@@ -147,12 +162,32 @@ public class ChemSoftConstants
 	 * of the computational chemistry job.
 	 */
 	public static final String PARJOBDETAILS = "JOBDETAILS";
+	
+	/**
+	 * Key for parameter providing the entire header of the job. A header is
+	 * expected to contain all details of a computational chemistry job, though
+	 * in a string-like fashion, i.e., without dividing the information into
+	 * directives, keywords, and data.
+	 */
+	public static final String PARHEADER = "HEADER";
 
 	/**
 	 * Key for parameter defining the pathname's root for any output file (i.e.,
 	 * the input for the computational chemistry software).
 	 */
 	public static final String PAROUTFILEROOT = "ROOTPATHNAMEOUTPUT";
+	
+	/**
+	 * Key for parameter defining the pathname of the main output file (i.e.,
+	 * the input for the computational chemistry software).
+	 */
+	public static final String PAROUTFILE = "PATHNAMEOUTPUT";
+	
+	/**
+	 * Key for parameter requiring to skip generation of the json file with 
+	 * the definition of a mol/s-specific job.
+	 */
+	public static final String PARNOJSONOUTPUT = "NOJSONOUTPUT";
 	
 	/**
 	 * Key for parameter defining the charge of the system.
@@ -163,6 +198,16 @@ public class ChemSoftConstants
 	 * Key for parameter defining the spin multiplicity of the system
 	 */
 	public static final String PARSPINMULT = "SPIN_MULTIPLICITY";
+	
+	/**
+	 * Value-less parameter requiring to omit charge specification.
+	 */
+	public static final String PARNOCHARGE = "NOCHARGE";
+	
+	/**
+	 * Value-less parameter requiring to omit spin multiplicity.
+	 */
+	public static final String PARNOSPIN = "NOSPIN";
 	
 	/**
 	 * Key for the parameter defining where and how and what geometry to add  
@@ -176,7 +221,21 @@ public class ChemSoftConstants
 	/**
 	 * Possible values for how a molecular geometry can be reported
 	 */
-	public static enum CoordsType {XYZ, ZMAT, INTERNAL};
+	public static enum CoordsType {XYZ, ZMAT};
+	
+	/**
+	 * Key for the parameter defining which geometry to use when dealing with
+	 * multiple geometries.
+	 */
+	public static final String PARMULTIGEOMID = "USEGEOMATINDEX";
+			
+	/**
+	 * Parameter requiring to print atom tags when reporting a geometry.
+	 * Atom tags are built from the elemental symbol and the 1-based index
+	 * of the atom in the atom list. E.g., tag "C5" will be used for the 
+	 * fifth atom in the list, which is a carbon atom.
+	 */
+	public static final String PARUSEATMTAGS = "USEATOMTAGS";
 	
 	/**
 	 * Key for the parameter defining where to add filename that is dependent 
@@ -205,7 +264,18 @@ public class ChemSoftConstants
 	public static final String PARCOORDTYPE = "COORDTYPE";
 	
 	/**
-	 * Key for directive data containing the geometry
+	 * Name of directive that should be printed without its name, thus behaving 
+	 * as a silent container.
+	 */
+	public static final String UNNAMEDDIRECTIVE = "UNNAMEDDIRECTIVE";
+	
+	/**
+	 * Name of directive meant to contain the geometry and related information.
+	 */
+	public static final String DIRGEOMETRY = "GEOMETRY";
+	
+	/**
+	 * Name of directive data meant to contain the geometry
 	 */
 	public static final String DIRDATAGEOMETRY = "DIRDATAGEOMETRY";
 

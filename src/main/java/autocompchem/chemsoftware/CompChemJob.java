@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -21,9 +24,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -127,18 +138,32 @@ public class CompChemJob extends Job implements Cloneable
     	}
     }
     
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for an empty job
+     * @throws IOException 
+     */
+
+    public static CompChemJob fromJSONFile(String pathname) throws IOException
+    {
+    	CompChemJob ccj = (CompChemJob) IOtools.readJsonFile(pathname, 
+    			Job.class);
+    	return ccj;
+    }
+    
 //-----------------------------------------------------------------------------
     
     /**
      * Looks into the existing directives for ACC tasks, and performs them.
      * Depending on the task, some directives may be changed as a result of the
      * ACC tasks. 
-     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param mols the molecular representation given to mol-dependent tasks.
      */
     
     //TODO rename so that it is clear that this makes the job mol-dependent
     
-    public void processDirectives(IAtomContainer mol)
+    public void processDirectives(List<IAtomContainer> mols)
     {
     	for (Directive d : directives)
     	{
@@ -146,11 +171,11 @@ public class CompChemJob extends Job implements Cloneable
     		{
     			continue;
     		}
-    		d.performACCTasks(mol,this);
+    		d.performACCTasks(mols, this);
     	}
     	for (Job step : steps)
     	{
-    		((CompChemJob) step).processDirectives(mol);
+    		((CompChemJob) step).processDirectives(mols);
     	}
     }
 
@@ -173,12 +198,30 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Finds and return a specified directive.
+     * Finds and return a specified directive. This method looks only at the 
+     * directives of this very job, not at the content of any embedded job.
      * @param name of the directive to return (case insensitive).
      * @return the directive or null if none is found with that name.
      */
     
     public Directive getDirective(String name)
+    {
+    	return getDirective(name, false);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return a specified directive. This method looks also at the 
+     * content of any embedded job, if recursion is required. Note that we 
+     * return the first-encountered directive with the given name.
+     * @param name of the directive to return (case insensitive).
+     * @param recursive use <code>true</code> to allow recursion into embedded
+     * jobs.
+     * @return the directive or null if none is found with that name.
+     */
+    
+    public Directive getDirective(String name, boolean recursive)
     {
     	for (Directive d : directives)
     	{
@@ -186,6 +229,16 @@ public class CompChemJob extends Job implements Cloneable
     		{
     			return d;
     		}
+    	}
+    	if (recursive)
+    	{
+    		Directive d = null;
+	    	for (Job step : steps)
+	    	{
+	    		d= ((CompChemJob)step).getDirective(name, true);
+	    		if (d!=null)
+	    			return d;
+	    	}
     	}
     	return null;
     }
@@ -218,12 +271,29 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Adds directive to this job or, if the a directive with such name already
+     * Adds directive to this job or, if a directive with such name already
      * exists, replaces the existing one with the given one.
      * @param d the given directive
      */
     
     public void setDirective(Directive d)
+    {
+    	if (d==null)
+    		throw new IllegalArgumentException("Null directives not allowed!");
+    	setDirective(d, false);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds directive to this job or, if a directive with such name already
+     * exists, replaces the existing one with the given one.
+     * @param d the given directive
+     * @param recursive use <code>true</code> to set the directive in all 
+     * embedded jobs or steps.
+     */
+    
+    public void setDirective(Directive d, boolean recursive)
     {
     	if (directives.contains(d))
     	{
@@ -232,66 +302,152 @@ public class CompChemJob extends Job implements Cloneable
     	} else {
     	    directives.add(d);
     	}
+    	
+    	if (getNumberOfSteps()>0 && recursive)
+        {
+	        for (Job  step : steps)
+	        {
+	        	if (step instanceof CompChemJob)
+	        		((CompChemJob) step).setDirective(d, recursive);
+	        }
+        }
     }
-
-////------------------------------------------------------------------------------
-//
-//    /**
-//     * Change the charge in all steps
-//     * @param newCharge new value of the charge for all steps
-//     */
-//
-//    public void setAllCharge(int newCharge)
-//    {
-//        for (int i=0; i<steps.size(); i++)
-//        {
-//        	//TODO
-////            getStep(i).setCharge(newCharge);
-//        }
-//    }
-//
-////------------------------------------------------------------------------------
-//
-//    /**
-//     * Change spin multiplicity in all steps
-//     * @param newSpinMult new value of the spin multiplicity for all steps
-//     */
-//
-//    public void setAllSpinMultiplicity(int newSpinMult)
-//    {
-//        for (int i=0; i<steps.size(); i++)
-//        {
-//           //TODO getStep(i).setSpinMultiplicity(newSpinMult);
-//        }
-//    }
-//
-////------------------------------------------------------------------------------
-//
-//    /**
-//     * Change the title in all steps
-//     * @param title string to be used as title in all steps
-//     */
-//
-//    public void setAllTitle(String title)
-//    {
-//        for (int i=0; i<steps.size(); i++)
-//        {
-//           //TODO getStep(i).setTitle(title);
-//        }
-//    }
-
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds directive to this job regardless of whether another directive with 
+     * the same name exists.
+     * @param d the given directive
+     */
+    public void addDirective(Directive d)
+    {
+    	directives.add(d);
+    }
+        
 //------------------------------------------------------------------------------
 
     /**
-     * Clones all information as to produce an independent deep copy of this
-     * object. This is achieved by exporting the object to string and 
+     * Removes the first occurrence of the specified Directive from this list,
+     * if it is present. If the list does not contain the Directive, 
+     * it is unchanged.
+     * @param origiGeomDir
+     * @return <code>true</code> if the list of directives changes upon calling
+     * this method, i.e., the object has been removed.
+     */
+  	public boolean removeDirective(Directive d) 
+  	{
+  		return directives.remove(d);
+  	}
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Sets a {@link Keyword} in a {@link Directive} with the given name
+     * if it is not already present. 
+     * @param dirName the name of the directive.
+     * @param keyName the name of the {@link Keyword}.
+     * @param isLoud use <code>true</code> if the keyword should be set to be
+     * a loud keyword, meaning that conversion to text used the syntax 
+     * <code>key|separator|value</code> (for loud keywords) instead of just
+     * <code>value</code> (for non-loud, or silent keywords).
+     * @param value the value of the keyword to specify.
+     */
+    public void setKeywordIfUnset(String dirName, String keyName, 
+    		boolean isLoud, String value)
+    {
+		Directive dir = getDirective(dirName);
+		if (dir==null)
+		{
+			dir = new Directive(dirName);
+    		dir.addKeyword(new Keyword(keyName, isLoud, value));
+			setDirective(dir);
+		} else {
+			if (dir.getKeyword(keyName)==null)
+				dir.addKeyword(new Keyword(keyName, isLoud, value));
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Sets a {@link DirectiveData} in a {@link Directive} with the given name
+     * if it is not already present. 
+     * @param dirName the name of the directive.
+     * @param dirDataName the name of the {@link DirectiveData}.
+     * @param dd a source of data. We'll take the value from this instance to
+     * make a new {@link directiveData}.
+     */
+    public void setDirectiveDataIfUnset(String dirName, String dirDataName, 
+    		DirectiveData dd)
+    {
+    	Directive dir = getDirective(dirName);
+		if (dir==null)
+		{
+			dir = new Directive(dirName);
+    		dir.addDirectiveData(dd);
+			setDirective(dir);
+		} else {
+			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
+			if (oldDd==null)
+			{
+        		dir.addDirectiveData(dd);
+        	} else {
+        		oldDd.setValue(dd.getValue());
+        	}
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Overwrites all directives of this job with the given ones.
+     * @param directives the new directives
+     */
+    
+    public void setDirectives(ArrayList<Directive> directives)
+    {
+    	for (Directive d : directives)
+    		if (d==null)
+    			throw new IllegalArgumentException(
+    					"Null directives not allowed!");
+    	this.directives = directives;
+    }
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Removes the ACC tasks from any directive's component in this job and in
+     * any embedded job.
+     */
+    public void removeACCTasks()
+    {
+    	for (Directive d : directives)
+    	{
+    		d.removeACCTasks();
+    	}
+    	
+    	for (Job j : steps)
+    	{
+    		((CompChemJob) j).removeACCTasks();
+    	}
+    }
+   
+//------------------------------------------------------------------------------
+
+    /**
+     * Copies most information from this jobs and its steps and builds a new job
+     * out of it. This is achieved by exporting the object to string and 
      * constructing a brand new object from that string.
-     * @return a deep copy.
+     * @return a new job.
      */
     
     public CompChemJob clone()
     {
-    	CompChemJob clone = new CompChemJob(this.toLinesJobDetails());
+    	Gson writer = ACCJson.getWriter();
+    	Gson reader = ACCJson.getReader();
+    	CompChemJob clone = (CompChemJob) reader.fromJson(writer.toJson(this), 
+    			Job.class);
     	return clone;
     }
 
@@ -335,7 +491,31 @@ public class CompChemJob extends Job implements Cloneable
         }
         return lines;
     }
+    
+//------------------------------------------------------------------------------
 
+    public static class CompChemJobSerializer 
+    implements JsonSerializer<CompChemJob>
+    {
+        @Override
+        public JsonElement serialize(CompChemJob job, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONJOVTYPE, job.getClass().getSimpleName());
+            
+            if (!job.params.isEmpty())
+            	jsonObject.add(JSONPARAMS, context.serialize(job.params));
+            if (!job.steps.isEmpty())
+            	jsonObject.add(JSONSUBJOBS, context.serialize(job.steps));
+            if (!job.directives.isEmpty())
+            	jsonObject.add("directives", context.serialize(job.directives));
+            
+            return jsonObject;
+        }
+    }
+    
 //------------------------------------------------------------------------------
 
 }

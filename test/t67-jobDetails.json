@@ -1,0 +1,999 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "scf",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "ecce_print",
+          "keywords": [
+            {
+              "reference": "eccefile",
+              "value": "ecce.out",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "units",
+              "value": "angstrom"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[C] [N] 1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry"
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step1: SP with HF\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[Cl] [Ru] 2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step2: SP with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "LOOSE"
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step3: pre-opt. loose\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "hessian",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[Cl] [Ru] 2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant\n[C] [N] 1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step4: hessian\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "INHESS",
+              "keywords": [
+                {
+                  "reference": "inhess",
+                  "value": "0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "reference": "zcoord",
+                  "value": "BOND 1 2 constant",
+                  "type": "STRING"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step5: pre-opt.\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "lebedev",
+                  "value": "99 14"
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "INHESS",
+              "keywords": [
+                {
+                  "reference": "inhess",
+                  "value": "0",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "TIGHT"
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "reference": "zcoord",
+                  "value": "BOND 1 2 constant",
+                  "type": "STRING"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step6: opt. grid\u003d(99,590)\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "lebedev",
+                  "value": "99 14"
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "reference": "zcoord",
+                  "value": "BOND 1 2",
+                  "type": "STRING"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step7: freq grid\u003d(99,590)\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "lebedev",
+                  "value": "99 14"
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "saddle",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "TIGHT"
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step8: sabble opt.\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "lebedev",
+                  "value": "99 14"
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step9: final frequencies\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                " * library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 package autocompchem.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -19,6 +21,12 @@ package autocompchem.utils;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -72,6 +80,24 @@ public class NumberUtilsTest
     	s = "-i123456.7890";
     	assertFalse(NumberUtils.isParsableToInt(s),"Complex w/ point");
     	
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetcomplementary() throws Exception
+    {
+    	List<Integer> ids = new ArrayList<Integer>(Arrays.asList(1,2,3,
+    			5, 7, 7, 5));
+    	
+    	Set<Integer> expected = new HashSet<Integer>();
+    	expected.add(0);
+    	expected.add(4);
+    	expected.add(6);
+    	expected.add(8);
+    	expected.add(8);
+    	
+    	assertEquals(expected,NumberUtils.getComplementaryIndexes(ids, 9));
     }
     
 //------------------------------------------------------------------------------

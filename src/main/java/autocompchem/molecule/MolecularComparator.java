@@ -31,9 +31,7 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.constants.ACCConstants;
 import autocompchem.files.FileUtils;
-import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometry;

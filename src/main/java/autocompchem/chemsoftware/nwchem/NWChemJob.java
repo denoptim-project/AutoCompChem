@@ -18,10 +18,18 @@ package autocompchem.chemsoftware.nwchem;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.Keyword;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
 
 /**
  * Object representing a complete NWChem job and may include one or more tasks 
@@ -316,6 +324,116 @@ public class NWChemJob
         }
         return lines;
     }
+    
+//------------------------------------------------------------------------------
+
+	public CompChemJob convertToCompChemJob() 
+	{
+		CompChemJob ccj = new CompChemJob();
+		for (NWChemTask nwcStep : steps)
+		{
+			CompChemJob ccjStep = new CompChemJob();
+			
+			ccjStep.setParameters(nwcStep.getTaskSpecificParams());
+			
+			for (NWChemDirective nwcDir : nwcStep.getAllDirectives())
+			{
+				Directive optDir = nwcDir.convertToACCDirective();
+				ccjStep.setDirective(optDir);
+			}
+			
+			// Translate parameters into tasks
+			ParameterStorage ps = nwcStep.getTaskSpecificParams();
+			List<NamedData> toRemove = new ArrayList<NamedData>();
+			for (String pKey : ps.getAllNamedData().keySet())
+			{
+				NamedData nd = ps.getNamedData(pKey);
+				switch (nd.getReference().toUpperCase())
+				{
+				case BasisSetConstants.ATMSPECBS:
+					{
+						Directive basisDir = ccjStep.getDirective("basis");
+						if (basisDir==null)
+							basisDir = new Directive("basis");
+						ParameterStorage taskPs = new ParameterStorage();
+						taskPs.setParameter("TASK",
+								TaskID.GENERATEBASISSET.toString());
+						taskPs.setParameter(nd.getReference(),
+								nd.getValueAsString());
+						DirectiveData dd = new DirectiveData("basissetdata");
+						dd.setTaskParams(taskPs);
+						basisDir.addDirectiveData(dd);
+						ccjStep.setDirective(basisDir);
+						toRemove.add(nd);
+						break;
+					}
+					
+				case NWChemConstants.ZCRDDIR:
+				{
+					Directive geomDir = ccjStep.getDirective(
+							NWChemConstants.GEOMDIR);
+					if (geomDir==null)
+						geomDir = new Directive(NWChemConstants.GEOMDIR);
+					Directive zcoordDir = geomDir.getSubDirective(
+							NWChemConstants.ZCRDDIR);
+					if (zcoordDir==null)
+					{	
+						zcoordDir = new Directive(NWChemConstants.ZCRDDIR);
+						geomDir.addSubDirective(zcoordDir);
+					}
+					ParameterStorage taskPs = new ParameterStorage();
+					taskPs.setParameter("TASK",
+							TaskID.GENERATECONSTRAINTS.toString());
+					taskPs.setParameter("SMARTS",
+							nd.getValueAsString());
+					DirectiveData dd = new DirectiveData("zcoorddata");
+					dd.setTaskParams(taskPs);
+					zcoordDir.addDirectiveData(dd);
+					ccjStep.setDirective(geomDir);
+					toRemove.add(nd);
+					break;
+				}
+				
+				//FREEZEIC would be possible but is not present in legacy examples
+				
+				case "FREEZEATM":
+				{	
+					ParameterStorage taskPs = new ParameterStorage();
+					taskPs.setParameter("TASK",
+							TaskID.GENERATECONSTRAINTS.toString());
+					taskPs.setParameter("SMARTS",
+							nd.getValueAsString());
+					
+					Keyword activeSetKey = new Keyword(NWChemConstants.ACTIVEATOMS, 
+							true, new ArrayList<String>());
+					activeSetKey.setTaskParams(taskPs);
+					activeSetKey.removeValue();
+					
+					Directive setDir = ccjStep.getDirective("SET");
+					if (setDir==null)
+						setDir = new Directive("SET");
+					setDir.addKeyword(activeSetKey);
+					ccjStep.setDirective(setDir);
+					toRemove.add(nd);
+					break;
+				}
+				
+				default:
+					// Not translating the parameter storage into a task
+					ccjStep.setParameter(nd.getReference(), 
+							nd.getType(), nd.getValue());
+					break;
+				}
+			}
+			for (NamedData dat : toRemove)
+			{
+				ps.removeData(dat.getReference());
+			}
+			
+			ccj.addStep(ccjStep);
+		}
+		return ccj;
+	}
 
 //------------------------------------------------------------------------------
 

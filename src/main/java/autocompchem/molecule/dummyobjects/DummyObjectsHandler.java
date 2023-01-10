@@ -623,7 +623,7 @@ public class DummyObjectsHandler extends Worker
         
         double bestVal = 1.0;
         int bestId = -1;
-        Point3d srcP3d = MolecularUtils.getCoords3d(src);
+        Point3d srcP3d = AtomUtils.getCoords3d(src);
         for (int i=0; i<allCandidateDirs.size(); i++)
         {
             double worstVal = 0.0;

@@ -1,5 +1,7 @@
 package autocompchem.datacollections;
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,24 +20,39 @@ package autocompchem.datacollections;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.Set;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
+//TODO-gg are parameters just Directives for ACC
+
 /**
- * Storage of {@link Parameter}s. 
- * This class has also the capability of importing string-based parameters 
+ * Storage of parameters, i.e., information that is collected in a list of 
+ * entries that can be either 
+ * keywords (i.e., strings that have a meaning of their own) or
+ * keyword:value pairs (i.e., data that is named: the keyword is the name and
+ * the value the data that name refer to).
+ * This class has the capability of importing string-based parameters 
  * directly from a formatted text file.
- * The recognised format is as follows:
+ * The recognized format is as follows:
  * <ul>
  * <li> lines beginning with 
  * {@value  autocompchem.datacollections.ParameterConstants#COMMENTLINE} 
@@ -46,17 +63,18 @@ import autocompchem.text.TextBlockIndexed;
  * follow until a line beginning with 
  * {@value autocompchem.datacollections.ParameterConstants#ENDMULTILINE}
  * is found. All lines of a multi line block are interpreted as pertaining to a 
- * single {@link Parameter}. The text in between 
+ * single parameter (i.e., a {@link NamedData}. The text in between 
  * {@value autocompchem.datacollections.ParameterConstants#STARTMULTILINE} and 
  * the 
  * {@value autocompchem.datacollections.ParameterConstants#ENDMULTILINE}, 
  * apart from containing one or more
  * new line characters, follows the same syntax defined below for the single
- * line definition of a {@link Parameter}.</li>
- * <li> all other lines define each one a single {@link Parameter}.
+ * line definition of a parameter, i.e., a {@link NamedData}.</li>
+ * <li> all other lines define each one a single parameter, 
+ * i.e., a {@link NamedData}.
  * All text before the separator (i.e., the first 
  * {@value autocompchem.datacollections.ParameterConstants#SEPARATOR} 
- * character) is interpreted as the reference name of the {@link Parameter},
+ * character) is interpreted as the reference name of the {@link NamedData},
  * while the rest as its value/content. Reference name is case insensitive,
  * and is stored as upper case.</li>
  * </ul>
@@ -66,11 +84,6 @@ import autocompchem.text.TextBlockIndexed;
 
 public class ParameterStorage extends NamedDataCollector implements Cloneable
 {
-
-	/**
-	 * Container of parameters
-	 */
-	private Map<String,Parameter> allPars = new HashMap<String,Parameter>();
 	
 //------------------------------------------------------------------------------
 
@@ -82,28 +95,13 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     {
         super();
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor from a filled map of parameters.
-     * @param allData the map of parameters.
-     */
-    
-    public ParameterStorage(Map<String,Parameter> allData)
-    {
-    	for (Entry<String,Parameter> e : allData.entrySet())
-    	{
-    		this.allData.put(e.getKey().toUpperCase(),e.getValue());
-    	}
-    }
     
 //------------------------------------------------------------------------------
     
     /**
      * Case insensitive evaluation.
      * @param ref the reference name to search form (case insensitive).
-     * @return <code>true</code> is the upper case reference name is found
+     * @return <code>true</code> if the upper case reference name is found
      */
     
     public boolean contains(String ref)
@@ -116,19 +114,19 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     /**
      * Return the parameter corresponding to the given reference name.
      * @param ref reference name of the parameter (case insensitive).
-     * @return the parameter with the given reference string.
+     * @return the parameter with the given reference string or null if no
+     * such parameter is found.
      */
 
-    public Parameter getParameterOrNull(String ref)
+    public NamedData getParameterOrNull(String ref)
     {
-        if (!this.contains(ref))
+        if (!contains(ref))
         {
             return null;
         }
-        return (Parameter) allData.get(ref.toUpperCase());
+        return allData.get(ref.toUpperCase());
     }
-
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -138,14 +136,14 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @return the parameter with the given reference string.
      */
 
-    public Parameter getParameter(String ref)
+    public NamedData getParameter(String ref)
     {
-        if (!this.contains(ref))
+        if (!contains(ref))
         {
             Terminator.withMsgAndStatus("ERROR! Key '" + ref + "' not found in "
                         + "ParameterStorage!",-1);
         }
-        return (Parameter) allData.get(ref.toUpperCase());
+        return getParameterOrNull(ref);
     }
 
 //------------------------------------------------------------------------------
@@ -159,19 +157,18 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @return the user defined value or the default
      */
 
-    public Parameter getParameterOrDefault(String refName, 
-    		Parameter.NamedDataType defKind, 
+    public NamedData getParameterOrDefault(String refName, NamedDataType defKind, 
     		Object defValue)
     {
     	refName = refName.toUpperCase();
-        Parameter p = new Parameter();
+    	NamedData p;
         if (this.contains(refName))
         {
-             p = (Parameter) allData.get(refName);
+             p = allData.get(refName);
         }
         else
         {
-        	p = new Parameter(refName, defKind, defValue);
+        	p = new NamedData(refName, defKind, defValue);
         }
         return p;
     }
@@ -186,69 +183,29 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 
     public String getParameterValue(String ref)
     {
-        if (this.contains(ref))
+        if (contains(ref))
         {
         	return allData.get(ref.toUpperCase()).getValueAsString();
         }
         return null;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Updates the subset of NamedData as to contain only those that are
-     * instances of the Parameter class, and makes sure the reference names are
-     * upper case.
-     */
-    
-    private void updateParamMap()
-    {
-    	allPars.clear();
-    	for (Entry<String,NamedData> e : allData.entrySet())
-    	{    		
-    		if (e.getValue() instanceof Parameter)
-    		{
-    			allPars.put(e.getKey().toUpperCase(),(Parameter) e.getValue());
-    		}
-    	}
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return all the parameters stored here.
-     * <b>WARNING:</b> since the parameter's reference name is case insensitive,
-     * you must avoid <code>m.getAllParameters.get("myRef")</code> and use the
-     * {@link ParameterStorage#getParameter(String)}, or
-     * {@link ParameterStorage#getParameterOrDefault(String, NamedDataType, Object)}
-     * or {@link ParameterStorage#getParameterOrNull(String)}, or 
-     * {@link ParameterStorage#getRefNamesSet()}. 
-     * 
-     * @return the map with all parameters.
-     */
-
-    @Deprecated
-    public Map<String,Parameter> getAllParameters()
-    {
-    	updateParamMap();
-        return allPars;
     }
 
 //------------------------------------------------------------------------------
     
     /**
      * Returns the set of reference names. This method is meant to be the case
-     * insensitive analogue of <code>map.keySet()</code>.
+     * insensitive analog of <code>map.keySet()</code>.
      * @return the set of reference names for the parameters included in this 
      * collection.
      */
     
     public Set<String> getRefNamesSet()
     {
-    	updateParamMap();
     	Set<String> s = new HashSet<String>();
-    	for (String k : allPars.keySet())
+    	for (String k : allData.keySet())
+    	{
     		s.add(k.toUpperCase());
+    	}
     	return s;
     }
     
@@ -257,13 +214,79 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     /**
      * Store a parameter with the given reference name. If the parameter already
      * exists, it will be overwritten.
-     * @param ref the reference name of the parameter.
-     * @param par the new parameter to be stores.
+     * @param par the new parameter to be stored.
      */
 
-    public void setParameter(Parameter par)
+    public void setParameter(NamedData par)
     {
-        allData.put(par.getReference(),par); 
+        allData.put(par.getReference().toUpperCase(), par); 
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Store a value-less parameter that only has its given reference name. 
+     * Such a value-less parameter is typically a keyword: its existence is
+     * sufficient to convey some information.
+     * If the parameter already
+     * exists, it will be overwritten.
+     * @param ref the reference name of the parameter.
+     * @param value the value of the parameter to be stored.
+     */
+
+    public void setParameter(String ref)
+    {
+        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.UNDEFINED, 
+        		null)); 
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Store a parameter with the given reference name and value. 
+     * If the parameter already
+     * exists, it will be overwritten.
+     * @param ref the reference name of the parameter.
+     * @param value the value of the parameter to be stored.
+     */
+
+    public void setParameter(String ref, String value)
+    {
+        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 
+        		value)); 
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Store a parameter with the given reference name and value, and the value
+     * is to be considered a string.
+     * If the parameter already
+     * exists, it will be overwritten.
+     * @param ref the reference name of the parameter.
+     * @param value the value of the parameter to be stored as a string.
+     */
+
+    public void setParameter(String ref, Object value)
+    {
+        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 
+        		value.toString())); 
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Store a parameter with the given reference name, type, and value. 
+     * If the parameter already
+     * exists, it will be overwritten.
+     * @param ref the reference name of the parameter.
+     * @param type the type of value.
+     * @param value the value of the parameter to be stores.
+     */
+
+    public void setParameter(String ref, NamedDataType type, Object value)
+    {
+        setParameter(new NamedData(ref.toUpperCase(), type, value)); 
     }
 
 //------------------------------------------------------------------------------
@@ -275,8 +298,8 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     public void setDefault()
     {
         //Set default parameter
-        Parameter vl = new Parameter(ACCConstants.VERBOSITYPAR,
-        		Parameter.NamedDataType.INTEGER,"0");
+    	NamedData vl = new NamedData(ACCConstants.VERBOSITYPAR, 
+    			NamedDataType.INTEGER,"0");
         allData.put(ACCConstants.VERBOSITYPAR,vl);
     }
 
@@ -324,7 +347,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     /**
      * Read a formatted text and import all parameters
      * @param filename pseudo file name used only for reporting errors, does
-     * not need to be an existing file.
+     * not need to be an existing file. Used only for logging errors.
      * @param lines the block of lines to read
      */
 
@@ -359,7 +382,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
             String value = signleBlock.get(1);
 
             //All params read from text file are seen as Strings for now
-            Parameter prm = new Parameter(key,NamedData.NamedDataType.STRING,
+            NamedData prm = new NamedData(key, NamedData.NamedDataType.STRING,
             		value);
             setParameter(prm);
         }
@@ -374,19 +397,21 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     public ParameterStorage clone()
     {
     	ParameterStorage newPar = new ParameterStorage();
-    	for (String ref : this.getRefNamesSet())
+    	for (String ref: super.getAllNamedData().keySet())
     	{
-    		try {
-				Parameter p = this.getParameter(ref).clone();
-				newPar.setParameter(p);
+    		NamedData nd =  super.getNamedData(ref);
+    		NamedData ndClone = null;
+			try { 
+				ndClone= nd.clone();
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! Counl not clone "
 						+ "ParameterStorage",-1);
 			}
+			newPar.putNamedData(ndClone);
     	}
     	return newPar;
-    }
+    }  
     
 //------------------------------------------------------------------------------
     
@@ -402,7 +427,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
         ArrayList<String> lines = new ArrayList<String>();
         for (String ref : getRefNamesSet())
         {
-        	Parameter par = getParameter(ref);
+        	NamedData par = getParameter(ref);
         	String parStr = par.getReference() + ParameterConstants.SEPARATOR 
         			+ par.getValueAsString();
             lines.add(parStr);
@@ -427,7 +452,43 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
         sb.append("]]");
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
 
+    public static class ParameterStorageSerializer 
+    implements JsonSerializer<ParameterStorage>
+    {
+		@Override
+		public JsonElement serialize(ParameterStorage src, Type typeOfSrc, 
+				JsonSerializationContext context) 
+		{
+			Collection<NamedData> list = src.allData.values();
+			return context.serialize(list);
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+
+    public static class ParameterStorageDeserializer 
+    implements JsonDeserializer<ParameterStorage>
+    {
+		@Override
+		public ParameterStorage deserialize(JsonElement json, Type typeOfT, 
+				JsonDeserializationContext context)
+				throws JsonParseException 
+		{
+        	List<NamedData> list = context.deserialize(json, 
+        			new TypeToken<List<NamedData>>(){}.getType());
+        	
+        	ParameterStorage ps = new ParameterStorage();
+        	for (NamedData nd : list)
+        	{
+        		ps.setParameter(nd);
+        	}
+         	return ps;
+		}
+    }
+    
 //------------------------------------------------------------------------------
 
 }

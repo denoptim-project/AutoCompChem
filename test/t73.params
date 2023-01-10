@@ -3,5 +3,5 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputGaussian
-INFILE: ../t73-mol.sdf
-JOBDETAILSFILE: ../t73-jobDetails
+INPUTGEOMETRIESFILE: ../t73-mol.sdf
+JOBDETAILSFILE: ../t73-jobDetails.json

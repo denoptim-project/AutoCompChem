@@ -18,7 +18,6 @@ package autocompchem.chemsoftware.generic;
  */
 
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 
 /**
@@ -70,11 +69,9 @@ public class GenericToolParameters extends ParameterStorage
 
     public String getOutputInitialMsg()
     {
-        Parameter par  =  getParameterOrDefault(
-                                            GenericToolConstants.DEFINITMSGKEY,
-                                            NamedDataType.STRING,
-                                            GenericToolConstants.DEFINITMSG);
-        return par.getValue().toString();
+        return getParameterOrDefault(GenericToolConstants.DEFINITMSGKEY,
+        		NamedDataType.STRING,GenericToolConstants.DEFINITMSG)
+        		.getValue().toString();
     }
 
 //------------------------------------------------------------------------------
@@ -88,11 +85,11 @@ public class GenericToolParameters extends ParameterStorage
 
     public String getOutputNormalEndMsg()
     {
-        Parameter par  =  getParameterOrDefault(
-                                          GenericToolConstants.DEFNORMENDMSGKEY,
-                                          NamedDataType.STRING,
-                                          GenericToolConstants.DEFNORMENDMSG);
-        return par.getValue().toString();
+        return getParameterOrDefault(
+        		GenericToolConstants.DEFNORMENDMSGKEY,
+        		NamedDataType.STRING,
+        		GenericToolConstants.DEFNORMENDMSG)
+        		.getValue().toString();
     }
 
 //------------------------------------------------------------------------------

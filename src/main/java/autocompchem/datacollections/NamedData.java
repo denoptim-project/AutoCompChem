@@ -1,16 +1,33 @@
 package autocompchem.datacollections;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+
+import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Action;
 import autocompchem.text.TextBlock;
+import autocompchem.utils.StringUtils;
 
 /*
  *   Copyright (C) 2014  Marco Foscato
@@ -74,7 +91,31 @@ public class NamedData implements Cloneable
         LISTOFINTEGERS,
         NORMALMODE,
         NORMALMODESET, 
-        ACTION};
+        ACTION,
+        PARAMETERSTORAGE, 
+        CONSTRAINTSSET};
+        
+    /**
+     * List of types that can be serailized to JSON
+     */
+    public static final Set<NamedDataType> jsonable = new HashSet<NamedDataType>(
+            Arrays.asList(NamedDataType.STRING,
+            		NamedDataType.INTEGER,
+            		NamedDataType.DOUBLE,
+            		NamedDataType.BOOLEAN,
+            		NamedDataType.TEXTBLOCK,
+            		NamedDataType.PARAMETERSTORAGE,
+            		NamedDataType.BASISSET,
+            		NamedDataType.IATOMCONTAINER,
+            		NamedDataType.CONSTRAINTSSET,
+            		NamedDataType.ZMATRIX));
+    // NB: when extending the above list, remember to add the corresponding case
+    // in the NamedDataDeserializer!
+    
+    /**
+     * String use to not that a type could not be serialized to JSON
+     */
+    public static final String NONJSONABLE = "Type is not JSON-able";
 
 //------------------------------------------------------------------------------
 
@@ -83,8 +124,7 @@ public class NamedData implements Cloneable
      */
 
     public NamedData()
-    {
-    }
+    {}
     
 //------------------------------------------------------------------------------
 
@@ -154,6 +194,17 @@ public class NamedData implements Cloneable
     	this.type = detectType(value);
         this.value = value;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Erases the value and type of this NamedData.
+     */
+    public void removeValue()
+    {
+    	value = null;
+    	type = NamedDataType.UNDEFINED;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -171,13 +222,60 @@ public class NamedData implements Cloneable
 
     /**
      * Return the string representation of the value of this data.
-     * Corresponds to getValue().toString().
+     * Corresponds to getValue().toString() or to merging any list of items
+     * using the space as separator.
      * @return the value of this data.
      */
 
     public String getValueAsString()
     {
+    	if (value==null)
+    		return "null";
+    	if (type == NamedDataType.LISTOFDOUBLES 
+    			|| type == NamedDataType.LISTOFINTEGERS
+    			|| type == NamedDataType.TEXTBLOCK)
+    		return StringUtils.mergeListToString(getValueAsLines(), " ", true);
+    	
         return value.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the representation of the value of this data as a text block.
+     * @return the value of this data or null it the value cannot be converted 
+     * to lines of text.
+     */
+
+    @SuppressWarnings("unchecked")
+	public List<String> getValueAsLines()
+    {
+    	if (value==null)
+    		return null;
+
+    	List<String> lines = new ArrayList<String>();
+    	switch (type)
+    	{
+		case LISTOFDOUBLES:
+			for (Double d : (ListOfDoubles) value)
+				lines.add(d.toString());
+			break;
+		case LISTOFINTEGERS:
+			for (Integer d : (ListOfIntegers) value)
+				lines.add(d.toString());
+			break;
+		case STRING:
+			lines.addAll(Arrays.asList(((String)value).split(
+					System.getProperty("line.separator"))));
+			break;
+		case TEXTBLOCK:
+			for (String l : (ArrayList<String>) value)
+				lines.add(l);
+			break;
+		default:
+			return null;
+    	}
+        return lines;
     }
 
 //------------------------------------------------------------------------------
@@ -193,6 +291,18 @@ public class NamedData implements Cloneable
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Sets the type of this data.
+     * @param type the type to specify.
+     */
+
+    public void setType(NamedDataType type)
+    {
+        this.type = type;
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * Looks at the object and find out what class it is an instance of.
@@ -203,6 +313,9 @@ public class NamedData implements Cloneable
     private static NamedDataType detectType(Object o)
     {
     	NamedDataType tp = NamedDataType.UNDEFINED;
+    	if (o==null)
+    		return tp;
+    	
        	String className = o.getClass().getName();
     	className = className.substring(className.lastIndexOf(".")+1);
 
@@ -286,6 +399,14 @@ public class NamedData implements Cloneable
     			tp = NamedDataType.ACTION;
     			break;
     		
+    		case ("ParameterStorage"):
+    			tp = NamedDataType.PARAMETERSTORAGE;
+    			break;
+    			
+    		case ("ConstraintsSet"):
+    			tp = NamedDataType.CONSTRAINTSSET;
+    			break;
+    		
     		default:
     			tp = NamedDataType.UNDEFINED;
     			break;
@@ -304,96 +425,128 @@ public class NamedData implements Cloneable
     public NamedData clone() throws CloneNotSupportedException
     {
     	Object cVal = null;
-        switch (type) 
-        {
-        case DOUBLE:
-            cVal = Double.parseDouble(value.toString());
-            break;
 
-        case INTEGER:
-            cVal = Integer.parseInt(value.toString());
-            break;
-
-        case STRING:
-            cVal = value.toString();
-            break;
-
-        case TEXTBLOCK:
-        {
-            @SuppressWarnings("unchecked") ArrayList<String> lines =
-            (ArrayList<String>) value;
-            cVal = new TextBlock(lines);
-            break;
-        }
+    	if (value!=null)
+    	{
+	        switch (type) 
+	        {
+	        case DOUBLE:
+	            cVal = Double.parseDouble(value.toString());
+	            break;
+	
+	        case INTEGER:
+	            cVal = Integer.parseInt(value.toString());
+	            break;
+	
+	        case STRING:
+	            cVal = value.toString();
+	            break;
+	
+	        case TEXTBLOCK:
+	        {
+	            @SuppressWarnings("unchecked") ArrayList<String> lines =
+	            (ArrayList<String>) value;
+	            cVal = new TextBlock(lines);
+	            break;
+	        }
+	        
+	        case LISTOFDOUBLES:
+	        {
+	            @SuppressWarnings("unchecked") ArrayList<Double> doubles =
+	            (ArrayList<Double>) value;
+	            ListOfDoubles l = new ListOfDoubles();
+	            for (Double d : doubles)
+	            {
+	            	l.add(d.doubleValue());
+	            }
+	            cVal = l;
+	            break;
+	        }
+	
+	        case LISTOFINTEGERS:
+	        {
+	            @SuppressWarnings("unchecked") ArrayList<Integer> ints =
+	            (ArrayList<Integer>) value;
+	            ListOfIntegers l = new ListOfIntegers();
+	            for (Integer i : ints)
+	            {
+	            	l.add(i.intValue());
+	            }
+	            cVal = l;
+	            break;
+	        }
+	
+	        case BOOLEAN:
+	            cVal = Boolean.parseBoolean(value.toString());
+	            break;
+	
+	        case IATOMCONTAINER:
+	            cVal = ((IAtomContainer) value).clone();
+	            break;
+	
+	        case ATOMCONTAINERSET:
+	        	AtomContainerSet cSet = new AtomContainerSet();
+	        	for (IAtomContainer iac : ((AtomContainerSet) value).atomContainers())
+	        	{
+	        		cSet.addAtomContainer(iac.clone());
+	        	}
+	            cVal = cSet;
+	            break;
+	
+	        case FILE:
+	            cVal = new File(((File) value).getAbsolutePath());
+	            break;
+	
+	        case ZMATRIX:
+	        	cVal = ((ZMatrix) value).clone();
+	            break;
+	                        
+	        case NORMALMODE:
+	        	cVal = ((NormalMode) value).clone();
+	        	break;
+	
+	        case NORMALMODESET:
+	        	cVal = ((NormalModeSet) value).clone();
+	        	break;
+	        	
+	        case ACTION:
+	        	cVal = ((Action) value).clone();
+	        	break;
+	        	
+	        case PARAMETERSTORAGE:
+	            cVal = ((ParameterStorage) value).clone();
+	            break;
+	            
+	        case CONSTRAINTSSET:
+	        	cVal = ((ConstraintsSet) value).clone();
+	        	break;
+	        	
+	        default:
+	        	cVal = value.toString();
+	            break;
+	        }
+    	}
         
-        case LISTOFDOUBLES:
-        {
-            @SuppressWarnings("unchecked") ArrayList<Double> doubles =
-            (ArrayList<Double>) value;
-            ListOfDoubles l = new ListOfDoubles();
-            for (Double d : doubles)
-            {
-            	l.add(d.doubleValue());
-            }
-            cVal = l;
-            break;
-        }
-
-        case LISTOFINTEGERS:
-        {
-            @SuppressWarnings("unchecked") ArrayList<Integer> ints =
-            (ArrayList<Integer>) value;
-            ListOfIntegers l = new ListOfIntegers();
-            for (Integer i : ints)
-            {
-            	l.add(i.intValue());
-            }
-            cVal = l;
-            break;
-        }
-
-        case BOOLEAN:
-            cVal = Boolean.parseBoolean(value.toString());
-            break;
-
-        case IATOMCONTAINER:
-            cVal = ((IAtomContainer) value).clone();
-            break;
-
-        case ATOMCONTAINERSET:
-        	AtomContainerSet cSet = new AtomContainerSet();
-        	for (IAtomContainer iac : ((AtomContainerSet) value).atomContainers())
-        	{
-        		cSet.addAtomContainer(iac.clone());
-        	}
-            cVal = cSet;
-            break;
-
-        case FILE:
-            cVal = new File(((File) value).getAbsolutePath());
-            break;
-
-        case ZMATRIX:
-        	cVal = ((ZMatrix) value).clone();
-            break;
-                        
-        case NORMALMODE:
-        	cVal = ((NormalMode) value).clone();
-        	break;
-
-        case NORMALMODESET:
-        	cVal = ((NormalModeSet) value).clone();
-        	break;
-        	
-        case ACTION:
-        	cVal = ((Action) value).clone();
-        	
-        default:
-            cVal = value.toString();
-            break;
-        }
-    	NamedData nd = new NamedData(this.getReference(),type, cVal);
+    	NamedData nd = new NamedData(this.getReference(), type, cVal);
     	return nd;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (!(o instanceof NamedData))
+     		return false;
+ 	   
+ 	    NamedData other = (NamedData) o;
+ 	   
+ 	    return this.reference.equals(other.reference)
+ 	    		&& this.type == other.type
+ 	    		&& this.value.equals(other.value);
     }
     
 //------------------------------------------------------------------------------
@@ -411,5 +564,96 @@ public class NamedData implements Cloneable
 
 //------------------------------------------------------------------------------
 
+    public static class NamedDataSerializer implements JsonSerializer<NamedData>
+    {
+		@Override
+		public JsonElement serialize(NamedData src, Type typeOfSrc, 
+				JsonSerializationContext context) 
+		{
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("reference", src.reference);
+            if (src.type != NamedDataType.STRING)
+            {
+                jsonObject.addProperty("type", src.type.toString());	
+            }
+			if (!jsonable.contains(src.getType()))
+			{
+	            jsonObject.addProperty("value", NONJSONABLE);
+			} else {
+				jsonObject.add("value", context.serialize(src.value));
+			}
+            return jsonObject;
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+
+    public static class NamedDataDeserializer 
+      implements JsonDeserializer<NamedData>
+    {
+		@Override
+		public NamedData deserialize(JsonElement json, Type typeOfT, 
+				JsonDeserializationContext context)
+				throws JsonParseException 
+		{
+			JsonObject jo = json.getAsJsonObject();
+			Object joValue = null;
+			NamedDataType joType = NamedDataType.STRING;
+			if (jo.has("type"))
+			{
+				joType = NamedDataType.valueOf(jo.get("type").getAsString());
+			}
+			JsonElement je = jo.get("value");
+			
+			if (!jsonable.contains(joType))
+			{
+				return new NamedData(jo.get("reference").getAsString(),
+						joType, joValue);
+			}
+			
+			//NB: this list of cases must reflect the content of "jsonable"
+			switch (joType)
+			{
+			case BOOLEAN:
+				joValue = context.deserialize(je, Boolean.class);
+				break;
+			case DOUBLE:
+				joValue = context.deserialize(je, Double.class);
+				break;
+			case INTEGER:
+				joValue = context.deserialize(je, Integer.class);
+				break;
+			case STRING:
+				joValue = context.deserialize(je, String.class);
+				break;
+			case TEXTBLOCK:
+				joValue = new TextBlock(context.deserialize(je,
+						new TypeToken<ArrayList<String>>(){}.getType()));
+				break;
+			case PARAMETERSTORAGE:
+				joValue = context.deserialize(je, ParameterStorage.class);
+				break;
+			case BASISSET:
+				joValue = context.deserialize(je, BasisSet.class);
+				break;
+			case IATOMCONTAINER:
+				joValue = context.deserialize(je, IAtomContainer.class);
+				break;
+			case CONSTRAINTSSET:
+				joValue = context.deserialize(je, ConstraintsSet.class);
+				break;
+			case ZMATRIX:
+				joValue = context.deserialize(je, ZMatrix.class);
+				break;
+			default:
+				break;
+			}
+			
+			return new NamedData(jo.get("reference").getAsString(),
+					joType, joValue);
+		}
+    }
+    
+//-----------------------------------------------------------------------------
 }
 

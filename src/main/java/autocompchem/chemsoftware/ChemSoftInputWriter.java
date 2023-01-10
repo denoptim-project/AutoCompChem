@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware;
 
+import java.io.File;
+import java.io.IOException;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -19,12 +22,26 @@ package autocompchem.chemsoftware;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
+import javax.vecmath.Point3d;
+
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.Gson;
+
+import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.ACCFileType;
+import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Worker;
 
@@ -36,7 +53,6 @@ import autocompchem.worker.Worker;
 
 public abstract class ChemSoftInputWriter extends Worker
 {
-    
     /**
      * Molecular geometries input file. One or more geometries depending on the
      * kind of computational chemistry job. 
@@ -53,53 +69,70 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Definition of how to use multiple geometries
      */
-    private enum MultiGeomMode {SingleGeom,ReactProd,ReactTSProd,Path};
+    private enum MultiGeomMode {INDEPENDENT, PATH};
     
     /**
      * Chosen mode of handling multiple geometries.
      */
-    private MultiGeomMode multiGeomMode = MultiGeomMode.SingleGeom;
+    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENT;
 
+    
+    /**
+     * Flaq requesting to overwrite geometry names
+     */
+    private boolean overwriteGeomNames = false;
+    
     /**
      * Geometry names
      */
-    private ArrayList<String> geomNames = new ArrayList<String>(
-                                                     Arrays.asList("geometry"));
+    protected ArrayList<String> geomNames = new ArrayList<String>(
+    		Arrays.asList("geometry"));
 
     /**
      * Input format identifier.
      */
     private String inFileFormat = "nd";
 
+    //TODO-gg make these be File
     /**
      * Pathname root for output files (input for comp.chem. software).
      */
-    private String outFileNameRoot;
+    protected String outFileNameRoot;
     
     /**
      * Output name (input for comp.chem. software).
      */
     private String outFileName;
+    
+    /**
+     * Flag deciding if we write the specific job-details file or not.
+     */
+    private boolean writeJobSpecificJDOutput = true;
 
     /**
      * Output job details name.
      */
     private String outJDFile;
-    
-    /**
-     * Default value for integers
-     */
-    private final int def = -999999;
 
     /**
-     * charge of the whole system
+     * Charge of the whole system.
      */
-    private int charge = def;
+    private int charge = 0;
     
     /**
-     * Spin multiplicity of the whole system
+     * Spin multiplicity of the whole system.
      */
-    private int spinMult = def;
+    private int spinMult = 1;
+    
+    /**
+     * Flag requiring to omit charge specification.
+     */
+    private boolean omitCharge = false;
+    
+    /**
+     * Flag requiring to omit spin multiplicity specification.
+     */
+    private boolean omitSpinMult = false;
     
     /**
      * The computational chemistry job we want to prepare the input for.
@@ -202,14 +235,44 @@ public abstract class ChemSoftInputWriter extends Worker
                     + "sure file '" + inGeomFile + "' has proper "
                     + "format and extension.", -1);
             }
+        } 
+        //TODO: deal with stream-like input
+        if (inpGeom.size()==0)
+        {
+            Terminator.withMsgAndStatus("ERROR! No geometry provided. "
+            		+ "Nothing to do!",-1);
         }
 
         if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
         {
-            String value = 
-                    params.getParameter(ChemSoftConstants.PARMULTIGEOMMODE)
-                    .getValueAsString();
-            this.multiGeomMode = MultiGeomMode.valueOf(value);
+            String value = params.getParameter(
+            		ChemSoftConstants.PARMULTIGEOMMODE).getValueAsString();
+            this.multiGeomMode = MultiGeomMode.valueOf(value.toUpperCase());
+        }
+        
+        if (params.contains(ChemSoftConstants.PARGEOMNAMES))
+        {
+            this.overwriteGeomNames = true;
+            this.geomNames.clear();
+            String line = params.getParameter(
+            		ChemSoftConstants.PARGEOMNAMES).getValue().toString();
+            String[] parts = line.trim().split("\\s+");
+            for (int i=0; i<parts.length; i++)
+            {
+                if (this.geomNames.contains(parts[i]))
+                {
+                    Terminator.withMsgAndStatus("ERROR! Geometry name '" 
+                                        + parts[i] + "' is used more than once."
+                                        + " Check line '" + line + "'.",-1);
+                }
+                this.geomNames.add(parts[i]);
+            }
+            if (geomNames.size()!=inpGeom.size())
+            {
+            	Terminator.withMsgAndStatus("ERROR! Found " + inpGeom.size() 
+            		+ " geometries, but " + geomNames.size() + " names. Check "
+            		+ "yout input.",-1); 
+            }
         }
 
         if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
@@ -222,7 +285,19 @@ public abstract class ChemSoftInputWriter extends Worker
                         + jdFile + "'.");
             }
             FileUtils.foundAndPermissions(jdFile,true,false,false);
-            this.ccJob = new CompChemJob(jdFile);
+            if (FileAnalyzer.getFileTypeByProbeContentType(jdFile) ==
+            		ACCFileType.JSON)
+            {
+            	try {
+					this.ccJob = CompChemJob.fromJSONFile(jdFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Could not construct "
+							+ "job from file '" + jdFile + "'.",-1); 
+				}	
+            } else {
+            	this.ccJob = new CompChemJob(jdFile);
+            }
         }
         else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
@@ -235,6 +310,17 @@ public abstract class ChemSoftInputWriter extends Worker
             ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
                     jdLines.split("\\r?\\n")));
             this.ccJob = new CompChemJob(lines);
+        }
+        else if (params.contains(ChemSoftConstants.PARHEADER))
+        {
+        	this.ccJob = new CompChemJob();
+        	Directive header = new Directive(ChemSoftConstants.PARHEADER);
+        	DirectiveData ddHeader = new DirectiveData(
+        			ChemSoftConstants.PARHEADER);
+        	ddHeader.setValue(params.getParameter(
+                    ChemSoftConstants.PARHEADER).getValueAsString());
+        	header.addDirectiveData(ddHeader);
+        	this.ccJob.addDirective(header);
         }
         else 
         {
@@ -249,18 +335,45 @@ public abstract class ChemSoftInputWriter extends Worker
             outFileNameRoot = params.getParameter(
                     ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
             outFileName = outFileNameRoot + inpExtrension;
-            outJDFile = outFileName + ChemSoftConstants.JDEXTENSION;
+            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
+        } else if (params.contains(ChemSoftConstants.PAROUTFILE))
+        {
+        	outFileName = params.getParameter(
+        			ChemSoftConstants.PAROUTFILE).getValueAsString();
+            outFileNameRoot = FileUtils.getRootOfFileName(outFileName);
+            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
         } else {
-            outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
-            outFileName = outFileNameRoot + outExtension;
-            outJDFile = outFileNameRoot + ChemSoftConstants.JDEXTENSION;
-            if (verbosity > 0)
-            {
-                System.out.println(" No '" + ChemSoftConstants.PAROUTFILEROOT
-                        + "' parameter found. " + NL
-                        + "Root of any output file name set to '" 
-                        + outFileNameRoot + "'.");
-            }
+        	if (inGeomFile==null)
+        	{
+        		outFileNameRoot = "accOutput";
+                if (verbosity > 0)
+                {
+	        		System.out.println(" Neither '" 
+	        				 + ChemSoftConstants.PAROUTFILE + "' nor '" 
+	        				 + ChemSoftConstants.PAROUTFILEROOT + "' found and no '"
+	        				 + ChemSoftConstants.PARGEOMFILE + "' found. " + NL
+	                         + " Root of any output file name set to '" 
+	                         + outFileNameRoot + "'.");
+                }
+        	} else {
+        		outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
+                if (verbosity > 0)
+                {
+                    System.out.println(" Neither '" 
+                    		+ ChemSoftConstants.PAROUTFILEROOT + "' nor '"
+                    		+ ChemSoftConstants.PAROUTFILE 
+                    		+ "' parameter found. " + NL
+                            + " Root of any output file name set to '" 
+                            + outFileNameRoot + "'.");
+                }
+        	}
+            outFileName = outFileNameRoot + inpExtrension;
+            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
+        }
+        
+        if (params.contains(ChemSoftConstants.PARNOJSONOUTPUT))
+        {
+        	writeJobSpecificJDOutput = false;
         }
 
         if (params.contains(ChemSoftConstants.PARCHARGE))
@@ -274,26 +387,92 @@ public abstract class ChemSoftInputWriter extends Worker
             spinMult = Integer.parseInt(params.getParameter(
                     ChemSoftConstants.PARSPINMULT).getValueAsString());
         }
+        
+        if (params.contains(ChemSoftConstants.PARNOCHARGE))
+        {
+            omitCharge = true;
+        }
+        
+        if (params.contains(ChemSoftConstants.PARNOSPIN))
+        {
+            omitSpinMult = true;
+        }
     }
     
 //-----------------------------------------------------------------------------
 
     /**
      * Performs any of the registered tasks according to how this worker
-     * has been initialised.
+     * has been initialized.
      */
 
     @Override
     public void performTask()
     {
-
-        if (multiGeomMode.equals(MultiGeomMode.SingleGeom))
-        {
-            printInputForEachMol();
-        } else {
-            printInputWithMultipleGeometry();
-        }
-
+    	if (inpGeom.size() == 1)
+    	{
+    		produceSingleJobInputFiles(inpGeom, outFileName, outFileNameRoot);
+    	} else {
+    		
+    		switch (multiGeomMode)
+    		{
+			case INDEPENDENT:
+				// We simply repeat the same operation for each geometry.
+				for (int molId = 0; molId<inpGeom.size(); molId++)
+		        {
+		            IAtomContainer mol = inpGeom.get(molId);
+		            
+		            String fileRootName = outFileNameRoot + "-" + molId;
+		            if (overwriteGeomNames)
+		            {
+		            	String geomName = geomNames.get(molId);
+		            	mol.setTitle(geomName);
+		            	fileRootName = outFileNameRoot + "-" + geomName;
+		            }
+		            
+		            if (verbosity > 0)
+		            {
+		                System.out.println(" Writing input file for molecule #" 
+		                        + (molId+1) + ": " 
+		                		+ MolecularUtils.getNameOrID(mol));
+		            }
+		            
+		            List<IAtomContainer> set = new ArrayList<IAtomContainer>();
+		            set.add(mol);
+		            produceSingleJobInputFiles(set, fileRootName+inpExtrension,
+		            		fileRootName);
+		        }
+				break;
+				
+			case PATH:
+				// All geometries are included in a single input
+	            if (verbosity > 0)
+	            {
+	                System.out.println(" Writing input file for " 
+	                		+ inpGeom.size() + " geometries");
+	            }
+	            
+				if (overwriteGeomNames)
+	            {
+					for (int molId = 0; molId<inpGeom.size(); molId++)
+			        {
+		            	String geomName = geomNames.get(molId);
+		            	inpGeom.get(molId).setTitle(geomName);
+			        }
+	            }
+	            
+	            produceSingleJobInputFiles(inpGeom, outFileNameRoot 
+	            		+ inpExtrension, outFileNameRoot);
+				break;
+				
+			default:
+				Terminator.withMsgAndStatus("ERROR! Multigeometry "
+						+ "mode '" + multiGeomMode + "' is not implemented. "
+						+ "Please, contact the authors.", -1);
+				break;
+    		}
+    	}
+    	
         if (exposedOutputCollector != null)
         {
 /*
@@ -307,59 +486,234 @@ public abstract class ChemSoftInputWriter extends Worker
     
 //------------------------------------------------------------------------------
     
-    private void printInputForEachMol()
+    /**
+     * Prepare the set of input files of a single job, which may or may not 
+     * consist of multiple steps to be performed by a computational chemistry 
+     * software tool.
+     * @param mols the set of geometries that pertain this single job. Note that
+     * in the vast majority of cases there will be only one geometry. This
+     * corresponds to multi-geometry mode {@value MultiGeomMode#INDEPENDENT}.
+     * However, jobs do use multiple input geometries within the same job
+     * (e.g., transition state searches that start from the geometries of the
+     * reactant and product). This is the case of multi-geometry mode 
+     * {@value MultiGeomMode#PATH}.
+     * <br>
+     * <b>WARNING</b>: Changes in the number of electrons or in spin 
+     * multiplicity among the geometries are not supported (yet).
+     * @param outFileName the pathname of the job's main input file.
+     * @param outFileNameRoot the root of the 
+     * pathname to any job input file that will be
+     * produced. Extensions and suffixed are defined by software specific 
+     * constants.
+     */
+    private void produceSingleJobInputFiles(List<IAtomContainer> mols, 
+    		String outFileName,	String outFileNameRoot)
     {
-    	if (inpGeom.size() == 1)
+    	// We customize a copy of the master job
+		CompChemJob molSpecJob = ccJob.clone();
+		
+		// Define the name's root for any input file created
+		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, 
+				outFileNameRoot, true);
+		
+		// Add atom coordinates to the so-far molecule-agnostic job
+		setChemicalSystem(molSpecJob, mols);
+		
+		// Add strings/pathnames that are molecular specific. e.g., pathnames or
+		// links that are explicitly defined in any part of any input file.
+		setSystemSpecificNames(molSpecJob);
+		
+		// WARNING: for now we do not expect any change of #electrons or spin
+		Object pCharge = mols.get(0).getProperty(ChemSoftConstants.PARCHARGE);
+		if (pCharge != null)
+		{
+			try {
+				Integer.valueOf(pCharge.toString());
+			} catch (NumberFormatException e) {
+				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+						+ pCharge.toString() + "' as charge. Check "
+						+ "value of property '" + ChemSoftConstants.PARCHARGE
+						+ "'.", -1);
+			}
+			setChargeIfUnset(molSpecJob, pCharge.toString(), omitCharge);
+		}
+		
+		Object pSpin = mols.get(0).getProperty(ChemSoftConstants.PARSPINMULT);
+		if (pSpin != null)
+		{
+			try {
+				Integer.valueOf(pSpin.toString());
+			} catch (NumberFormatException e) {
+				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+						+ pSpin.toString() + "' as spin multiplicity. Check "
+						+ "value of property '" + ChemSoftConstants.PARSPINMULT
+						+ "'.", -1);
+			}
+			setSpinMultiplicityIfUnset(molSpecJob, pSpin.toString(), omitSpinMult);
+		}
+		
+		// These calls take care also of the sub-jobs/directives
+		molSpecJob.processDirectives(mols);
+		
+		// Ensure a value of charge and spin has been defined
+		setChargeIfUnset(molSpecJob, charge+"", omitCharge);
+		setSpinMultiplicityIfUnset(molSpecJob, spinMult+"", omitSpinMult);
+		
+		// Produce the actual main input file
+		FileUtils.mustNotExist(outFileName);
+		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), false);
+		
+		// Produce a specific job-details file
+		if (writeJobSpecificJDOutput)
+		{
+			CompChemJob cleanCCJ = molSpecJob.clone();
+			cleanCCJ.removeACCTasks();
+			FileUtils.mustNotExist(outFileNameRoot 
+					+ ChemSoftConstants.JSONJDEXTENSION);
+			Gson writer = ACCJson.getWriter();
+			IOtools.writeTXTAppend(outFileNameRoot 
+					+ ChemSoftConstants.JSONJDEXTENSION, 
+					writer.toJson(cleanCCJ), true);
+		}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the strings that the given job needs to become specific.
+     */
+    protected abstract void setSystemSpecificNames(CompChemJob ccj);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the charge definition to any step where it is not already defined. 
+     * This means that this method must not overwrite existing charge settings.
+     * Moreover, this method must deal with the requests to omit charge 
+     * specification.
+     * @param ccj the job to customize.
+     * @param charge the value of the charge to specify.
+     * @param omitIfPossible if <code>true</code> we are asked to omit the 
+     * specification and leave the job use pre-existing information
+     * coming from previous steps or from some sort
+     * of input external to the job's main input file, e.g., checkpoint files)
+     */
+    protected abstract void setChargeIfUnset(CompChemJob ccj, String charge, 
+    		boolean omitIfPossible);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the spin multiplicity definition to any step where it is not already 
+     * defined. 
+     * This means that this method must not overwrite existing settings.
+     * Moreover, this method must deal with the requests to omit spin 
+     * specification.
+     * @param ccj the job to customize.
+     * @param sm the value of the spin multiplicity to specify.
+     * @param omitIfPossible if <code>true</code> we are asked to omit the 
+     * specification and leave the job use pre-existing information
+     * coming from previous steps or from some sort
+     * of input external to the job's main input file, e.g., checkpoint files)
+     */
+    protected abstract void setSpinMultiplicityIfUnset(CompChemJob ccj, 
+    		String sm, boolean omitIfPossible);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the definitions of the chemical system/s is needed. This method
+     * handles multiple geometries according to the settings given upon 
+     * initializing this instance.
+     * Note that we here only consider the definition of the atoms and their 
+     * position, not the charge of the spin multiplicity, for which there are 
+     * dedicated methods.
+     * @param ccj the job to customize.
+     * @param iacs the atom containers to translate into one or more 
+     * chemical system representation suitable for the comp.chem. software.
+     */
+    protected abstract void setChemicalSystem(CompChemJob ccj, 
+    		List<IAtomContainer> iacs);
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Produced the text that will be printed in the job's main input file, 
+     * the one defining what kind of setting the comp.chem. software should use
+     * and what exactly to do. Other input needed by the comp.chem. software, 
+     * such as the definition of the chemical system's geometry, may or may not 
+     * be part of the main input file.
+     */
+    //TODO: make this work with a StringBuilder
+    protected abstract ArrayList<String> getTextForInput(CompChemJob job);
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a keyword in a directive with the given name to any step where it is
+     * not already defined. 
+     * This means that this method does not overwrite existing charge settings
+     * @param ccj the job to customize.
+     * @param dirName the name of the directive
+     * @param keyName the name of the keywords
+     * @param value the value of the keyword to specify.
+     */
+    public static void setKeywordIfNotAlreadyThere(CompChemJob ccj, 
+    		String dirName, String keyName, String value)
+    {
+    	setKeywordIfNotAlreadyThere(ccj, dirName, keyName, false, value);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets a keyword in a directive with the given name to any step where it is
+     * not already defined. 
+     * This means that this method does not overwrite existing charge settings.
+     * This method can alter only the given job and its steps, but does not 
+     * consider the possibility of having further levels of nested jobs.
+     * @param ccj the job to customize.
+     * @param dirName the name of the directive
+     * @param keyName the name of the keywords
+     * @param isLoud use <code>true</code> if the keyword should be set to be
+     * a loud keyword, meaning that conversion to text used the syntax 
+     * <code>key|separator|value</code> (for loud keywords) instead of just
+     * <code>value</code> (for non-loud, or silent keywords).
+     * @param value the value of the keyword to specify.
+     */
+    public static void setKeywordIfNotAlreadyThere(CompChemJob ccj, 
+    		String dirName, String keyName, boolean isLoud, String value)
+    {
+    	if (ccj.getNumberOfSteps()>0)
     	{
-    		printInputForOneMol(inpGeom.get(0), outFileName, outFileNameRoot);
+    		for (Job stepJob : ccj.getSteps())
+    		{
+    			((CompChemJob)stepJob).setKeywordIfUnset(dirName, keyName, 
+    					isLoud, value);
+    		}
     	} else {
-    		
-            // TODO: what about files other than the .inp?
-            // For instance, the XYZ file for neb-ts jobs.
-            // In some cases (i.e., Orca) we can just wrote their filename 
-    		// in input file, but in other cases we might need to give separate 
-    		// geom files
-        
-	        for (int molId = 0; molId<inpGeom.size(); molId++)
-	        {
-	            IAtomContainer mol = inpGeom.get(molId);
-	            
-	            if (verbosity > 0)
-	            {
-	                System.out.println(" Writing input file for molecule #" 
-	                        + (molId+1) + ": " 
-	                		+ MolecularUtils.getNameOrID(mol));
-	            }
-	            
-	            printInputForOneMol(mol,outFileNameRoot + "-" + molId + 
-	            		inpExtrension, outFileNameRoot + "-" + molId);
-	        }
+    		ccj.setKeywordIfUnset(dirName, keyName, isLoud, value);
     	}
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Write the input for a single chemical entity.
-     * @param mol the chemical entity.
-     * @param outFileName the pathname where to write.
-     */
-    protected abstract void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot);
     
 //------------------------------------------------------------------------------
     
-    /**
-     * Writes the input file meant to deal with a collection of chemical 
-     * entities.
-     */
-    private void printInputWithMultipleGeometry()
+    public static void setDirectiveDataIfNotAlreadyThere(CompChemJob ccj, 
+    		String dirName, String dirDataName, DirectiveData dd)
     {
-        Terminator.withMsgAndStatus(" ERROR! Running "
-                + "printInputWithMultipleGeometry, which should have been"
-                + " overwritten by devellpers.",-1);
+    	//TODO-gg use directive component path
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+    		for (Job stepJob : ccj.getSteps())
+    		{
+    			((CompChemJob)stepJob).setDirectiveDataIfUnset(dirName, 
+    					dirDataName, dd);
+    		}
+    	} else {
+    		ccj.setDirectiveDataIfUnset(dirName, dirDataName, dd);
+    	}
     }
-
+    
 //------------------------------------------------------------------------------
 
 }

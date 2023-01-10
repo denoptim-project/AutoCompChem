@@ -155,4 +155,16 @@ public class OrcaConstants
 	 */
 	public static final String LOGJOBEXTNAMESPACE = 
 			"calculation namespace ";
+	
+	/**
+	 * Name of the 'coords' {@link Directive} defining the chemical system.
+	 */
+	public static final String COORDSDIRNAME = "coords";
+	
+
+	/**
+	 * Name of the '*' {@link Directive} defining the chemical system.
+	 */
+	public static final String STARDIRNAME = "*";
+	
 }

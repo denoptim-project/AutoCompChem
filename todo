@@ -47,3 +47,11 @@
 
 - remove OS dependency from t123
 
+- make singleton worker registry and task id registry
+
+- make task names and keywords work also with spaces and "usign the quotations"
+
+- t116 QMMM
+- t53 QMMM
+- t63 reading from previous job's output
+

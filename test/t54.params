@@ -5,9 +5,8 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputNWChem
-INFILE: ../t54-mol.sdf 
+INPUTGEOMETRIESFILE: ../t54-mol.sdf 
 OUTFILE: t54.nw
-JOBDETAILSFILE: ../t54.jobDetails
+JOBDETAILSFILE: ../t54-jobDetails.json
 CHARGE: 0
 SPIN_MULTIPLICITY: 1
-FREEZEATM: [#7]

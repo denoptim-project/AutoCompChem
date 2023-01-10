@@ -8,5 +8,5 @@
 #
 VERBOSITY: 2
 TASK: PrepareInputGaussian
-INFILE: ../t94-mol.sdf
-JOBDETAILSFILE: ../t94-jobDetails
+INPUTGEOMETRIESFILE: ../t94-mol.sdf
+JOBDETAILSFILE: ../t94-jobDetails.json

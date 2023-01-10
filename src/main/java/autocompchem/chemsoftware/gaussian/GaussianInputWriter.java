@@ -1,7 +1,9 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.io.File;
+
 /*
- *   Copyright (C) 2016  Marco Foscato
+ *   Copyright (C) 2021  Marco Foscato
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Affero General Public License as published by
@@ -17,12 +19,13 @@ package autocompchem.chemsoftware.gaussian;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
@@ -30,95 +33,37 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FileUtils;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
-import autocompchem.modeling.basisset.BasisSetGenerator;
+import autocompchem.modeling.basisset.CenterBasisSet;
+import autocompchem.modeling.basisset.ECPShell;
+import autocompchem.modeling.basisset.Primitive;
+import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 /**
- * Writes input files for Gaussian. Accepts both the direct definition of the
- * header (Link0 and Route sections of Gaussian input) and the use of 
- * a jobdetails formatted text file (see {@link GaussianJob}).<br>
- * Parameters:
- * <ul>
- * <li>
- * <b>INFILE</b>: name of the structure file (i.e. path/name.sdf).
- * </li>
- * <li>
- * <b>JOBDETAILSFILE</b>: formatted text file defining all 
- * the details of a {@link GaussianJob}. Usually the jobdetails txt 
- * file is the file used to generate the input file (name
- * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
- * ) for 
- * Gaussian (see {@link GaussianJob} for the format of jobdetails files).
- * In alternative, use <b>JOBDETAILS</b> to give the details of the job
- * in a nested block of text.
- * keyword 
- * <b>HEADER</b> with a labelled block of lines (i.e., a bunch of text 
- * starting with the $START label and finishing with the $END label).
- * The text in the labelled block is used as header of 
- * the Gaussian input file.
- * In this header only Gaussian's 'Link0' and 'Route' sections
- * should be included. For comments, charge and spin 
- * multiplicity, see below.<br>
- * <br>
- * <b>WARNING!</b> This header is treated as a pure string and 
- * no check
- * of its format will be performed. Thus if the header has wrong
- * format, so will have the output file.
- * Moreover, by using a fixed header no modification of such 
- * header can be performed by the GaussianInputWriter or by any
- * other tool (i.e. {@link GaussianReStarter}). For instance,
- * name of checkpoint file, memory, nodes, processors, and 
- * everything that is specified in the header CANNOT BE EDITED!<br>
- * <br>
- * </li>
- * <li>
- * (optional) <b>VERBOSITY</b> verbosity level.
- * </li>
- * <li>
- * (optional) <b>OUTNAME</b> name of the output file (
- * {@value autocompchem.chemsoftware.gaussian.GaussianConstants#GAUINPEXTENSION}
- * for Gaussian)
- * </li>
- * </ul>
- * 
- * Optional parameters not needed if JOBDETAILS option is in use, but
- * that will overwrite JOBDETAILS specifications if both JOBDETAILS and
- * these options are specified in the {@link ParameterStorage}.
- * <ul>
- * <li>
- * (optional) <b>COMMENT</b> comment line for the output file
- * </li>
- * <li>
- * (optional) <b>CHARGE</b> the charge of the chemical system
- * </li>
- * <li>
- * (optional) <b>SPIN_MULTIPLICITY</b>  the spin multiplicity of the 
- * chemical system
- * </li>
- * </ul>
- *            
- * 
+ * Writes input files for software Gaussian.
+ *
  * @author Marco Foscato
  */
 
-public class GaussianInputWriter extends Worker
+public class GaussianInputWriter extends ChemSoftInputWriter
 {
     /**
      * Declaration of the capabilities of this subclass of {@link Worker}.
@@ -126,745 +71,880 @@ public class GaussianInputWriter extends Worker
     public static final Set<TaskID> capabilities =
             Collections.unmodifiableSet(new HashSet<TaskID>(
                     Arrays.asList(TaskID.PREPAREINPUTGAUSSIAN)));
-
-    //Input filename
-    private String inFile;
-
-    //Input format identifier
-    private String inFormat = "nd";
-
-    /**
-     *  Output name (input for Gaussian)
-     */
-    private String outFile;
-
-    /**
-     * Output job details name
-     */
-    private String outJDFile;
-
-    //Keywords or job details
-    private String header;
-    private String comment;
-    private final int def = -999999;
-    private int charge = def;
-    private int spinMult = def;
-    private GaussianJob gaussJob;
-
-    //Use header or job details from GaussianJob
-    private boolean useHeader;
-
-    //Verbosity level
-    private int verbosity = 1;
-
-
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Constructor.
-     */
-    public GaussianInputWriter()
-    {
-        super("inputdefinition/todo.json");
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Initialise the worker according to the parameters loaded by constructor.
-     */
-
-    @Override
-    public void initialize()
-    {
-        //Define verbosity 
-        if (params.contains("VERBOSITY"))
-        {
-            String vStr =params.getParameter("VERBOSITY").getValue().toString();
-            this.verbosity = Integer.parseInt(vStr);
-
-            if (verbosity > 0)
-                System.out.println(" Adding parameters to GaussianInputWriter");
-        }
-
-        //Get and check the input file
-        this.inFile = params.getParameter("INFILE").getValue().toString();
-        if (inFile.endsWith(".sdf"))
-        {
-            inFormat = "SDF";
-        }
-        else if (inFile.endsWith(".xyz"))
-        {
-            inFormat = "XYZ";
-        }
-        else
-        {
-            Terminator.withMsgAndStatus("ERROR! This version of "
-                  + "GaussianInputWriter can handle only SDF or XYZ input",-1);
-        }
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-
-        //Use GaussianJob or header specified by hand?
-        useHeader = false;
-        if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
-        {
-            String jdFile = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Job details from JD file '" 
-                		+ jdFile + "'.");
-            }
-            FileUtils.foundAndPermissions(jdFile,true,false,false);
-            this.gaussJob = new GaussianJob(jdFile);
-        }
-        else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
-        {
-            String jdLines = params.getParameter(
-            		ChemSoftConstants.PARJOBDETAILS).getValueAsString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Job details from nested parameter block.");
-            }
-            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
-            		jdLines.split("\\r?\\n")));
-            this.gaussJob = new GaussianJob(lines);
-        } else if (params.contains("HEADER")) {
-            //Use header (only for single step jobs)
-            useHeader = true;
-            header = params.getParameter("HEADER").getValue().toString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Single step Gaussian job "
-                        + "(details from header)\n" + header);
-            }
-        }
-        else 
-        {
-            Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-            		+ "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-            		+ "' nor '" + ChemSoftConstants.PARJOBDETAILS 
-            		+ "'found in parameters.",-1);
-        }
-        
-        //Name of output
-        if (params.contains("OUTNAME"))
-        {
-            outFile = params.getParameter("OUTNAME").getValue().toString();
-            outJDFile = FileUtils.getPathToPatent(outFile)
-            		+ System.getProperty("file.separator")
-            		+ FileUtils.getRootOfFileName(outFile)
-            		+ GaussianConstants.JDEXTENSION;
-        } else {
-            String inputRoot = FileUtils.getRootOfFileName(inFile);
-            outFile = inputRoot + GaussianConstants.GAUINPEXTENSION;
-            outJDFile = inputRoot + GaussianConstants.JDEXTENSION;
-            if (verbosity > 0)
-            {
-                System.out.println(" No 'OUTNAME' option found. "
-                + "Output name set to '" + outFile + "'.");
-            }
-        }
-
-        //COMMENT
-        if (params.contains("COMMENT"))
-        {
-            comment = params.getParameter("COMMENT").getValue().toString();
-            if (!useHeader)
-            {
-                this.gaussJob.setAllComments(comment);
-                if (verbosity > 0)
-                {
-                    System.out.println(" Found 'COMMENT' option. Overwriting "
-                              + "comments in all steps");
-                }
-            }
-        } else if (useHeader) {
-            comment = "Compound Job created from " + inFile
-                            + " by AutoCompChem (with header)";
-        }
-
-        //CHARGE
-        if (params.contains("CHARGE"))
-        {
-            charge = Integer.parseInt(
-                        params.getParameter("CHARGE").getValue().toString());
-            if (!useHeader)
-            {
-                this.gaussJob.setAllCharge(charge);
-                if (verbosity > 0)
-                {
-                    System.out.println(" Found 'CHARGE' option. Overwriting "
-                        + "charge in all steps using " + charge);
-                }
-            }
-        } else {
-            if (!useHeader)
-            {
-                charge = this.gaussJob.getStep(0).getMolSpec().getCharge();
-            }
-        }
-
-        //SPIN_MULTIPLICITY
-        if (params.contains("SPIN_MULTIPLICITY"))
-        {
-            spinMult = Integer.parseInt(
-               params.getParameter("SPIN_MULTIPLICITY").getValue().toString());
-            if (!useHeader)
-            {
-                this.gaussJob.setAllSpinMultiplicity(spinMult);
-                if (verbosity > 0)
-                {
-                    System.out.println(" Found 'SPIN_MULTIPLICITY' option. "
-                        + "Overwriting spin multiplicity in all steps "
-                        + "using " + spinMult);
-                }
-            }
-        } else {
-            if (!useHeader)
-            {
-                spinMult = 
-                    this.gaussJob.getStep(0).getMolSpec().getSpinMultiplicity();
-            }
-        }
-    }
     
 //-----------------------------------------------------------------------------
 
     /**
-     * Performs any of the registered tasks according to how this worker
-     * has been initialised.
+     * Constructor sets the parameters that depend on XTB conventions.
      */
 
-    @SuppressWarnings("incomplete-switch")
+    public GaussianInputWriter() 
+    {
+		inpExtrension = GaussianConstants.GAUINPEXTENSION;
+	}
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * In Gaussian the charge is defined in a {@link Keyword} named 
+     * {@value GaussianConstants.MSCHARGEKEY} of the 
+     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * Moreover, the specification of the charge cannot be omitted, so the
+     * <code>omitIfPossible</code> parameter does not take effect.
+     */
     @Override
-    public void performTask()
+    protected void setChargeIfUnset(CompChemJob ccj, String charge, 
+    		boolean omitIfPossible)
     {
-        switch (task)
-          {
-          case PREPAREINPUTGAUSSIAN:
-              writeInp();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
-        }
+    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC, 
+    			GaussianConstants.MSCHARGEKEY, charge);
     }
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Write Gaussian input file according to the parameters given to the
-     * constructor of this GaussianInputWriter. In case of multi entry  
-     * files, a single input will be generated per each molecule using the name
-     * of the molecule (title in SDF properties) as root for the output name
-     * Gaussian job details derive from the current status of the
-     * <code>GaussianJob</code> field in this GaussianInputWriter and the other
-     * field defined by the constructor.
-     * No argument is accepted by this method, so,
-     * before running, make sure you provided the proper settings
-     * during construction of this GaussianInputWriter.
+     * {@inheritDoc}
+     * 
+     * In Gaussian the spin multiplicity is defined in a {@link Keyword} named 
+     * {@value GaussianConstants.MSSPINMLTKEY} of the 
+     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * Moreover, the specification of the spin cannot be omitted, so the
+     * <code>omitIfPossible</code> parameter does not take effect.
      */
-
-    public void writeInp()
+    @Override
+    protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm, 
+    		boolean omitIfPossible)
     {
-        //Get molecule/s
-        int n = 0;
-        try {
-            ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
-            switch (inFormat) {
-
-                case "SDF":
-                    mols = IOtools.readSDF(inFile);
-                    break;
-
-                case "XYZ":
-                    mols = IOtools.readXYZ(inFile);
-                    break;
-
-                default:
-                    Terminator.withMsgAndStatus("ERROR! GaussianInputWriter"
-                        + " does not accept file format other than SDF and"
-                        + " XYZ. Make sure file '" + inFile +"' has proper "
-                        + " format and extension.", -1);
-            }
-
-            for (IAtomContainer mol : mols)
-            {
-                n++;
-                String molName = MolecularUtils.getNameOrID(mol);
-
-                //Set name of the output file and checkpoint
-                // If there is more than one molecule we cannot use the given
-                // outFile for the output.
-                if (mols.size() > 1)
-                {
-                    outFile = molName + GaussianConstants.GAUINPEXTENSION;
-                    outJDFile = molName + GaussianConstants.JDEXTENSION;
-                }
-
-                FileUtils.mustNotExist(outFile);
-                FileUtils.mustNotExist(outJDFile);
-                String checkPointName = FileUtils.getRootOfFileName(outFile);
-
-                //write INP using fixed header or JobDetails
-                if (useHeader)
-                {
-                    writeSingleStepInp(mol,header,comment,outFile);
-                } 
-                else 
-                {
-                    //Update molecular representation
-                    if (inFormat=="SDF")
-                    {
-                        if (chargeOrSpinFromIAC(mol))
-                        {
-                            gaussJob.setAllCharge(charge);
-                            gaussJob.setAllSpinMultiplicity(spinMult);
-                        }
-                    }
-
-                    //If by any chance one of the two was not defined before
-                    checkChargeSpinNotAtDefault();
-
-                    if (gaussJob.getStep(0).needsGeometry())
-                    {
-                        GaussianMolSpecification gMolSpec  = 
-                              new GaussianMolSpecification(mol,charge,spinMult);
-                        gaussJob.getStep(0).setMolSpecification(gMolSpec);
-                    }
-
-                    //Update molecule/atom-specific options
-                    if (inFormat=="XYZ")
-                    {
-                        String msg = "WARNING! To ensure proper chemical  "
-                        + "perception of atoms and groups use an input file "
-                        + "that specified the connectivity and the bond orders "
-                        + "(i.e., SDF). For now, only "
-                        + "a poor chemical perception can be achieved from XYZ "
-                        + "input files";
-                        System.out.println(msg);
-                        System.err.println(msg);
-                    }
-                    for (int istp=0; istp<gaussJob.getNumberOfSteps(); istp++)
-                    {
-                        GaussianStep gStep = gaussJob.getStep(istp);
-                        GaussianOptionsSection gOpts = gStep.getOptionSection();
-
-                        for (String oName : gOpts.getRefNames())
-                        {
-                            String value = gOpts.getValue(oName);
-                            if (value.toUpperCase().startsWith(
-                                                   GaussianConstants.LABPARAMS))
-                            {
-                                String aLn = value.substring(
-                                          GaussianConstants.LABPARAMS.length());
-                                String[] aLs = aLn.split(
-                                          System.getProperty("line.separator"));
-                                ArrayList<String> aAl = new ArrayList<String>(
-                                                            Arrays.asList(aLs));
-                                ParameterStorage aPs = new ParameterStorage();
-                                aPs.importParametersFromLines("jobDetails",aAl);
-                                String updatedOpt = getMoleculeSpecificOpts(mol,
-                                                                     aPs,gStep);
-                                gOpts.setPart(oName,updatedOpt);
-                            }
-                        }
-                    }
-
-                    //Update name of checkpoint file
-                    gaussJob.setAllLinkSections("CHK",checkPointName);
-
-                    //Write inp
-                    writeGaussianInput();
-                }
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned while "
-                + "making Gaussin input for molecule " + n + " from file " 
-                + inFile + "\n" + t, -1);
-        }
+    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVEMOLSPEC,
+    			GaussianConstants.MSSPINMLTKEY, sm);
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Return true if the charge or the spin are overwritten according to the
-     * IAtomContainer properties "CHARGE" and "SPIN_MULTIPLICITY"
-     * @param mol the molecule from which we get charge and spin
+     * {@inheritDoc}
+     * 
+     * In Gaussian, a chemical system is defined in the {@link DirectiveData} of
+     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * 
+     * WARNING: so far it works with only one molecule.
      */
-
-    private boolean chargeOrSpinFromIAC(IAtomContainer mol)
+    protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs)
     {
-        boolean res = false;
+    	if (!needsGeometry(ccj))
+    		return;
+    	
+    	//TODO-gg fixme!
+    	//WARNING so far works with only one chemical system
+    	IAtomContainer iac = iacs.get(0);
 
-        String str = " Using IAtomContainer to overwrite set charge and "
-                        + "spin multiplicity.\n"
-                        + " From c = " + charge + " and s.m. = "
-                        + spinMult;
-
-        //Deal with the charge
-        if (MolecularUtils.hasProperty(mol, "CHARGE"))
-        {
-            res = true;
-            charge = Integer.parseInt(mol.getProperty("CHARGE").toString());
-        }
-
-        //Deal with the spin multiplicity
-        if (MolecularUtils.hasProperty(mol, "SPIN_MULTIPLICITY"))
-        {
-            res = true;
-            spinMult = Integer.parseInt(
-                        mol.getProperty("SPIN_MULTIPLICITY").toString());
-        }
-
-        if (verbosity > 1)
-        {
-            if (res)
-            {
-                System.out.println(str + " to c = " + charge + " and s.m. = "
-                                + spinMult);
-            }
-        }
-
-        return res;
+    	DirectiveData dd = new DirectiveData("coordinates");
+    	dd.setValue(iac);
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+        	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
+        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    	} else {
+        	setDirectiveDataIfNotAlreadyThere(ccj, 
+        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    	}
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Check whether charge or spin were defined. If one is not defined, 
-     * terminates the program.
+     * Checks if a job needs to specify the geometry of the chemical system in
+     * its input file or if it does not because it either takes it from the 
+     * checkpoint file or there is a task adding a geometry to the molecule
+     * specification section. We assume that any {@link DirectiveData} found in
+     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive} is
+     * about defining the geometry. Therefore, the existence of any such
+     * {@link DirectiveData} is sufficient to make this method return 
+     * <code>false</code>.
+     * @param ccj the job to analyze
+     * @return <code>true</code> if the geometry should be in the input file.
      */
-
-    private void checkChargeSpinNotAtDefault()
+    public static boolean needsGeometry(CompChemJob ccj)
     {
-        if (charge == def)
-        {
-            Terminator.withMsgAndStatus("ERROR! Property "
-                + "<CHARGE> cannot be defined.",-1);
-        }
-
-        if (spinMult == def)
-        {
-            Terminator.withMsgAndStatus("ERROR! Property "
-                + "<SPIN_MULTIPLICITY> cannot be defined.", -1);
-        }
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+			return needsGeometry((CompChemJob) ccj.getStep(0));
+    	} else {
+    		Directive route = ccj.getDirective(GaussianConstants.DIRECTIVEROUTE);
+    		if (route!=null && !needsGeometry(route))
+    			return false;
+    		Directive geom = ccj.getDirective(GaussianConstants.DIRECTIVEMOLSPEC);
+    		//WARNING: we assume that any DirectiveData
+    		if (geom!=null && geom.getAllDirectiveDataBlocks().size()>0)
+    			return false;
+    	}
+    	return true;
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Generated atom/molecule-specific options.
-     * @param mol the specific molecule
-     * @param params the details of the work to do. This object should contain
-     * only one parameter.
-     * @param gStep the step to which the options apply
-     * @return a single string (likely containing newline character) with the
-     * atom/molecule-specific options
+     * Looks into the route section for keywords indicating the the geometry is 
+     * taken from the checkpoint file, in one of the many ways, so no geometry
+     * needs to be specified in the molecular section of the input.
+     * @param routeDir
+     * @return <code>true</code> if a geometry needs to be given in the 
+     * molecular specification section.
      */
-
-    public String getMoleculeSpecificOpts(IAtomContainer mol, 
-                                    ParameterStorage params, GaussianStep gStep)
+    private static boolean needsGeometry(Directive routeDir)
     {
-        String result = "";
-        String verbKey = ACCConstants.VERBOSITYPAR;
-        GaussianRouteSection stepRoute = gStep.getRouteSection();
-
-        for (String action : params.getRefNamesSet())
-        {
-            switch (action.toUpperCase()) 
-            {
-                case BasisSetConstants.ATMSPECBS:                	
-                    ParameterStorage locPars = new ParameterStorage();
-                    locPars.setParameter(params.getParameter(action));
-                    locPars.setParameter(new Parameter(verbKey,
-                    		NamedDataType.INTEGER, verbosity));
-                    
-                	// Get a worker to deal with the basis set generation task
-                    locPars.setParameter(new Parameter(WorkerConstants.PARTASK,
-                		NamedDataType.STRING, "GENERATEBASISSET"));
-                	Worker w = WorkerFactory.createWorker(locPars);
-                    BasisSetGenerator bsg = (BasisSetGenerator) w;
-                    
-                    bsg.setAtmIdxAsId(true);
-                    BasisSet bs = bsg.assignBasisSet(mol);
-                    String genBsKey = "GEN";
-                    if (bs.hasECP())
-                    {
-                        genBsKey = "GENECP";
-                    }
-                    String bsKeyRef = GaussianConstants.SUBKEYMODELBASISET;
-                    if (stepRoute.containsKey(bsKeyRef))
-                    {
-                        String oldBsKey = stepRoute.getValue(bsKeyRef);
-                        String[] parts = oldBsKey.split("\\s+");
-                        for (int j=1; j<parts.length;j++)
-                        {
-                            genBsKey = genBsKey + " " + parts[j];
-                        }
-                    }
-                    stepRoute.put(bsKeyRef,genBsKey);
-                    result = bs.toInputFileString("gaussian");
-                    break;
-                    
-                case "GENERATECONSTRAINTS":
-                {
-                	//TODO verbosity/logging
-                    System.out.println("ACC starts creating geometric constraints");
-                    
-                    ParameterStorage cnstrParams = new ParameterStorage();
-                    //TODO: this should be avoided by using TASK instead of ACCTASK
-                    cnstrParams.setParameter(new Parameter("TASK",
-                		NamedDataType.STRING, TaskID.GENERATECONSTRAINTS));
-                    
-                    //TODO:change here we translate the syntax to get the 
-                    // parameters for the internal task. This is shit that will
-                    // go away one we'll use the ChemSoftInputWriter.
-                    ArrayList<String> lines = new ArrayList<String>();
-                    String allLines = (String) params.getParameter(action).getValue();
-                    lines.addAll(Arrays.asList(allLines.split("\n")));
-                    String smarts = "";
-                    String atomIDs ="";
-                    for (String line : lines)
-                    {
-                    	//TODO change: this is very hardcoded!!!
-                    	String key = line.substring(0, line.indexOf(":"));
-                    	String value = line.substring(line.indexOf(":")+1).trim();
-                    	switch (key.toUpperCase())
-                    	{
-                    		case "SMARTS":
-                    			if (smarts.isBlank())
-                    			{
-                    				smarts = value;
-                    			} else {
-                    				smarts = smarts 
-                    						+ System.getProperty("line.separator") 
-                    						+ value;
-                    			}
-                    			break;
-                    		case "ATOMIDS":
-                    			if (atomIDs.isBlank())
-                    			{
-                    				atomIDs = value;
-                    			} else {
-                    				atomIDs = atomIDs 
-                    						+ System.getProperty("line.separator") 
-                    						+ value;
-                    			}
-                    			break;
-                    		case "GENERATECONSTRAINTS":
-                    			break;
-                    		default:
-                    			cnstrParams.setParameter(new Parameter(key,
-                    					line.substring(line.indexOf(":")+1).trim()));
-                    	}
-                    }
-                    if (!smarts.isBlank())
-        			{
-                    	cnstrParams.setParameter(new Parameter("SMARTS",smarts));
-        			}
-                    if (!atomIDs.isBlank())
-        			{
-                    	cnstrParams.setParameter(new Parameter("ATOMIDS",atomIDs));
-        			}
-                    
-                	Worker wrkr = WorkerFactory.createWorker(cnstrParams);
-                	ConstraintsGenerator cnstrg = (ConstraintsGenerator) wrkr;
-                	
-                	ConstraintsSet cs = new ConstraintsSet();
-                	try {
-    					cs = cnstrg.createConstraints(mol);
-    				} catch (Exception e) {
-    					e.printStackTrace();
-    					Terminator.withMsgAndStatus("ERROR! Unable to create "
-    							+ "constraints. Exception from the "
-    							+ "ConstraintGenerator.", -1);
-    				}
-                    
-                    //TODO verbosity/logging
-                    cs.printAll();
-                    for (Constraint cns : cs)
-                    {
-                    	String str = "";
-                    	switch (cns.getType())
-                    	{
-							case ANGLE:
-								str = "A " + (cns.getAtomIDs()[0]+1) + " "
-										+ (cns.getAtomIDs()[1]+1) + " "
-										+ (cns.getAtomIDs()[2]+1);
-								
-								break;
-							case DIHEDRAL:
-								str = "D " + (cns.getAtomIDs()[0]+1) + " "
-										+ (cns.getAtomIDs()[1]+1) + " "
-										+ (cns.getAtomIDs()[2]+1) + " "
-										+ (cns.getAtomIDs()[3]+1);
-								break;
-							case DISTANCE:
-								str = "B " + (cns.getAtomIDs()[0]+1) + " "
-										+ (cns.getAtomIDs()[1]+1);
-								break;
-							case FROZENATM:
-								str = "X " + (cns.getAtomIDs()[0]+1);
-								break;
-							case UNDEFINED:
-								break;
-							default:
-								break;
-                    	}
-                    	
-                    	// NB: Gaussian does not yet accept a value!
-                    	/*
-                    	if (cns.hasValue())
-                    		str = str + " " + cns.getValue();
-                    	*/
-                    	
-                    	if (cns.hasOpt())
-                    		str = str + " " + cns.getOpt();
-                    	
-                    	result = result + str 
-                    			+ System.getProperty("line.separator");
-                    }
-                	break;
-                }
-
-                //TODO: add here other atom/molecule specific option
-
-                default:
-                    String msg = "WARNING! Action '" + action + "' is not a "
-                           + "known task when updating atom/molecule-specific "
-                           + "options in a Gaussian input file.";
-                    if (verbosity > 0)
-                    {
-                        System.out.println(msg);
-                    }
-                    break;
-            }
-        }
-        return result;
+    	if (routeDir!=null)
+    	{
+	    	Keyword geomKey = routeDir.getKeyword(GaussianConstants.GAUKEYGEOM);
+			if (geomKey!=null)
+			{
+				String value = geomKey.getValueAsString().toUpperCase();
+				if (value.startsWith(GaussianConstants.GAUKEYGEOMCHK) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMCHECK) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMALLCHK) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMSTEP) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMNGEOM) ||
+						value.startsWith(GaussianConstants.GAUKEYGEOMMOD))
+		        {
+					// Geometry will be taken from checkpoint file.
+					return false;
+		        }
+			}
+    	}
+		return true;
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Write Gaussian input file. Only a single step, no compound job.
-     * Charge and Spin Multiplicity will be taken  
-     * from the properties "SPIN_MULTIPLICITY" and "CHARGE" of the 
-     * IAtomContainer. If these 
-     * properties are not defined the execution will stop with an error.
-     * @param mol molecule
-     * @param kw keywords section including both 'link 0' and Route' sections
-     * blank line termination is already included in the form.
-     * @param comm text comment
-     * @param outName name of the output file
+     * {@inheritDoc}
      */
-
-    public void writeSingleStepInp(IAtomContainer mol, String kw, String comm,
-                                        String outName)
+    protected void setSystemSpecificNames(CompChemJob ccj)
     {
-        //This call also changes spin and charge
-        if (chargeOrSpinFromIAC(mol))
+    	File pathnameRoot = new File(outFileNameRoot);
+    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVELINK0,
+    			"chk", true, pathnameRoot.getName());
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected ArrayList<String> getTextForInput(CompChemJob job)
+    {
+        ArrayList<String> lines= new ArrayList<String>();
+        if (job.getNumberOfSteps()>1)
         {
-            //If by any chance one of the two was not defined from before
-            checkChargeSpinNotAtDefault();
+	        for (int step = 0; step<job.getNumberOfSteps(); step++)
+	        {
+	        	CompChemJob stepCcj = (CompChemJob)job.getStep(step);
+	            if (step != 0)
+	            {
+	                lines.add(GaussianConstants.STEPSEPARATOR);
+	            }
+	            lines.addAll(getTextForStep(stepCcj));
+	        }
         } else {
-            Terminator.withMsgAndStatus("ERROR! Properties "
-                + "<SPIN_MULTIPLICITY> and <CHARGE> cannot be taken from "
-                + "SDF properties.",-1);
+        	lines.addAll(getTextForStep(job));
         }
-
-        //write the inp file for Gaussian
-        comment = comm;
-        writeSingleStepInp(mol, kw, comment, charge, spinMult, outName);
+        return lines;
     }
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Write Gaussian input file. Only a single step, no compound job.
-     * @param mol molecule
-     * @param kw Keywords section including both 'link 0' and Route' sections
-     * blank line termination is already included in the form.
-     * @param comm text comment
-     * blank line termination is already included in the form.
-     * @param ch charge
-     * @param sm spin multiplicity
-     * @param outName name of the output file
+     * This is the method the encodes the syntax of the Gaussian input file for 
+     * a single step job (i.e., the given {@link Job} is not expected to contain
+     * embedded {@link Job}s). 
+     * Here we translate all comp.chem.-software agnostic components to 
+     * Gaussian-specific format.
+     * @param step the Gaussian job step object.
+     * @return the list of lines for the input file
      */
+    
+    private ArrayList<String> getTextForStep(CompChemJob step)
+    {	
+    	ArrayList<String> lines = new ArrayList<String>();
+    	
+    	//
+    	// Building lines of Link0 section
+    	// 
+    	
+    	Directive lnkDir = step.getDirective(GaussianConstants.DIRECTIVELINK0);
+    	if (lnkDir != null)
+    	{
+    		// We expect only keywords
+    		for (Keyword k : lnkDir.getAllKeywords())
+    		{
+    			if (k.isLoud())
+    				lines.add("%" + k.getName() + "=" + k.getValueAsString());
+    			else
+        			lines.add("%" + k.getValueAsString());
+    		}
+    		if (lnkDir.getAllDirectiveDataBlocks().size()>0)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for Link0 section of Gaussian "
+    					+ "job contains data blocks but only keywords are "
+    					+ "expected. Check your input!");
+    		}
+    		if (lnkDir.getAllSubDirectives().size()>0)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for Link0 section of Gaussian "
+    					+ "job contains subdirectives but only keywords are "
+    					+ "expected. Check your input!");
+    		}
+    	} // No default link0 section
+    	
 
-    public void writeSingleStepInp(IAtomContainer mol, String kw, String comm, 
-                                        int ch, int sm, String outName)
-    {
-        //check file
-        FileUtils.mustNotExist(outName);
-
-        FileWriter writer = null;
-        try
-        {
-            writer = new FileWriter(outName,true); 
-
-            //write KEYWORDS - Link0 and Route sections
-            writer.write(kw + "\n");
-            writer.write("\n"); // Black line terminated section
-
-            //write COMMENT - Title section
-            writer.write(comm + "\n");
-            writer.write("\n"); // Black line terminated section
-
-            //write CHARGE and SPIM MULTIPLICITY - Molecule specification 1
-            writer.write(ch + " " + sm + "\n");
-            // write Z-matrix or coordinates - Molecule specification 2
-            for (IAtom a : mol.atoms())
-            {
-                String symbol = a.getSymbol();
-                Point3d p3d = a.getPoint3d();
-                writer.write(symbol + "     " +
-                              p3d.x + "     " +
-                              p3d.y + "     " +
-                              p3d.z + "     \n");
+    	// 
+    	// Convert header into route section
+    	//
+    	Directive textHeader = step.getDirective(ChemSoftConstants.PARHEADER);
+    	if (textHeader!=null)
+    	{
+    		lines.add(textHeader.getDirectiveData(ChemSoftConstants.PARHEADER)
+    				.getValueAsString());
+    	}
+    	
+    	//
+    	// Building lines of Route section
+    	//
+    	Directive rouDir = step.getDirective(GaussianConstants.DIRECTIVEROUTE);
+    	if (rouDir != null)
+    	{
+    		// First the special keywords
+    		String firstLine = "";
+    		Keyword pKey = rouDir.getKeyword(GaussianConstants.KEYPRINT);
+    		if (pKey!=null)
+    		{
+    			firstLine = "#"+pKey.getValueAsString();
+    		}  else {
+    			firstLine = "#P";
             }
-            writer.write("\n"); // Black line terminated section
+    		Keyword modKey = rouDir.getKeyword(GaussianConstants.KEYMODELMETHOD);
+    		if (modKey!=null)
+    		{
+    			firstLine = firstLine + " " + modKey.getValueAsString() + "/";
+    		} else {
+    			firstLine = firstLine + " ";
+    		}
+    		Keyword bsKey = rouDir.getKeyword(GaussianConstants.KEYMODELBASISET);
+    		if (bsKey!=null)
+    		{
+    			// space has been already added, if needed
+    			firstLine = firstLine + bsKey.getValueAsString();
+    		}
+    		lines.add(firstLine);
+    		Keyword jtKey = rouDir.getKeyword(GaussianConstants.KEYJOBTYPE);
+    		if (jtKey!=null)
+    		{
+    			lines.add("# " + jtKey.getValueAsString());
+    		}
+    		
+    		// All other keywords
+    		for (Keyword k : rouDir.getAllKeywords())
+    		{
+    			if (GaussianConstants.SPECIALKEYWORDS.contains(k.getName()))
+    				continue;
+    			if (k.isLoud())
+    			{
+    				lines.add("# " + k.getName() + "=" + k.getValueAsString());
+    			} else {
+        			lines.add("# " + k.getValueAsString());
+    			}
+    		}
+    		for (Directive subDir : rouDir.getAllSubDirectives())
+    		{
+        		String directiveLine = "# ";
+    			// Gaussian uses only one nesting level!
+    			if (subDir.getAllSubDirectives().size()>0)
+    			{
+    				throw new IllegalArgumentException(
+        					"Subdirective " + subDir.getName() + " in Route "
+        					+ "section of Gaussian job contains nested "
+        					+ "sub-sub-directive/s. This is not compatible with "
+        					+ "Gaussian input syntax. Check your input!");
+    			}
+    			if (subDir.getAllDirectiveDataBlocks().size()>0)
+    			{
+    				throw new IllegalArgumentException(
+        					"Subdirective " + subDir.getName() + " in Route "
+        					+ "section of Gaussian job contains directive "
+        					+ "data blocks. This is not compatible with "
+        					+ "Gaussian input syntax. Check your input!");
+    			}
+    			directiveLine = directiveLine + subDir.getName() + "=(";
+    			boolean first = true;
+    			for (Keyword k : subDir.getAllKeywords())
+    			{
+    				String keyStr = "";
+    				if (k.isLoud())
+    				{
+    					keyStr = k.getName() + "=" + k.getValueAsString();
+    				} else {
+    					keyStr = k.getValueAsString();
+    				}
+    				if (first)
+    				{
+    					directiveLine = directiveLine + keyStr;
+    				} else {
+    					directiveLine = directiveLine + "," + keyStr;
+    				}
+    				first = false;
+    			}
+    			directiveLine = directiveLine + ")";
+        		lines.add(directiveLine);
+    		}
+    		
+    		if (rouDir.getAllDirectiveDataBlocks().size()>0)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for Route section of Gaussian "
+    					+ "job contains data blocks but only keywords are "
+    					+ "expected. Check your input!");
+    		}
+    	} else {
+    		if (textHeader==null)
+    			lines.add("#P");
+    	}
+		lines.add(""); // Empty line terminating route section
+    	
+		//
+		// Building line of Title section (well, one line plus blank line)
+		//
+    	Directive titDir = step.getDirective(GaussianConstants.DIRECTIVETITLE);
+    	if (titDir != null)
+    	{
+    		// We expect only ONE keywords
+    		if (titDir.getAllKeywords().size()>1)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for title section of Gaussian "
+    					+ "job contains more than one keyword. "
+    					+ "Check your input!");
+    		}
+    		Keyword k = titDir.getAllKeywords().get(0);
+    		lines.add(k.getValueAsString());
+    		
+    		if (titDir.getAllDirectiveDataBlocks().size()>0)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for title section of Gaussian "
+    					+ "job contains data blocks but only keywords are "
+    					+ "expected. Check your input!");
+    		}
+    		if (titDir.getAllSubDirectives().size()>0)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for title section of Gaussian "
+    					+ "job contains subdirectives but only keywords are "
+    					+ "expected. Check your input!");
+    		}
+    	} else {
+			lines.add("No title");
+    	}
+		lines.add(""); // Empty line terminating title section
+		
+		//
+		// Building lines of Molecular Specification Section
+		//
+		Directive molDir = step.getDirective(GaussianConstants.DIRECTIVEMOLSPEC);
+    	if (molDir != null)
+    	{
+    		// We expect TWO keywords
+    		if (molDir.getAllKeywords().size()!=2)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for molecular specification "
+    					+ "section of Gaussian "
+    					+ "job contains N!=2 keywords. "
+    					+ "Check your input!");
+    		}
+    		Keyword kCharge = molDir.getKeyword(GaussianConstants.MSCHARGEKEY);
+	    	Keyword kSpinMult = molDir.getKeyword(GaussianConstants.MSSPINMLTKEY);
+    		lines.add(kCharge.getValueAsString() + " " + kSpinMult.getValueAsString());
+    		
+    		if (molDir.getAllDirectiveDataBlocks().size()>0)
+    		{
+    			for (DirectiveData dd : molDir.getAllDirectiveDataBlocks())
+    			{
+    				switch (dd.getType())
+    	        	{
+	    			case IATOMCONTAINER:
+	    				IAtomContainer mol = (IAtomContainer) dd.getValue();
+	    				for (IAtom atm : mol.atoms())
+	    				{
+	    					Point3d p3d = AtomUtils.getCoords3d(atm);
 
-        } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Failure in writing Gaussian "
-                        + "input. Details " + t,-1);
-        } finally {
-             try {
-                 if(writer != null)
-                     writer.close();
-             } catch (IOException ioe) {
-                Terminator.withMsgAndStatus("ERROR! Failure in compliting "
-                        + "writing process for Gaussian input." + ioe, -1);
-             }
-        }
+	    		    		String el = AtomUtils.getSymbolOrLabel(atm);
+	    					lines.add(String.format(Locale.ENGLISH,"%s", el)
+	    							+ String.format(Locale.ENGLISH," %17.12f",
+	    									p3d.x)
+	    							+ String.format(Locale.ENGLISH," %17.12f",
+	    									p3d.y)
+	    							+ String.format(Locale.ENGLISH," %17.12f",
+	    									p3d.z));
+	    				}
+	    				break;
+	    			
+	    			case ZMATRIX:
+	    				ZMatrix zmat = (ZMatrix) dd.getValue();
+	    				if (!zmat.hasConstants()) 
+	    				{
+	    					for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom atm = zmat.getZAtom(i);
+	    			        	StringBuilder sbAtom = new StringBuilder();
+	    			        	sbAtom.append("  ");
+	    			        	sbAtom.append(atm.getName()).append(" ");
+	    			            int idI = atm.getIdRef(0);
+	    			            int idJ = atm.getIdRef(1);
+	    			            int idK = atm.getIdRef(2);
+	    			            InternalCoord icI = atm.getIC(0);
+	    			            InternalCoord icJ = atm.getIC(1);
+	    			            InternalCoord icK = atm.getIC(2);
+	    			            if (atm.getIdRef(0) != -1)
+	    			            {
+	    			            	sbAtom.append(idI + 1).append(" ");
+	    			            	sbAtom.append(String.format(Locale.ENGLISH, 
+	    			                		"%5.8f", 
+	    			                		icI.getValue())).append(" ");
+	    			                if (idJ != -1)
+	    			                {
+	    			                	sbAtom.append(idJ + 1).append(" ");
+	    			                	sbAtom.append(String.format(
+	    			                			Locale.ENGLISH,
+	    			                    		"%5.8f", 
+	    			                    		icJ.getValue())).append(" ");
+	    			                    if (idK != -1)
+	    			                    {
+	    			                    	sbAtom.append(idK + 1).append(" ");
+	    			                    	sbAtom.append(String.format(
+	    			                        		Locale.ENGLISH,
+	    			                        		"%5.8f", 
+	    			                        		icK.getValue())).append(" ");
+	    			                        if (!icK.getType().equals(
+	    			                        		InternalCoord.NOTYPE))
+	    			                        {
+	    			                        	sbAtom.append(icK.getType());
+	    			                        }
+	    			                    }
+	    			                }
+	    			            }
+	    			            lines.add(sbAtom.toString());
+	    			        }
+	    				} else {
+	    					// First write the ZMatrix itself (with variable names)
+	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom atm = zmat.getZAtom(i);
+	    			        	StringBuilder sbAtom = new StringBuilder();
+	    			        	sbAtom.append(atm.getName()).append(" ");
+	    			            int idI = atm.getIdRef(0);
+	    			            int idJ = atm.getIdRef(1);
+	    			            int idK = atm.getIdRef(2);
+	    			            InternalCoord icI = atm.getIC(0);
+	    			            InternalCoord icJ = atm.getIC(1);
+	    			            InternalCoord icK = atm.getIC(2);
+	    			            if (atm.getIdRef(0) != -1)
+	    			            {
+	    			            	//NB: 1-based indexing!
+	    			            	sbAtom.append(idI + 1).append(" ");
+	    			            	sbAtom.append(icI.getName()).append(" ");
+	    			                if (idJ != -1)
+	    			                {
+	    			                	sbAtom.append(idJ + 1).append(" ");
+	    			                	sbAtom.append(
+	    			                			icJ.getName()).append(" ");
+	    			                    if (idK != -1)
+	    			                    {
+	    			                    	sbAtom.append(idK + 1).append(" ");
+	    			                    	sbAtom.append(
+	    			                    			icK.getName()).append(" ");
+	    			                    	if (!icK.getType().equals(
+	    			                        		InternalCoord.NOTYPE))
+	    			                        {
+	    			                    		sbAtom.append(icK.getType());
+	    			                        }
+	    			                    }
+	    			                }
+	    			            }
+	    			            lines.add(sbAtom.toString());
+	    			        }
+	    			        // Then write the list of variables with initial value
+	    			        lines.add("  Variables:");
+	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+	    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+	    			        	{
+	    			        		InternalCoord ic = zatm.getIC(iIC);
+	    			        		if (ic.isConstant())
+	    			        			continue;
+	    			        		lines.add(ic.getName() + " " 
+	    			        			+ String.format(Locale.ENGLISH, 
+	    			        					" %5.8f", ic.getValue()));
+	    			        	}
+	    			        }
+	    			        
+	    			        // And finally write the list of constants
+	    			        lines.add("  Constants:");
+	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+	    			        {
+	    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+	    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+	    			        	{
+	    			        		InternalCoord ic = zatm.getIC(iIC);
+	    			        		if (!ic.isConstant())
+	    			        			continue;
+	    			        		lines.add(ic.getName() + " " 
+	    			        			+ String.format(Locale.ENGLISH,
+	    			        					" %5.8f", ic.getValue()));
+	    			        	}
+	    			        }
+	    				}
+	    				break;
+	    				
+	    				default:
+	    					throw new IllegalArgumentException("Unexpected "
+	    							+ "type of DirectiveData. Check '"  
+	    							+ dd.getName() + "' in directive '" 
+	    							+ molDir.getName() + "'.");
+    	        	}
+    			}
+    		}
+    		if (molDir.getAllSubDirectives().size()>0)
+    		{
+    			throw new IllegalArgumentException(
+    					"Directive for molecular specification "
+    					+ "section of Gaussian "
+    					+ "job contains subdirectives but only keywords "
+    					+ "and ditrective data blocks are "
+    					+ "expected. Check your input!");
+    		}
+    	} // Since we always define charge and spin this directive is never null
+		lines.add(""); // Empty line terminating molecular specification section
+    	
+		//
+		// Building lines of Options section
+		//
+    	Directive optDir = step.getDirective(GaussianConstants.DIRECTIVEOPTS);
+    	if (optDir != null)
+    	{
+    		// For the moment we expect only directive data in this section
+    		Set<String> optNames = new HashSet<String>();
+    		optDir.getAllDirectiveDataBlocks().stream().forEach(
+    				dd -> optNames.add(dd.getName()));
+    		List<String> sortedOptNames = sortOpts(optNames);
+    		for (String ddName : sortedOptNames)
+    		{
+    			DirectiveData dd = optDir.getDirectiveData(ddName);
+    			// Some of the directivedata blocks need to be interpreted to
+    			// convert the agnostic data into Gaussian slang
+    			switch (ddName.toUpperCase())
+    			{
+	    			case GaussianConstants.DDBASISSET:
+	    			{
+	    				BasisSet bs = (BasisSet) dd.getValue();
+	    				lines.addAll(formatBasisSetLines(bs));
+	    				break;
+	    			}
+	    			
+	    			case GaussianConstants.DDMODREDUNDANT:
+	    			{
+	    				ConstraintsSet cs = (ConstraintsSet) dd.getValue();
+	                    for (Constraint cns : cs)
+	                    {
+	                    	String str = "";
+	                    	switch (cns.getType())
+	                    	{
+								case ANGLE:
+									str = "A " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1) + " "
+											+ (cns.getAtomIDs()[2]+1);
+									
+									break;
+								case DIHEDRAL:
+									str = "D " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1) + " "
+											+ (cns.getAtomIDs()[2]+1) + " "
+											+ (cns.getAtomIDs()[3]+1);
+									break;
+								case IMPROPERTORSION:
+									str = "D " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1) + " "
+											+ (cns.getAtomIDs()[2]+1) + " "
+											+ (cns.getAtomIDs()[3]+1);
+									break;
+								case DISTANCE:
+									str = "B " + (cns.getAtomIDs()[0]+1) + " "
+											+ (cns.getAtomIDs()[1]+1);
+									break;
+								case FROZENATM:
+									str = "X " + (cns.getAtomIDs()[0]+1);
+									break;
+								case UNDEFINED:
+									switch (cns.getAtomIDs().length)
+									{
+									case 1:
+										str = "X " + (cns.getAtomIDs()[0]+1);
+										break;
+									case 2:
+										str = "B " + (cns.getAtomIDs()[0]+1) 
+											+ " " + (cns.getAtomIDs()[1]+1);
+										break;
+									case 3:
+										str = "A " + (cns.getAtomIDs()[0]+1) 
+											+ " " + (cns.getAtomIDs()[1]+1) 
+											+ " " + (cns.getAtomIDs()[2]+1);
+										break;
+									case 4:
+										str = "D " + (cns.getAtomIDs()[0]+1) 
+											+ " " + (cns.getAtomIDs()[1]+1) 
+											+ " " + (cns.getAtomIDs()[2]+1) 
+											+ " " + (cns.getAtomIDs()[3]+1);
+										break;
+										
+									}
+									break;
+								default:
+									break;
+	                    	}
+	                    	
+	                    	if (cns.hasOpt())
+	                    	{
+	                    		str = str + " " + cns.getOpt();
+	                    	}
+	                    	lines.add(str);
+	                    }
+	        			lines.add(""); //empty line that terminates this part of option section
+	    				break;
+	    			}
+	    		
+	    			default:
+	    			{
+	    				lines.addAll(optDir.getDirectiveData(ddName).getLines());
+	        			lines.add(""); //empty line that terminates this part of option section
+	    			}
+    			}
+    		}
+    		
+    		// Dealing with keywords even if we do not (yet) expect them to be
+    		// present. They might result from the attempt to achieve special 
+    		//results
+    		for (Keyword k : optDir.getAllKeywords())
+    		{
+    			if (k.isLoud())
+    				lines.add(k.getName() + "=" + k.getValueAsString());
+    			else
+        			lines.add(k.getValueAsString());
+    			lines.add(""); //empty line that terminates this part of option section
+    		}
+    		
+    		// Dealing with subdirective even if we now do not expect them to be
+    		// present. They might result from the attempt to achieve special 
+    		//results
+    		for (Directive subDir : optDir.getAllSubDirectives())
+    		{
+    			String directiveLine = "";
+    			// Gaussian uses only one nesting level!
+    			if (subDir.getAllSubDirectives().size()>0)
+    			{
+    				throw new IllegalArgumentException(
+        					"Subdirective " + subDir.getName() + " in Option "
+        					+ "section of Gaussian job contains nested "
+        					+ "sub-sub-directive/s. This is not compatible with "
+        					+ "Gaussian input syntax. Check your input!");
+    			}
+    			if (subDir.getAllDirectiveDataBlocks().size()>0)
+    			{
+    				throw new IllegalArgumentException(
+        					"Subdirective " + subDir.getName() + " in Option "
+        					+ "section of Gaussian job contains directive "
+        					+ "data blocks. This is not compatible with "
+        					+ "Gaussian input syntax. Check your input!");
+    			}
+    			directiveLine = directiveLine + subDir.getName() + "=(";
+    			boolean first = true;
+    			for (Keyword k : subDir.getAllKeywords())
+    			{
+    				String keyStr = "";
+    				if (k.isLoud())
+    				{
+    					keyStr = k.getName() + "=" + k.getValueAsString();
+    				} else {
+    					keyStr = k.getValueAsString();
+    				}
+    				if (first)
+    				{
+    					directiveLine = directiveLine + keyStr;
+    				} else {
+    					directiveLine = directiveLine + "," + keyStr;
+    				}
+    				first = false;
+    			}
+    			directiveLine = directiveLine + ")";
+    			lines.add(directiveLine);
+    			lines.add(""); //empty line that terminates this part of option section
+    		}
+			lines.add(""); //empty line that terminates the option section
+    	} // No default Option section
+    	
+    	return lines;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private static String getCenterIdentifier(CenterBasisSet cbs)
+    {
+    	String atmStr = "";
+		if (cbs.getCenterIndex()!=null)
+		{
+			atmStr = (cbs.getCenterIndex()+1) + "";
+		} else {
+			atmStr = Character.toUpperCase(cbs.getElement().charAt(0)) + "";
+			if (cbs.getElement().length()>1)
+				atmStr = atmStr + cbs.getElement().toLowerCase().substring(1);
+		}
+		return atmStr;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Prepares the lines of text hat are meant to define a basis set in 
+     * Gaussian's input files, i.e., in the Gaussian Basis Set (gbs) format
+     * used also for saving basis sets to files.
+     * @param bs the basis set to format to a list of strings.
+     * @return the list of strings where each string is a line (without new line
+     * character at the end).
+     */
+    public static List<String> formatBasisSetLines(BasisSet bs) 
+	{
+    	List<String> lines = new ArrayList<String>();
+    	for (CenterBasisSet cbs : bs.centerBSs)
+    	{
+	        String atmStr = getCenterIdentifier(cbs);
+	        if (cbs.getNamedComponents().size() > 0)
+	        {
+	            for (String n : cbs.getNamedComponents())
+	            {
+	                lines.add(String.format(Locale.ENGLISH,"%-6s 0", atmStr));
+	                lines.add(n);
+	                lines.add("****");
+	            } 
+	        }
+	        if (cbs.getShells().size() > 0)
+	        {
+	        	lines.add(String.format(Locale.ENGLISH,"%-6s 0", atmStr));
+	            for (Shell s : cbs.getShells())
+	            {
+	            	lines.add(String.format(Locale.ENGLISH, "%-3s %-3d %-7.3f",
+	            			s.getType(), s.getSize(), s.getScaleFact()));
+	                for (Primitive p : s.getPrimitives())
+	                {
+	                    String eForm = "%" + (p.getExpPrecision() + 6) + "." 
+	                    		+ (p.getExpPrecision()-1) + "E     ";
+	                    String line = String.format(Locale.ENGLISH,
+	                    		eForm,p.getExp());
+	                    
+	                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+	                    		+ (p.getCoeffPrecision()-1) + "E";
+	                    for (Double c : p.getCoeff())
+	                    {
+	                    	line = line + String.format(Locale.ENGLISH,cForm,c);
+	                    }
+	                    lines.add(line);
+	                }
+	            }
+	            lines.add("****");
+	        }
+    	}
+    	
+    	// This is where we add the empty line between basis set and ECP block
+    	lines.add("");
+    	
+    	for (CenterBasisSet cbs : bs.centerBSs)
+    	{
+	        if (cbs.getECPShells().size() == 0)
+	        {
+	            continue;
+	        }
+	        
+	        String atmStr = getCenterIdentifier(cbs);
+	        
+	        lines.add(String.format(Locale.ENGLISH, "%-6s 0", atmStr));
+	        lines.add(String.format(Locale.ENGLISH, "%s %2d %3d", 
+	        		cbs.getECPType(), cbs.getECPMaxAngMom(), 
+	        		cbs.getElectronsInECP()));
+            for (ECPShell s : cbs.getECPShells())
+            {
+            	lines.add(String.format(Locale.ENGLISH, "%-3s", s.getType()));
+            	lines.add(String.format(Locale.ENGLISH, " %2d", s.getSize()));
+                for (Primitive p : s.getPrimitives())
+                {
+                	String line = String.format(Locale.ENGLISH, "%-1d", 
+                			p.getAngMmnt());
+                    String eForm = "%" + (p.getExpPrecision() + 6) + "." 
+                    		+ (p.getExpPrecision()-1) + "E     ";
+                    line = line + String.format(Locale.ENGLISH,
+                    		eForm, p.getExp());
+                    
+                    String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
+                    		+ (p.getCoeffPrecision()-1) + "E";
+                    for (Double c : p.getCoeff())
+                    {
+                    	line = line + String.format(Locale.ENGLISH, cForm, c);
+                    }
+                    lines.add(line);
+                }
+            }
+    	}
+        return lines;
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Write multistep Gaussian input file, either Single- or multi-step job, 
-     * using only the setting provided in constructing this GaussianInputWriter
+     * Order the keys of the option blocks according to the presumed 
+     * expectations of Gaussian (i.e., basis set before PCM)
+     * @param keySet the set of keys
+     * @return the reordered list
      */
 
-    public void writeGaussianInput()
+    private List<String> sortOpts(Set<String> keySet)
     {
-        if (verbosity > 0)
+        List<String> sortedKeys = new ArrayList<String>();
+        if (keySet.contains(GaussianConstants.DDMODREDUNDANT))
         {
-             System.out.println(" Writing Gaussian input file: " + outFile);
+            sortedKeys.add(GaussianConstants.DDMODREDUNDANT);
         }
-
-        IOtools.writeTXTAppend(outFile,gaussJob.toLinesInp(),false);
-        IOtools.writeTXTAppend(outJDFile,gaussJob.toLinesJob(),false);
+        if (keySet.contains(GaussianConstants.DDBASISSET))
+        {
+            sortedKeys.add(GaussianConstants.DDBASISSET);
+        }
+        if (keySet.contains(GaussianConstants.DDPCM))
+        {
+            sortedKeys.add(GaussianConstants.DDPCM);
+        }
+        for (String key : keySet)
+        {
+            if (key.equals(GaussianConstants.DDPCM) 
+                || key.equals(GaussianConstants.DDBASISSET)
+                || key.equals(GaussianConstants.DDMODREDUNDANT))
+            {
+                continue;
+            }
+            sortedKeys.add(key);
+        }
+        return sortedKeys;
     }
-
+    
 //------------------------------------------------------------------------------
 
 }

@@ -6,9 +6,9 @@ echo NOT Passed ERROR 1
 exit -1
 fi
 
-if [ $(wc -l t129-mol.inp | awk '{print $1}') != 180 ]; then echo NOT Passed ERROR 2; exit -1 ; fi
+if [ $(wc -l t129-mol.inp | awk '{print $1}') != 176 ]; then echo NOT Passed ERROR 2; exit -1 ; fi
 
- if ! grep -q "# HF/GEN 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
+ if ! grep -q "#P HF/GEN 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
  if ! grep -q "H * 0" t129-mol.inp ; then echo NOT Passed ERROR 15 ; exit -1 ; fi
  if ! grep -q "STO-3G" t129-mol.inp ; then echo NOT Passed ERROR 16 ; exit -1 ; fi
  if ! grep -q "S * 7 * 1\.000  " t129-mol.inp ; then echo NOT Passed ERROR 19 ; exit -1 ; fi
@@ -35,8 +35,8 @@ if [ $(wc -l t129-mol.inp | awk '{print $1}') != 180 ]; then echo NOT Passed ERR
  if ! grep -q " 3\.1100.E-02 * 1.000000.E+00" t129-mol.inp ; then echo NOT Passed ERROR 40 ; exit -1 ; fi
  if ! grep -q "D * 1 * 1\.000  " t129-mol.inp ; then echo NOT Passed ERROR 41 ; exit -1 ; fi
  if ! grep -q " 5\.87000.E-01 * 1.000000.E+00" t129-mol.inp ; then echo NOT Passed ERROR 42 ; exit -1 ; fi
- if ! grep -q "# OLYP/CHKBASIS 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 48 ; exit -1 ; fi
- if ! grep -q "# OLYP/GEN 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 61 ; exit -1 ; fi
+ if ! grep -q "#P OLYP/CHKBASIS 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 48 ; exit -1 ; fi
+ if ! grep -q "#P OLYP/GEN 5D 7F" t129-mol.inp ; then echo NOT Passed ERROR 61 ; exit -1 ; fi
  if ! grep -q "S * 3 * 1\.000  " t129-mol.inp ; then echo NOT Passed ERROR 72 ; exit -1 ; fi
  if ! grep -q " 1\.9238400.E+01 * 3.2828.E-02" t129-mol.inp ; then echo NOT Passed ERROR 73 ; exit -1 ; fi
  if ! grep -q " 2\.898700.E+00 * 2.31204.E-01" t129-mol.inp ; then echo NOT Passed ERROR 74 ; exit -1 ; fi

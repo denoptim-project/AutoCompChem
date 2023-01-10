@@ -1,0 +1,210 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "Nprocshared",
+              "value": "8"
+            },
+            {
+              "reference": "mem",
+              "value": "28GB"
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2DZ 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            },
+            {
+              "reference": "IOP",
+              "value": "IOP(1/19\u003d11)",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "400"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "5"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Testing AutoCompChem - 2 Dec 2013",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "Nprocshared",
+              "value": "8"
+            },
+            {
+              "reference": "mem",
+              "value": "28GB"
+            }
+          ]
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "STO-3G",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "5"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " second step of  Testing AutoCompChem - 2 Dec 2013",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

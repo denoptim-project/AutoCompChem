@@ -1,16 +1,73 @@
 #!/bin/bash
 
-grep -q "ERROR! Property <CHARGE> cannot be defined" t50.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
+if [ ! -f t50-mol.inp ]; then
+  echo "NOT Passed ERROR 0"
+  exit -1
 fi
 
-grep -q 'Termination status: -1' t50.log
+if ! $(grep -A6 -i "Variables:" t50-mol.inp | tail -n 1 | grep -q -i "Constants:"); then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if $(grep -A44 -i "Constants:" t50-mol.inp | tail -n 1 | grep -q -i "."); then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+grep -q "^[[:space:]]*C[[:space:]]*$" t50-mol.inp
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 5
+  exit -1
+fi
+
+grep -q "^[[:space:]]*N[[:space:]]*1[[:space:]]*dst1[[:space:]]*$" t50-mol.inp
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 6
+  exit -1
+fi
+
+grep -q "^[[:space:]]*C[[:space:]]*2[[:space:]]*dst2[[:space:]]*1[[:space:]]*ang1[[:space:]]*$" t50-mol.inp
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 7
+  exit -1
+fi
+
+grep -q "^[[:space:]]*C[[:space:]]*2[[:space:]]*dst3[[:space:]]*1[[:space:]]*ang2[[:space:]]*3[[:space:]]*ang3[[:space:]]*-1[[:space:]]*$" t50-mol.inp
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 8
+  exit -1
+fi
+
+grep -q "^[[:space:]]*O[[:space:]]*4[[:space:]]*dst4[[:space:]]*2[[:space:]]*ang4[[:space:]]*1[[:space:]]*tor1[[:space:]]*0[[:space:]]*$" t50-mol.inp
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 9
+  exit -1
+fi
+
+grep -A6 -i "Variables:" t50-mol.inp | grep -q "^[[:space:]]*ang7[[:space:]]*109.47......[[:space:]]*$"
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 11
+  exit -1
+fi
+
+grep -A6 -i "Variables:" t50-mol.inp | grep -q "^[[:space:]]*tor3[[:space:]]*89.9.......[[:space:]]*$"
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 12
+  exit -1
+fi
+
+grep -A6 -i "Variables:" t50-mol.inp | grep -q "^[[:space:]]*dst15[[:space:]]*1.300.....[[:space:]]*$"
+if [ $? != 0 ] ; then
+  echo NOT Passed ERROR 13
+  exit -1
+fi
+
+grep -q 'Termination status: 0' t50.log
 if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 2
-exit -1
+  echo NOT Passed ERROR 16
+  exit -1
 fi

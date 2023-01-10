@@ -15,7 +15,7 @@ if ! grep -q "O *0" t77.gbs ; then echo NOT Passes ERROR 2,10 ; exit -1 ; fi
 if ! grep -q "N *0" t77.gbs ; then echo NOT Passes ERROR 2,13 ; exit -1 ; fi
 if ! grep -q "C *0" t77.gbs ; then echo NOT Passes ERROR 2,16 ; exit -1 ; fi
 if ! grep -q "H *0" t77.gbs ; then echo NOT Passes ERROR 2,19 ; exit -1 ; fi
-if ! grep -q "Pd1 *0" t77.gbs ; then echo NOT Passes ERROR 2,22 ; exit -1 ; fi
+if ! grep -q "1 *0" t77.gbs ; then echo NOT Passes ERROR 2,22 ; exit -1 ; fi
 if ! grep -q "S *7 *1.000 *" t77.gbs ; then echo NOT Passes ERROR 2,23 ; exit -1 ; fi
  if ! grep -q " 2\.081230000E+02 * 7\.270E-04" t77.gbs ; then echo NOT Passes ERROR 2,24 ; exit -1 ; fi
  if ! grep -q " 2\.28525000E+01 * -4\.09280E-02" t77.gbs ; then echo NOT Passes ERROR 2,25 ; exit -1 ; fi

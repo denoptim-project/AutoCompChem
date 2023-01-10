@@ -18,6 +18,13 @@ package autocompchem.modeling.constraints;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+import autocompchem.modeling.basisset.Primitive;
+import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.utils.NumberUtils;
 
 /**
  * This class represents the concept of a constraint that is applied on a list
@@ -34,7 +41,8 @@ import java.util.ArrayList;
 
 public class Constraint implements Comparable<Constraint>
 {
-	public enum ConstraintType {FROZENATM, DISTANCE, ANGLE, DIHEDRAL, UNDEFINED}
+	public enum ConstraintType {FROZENATM, DISTANCE, ANGLE, DIHEDRAL, 
+		IMPROPERTORSION, UNDEFINED}
 	
 	/**
 	 * The type of this constraint
@@ -120,10 +128,16 @@ public class Constraint implements Comparable<Constraint>
 	 * @param j second index (0-based)
 	 * @param k third index (0-based)
 	 * @param l forth index (0-based)
+	 * @param isDihedral use <code>true<code> to indicate that this 4-tupla 
+	 * indicates a proper dihedral where the connectivity is i-j-k-l.
 	 */
-	public Constraint(int i, int j, int k, int l)
+	public Constraint(int i, int j, int k, int l, boolean isDihedral)
 	{
-		this(i, j, k, l, ConstraintType.DIHEDRAL, null, null);
+		this(i, j, k, l, null, null, null);
+		if (isDihedral)
+			type = ConstraintType.DIHEDRAL;
+		else
+			type = ConstraintType.IMPROPERTORSION;
 	}
 	
 //------------------------------------------------------------------------------
@@ -199,12 +213,15 @@ public class Constraint implements Comparable<Constraint>
 	 * Constructs a constrain.
 	 * @param ids atom IDs. The number of value determines the type of 
 	 * constraint.
+	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
+	 * represent a set of centers that are connected in the order given, e.g.
+	 * 1-j-k-l.
 	 * @throws Exception
 	 */
-	public static Constraint buildConstraint(ArrayList<Integer> ids) 
-			throws Exception
+	public static Constraint buildConstraint(ArrayList<Integer> ids, 
+			boolean areLinearlyConnected) throws Exception
 	{
-		return buildConstraint(ids, null, null);
+		return buildConstraint(ids, null, null, areLinearlyConnected);
 	}
 	
 //------------------------------------------------------------------------------
@@ -219,11 +236,15 @@ public class Constraint implements Comparable<Constraint>
 	 * software how to use the given information. For example,
 	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
 	 * (add constraint). Or null, if no option has to be given.
+	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
+	 * represent a set of centers that are connected in the order given, e.g.
+	 * 1-j-k-l.
 	 * @return the constraint.
 	 * @throws Exception
 	 */
 	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, String opts) throws Exception
+			Double value, String opts, boolean areLinearlyConnected) 
+					throws Exception
 	{
 		switch (ids.size())
 		{
@@ -237,8 +258,19 @@ public class Constraint implements Comparable<Constraint>
 				return new Constraint(ids.get(0), ids.get(1), ids.get(2), -1,
 						ConstraintType.ANGLE, value, opts);
 			case 4:
-				return new Constraint(ids.get(0), ids.get(1), ids.get(2),
+				if (areLinearlyConnected)
+				{
+					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
 						ids.get(3), ConstraintType.DIHEDRAL, value, opts);
+				} else {
+					//TODO-gg use connectivity matrix instead of 
+					// areLinearlyConnected so that we can distinguish the
+					// improper torsion from undefined 4-tuples.
+					// Also, add option to ignore the typing of the constraint.
+					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
+							ids.get(3), ConstraintType.IMPROPERTORSION, value, 
+							opts);
+				}
 			default:
 				throw new Exception("Unexpected number of atom IDs (" 
 						+ ids.size() + "). Cannot construct a Constraint.");
@@ -247,6 +279,9 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 	
+	/**
+	 * @return the type of this constraint.
+	 */
 	public ConstraintType getType()
 	{
 		return type;
@@ -254,6 +289,9 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 	
+	/**
+	 * @return <code>true</code> if this constraint has an associated value.
+	 */
 	public boolean hasValue()
 	{
 		return hasValue;
@@ -261,9 +299,24 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * @return the value associated with this constraint.
+	 */
 	public double getValue()
 	{
 		return value;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Changes the value associated with this constraint.
+	 * @param value the new value.
+	 */
+	public void setValue(double value) 
+	{
+		this.hasValue = true;
+		this.value = value;
 	}
 	
 //------------------------------------------------------------------------------
@@ -288,6 +341,10 @@ public class Constraint implements Comparable<Constraint>
 
 //------------------------------------------------------------------------------
 
+	/**
+	 * Defines the atom indexes that define this constraint.
+	 * @param ids the list of 0-based indexes.
+	 */
 	public void setAtomIDs(int[] ids)
 	{
 		atmIDs = ids;
@@ -295,6 +352,9 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * @return the list of atom indexes that defines this constraint (0-based).
+	 */
 	public int[] getAtomIDs()
 	{
 		return atmIDs;
@@ -302,7 +362,104 @@ public class Constraint implements Comparable<Constraint>
 	
 //------------------------------------------------------------------------------
 
-	private int getNumberOfIDs()
+	/**
+	 * @return the list of atom indexes that defines this constraint (0-based).
+	 */
+	public List<Integer> getAtomIDsList()
+	{
+		List<Integer> idList = new ArrayList<Integer>();
+		for(int i=0; i<atmIDs.length; i++)
+		{
+			if (atmIDs[i]>-1)
+				idList.add(atmIDs[i]);
+		}
+		return idList;
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Returns a copy of the list of indexes in which the indexes are sorted
+	 * as follows:
+	 * <ul>
+	 * <li>{@link ConstraintType#DISTANCE}: smallest ID first</li>
+	 * <li>{@link ConstraintType#ANGLE}: the smallest between first and last 
+	 * index is placed first.</li>
+	 * <li>{@link ConstraintType#DIHEDRAL}: rearranges as to get the smallest 
+	 * between second and third index in the second position.</li>
+	 * </ul>
+	 * No change for other types.
+	 * @return the sorted list of IDS.
+	 */
+	public int[] getSortedAtomIDs()
+	{
+		int[] sorted = atmIDs;
+        switch (type)
+        {
+            case DISTANCE:
+                if (atmIDs[0] > atmIDs[1])
+                {
+                	sorted = new int[2];
+                	sorted[0] = atmIDs[1];
+                	sorted[1] = atmIDs[0];
+                } else {
+                	sorted = new int[2];
+                	sorted[0] = atmIDs[0];
+                	sorted[1] = atmIDs[1];
+                }
+                break;
+
+            case ANGLE:
+                if (atmIDs[0] > atmIDs[2])
+                {
+                	sorted = new int[3];
+                	sorted[0] = atmIDs[2];
+                	sorted[1] = atmIDs[1];
+                	sorted[2] = atmIDs[0];
+                } else {
+                	sorted = new int[3];
+                	sorted[0] = atmIDs[0];
+                	sorted[1] = atmIDs[1];
+                	sorted[2] = atmIDs[2];
+                }
+                break;
+
+            case DIHEDRAL:
+            	if (atmIDs[1] > atmIDs[2])
+                {
+                	sorted = new int[4];
+                	sorted[0] = atmIDs[3];
+                	sorted[1] = atmIDs[2];
+                	sorted[2] = atmIDs[1];
+                	sorted[3] = atmIDs[0];
+                } else {
+                	sorted = new int[4];
+                	sorted[0] = atmIDs[0];
+                	sorted[1] = atmIDs[1];
+                	sorted[2] = atmIDs[2];
+                	sorted[3] = atmIDs[3];
+                }
+                break;
+			default:
+				//Nothing.
+				break;
+        }
+		return sorted;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Usually, 
+	 * one index is used to define a frozen atom, two for distances, 
+	 * three for angles, and four for dihedral of improper torsions. Yet, upon
+	 * demands from the user any number of indexes can be associated with an
+	 * {@value ConstraintType#UNDEFINED} type. So the number of indexes should
+	 * not be used as a replacement of the defined type. 
+	 * See {@link Constraint#getType()}
+	 * @return the number of indexes that define this constraint. 
+	 */
+	public int getNumberOfIDs()
 	{
 		int n = 0;
 		for (int i : atmIDs)
@@ -312,106 +469,104 @@ public class Constraint implements Comparable<Constraint>
 		}
 		return n;
 	}
+	
 //------------------------------------------------------------------------------
 	
 	@Override
 	public int compareTo(Constraint o) 
-	{	
-		if (this.getNumberOfIDs() == o.getNumberOfIDs())
+	{
+		// Type takes priority
+		if (this.getType()!=o.getType())
 		{
-			if (this.getAtomIDs()[0] == o.getAtomIDs()[0]
-					&& this.getNumberOfIDs() > 1)
-			{
-				if (this.getAtomIDs()[1] == o.getAtomIDs()[1]
-						&& this.getNumberOfIDs() > 2)
-				{
-					if (this.getAtomIDs()[2] == o.getAtomIDs()[2]
-							&& this.getNumberOfIDs() > 3)
-					{
-						return Integer.compare(this.getAtomIDs()[3],
-								o.getAtomIDs()[3]);
-					} else if (this.getNumberOfIDs() == 4)
-					{
-						if (this.getAtomIDs()[0] == o.getAtomIDs()[3]
-							&& this.getAtomIDs()[1] == o.getAtomIDs()[2]
-							&& this.getAtomIDs()[3] == o.getAtomIDs()[1]
-							&& this.getAtomIDs()[3] == o.getAtomIDs()[0])
-						{
-							return 0;
-						} else {
-							return Integer.compare(this.getAtomIDs()[2], 
-									o.getAtomIDs()[2]);
-						}
-					} else {
-						return Integer.compare(this.getAtomIDs()[2], 
-								o.getAtomIDs()[2]);
-					}
-				} else if (this.getNumberOfIDs() == 3)
-				{
-					if (this.getAtomIDs()[0] == o.getAtomIDs()[2]
-						&& this.getAtomIDs()[1] == o.getAtomIDs()[1]
-						&& this.getAtomIDs()[2] == o.getAtomIDs()[0])
-					{
-						return 0;
-					} else {
-						return Integer.compare(this.getAtomIDs()[1], 
-								o.getAtomIDs()[1]);
-					}
-				} else if (this.getNumberOfIDs() == 4)
-				{
-					if (this.getAtomIDs()[0] == o.getAtomIDs()[3]
-						&& this.getAtomIDs()[1] == o.getAtomIDs()[2]
-						&& this.getAtomIDs()[3] == o.getAtomIDs()[1]
-						&& this.getAtomIDs()[3] == o.getAtomIDs()[0])
-					{
-						return 0;
-					} else {
-						return Integer.compare(this.getAtomIDs()[1], 
-								o.getAtomIDs()[1]);
-					}
-				} else {
-					return Integer.compare(this.getAtomIDs()[1], 
-							o.getAtomIDs()[1]);
-				}
-			} else if (this.getNumberOfIDs() == 2)
-			{
-				if (this.getAtomIDs()[0] == o.getAtomIDs()[1]
-					&& this.getAtomIDs()[1] == o.getAtomIDs()[0])
-				{
-					return 0;
-				} else {
-					return Integer.compare(this.getAtomIDs()[0], 
-							o.getAtomIDs()[0]);
-				}
-			} else if (this.getNumberOfIDs() == 3)
-			{
-				if (this.getAtomIDs()[0] == o.getAtomIDs()[2]
-					&& this.getAtomIDs()[1] == o.getAtomIDs()[1]
-					&& this.getAtomIDs()[2] == o.getAtomIDs()[0])
-				{
-					return 0;
-				} else {
-					return Integer.compare(this.getAtomIDs()[0], 
-							o.getAtomIDs()[0]);
-				}
-			} else if (this.getNumberOfIDs() == 4)
-			{
-				if (this.getAtomIDs()[0] == o.getAtomIDs()[3]
-					&& this.getAtomIDs()[1] == o.getAtomIDs()[2]
-					&& this.getAtomIDs()[3] == o.getAtomIDs()[1]
-					&& this.getAtomIDs()[3] == o.getAtomIDs()[0])
-				{
-					return 0;
-				} else {
-					return Integer.compare(this.getAtomIDs()[0], 
-							o.getAtomIDs()[0]);
-				}
-			} else {
-				return Integer.compare(this.getAtomIDs()[0],o.getAtomIDs()[0]);
-			}
-		} else {
-			return Integer.compare(this.getNumberOfIDs(), o.getNumberOfIDs());
+			return this.getType().compareTo(o.getType());
 		}
+		
+		// In case of same type then we look at the main indexes
+		int[] ids1 = this.getSortedAtomIDs();
+		int[] ids2 = o.getSortedAtomIDs();
+		switch (this.getType())
+		{
+			case DISTANCE:
+			{
+				if (ids1[0]!=ids2[0])
+					return Integer.compare(ids1[0], ids2[0]);
+				else if (ids1[1]!=ids2[1])
+					return Integer.compare(ids1[1], ids2[1]);
+				break;
+			}
+			case ANGLE:
+			{
+				if (ids1[1]!=ids2[1])
+					return Integer.compare(ids1[1], ids2[1]);
+				else if (ids1[0]!=ids2[0])
+					return Integer.compare(ids1[0], ids2[0]);
+				else if (ids1[2]!=ids2[2])
+					return Integer.compare(ids1[2], ids2[2]);
+				break;
+			}
+			case DIHEDRAL:
+			{
+				if (ids1[1]!=ids2[1])
+					return Integer.compare(ids1[1], ids2[1]);
+				else
+					if (ids1[2]!=ids2[2])
+						return Integer.compare(ids1[2], ids2[2]);
+					else if (ids1[0]!=ids2[0])
+						return Integer.compare(ids1[0], ids2[0]);
+					else if (ids1[3]!=ids2[3])
+						return Integer.compare(ids1[3], ids2[3]);
+				break;
+			}
+			case FROZENATM:
+			{
+				return Integer.compare(ids1[0], ids2[0]);
+			}
+			default:
+			{
+				if (ids1[0]!=ids2[0])
+					return Integer.compare(ids1[0], ids2[0]);
+				else if (ids1[1]!=ids2[1])
+					return Integer.compare(ids1[1], ids2[1]);
+				else if (ids1[2]!=ids2[2])
+					return Integer.compare(ids1[2], ids2[2]);
+				else if (ids1[3]!=ids2[3])
+					return Integer.compare(ids1[3], ids2[3]);
+				break;
+			}
+		}
+		
+		// Type and IDs are equivalent
+		return 0;
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Constraint))
+			return false;
+		Constraint other = (Constraint) o;
+   	 
+	   	if (this.atmIDs.length != other.atmIDs.length)
+	   		 return false;
+	   				 
+		for (int i=0; i<this.atmIDs.length; i++)
+		{
+			if (this.atmIDs[i] != other.atmIDs[i])
+				return false;
+		}
+		
+		if (!NumberUtils.closeEnough(this.value, other.value))
+	   		 return false;
+		
+		if (this.options!=null && other.options!=null
+				&& !this.options.equals(other.options))
+			return false;
+	   	 
+	   	return this.type == other.type
+	   			&& this.hasValue == other.hasValue 
+	   			&& this.hasOpt == other.hasOpt;
 	}
 	
 //------------------------------------------------------------------------------

@@ -18,10 +18,14 @@ package autocompchem.modeling.basisset;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
+import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
+import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 
 
 /**
@@ -43,7 +47,7 @@ public class BasisSetUtils
      */
 
     public static BasisSet importBasisSetFromGBSFile(String inFile, 
-                                                                  int verbosity)
+    		int verbosity)
     {
         String msg = "";
         BasisSet bs = new BasisSet();
@@ -111,7 +115,15 @@ public class BasisSetUtils
             {
                 foundBSSection = true;
                 String atmId = wrds[0].toUpperCase();
-                cbs = bs.getCenterBasisSetForCenter(atmId);
+                if (StringUtils.isAtomID(msg))
+                {
+                	String[] elInt = StringUtils.splitCharactersAndNumber(atmId);
+                	String el = elInt[0];
+                	int id = Integer.parseInt(elInt[1]);
+                	cbs = bs.getCenterBasisSetForCenter(null, id, el);
+                } else {
+                	cbs = bs.getCenterBasisSetForElement(atmId);
+                }
                 if (verbosity > 2)
                 {
                     System.out.println("Importing basis set for center '" 
@@ -232,12 +244,11 @@ public class BasisSetUtils
             else if (wrds.length == 2 && wrds[0].matches("\\w+\\.?") 
                                         && wrds[1].equals("0") && isECPSection)
             {
-                String atmId = wrds[0].toUpperCase();
-                cbs = bs.getCenterBasisSetForCenter(atmId);
-                cbs.setElement(atmId);
+                String elSymbol = wrds[0].toUpperCase();
+                cbs = bs.getCenterBasisSetForElement(elSymbol);
                 if (verbosity > 2)
                 {
-                    System.out.println("Importing ECP for '" + atmId+ "' "
+                    System.out.println("Importing ECP for '" + elSymbol+ "' "
                                        + " element:'" + cbs.getElement()+ "'.");
                 }
                 boolean keepReadingECP = true;
@@ -272,8 +283,7 @@ public class BasisSetUtils
                             cbs.addECPShell(ecps.clone());
                         }
 
-                        cbs = bs.getCenterBasisSetForCenter(wrds[0]);
-                        cbs.setElement(wrds[0]);
+                        cbs = bs.getCenterBasisSetForElement(wrds[0]);
                         addIntECCP = false;
 
                         if (verbosity > 2)
@@ -392,7 +402,7 @@ public class BasisSetUtils
 
     /**
      * Writes a basis set to an output file according to the given format.
-     * Known formats are listed in the {@link BasisSet} documentation.
+     * Known formats are 'Gaussian' and 'NWChem'.
      * @param bs the basis set to be written
      * @param format the format of the basis set (i.e., the name of the software
      * package meant to read the basis set) 
@@ -401,7 +411,28 @@ public class BasisSetUtils
 
     public static void writeFormattedBS(BasisSet bs, String format, String out)
     {
-        IOtools.writeTXTAppend(out,bs.toInputFileString(format),true);
+    	List<String> lines = new ArrayList<String>();
+    	switch (format.toUpperCase())
+    	{
+    	case "GAUSSIAN":
+    		lines = GaussianInputWriter.formatBasisSetLines(bs);
+    		lines.add(""); //Empty line terminating ECP section
+    		break;
+    		
+    	case "NWCHEM":
+    		lines.add("BASIS \"ao basis\" print");
+    		lines.addAll(NWChemInputWriter.formatBasisSetLines(bs));
+    		lines.add("END");
+    		lines.add("ECP");
+    		lines.addAll(NWChemInputWriter.formatECPLines(bs));
+    		lines.add("END");
+    		break;
+    		
+    	default:
+    		
+    	}
+        IOtools.writeTXTAppend(out, StringUtils.mergeListToString(lines, 
+        		System.getProperty("line.separator")), true);
     }
 
 //----------------------------------------------------------------------------- 

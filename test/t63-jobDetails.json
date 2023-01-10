@@ -1,0 +1,191 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step started from NWChem output\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "H library lanl2dz_ecp",
+                "C library lanl2dz_ecp",
+                "N library lanl2dz_ecp",
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "dirData": [
+            {
+              "reference": "ecp",
+              "value": [
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "fine",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Last step: frequencies\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "H library lanl2dz_ecp",
+                "C library lanl2dz_ecp",
+                "N library lanl2dz_ecp",
+                "Cl library lanl2dz_ecp",
+                "Ru library lanl2dz_ecp"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

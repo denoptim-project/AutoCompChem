@@ -29,7 +29,6 @@ import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -184,12 +183,11 @@ public abstract class ChemSoftOutputHandler extends Worker
         			ChemSoftConstants.PARPRINTLASTGEOMEACH).getValueAsString();
             String[] p = s.split("\\s+");
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFORMAT,
-            		p[0]));
+            ps.setParameter(ChemSoftConstants.GENERALFORMAT,
+            		p[0]);
             if (p.length>1)
             {
-                ps.setParameter(new Parameter(
-                		ChemSoftConstants.GENERALFILENAME, p[1]));
+                ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
             analysisAllTasks.add(a);
@@ -201,12 +199,10 @@ public abstract class ChemSoftOutputHandler extends Worker
         			ChemSoftConstants.PARPRINTLASTGEOM).getValueAsString();
             String[] p = s.split("\\s+");
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFORMAT,
-            		p[0]));
+            ps.setParameter(ChemSoftConstants.GENERALFORMAT, p[0]);
             if (p.length>1)
             {
-                ps.setParameter(new Parameter(
-                		ChemSoftConstants.GENERALFILENAME, p[1]));
+                ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
             analysisGlobalTasks.add(a);
@@ -218,12 +214,10 @@ public abstract class ChemSoftOutputHandler extends Worker
         			ChemSoftConstants.PARPRINTALLGEOM).getValueAsString();
             String[] p = s.split("\\s+");
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFORMAT,
-            		p[0]));
+            ps.setParameter(ChemSoftConstants.GENERALFORMAT, p[0]);
             if (p.length>1)
             {
-                ps.setParameter(new Parameter(
-                		ChemSoftConstants.GENERALFILENAME, p[1]));
+                ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.ALLGEOM,ps);
             analysisAllTasks.add(a);
@@ -258,10 +252,9 @@ public abstract class ChemSoftOutputHandler extends Worker
                 list.add(w);
             }
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(new Parameter(ChemSoftConstants.GENERALFILENAME,
-            		p[p.length-1]));
-            ps.setParameter(new Parameter(ChemSoftConstants.GENERALINDEXES,
-            		StringUtils.mergeListToString(list, " ")));
+            ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[p.length-1]);
+            ps.setParameter(ChemSoftConstants.GENERALINDEXES,
+            		StringUtils.mergeListToString(list, " "));
             AnalysisTask a = new AnalysisTask(AnalysisKind.VIBMODE,ps);
             analysisAllTasks.add(a);
         }
@@ -302,8 +295,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 	                        + ".", -1); 
 	                }
 	                //Silly: we check the conversion to double and then store a string...
-	                ps.setParameter(new Parameter(
-	                		ChemSoftConstants.PARBONDLENGTHTOLETANCE,w));
+	                ps.setParameter(ChemSoftConstants.PARBONDLENGTHTOLETANCE, w);
 	                checkBLvsCT = true;
                 }
             }
@@ -356,8 +348,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 	            			Terminator.withMsgAndStatus("ERROR! expecting a "
 	            					+ "value after QUASIHARM.",-1);
 	            		}
-	            		ps.setParameter(new Parameter(
-	            				ChemSoftConstants.QHARMTHRSLD, p[i+1]));
+	            		ps.setParameter(ChemSoftConstants.QHARMTHRSLD, p[i+1]);
 	            	}
             	}
             }
@@ -384,8 +375,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 	            			Terminator.withMsgAndStatus("ERROR! expecting a "
 	            					+ "value after LOWESTFREQ.",-1);
 	            		}
-	            		ps.setParameter(new Parameter(
-	            				ChemSoftConstants.SMALLESTFREQ, p[i+1]));
+	            		ps.setParameter(ChemSoftConstants.SMALLESTFREQ, p[i+1]);
 	            	}
             	}
             }

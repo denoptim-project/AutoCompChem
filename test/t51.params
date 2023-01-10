@@ -1,18 +1,9 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
+# ZMatrix with selection of constants
 #
-VERBOSITY: 2
-TASK: PrepareInputNWChem
-INFILE: ../t50-mol.sdf
-OUTFILE: nwchem51.nw
-JOBDETAILSFILE: ../t48-jobDetails
-CoordinatesType: cartesian
-$STARTFREEZEATM: 
-[$([#1][#6]~[Ru])]
-[#6]~[Ru]
-[Pt]
-$END 
-CHARGE: 0
-SPIN_MULTIPLICITY: 10
+VERBOSITY: 1
+TASK: PrepareInputGaussian
+INPUTGEOMETRIESFILE: ../t51-mol.sdf
+JOBDETAILSFILE: ../t51-jobDetails.json

@@ -21,8 +21,13 @@ import java.text.DecimalFormat;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import autocompchem.constants.ACCConstants;
 
 /**
  * Toolbox for numbers
@@ -256,5 +261,54 @@ public class NumberUtils
         return getEnglishFormattedDecimal(pattern,4,value);
     }
 
+//------------------------------------------------------------------------------
+    
+    /**
+     * Produces the list of indexes complementary to the given ones. Considers
+     * only 0-based positive indexes.
+     * @param ids the list of ids for which we want the complementary ones.
+     * @param size defines the maximum index in an indirect way: it is the
+     * size of the complete list of indexes.
+     * @return the set of complementary indexes.
+     */
+    public static Set<Integer> getComplementaryIndexes(Collection<Integer> ids,
+    		int size)
+    {
+    	Set<Integer> chosenIDs = new HashSet<Integer>();
+    	for (int i=0; i<size; i++)
+    		chosenIDs.add(i);
+    	chosenIDs.removeAll(ids);
+    	return chosenIDs;
+    } 
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Utility to compare two floating point values against the default
+     * threshold.
+     * @param v1 a value to compare.
+     * @param v2 another value to compare.
+     * @param thrld the threshold.
+     * @return
+     */
+    public static boolean closeEnough(Double v1, Double v2)
+    {
+    	return closeEnough(v1, v2, ACCConstants.DOUBLEPRECISION);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Utility to compare two floating point values against a threshold.
+     * @param v1 a value to compare.
+     * @param v2 another value to compare.
+     * @param thrld the threshold.
+     * @return
+     */
+    public static boolean closeEnough(Double v1, Double v2, Double thrld)
+    {
+    	return Math.abs(v1-v2) < thrld;
+    }
+    
 //------------------------------------------------------------------------------     
 }

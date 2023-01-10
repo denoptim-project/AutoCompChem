@@ -26,7 +26,7 @@ import autocompchem.run.Terminator;
 
 
 /**
- * Object representing an enseble of shells used as basis set for a center 
+ * Object representing an ensemble of shells used as basis set for a center 
  * (i.e., atom or pseudo-atom). The ensemble may be a portion of the entire 
  * basis set for the specific center. ECP may be included in this basis set.
  *
@@ -36,14 +36,21 @@ import autocompchem.run.Terminator;
 public class CenterBasisSet
 {
     /**
-     * Center (i.e., atom) reference name.
+     * The tag assigned to a center/atom. It may or may not be related with 
+     * the elements and/or the index of the center.
      */
-    private String atmId = "noAtomId";
+    private String tag;
+    
+    /**
+     * Center's (i.e., atom) index (0-based).
+     */
+    private Integer id;
 
     /**
-     * Elemental symbol
+     * Center's (i.e., atom) elemental symbol.
      */
-    private String element = "noElSymb";    
+    private String element;   
+    
     /**
      * Basis set components by name. 
      * Names are independent from the list of shells and ECP components.
@@ -75,32 +82,36 @@ public class CenterBasisSet
      */
     private int ne = 0;
 
-
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty object
+     * Constructor for an empty CenterBasisSet that does not even specify which 
+     * center it applies to.
+     */
+    public CenterBasisSet() 
+    {}
+    
+//------------------------------------------------------------------------------
+
+	/**
+     * Constructor for a CenterBasisSet and define the ID of the center.
+     * @param centerTag the tag identifying the center/s the basis set is meant 
+     * for. Give null to signify that no tag is specified for the center.
+     * @param idx the index of the center (0-based).
+     * @param elSymb the elemental symbol.
      */
 
-    public CenterBasisSet()
+    public CenterBasisSet(String centerTag, Integer idx, String elSymb)
     {
+        this.tag = centerTag;
+        if (idx!=null)
+        	this.id = Integer.valueOf(idx.toString());
+        this.element = elSymb;
     }
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Constructor for a CenterBasisSet and define the ID of the center
-     * @param atmId reference identified of the center (i.e., atom)
-     */
-
-    public CenterBasisSet(String atmId)
-    {
-        this.atmId = atmId;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
+	/**
      * Add a named components, that is, a basis set that is widely recognized
      * by its name. Note that the name is not interpreted, but is treated as
      * a string.
@@ -177,6 +188,28 @@ public class CenterBasisSet
             this.setElectronsInECP(other.getElectronsInECP());
         }
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the identifier of the centers this basis set applies to, or
+     * null if such tag has not been defined.
+     */
+    public String getCenterTag() 
+    {
+		return tag;
+	}
+
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the identifier of the centers this basis set applies to.
+     * @param tag the identifier of the centers this basis set applies to.
+     */
+	public void setCenterTag(String tag) 
+	{
+		this.tag = tag;
+	}
 
 //------------------------------------------------------------------------------
 
@@ -192,42 +225,6 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
 
     /**
-     * Set the type of the ECP
-     * @param type the new type of ECP
-     */
-
-    public void setECPType(String type)
-    {
-        this.ecpType = type;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the maximum angular momentun for ECP 
-     * @param maxl the maximum angular momentum
-     */
-
-    public void setECPMaxAngMom(int maxl)
-    {
-        this.maxl = maxl;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the number of core electrons replaced by the potential
-     * @param ne the number of core electrons
-     */
-
-    public void setElectronsInECP(int ne)
-    {
-        this.ne = ne;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Returns the elemental symbol
      * @return the elemental symbol
      */
@@ -236,18 +233,42 @@ public class CenterBasisSet
     {
         return element;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the referance name of the center
-     * @return the reference name of the center
+     * Sets the index of the center (0-based).
      */
 
-    public String getCenterId()
+    public void setCenterIndex(int id)
     {
-        return atmId;
+        this.id = id;
+    } 
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the index of the center (0-based).
+     * @return the index of the center or null if not defined.
+     */
+
+    public Integer getCenterIndex()
+    {
+        return id;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Set the type of the ECP
+     * @param type the new type of ECP
+     */
+
+    public void setECPType(String type)
+    {
+        this.ecpType = type;
+    }
+    
 
 //------------------------------------------------------------------------------
 
@@ -264,6 +285,18 @@ public class CenterBasisSet
 //------------------------------------------------------------------------------
 
     /**
+     * Set the maximum angular momentum for ECP 
+     * @param maxl the maximum angular momentum
+     */
+
+    public void setECPMaxAngMom(int maxl)
+    {
+        this.maxl = maxl;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the maximum angular momentun for ECP
      * @return the maximum angular momentum in the ECP
      */
@@ -271,6 +304,18 @@ public class CenterBasisSet
     public int getECPMaxAngMom()
     {
         return maxl;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Set the number of core electrons replaced by the potential
+     * @param ne the number of core electrons
+     */
+
+    public void setElectronsInECP(int ne)
+    {
+        this.ne = ne;
     }
 
 //------------------------------------------------------------------------------
@@ -323,22 +368,98 @@ public class CenterBasisSet
     {
         return ecps;
     }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o)
+    {
+    	if (!(o instanceof CenterBasisSet))
+    		return false;
+    	CenterBasisSet other = (CenterBasisSet) o;
+    	
+    	if ((this.tag==null && other.tag!=null)
+    			|| (this.tag!=null && other.tag==null))
+    		return false;
+    	if (this.tag!=null && other.tag!=null && !this.tag.equals(other.tag))
+    		return false;
+    	
+    	if ((this.id==null && other.id!=null)
+    			|| (this.id!=null && other.id==null))
+    		return false;
+    	if (this.id!=null && other.id!=null && this.id!=other.id)
+    		return false;
+
+    	if ((this.element==null && other.element!=null)
+    			|| (this.element!=null && other.element==null))
+    		return false;
+    	if (this.element!=null && other.element!=null 
+    			&& !this.element.equals(other.element))
+    		return false;
+    	if (!this.ecpType.equals(other.ecpType))
+    		return false;
+    	if (this.maxl!=other.maxl)
+    		return false;
+    	if (this.ne!=other.ne)
+    		return false;
+    	
+    	if (this.namedComponents.size()!=other.namedComponents.size())
+    		return false;
+    	for (int i=0; i<this.namedComponents.size(); i++)
+    	{
+    		if (!this.namedComponents.get(i).equals(
+    				other.namedComponents.get(i)))
+    			return false;
+    	}
+    	
+    	if (this.shells.size()!=other.shells.size())
+    		return false;
+    	for (int i=0; i<this.shells.size(); i++)
+    	{
+    		if (!this.shells.get(i).equals(other.shells.get(i)))
+    			return false;
+    	}
+
+    	if (this.ecps.size()!=other.ecps.size())
+    		return false;
+    	for (int i=0; i<this.ecps.size(); i++)
+    	{
+    		if (!this.ecps.get(i).equals(other.ecps.get(i)))
+    			return false;
+    	}
+    	return true;
+    }
 
 //------------------------------------------------------------------------------
 
     /**
      * Returns a string representation for deployment in the preparation of 
      * input files for a specific software package.
-     * Known formats include: "Gaussian".
+     * Known formats include: "Gaussian" and "NWChem".
      * @param format defined the software syntax to follow in the generation of
      * the string
-     * @return a single string that contains all lines (newline charactrs)
+     * @return a single string that contains all lines (newline characters). 
+     * Note it contains a newline character also at the end.
      */
 
+    @Deprecated
     public String toInputFileStringBS(String format)
     {
         StringBuilder sb = new StringBuilder();
         String nl = System.getProperty("line.separator");
+
+        //TODO-gg this is software specific and should be done in 
+        // software-specific classes
+        String atmStr = "";
+        if (id!=null)
+        {
+        	atmStr = Character.toUpperCase(element.charAt(0))
+                	+ element.toLowerCase().substring(1) + (id+1);
+        } else {
+        	atmStr = Character.toUpperCase(tag.charAt(0))
+        	+ tag.toLowerCase().substring(1);
+        }
+        
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
@@ -346,41 +467,52 @@ public class CenterBasisSet
                 {
                     for (String n : namedComponents)
                     {
-                        sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId)).append(nl);
+                        sb.append(String.format(Locale.ENGLISH,"%-6s 0", atmStr))
+                        	.append(nl);
                         sb.append(n).append(nl);
                         sb.append("****").append(nl);
                     } 
                 }
                 if (shells.size() > 0)
                 {
-                    sb.append(String.format(Locale.ENGLISH,"%-6s 0",atmId)).append(nl);
+                    sb.append(String.format(Locale.ENGLISH,"%-6s 0", atmStr))
+                    	.append(nl);
                     for (Shell s : shells)
                     {
-                        sb.append(s.toInputFileString(format,"notUsed"));
+                        sb.append(s.toInputFileString(format, "notUsed"));
                     }
                     sb.append("****").append(nl);
                 }
                 break;
 
             case "NWCHEM":
-                String atmStr = Character.toUpperCase(atmId.charAt(0)) 
-                                             + atmId.toLowerCase().substring(1);
+                boolean first = true;
                 for (String n : namedComponents)
                 {
+                	if (first)
+                		first = false;
+                	else
+                		sb.append(nl);
+                	
                     if (n.contains(" "))
                     {
-                        sb.append(
-                                 String.format(Locale.ENGLISH,"  %s library \"%s\"",atmStr,n));
+                        sb.append(String.format(Locale.ENGLISH,
+                        		"  %s library \"%s\"", atmStr, n));
                     }
                     else
                     {
-                        sb.append(String.format(Locale.ENGLISH,"  %s library %s",atmStr,n));
+                        sb.append(String.format(Locale.ENGLISH, 
+                        		"  %s library %s", atmStr, n));
                     }
-                    sb.append(nl);
                 }
+                first = true;
                 for (Shell s : shells)
                 {
-                    sb.append(s.toInputFileString(format,atmId));
+                	if (first)
+                		first = false;
+                	else
+                		sb.append(nl);
+                    sb.append(s.toInputFileString(format, atmStr));
                 }
                 break;
 
@@ -406,6 +538,7 @@ public class CenterBasisSet
      * @return a single string that contains all lines (newline charactrs)
      */
 
+    @Deprecated
     public String toInputFileStringECP(String format)
     {
         StringBuilder sb = new StringBuilder();
@@ -413,12 +546,25 @@ public class CenterBasisSet
         {
             return "";
         }
+      
+        //TODO-gg this is software specific and should be done in 
+        // software-specific classes
+        String atmStr = "";
+        if (id!=null)
+        {
+        	atmStr = Character.toUpperCase(element.charAt(0))
+                	+ element.toLowerCase().substring(1) + (id+1);
+        } else {
+        	atmStr = Character.toUpperCase(tag.charAt(0))
+        	+ tag.toLowerCase().substring(1);
+        }
+        
         String nl = System.getProperty("line.separator");
         switch (format.toUpperCase())
         {
             case "GAUSSIAN":
                 sb.append(String.format(Locale.ENGLISH,
-                		"%-6s 0",atmId)).append(nl);
+                		"%-6s 0", tag)).append(nl);
                 sb.append(String.format(Locale.ENGLISH,
                 		"%s %2d %3d",ecpType,maxl,ne));
                 sb.append(nl);
@@ -429,8 +575,6 @@ public class CenterBasisSet
                 break;
 
             case "NWCHEM":
-                String atmStr = Character.toUpperCase(atmId.charAt(0)) 
-                                             + atmId.toLowerCase().substring(1);
                 sb.append(String.format(Locale.ENGLISH,
                 		"  %s nelec %s",atmStr,ne)).append(nl);
                 boolean first = true;
@@ -441,16 +585,16 @@ public class CenterBasisSet
                                 BasisSetConstants.ANGMOMINTTOSTR.get(maxl)))
                     {
                         ecpsType = "ul";
-                        first = false;
-                    }
-                    else
-                    {
+                    } else {
                         String[] parts = ecpsType.split("-");
                         ecpsType = parts[0]; 
                     }
-                    sb.append(String.format(Locale.ENGLISH,
-                    		"  %s %s",atmStr,ecpsType));
-                    sb.append(nl);
+                    if (first)
+                    	first = false;
+                    else
+                        sb.append(nl);
+                    sb.append(String.format(Locale.ENGLISH, "  %s %s", atmStr, 
+                    		ecpsType));
                     sb.append(s.toInputFileString(format));
                 }
                 break;

@@ -1,7 +1,5 @@
 package autocompchem.modeling.basisset;
 
-import java.util.ArrayList;
-
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -19,7 +17,6 @@ import java.util.ArrayList;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.List;
 import java.util.Locale;
 
 import autocompchem.run.Terminator;
@@ -30,92 +27,73 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class ECPShell
+public class ECPShell extends Shell implements Cloneable
 {
-    /**
-     * ECPShell type 
-     */
-    private String type = "";
-
-    /**
-     * List of primitive functions
-     */
-    private List<Primitive> primitives = new ArrayList<Primitive>();
-
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty ECPShell
+     * Constructor for an empty ECPShell.
      */
 
     public ECPShell()
     {
+    	super();
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an ECPShell with type
-     * @param type the type of potential
+     * Constructor for an ECPShell with type.
+     * @param type the type of potential.
      */
 
     public ECPShell(String type)
     {
-        this.type = type;
+    	super(type);
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Add a primitive function
-     * @param p the primitive function to be added
+     * Constructor for an ECPShell with type and scale factor
+     * @param type the type of potential.
+     * @param scaleFact the scaling factor.
      */
 
-    public void add(Primitive p)
+    public ECPShell(String type, double scaleFact)
     {
-        primitives.add(p);
+    	super(type, scaleFact);
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Return the type of this ECPShell
-     * @return the type of this ECPShell
+     * Deep-clone this ECPShell.
+     * @return a new object with the same content as this one.
      */
 
-    public String getType()
-    {
-        return type;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns the number of primitives
-     * @return the number of primitives
-     */
-
-    public int getSize()
-    {
-        return primitives.size();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Deep-clone this ECPShell
-     * @return a new object with the same content as this one
-     */
-
+     @Override
      public ECPShell clone()
      {
-        ECPShell newShell = new ECPShell(type);
+        ECPShell newShell = new ECPShell(type, scaleFact);
         for (Primitive p : primitives)
         {
             newShell.add(p.clone());
         }
         return newShell;
+     }
+     
+//------------------------------------------------------------------------------
+     
+     @Override
+     public boolean equals(Object o)
+     {
+    	 if (!(o instanceof ECPShell))
+    		 return false;
+    	 ECPShell other = (ECPShell) o;
+    	 
+    	 return super.equals(other);
      }
 
 //------------------------------------------------------------------------------
@@ -162,8 +140,9 @@ public class ECPShell
 
             case "NWCHEM":
                 // The header is printed by the CenterBasisSet class.
-                for (Primitive p : primitives)
+            	for (Primitive p : primitives)
                 {
+                	sb.append(nl); // we are always writing after the header
                     sb.append(String.format(Locale.ENGLISH,
                     		"  %d ",p.getAngMmnt()));
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
@@ -178,7 +157,6 @@ public class ECPShell
 					    sb.append(String.format(Locale.ENGLISH,
 					    		cForm,c));
 					}
-                    sb.append(nl);
                 }
                 break;
 

@@ -20,7 +20,6 @@ package autocompchem.run;
 import java.util.ArrayList;
 import java.util.Date;
 
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.perception.Perceptron;
@@ -68,8 +67,8 @@ public class EvaluationJob extends ACCJob
     	super();
         setParallelizable(true);
         setNumberOfThreads(1);
-        params.setParameter(new Parameter(WorkerConstants.PARTASK, 
-        		TaskID.EVALUATEJOB.toString()));
+        params.setParameter(WorkerConstants.PARTASK, 
+        		TaskID.EVALUATEJOB.toString());
 	}
     
 //------------------------------------------------------------------------------
@@ -84,8 +83,8 @@ public class EvaluationJob extends ACCJob
         super();
         setParallelizable(true);
         setNumberOfThreads(1);
-        params.setParameter(new Parameter(WorkerConstants.PARTASK, 
-        		TaskID.EVALUATEJOB.toString()));
+        params.setParameter(WorkerConstants.PARTASK, 
+        		TaskID.EVALUATEJOB.toString());
         this.jobToEvaluate = jobToEvaluate;
         this.sitsDB = sitsDB;
         this.icDB = icDB;

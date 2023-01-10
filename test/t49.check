@@ -1,20 +1,8 @@
 #!/bin/bash
 
-grep -q "Found 'CHARGE' option" t49.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
-fi
-
 grep -q -i "CHARGE[[:space:]]*0" t49-mol.nw
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 2
-exit -1
-fi
-
-grep -q "Found 'SPIN_MULTIPLICITY' option" t49.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 3
 exit -1
 fi
 

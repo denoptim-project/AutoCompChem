@@ -1,0 +1,313 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "type": "TEXTBLOCK",
+              "value": [
+                "scf"
+              ],
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
+              "value": [
+                "energy"
+              ],
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "ecce_print",
+          "keywords": [
+            {
+              "reference": "eccefile",
+              "type": "TEXTBLOCK",
+              "value": [
+                "ecce.out"
+              ],
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "units",
+              "type": "TEXTBLOCK",
+              "value": [
+                "angstrom"
+              ]
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "c1"
+                  ],
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "type": "TEXTBLOCK",
+              "value": [
+                "\"Step1:",
+                "SP",
+                "with",
+                "HF\""
+              ],
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "DISP",
+              "keywords": [
+                {
+                  "reference": "vdw",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "3"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "TOLERANCES",
+              "keywords": [
+                {
+                  "reference": "tight",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "tight"
+                  ],
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "xfine"
+                  ],
+                  "isLoud": false
+                },
+                {
+                  "reference": "disk",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "nodisk"
+                  ],
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "1e-8"
+                  ]
+                },
+                {
+                  "reference": "density",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "1e-7"
+                  ]
+                },
+                {
+                  "reference": "gradient",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "1e-6"
+                  ]
+                },
+                {
+                  "reference": "ncyds",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "150"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "type": "TEXTBLOCK",
+                  "value": [
+                    "pbe0"
+                  ],
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "DIRECT"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "type": "TEXTBLOCK",
+              "value": [
+                "dft"
+              ],
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
+              "value": [
+                "energy"
+              ],
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "type": "TEXTBLOCK",
+              "value": [
+                "\"Step2:",
+                "SP",
+                "with",
+                "DFT\""
+              ],
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "type": "TEXTBLOCK",
+              "value": [
+                "dft"
+              ],
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
+              "value": [
+                "optimize"
+              ],
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "type": "TEXTBLOCK",
+              "value": [
+                "\"Step3:",
+                "opt\""
+              ],
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "type": "TEXTBLOCK",
+              "value": [
+                "dft"
+              ],
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "type": "TEXTBLOCK",
+              "value": [
+                "frequencies"
+              ],
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "type": "TEXTBLOCK",
+              "value": [
+                "\"Step4:",
+                "hessian+freq",
+                "I\""
+              ],
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

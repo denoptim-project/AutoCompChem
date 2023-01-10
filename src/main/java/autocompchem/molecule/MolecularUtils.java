@@ -303,37 +303,10 @@ public class MolecularUtils
 
     public static Vector3d getVectorFromTo(IAtom srcAtom, IAtom trgAtom)
     {
-        Point3d ps = getCoords3d(srcAtom);
-        Point3d pt = getCoords3d(trgAtom);
+        Point3d ps = AtomUtils.getCoords3d(srcAtom);
+        Point3d pt = AtomUtils.getCoords3d(trgAtom);
         Vector3d v3d = new Vector3d(ps.x-pt.x, ps.y-pt.y, ps.z-pt.z);
         return v3d;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Get Cartesian coordinates in 3D space of an atom (even if this is in 2D)
-     * @param atom the target atom
-     * @return the point in 3D Cartesian coords
-     */
-
-    public static Point3d getCoords3d(IAtom atom)
-    {
-        Point3d p3d = new Point3d();
-        try {
-            Point2d atp2d = new Point2d();
-            atp2d = atom.getPoint2d();
-            p3d.x = atp2d.x;
-            p3d.y = atp2d.y;
-            p3d.z = 0.0000;
-        } catch (Throwable t) {
-            Point3d atp3d = new Point3d();
-            atp3d = atom.getPoint3d();
-            p3d.x = atp3d.x;
-            p3d.y = atp3d.y;
-            p3d.z = atp3d.z;            
-        }
-        return p3d;
     }
 
 //-----------------------------------------------------------------------------
@@ -429,32 +402,34 @@ public class MolecularUtils
 
     public static String getNameOrID(IAtomContainer mol)
     {
-        String name = "noname";
-
-        //ChEBI
-        try {
-            name = mol.getProperty("ChEBI ID").toString();
-        } catch (Throwable t1) {
-            //TTD
-            try {
-                name = mol.getProperty("DRUGID").toString();
-            } catch (Throwable t2) {
-                //CDK
-                try {
-                    name = mol.getProperty("cdk:Title").toString();
-                } catch (Throwable t3) {
-                    //General case using title
-                    try {
-                        name = mol.getProperty(CDKConstants.TITLE).toString();
-                    } catch (Throwable t) {
-                        if (repOnScreen >= 3)
-                            System.out.println("Molecule name not found. "
-                                                + "Set to '" + name + "'.");
-                    }
-                }
-            }
+    	String name = mol.getTitle();
+    	if (name==null || name.equals("") || name.isBlank())
+    	{
+    		name = "noname";
+	        //ChEBI
+	        try {
+	            name = mol.getProperty("ChEBI ID").toString();
+	        } catch (Throwable t1) {
+	            //TTD
+	            try {
+	                name = mol.getProperty("DRUGID").toString();
+	            } catch (Throwable t2) {
+	                //CDK
+	                try {
+	                    name = mol.getProperty("cdk:Title").toString();
+	                } catch (Throwable t3) {
+	                    //General case using title
+	                    try {
+	                        name = mol.getProperty(CDKConstants.TITLE).toString();
+	                    } catch (Throwable t) {
+	                        if (repOnScreen >= 3)
+	                            System.out.println("Molecule name not found. "
+	                                                + "Set to '" + name + "'.");
+	                    }
+	                }
+	            }
+	        }
         }
-
         return name;
     }
 
@@ -469,8 +444,8 @@ public class MolecularUtils
 
     public static double calculateInteratomicDistance(IAtom atmA, IAtom atmB)
     {
-        Point3d pa = getCoords3d(atmA);
-        Point3d pb = getCoords3d(atmB);
+        Point3d pa = AtomUtils.getCoords3d(atmA);
+        Point3d pb = AtomUtils.getCoords3d(atmB);
         double dx = pa.x - pb.x;
         double dy = pa.y - pb.y;
         double dz = pa.z - pb.z;
@@ -494,9 +469,9 @@ public class MolecularUtils
                                                                 IAtom atomRight)
     {
         double angle = 0.0;
-        Point3d l3d = getCoords3d(atomLeft);
-        Point3d c3d = getCoords3d(atomCentre);
-        Point3d r3d = getCoords3d(atomRight);
+        Point3d l3d = AtomUtils.getCoords3d(atomLeft);
+        Point3d c3d = AtomUtils.getCoords3d(atomCentre);
+        Point3d r3d = AtomUtils.getCoords3d(atomRight);
 
         double xab = l3d.x - c3d.x;
         double yab = l3d.y - c3d.y;
@@ -530,10 +505,10 @@ public class MolecularUtils
     public static double calculateTorsionAngle(IAtom atmA, IAtom atmB, 
                                                         IAtom atmC, IAtom atmD)
     {
-        Point3d pA = getCoords3d(atmA);
-        Point3d pB = getCoords3d(atmB);
-        Point3d pC = getCoords3d(atmC);
-        Point3d pD = getCoords3d(atmD);
+        Point3d pA = AtomUtils.getCoords3d(atmA);
+        Point3d pB = AtomUtils.getCoords3d(atmB);
+        Point3d pC = AtomUtils.getCoords3d(atmC);
+        Point3d pD = AtomUtils.getCoords3d(atmD);
 
         double[] A = new double[] {pA.x,pA.y,pA.z};
         double[] B = new double[] {pB.x,pB.y,pB.z};

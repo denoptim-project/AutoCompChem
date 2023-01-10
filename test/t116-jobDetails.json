@@ -1,0 +1,209 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "!",
+          "keywords": [
+            {
+              "reference": "functional",
+              "value": "BP86",
+              "isLoud": false
+            },
+            {
+              "reference": "key",
+              "value": "value"
+            }
+          ]
+        },
+        {
+          "name": "#",
+          "keywords": [
+            {
+              "reference": "comment",
+              "value": "just a comment",
+              "isLoud": false
+            },
+            {
+              "reference": "commentKey",
+              "value": "this is a dummy input file"
+            }
+          ]
+        },
+        {
+          "name": "coords",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "DirDataGeometry",
+              "type": "UNDEFINED"
+            }
+          ]
+        },
+        {
+          "name": "geom",
+          "subDirectives": [
+            {
+              "name": "InHess",
+              "keywords": [
+                {
+                  "reference": "hessSource",
+                  "value": "Read",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "InHessName",
+              "keywords": [
+                {
+                  "reference": "filename",
+                  "type": "UNDEFINED",
+                  "value": "Type is not JSON-able",
+                  "isLoud": false,
+                  "accTaskParams": [
+                    {
+                      "reference": "SUFFIX",
+                      "value": ".hess"
+                    },
+                    {
+                      "reference": "TASK",
+                      "value": "GET_FILENAME"
+                    },
+                    {
+                      "reference": "QUOTATION",
+                      "value": "\""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "constraints",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GenerateConstraints"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded"
+                    },
+                    {
+                      "reference": "VERBOSITY",
+                      "value": "2"
+                    },
+                    {
+                      "reference": "ATOMIDS",
+                      "value": "1\n2 3 1.234\n2 3 4 126.0\n2 3 4 5 -0.123\n12"
+                    }
+                  ],
+                  "reference": "constraints",
+                  "type": "UNDEFINED"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "*",
+          "keywords": [
+            {
+              "reference": "charge",
+              "value": "-10",
+              "isLoud": false
+            },
+            {
+              "reference": "spin_multiplicity",
+              "value": "5",
+              "isLoud": false
+            },
+            {
+              "reference": "coordtype",
+              "value": "xyzfile",
+              "isLoud": false
+            },
+            {
+              "reference": "filename",
+              "type": "UNDEFINED",
+              "value": "Type is not JSON-able",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "SUFFIX",
+                  "value": ".xyz"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GET_FILENAME"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dummy",
+          "subDirectives": [
+            {
+              "name": "nestOne",
+              "keywords": [
+                {
+                  "reference": "key1",
+                  "value": "value1"
+                }
+              ],
+              "subDirectives": [
+                {
+                  "name": "nestTwo",
+                  "keywords": [
+                    {
+                      "reference": "key2",
+                      "value": "value2"
+                    }
+                  ],
+                  "dirData": [
+                    {
+                      "reference": "data",
+                      "value": [
+                        "first 2345",
+                        "second 2355i",
+                        "third 03940"
+                      ],
+                      "type": "TEXTBLOCK"
+                    }
+                  ]
+                }
+              ],
+              "dirData": [
+                {
+                  "reference": "data1",
+                  "value": [
+                    "fff",
+                    "1 AAA",
+                    "2 BBB",
+                    "3 CCC"
+                  ],
+                  "type": "TEXTBLOCK"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

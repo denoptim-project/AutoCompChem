@@ -1,0 +1,392 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "memory",
+          "keywords": [
+            {
+              "reference": "total",
+              "value": "8mb"
+            },
+            {
+              "reference": "stack",
+              "value": "2"
+            },
+            {
+              "reference": "heap",
+              "value": "2"
+            },
+            {
+              "reference": "global",
+              "value": "4mb"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "scf",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"geometry name is long and contains spaces\"",
+              "isLoud": false
+            },
+            {
+              "reference": "units",
+              "value": "angstrom"
+            },
+            {
+              "reference": "anotherkeyword",
+              "value": "2ndKeyword valueLoooooooooooooooooooong"
+            },
+            {
+              "reference": "3rd key",
+              "value": "trd and last value"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                },
+                {
+                  "reference": "COORDTYPE",
+                  "value": "ZMAT"
+                }
+              ],
+              "reference": "geometry",
+              "type": "UNDEFINED"
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step:1 SP with HF\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "* library cc-pvdz"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "fine",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "set",
+          "keywords": [
+            {
+              "reference": "variable",
+              "value": "123"
+            },
+            {
+              "reference": "blabla",
+              "value": "ribla bla",
+              "isLoud": false
+            },
+            {
+              "reference": "blabla",
+              "value": "ribla riribla"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"same geometry as before\"",
+              "isLoud": false
+            },
+            {
+              "reference": "units",
+              "value": "angstrom"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step:2 SP with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"ao basis\"",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "* library cc-pvdz",
+                "oxygen library cc-pvtz",
+                "nitrogen library cc-pvtz"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "dft",
+          "keywords": [
+            {
+              "reference": "mult",
+              "value": "3"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "fine",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"initial geometry\"",
+              "isLoud": false
+            },
+            {
+              "reference": "units",
+              "value": "angstrom"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step3: geometry optimization with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"ao basis\"",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "basis",
+              "value": [
+                "* library cc-pvtz",
+                "oxigen library cc-pvtz"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "unset",
+          "keywords": [
+            {
+              "reference": "variable",
+              "value": "123"
+            },
+            {
+              "reference": "blabla",
+              "value": "ribla bla",
+              "isLoud": false
+            },
+            {
+              "reference": "blabla",
+              "value": "ribla riribla"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

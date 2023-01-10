@@ -1,6 +1,5 @@
 package autocompchem.modeling.basisset;
 
-import java.util.ArrayList;
 
 /*   
  *   Copyright (C) 2016  Marco Foscato 
@@ -19,6 +18,7 @@ import java.util.ArrayList;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,33 +31,32 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class Shell
+public class Shell implements Cloneable
 {
     /**
      * Shell type (S, P, D, SP, SPD, F, G, ...)
      */
-    private String type = "";
+    protected String type = "";
 
     /**
      * List of primitive functions
      */
-    private List<Primitive> primitives = new ArrayList<Primitive>();
+    protected List<Primitive> primitives = new ArrayList<Primitive>();
 
     /**
      * Scale factor
      */
-    private double scaleFact = 1.0;
+    protected double scaleFact = 1.0;
 
-
+	
 //------------------------------------------------------------------------------
 
-    /**
+	/**
      * Constructor for an empty Shell
      */
 
     public Shell()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -75,9 +74,9 @@ public class Shell
 
     /**
      * Constructor for a Shell with definition of the type of shell and the 
-     * scale factor
-     * @param type the type of shell
-     * @param scaleFact the scaling factor
+     * scale factor.
+     * @param type the type of shell.
+     * @param scaleFact the scaling factor.
      */
 
     public Shell(String type, double scaleFact)
@@ -89,20 +88,41 @@ public class Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Add a primitive function
-     * @param p the primitive function to be added
+     * Add a primitive function.
+     * @param p the primitive function to be added.
      */
 
     public void add(Primitive p)
     {
         primitives.add(p);
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the primitives in this shell.
+     */
+	public List<Primitive> getPrimitives() 
+	{
+		return primitives;
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Overwrites the list of primitives with the given list.
+	 * @param primitives the new primitives.
+	 */
+	public void setPrimitives(List<Primitive> primitives) 
+	{
+		this.primitives = primitives;
+	}
 
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the type of this shell
-     * @return the type
+     * Returns the type of this shell.
+     * @return the type.
      */
 
     public String getType()
@@ -113,8 +133,41 @@ public class Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the number of primitives
-     * @return the number of primitives
+     * Sets the type of this shell.
+     */
+
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the scaling factor of this shell.
+     */
+    public double getScaleFact() 
+    {
+		return scaleFact;
+	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the scaling factor of this shell.
+     * @param scaleFact the scaling factor to use.
+     */
+	public void setScaleFact(double scaleFact) 
+	{
+		this.scaleFact = scaleFact;
+	}
+
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the number of primitives.
+     * @return the number of primitives.
      */
 
     public int getSize()
@@ -125,20 +178,42 @@ public class Shell
 //------------------------------------------------------------------------------
 
     /**
-     * Deep-clone this shell
-     * @return a new object with the same content as this one
+     * Deep-clone this shell.
+     * @return a new object with the same content as this one.
      */
 
      public Shell clone()
      {
-        Shell newShell = new Shell(type,scaleFact);
+        Shell newShell = new Shell(type, scaleFact);
         for (Primitive p : primitives)
         {
             newShell.add(p.clone());
         }
         return newShell;
      }
-
+     
+//------------------------------------------------------------------------------
+     
+     @Override
+     public boolean equals(Object o)
+     {
+    	 if (!(o instanceof Shell))
+    		 return false;
+    	 Shell other = (Shell) o;
+    	 
+    	 if (this.primitives.size() != other.primitives.size())
+    		 return false;
+    				 
+		 for (int i=0; i<this.primitives.size() ; i++)
+		 {
+			 if (!this.primitives.get(i).equals(other.primitives.get(i)))
+				 return false;
+		 }
+    	 
+    	 return this.type.equals(other.type) 
+    			 && this.scaleFact == other.scaleFact;
+     }
+     
 //------------------------------------------------------------------------------
 
     /**
@@ -151,6 +226,7 @@ public class Shell
      * software packages recognizing the given format.
      */
 
+     @Deprecated
     public String toInputFileString(String format, String atomId)
     {
         StringBuilder sb = new StringBuilder();
@@ -178,22 +254,23 @@ public class Shell
 
             case "NWCHEM":
                 String atmStr = Character.toUpperCase(atomId.charAt(0)) 
-                                            + atomId.toLowerCase().substring(1);
+                	+ atomId.toLowerCase().substring(1);
                 sb.append(String.format(Locale.ENGLISH, 
-                		"  %s %s",atmStr,type)).append(nl);
+                		"  %s %s", atmStr, type));
                 for (Primitive p : primitives)
                 {
                     String eForm = "%" + (p.getExpPrecision() + 6) + "."
                                           + (p.getExpPrecision()-1) + "E      ";
-                    sb.append(String.format(Locale.ENGLISH, eForm,p.getExp()));
+                    sb.append(nl).append(String.format(Locale.ENGLISH, 
+                    		eForm,p.getExp()));
                     
                     String cForm = " %" + (p.getCoeffPrecision() + 6) + "."
                             + (p.getCoeffPrecision()-1) + "E";
 					for (Double c : p.getCoeff())
 					{
-						sb.append(String.format(Locale.ENGLISH, cForm, c));
+						sb.append(String.format(Locale.ENGLISH, 
+								cForm, c));
 					}
-                    sb.append(nl);
                 }
                 break;
 

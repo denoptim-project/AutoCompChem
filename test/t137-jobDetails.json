@@ -1,0 +1,207 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "GEN 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "reference": "MODREDUDANT",
+                  "value": "MODREDUNDANT",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "SMARTS [#6] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#1] name STO-3G\nSMARTS [#7] name STO-3G\nSMARTS [#17] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ],
+              "reference": "BASISSET",
+              "type": "UNDEFINED"
+            },
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded\n[#6] [#8] options:F more"
+                },
+                {
+                  "reference": "VERBOSITY",
+                  "value": "2"
+                },
+                {
+                  "reference": "ATOMIDS",
+                  "value": "1\n2 3 A\n2 3 4 126.0 F\n2 3 4 5 -0.123 options:A b c d"
+                }
+              ],
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "600"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "5"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

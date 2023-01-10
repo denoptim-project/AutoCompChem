@@ -80,4 +80,9 @@ public class ACCConstants
      */
     public final static String ATMIDPROP = "ATMIDPROP";
 
+    /**
+     * Threshold for comparing {@link Double} numbers;
+     */
+	public static final double DOUBLEPRECISION = 0.00000000000001;
+
 }

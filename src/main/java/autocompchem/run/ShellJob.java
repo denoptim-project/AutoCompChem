@@ -19,12 +19,18 @@ package autocompchem.run;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -319,6 +325,29 @@ public class ShellJob extends Job
         if (getVerbosity() > 0)
         {
             System.out.println("Done with SHELL Job " + this.toString());
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class ShellJobSerializer 
+    implements JsonSerializer<ShellJob>
+    {
+        @Override
+        public JsonElement serialize(ShellJob job, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONJOVTYPE, job.getClass().getSimpleName());
+            
+            if (!job.params.isEmpty())
+            	jsonObject.add(JSONPARAMS, context.serialize(job.params));
+            if (!job.steps.isEmpty())
+            	jsonObject.add(JSONSUBJOBS, context.serialize(job.steps));
+            jsonObject.add("command", context.serialize(job.command));
+
+            return jsonObject;
         }
     }
 

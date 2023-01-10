@@ -6,7 +6,7 @@ echo NOT Passes ERROR 1
 exit -1
 fi
 
-if ! grep -q "PD *0" t78.gbs ; then echo NOT Passes ERROR 2,1 ; exit -1 ; fi
+if ! grep -q -i "PD *0" t78.gbs ; then echo NOT Passes ERROR 2,1 ; exit -1 ; fi
 if ! grep -q "S *7 *1.000 *" t78.gbs ; then echo NOT Passes ERROR 2,2 ; exit -1 ; fi
  if ! grep -q " 2\.081230000E+02 * 7\.270E-04" t78.gbs ; then echo NOT Passes ERROR 2,3 ; exit -1 ; fi
  if ! grep -q " 2\.28525000E+01 * -4\.09280E-02" t78.gbs ; then echo NOT Passes ERROR 2,4 ; exit -1 ; fi

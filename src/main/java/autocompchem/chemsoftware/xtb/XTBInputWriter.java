@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -32,7 +33,6 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
@@ -49,8 +49,6 @@ import autocompchem.worker.Worker;
  *
  * @author Marco Foscato
  */
-
-//TODO: write doc
 
 public class XTBInputWriter extends ChemSoftInputWriter
 {
@@ -70,99 +68,10 @@ public class XTBInputWriter extends ChemSoftInputWriter
     public XTBInputWriter() 
     {
 		inpExtrension = XTBConstants.INPEXTENSION;
-		outExtension = XTBConstants.INPEXTENSION;
 	}
     
 //------------------------------------------------------------------------------
-    
-    protected void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot)
-    {		
-		CompChemJob molSpecJob = ccJob.clone();
-
-		Parameter pathnamePar = new Parameter(
-				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		molSpecJob.setParameter(pathnamePar);
-		
-    	// WARNING: at this time XTB is not capable of running a multi-step jobs
-/*		
-		for (Job subJob : molSpecJob.getSteps())
-		{
-			subJob.setParameter(pathnamePar);
-		}
-*/
-		
-		Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
-		if (pCharge != null)
-		{
-			int charge;
-			try {
-				charge = Integer.valueOf(pCharge.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pCharge.toString() + "' as charge. Check "
-						+ "value of property '" + ChemSoftConstants.PARCHARGE
-						+ "'.", -1);
-			}
-			Directive d = new Directive("charge");
-			d.addKeyword(new Keyword("value", false, pCharge.toString()));
-			molSpecJob.setDirective(d);
-		}
-		
-		Object pSpin = mol.getProperty(ChemSoftConstants.PARSPINMULT);
-		if (pSpin != null)
-		{
-			int spinMult = 0;
-			try {
-				spinMult = Integer.valueOf(pSpin.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pSpin.toString() + "' as spin multiplicity. Check "
-						+ "value of property '" + ChemSoftConstants.PARSPINMULT
-						+ "'.", -1);
-			}
-			int numUnpairedEls = spinMult - 1;
-			Directive d = new Directive("spin");
-			d.addKeyword(new Keyword("value", false, numUnpairedEls + ""));
-			molSpecJob.setDirective(d);
-		}
-		
-		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(mol);
-		//molSpecJob.sortDirectivesBy(new XTBDirectiveComparator());
-		
-    	// WARNING: at this time XTB is not capable of running a multi-step jobs
-		ArrayList<String> lines = new ArrayList<String>();
-		if (molSpecJob.getNumberOfSteps()>0)
-		{
-			// If one day XTB becomes able to run multiple steps this is where 
-			// we'll collect the input lines for each step and add the step 
-			// separator.
-			// For now we report the inconsistency.
-			Terminator.withMsgAndStatus("ERROR! XTB does not run multi-step "
-					+ "jobs, but your input contains more than one step.", -1);
-		} else {
-			lines.addAll(getTextForInput(molSpecJob));
-		}
-		IOtools.writeTXTAppend(outFileName, lines, true);
-    }
-    
-//------------------------------------------------------------------------------
-    
-    private ArrayList<String> getTextForInput(CompChemJob job)
-    {
-    	ArrayList<String> lines = new ArrayList<String>();
-		Iterator<Directive> it = job.directiveIterator();
-		while (it.hasNext())
-		{
-			Directive d = it.next();
-			lines.addAll(getTextForInput(d,true));
-		}
-    	return lines;
-    }
-    
-//------------------------------------------------------------------------------
-    
+ 
     /**
      * This is the method the encodes the syntax of the XTB input file for a 
      * single job directive. Here we translate all comp.chem.-software agnostic 
@@ -187,12 +96,10 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			{
 				if (k.isLoud())
 				{
-					lines.add("#" + k.getName() + " "
-						+ StringUtils.mergeListToString(k.getValue()," "));
+					lines.add("#" + k.getName() + " " + k.getValueAsString());
 				} else
 				{
-					lines.add("#" + StringUtils.mergeListToString(
-							k.getValue()," "));	
+					lines.add("#" + k.getValueAsString());
 				}
 			}
 			// Sub directives and DirectiveData are not suitable for XTB's
@@ -240,8 +147,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			{
 				if (d.getAllKeywords().size() == 1)
 				{
-					lines.add("$chrg " + d.getAllKeywords().get(0).getValue()
-							.get(0));
+					lines.add("$chrg " 
+							+ d.getAllKeywords().get(0).getValueAsString());
 				} else {
 					Terminator.withMsgAndStatus("ERROR! Expecting one keyword "
 							+ "in $chrg/$charge directive.",-1);
@@ -253,8 +160,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			{
 				if (d.getAllKeywords().size() == 1)
 				{
-					lines.add("$spin " + d.getAllKeywords().get(0).getValue()
-							.get(0));
+					lines.add("$spin " 
+							+ d.getAllKeywords().get(0).getValueAsString());
 				} else {
 					Terminator.withMsgAndStatus("ERROR! Expecting one keyword "
 							+ "in $spin directive.",-1);
@@ -281,7 +188,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					{
 						l = l + getKeyAndSeparator(dirName,k.getName());
 					}
-					String v = StringUtils.mergeListToString(k.getValue(),",",true);
+					String v = StringUtils.mergeListToString(k.getValueAsLines(),
+							",",true);
 					while (v.contains(ParameterConstants.STARTMULTILINE))
 					{
 						v = v.replace(ParameterConstants.STARTMULTILINE, "");
@@ -334,7 +242,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					{
 						l = l + getKeyAndSeparator(dirName,k.getName());
 					}
-					String v = StringUtils.mergeListToString(k.getValue(),",",true);
+					String v = StringUtils.mergeListToString(k.getValueAsLines(),
+							",",true);
 					while (v.contains(ParameterConstants.STARTMULTILINE))
 					{
 						v = v.replace(ParameterConstants.STARTMULTILINE, "");
@@ -387,7 +296,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
 					{
 						l = l + getKeyAndSeparator(dirName,k.getName());
 					}
-					String v = StringUtils.mergeListToString(k.getValue(),",",true);
+					String v = StringUtils.mergeListToString(k.getValueAsLines(),
+							",",true);
 					while (v.contains(ParameterConstants.STARTMULTILINE))
 					{
 						v = v.replace(ParameterConstants.STARTMULTILINE, "");
@@ -531,7 +441,8 @@ public class XTBInputWriter extends ChemSoftInputWriter
             if (c.hasValue())
             {
                 frozenAngleStr = frozenAngleStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) + ", " 
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", " 
                 		+ c.getValue();
             } else {
                 frozenAngleStr = frozenAngleStr + (c.getAtomIDs()[0]+1) + ", "
@@ -547,11 +458,33 @@ public class XTBInputWriter extends ChemSoftInputWriter
             if (c.hasValue())
             {
                 frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
                         + (c.getAtomIDs()[3]+1) + ", " + c.getValue();
             } else {
                 frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[3]+1)
+                        + ", auto";
+            }
+            lines.add(frozenTorsStr);
+        }
+        
+        for (Constraint c : cs.getConstrainsWithType(
+        		ConstraintType.IMPROPERTORSION))
+        {
+            String frozenTorsStr = XTBConstants.INDENT + "dihedral: ";
+            if (c.hasValue())
+            {
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
+                        + (c.getAtomIDs()[3]+1) + ", " + c.getValue();
+            } else {
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
+                        + (c.getAtomIDs()[1]+1) + ", " 
+                		+ (c.getAtomIDs()[2]+1) + ", "
                         + (c.getAtomIDs()[3]+1)
                         + ", auto";
             }
@@ -573,6 +506,104 @@ public class XTBInputWriter extends ChemSoftInputWriter
         }
     	return lines;
     }
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     * 
+     * This method is not doing anything in XTB job's main input file. No usage
+     * case requiring such functionality.
+     */
+	@Override
+	protected void setSystemSpecificNames(CompChemJob ccj) 
+	{}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * In XTB's main input file the charge is defined in a
+	 *  {@link Keyword} of the
+	 * 'charge' {@link Directive}.
+	 */
+	@Override
+	protected void setChargeIfUnset(CompChemJob ccj, String charge,
+			boolean omitIfPossible) 
+	{
+		if (omitIfPossible)
+			return;
+		
+		//TODO-gg use constant for directive name.
+		setKeywordIfNotAlreadyThere(ccj, "charge", "value", false, charge);
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * In XTB's main input file the spin multiplicity is defined in a 
+	 * {@link Keyword} of the
+	 * 'spin' {@link Directive} as number of unpaired electrons.
+	 */
+	@Override
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm,
+			boolean omitIfPossible) 
+	{
+		if (omitIfPossible)
+			return;
+		
+		int numUnpairedEls = Integer.parseInt(sm) - 1;
+		//TODO-gg use constant for directive name.
+		setKeywordIfNotAlreadyThere(ccj, "spin", "value", false, 
+				numUnpairedEls + "");
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * XTB allows for reading the chemical system in an external file. This
+	 * method is, therefore, not writing any molecular specification to the
+	 * job's main input file.
+	 */
+	@Override
+	protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs) 
+	{
+    	//TODO: check for consistency between the two methods for setting the geometry
+    	// - one is this method
+    	// - the other is using the "ADD_GEOMETRY" task in a directive
+    	
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * At this time, XTB does not run multi-step jobs. Therefore, an exception is
+	 * triggered if you try to feed a multi-step job as argument to this method.
+	 */
+	@Override
+	protected ArrayList<String> getTextForInput(CompChemJob job) 
+	{
+		if (job.getNumberOfSteps()>1)
+			throw new IllegalArgumentException("ERROR! XTB does not run "
+					+ "multi-step jobs, but your input contains more than one "
+					+ "step.");
+		
+    	ArrayList<String> lines = new ArrayList<String>();
+		Iterator<Directive> it = job.directiveIterator();
+		while (it.hasNext())
+		{
+			Directive d = it.next();
+			lines.addAll(getTextForInput(d,true));
+		}
+    	return lines;
+	}
     
 //------------------------------------------------------------------------------
 

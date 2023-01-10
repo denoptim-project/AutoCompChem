@@ -200,7 +200,7 @@ function functionalityTesting() {
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenTests[@]} -eq 0 ]
     then 
-        for i in $(seq 1 $(ls ../t*.params | wc -l | awk '{print $1}'))
+        for i in $(seq 1 $(ls ../t*.params | sed 's/\.\.\/t//' | sed 's/.params//' | sort -n | tail -n 1))
         do
             chosenTests+=($i)
         done
@@ -272,7 +272,7 @@ function cliTesting() {
         argsToACC="$(cat "$argsFile")"
         if [ ! -f "$argsFile" ]
         then
-            echo "Test CLI t$i not found. Jumping to next test ID."
+            echo "Test CLI $i not found. Jumping to next test ID."
             continue
         fi
         echo " "

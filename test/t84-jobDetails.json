@@ -1,0 +1,564 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "GENECP 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "1000"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "150"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 1 - PBEPBE-D3 protocol_1",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "SMARTS [*] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [$([*]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs\nSMARTS [$([#1]~[#6]~[Ru])] Link  ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_ONLY-POL.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ],
+              "reference": "BASISSET",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "150"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 2 - PBEPBE-D3 protocol_1",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS 5D 7F",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "150"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "500"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "reference": "GENERAL",
+                  "value": "RRHF",
+                  "isLoud": false
+                },
+                {
+                  "reference": "WFREOPT",
+                  "value": "OPT",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 3 - PBEPBE-D3 protocol_1",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "OPT",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "150"
+                },
+                {
+                  "reference": "FORCECONSTANTS",
+                  "value": "CALCFC",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "150"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "200"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 4 - PBEPBE-D3 protocol_1",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK "
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "FREQ",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "150"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "200"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 5 - PBEPBE-D3 protocol_1",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

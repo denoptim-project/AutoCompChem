@@ -87,28 +87,42 @@ public class BSMatchingRule
      */
 
     public BSMatchingRule()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for a rule from its parameters
-     * @param rName reference name
-     * @param rType type of rule
-     * @param rKey the SMARTS query or elemental symbol
-     * @param srcTyp the type of source from which to take the basis set
-     * @param src the name or pathname of the source of the basis set
+     * @param refName reference name
+     * @param type type of rule
+     * @param query the SMARTS query or elemental symbol
+     * @param bsSrcTyp the type of source from which to take the basis set
+     * @param bsSurce the name or pathname of the source of the basis set
      */
 
-    public BSMatchingRule(String rName, String rType, String rKey, 
-                                                      String srcTyp, String src)
+    public BSMatchingRule(String refName, String type, String query,
+    		String bsSrcTyp, String bsSurce)
     {
-        this.refName = rName;
-        this.type = rType;
-        this.smarts = rKey;
-        this.srcType = srcTyp;
-        this.source = src;
+        this.refName = refName;
+        this.type = type;
+        this.smarts = query;
+        this.srcType = bsSrcTyp;
+        this.source = bsSurce;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a rule by parsing a formatted string of text. The syntax
+     * is defined above.
+     * @param txt the string to be parsed
+     * @param i a unique integer used to identify the rule. Is used to build the
+     * reference name of the generated rule by first word in txt with i.
+     */
+
+    public BSMatchingRule(String txt, int i)
+    {
+    	this(txt, txt.split("\\s+")[0]+i);
     }
 
 //------------------------------------------------------------------------------
@@ -117,11 +131,10 @@ public class BSMatchingRule
      * Constructor for a rule by parsing a formatted string of text. The syntax
      * is defined above.
      * @param txt the string to be parsed
-     * @param i a unique integer used to identify the rule. Is used to buildthe
-     * reference name of the generated rule.
+     * @param refName the reference name of this rule to build.
      */
 
-    public BSMatchingRule(String txt, int i)
+    public BSMatchingRule(String txt, String refName)
     {
         String[] p = txt.split("\\s+");
         String msg = "ERROR! The following string does not look like a "
@@ -145,7 +158,6 @@ public class BSMatchingRule
             Terminator.withMsgAndStatus(msg + "Unknown basis set source "
                                  + "type: " + p[2] + ".  Check line " + txt,-1);
         }
-        String ruleName = p[0] + i;
         String pp = "";
         for (int j=3; j<p.length; j++)
         {
@@ -155,9 +167,12 @@ public class BSMatchingRule
                 pp = pp + " ";
             }
         }
-        this.refName = ruleName;
+        this.refName = refName;
         this.type = p[0];
-        this.smarts = p[1];
+        if (p[1].equals("null"))
+        	this.smarts = null;
+        else
+        	this.smarts = p[1];
         this.srcType = p[2];
         this.source = pp;
     }
@@ -189,7 +204,7 @@ public class BSMatchingRule
 //------------------------------------------------------------------------------
 
     /**
-     * Retunrs the key of this rule: a SMARTS query or an elemental symbol
+     * Returns the key of this rule: a SMARTS query or an elemental symbol
      * @return the SMARTS or elemental symbol
      */
 
@@ -201,7 +216,7 @@ public class BSMatchingRule
 //------------------------------------------------------------------------------
 
     /**
-     * Retunrs the type of source
+     * Returns the type of source
      * @return the type of source
      */
 
@@ -213,7 +228,7 @@ public class BSMatchingRule
 //------------------------------------------------------------------------------
 
     /**
-     * Retunrs the source
+     * Returns the source
      * @return the source of the basis se as its name or pathname
      */
 
@@ -225,7 +240,7 @@ public class BSMatchingRule
 //------------------------------------------------------------------------------
 
     /**
-     * Retunrs a string suitable to be parsed back by this object's constructor.
+     * Returns a string suitable to be parsed back by this object's constructor.
      * @return the string
      */
 

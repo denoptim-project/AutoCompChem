@@ -23,6 +23,7 @@ import javax.vecmath.Vector3d;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.interfaces.IAtom;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.MolecularUtils;
 
 /**
@@ -92,8 +93,8 @@ public class LigandInSpace
         this.cnt = cnt;
 
         //calculate vector center-ligand atom
-        Point3d pLig = MolecularUtils.getCoords3d(atm);
-        Point3d pCnt = MolecularUtils.getCoords3d(cnt);
+        Point3d pLig = AtomUtils.getCoords3d(atm);
+        Point3d pCnt = AtomUtils.getCoords3d(cnt);
         this.clVec = new Vector3d(pCnt.x - pLig.x, 
                                   pCnt.y - pLig.y,
                                   pCnt.z - pLig.z);

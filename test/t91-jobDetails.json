@@ -1,0 +1,308 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "keywords": [
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "ecpdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement Cl Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "scf",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "units",
+              "value": "angstrom"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[#1] [Ru] onlybonded options:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded options:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded options:constant"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step:1 SP with HF\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"ao basis\"",
+              "isLoud": false
+            },
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "basisdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement Cl Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "ecp",
+          "keywords": [
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "ecpdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nSMARTS [$([#1,#6,#17]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [$([#6]~[#6,#1]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"ao basis\"",
+              "isLoud": false
+            },
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "basisdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nSMARTS [$([#1,#6,#17]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [$([#6]~[#6,#1]~[Ru])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nElement Ru Link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "GRID",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "xfine",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CONVERGENCE",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "S6",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step:2 SP with DFT\"",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "python",
+          "dirData": [
+            {
+              "reference": "code",
+              "value": [
+                "print \u0027In Python code\u0027",
+                "print \u0027Hello world from process \u0027, ga_nodeid()",
+                "",
+                "# comment within code",
+                "print \u0027Done with python\u0027"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "python",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

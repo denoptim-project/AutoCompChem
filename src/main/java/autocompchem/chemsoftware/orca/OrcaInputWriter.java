@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import javax.vecmath.Point3d;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
@@ -38,7 +40,6 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.Parameter;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
@@ -55,8 +56,6 @@ import autocompchem.worker.Worker;
  *
  * @author Marco Foscato
  */
-
-//TODO: write doc
 
 public class OrcaInputWriter extends ChemSoftInputWriter
 {
@@ -76,63 +75,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     public OrcaInputWriter() 
     {
 		inpExtrension = OrcaConstants.INPEXTENSION;
-		outExtension = OrcaConstants.INPEXTENSION;
 	}
-    
-//------------------------------------------------------------------------------
-    
-    protected void printInputForOneMol(IAtomContainer mol, 
-    		String outFileName, String outFileNameRoot)
-    {		
-		CompChemJob molSpecJob = ccJob.clone();
-
-		Parameter pathnamePar = new Parameter(
-				ChemSoftConstants.PAROUTFILEROOT,outFileNameRoot);
-		molSpecJob.setParameter(pathnamePar);
-		
-		for (Job subJob : molSpecJob.getSteps())
-		{
-			subJob.setParameter(pathnamePar);
-		}
-		
-		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(mol);
-		molSpecJob.sortDirectivesBy(new OrcaDirectiveComparator());
-		
-    	// WARNING: for now we are not considering the possibility of having
-    	// both directives AND sub jobs. So it's either one or the other
-		
-		ArrayList<String> lines = new ArrayList<String>();
-		if (molSpecJob.getNumberOfSteps()>0)
-		{
-			for (int i=0; i<molSpecJob.getNumberOfSteps(); i++)
-			{
-				CompChemJob step = (CompChemJob) molSpecJob.getStep(i);
-				lines.addAll(getTextForInput(step));
-				if (i<(molSpecJob.getNumberOfSteps()-1))
-				{
-					lines.add(OrcaConstants.JOBSEPARATOR);
-				}
-			}
-		} else {
-			lines.addAll(getTextForInput(molSpecJob));
-		}
-		IOtools.writeTXTAppend(outFileName, lines, true);
-    }
-    
-//------------------------------------------------------------------------------
-    
-    private ArrayList<String> getTextForInput(CompChemJob job)
-    {
-    	ArrayList<String> lines = new ArrayList<String>();
-		Iterator<Directive> it = job.directiveIterator();
-		while (it.hasNext())
-		{
-			Directive d = it.next();
-			lines.addAll(getTextForInput(d,true));
-		}
-    	return lines;
-    }
     
 //------------------------------------------------------------------------------
     
@@ -160,12 +103,10 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			{
 				if (k.isLoud())
 				{
-					lines.add("#" + k.getName() + " "
-						+ StringUtils.mergeListToString(k.getValue()," "));
+					lines.add("#" + k.getName() + " " + k.getValueAsString());
 				} else
 				{
-					lines.add("#" + StringUtils.mergeListToString(
-							k.getValue()," "));	
+					lines.add("#" + k.getValueAsString());	
 				}
 			}
 			// Sub directives and DirectiveData are not suitable for Orca's
@@ -210,12 +151,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				{
 					if (k.isLoud())
 					{
-						line = line + " " + k.getName() + " "
-							+ StringUtils.mergeListToString(k.getValue()," ");
+						line = line + " " + k.getName() + " " 
+								+ k.getValueAsString();
 					} else
 					{
-						line = line + " " + StringUtils.mergeListToString(
-								k.getValue()," ");
+						line = line + " " + k.getValueAsString();
 					}
 				}
 				// Sub directives and DirectiveData are not suitable for Orca's
@@ -282,10 +222,9 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					if (k.isLoud())
 					{
 						line = line + " " + k.getName() + " "
-							+ StringUtils.mergeListToString(k.getValue()," ");
+								+ k.getValueAsString();
 					} else {
-						line = line + " "
-							+ StringUtils.mergeListToString(k.getValue()," ");
+						line = line + " " + k.getValueAsString();
 					}
 				}
 				lines.add(line);
@@ -387,6 +326,58 @@ public class OrcaInputWriter extends ChemSoftInputWriter
             frozenTorsStr = frozenTorsStr + " C }";
             lines.add(frozenTorsStr);
         }
+        for (Constraint c : cs.getConstrainsWithType(
+        		ConstraintType.IMPROPERTORSION))
+        {
+            String frozenTorsStr = OrcaConstants.INDENT + "{ D";
+            if (c.hasValue())
+            {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
+                        + c.getAtomIDs()[3] + " " + c.getValue();
+            } else {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
+                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
+                        + c.getAtomIDs()[3];
+            }
+            frozenTorsStr = frozenTorsStr + " C }";
+            lines.add(frozenTorsStr);
+        }
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.UNDEFINED))
+        {
+            String cStr = OrcaConstants.INDENT;
+            switch (c.getAtomIDs().length)
+	            {
+	            case 1:
+	            	cStr = cStr + "{ C " + c.getAtomIDs()[0];
+	            	break;
+
+	            case 2:
+	            	cStr = cStr + "{ B " + c.getAtomIDs()[0] 
+	            			+ " "  + c.getAtomIDs()[1];
+	            	break;
+	            	
+	            case 3:
+	            	cStr = cStr + "{ A " + c.getAtomIDs()[0] 
+	            			+ " "  + c.getAtomIDs()[1]
+	    	            	+ " "  + c.getAtomIDs()[2];
+	            	break;
+
+	            case 4:
+	            	cStr = cStr + "{ D " + c.getAtomIDs()[0] 
+	            			+ " "  + c.getAtomIDs()[1]
+	    	            	+ " "  + c.getAtomIDs()[2]
+	    	    	        + " "  + c.getAtomIDs()[3];
+	            	break;
+            }
+            
+            if (c.hasValue())
+            {
+            	cStr = cStr + " " + c.getValue();
+            }
+            cStr = cStr + " C }";
+            lines.add(cStr);
+        }
         lines.add("end");
     	return lines;
     }
@@ -433,13 +424,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		d.sortKeywordsBy(new CoordsKeywordsComparator());
 		for (Keyword k : d.getAllKeywords())
 		{
+			//TODO-gg this is what the toString() method of Keyword should do!
 			if (k.isLoud())
 			{
-				line = line + " " + k.getName() + " "
-					+ StringUtils.mergeListToString(k.getValue()," ");
+				line = line + " " + k.getName() + " " + k.getValueAsString();
 			} else {
-				line = line + " "
-					+ StringUtils.mergeListToString(k.getValue()," ");
+				line = line + " " + k.getValueAsString();
 			}
 		}
 		lines.add(line);
@@ -454,7 +444,8 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		
 		for (DirectiveData dd : d.getAllDirectiveDataBlocks())
 		{
-			if (dd.getName().equals(ChemSoftConstants.DIRDATAGEOMETRY))
+			if (dd.getName().toUpperCase().equals(
+					ChemSoftConstants.DIRDATAGEOMETRY))
 			{
 				Object o = dd.getValue();
 				switch (dd.getType())
@@ -464,7 +455,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 						IAtomContainer mol = (IAtomContainer) o;
 						for (IAtom atm : mol.atoms())
 						{
-							Point3d p3d = MolecularUtils.getCoords3d(atm);
+							Point3d p3d = AtomUtils.getCoords3d(atm);
 							lines.add(OrcaConstants.INDENT 
 									+ String.format(Locale.ENGLISH," %3s",atm.getSymbol())
 									+ String.format(Locale.ENGLISH," %10.5f",p3d.x)
@@ -511,6 +502,166 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		}
     	return lines;
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * {@inheritDoc}
+     * 
+     * This method is not doing anything in Orca job's main input file. No usage
+     * case requiring such functionality.
+     */
+	@Override
+	protected void setSystemSpecificNames(CompChemJob ccj) 
+	{}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * In Orca's main input file the charge is defined in the
+	 * {@value ChemSoftConstants#PARCHARGE} {@link Keyword} of the
+	 * {@value OrcaConstants#COORDSDIRNAME} {@link Directive}.
+	 */
+	@Override
+	protected void setChargeIfUnset(CompChemJob ccj, String charge, 
+			boolean omitIfPossible) 
+	{
+		if (omitIfPossible)
+			return;
+		
+		if (ccj.getNumberOfSteps()>0)
+    	{
+    		for (Job stepJob : ccj.getSteps())
+    		{
+        		setCharge((CompChemJob) stepJob, charge);
+    		}
+    	} else {
+    		setCharge(ccj, charge);
+    	}
+	}
+	
+//------------------------------------------------------------------------------
+	
+	private static void setCharge(CompChemJob ccj, String charge)
+	{
+		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
+		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
+		if (dCoords==null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARCHARGE, false, charge);
+		} else if (dCoords!=null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARCHARGE, false, charge);
+		} else if (dCoords==null && dStar!=null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
+			ChemSoftConstants.PARCHARGE, false, charge);
+		}
+		//One or the other directive must be present!
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * In Orca's main input file the spin multiplicity is defined in the
+	 * {@value ChemSoftConstants#PARSPINMULT} {@link Keyword} of the
+	 * {@value OrcaConstants#COORDSDIRNAME} {@link Directive} 
+	 */
+	@Override
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm,
+			boolean omitIfPossible) 
+	{
+		if (omitIfPossible)
+			return;
+		
+		if (ccj.getNumberOfSteps()>0)
+    	{
+    		for (Job stepJob : ccj.getSteps())
+    		{
+    			setSpinMultiplicity((CompChemJob) stepJob, sm);
+    		}
+    	} else {
+    		setSpinMultiplicity(ccj, sm);
+    	}
+	}
+	
+//------------------------------------------------------------------------------
+
+	public static void setSpinMultiplicity(CompChemJob ccj, String sm)
+	{
+		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
+		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
+		if (dCoords==null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARSPINMULT, false, sm);
+		} else if (dCoords!=null && dStar==null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
+			ChemSoftConstants.PARSPINMULT, false, sm);
+		} else if (dCoords==null && dStar!=null)
+		{
+			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
+			ChemSoftConstants.PARSPINMULT, false, sm);
+		}
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * For Orca jobs we exploit the ACC task resulting from 
+	 * {@link ChemSoftConstants.PARGEOMETRY}.
+	 */
+	@Override
+	protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs) 
+	{}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * Since Orca job can have multiple steps, this method accepts 
+	 * {@link CompChemJob}s containing multiple steps.
+	 */
+	@Override
+	protected ArrayList<String> getTextForInput(CompChemJob job) 
+	{
+    	ArrayList<String> lines = new ArrayList<String>();
+    	if (job.getNumberOfSteps()>1)
+    	{
+	    	for (int i=0; i<job.getNumberOfSteps(); i++)
+			{
+				CompChemJob step = (CompChemJob) job.getStep(i);
+				Iterator<Directive> it = step.directiveIterator();
+				while (it.hasNext())
+				{
+					Directive d = it.next();
+					lines.addAll(getTextForInput(d, true));
+				}
+				if (i<(job.getNumberOfSteps()-1))
+				{
+					lines.add(OrcaConstants.JOBSEPARATOR);
+				}
+			}
+    	} else {
+    		Iterator<Directive> it = job.directiveIterator();
+			while (it.hasNext())
+			{
+				Directive d = it.next();
+				lines.addAll(getTextForInput(d, true));
+			}
+    	}
+    	return lines;
+	}
     
 //------------------------------------------------------------------------------
 

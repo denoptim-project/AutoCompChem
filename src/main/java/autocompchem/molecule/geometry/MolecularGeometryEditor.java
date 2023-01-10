@@ -34,8 +34,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
@@ -1105,9 +1103,7 @@ public class MolecularGeometryEditor extends Worker
 
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
-        locPar.setParameter(new Parameter(WorkerConstants.PARTASK,
-        		NamedDataType.STRING,
-        		"PRINTZMATRIX"));
+        locPar.setParameter(WorkerConstants.PARTASK, "PRINTZMATRIX");
         Worker w = WorkerFactory.createWorker(locPar);
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix();

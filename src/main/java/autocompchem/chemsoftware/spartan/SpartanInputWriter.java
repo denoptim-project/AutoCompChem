@@ -34,6 +34,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
@@ -811,9 +812,9 @@ public class SpartanInputWriter extends Worker
         //Carthesian coords (Angstrom)
         for (IAtom atm : mol.atoms())
         {
-            double x = MolecularUtils.getCoords3d(atm).x;
-            double y = MolecularUtils.getCoords3d(atm).y;
-            double z = MolecularUtils.getCoords3d(atm).z;
+            double x = AtomUtils.getCoords3d(atm).x;
+            double y = AtomUtils.getCoords3d(atm).y;
+            double z = AtomUtils.getCoords3d(atm).z;
  
             StringBuilder sb = new StringBuilder();
             sb.append(String.format(Locale.ENGLISH,"%3d",atm.getAtomicNumber())).append(" ");

@@ -1,6 +1,8 @@
 package autocompchem.chemsoftware;
 
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -22,13 +24,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -36,11 +44,14 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -53,7 +64,7 @@ import autocompchem.worker.WorkerFactory;
  * @author Marco Foscato
  */
 
-public class Directive implements IDirectiveComponent
+public class Directive implements IDirectiveComponent, Cloneable
 {
     /**
      * Directive name.
@@ -75,6 +86,7 @@ public class Directive implements IDirectiveComponent
      */
     private ArrayList<DirectiveData> dirData;
 
+
 //-----------------------------------------------------------------------------
 
     /**
@@ -92,7 +104,7 @@ public class Directive implements IDirectiveComponent
 
     /**
      * Constructor for an empty directive with a name.
-     * @param name the name if the directive.
+     * @param name the name of the directive.
      */
 
     public Directive(String name)
@@ -138,6 +150,17 @@ public class Directive implements IDirectiveComponent
 //-----------------------------------------------------------------------------
     
     /**
+     * Sets the name of this directive.
+     * @param name the new name.
+     */
+	private void setName(String name) 
+	{
+		this.name = name;
+	}
+ 
+//-----------------------------------------------------------------------------
+
+    /**
      * @return the kind of directive component this is.
      */
     
@@ -161,8 +184,8 @@ public class Directive implements IDirectiveComponent
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the sub directive with the given name. 
-     * @param name the name of the sub directive to get.
+     * Returns the first sub directive with the given name. 
+     * @param name the name of the sub directive to get (case-insensitive).
      * @return the sub directive with the given name or null it it doesn't 
      * exist.
      */
@@ -224,7 +247,7 @@ public class Directive implements IDirectiveComponent
     /**
      * Returns the keyword with the given name. Only keyword belonging to
      * this directive can be returned. Keywords of sub directives are ignored. 
-     * @param name the name of the keyword to get.
+     * @param name the name of the keyword to get (case-insensitive).
      * @return the keyword with the given name or null if such keyword
      * does not exist.
      */
@@ -258,7 +281,7 @@ public class Directive implements IDirectiveComponent
     /**
      * Returns the data block having the specified name. Data of subordinate
      * directives are ignored.
-     * @param name the name of the data block to get.
+     * @param name the name of the data block to get (case-insensitive).
      * @return the data blocks having the specified name or null if such data
      * block does not exist.
      */
@@ -277,6 +300,12 @@ public class Directive implements IDirectiveComponent
     
 //-----------------------------------------------------------------------------
 
+    /**
+     * Searched for a component on the given name and type.
+     * @param name the name to search for  (case-insensitive).
+     * @param type the type to search for.
+     * @return <code>true</code> if such component exists.
+     */
     public boolean hasComponent(String name, DirectiveComponentType type)
     {
     	IDirectiveComponent comp = getComponent(name, type);
@@ -323,7 +352,8 @@ public class Directive implements IDirectiveComponent
     
     /**
      * Looks for the component with the given reference name and type.
-     * @param name the reference name of the component to find.
+     * @param name the reference name of the component to find 
+     * (case-insensitive).
      * @param type the type of component to find.
      * @return the desired component.
      */
@@ -418,8 +448,8 @@ public class Directive implements IDirectiveComponent
      * data of the existing directive. 
      */
 
-    public void setSubDirective(Directive dir, boolean owKeys, 
-                                              boolean owSubDirs, boolean owData)
+    public void setSubDirective(Directive dir, boolean owKeys,
+    		boolean owSubDirs, boolean owData)
     {
         Directive oldDir = getSubDirective(dir.getName());
         if (oldDir == null)
@@ -516,7 +546,7 @@ public class Directive implements IDirectiveComponent
      */
     
     public boolean hasACCTask()
-    {
+    {	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
@@ -544,73 +574,103 @@ public class Directive implements IDirectiveComponent
 //-----------------------------------------------------------------------------
     
     /**
-     * Performs and ACC tasks that are defined within this directive. Such
-     * tasks are typically dependent on a specific atom container, and, by
-     * running this method, this job becomes molecule-specific. Moreover,
+     * Removes the ACC tasks from any directive's component.
+     */
+    public void removeACCTasks()
+    {
+    	for (Keyword k : keywords)
+    	{
+    		k.removeACCTasks();
+    	}
+    	for (DirectiveData dd : dirData)
+    	{
+    		dd.removeACCTasks();
+    	}
+    	for (Directive d : subDirectives)
+    	{
+    		d.removeACCTasks();
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Performs ACC tasks that are defined within this directive. Such
+     * tasks are typically dependent on the chemical system at hand, so, by
+     * running this method, this job becomes system-specific. Moreover,
      * ACC may 
-     * modify the content of this directive (or any of its components: 
-     * keywords, directive data, and sub directives) accordingly to the  
+     * modify the content of any of its components, i.e., 
+     * keywords, directive data, accordingly to the  
      * needs of the given tasks.
      * Tasks are performed serially, one after the other, according to this
      * ordering scheme:
      * <ol>
-     * <li>tasks found in Keywords,</li>
-     * <li>tasks found in DirectiveData,</li>
-     * <li>tasks found in sub Directives,</li>
+     * <li>tasks found in {@link Keyword}s,</li>
+     * <li>tasks found in {@link DirectiveData}s,</li>
+     * <li>recursion into embedded (sub){@link Directive}s,</li>
      * </ol>
      * In each case, when multiple components are present, the ordering of 
      * components is respected when searching and performing tasks.
-     * @param mol the molecular representation given to mol-dependent tasks.
+     * @param mols the chemical system/s given to any system-dependent tasks.
      * @param job the job that called this method.
      */
     
-    public void performACCTasks(IAtomContainer mol, Job job)
+    public void performACCTasks(List<IAtomContainer> mols, Job job)
     {
+    	// For now we do not see any use case for tasks in the directive itself.
+    	// This because the directive holds no data/value by itself, and thus
+    	// any task aiming to add/modify data/values should belong to a
+    	// component that implements IValueContainer
+    	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
     		{
-	    		ArrayList<ParameterStorage> psLst = 
-	    				getACCTaskParams(k.getValue(), k);
-	    		for (ParameterStorage ps : psLst)
-	    		{
-	        		performACCTask(mol,ps,k,job);
-	    		}
+	    		ParameterStorage ps;
+    			if (k.getTaskParams()!=null)
+    			{
+    				ps = k.getTaskParams();
+    			} else {
+    				ps = getACCTaskParams(k.getValueAsLines(), k);
+    			}
+	    		performACCTask(mols, ps, k, job);
     		}
     	}
     	for (DirectiveData dd : dirData)
     	{
     		if (dd.hasACCTask())
     		{
-    			ArrayList<String> lines = dd.getLines();
-    			
-    			// WARNING! Here we assume that the entire content of the 
-    			// directive data, is about the ACC task. Thus, we add the 
-    			// multiline start/end labels so that the getACCTaskParams
-    			// method will keep read all the lines as one.
-    			if (lines.size()>1)
+	    		ParameterStorage ps;
+    			if (dd.getTaskParams()!=null)
     			{
-	    			lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
-	    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
-	    					+ ChemSoftConstants.JDCLOSEBLOCK);
+    				ps = dd.getTaskParams();
+    			} else {
+	    			// This is legacy code: deals with cases where the parameters 
+	    			//defining the task are still listed in the 'value' of dd
+	    			ArrayList<String> lines = dd.getLines();
+	    			
+	    			// WARNING! Here we assume that the entire content of the 
+	    			// directive data, is about the ACC task. Thus, we add the 
+	    			// multiline start/end labels so that the getACCTaskParams
+	    			// method will keep read all the lines as one.
+	    			if (lines.size()>1)
+	    			{
+		    			lines.set(0, ChemSoftConstants.JDOPENBLOCK + lines.get(0));
+		    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
+		    					+ ChemSoftConstants.JDCLOSEBLOCK);
+	    			}
+	    			ps = getACCTaskParams(lines, dd);
     			}
-    			ArrayList<ParameterStorage> psLst = 
-	    				getACCTaskParams(lines, dd);
-	    		for (ParameterStorage ps : psLst)
-	    		{
-	        		performACCTask(mol,ps,dd,job);
-	    		}
-    		}
+				performACCTask(mols, ps, dd, job);
+    		}	
     	}
     	for (Directive d : subDirectives)
     	{
     		// This is effectively a recursion into nested directives
-    		// Also note that ACC tasks are effectively defined only in 
-    		// Keywords and DirectiveData.
-    		d.performACCTasks(mol, job);
+    		d.performACCTasks(mols, job);
     	}
     }
-
+    
 //-----------------------------------------------------------------------------
     
     /**
@@ -619,77 +679,185 @@ public class Directive implements IDirectiveComponent
      * @return the list of parameter storage units.
      */
     
-    private ArrayList<ParameterStorage> getACCTaskParams(
-    		ArrayList<String> lines, IDirectiveComponent dirComp)
+    public static ParameterStorage getACCTaskParams(List<String> lines)
+    {	
+    	return getACCTaskParams(lines, null);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Parses the block of lines as to find parameters defining an ACC tasks.
+     * @param lines to parse.
+     * @return the list of parameter storage units.
+     */
+    
+    private static ParameterStorage getACCTaskParams(List<String> lines, 
+    		IDirectiveComponent dirComp)
     {	
     	// This takes care of any $START/$END label needed to make all JD lines
     	// fit into a single line for the purpose of making the 
     	// directive component line.
     	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
-    			lines, ChemSoftConstants.JDCOMMENT, 
+    			new ArrayList<String>(lines), ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	
     	// Then we take away any line that does not contain ACC tasks
-    	ArrayList<String> linesWithACCTasks = new ArrayList<String>();
-    	for (String line : linesPack)
+    	int numOfLinesWithTask = 0;
+    	boolean fixObsoleteSytax = false;
+    	String task = "";
+    	for (int iLine=0; iLine<linesPack.size(); iLine++)
     	{
+    		String line = linesPack.get(iLine);
     		if (line.toUpperCase().contains(ChemSoftConstants.JDLABACCTASK))
     		{
-    			linesWithACCTasks.add(line);
+    			numOfLinesWithTask++;
+    		} else if (line.toUpperCase().contains(GaussianConstants.LABPARAMS))
+        	// Due to legacy code using a different convention (the Gaussian stuff)
+        	// We need to check for the possibility of a different keyword, and
+    	    // we need to adapt the obsolete syntax.
+    		{
+    			String lineMod = line.replace(GaussianConstants.LABPARAMS,"");
+    			linesPack.set(iLine, lineMod);
+    			fixObsoleteSytax=true;
+    			if (lineMod.toUpperCase().contains(BasisSetConstants.ATMSPECBS))
+    				task = TaskID.GENERATEBASISSET.toString();
+    			else if (lineMod.toUpperCase().contains(
+    					TaskID.GENERATECONSTRAINTS.toString()))
+    				task = TaskID.GENERATECONSTRAINTS.toString();
+    			numOfLinesWithTask++;
     		}
     	}
     	
-    	if (linesWithACCTasks.size()==0)
+    	if (numOfLinesWithTask==0)
 		{
     		// Nothing to do
-			return new ArrayList<ParameterStorage>();
+			return new ParameterStorage();
 		} 
-    	else if (linesWithACCTasks.size()>1)
+    	else if (numOfLinesWithTask>1)
     	{
     		Terminator.withMsgAndStatus("ERROR! Unexpected format of "
     				+ "the directive component containing this value: '" 
     				+ lines + "'", -1);
     	}
-
-    	ArrayList<ParameterStorage> psList = new ArrayList<ParameterStorage>();
-    	for (String lineForOneTask : linesPack)
-    	{    		
-    		ArrayList<String> taskSpecificLines = new ArrayList<String>(
-    				Arrays.asList(lineForOneTask.split(
-    						System.getProperty("line.separator"))));
-			ParameterStorage ps = new ParameterStorage();
+    	// Warning: because of the above the rest is assuming there is only one
+    	// task, even if the return value is a list.
+    	
+		ArrayList<String> taskSpecificLines = new ArrayList<String>(
+				Arrays.asList(linesPack.get(0).split(
+						System.getProperty("line.separator"))));
+		ParameterStorage ps = new ParameterStorage();
+		if (dirComp!=null)
+		{
 			ps.importParametersFromLines("Directive " 
 	    			+ dirComp.getComponentType() + " " + dirComp.getName(),
 	    			taskSpecificLines);
-			psList.add(ps);
+		} else {
+			ps.importParametersFromLines("noFile",
+	    			taskSpecificLines);
+		}
+		
+		//TODO: much of this will eventually be removed or moved to a dedicated 
+		// class for converting job details files
+		
+		//Another fix of the obsolete syntax
+		if (task.equals(TaskID.GENERATECONSTRAINTS.toString()))
+		{
+			taskSpecificLines = new ArrayList<String>(
+					Arrays.asList(ps.getParameter(
+							TaskID.GENERATECONSTRAINTS.toString()).getValue()
+							.toString().split(
+									System.getProperty("line.separator"))));
+			ps = new ParameterStorage();
+			String smarts = "";
+            String atomIDs ="";
+            for (String line : taskSpecificLines)
+            {
+            	//WARNING! this is very hardcoded!!! 
+            	// Takes from GaussianInputWriter
+            	String key = line.substring(0, line.indexOf(":"));
+            	String value = line.substring(line.indexOf(":")+1).trim();
+            	switch (key.toUpperCase())
+            	{
+            		case "SMARTS":
+            			if (smarts.isBlank())
+            			{
+            				smarts = value;
+            			} else {
+            				smarts = smarts 
+            						+ System.getProperty("line.separator") 
+            						+ value;
+            			}
+            			break;
+            		case "ATOMIDS":
+            			if (atomIDs.isBlank())
+            			{
+            				atomIDs = value;
+            			} else {
+            				atomIDs = atomIDs 
+            						+ System.getProperty("line.separator") 
+            						+ value;
+            			}
+            			break;
+            		case "GENERATECONSTRAINTS":
+            			break;
+            		default:
+            			ps.setParameter(key,
+            					line.substring(line.indexOf(":")+1).trim());
+            	}
+            }
+            if (!smarts.isBlank())
+			{
+            	ps.setParameter("SMARTS",smarts);
+			}
+            if (!atomIDs.isBlank())
+			{
+            	ps.setParameter("ATOMIDS",atomIDs);
+			}
+		}
+
+    	if (fixObsoleteSytax)
+    	{
+    		ps.setParameter(ChemSoftConstants.JDLABACCTASK, task);
     	}
-		return psList;
+    	return ps;
     }
     
 //-----------------------------------------------------------------------------
 
     /**
      * Performs the task that is specified in the given set of parameters. Note
-     * the given parameters are all meant of a single task that is defined by 
-     * the {@link ChemSoftConstants.JDLABACCTASK} parameter. Other
-     * parameters are given to complement the information the task might need.
-     * @param mol the molecular representation given to mol-dependent tasks.
-     * @param ps the collection of parameters defining one single task (though 
-     * this can certainly require more than one parameter).
-     * @param dirComp the component that contained the definition of the task.
-     * @param job the job containing the directive component
+     * the given parameters are all meant to pertain a single task.
+     * @param mols the molecular representation used in system-dependent tasks.
+     * @param params the collection of parameters defining one single task 
+     * (though this can certainly require more than one parameter).
+     * @param dirComp the directive component that required performing the task.
+     * @param job the job containing the directive component that required 
+     * performing the task.
      */
     
-    private void performACCTask(IAtomContainer mol, ParameterStorage params, 
+    private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
     		IDirectiveComponent dirComp, Job job)
     {	
-        if (!params.contains(ChemSoftConstants.JDLABACCTASK))
+    	String task = "none";
+    	if (params.contains(ChemSoftConstants.JDLABACCTASK))
         {
+    		task = params.getParameter(
+            		ChemSoftConstants.JDLABACCTASK).getValueAsString();
+        } else if (params.contains(ChemSoftConstants.JDACCTASK))
+        {
+    		task = params.getParameter(
+            		ChemSoftConstants.JDACCTASK).getValueAsString();
+        } else {
         	return;
         }
-        
-        String task = params.getParameter(
-        		ChemSoftConstants.JDLABACCTASK).getValueAsString();
+    	
+    	// TODO-gg this mess is all because the tasks are not all in TaskID
+    	// TODO-gg Need to clean up this part!!!
+    	if (task.toUpperCase().equals(TaskID.GENERATEBASISSET.toString()))
+    	{
+    		task = BasisSetConstants.ATMSPECBS;
+    	}
         
         switch (task.toUpperCase()) 
         {   
@@ -714,32 +882,20 @@ public class Directive implements IDirectiveComponent
             		pathname = q + pathname + q;
             	}
             	
-            	switch (dirComp.getComponentType())
+            	if (dirComp instanceof IValueContainer)
             	{
-                	case DIRECTIVEDATA:
-                	{
-                		((DirectiveData) dirComp).setValue(pathname);
-                		break;
-                	}
-                	case KEYWORD:
-                	{
-                		((Keyword) dirComp).setValue(pathname);
-                		break;
-                	}
-					case DIRECTIVE:
-						break;
+            		((IValueContainer) dirComp).setValue(pathname);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
             	}
             	break;
             }
             
             case ChemSoftConstants.PARGEOMETRY:
-            {
-            	//TODO verbosity/logging
-                System.out.println("ACC adds geometry to job");
-                
-            	DirectiveData dirDataWithGeom = new DirectiveData();
-            	dirDataWithGeom.setReference(ChemSoftConstants.DIRDATAGEOMETRY);
-            	
+            {   
             	CoordsType coordsType = CoordsType.XYZ;
             	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
             	{
@@ -750,67 +906,82 @@ public class Directive implements IDirectiveComponent
             		coordsType = CoordsType.valueOf(
             			value.trim().toUpperCase());
             	}
+            	int geometryId = 0;
+            	if (params.contains(ChemSoftConstants.PARMULTIGEOMID))
+            	{
+            		geometryId = Integer.parseInt(params.getParameter(
+            				ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
+            	}
             	
             	switch (coordsType)
             	{    
                 	case ZMAT:
                 	{
-                		//TODO
-                		Terminator.withMsgAndStatus("ERROR! handling of "
-                				+ "internal coordinates not implemented "
-                				+ "yet... sorry!",-1);
-                		
-                		ZMatrix zmat = new ZMatrix();
-                		
-                		//TODO: get the actual zmat for mol
-                		
-                        dirDataWithGeom.setValue(zmat);
-                		break;
-                	}
-                	
-                	case INTERNAL:
-                	{
-                		//TODO
-                		Terminator.withMsgAndStatus("ERROR! handling of "
-                				+ "internal coordinates not implemented "
-                				+ "yet... sorry!",-1);
+                		ParameterStorage zmatMakerTask = new ParameterStorage();
+                		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
+                				"PRINTZMATRIX");
+                		zmatMakerTask.setParameter("MOL", 
+                				NamedDataType.IATOMCONTAINER, 
+                				mols.get(geometryId));
+                        Worker w = WorkerFactory.createWorker(zmatMakerTask);
+                        ZMatrixHandler zmh = (ZMatrixHandler) w;
+                        ZMatrix zmat = zmh.makeZMatrix();
+                        if (params.contains(ZMatrixConstants.SELECTORMODE))
+                        {
+                        	ParameterStorage cnstMakerTask = params.clone();
+                        	cnstMakerTask.setParameter(
+                        			WorkerConstants.PARTASK, 
+                        			//TODO-gg this is a better way to avoid to
+                        			// many locations where constants are defined.
+                        			TaskID.GENERATECONSTRAINTS.toString());
+                        	
+                            ConstraintsGenerator cnstrg = (ConstraintsGenerator)
+                            		WorkerFactory.createWorker(cnstMakerTask);
+                        	ConstraintsSet cs = new ConstraintsSet();
+                        	try {
+            					cs = cnstrg.createConstraints(mols.get(
+            							geometryId));
+            				} catch (Exception e) {
+            					e.printStackTrace();
+            					Terminator.withMsgAndStatus("ERROR! "
+            							+ "Unable to create constraints. "
+            							+ "Exception from the "
+            							+ "ConstraintGenerator.", -1);
+            				}
+                        	String mode = params.getParameterValue(
+                        			ZMatrixConstants.SELECTORMODE);
+                        	switch (mode.toUpperCase())
+                        	{
+                        	case ZMatrixConstants.SELECTORMODE_CONSTANT:
+                            	zmat.setConstants(cs);
+                        		break;
+
+                        	case ZMatrixConstants.SELECTORMODE_VARIABLES:
+                            	zmat.setVariables(cs);
+                        		break;
+                        	}
+                        }
+                        
+                		((IValueContainer) dirComp).setValue(zmat);
                 		break;
                 	}
                 	
                 	case XYZ:
                 	default:
                 	{
-                		dirDataWithGeom.setValue(mol);
-                        if (MolecularUtils.hasProperty(mol, 
-                        		ChemSoftConstants.PARCHARGE))
-                        {
-                            String charge = mol.getProperty(
-                            		ChemSoftConstants.PARCHARGE)
-                            		.toString();
-                            setKeyword(new Keyword(
-                            		ChemSoftConstants.PARCHARGE,
-                            		false, charge));
-                        }
-                        if (MolecularUtils.hasProperty(mol, 
-                        		ChemSoftConstants.PARSPINMULT))
-                        {
-                            String spinMult = mol.getProperty(
-                            		ChemSoftConstants.PARSPINMULT)
-                            		.toString();
-                            setKeyword(new Keyword(
-                            		ChemSoftConstants.PARSPINMULT,
-                            		false, spinMult));
-                        }
+                		IAtomContainer mol = mols.get(geometryId);
+                		((IValueContainer) dirComp).setValue(mol);
                 		break;
                 	}
             	}
-            	setDataDirective(dirDataWithGeom);
-            	deleteComponent(dirComp);
             	break;
             }
             	
             case BasisSetConstants.ATMSPECBS:
             {
+        		// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
             	//TODO verbosity/logging
                 System.out.println("ACC starts creating atom-specific "
                 		+ "Basis Set");
@@ -828,19 +999,23 @@ public class Directive implements IDirectiveComponent
                 ParameterStorage bsGenParams = new ParameterStorage();
                 bsGenParams.setParameter(params.getParameter(task));
                 
-                bsGenParams.setParameter(new Parameter("TASK",
-            		NamedDataType.STRING, "GENERATEBASISSET"));
+                //TODO-gg this simplifies if we use TaskID as it should 
+                bsGenParams.setParameter("TASK", "GENERATEBASISSET");
             	Worker w = WorkerFactory.createWorker(bsGenParams);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
                 bsg.setAtmIdxAsId(true);
                 BasisSet bs = bsg.assignBasisSet(mol);
                 
-                //Replace DirectiveData with one with the BS object
-                DirectiveData dd = new DirectiveData();
-                dd.setReference(dirComp.getName());
-                dd.setValue(bs);
-                setDataDirective(dd);
+                if (dirComp instanceof IValueContainer)
+            	{
+            		((IValueContainer) dirComp).setValue(bs);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
+            	}
                 break;
             }
             
@@ -848,6 +1023,9 @@ public class Directive implements IDirectiveComponent
             //case TaskID.GENERATECONSTRAINTS:
             case "GENERATECONSTRAINTS":
             {
+        		// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
             	String s = TaskID.GENERATECONSTRAINTS.toString();
             	//TODO verbosity/logging
                 System.out.println("ACC starts creating geometric constraints");
@@ -855,8 +1033,9 @@ public class Directive implements IDirectiveComponent
                 ParameterStorage cnstrParams = params.clone();
                 
                 //TODO: this should be avoided by using TASK instead of ACCTASK
-                cnstrParams.setParameter(new Parameter("TASK",
-            		NamedDataType.STRING, TaskID.GENERATECONSTRAINTS));
+                //TODO-gg use WorkerConstant.TASK
+                cnstrParams.setParameter("TASK", 
+                		TaskID.GENERATECONSTRAINTS.toString());
                 
             	Worker w = WorkerFactory.createWorker(cnstrParams);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
@@ -871,20 +1050,25 @@ public class Directive implements IDirectiveComponent
 							+ "ConstraintGenerator.", -1);
 				}
             	
-            	//Replace DirectiveData with the constraints container
-                DirectiveData dd = new DirectiveData();
-                dd.setReference(dirComp.getName());
-                dd.setValue(cs);
-                setDataDirective(dd);
+            	// Replace value of component that triggered this task
+            	if (dirComp instanceof IValueContainer)
+            	{
+            		((IValueContainer) dirComp).setValue(cs);
+            	} else {
+            		throw new IllegalArgumentException("Task " + task 
+            				+ " can be performed only from within Keywords "
+            				+ "or DirectiveData. Not from " 
+            				+ dirComp.getClass().getName());
+            	}
                 
-                //TODO verbosity/logging
+                //TODO-gg verbosity/logging
                 cs.printAll();
             	break;
             }
             
             case ChemSoftConstants.PARADDINTCOORDS:
             {
-            	//TODO
+            	//TODO: remove and use the add_geometry task instead
             	Terminator.withMsgAndStatus("ERROR! handling of "
         				+ "redundant internal coordinates not implemented "
         				+ "yet... sorry!",-1);
@@ -993,6 +1177,64 @@ public class Directive implements IDirectiveComponent
         return lines;
     }
 
+//------------------------------------------------------------------------------
+
+    public static class DirectiveSerializer 
+    implements JsonSerializer<Directive>
+    {
+        @Override
+        public JsonElement serialize(Directive dir, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty("name", dir.name);
+            
+            if (dir.keywords!=null && dir.keywords.size()>0)
+                jsonObject.add("keywords", context.serialize(dir.keywords));
+            
+            if (dir.subDirectives!=null && dir.subDirectives.size()>0)
+                jsonObject.add("subDirectives", 
+                		context.serialize(dir.subDirectives));
+            
+            if (dir.dirData!=null && dir.dirData.size()>0)
+                jsonObject.add("dirData", context.serialize(dir.dirData));
+           
+            return jsonObject;
+        }
+    }
+
 //-----------------------------------------------------------------------------
+    
+    /**
+     * Creates a new directive that contains all components of this one (to the
+     * extent the components' content is cloneable) and is named as specified
+     * in the given argument.
+     * @param dirName the name of the directive to create.
+     * @return the new directive.
+     * @throws CloneNotSupportedException 
+     */
+    @Override
+	public Directive clone() throws CloneNotSupportedException 
+	{
+		Directive newDir = new Directive(name);
+
+		for (Keyword k : keywords)
+		{
+			newDir.addKeyword(k.clone());
+		}
+		for (DirectiveData dd : dirData)
+		{
+			newDir.addDirectiveData(dd.clone());
+		}
+		for (Directive d : subDirectives)
+		{
+			newDir.addSubDirective(d.clone());
+		}
+		return newDir;
+	}
  
+//-----------------------------------------------------------------------------
+
+	
 }

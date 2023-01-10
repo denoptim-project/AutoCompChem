@@ -224,7 +224,7 @@ public class NWChemOutputHandler extends Worker
      * (optional) <b>JOBDETAILS</b>: formatted text file defining all
      * the details of a {@link NWChemJob}. Usually the jobdetails txt
      * file is the file used to generate the input file (name.nw) for
-     * NWChem (see {@link NWChemInputWriter}).
+     * NWChem (see {@link NWChemInputWriter2}).
      * </li>
      * <li>
      * (optional) <b>OUTFILE</b>: name of the file where output molecular

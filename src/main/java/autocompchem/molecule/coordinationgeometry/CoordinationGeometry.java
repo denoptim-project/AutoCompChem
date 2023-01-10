@@ -25,6 +25,7 @@ import javax.vecmath.Point3d;
 
 import org.openscience.cdk.interfaces.IAtom;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 
@@ -84,10 +85,10 @@ public class CoordinationGeometry
 
         //Make ligands in space
         ligands = new ArrayList<Point3d>();
-        Point3d pCnt = MolecularUtils.getCoords3d(centralAtm);
+        Point3d pCnt = AtomUtils.getCoords3d(centralAtm);
         for (IAtom atml : atms)
         {
-            Point3d pLig = MolecularUtils.getCoords3d(atml);
+            Point3d pLig = AtomUtils.getCoords3d(atml);
             Point3d pLigNorm = new Point3d(pLig.x - pCnt.x ,
                                            pLig.y - pCnt.y ,
                                            pLig.z - pCnt.z);

@@ -24,7 +24,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 
 /**
  * This object represents a single NWChem directive that consists of
@@ -718,6 +722,30 @@ public class NWChemDirective
 
         return lines;
     }
+
+//-----------------------------------------------------------------------------
+    
+	public Directive convertToACCDirective() {
+		Directive dir = new Directive(name);
+		for (NWChemKeyword nwcKey : keywords)
+		{
+			dir.addKeyword(new Keyword(nwcKey.getName(), nwcKey.isLoud(), 
+					StringUtils.mergeListToString(nwcKey.getValue(), 
+					//System.getProperty("line.separator"),
+					" ", true)));
+		}
+		for (NWChemDirective nwcDir : subDirectives)
+		{
+			dir.addSubDirective(nwcDir.convertToACCDirective());
+		}
+		for (NWChemDirectiveData nwcDirDat : dirData)
+		{
+			dir.addDirectiveData(new DirectiveData(nwcDirDat.getName(),
+					nwcDirDat.getContent()));
+		}
+		
+		return dir;
+	}
 
 //-----------------------------------------------------------------------------
  

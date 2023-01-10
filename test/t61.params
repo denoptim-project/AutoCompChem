@@ -5,8 +5,8 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputNWChem
-INFILE: ../t61-mol.sdf
-JOBDETAILSFILE: ../t61-jobDetails
+INPUTGEOMETRIESFILE: ../t61-mol.sdf
+JOBDETAILSFILE: ../t61-jobDetails.json
 CoordinatesType: Cartesian
 $STARTZCOORD: 
 [*] [$(C(~[Ru])~C)] constant

@@ -1,6 +1,8 @@
 package autocompchem.datacollections;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*   
@@ -23,15 +25,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.Gson;
+
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.io.ACCJson;
+import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainer;
+import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainerTest;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetTest;
+import autocompchem.modeling.constraints.ConstraintsSetTest;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixTest;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.situation.Situation;
@@ -42,7 +54,7 @@ import autocompchem.text.TextBlock;
 
 
 /**
- * Unit Test for NamedData class 
+ * Unit Test for {@link NamedData} class 
  * 
  * @author Marco Foscato
  */
@@ -141,9 +153,69 @@ public class NamedDataTest
     	nd.setValue(o);
     	assertTrue(NamedDataType.UNDEFINED.equals(nd.getType()),
     			"Detecting Undefined Object");
-    	
     }
 
 //------------------------------------------------------------------------------
+ 
+    @Test
+    public void testJsonRoundTrip() throws Exception
+    {
+    	List<NamedData> nds = new ArrayList<NamedData>();
+    	
+    	// first add JSON-able types
+    	nds.add(new NamedData("String", NamedDataType.STRING, "s"));
+    	nds.add(new NamedData("Boolean", NamedDataType.BOOLEAN, false));
+    	nds.add(new NamedData("Integer", NamedDataType.INTEGER, 1));
+    	nds.add(new NamedData("Double", NamedDataType.DOUBLE, 1.23));
+    	nds.add(new NamedData("Double", NamedDataType.DOUBLE, 1.0));
+    	nds.add(new NamedData("File", NamedDataType.FILE, new File("path")));
+    	nds.add(new NamedData("TextBlock", NamedDataType.TEXTBLOCK, 
+    			new ArrayList<String>(Arrays.asList("These","are","3 lines"))));
+    	nds.add(new NamedData("BasisSet", NamedDataType.BASISSET, 
+    			BasisSetTest.getTestBasisSet()));
+    	nds.add(new NamedData("IAtomContainer", NamedDataType.IATOMCONTAINER, 
+    			JSONableIAtomContainerTest.getTestIAtomContainer()));
+    	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
+    			ConstraintsSetTest.getTestConstraintSet()));
+    	nds.add(new NamedData("ZMatrix", NamedDataType.ZMATRIX,
+    			ZMatrixTest.getTestZMatrix()));
+    	
+    	// The following ones are non-JSON-able
+    	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 
+    			new Situation()));
+    	nds.add(new NamedData("Undefined", NamedDataType.UNDEFINED, null));
 
+    	Gson writer = ACCJson.getWriter();
+    	Gson reader = ACCJson.getReader();
+    	
+    	for (NamedData nd : nds)
+    	{
+        	String jsonStr = writer.toJson(nd);
+        	NamedData nd2 = reader.fromJson(jsonStr, NamedData.class);
+        	if (!NamedData.jsonable.contains(nd.getType()))
+        	{
+        		assertEquals("null", nd2.getValueAsString());
+        		assertEquals(null, nd2.getValue());
+        	} else {
+        		if (NamedDataType.IATOMCONTAINER == nd.getType())
+        		{
+        			// NB: cannot use equals() because we serialize only
+        			// part of the data in the IAtomContainer class.
+        			JSONableIAtomContainer jiac = new JSONableIAtomContainer(
+        					(IAtomContainer) nd.getValue());
+        			JSONableIAtomContainer jiac2 = new JSONableIAtomContainer(
+        					(IAtomContainer) nd2.getValue());
+        			assertTrue(jiac.equals(jiac2));
+        		} else {
+		        	jsonStr = writer.toJson(nd2);
+		        	assertEquals(nd.getReference(), nd2.getReference());
+		        	assertEquals(nd.getType(), nd2.getType());
+		        	assertEquals(nd.getValue(), nd2.getValue());
+        		}
+        	}
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
+    
 }

@@ -21,10 +21,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.google.gson.Gson;
+
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 
 
@@ -55,6 +60,23 @@ public class FileAnalyzerTest
         
         assertEquals(3,FileAnalyzer.count(tmpPathName,"line #"),
         		"Total matches");
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetFileTypeByProbing()
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String tmpPathName = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "fiel.json";
+        Gson writer = ACCJson.getWriter();
+        IOtools.writeTXTAppend(tmpPathName, writer.toJson(
+        		new ArrayList<String>(Arrays.asList("A", "222", "t h i r d"))),
+        		false);
+    	
+    	assertEquals(ACCFileType.JSON,
+    			FileAnalyzer.getFileTypeByProbeContentType(tmpPathName));
     }
 
 //------------------------------------------------------------------------------

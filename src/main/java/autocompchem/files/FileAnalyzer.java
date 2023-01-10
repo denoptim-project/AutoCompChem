@@ -18,6 +18,7 @@ package autocompchem.files;
  */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -180,7 +181,7 @@ public class FileAnalyzer
      * @param pattern1 identifies the beginning of the target section.
      * @param pattern2 identifies the end of the target section
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing <code>pattern1</code> and <code>pattern2</code> into the
      * target section.
@@ -213,7 +214,7 @@ public class FileAnalyzer
      * @param endPattrns list of patterns that identify the end of a 
      * target section. Each entry must have a corresponding one in startPattrns
      * @param onlyFirst set to <code>true</code> to stop the search after the
-     * end of the firts match
+     * end of the first match
      * @param inclPatts set to <code>true</code> to include the lines
      * containing the patterns into the
      * target section.
@@ -617,7 +618,45 @@ public class FileAnalyzer
             Terminator.withMsgAndStatus("ERROR! " + msg, -1);
         
         return matches;
-    }    
+    }   
+    
+//------------------------------------------------------------------------------
+    
+    public static ACCFileType getFileTypeByProbeContentType(String fileName)
+    {
+    	/*
+//TODO-gg use Tika
+<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+<dependency>
+    <groupId>org.apache.tika</groupId>
+    <artifactId>tika-core</artifactId>
+    <version>2.6.0</version>
+</dependency>
+    	 */
+    	ACCFileType type = ACCFileType.UNSPECIFIED;
+        final File file = new File(fileName);
+        
+        //TODO-gg remove this is hardcoded for now
+    	String typ = "UNSPECIFIED";
+    	if (fileName.toUpperCase().endsWith(".JSON"))
+    	{
+    		typ = "JSON";
+    	} else if (fileName.toUpperCase().endsWith(".TXT"))
+    	{
+    		typ = "TXT";
+    	/*
+    	} else if (fileName.toUpperCase().endsWith("JOBDETAILS"))
+    	{	
+    		typ = "JSON";
+    	*/
+    	} else if (fileName.toUpperCase().endsWith("SDF"))
+    	{	
+    		typ = "SDF";
+    	}
+	    type = ACCFileType.valueOf(typ);
+	    
+        return type;
+    }   
 
 //------------------------------------------------------------------------------
 

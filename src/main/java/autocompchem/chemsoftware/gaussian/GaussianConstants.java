@@ -1,7 +1,9 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -22,6 +24,8 @@ import java.util.HashSet;
 
 import java.util.Set;
 
+import autocompchem.chemsoftware.DirectiveData;
+
 /**
  * Storage of predefined constants for Gaussian related tools
  *
@@ -34,6 +38,11 @@ public class GaussianConstants
      * Extension of Gaussian input files
      */
     public final static String GAUINPEXTENSION = ".inp";
+    
+    /**
+     * Extension for Gaussian output files (i.e., log files from Gaussian)
+     */
+	public static final String OUTEXTENSION = ".out";
 
     /**
      * Extension of Gaussian job details file
@@ -226,5 +235,89 @@ public class GaussianConstants
      * Lowest non-zero frequency (absolute value)
      */
     public final static double MINFREQ = 0.1;
+    
+    /**
+     * Mol.Spec's keyword for recording the charge
+     */
+    public final static String MSCHARGEKEY = "CHARGE";
+
+    /**
+     * Mol.Spec's keyword for recording the spin multiplicity
+     */
+    public final static String MSSPINMLTKEY = "SPIN_MULTIPLICITY";
+    
+    /**
+     * Name of link0 Directive
+     */
+    public final static String DIRECTIVELINK0 = "Link0";
+    
+    /**
+     * Name of Route Directive
+     */
+    public final static String DIRECTIVEROUTE = "Route";
+
+    /**
+     * Name of Title Directive
+     */
+    public final static String DIRECTIVETITLE = "Title";
+
+    /**
+     * Name of Molecular Specification Directive
+     */
+    public final static String DIRECTIVEMOLSPEC= "MolSpec";
+
+    /**
+     * Name of Options Directive
+     */
+    public final static String DIRECTIVEOPTS = "Options";
+
+    /**
+     * Non-standard keyword reserved for specifying the amount of log from
+     * Gaussian (this is the "#P" keyword).
+     */
+    public final static String KEYPRINT = "PRINT";
+
+    /**
+     * Non-standard keyword reserved for specifying the energy model. 
+     * This is the 'MODEL' string in 'MODEL/BASIS'
+     */
+    public final static String KEYMODELMETHOD = "MODEL_METHOD";
+    
+    /**
+     * Non-standard keyword reserved for specifying the basis set. This is the
+     * 'BASIS' string in 'MODEL/BASIS'
+     */
+    public final static String KEYMODELBASISET = "MODEL_BASISSET";
+
+    /**
+     * Non-standard keyword reserved for specifying the type of job (e.g., SP,
+     * OPT)
+     */
+    public final static String KEYJOBTYPE = "JOBTYPE";
+    
+    /**
+     * List of keyword names for those keywords that do not behave normally. 
+     * These are keywords that are treated in special ways.
+     */
+	public static final List<String> SPECIALKEYWORDS = new ArrayList<String>(
+			Arrays.asList(KEYPRINT, KEYMODELMETHOD, KEYMODELBASISET, KEYJOBTYPE));
+
+	/**
+	 * Name of the {@link DirectiveData} holding a molecule specific basis set
+	 * in agnostic format.
+	 */
+	public static final String DDBASISSET = "BASISSET";
+	
+	/**
+	 * Name of the {@link DirectiveData} holding a molecule specific set of
+	 * constraints or coordinates.
+	 */
+	public static final String DDMODREDUNDANT = "MODREDUNDANT";
+	
+	/**
+	 * Name of the {@link DirectiveData} holding a molecule specific set of
+	 * PCM options and settings.
+	 */
+	public static final String DDPCM = "PCM";
 
 }

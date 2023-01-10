@@ -1,0 +1,435 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "GENECP 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "1000"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "180"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " protocol MF06",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/Pd__LANL2DZ_ECP.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ],
+              "reference": "BASISSET",
+              "type": "UNDEFINED"
+            },
+            {
+              "reference": "FREETEXTOPT",
+              "value": [
+                "first line",
+                "second line",
+                "",
+                "third line after gap",
+                "last line"
+              ],
+              "type": "TEXTBLOCK"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "GENECP 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name LANL2DZ\nElement C Name LANL2DZ\nElement N Name LANL2DZ\nElement O Name LANL2DZ\nElement S Name LANL2DZ\nElement P Name LANL2DZ\nElement Pd Name LANL2DZ\nElement Pd Link ../data/basisset/gaussian/PD__LANL2DZ_ECPonly.gbs\nElement Fe Link ../data/basisset/gaussian/Fe__LANL2DZ_ECP.gbs\nSMARTS [$([#6]~[Fe])] link ../data/basisset/gaussian/C__Stuttgart_RCL_ECP.gbs\nSMARTS [$([*]~[Pd])] link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZdp_ECP.gbs\nSMARTS [#7] name LANL2DZ"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ],
+              "reference": "BASISSET",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "600"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "5"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "OLYP",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2MB 5D 7F",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "reference": "WFREOPT",
+                  "value": "OPT",
+                  "isLoud": false
+                },
+                {
+                  "reference": "GENERAL",
+                  "value": "RRHF",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "200"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "ALGORITHM",
+                  "value": "QC",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "280"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "No comment",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "MolSpec",
+          "keywords": [
+            {
+              "reference": "SPIN_MULTIPLICITY",
+              "value": "1",
+              "isLoud": false
+            },
+            {
+              "reference": "CHARGE",
+              "value": "0",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options"
+        }
+      ]
+    }
+  ]
+}

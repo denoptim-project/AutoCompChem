@@ -26,14 +26,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.Parameter;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
-import autocompchem.run.JobFactory;
-
 
 /**
  * Unit Test for the {@link Worker}

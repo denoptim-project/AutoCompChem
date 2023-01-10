@@ -68,7 +68,7 @@ public class GaussianLinkCommandsSection
             }
 
             //Decode form
-            String actualLine = lineUp.substring(
+            String actualLine = line.substring(
                                          GaussianConstants.KEYLINKSEC.length());
             String key = actualLine.substring(0,actualLine.indexOf("="));
             String value = actualLine.substring(actualLine.indexOf("=") + 1);

@@ -32,7 +32,7 @@ public class NamedDataCollector implements Cloneable
 {
 
     /**
-     * The data structure collecting the NamedData by their reference name 
+     * The data structure collecting the {@link NamedData} by their reference name 
      * (i.e., key)
      */
 	
@@ -52,8 +52,8 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor from a filled map of NamedData
-     * @param allData the map of NamedData
+     * Constructor from a filled map of {@link NamedData}
+     * @param allData the map of {@link NamedData}
      */
     
     public NamedDataCollector(Map<String,NamedData> allData)
@@ -64,7 +64,7 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * @return <code>false</code> if this NamedDataCollector contains NamedData
+     * @return <code>false</code> if this NamedDataCollector contains {@link NamedData}
      */
 
     public boolean isEmpty()
@@ -75,9 +75,9 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Return the NamedData required or null
-     * @param ref reference name of the NamedData
-     * @return the NamedData with the given reference string
+     * Return the {@link NamedData} required or null
+     * @param ref reference name of the {@link NamedData}
+     * @return the {@link NamedData} with the given reference string
      */
 
     public NamedData getNamedDataOrNull(String ref)
@@ -88,22 +88,41 @@ public class NamedDataCollector implements Cloneable
         }
         return allData.get(ref);
     }
-
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Return the NamedData required
-     * @param ref reference name of the NamedData
-     * @return the NamedData with the given reference string
+     * Return the {@link NamedData} required. Triggers fatal error if no data is
+     * found with that name.
+     * @param ref reference name of the {@link NamedData}.
+     * @return the {@link NamedData} with the given reference string.
      */
 
     public NamedData getNamedData(String ref)
     {
+    	return getNamedData(ref, false);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the {@link NamedData} required
+     * @param ref reference name of the {@link NamedData}
+     * @param tolerant use <code>true</code> to allow returning null if no data 
+     * with the given name is found.
+     * @return the {@link NamedData} with the given reference string
+     */
+
+    public NamedData getNamedData(String ref, boolean tolerant)
+    {
         if (!this.contains(ref))
         {
-            Terminator.withMsgAndStatus("ERROR! Key '" + ref + "' not found in "
-                        + "NamedDataCollector!",-1);
+        	if (tolerant)
+        		return null;
+        	else
+        		Terminator.withMsgAndStatus("ERROR! Key '" + ref 
+        				+ "' not found in " + this.getClass().getSimpleName(),
+        				-1);
         }
         return allData.get(ref);
     }
@@ -111,9 +130,9 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Return the NamedData required or the given alternative.
-     * @param refName the reference name of the NamedData
-     * @param defKind the NamedData type to use for the default NamedData
+     * Return the {@link NamedData} required or the given alternative.
+     * @param refName the reference name of the {@link NamedData}
+     * @param defKind the {@link NamedData} type to use for the default {@link NamedData}
      * @param defValue the fully qualified name of the class from which
      * the default value is to be taken
      * @return the user defined value or the default
@@ -138,8 +157,8 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Return all the NamedData stored
-     * @return the map with all NamedData
+     * Return all the {@link NamedData} stored
+     * @return the map with all {@link NamedData}
      */
 
     public Map<String,NamedData> getAllNamedData()
@@ -150,9 +169,9 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Store a NamedData with the given reference name. If the NamedData already
-     * exists, it will be overwritten
-     * @param data the new NamedData to be stored
+     * Store a {@link NamedData} with the given reference name. If the {@link NamedData} already
+     * exists, it will be overwritten.
+     * @param data the new {@link NamedData} to be stored
      */
 
     public void putNamedData(NamedData data)
@@ -163,10 +182,10 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Store a NamedData with the given reference name. If the NamedData already
-     * exists, it will be overwritten
-     * @param ref the reference name of the NamedData
-     * @param par the new NamedData to be stored
+     * Store a {@link NamedData} with the given reference name. If the {@link NamedData} already
+     * exists, it will be overwritten.
+     * @param ref the reference name of the {@link NamedData}
+     * @param par the new {@link NamedData} to be stored
      */
 
     public void putNamedData(String ref, NamedData par)
@@ -179,7 +198,7 @@ public class NamedDataCollector implements Cloneable
     /**
      * Search for a reference name
      * @param ref the reference name to be searched
-     * @return <code>true</code> if this collector contains a NamedData
+     * @return <code>true</code> if this collector contains a {@link NamedData}
      * with the given reference name 
      */
 
@@ -207,11 +226,37 @@ public class NamedDataCollector implements Cloneable
     	}
     	return ndc;
     }
-
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (!(o instanceof NamedDataCollector))
+     		return false;
+ 	   
+ 	    NamedDataCollector other = (NamedDataCollector) o;
+ 	  
+ 	    for (String nameOfData : this.allData.keySet())
+ 	    {
+ 		    NamedData oND = other.getNamedData(nameOfData);
+ 		    if (oND==null)
+ 		    	return false;
+ 		    
+ 		    NamedData tND = this.getNamedData(nameOfData);
+ 		    if (!tND.equals(oND))
+ 		    	return false;
+ 	    }
+ 	    return true;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
-     * @return the string representation of this NamedData Collector
+     * @return the string representation of this collector
      */
 
     public String toString()
@@ -225,6 +270,16 @@ public class NamedDataCollector implements Cloneable
         sb.append("]]");
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Removes the data with the given reference name, if present.
+     * @param ref
+     */
+  	public void removeData(String ref) {
+  		allData.remove(ref);
+  	}
 
 //------------------------------------------------------------------------------
 
