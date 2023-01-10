@@ -1,0 +1,57 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "KEYWORDS",
+      "keywords": [
+        {
+          "reference": "JobType",
+          "value": "SCONFANAL",
+          "isLoud": false
+        },
+        {
+          "reference": "Potential",
+          "value": "MMFF",
+          "isLoud": false
+        },
+        {
+          "reference": "CONSTRAIN",
+          "value": "CONSTRAIN",
+          "isLoud": false
+        },
+        {
+          "reference": "CONFSEXAMINED",
+          "value": "10"
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "dirData": [
+        {
+          "reference": "text",
+          "value": "This is my comment"
+        }
+      ]
+    },
+    {
+      "name": "Constraints",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[C] [N] onlybonded useCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded 60.0\n[C] [Ru] [C] [N] onlybonded useCurrentValue options:key5 key6 key7"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    }
+  ]
+}
+

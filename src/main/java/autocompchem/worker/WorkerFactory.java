@@ -30,6 +30,7 @@ import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.chemsoftware.orca.OrcaOutputHandler;
 import autocompchem.chemsoftware.qmmm.QMMMInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
+import autocompchem.chemsoftware.spartan.SpartanInputWriter2;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
@@ -336,6 +337,8 @@ public class WorkerFactory
             return QMMMInputWriter.capabilities;
         case SpartanInputWriter:
             return SpartanInputWriter.capabilities;
+        case SpartanInputWriter2:
+            return SpartanInputWriter2.capabilities;
         case SpartanOutputHandler:
             return SpartanOutputHandler.capabilities;
         case VibModuleOutputHandler:
@@ -425,6 +428,8 @@ public class WorkerFactory
             return new QMMMInputWriter();
         case SpartanInputWriter:
             return new SpartanInputWriter();
+        case SpartanInputWriter2:
+            return new SpartanInputWriter2();
         case SpartanOutputHandler:
             return new SpartanOutputHandler();
         case VibModuleOutputHandler:

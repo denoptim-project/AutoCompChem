@@ -64,6 +64,7 @@ public enum TaskID
     PREPAREINPUTXTB,
     PREPAREINPUTQMMM,        
     PREPAREINPUTSPARTAN,     
+    PREPAREINPUTSPARTAN2, //TODO-gg keep only this and rename     
     PRINTZMATRIX,            
     PRUNEMOLECULES,           
     REMOVEDUMMYATOMS,         

@@ -75,7 +75,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 //-----------------------------------------------------------------------------
 
     /**
-     * Constructor sets the parameters that depend on XTB conventions.
+     * Constructor sets the parameters that depend on Gaussian conventions.
      */
 
     public GaussianInputWriter() 
@@ -89,8 +89,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian the charge is defined in a {@link Keyword} named 
-     * {@value GaussianConstants.MSCHARGEKEY} of the 
-     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * {@value GaussianConstants#MSCHARGEKEY} of the 
+     * {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
      * Moreover, the specification of the charge cannot be omitted, so the
      * <code>omitIfPossible</code> parameter does not take effect.
      */
@@ -108,8 +108,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian the spin multiplicity is defined in a {@link Keyword} named 
-     * {@value GaussianConstants.MSSPINMLTKEY} of the 
-     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * {@value GaussianConstants#MSSPINMLTKEY} of the 
+     * {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
      * Moreover, the specification of the spin cannot be omitted, so the
      * <code>omitIfPossible</code> parameter does not take effect.
      */
@@ -127,7 +127,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian, a chemical system is defined in the {@link DirectiveData} of
-     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * the {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
      * 
      * WARNING: so far it works with only one molecule.
      */
@@ -159,7 +159,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * its input file or if it does not because it either takes it from the 
      * checkpoint file or there is a task adding a geometry to the molecule
      * specification section. We assume that any {@link DirectiveData} found in
-     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive} is
+     * the {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive} is
      * about defining the geometry. Therefore, the existence of any such
      * {@link DirectiveData} is sufficient to make this method return 
      * <code>false</code>.

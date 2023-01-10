@@ -1,0 +1,84 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "KEYWORDS",
+      "keywords": [
+        {
+          "reference": "JobType",
+          "value": "SCONFANAL",
+          "isLoud": false
+        },
+        {
+          "reference": "Potential",
+          "value": "MMFF",
+          "isLoud": false
+        },
+        {
+          "reference": "CONSTRAIN",
+          "value": "CONSTRAIN",
+          "isLoud": false
+        },
+        {
+          "reference": "CONFSEXAMINED",
+          "value": "10"
+        },
+        {
+          "reference": "FFHINT",
+          "value": "Ru1~~210"
+        },
+        {
+          "reference": "FFHINT",
+          "value": "C1~~206"
+        },
+        {
+          "reference": "FFHINT",
+          "value": "N1~~211"
+        },
+        {
+          "reference": "Partial",
+          "value": "PARTIAL",
+          "isLoud": false
+        }
+      ]
+    },
+    {
+      "name": "Title",
+      "keywords": [
+        {
+          "reference": "text",
+          "value": "t69-mol",
+          "isLoud": false
+        }
+      ]
+    },
+    {
+      "name": "Comment",
+      "dirData": [
+        {
+          "reference": "text",
+          "value": "This is my comment"
+        }
+      ]
+    },
+    {
+      "name": "Constraints",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[C] [N] onlybonded \n[C] [Ru] [$(C(~[Ru])~C)] onlybonded 60.0\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    }
+  ]
+}
+

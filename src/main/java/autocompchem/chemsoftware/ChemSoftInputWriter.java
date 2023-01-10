@@ -154,7 +154,7 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     protected String outExtension;
 
-    private final String NL = System.getProperty("line.separator");
+    protected final String NL = System.getProperty("line.separator");
     
 
 //-----------------------------------------------------------------------------
