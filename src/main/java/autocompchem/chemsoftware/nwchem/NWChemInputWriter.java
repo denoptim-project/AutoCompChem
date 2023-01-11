@@ -1057,5 +1057,19 @@ public class NWChemInputWriter extends ChemSoftInputWriter
   	}
     
 //------------------------------------------------------------------------------
+	
+  	/**
+  	 * {@inheritDoc}
+  	 * 
+  	 * No special file structure required for NWChem. This method does nothing.
+  	 */
+  	@Override
+  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+			String outputFileName) 
+	{
+		return outputFileName;
+	}
+  	
+//------------------------------------------------------------------------------
 
 }

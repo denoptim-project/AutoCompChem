@@ -1,81 +1,82 @@
 #!/bin/bash
 
-#TODO-gg
-echo skipped
-exit 0
-
-if [ ! -f "t69-sp14.input/_spartandir" ]
+if [ ! -f "t69-sp14.spardir/_spartandir" ]
 then
-echo NOT Passes ERROR 1
-exit -1
+  echo NOT Passes ERROR 1
+  exit -1
 fi
 
-if [ ! -f "t69-sp14.input/t69_mol1/_spartan" ] ; then
-echo NOT Passes ERROR 2
-exit -1
+if [ ! -f "t69-sp14.spardir/t69_mol1/_spartan" ] ; then
+  echo NOT Passes ERROR 2
+  exit -1
 fi
 
-grep -q "cdk:Title=t69_mol1" t69-sp14.input/t69_mol1/cell
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 3
-exit -1
+if ! grep -q "cdk:Title=t69_mol1" t69-sp14.spardir/t69_mol1/cell; then
+  echo NOT Passed ERROR 3
+  exit -1
 fi
 
-inputFile="t69-sp14.input/t69_mol1/input"
+inputFile="t69-sp14.spardir/t69_mol1/input"
 
-grep -q "SCONFANAL MMFF CONSTRAIN CONFSEXAMINED=10" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4
-exit -1
+if ! head -n 1 "$inputFile" | grep -q "SCONFANAL"; then
+  echo NOT Passed ERROR 4a
+  exit -1
 fi
 
-grep -q "\-222 \-333" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 5
-exit -1
+if ! head -n 1 "$inputFile" | grep -q "CONSTRAIN"; then
+  echo NOT Passed ERROR 4b
+  exit -1
 fi
 
-grep -q " 1 * 4 * 1" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 6
-exit -1
+if ! head -n 1 "$inputFile" | grep -q "CONFSEXAMINED=10"; then
+  echo NOT Passed ERROR 4c
+  exit -1
 fi
 
-grep -q " BOND * 13 * 14 * 1.3365" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 7
-exit -1
+if ! head -n 1 "$inputFile" | grep -q "MMFF"; then
+  echo NOT Passed ERROR 4d
+  exit -1
 fi
 
-grep -q "  ANGL * 1 * 10 * 13 60.0 key3" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 8
-exit -1
+if ! grep -q "\-222 333" "$inputFile" ; then
+  echo NOT Passed ERROR 5
+  exit -1
 fi
 
-grep -q "  TORS * 1 * 10 * 13 * 14 key5 key6 key7" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 9
-exit -1
+if ! grep -q " 1 * 4 * 1" "$inputFile" ; then
+  echo NOT Passed ERROR 6
+  exit -1
 fi
 
-grep -q " 41 * 42 * 4" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 10
-exit -1
+if ! grep -q " BOND * 13 * 14 * 1.3365" "$inputFile"; then
+  echo NOT Passed ERROR 7
+  exit -1
 fi
 
-grep -q " 22 * 23 * 2" $inputFile
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 11
-exit -1
+if ! grep -q "  ANGL * 13 * 10 * 1 * 60.0" "$inputFile"; then
+  echo NOT Passed ERROR 8
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t69.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if ! grep -q "  TORS * 1 * 10 * 13 * 14 * 3.69" "$inputFile"; then
+  echo NOT Passed ERROR 9
+  exit -1
+fi
+
+if ! grep -q " 41 * 42 * 4" "$inputFile"; then
+  echo NOT Passed ERROR 10
+  exit -1
+fi
+
+if ! grep -q " 22 * 23 * 2" "$inputFile"; then
+  echo NOT Passed ERROR 11
+  exit -1
+fi
+
+if ! grep -q 'Termination status: 0' t69.log
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 12
-exit -1
+  echo NOT Passed ERROR 12
+  exit -1
 fi

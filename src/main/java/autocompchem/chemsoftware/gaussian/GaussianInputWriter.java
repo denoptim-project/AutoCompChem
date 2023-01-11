@@ -946,5 +946,19 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     }
     
 //------------------------------------------------------------------------------
+	
+  	/**
+  	 * {@inheritDoc}
+  	 * 
+  	 * No special file structure required for Gaussian. This method does nothing.
+  	 */
+  	@Override
+  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+  			String outputFileName) 
+  	{
+  		return outputFileName;
+  	}
+    
+//------------------------------------------------------------------------------
 
 }

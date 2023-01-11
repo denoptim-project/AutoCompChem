@@ -623,6 +623,20 @@ public class XTBInputWriter extends ChemSoftInputWriter
 		}
     	return lines;
 	}
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * No special file structure required for XTB. This method does nothing.
+	 */
+	@Override
+	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+  			String outputFileName) 
+  	{
+  		return outputFileName;
+  	}
     
 //------------------------------------------------------------------------------
 

@@ -662,6 +662,20 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	}
     	return lines;
 	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * No special file structure required for Orca. This method does nothing.
+	 */
+	@Override
+	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+  			String outputFileName) 
+  	{
+  		return outputFileName;
+  	}
     
 //------------------------------------------------------------------------------
 

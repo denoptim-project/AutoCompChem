@@ -52,7 +52,7 @@ import autocompchem.text.TextAnalyzer;
  * the definition of a chemical object, such as a molecule. For example,
  * the job can define how to generate the basis set from any molecule, and 
  * thus be independent from a specific molecular object. Then, upon processing
- * ACC tasks with the {@Link #processDirectives(IAtomContainer)} method, the
+ * ACC tasks with the {@link processDirectives} method, the
  * same CompChemJob will generate the basis set for the given atom container,
  * thus becoming molecule-specific.
  * 

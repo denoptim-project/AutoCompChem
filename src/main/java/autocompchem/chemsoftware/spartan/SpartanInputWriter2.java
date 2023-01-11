@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
@@ -90,7 +91,7 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
 
     public SpartanInputWriter2() 
     {
-    	inpExtrension = "";
+    	inpExtrension = ".spardir";
     }
 
 //------------------------------------------------------------------------------
@@ -647,6 +648,83 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
 					+ d.getName() + "' should contain one data collection, but "
 					+ "contains " + sz + ". Check your input!");
 		}
+    }   
+    
+//------------------------------------------------------------------------------
+	
+  	/**
+  	 * {@inheritDoc}
+  	 * <br>
+  	 * Spartan requires a folder structure containing "flag files" 
+  	 * that define what the
+  	 * folders are in Spartan convention, and "secondary input files" 
+  	 * providing additional details
+  	 * to the main input files (e.g., cell parameters, properties). This method
+  	 * generates such folder structure, 
+  	 * the "flag files", 
+  	 * and the "secondary input files", but does
+  	 *  not create the main input file, which is always named 
+  	 *  <code>input</code>.
+  	 *  <br>
+  	 *  WARNING: although this method takes a list of structures, so far Spartan
+  	 *  input can only pertain a single structure, so we will consider only the
+  	 *  first of the structures provided.
+  	 */
+  	@Override
+  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+  			String outputFileName) 
+  	{
+  		IAtomContainer mol = mols.get(0);
+  		
+        String molName = MolecularUtils.getNameOrID(mol); 
+        
+        String separator = File.separator;
+        
+        // Create folder tree
+        File jobFolder = new File(outputFileName);
+        File molSpecFolder = new File(jobFolder + separator + molName);
+        if (!molSpecFolder.mkdirs())
+        {
+            Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
+            		+ molSpecFolder+ "'.",-1);
+        }
+        
+        //Create Spartan's flag files
+        IOtools.writeTXTAppend(jobFolder + separator + 
+        		SpartanConstants.ROOTFLGFILENAME, 
+        		SpartanConstants.ROOTFLGFILEHEAD, false);
+        IOtools. writeTXTAppend(molSpecFolder + separator +
+        		SpartanConstants.MOLFLGFILENAME,
+        		SpartanConstants.MOLFLGFILEHEAD, false);
+        
+        //Create cell file
+        IOtools.writeTXTAppend(molSpecFolder + separator +
+        		SpartanConstants.CELLFILENAME,
+        		getCellDirective(mol), false);  		
+        
+        return molSpecFolder + separator + SpartanConstants.INPUTFILENAME;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+    /**
+     * Collects all molecular properties and reports then in the form of a 
+     * list of strings formatted for Spartan's CELL file.
+     * @param mol the molecular representation containing the properties to
+     * be formatted.
+     */
+
+    private ArrayList<String> getCellDirective(IAtomContainer mol)
+    {
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add(SpartanConstants.CELLOPN);
+        for (Map.Entry<Object, Object> p : mol.getProperties().entrySet())
+        {
+            lines.add(SpartanConstants.INDENT + p.getKey().toString() + "=" 
+            		+ p.getValue().toString());
+        }
+        lines.add(SpartanConstants.CELLEND);
+        return lines;
     }
     
 //------------------------------------------------------------------------------
