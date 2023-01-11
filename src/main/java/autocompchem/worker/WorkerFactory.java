@@ -49,6 +49,7 @@ import autocompchem.molecule.MolecularPruner;
 import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.atomclashes.AtomClashAnalyzer;
 import autocompchem.molecule.chelation.ChelateAnalyzer;
+import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.connectivity.ConnectivityGenerator;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
@@ -292,6 +293,8 @@ public class WorkerFactory
             return ConnectivityGenerator.capabilities;
         case ConstraintsGenerator:
         	return ConstraintsGenerator.capabilities;
+        case ConformationalSpaceGenerator:
+        	return ConformationalSpaceGenerator.capabilities;
         case DummyObjectsHandler:
             return DummyObjectsHandler.capabilities;
         case ForceFieldEditor:
@@ -381,6 +384,8 @@ public class WorkerFactory
             return new BasisSetGenerator();
         case ChelateAnalyzer:
             return new ChelateAnalyzer();
+        case ConformationalSpaceGenerator:
+        	return new ConformationalSpaceGenerator();
         case ConnectivityGenerator:
             return new ConnectivityGenerator();
         case ConstraintsGenerator:

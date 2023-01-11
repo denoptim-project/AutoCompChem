@@ -23,7 +23,8 @@ import org.openscience.cdk.interfaces.IAtom;
 
 
 /**
- * The conformational coordinate as a predefined change in a molecular structure
+ * The conformational coordinate as a predefined change of a internal coordinate
+ * defined by a list of atoms in a molecular structure.
  * 
  * @author Marco Foscato 
  */
@@ -68,8 +69,7 @@ public class ConformationalCoordinate
      */
 
     public ConformationalCoordinate()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -186,6 +186,7 @@ public class ConformationalCoordinate
      * @return a string representation of this confomational coordinate
      */
 
+    @Override
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
@@ -200,4 +201,5 @@ public class ConformationalCoordinate
     }
 
 //------------------------------------------------------------------------------
+    
 }

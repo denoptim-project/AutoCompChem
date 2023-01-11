@@ -24,22 +24,24 @@ import java.util.Set;
 
 
 /**
- * The conformational space as the combination of a list of conformational
+ * The definition of conformational moves that generate a conformational space 
+ * as the combination of a list of conformational
  * changes (i.e., the conformational coordinates).
  * 
  * @author Marco Foscato 
  */
 
+//TODO-gg make similar to ConstrainDefinition
 public class ConformationalMovesDefinition
 {
     /**
-     * Storage of named SMARTS queries identifying the foldable moieties
+     * Storage of named SMARTS queries identifying the foldable moieties.
      */
     private Map<String,String> smarts = new HashMap<String,String>();
 
     /**
      * Storage of details/options for SMARTS queries identifying the foldable 
-     * moieties 
+     * moieties.
      */
     private Map<String,ArrayList<String>> smartsOpts =
                                         new HashMap<String,ArrayList<String>>();

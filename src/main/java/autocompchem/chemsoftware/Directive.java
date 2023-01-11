@@ -49,6 +49,8 @@ import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.conformation.ConformationalSpace;
+import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
@@ -1158,6 +1160,42 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO-gg verbosity/logging
                 cs.printAll();
+            	break;
+            }
+            
+          //TODO make this work on enum, and create TaskIDs for all other tasks
+            //case TaskID.GENERATECONFORMATIONALSPACE:
+            case "GENERATECONFORMATIONALSPACE":
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+        	
+            	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
+                ParameterStorage csGenParams = params.clone();
+                
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                csGenParams.setParameter("TASK", 
+                		TaskID.GENERATECONFORMATIONALSPACE.toString());
+                
+            	Worker w = WorkerFactory.createWorker(csGenParams);
+            	ConformationalSpaceGenerator csGen = 
+            			(ConformationalSpaceGenerator) w;
+            	
+            	ConformationalSpace cs = new ConformationalSpace();
+            	try {
+					//TOGO-dd reactivate
+            		//cs = csGen.createConformationalSpace(mol);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Unable to create "
+							+ "conformational space. Exception from the "
+							+ "ConformationalSpaceGenerator.", -1);
+				}
+            	
+            	// Replace value of component that triggered this task
+            	((IValueContainer) dirComp).setValue(cs);
             	break;
             }
             

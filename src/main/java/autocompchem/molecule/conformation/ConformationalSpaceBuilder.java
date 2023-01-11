@@ -40,7 +40,7 @@ import autocompchem.smarts.ManySMARTSQuery;
  * 
  * @author Marco Foscato 
  */
-
+//TODO-gg replace by ConformationalSpaceGenerator
 public class ConformationalSpaceBuilder
 {
 

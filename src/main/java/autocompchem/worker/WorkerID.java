@@ -31,6 +31,7 @@ public enum WorkerID
     AtomLabelsGenerator,
     BasisSetGenerator,
     ChelateAnalyzer,
+    ConformationalSpaceGenerator,
     ConnectivityGenerator,
     ConstraintsGenerator,
     DummyObjectsHandler,
