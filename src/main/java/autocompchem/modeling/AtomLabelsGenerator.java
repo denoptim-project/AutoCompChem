@@ -150,6 +150,12 @@ public class AtomLabelsGenerator extends Worker
             		params.getParameter("MODE").getValueAsString());
         }
         
+        if (params.contains("SEPARATOR"))
+        {
+            this.labelsSeparator = 
+            		params.getParameter("SEPARATOR").getValueAsString();
+        }
+        
         if (params.contains("ZEROBASED"))
         {
             this.zeroBased = Boolean.valueOf(
