@@ -18,6 +18,9 @@ package autocompchem.modeling.constraints;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
@@ -25,6 +28,12 @@ import autocompchem.utils.NumberUtils;
 
 public class ConstrainDefinition 
 {
+
+    /**
+     * Keyword used to identify values
+     */
+    private static final String KEYVALUES = "VALUE:";
+    
 	/**
 	 * Keyword used to flag the request of considering only tuples of atoms 
 	 * that are bonded in the order given by the tuple.
@@ -53,6 +62,16 @@ public class ConstrainDefinition
      * Keyword used to flag the identification of options.
      */
     private static final String KEYOPTIONS = "OPTIONS:";
+    
+    /**
+     * Keyword used to identify prefixes
+     */
+    private static final String KEYPREFIX = "PREFIX:";
+    
+    /**
+     * Keyword used to identify suffix
+     */
+    private static final String KEYSUFFIX= "SUFFIX:";
 
 	/**
      * Reference name 
@@ -107,12 +126,27 @@ public class ConstrainDefinition
 	private boolean notAnIC = false;
 	
 	/**
-	 * A given optional setting for the constraint. Examples are the options
+	 * A given optional string that is not marked to be a prefix or a suffix.
+	 * Examples are the options
 	 * telling the comp. chem. software what to do with this constraints, i.e.,
 	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint).
+	 * (add constraint). 
 	 */
 	private String options;
+	
+	/**
+	 * A given optional string that is marked to be a prefix.
+	 * Examples are the keywords that need to be written before the tuple of
+	 * atom pointers.
+	 */
+	private String prefix;
+	
+	/**
+	 * A given optional string that is marked to be a suffix.
+	 * Examples are the keywords that need to be written after the tuple of
+	 * atom pointers.
+	 */
+	private String suffix;
 
 //------------------------------------------------------------------------------
 
@@ -126,112 +160,163 @@ public class ConstrainDefinition
     public ConstrainDefinition(String txt, int i)
     {
         String[] p = txt.trim().split("\\s+");
+        List<String> parts = new ArrayList<String>(Arrays.asList(p));
         String msg = "ERROR! The following string does not look like a "
         		+ "properly formatted rule for constraints generation. ";
         
         if (p.length < 1)
         {
             Terminator.withMsgAndStatus(msg + "Not enough words to make a "
-            		+ " constraint defining rule. Check line " + txt,-1);
+            		+ " constraint defining rule. Check line " + txt, -1);
         }
         
         this.refName = "CnstrRule-"+i;
         
+    	Iterator<String> partsReader = parts.iterator();
+    	boolean readingIDs = false;
+    	boolean readingSMARTS = false;
+    	boolean readingValues = false;
+    	boolean readingOpts = false;
+    	boolean readingPrefix = false;
+    	boolean readingSuffix = false;
+    	
         //The first string distinguished between SMARTS (i.e., a alphanumeric
         // string) and atom IDs (i.e., an integer).
-        
-        if (NumberUtils.isNumber(p[0]))
+    	if (NumberUtils.isNumber(p[0]))
         {
-        	this.type = RuleType.ID;
-        	this.idsQry = new ArrayList<Integer>();
-        	boolean readOpts = false;
-            for (int j=0; j<p.length; j++)
-            {
-            	if (NumberUtils.isParsableToInt(p[j]) && !readOpts)
-            	{
-            		// Reading atom IDs
-            		this.idsQry.add(Integer.parseInt(p[j]));
-            	} else {
-	            	if (NumberUtils.isParsableToDouble(p[j]) && !readOpts)
-	            	{
-	            		// Reading optional value
-	            		// WARNING! For now we expect only one double value
-	            		this.hasValue = true;
-	            		this.value = Double.parseDouble(p[j]);
-	            	} else if (PARONLYBONDED.equals(p[j].toUpperCase()) 
-	            			&& !readOpts) {
-	            		this.onlyBonded = true;
-	            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase()) 
-	            			&& !readOpts) {
-	            		this.notAnIC = true;
-	            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase()) 
-	            			&& !readOpts) {
-	            		this.hasValue = true;
-	            		this.useCurrentValue = true;
-	            	} else {
-	            		// Anything else is interpreted as an additional option,
-	            		// i.e., the "A" or "F" of Gaussian constraints
-	            		String s =  p[j];
-	            		if (p[j].toUpperCase().startsWith(KEYOPTIONS))
-	            			s = s.substring(KEYOPTIONS.length());
-	            		if (this.options!=null)
-	            		{
-	            			this.options = this.options + " " + s;
-	            		} else {
-	            			this.options = s;
-	            		}
-	            	}
-            	}
-            }
+    		this.type = RuleType.ID;
+         	this.idsQry = new ArrayList<Integer>();
+         	readingIDs = true;
         } else {
         	this.type = RuleType.SMARTS;
         	this.smartsQry = new ArrayList<SMARTS>();
-        	boolean endOfSmarts = false;
-        	boolean readOpts = false;
-            for (int j=0; j<p.length; j++)
-            {
-            	if (NumberUtils.isNumber(p[j]) && !readOpts)
-            	{
-            		// WARNING! For now we expect only one numerical value
-            		// So, the last numerical we find is going to be the value.
-            		endOfSmarts = true;
-            		this.hasValue = true;
-            		this.value = Double.parseDouble(p[j]);
-            	} else if (PARONLYBONDED.equals(p[j].toUpperCase()) && !readOpts) 
-            	{
-            		endOfSmarts = true;
-            		this.onlyBonded = true;
-            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase()) && !readOpts) 
-            	{
-            		endOfSmarts = true;
-            		this.notAnIC = true;
-            	} else if (PARCURRENTVALUE.equals(p[j].toUpperCase()) && !readOpts) 
-            	{
-            		endOfSmarts = true;
-            		this.hasValue = true;
-            		this.useCurrentValue = true;
-            	} else {
-            		String s = p[j];
-            		if (p[j].toUpperCase().startsWith(KEYOPTIONS) || readOpts)
-            		{
-            			endOfSmarts = true;
-            			readOpts = true;
-            			if (p[j].toUpperCase().startsWith(KEYOPTIONS))
-            				s = s.substring(KEYOPTIONS.length());
-            			if (this.options!=null)
-	            		{
-	            			this.options = this.options + " " + s;
-	            		} else {
-	            			this.options = s;
-	            		}
-            		}
-            		if (!endOfSmarts)
-            		{
-            			this.smartsQry.add(new SMARTS(p[j]));
-            		}
-            	}
-            }
+        	readingSMARTS = true;
         }
+    	
+    	while (partsReader.hasNext())
+    	{
+    		String word = partsReader.next();
+			if (word.toUpperCase().startsWith(KEYVALUES))
+        	{
+        		readingIDs = false;
+        		readingSMARTS = false;
+            	readingValues = true;
+            	readingOpts = false;
+            	readingPrefix = false;
+            	readingSuffix = false;
+        		this.hasValue = true;
+        		word = word.substring(KEYVALUES.length());
+        		word = word.trim();
+        		if (word.length()==0)
+        			continue;
+        	} else if (word.toUpperCase().startsWith(KEYOPTIONS))
+        	{
+        		readingIDs = false;
+        		readingSMARTS = false;
+            	readingValues = false;
+            	readingOpts = true;
+            	readingPrefix = false;
+            	readingSuffix = false;
+            	word = word.substring(KEYOPTIONS.length());
+        		word = word.trim();
+        		if (word.length()==0)
+        			continue;
+        	} else if (word.toUpperCase().startsWith(KEYPREFIX))
+        	{
+        		readingIDs = false;
+        		readingSMARTS = false;
+            	readingValues = false;
+            	readingOpts = false;
+            	readingPrefix = true;
+            	readingSuffix = false;
+            	word = word.substring(KEYPREFIX.length());
+        		word = word.trim();
+        		if (word.length()==0)
+        			continue;
+        	} else if (word.toUpperCase().startsWith(KEYSUFFIX))
+        	{
+        		readingIDs = false;
+        		readingSMARTS = false;
+            	readingValues = false;
+            	readingOpts = false;
+            	readingPrefix = false;
+            	readingSuffix = true;
+            	word = word.substring(KEYSUFFIX.length());
+        		word = word.trim();
+        		if (word.length()==0)
+        			continue;
+        	} else if (PARONLYBONDED.equals(word.toUpperCase()))
+    		{
+        		readingIDs = false;
+        		readingSMARTS = false;
+        		this.onlyBonded = true;
+        		continue;
+    		} else if (PARNOINTCOORD.equals(word.toUpperCase()))
+    		{
+        		readingIDs = false;
+        		readingSMARTS = false;
+        		this.notAnIC = true;
+        		continue;
+    		} else if (PARCURRENTVALUE.equals(word.toUpperCase()))
+    		{
+        		readingIDs = false;
+        		readingSMARTS = false;
+        		this.hasValue = true;
+        		this.useCurrentValue = true;
+        		continue;
+    		} else if (readingIDs && !NumberUtils.isParsableToInt(word)) {
+    			if (word.contains(":"))
+    			{
+    				Terminator.withMsgAndStatus("Wrong syntax in line '" 
+    						+ txt + "'. Word '" + word + "' is unexpected "
+            				+ "and contains ':'. "
+            				+ "Perhaps a space is missing after ':'?", -1);
+    			} else {
+    				Terminator.withMsgAndStatus("Wrong syntax in "
+            				+ "line '" + txt + "'. Word '" + word 
+            				+ "' is unexpected.", -1);
+    			}
+            }
+    		
+        	if (readingIDs)
+        	{
+        		this.idsQry.add(Integer.parseInt(word));
+        	} else if (readingSMARTS)
+        	{
+        		this.smartsQry.add(new SMARTS(word));
+        	} else if (readingValues)
+        	{
+        		this.value = Double.parseDouble(word);
+        	} else if (readingOpts)
+        	{
+        		if (this.options!=null)
+        		{
+        			this.options = this.options + " " + word;
+        		} else {
+        			this.options = word;
+        		}
+        	} else if (readingPrefix )
+        	{
+        		if (this.prefix!=null)
+        		{
+        			this.prefix = this.prefix + " " + word;
+        		} else {
+        			this.prefix = word;
+        		}
+        	} else if (readingSuffix)
+        	{
+        		if (this.suffix!=null)
+        		{
+        			this.suffix = this.suffix + " " + word;
+        		} else {
+        			this.suffix = word;
+        		}
+        	} else {
+        		Terminator.withMsgAndStatus("Wrong syntax in "
+        				+ "line '" + txt + "'. Word '" + word 
+        				+ "' could not be interpreted.", -1);
+        	}
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -261,7 +346,8 @@ public class ConstrainDefinition
 //------------------------------------------------------------------------------
     
     /**
-     * @return the list of SMARTS queries of this rule
+     * @return the list of SMARTS queries of this rule. Null if none define or
+     * rule does not uses SMARTS.
      */
     
     public ArrayList<SMARTS> getSMARTS()
@@ -272,12 +358,58 @@ public class ConstrainDefinition
 //------------------------------------------------------------------------------
     
     /**
-     * @return the list of atom IDs queries of this rule
+     * @return the list of atom IDs queries of this rule. Null if none define or
+     * rule does not uses indexes.
      */
     
     public ArrayList<Integer> getAtomIDs()
     {
     	return idsQry;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the value associated to constraints defined by this rule
+     * @return the value
+     */
+
+    public double getValue()
+    {
+        return value;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the string collecting options
+     */
+
+    public String getOpts()
+    {
+        return options;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the string collecting prefix
+     */
+
+    public String getPrefix()
+    {
+        return prefix;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the string collecting suffix
+     */
+
+    public String getSuffix()
+    {
+        return suffix;
     }
     
 //------------------------------------------------------------------------------
@@ -296,6 +428,18 @@ public class ConstrainDefinition
 //------------------------------------------------------------------------------
 
     /**
+     * Returns the flag defining if this rule makes use of the a value.
+     * @return <code>true</code> if this constraints defined by this rule use
+     * a value.
+     */
+  	public boolean hasValue()
+  	{
+  		return hasValue;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the flag defining if this rule makes use of the current value
      * as the value set in the constraint.
      * @return <code>true</code> if this constraints defined by this rule use
@@ -305,6 +449,19 @@ public class ConstrainDefinition
   	public boolean usesCurrentValue()
   	{
   		return useCurrentValue;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the flag defining if this rule is meant to match tuples that
+     * may not correspond to internal coordinates.
+     * @return <code>true</code> if this rule is meant to match tuples that
+     * may not correspond to internal coordinates.
+     */
+  	public boolean notAnIC()
+  	{
+  		return notAnIC;
   	}
   	
 //------------------------------------------------------------------------------
@@ -337,41 +494,21 @@ public class ConstrainDefinition
   		if (currentValue==null && useCurrentValue)
   			throw new IllegalArgumentException("Request to use current value "
   					+ "to make constraints, but given current value is null");
-  		
-  		if (notAnIC)
+ 	
+  		if (!hasValue)
   		{
-  			// type will be undefined
-  			Constraint c = new Constraint();
-  			int[] ids = new int[idsList.size()];
-  			for (int i=0; i<idsList.size(); i++)
-  			{
-  				ids[i] = idsList.get(i);
-  			}
-  			c.setAtomIDs(ids);
-  			if (hasValue)
-  			{
-  				if (useCurrentValue)
-  					c.setValue(currentValue.doubleValue());
-  				else
-  					c.setValue(value);
-  			}
-  			return c;
+  			return Constraint.buildConstraint(idsList, null, options,
+  					areLinearlyConnected, prefix, suffix, notAnIC);
   		} else {
-	  		if (!hasValue)
-	  		{
-	  			return Constraint.buildConstraint(idsList, null, options,
-	  					areLinearlyConnected);
-	  		} else {
-	  			if (useCurrentValue)
-	  			{
-	  				return Constraint.buildConstraint(idsList, 
-	  						currentValue.doubleValue(), options,
-	  						areLinearlyConnected);
-	  			} else {
-	  				return Constraint.buildConstraint(idsList, value, options,
-		  					areLinearlyConnected);
-	  			}
-	  		}
+  			if (useCurrentValue)
+  			{
+  				return Constraint.buildConstraint(idsList, 
+  						currentValue.doubleValue(), options,
+  						areLinearlyConnected, prefix, suffix, notAnIC);
+  			} else {
+  				return Constraint.buildConstraint(idsList, value, options,
+	  					areLinearlyConnected, prefix, suffix, notAnIC);
+  			}
   		}
   	}
 

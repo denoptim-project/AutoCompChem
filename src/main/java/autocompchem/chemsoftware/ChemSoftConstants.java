@@ -247,13 +247,13 @@ public class ChemSoftConstants
 
 	/**
 	 * Key for parameter defining if and what suffix append when
-	 * reporting the complete pathname in tasks {@link .PARGETFILENAMEROOT}
+	 * reporting the complete pathname in tasks {@link PARGETFILENAMEROOT}
 	 */
 	public static final String PARGETFILENAMEROOTSUFFIX = "SUFFIX";
 	
 	/**
 	 * Key for parameter defining if and what quotation mark to use for
-	 * reporting the complete pathname in tasks {@link .PARGETFILENAMEROOT}
+	 * reporting the complete pathname in tasks {@link PARGETFILENAMEROOT}
 	 */
 	public static final String PARGETFILENAMEROOTQUOTE = "QUOTATION";
 

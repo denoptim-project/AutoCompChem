@@ -75,7 +75,7 @@
                     },
                     {
                       "reference": "SMARTS",
-                      "value": "[C] [N] 1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+                      "value": "[C] [N] value:1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] value:60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
                     }
                   ],
                   "reference": "zcoordconstraints"
@@ -186,7 +186,7 @@
                     },
                     {
                       "reference": "SMARTS",
-                      "value": "[Cl] [Ru] 2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant"
+                      "value": "[Cl] [Ru] value:2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] value:60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant"
                     }
                   ],
                   "reference": "zcoordconstraints"
@@ -374,7 +374,7 @@
                     },
                     {
                       "reference": "SMARTS",
-                      "value": "[Cl] [Ru] 2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant\n[C] [N] 1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] 60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
+                      "value": "[Cl] [Ru] value:2.5 onlybonded options:BondRuCl constant\n[C] [N] onlybonded\n[C] [Ru] [$(C(~[Ru])~C)] value:60.0 onlybonded options:constant\n[C] [Ru] [C] [N] onlybonded options:constant\n[C] [N] value:1.2 onlybonded options:key1\n[C] [Ru] [$(C(~[Ru])~C)] value:60.0 onlybonded options:key3\n[C] [Ru] [C] [N] onlybonded options:key5 key6 key7"
                     }
                   ],
                   "reference": "zcoordconstraints"

@@ -410,14 +410,6 @@ public class XTBInputWriter extends ChemSoftInputWriter
     	ConstraintsSet cs = (ConstraintsSet) d.getAllDirectiveDataBlocks()
     			.get(0).getValue();
     	
-    	
-    	//WARNING: frozen atoms are defined in directive "FIX" for XTB
-    	if (!cs.getConstrainsWithType(ConstraintType.FROZENATM).isEmpty())
-    	{
-    		//WARNING: frozen atoms are defined in directive "FIX" for XTB
-    		// We should never come in here.
-    	}
-    	
     	//NB: xtb used 1-based indexes for atoms
     	
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.DISTANCE))
@@ -491,15 +483,42 @@ public class XTBInputWriter extends ChemSoftInputWriter
             lines.add(frozenTorsStr);
         }
         
+    	//WARNING: frozen atoms are defined in directive "FIX" for XTB, but
+    	// there is a way to define "atoms" in the list of constraints
+        for (Constraint c : cs.getConstrainsWithType(ConstraintType.FROZENATM))
+        {
+            String frozenGroups = XTBConstants.INDENT + "atoms: ";
+            boolean first = true;
+            for (int i=0; i<c.getAtomIDs().length; i++)
+            {
+            	if (c.getAtomIDs()[i]<0)
+            		continue;
+            	if (first)
+            	{
+            		first = false;
+            		frozenGroups = frozenGroups + (c.getAtomIDs()[i]+1);
+            	} else {
+            		frozenGroups = frozenGroups + ", " + (c.getAtomIDs()[i]+1);
+            	}
+            }
+            lines.add(frozenGroups);
+        }
+        
+    	//WARNING: undefined constraints are translated into "atom" constraints
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.UNDEFINED))
         {
             String frozenGroups = XTBConstants.INDENT + "atoms: ";
+            boolean first = true;
             for (int i=0; i<c.getAtomIDs().length; i++)
             {
-            	frozenGroups = frozenGroups + (c.getAtomIDs()[i]+1);
-            	if (i<(c.getAtomIDs().length-1))
+            	if (c.getAtomIDs()[i]<0)
+            		continue;
+            	if (first)
             	{
-            		frozenGroups = frozenGroups + ", ";
+            		first = false;
+            		frozenGroups = frozenGroups + (c.getAtomIDs()[i]+1);
+            	} else {
+            		frozenGroups = frozenGroups + ", " + (c.getAtomIDs()[i]+1);
             	}
             }
             lines.add(frozenGroups);

@@ -1,5 +1,7 @@
 package autocompchem.smarts;
 
+import autocompchem.chemsoftware.DirectiveData;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -57,6 +59,29 @@ public class SMARTS
     {
         this.smartsAsString = str;
         this.isSingleAtom = isSingleAtomSMARTS(str);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	   
+ 	   SMARTS other = (SMARTS) o;
+ 	   
+ 	   if ((this.isSingleAtom && !other.isSingleAtom) 
+ 			   || (!this.isSingleAtom && other.isSingleAtom))
+ 		   return false;
+ 	   
+ 	   return this.smartsAsString.equals(other.smartsAsString);
     }
 
 //------------------------------------------------------------------------------

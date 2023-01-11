@@ -65,12 +65,27 @@ public class Constraint implements Comparable<Constraint>
 	private boolean hasValue = false;
 	
 	/**
-	 * A given optional setting for this constraint. Examples are the options
+	 * A given optional string that is not marked to be a prefix or a suffix.
+	 * Examples are the options
 	 * telling the comp. chem. software what to do with this constraints, i.e.,
 	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint).
+	 * (add constraint). 
 	 */
 	private String options;
+	
+	/**
+	 * A given optional string that is marked to be a prefix.
+	 * Examples are the keywords that need to be written before the tuple of
+	 * atom pointers.
+	 */
+	private String prefix;
+	
+	/**
+	 * A given optional string that is marked to be a suffix.
+	 * Examples are the keywords that need to be written after the tuple of
+	 * atom pointers.
+	 */
+	private String suffix;
 	
 	/**
 	 * Flag signaling this constrain uses options.
@@ -93,7 +108,7 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public Constraint(int i)
 	{
-		this(i, -1, -1, -1, ConstraintType.FROZENATM, null, null);
+		this(new int[] {i}, ConstraintType.FROZENATM, null, null);
 	}
 	
 //------------------------------------------------------------------------------
@@ -105,7 +120,7 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public Constraint(int i, int j)
 	{
-		this(i, j, -1, -1, ConstraintType.DISTANCE, null, null);
+		this(new int[] {i, j}, ConstraintType.DISTANCE, null, null);
 	}
 //------------------------------------------------------------------------------
 
@@ -117,7 +132,7 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public Constraint(int i, int j, int k)
 	{
-		this(i, j, k, -1, ConstraintType.ANGLE, null, null);
+		this(new int[] {i, j, k}, ConstraintType.ANGLE, null, null);
 	}
 	
 //------------------------------------------------------------------------------
@@ -133,7 +148,7 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public Constraint(int i, int j, int k, int l, boolean isDihedral)
 	{
-		this(i, j, k, l, null, null, null);
+		this(new int[] {i, j, k, l}, null, null, null);
 		if (isDihedral)
 			type = ConstraintType.DIHEDRAL;
 		else
@@ -151,7 +166,8 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public Constraint(int i, int j, double value)
 	{
-		this(i, j, -1, -1, ConstraintType.DISTANCE, Double.valueOf(value),null);
+		this(new int[] {i, j}, ConstraintType.DISTANCE, Double.valueOf(value),
+				null);
 	}
 	
 //------------------------------------------------------------------------------
@@ -166,7 +182,8 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public Constraint(int i, int j, int k, double value)
 	{
-		this(i, j, k, -1, ConstraintType.ANGLE, Double.valueOf(value), null);
+		this(new int[] {i, j, k}, ConstraintType.ANGLE, Double.valueOf(value), 
+				null);
 	}
 	
 //------------------------------------------------------------------------------
@@ -174,10 +191,8 @@ public class Constraint implements Comparable<Constraint>
 	/**
 	 * Constructs a constraint of any kind offering the possibility to define
 	 * a specific value and options to assign to the constraint.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 * @param l forth index (0-based)
+	 * @param ids indexes (0-based) of centers (i.e., atoms) defining this 
+	 * constraint
 	 * @param value a numerical value to be assigned to the constraint. Or null
 	 * if no value is to be set.
 	 * @param type the type of constraint. This defines how many of the indexes
@@ -187,13 +202,10 @@ public class Constraint implements Comparable<Constraint>
 	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
 	 * (add constraint). Or null, if no option has to be given.
 	 */
-	public Constraint(int i, int j, int k, int l, 
+	public Constraint(int[] ids,
 			ConstraintType type, Double value, String options)
 	{
-		this.atmIDs[0] = i;
-		this.atmIDs[1] = j;
-		this.atmIDs[2] = k;
-		this.atmIDs[3] = l;
+		this.atmIDs = ids;
 		if (value != null)
 		{
 			this.value = value.doubleValue();
@@ -221,7 +233,7 @@ public class Constraint implements Comparable<Constraint>
 	public static Constraint buildConstraint(ArrayList<Integer> ids, 
 			boolean areLinearlyConnected) throws Exception
 	{
-		return buildConstraint(ids, null, null, areLinearlyConnected);
+		return buildConstraint(ids, null, null, areLinearlyConnected, null, null);
 	}
 	
 //------------------------------------------------------------------------------
@@ -239,42 +251,92 @@ public class Constraint implements Comparable<Constraint>
 	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
 	 * represent a set of centers that are connected in the order given, e.g.
 	 * 1-j-k-l.
+	 * @param prefix a string associated with the constraint and flagged as 
+	 * prefix.
+	 * @param suffix a string associated with the constraint and flagged as 
+	 * suffix.
 	 * @return the constraint.
 	 * @throws Exception
 	 */
 	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, String opts, boolean areLinearlyConnected) 
-					throws Exception
+			Double value, String opts, boolean areLinearlyConnected,
+			String prefix, String suffix) throws Exception
 	{
-		switch (ids.size())
+		return buildConstraint(ids, value, opts, areLinearlyConnected,
+				 prefix, suffix, true);
+	}
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructs a constrain.
+	 * @param ids atom IDs. The number of value determines the type of 
+	 * constraint.
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
+	 * @param opts additional string usually used to tell the comp. chem.
+	 * software how to use the given information. For example,
+	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
+	 * (add constraint). Or null, if no option has to be given.
+	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
+	 * represent a set of centers that are connected in the order given, e.g.
+	 * 1-j-k-l.
+	 * @param prefix a string associated with the constraint and flagged as 
+	 * prefix.
+	 * @param suffix a string associated with the constraint and flagged as 
+	 * suffix.
+	 * @param notAnIC use <code>true</code> to prevent processing this 
+	 * constraint as an internal coordinate.
+	 * @return the constraint.
+	 * @throws Exception
+	 */
+	public static Constraint buildConstraint(ArrayList<Integer> ids, 
+			Double value, String opts, boolean areLinearlyConnected,
+			String prefix, String suffix, boolean notAnIC) throws Exception
+	{
+		ConstraintType type = ConstraintType.UNDEFINED;
+		if (!notAnIC)
 		{
-			case 1:
-				return new Constraint(ids.get(0), -1, -1, -1,
-						ConstraintType.FROZENATM, value, opts);
-			case 2:
-				return new Constraint(ids.get(0), ids.get(1), -1, -1,
-						ConstraintType.DISTANCE, value, opts);
-			case 3:
-				return new Constraint(ids.get(0), ids.get(1), ids.get(2), -1,
-						ConstraintType.ANGLE, value, opts);
-			case 4:
-				if (areLinearlyConnected)
-				{
-					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
-						ids.get(3), ConstraintType.DIHEDRAL, value, opts);
-				} else {
-					//TODO-gg use connectivity matrix instead of 
-					// areLinearlyConnected so that we can distinguish the
-					// improper torsion from undefined 4-tuples.
-					// Also, add option to ignore the typing of the constraint.
-					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
-							ids.get(3), ConstraintType.IMPROPERTORSION, value, 
-							opts);
-				}
-			default:
-				throw new Exception("Unexpected number of atom IDs (" 
-						+ ids.size() + "). Cannot construct a Constraint.");
-		}
+			switch (ids.size())
+			{
+				case 1:
+					type = ConstraintType.FROZENATM;
+					break;
+					
+				case 2:
+					type = ConstraintType.DISTANCE;
+					break;
+					
+				case 3:
+					type = ConstraintType.ANGLE;
+					break;
+					
+				case 4:
+					if (areLinearlyConnected)
+					{
+						type = ConstraintType.DIHEDRAL;
+					} else {
+						//TODO-gg use connectivity matrix instead of 
+						// areLinearlyConnected so that we can distinguish the
+						// improper torsion from undefined 4-tuples.
+						// Also, add option to ignore the typing of the constraint.
+						type = ConstraintType.IMPROPERTORSION;
+					}
+					break;
+					
+				default:
+					throw new Exception("Unexpected number of atom IDs (" 
+							+ ids.size() + "). Cannot construct a Constraint.");
+			}
+		} 
+
+		int[] idsArr = new int[ids.size()];
+		for (int i=0; i<ids.size(); i++)
+			idsArr[i] = ids.get(i);
+	
+		Constraint cstr = new Constraint(idsArr, type, value, opts);
+		cstr.setPrefix(prefix);
+		cstr.setSuffix(suffix);
+		return cstr;
 	}
 	
 //------------------------------------------------------------------------------
@@ -335,6 +397,8 @@ public class Constraint implements Comparable<Constraint>
 		}
 		sb.append("], value=").append(value);
 		sb.append("], options=").append(options);
+		sb.append("], prefix=").append(prefix);
+		sb.append("], suffix=").append(suffix);
 		sb.append("] ");
 		return sb.toString();
 	}
@@ -563,6 +627,14 @@ public class Constraint implements Comparable<Constraint>
 		if (this.options!=null && other.options!=null
 				&& !this.options.equals(other.options))
 			return false;
+		
+		if (this.prefix!=null && other.prefix!=null
+				&& !this.prefix.equals(other.prefix))
+			return false;
+		
+		if (this.suffix!=null && other.suffix!=null
+				&& !this.suffix.equals(other.suffix))
+			return false;
 	   	 
 	   	return this.type == other.type
 	   			&& this.hasValue == other.hasValue 
@@ -583,11 +655,67 @@ public class Constraint implements Comparable<Constraint>
 //------------------------------------------------------------------------------
 
 	/**
+	 * The optional string contains all text but anything marked as prefix or
+	 * suffix. For those, use {@link #getPrefix()} and {@link #getPrefix()}.
 	 * @return the optional string associated with this constraint.
 	 */
 	public String getOpt() 
 	{
 		return options;
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Retrieves any optional string marked to be a prefix.
+	 * Any optional string not marked to be prefix or suffix can be retrieved 
+	 * with {@link #getOpt()}.
+	 * @return the optional string associated with this constraint and flagged 
+	 * as prefix or an empty string if no prefix is defined
+	 */
+	public String getPrefix() 
+	{
+		if (prefix==null)
+			return "";
+		return prefix;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Set any optional string marked to be a prefix.
+	 * @param prefix the string to use as prefix
+	 */
+	public void setPrefix(String prefix) 
+	{
+		this.prefix = prefix;
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Retrieves any optional string marked to be a suffix.
+	 * Any optional string not marked to be prefix or suffix can be retrieved 
+	 * with {@link #getOpt()}.
+	 * @return the optional string associated with this constraint and flagged 
+	 * as suffix or an empty string if no suffix is defined.
+	 */
+	public String getSuffix() 
+	{
+		if (suffix==null)
+			return "";
+		return suffix;
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Set any optional string marked to be a suffix.
+	 * @param suffix the string to use as suffix
+	 */
+	public void setSuffix(String suffix) 
+	{
+		this.suffix = suffix;
 	}
 	
 //------------------------------------------------------------------------------

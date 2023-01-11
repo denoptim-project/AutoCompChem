@@ -916,24 +916,19 @@ public class Directive implements IDirectiveComponent, Cloneable
         		IAtomContainer mol = mols.get(0);
         		
         		// Define atom pointers
-        		//TODO-.gg
-        		List<String> pointers = new ArrayList<String>();
-        		int i=0;
-        		for (IAtom atm : mol.atoms())
-        		{
-        			i++;
-        			pointers.add(i+"");
-        		}
+        		ParameterStorage labMakerParams = params.clone();
+        		labMakerParams.setParameter("TASK", 
+                		TaskID.GENERATEATOMLABELS.toString());
+            	AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
+            			WorkerFactory.createWorker(labMakerParams);
+        		List<String> pointers = labGenerator.generateAtomLabels(mol);
         		
-	        	
-	        	// Identify atoms
+	        	// Identify specific atoms to work with
         		List<String> atmSpecValues = new ArrayList<String>();
-        		
                 ParameterStorage cnstrParams = params.clone();
                 
-                //TODO-gg should use Task identify atoms
+                //TODO-gg should use Task "identify atoms tuples"
                 
-                //TODO-gg: this should be avoided by using TASK instead of ACCTASK
                 //TODO-gg use WorkerConstant.TASK
                 cnstrParams.setParameter("TASK", 
                 		TaskID.GENERATECONSTRAINTS.toString());
@@ -953,11 +948,9 @@ public class Directive implements IDirectiveComponent, Cloneable
             	for (Constraint c : cs.getConstrainsWithType(
             			ConstraintType.FROZENATM))
             	{
-            		//TODO-gg add pre/suf-fix identification in options
-            		String suffix = c.getOpt();
-            		String prefix = "";
-            		atmSpecValues.add(prefix 
-            				+ pointers.get(c.getAtomIDs()[0]) + suffix);
+            		atmSpecValues.add(c.getPrefix() 
+            				+ pointers.get(c.getAtomIDs()[0]) 
+            				+ c.getSuffix());
             	}
 	        	
 	        	// Make and append atom-specific keywords

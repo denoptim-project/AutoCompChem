@@ -28,6 +28,29 @@
           "reference": "CONFSEXAMINED",
           "value": "10"
         }
+      ],
+      "accTaskParams": [
+        {
+          "reference": "TASK",
+          "value": "ADDATOMSPECKEYWORDS"
+        },
+        {
+          "reference": "KeywordName",
+          "value": "FFHINT"
+        },
+        {
+          "reference": "KwIsLoud",
+          "value": "true"
+        },
+        {
+          "reference": "AtmPointer",
+          "value": "Label"
+        },
+
+        {
+          "reference": "SMARTS",
+          "value": "[Ru]\n[#17]\n[#6;X3](~[#7,#6])~[#7]\n[#6]~[#7]"
+        }
       ]
     },
     {
