@@ -5,10 +5,6 @@ VERBOSITY: 1
 TASK: PrepareInputSpartan2
 INPUTGEOMETRIESFILE: ../t70-mol.sdf
 JOBDETAILSFILE: ../t70-jobDetails.json
-#$STARTATOMSPECIFICKEYWORDS:
-#[Ru] FFHINT= ~~210
-#[#6]-[$([#8]~[#6])]-[#6] KEYWORD= partB partC partD
-#$END
 #$STARTROTATABLEBONDS:
 #[#6]!@-[#6] 6
 #[C]~[#6] 5

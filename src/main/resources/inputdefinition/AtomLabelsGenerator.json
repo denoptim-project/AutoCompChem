@@ -12,7 +12,7 @@
     "doc": "The pathname to the file where to print the results."
   },
   {
-    "key": "MODE",
+    "key": "LABELTYPE",
     "type": "<String>",
     "doc": "Specifies how to create atom labels. Available options are 'ElementBased' (e.g., 'C1', 'C2', 'H1', 'H2') and 'IndexBased' (e.g., 'C1', 'C2', 'H4', 'H4')."
   },

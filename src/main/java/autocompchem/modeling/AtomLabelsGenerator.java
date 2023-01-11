@@ -144,10 +144,10 @@ public class AtomLabelsGenerator extends Worker
             FileUtils.mustNotExist(this.outFile);
         }
 
-        if (params.contains("MODE"))
+        if (params.contains("LABELTYPE"))
         {
             this.mode = AtomLabelMode.valueOf(
-            		params.getParameter("MODE").getValueAsString());
+            		params.getParameter("LABELTYPE").getValueAsString());
         }
         
         if (params.contains("SEPARATOR"))

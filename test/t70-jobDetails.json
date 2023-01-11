@@ -43,13 +43,16 @@
           "value": "true"
         },
         {
-          "reference": "AtmPointer",
-          "value": "Label"
+          "reference": "LABELTYPE",
+          "value": "ElementBased"
         },
-
+        {
+          "reference": "ZEROBASED",
+          "value": "false"
+        },
         {
           "reference": "SMARTS",
-          "value": "[Ru]\n[#17]\n[#6;X3](~[#7,#6])~[#7]\n[#6]~[#7]"
+          "value": "[Ru] suffix: ~~210"
         }
       ]
     },
@@ -108,7 +111,7 @@
               "value": "GenerateAtomLabels"
             },
             {
-              "reference": "MODE",
+              "reference": "LABELTYPE",
               "value": "ElementBased"
             },
             {

@@ -62,7 +62,7 @@
               "value": "GenerateAtomLabels"
             },
             {
-              "reference": "MODE",
+              "reference": "LABELTYPE",
               "value": "ElementBased"
             },
             {
