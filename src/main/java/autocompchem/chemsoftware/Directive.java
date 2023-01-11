@@ -23,9 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.lang.reflect.Type;
 
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -43,6 +46,8 @@ import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
@@ -631,7 +636,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * Performs ACC tasks that are defined within this directive. Such
      * tasks are typically dependent on the chemical system at hand, so, by
-     * running this method, this job becomes system-specific. Moreover,
+     * running this method, this job may become system-specific. Moreover,
      * ACC may 
      * modify the content of any of its components, i.e., 
      * keywords, directive data, accordingly to the  
@@ -639,6 +644,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * Tasks are performed serially, one after the other, according to this
      * ordering scheme:
      * <ol>
+     * <li>tasks found in this very {@link Directive},</li>
      * <li>tasks found in {@link Keyword}s,</li>
      * <li>tasks found in {@link DirectiveData}s,</li>
      * <li>recursion into embedded (sub){@link Directive}s,</li>
@@ -651,10 +657,10 @@ public class Directive implements IDirectiveComponent, Cloneable
     
     public void performACCTasks(List<IAtomContainer> mols, Job job)
     {
-    	// For now we do not see any use case for tasks in the directive itself.
-    	// This because the directive holds no data/value by itself, and thus
-    	// any task aiming to add/modify data/values should belong to a
-    	// component that implements IValueContainer
+    	if (accTaskParams!=null)
+    	{
+    		performACCTask(mols, accTaskParams, this, job);
+    	}
     	
     	for (Keyword k : keywords)
     	{
@@ -896,6 +902,83 @@ public class Directive implements IDirectiveComponent, Cloneable
         
         switch (task.toUpperCase()) 
         {   
+	        case ChemSoftConstants.PARADDATOMSPECIFICKEYWORD:
+	        {
+	        	if (!(dirComp instanceof Directive))
+	        	{
+	        		throw new IllegalArgumentException("Task " + task 
+	        				+ " can be performed only from within a Directive. "
+	        				+ "Not from " + dirComp.getClass().getName() + ".");
+	        	}
+	        	Directive targetDir = (Directive) dirComp;
+	        	
+	        	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
+        		// Define atom pointers
+        		//TODO-.gg
+        		List<String> pointers = new ArrayList<String>();
+        		int i=0;
+        		for (IAtom atm : mol.atoms())
+        		{
+        			i++;
+        			pointers.add(i+"");
+        		}
+        		
+	        	
+	        	// Identify atoms
+        		List<String> atmSpecValues = new ArrayList<String>();
+        		
+                ParameterStorage cnstrParams = params.clone();
+                
+                //TODO-gg should use Task identify atoms
+                
+                //TODO-gg: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                cnstrParams.setParameter("TASK", 
+                		TaskID.GENERATECONSTRAINTS.toString());
+                
+            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
+            	
+            	ConstraintsSet cs = new ConstraintsSet();
+            	try {
+					cs = cnstrg.createConstraints(mol);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Unable to create "
+							+ "constraints. Exception from the "
+							+ "ConstraintGenerator.", -1);
+				}
+            	for (Constraint c : cs.getConstrainsWithType(
+            			ConstraintType.FROZENATM))
+            	{
+            		//TODO-gg add pre/suf-fix identification in options
+            		String suffix = c.getOpt();
+            		String prefix = "";
+            		atmSpecValues.add(prefix 
+            				+ pointers.get(c.getAtomIDs()[0]) + suffix);
+            	}
+	        	
+	        	// Make and append atom-specific keywords
+	        	String kwName = ""; 
+	        	boolean isLoud = false; // By default it's a "mute" keyword
+	        	if (params.contains(ChemSoftConstants.KEYWORDNAME))
+            	{
+            		kwName = params.getParameter(
+            				ChemSoftConstants.KEYWORDNAME).getValueAsString();
+            	}
+	        	if (params.contains(ChemSoftConstants.KWISLOUD))
+            	{
+            		isLoud = Boolean.parseBoolean(params.getParameter(
+            				ChemSoftConstants.KWISLOUD).getValueAsString());
+            	}
+	        	for (String value : atmSpecValues)
+	        	{
+	        		targetDir.addKeyword(new Keyword(kwName, isLoud, value));
+	        	}
+	        	break;
+	        }
             case ChemSoftConstants.PARGETFILENAMEROOT:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
