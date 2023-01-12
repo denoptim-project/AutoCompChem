@@ -106,7 +106,8 @@ public class StringUtils
 
     /**
      * Appends all entries of a list to obtain a single string that uses the 
-     * given separator.
+     * given separator. Each object is converted into a string using the 
+     * corresponding <code>toString()</code> method.
      * @param list the entries to append.
      * @param sep separator to use between entries.
      * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
@@ -114,14 +115,15 @@ public class StringUtils
     
     public static String mergeListToString(List<? extends Object> list, String sep)
     {
-    	return mergeListToString(list,sep,false);
+    	return mergeListToString(list, sep, false);
     }
     
 //------------------------------------------------------------------------------
 
     /**
      * Appends all entries of a list to obtain a single string that uses the 
-     * given separator.
+     * given separator.  Each object is converted into a string using the 
+     * corresponding <code>toString()</code> method.
      * @param list the entries to append.
      * @param sep separator to use between entries.
      * @param trim if <code>true</code> avoids to write separator after the

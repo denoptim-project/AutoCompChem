@@ -94,7 +94,7 @@
             },
             {
               "reference": "SMARTS",
-              "value": "[C] [N] onlybonded useCurrentValue\n[Cl] [Ru] onlybonded useCurrentValue\n[$([#6]~[#7])] [Ru] onlybonded useCurrentValue\n[$([#6]@~[Ru])] [Ru] onlybonded useCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded useCurrentValue\n[$([#6]@~[Ru])] [$([#1][#6]@~[Ru])] onlybonded useCurrentValue\n[$([#6]@~[#6]@~[Ru])] [#1] onlybonded useCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded useCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded useCurrentValue\n[#17] [Ru] [#17] onlybonded useCurrentValue\n[#17] [Ru] [#6] onlybonded useCurrentValue\n[#1] [$([#6]@~[Ru])] [#1] onlybonded useCurrentValue\n[#1] [$([#6]@~[Ru])] [Ru] onlybonded useCurrentValue\n[#1] [$([#6]@~[Ru])] [#6] onlybonded useCurrentValue\n[C] [Ru] [C] [N] onlybonded useCurrentValue"
+              "value": "[C] [N] onlybonded getCurrentValue\n[Cl] [Ru] onlybonded getCurrentValue\n[$([#6]~[#7])] [Ru] onlybonded getCurrentValue\n[$([#6]@~[Ru])] [Ru] onlybonded getCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded getCurrentValue\n[$([#6]@~[Ru])] [$([#1][#6]@~[Ru])] onlybonded getCurrentValue\n[$([#6]@~[#6]@~[Ru])] [#1] onlybonded getCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded getCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded getCurrentValue\n[#17] [Ru] [#17] onlybonded getCurrentValue\n[#17] [Ru] [#6] onlybonded getCurrentValue\n[#1] [$([#6]@~[Ru])] [#1] onlybonded getCurrentValue\n[#1] [$([#6]@~[Ru])] [Ru] onlybonded getCurrentValue\n[#1] [$([#6]@~[Ru])] [#6] onlybonded getCurrentValue\n[C] [Ru] [C] [N] onlybonded getCurrentValue"
             }
           ],
           "reference": "constrain-generation task"

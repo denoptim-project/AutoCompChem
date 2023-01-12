@@ -23,7 +23,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 /** 
- * This object contains the list of neighbours per each atom in the system.
+ * This object contains the list of neighbors per each atom in the system.
  * Both 0-based and 1-based connectivity can be generated.
  *          
  * @author Marco Foscato
@@ -74,13 +74,13 @@ public class ConnectivityTable
 //------------------------------------------------------------------------------
 
     /**
-     * Add a neighbourning role to the connectivity table
+     * Add a neighborning role to the connectivity table
      * @param srcId the index of the src atom
-     * @param nbrs the list of atom Ids of the neighbours
+     * @param nbrs the list of atom Ids of the neighbors
      * @param zeroBased set <code>true</code> if the input is 0-based
      */
 
-    public void setNeighboursRelation(int srcId, ArrayList<Integer> nbrs, 
+    public void setNeighborsRelation(int srcId, ArrayList<Integer> nbrs, 
                                                               boolean zeroBased)
     {
         //scale to 0-based IDs
@@ -114,12 +114,12 @@ public class ConnectivityTable
 //------------------------------------------------------------------------------
 
     /**
-     * Get index of neighbours of an atom. Both 0-based and 1-based
+     * Get index of neighbors of an atom. Both 0-based and 1-based
      * output indexes can be produced.
      * @param srcId the index of the central atom (always 0-based)
      * @param zeroBased set to <code>true</code> if 0-based indexes are wanted
      * or <code>false</code> for 1-based. 
-     * @return the list of IDs of neighbour atoms
+     * @return the list of IDs of neighbor atoms
      */
 
     public ArrayList<Integer> getNbrsId(int srcId, boolean zeroBased)
@@ -140,14 +140,14 @@ public class ConnectivityTable
 //------------------------------------------------------------------------------
 
     /**
-     * Get index of neighbours of an atom in a formatted form. 
+     * Get index of neighbors of an atom in a formatted form. 
      * Both 0-based and 1-based
      * output indexes can be produced.
      * @param srcId the index of the central atom (always 0-based)
      * @param zeroBased set to <code>true</code> if 0-based indexes are wanted
      * or <code>false</code> for 1-based.
      * @param sep the separator to be used between the indexes
-     * @return the IDs of the neighbour atoms as a string
+     * @return the IDs of the neighbor atoms as a string
      */
 
     public String getNbrsIdAsString(int srcId, boolean zeroBased, String sep) 

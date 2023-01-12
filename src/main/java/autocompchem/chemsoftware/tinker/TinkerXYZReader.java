@@ -100,7 +100,7 @@ public class TinkerXYZReader
                     {
                         nbrs.add(Integer.parseInt(parts[j]));
                     }
-                    cTab.setNeighboursRelation(atmId-1,nbrs,true);
+                    cTab.setNeighborsRelation(atmId-1,nbrs,true);
                 }
             }
             i++;

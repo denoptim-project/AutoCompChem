@@ -29,6 +29,7 @@ public enum WorkerID
     AtomClashAnalyzer,
     AtomTypeMatcher,
     AtomLabelsGenerator,
+    AtomTupleGenerator,
     BasisSetGenerator,
     ChelateAnalyzer,
     ConformationalSpaceGenerator,

@@ -82,26 +82,48 @@ public class ConfigItem
 	 * @return a string formatted to optimize printing in CLI's help message.
 	 */
 	private String getStringThisKey() {
-		String[] words = doc.split("\\s+");
+		// The regex is meant to ignore any newline chars combination. This
+		// to enable usage of newline characters in the documentation string.
+		String[] words = doc.split("[^\\S\\r\\n]"); 
 		StringBuilder sbHeader = new StringBuilder();
 		sbHeader.append(" -> ").append(key).append(" ").append(type);
 		String indent = "        ";
-		sbHeader.append(System.getProperty("line.separator")).append(indent);
-		int rowCounter = 1;
+		sbHeader.append(System.getProperty("line.separator"));
+		
+		int previousRowsLength = 0;
+		int maxLineLength = 76;
 
 		StringBuilder sb = new StringBuilder();
+		sb.append(indent);
 		for (int i=0; i<words.length; i++) 
 		{
-			int length = sb.length() + words[i].length() + 2 
-					+ (indent.length()*rowCounter);
-			if ((76*rowCounter) > length)
+			//TODO-gg del
+			String word = words[i];
+			System.out.println(sb.toString());
+			if (words[i].equals("substructures"))
 			{
-				sb.append(words[i]).append(" ");
+				int ooo =0;
+			}
+			
+			int currentRowLength = sb.length() - (previousRowsLength);
+			int possibleLength = currentRowLength + words[i].length();
+			
+			if (possibleLength < maxLineLength)
+			{
+				sb.append(words[i]);
+				currentRowLength = possibleLength;
 			} else {
-				rowCounter++;
+				previousRowsLength = previousRowsLength + currentRowLength;
 				sb.append(System.getProperty("line.separator"));
-				sb.append(indent).append(words[i]).append(" ");
-			}	
+				sb.append(indent).append(words[i]);
+			}
+			if (words[i].matches(".*[\\r\\n]+"))
+			{
+				previousRowsLength = previousRowsLength + currentRowLength;
+				sb.append(indent);
+			} else {
+				sb.append(" ");
+			}
 		}
 		sb.append(System.getProperty("line.separator"));
 		sbHeader.append(sb.toString());
