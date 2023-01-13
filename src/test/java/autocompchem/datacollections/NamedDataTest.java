@@ -39,6 +39,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.ACCJson;
 import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainer;
 import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainerTest;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleListTest;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetTest;
 import autocompchem.modeling.constraints.ConstraintsSetTest;
@@ -179,6 +180,11 @@ public class NamedDataTest
     			ConstraintsSetTest.getTestConstraintSet()));
     	nds.add(new NamedData("ZMatrix", NamedDataType.ZMATRIX,
     			ZMatrixTest.getTestZMatrix()));
+    	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
+    			ConstraintsSetTest.getTestConstraintSet()));
+    	nds.add(new NamedData("AnnotatedAtomTupleSet", 
+    			NamedDataType.ANNOTATEDATOMTUPLELIST,
+    			AnnotatedAtomTupleListTest.getTestAnnotatedAtomTupleList()));
     	
     	// The following ones are non-JSON-able
     	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 

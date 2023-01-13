@@ -71,13 +71,13 @@ public class AtomTupleGenerator extends Worker
     /**
      * The name of the input file (molecular structure files)
      */
-    private String inFile = "noInFile";
+    protected String inFile = "noInFile";
 
     /**
      * List of atom-matching rules for definition of the tuples and of their 
      * attributes.
      */
-    private List<AtomTupleMatchingRule> rules = 
+    protected List<AtomTupleMatchingRule> rules = 
     		new ArrayList<AtomTupleMatchingRule>();
     
     /**
@@ -90,7 +90,7 @@ public class AtomTupleGenerator extends Worker
     /**
      * Verbosity level
      */
-    private int verbosity = 0;
+    protected int verbosity = 0;
 
     /**
      * Unique identifier for rules
@@ -141,7 +141,7 @@ public class AtomTupleGenerator extends Worker
         {
         	valKeys.addAll(Arrays.asList(
         			params.getParameter("VALUEDKEYWORDS").getValueAsString()
-        			.trim().split("\\s+")));
+        			.trim().toUpperCase().split("\\s+")));
         }
 
         List<String> boolKeys = new ArrayList<String>();
@@ -149,7 +149,7 @@ public class AtomTupleGenerator extends Worker
         {
         	boolKeys.addAll(Arrays.asList(
         			params.getParameter("BOOLEANKEYWORDS").getValueAsString()
-        			.trim().split("\\s+")));
+        			.trim().toUpperCase().split("\\s+")));
         }
 
         if (params.contains("SMARTS"))
@@ -290,6 +290,19 @@ public class AtomTupleGenerator extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Define annotated atom tuples for the given atom container using the
+     *  tuple-defining rules present in this instance.
+     * @param mol the atom container for which we want to create atom tuples.
+     * @return the list of tuples
+     */
+    public List<AnnotatedAtomTuple> createTuples(IAtomContainer mol)
+    {
+    	return createTuples(mol, rules);
     }
 
 //------------------------------------------------------------------------------

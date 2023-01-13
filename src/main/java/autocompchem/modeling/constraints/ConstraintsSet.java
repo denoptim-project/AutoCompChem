@@ -32,13 +32,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.intcoords.InternalCoord;
 
 /**
  * An ordered collection of constraints.
  */
-public class ConstraintsSet extends TreeSet<Constraint>
+public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 {
 
 	/**
@@ -76,6 +77,7 @@ public class ConstraintsSet extends TreeSet<Constraint>
 	{
 		if (!(o instanceof ConstraintsSet))
 			return false;
+		
 		ConstraintsSet other = (ConstraintsSet) o;
    	 
 	   	if (this.numAtoms != other.numAtoms)
@@ -88,10 +90,9 @@ public class ConstraintsSet extends TreeSet<Constraint>
 	   	Iterator<Constraint> otherIter = other.iterator();
 	   	while (thisIter.hasNext())
 	   	{
-	   		if (!thisIter.next().equals(otherIter.next()))
-	   			return false;
+	   	        if (!thisIter.next().equals(otherIter.next()))
+	   	                return false;
 	   	}
-	   	
 	   	return true;
 	}
 
@@ -184,7 +185,7 @@ public class ConstraintsSet extends TreeSet<Constraint>
     	Iterator<Constraint> iter = this.iterator();
 	   	while (iter.hasNext())
 	   	{
-	   		if (ic.compareIDs(iter.next().getAtomIDsList()))
+	   		if (ic.compareIDs(iter.next().getAtomIDs()))
 	   			return true;
 	   	}
 		return false;

@@ -664,50 +664,50 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	                    	switch (cns.getType())
 	                    	{
 								case ANGLE:
-									str = "A " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1) + " "
-											+ (cns.getAtomIDs()[2]+1);
+									str = "A " + (cns.getAtomIDs().get(0)+1) + " "
+											+ (cns.getAtomIDs().get(1)+1) + " "
+											+ (cns.getAtomIDs().get(2)+1);
 									
 									break;
 								case DIHEDRAL:
-									str = "D " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1) + " "
-											+ (cns.getAtomIDs()[2]+1) + " "
-											+ (cns.getAtomIDs()[3]+1);
+									str = "D " + (cns.getAtomIDs().get(0)+1) + " "
+											+ (cns.getAtomIDs().get(1)+1) + " "
+											+ (cns.getAtomIDs().get(2)+1) + " "
+											+ (cns.getAtomIDs().get(3)+1);
 									break;
 								case IMPROPERTORSION:
-									str = "D " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1) + " "
-											+ (cns.getAtomIDs()[2]+1) + " "
-											+ (cns.getAtomIDs()[3]+1);
+									str = "D " + (cns.getAtomIDs().get(0)+1) + " "
+											+ (cns.getAtomIDs().get(1)+1) + " "
+											+ (cns.getAtomIDs().get(2)+1) + " "
+											+ (cns.getAtomIDs().get(3)+1);
 									break;
 								case DISTANCE:
-									str = "B " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1);
+									str = "B " + (cns.getAtomIDs().get(0)+1) + " "
+											+ (cns.getAtomIDs().get(1)+1);
 									break;
 								case FROZENATM:
-									str = "X " + (cns.getAtomIDs()[0]+1);
+									str = "X " + (cns.getAtomIDs().get(0)+1);
 									break;
 								case UNDEFINED:
-									switch (cns.getAtomIDs().length)
+									switch (cns.getAtomIDs().size())
 									{
 									case 1:
-										str = "X " + (cns.getAtomIDs()[0]+1);
+										str = "X " + (cns.getAtomIDs().get(0)+1);
 										break;
 									case 2:
-										str = "B " + (cns.getAtomIDs()[0]+1) 
-											+ " " + (cns.getAtomIDs()[1]+1);
+										str = "B " + (cns.getAtomIDs().get(0)+1) 
+											+ " " + (cns.getAtomIDs().get(1)+1);
 										break;
 									case 3:
-										str = "A " + (cns.getAtomIDs()[0]+1) 
-											+ " " + (cns.getAtomIDs()[1]+1) 
-											+ " " + (cns.getAtomIDs()[2]+1);
+										str = "A " + (cns.getAtomIDs().get(0)+1) 
+											+ " " + (cns.getAtomIDs().get(1)+1) 
+											+ " " + (cns.getAtomIDs().get(2)+1);
 										break;
 									case 4:
-										str = "D " + (cns.getAtomIDs()[0]+1) 
-											+ " " + (cns.getAtomIDs()[1]+1) 
-											+ " " + (cns.getAtomIDs()[2]+1) 
-											+ " " + (cns.getAtomIDs()[3]+1);
+										str = "D " + (cns.getAtomIDs().get(0)+1) 
+											+ " " + (cns.getAtomIDs().get(1)+1) 
+											+ " " + (cns.getAtomIDs().get(2)+1) 
+											+ " " + (cns.getAtomIDs().get(3)+1);
 										break;
 										
 									}
@@ -718,7 +718,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	                    	
 	                    	if (cns.hasOpt())
 	                    	{
-	                    		str = str + " " + cns.getOpt();
+	                    		str = str + " " + cns.getOpts();
 	                    	}
 	                    	lines.add(str);
 	                    }

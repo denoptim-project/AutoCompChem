@@ -273,7 +273,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	    	for (Constraint c : cs.getConstrainsWithType(
 	    			ConstraintType.FROZENATM))
 	    	{
-	    		frozenCentersStr = frozenCentersStr + " " + c.getAtomIDs()[0];
+	    		frozenCentersStr = frozenCentersStr + " " + c.getAtomIDs().get(0);
 	    	}
 	    	frozenCentersStr = frozenCentersStr + " C }";
 	    	lines.add(frozenCentersStr);
@@ -284,11 +284,15 @@ public class OrcaInputWriter extends ChemSoftInputWriter
         	String frozenBondsStr = OrcaConstants.INDENT + "{ B";
         	if (c.hasValue())
         	{
-        		frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs()[0] + " "
-                		+ c.getAtomIDs()[1] + " " + c.getValue();
-        	} else {
-                frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs()[0] + " "
-                		+ c.getAtomIDs()[1];
+        		frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs().get(0) + " "
+                		+ c.getAtomIDs().get(1) + " " + c.getValue();
+        	} else if (c.hasCurrentValue())
+        	{
+        		frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs().get(0) + " "
+                		+ c.getAtomIDs().get(1) + " " + c.getCurrentValue();
+        	} else{
+                frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs().get(0) + " "
+                		+ c.getAtomIDs().get(1);
         	}
         	frozenBondsStr = frozenBondsStr + " C }";
         	lines.add(frozenBondsStr);
@@ -299,12 +303,17 @@ public class OrcaInputWriter extends ChemSoftInputWriter
             String frozenAngleStr = OrcaConstants.INDENT + "{ A";
             if (c.hasValue())
             {
-                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs()[0] + " "
-                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " " 
+                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " " 
                 		+ c.getValue();
-            } else {
-                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs()[0] + " "
-                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2];
+            } else if (c.hasCurrentValue())
+            {
+                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " " 
+                		+ c.getCurrentValue();
+            } else{
+                frozenAngleStr = frozenAngleStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2);
             }
             frozenAngleStr = frozenAngleStr + " C }";
             lines.add(frozenAngleStr);
@@ -315,13 +324,18 @@ public class OrcaInputWriter extends ChemSoftInputWriter
             String frozenTorsStr = OrcaConstants.INDENT + "{ D";
             if (c.hasValue())
             {
-                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
-                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
-                        + c.getAtomIDs()[3] + " " + c.getValue();
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " "
+                        + c.getAtomIDs().get(3) + " " + c.getValue();
+            } else if (c.hasCurrentValue())
+            {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " "
+                        + c.getAtomIDs().get(3) + " " + c.getCurrentValue();
             } else {
-                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
-                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
-                        + c.getAtomIDs()[3];
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " "
+                        + c.getAtomIDs().get(3);
             }
             frozenTorsStr = frozenTorsStr + " C }";
             lines.add(frozenTorsStr);
@@ -332,13 +346,18 @@ public class OrcaInputWriter extends ChemSoftInputWriter
             String frozenTorsStr = OrcaConstants.INDENT + "{ D";
             if (c.hasValue())
             {
-                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
-                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
-                        + c.getAtomIDs()[3] + " " + c.getValue();
-            } else {
-                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs()[0] + " "
-                        + c.getAtomIDs()[1] + " " + c.getAtomIDs()[2] + " "
-                        + c.getAtomIDs()[3];
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " "
+                        + c.getAtomIDs().get(3) + " " + c.getValue();
+            } else if (c.hasCurrentValue())
+            {
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " "
+                        + c.getAtomIDs().get(3) + " " + c.getCurrentValue();
+            } else{
+                frozenTorsStr = frozenTorsStr + " " + c.getAtomIDs().get(0) + " "
+                        + c.getAtomIDs().get(1) + " " + c.getAtomIDs().get(2) + " "
+                        + c.getAtomIDs().get(3);
             }
             frozenTorsStr = frozenTorsStr + " C }";
             lines.add(frozenTorsStr);
@@ -346,34 +365,37 @@ public class OrcaInputWriter extends ChemSoftInputWriter
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.UNDEFINED))
         {
             String cStr = OrcaConstants.INDENT;
-            switch (c.getAtomIDs().length)
+            switch (c.getAtomIDs().size())
 	            {
 	            case 1:
-	            	cStr = cStr + "{ C " + c.getAtomIDs()[0];
+	            	cStr = cStr + "{ C " + c.getAtomIDs().get(0);
 	            	break;
 
 	            case 2:
-	            	cStr = cStr + "{ B " + c.getAtomIDs()[0] 
-	            			+ " "  + c.getAtomIDs()[1];
+	            	cStr = cStr + "{ B " + c.getAtomIDs().get(0) 
+	            			+ " "  + c.getAtomIDs().get(1);
 	            	break;
 	            	
 	            case 3:
-	            	cStr = cStr + "{ A " + c.getAtomIDs()[0] 
-	            			+ " "  + c.getAtomIDs()[1]
-	    	            	+ " "  + c.getAtomIDs()[2];
+	            	cStr = cStr + "{ A " + c.getAtomIDs().get(0) 
+	            			+ " "  + c.getAtomIDs().get(1)
+	    	            	+ " "  + c.getAtomIDs().get(2);
 	            	break;
 
 	            case 4:
-	            	cStr = cStr + "{ D " + c.getAtomIDs()[0] 
-	            			+ " "  + c.getAtomIDs()[1]
-	    	            	+ " "  + c.getAtomIDs()[2]
-	    	    	        + " "  + c.getAtomIDs()[3];
+	            	cStr = cStr + "{ D " + c.getAtomIDs().get(0) 
+	            			+ " "  + c.getAtomIDs().get(1)
+	    	            	+ " "  + c.getAtomIDs().get(2)
+	    	    	        + " "  + c.getAtomIDs().get(3);
 	            	break;
             }
             
             if (c.hasValue())
             {
             	cStr = cStr + " " + c.getValue();
+            } else if (c.hasCurrentValue())
+            {
+            	cStr = cStr + " " + c.getCurrentValue();
             }
             cStr = cStr + " C }";
             lines.add(cStr);

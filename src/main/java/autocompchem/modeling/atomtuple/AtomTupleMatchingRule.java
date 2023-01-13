@@ -65,7 +65,7 @@ public class AtomTupleMatchingRule
     /**
      * Types of rules
      */
-    protected enum RuleType {SMARTS, ID, UNDEFINED}
+    public enum RuleType {SMARTS, ID, UNDEFINED}
     
     /**
      * Rule type
@@ -118,7 +118,7 @@ public class AtomTupleMatchingRule
 
     /**
      * Constructor for a rule by parsing a formatted string of text. 
-     * @param txt the string to be parsed
+     * @param txt the string to be parsed.
      * @param ruleName a unique name used to identify this rule. We do not check
      * for uniqueness.
      * @param valuedKeywords list of keywords expected to have a value.
@@ -132,7 +132,8 @@ public class AtomTupleMatchingRule
         this.refName = ruleName;
         if (valuedKeywords!=null)
         {
-	        attributeKeywords.addAll(valuedKeywords);
+        	for (String key : valuedKeywords)
+        		attributeKeywords.add(key.toUpperCase());
         }
         Map<String,Boolean> booleanAttributes = new HashMap<String,Boolean>();
     	// These are default keywords that we always have
@@ -142,9 +143,10 @@ public class AtomTupleMatchingRule
         attributeKeywords.add(AtomTupleConstants.KEYUSECURRENTVALUE);
         if (booleanKeywords!=null)
         {
-	        attributeKeywords.addAll(booleanKeywords);
 	        for (String key : booleanKeywords)
-	        	booleanAttributes.put(key, false);
+        		attributeKeywords.add(key.toUpperCase());
+	        for (String key : booleanKeywords)
+	        	booleanAttributes.put(key.toUpperCase(), false);
         }
         
         String[] p = txt.trim().split("\\s+");
@@ -358,7 +360,7 @@ public class AtomTupleMatchingRule
   	 * Creates an atom tuple combining the attributes defined in this rule with 
   	 * the given list of atom indexes. Note that new instances of each 
   	 * attribute and value are created to be assigned to the tuple instance.
-  	 * @param ids the list of indexes
+  	 * @param ids the list of indexes.
   	 * @return the atom tuple decorated by the attributes defined in this rule.
   	 */
   	public AnnotatedAtomTuple makeAtomTupleFromIDs(int[] ids) 
@@ -367,7 +369,7 @@ public class AtomTupleMatchingRule
 		
   		Map<String, String> myValued = new HashMap<String, String>();
 		for (String key : valuedAttributes.keySet())
-			myValued.put(key, valuedAttributes.get(key));
+			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
 		
 		return new AnnotatedAtomTuple(ids, myValueless, myValued);
   	}

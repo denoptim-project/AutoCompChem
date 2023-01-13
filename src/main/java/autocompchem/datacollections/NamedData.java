@@ -20,6 +20,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
@@ -93,7 +94,8 @@ public class NamedData implements Cloneable
         NORMALMODESET, 
         ACTION,
         PARAMETERSTORAGE, 
-        CONSTRAINTSSET};
+        CONSTRAINTSSET,
+        ANNOTATEDATOMTUPLELIST};
         
     /**
      * List of types that can be serailized to JSON
@@ -108,7 +110,8 @@ public class NamedData implements Cloneable
             		NamedDataType.BASISSET,
             		NamedDataType.IATOMCONTAINER,
             		NamedDataType.CONSTRAINTSSET,
-            		NamedDataType.ZMATRIX));
+            		NamedDataType.ZMATRIX,
+            		NamedDataType.ANNOTATEDATOMTUPLELIST));
     // NB: when extending the above list, remember to add the corresponding case
     // in the NamedDataDeserializer!
     
@@ -406,6 +409,10 @@ public class NamedData implements Cloneable
     		case ("ConstraintsSet"):
     			tp = NamedDataType.CONSTRAINTSSET;
     			break;
+    			
+    		case ("AnnotatedAtomTupleSet"):
+    			tp = NamedDataType.ANNOTATEDATOMTUPLELIST;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -520,6 +527,9 @@ public class NamedData implements Cloneable
 	        case CONSTRAINTSSET:
 	        	cVal = ((ConstraintsSet) value).clone();
 	        	break;
+	        	
+	        case ANNOTATEDATOMTUPLELIST:
+	        	cVal = ((AnnotatedAtomTupleList) value).clone();
 	        	
 	        default:
 	        	cVal = value.toString();
@@ -647,6 +657,9 @@ public class NamedData implements Cloneable
 				break;
 			case ZMATRIX:
 				joValue = context.deserialize(je, ZMatrix.class);
+				break;
+			case ANNOTATEDATOMTUPLELIST:
+				joValue = context.deserialize(je, AnnotatedAtomTupleList.class);
 				break;
 			default:
 				break;

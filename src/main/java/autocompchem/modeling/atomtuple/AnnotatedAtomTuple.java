@@ -19,73 +19,105 @@ package autocompchem.modeling.atomtuple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import autocompchem.modeling.basisset.Primitive;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 
 /**
  * This class represents the concept of a tuple of atom indexes decorated by 
  * attributes that can have either a boolean or String value.
- * <br>
- * Note: this class has a natural ordering that is inconsistent with equals.
- * This because attributes are not considered by natural ordering.
  * 
  * @author Marco Foscato
  */
 
-public class AnnotatedAtomTuple implements Comparable<AnnotatedAtomTuple>
+public class AnnotatedAtomTuple implements Cloneable
 {	
 	/**
 	 * The 0-based atom indexes
 	 */
-	private List<Integer> atmIDs = new ArrayList<Integer>();
+	private List<Integer> atmIDs;
 	
     /**
      * Map of keywords that take no value and are thus mapped 
      * to the flag reporting if they are found or not.
      */
-    private Set<String> valuelessAttributes = new HashSet<String>();
+    private Set<String> valuelessAttributes;
     
     /**
      * Map of keywords that take values and are thus mapped to their
      * value.
      */
-    private Map<String,String> valuedAttributes = 
-    		new HashMap<String, String>();
+    private Map<String,String> valuedAttributes;
 	
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * Constructs a tuple of atoms with no decorating attributes.
+  	 * @param ids 0-based indexes defining the tuple of atoms.
+  	 */
+  	public AnnotatedAtomTuple(int[] ids)
+  	{
+  		this.atmIDs = new ArrayList<Integer>();
+  		for (int i=0; i<ids.length; i++)
+  		{
+  			this.atmIDs.add(ids[i]);
+  		}
+  		this.valuelessAttributes = new HashSet<String>();
+  		this.valuedAttributes = new HashMap<String, String>();
+  	}
+  	
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * Constructs a tuple of atoms with decorating attributes.
+  	 * @param ids 0-based indexes defining the tuple of atoms.
+  	 * @param valuelessAttributes value-less attributes.
+  	 * @param valuedAttributes map of attributes with their (String) value.
+  	 */
+  	public AnnotatedAtomTuple(int[] ids, 
+  			Set<String> valuelessAttributes, 
+  			Map<String, String> valuedAttributes)
+  	{
+  		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
+  				valuelessAttributes, valuedAttributes);
+  	}
+  	
 //------------------------------------------------------------------------------
 
 	/**
 	 * Constructs a tuple of atoms with decorating attributes.
-	 * @param ids 0-based indexes defining the tuple of atoms. 
+	 * @param ids 0-based indexes defining the tuple of atoms.
 	 * @param valuelessAttributes value-less attributes.
 	 * @param valuedAttributes map of attributes with their (String) value.
 	 */
-	public AnnotatedAtomTuple(int[] ids, 
+	public AnnotatedAtomTuple(List<Integer> ids, 
 			Set<String> valuelessAttributes, 
 			Map<String, String> valuedAttributes)
 	{
-		for (int i=0; i<ids.length; i++)
-		{
-			this.atmIDs.add(ids[i]);
-		}
+		this.atmIDs = ids;
 		this.valuelessAttributes = valuelessAttributes;
 		this.valuedAttributes = valuedAttributes;
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Sets the value of the index at the given positiion.
+	 */
+	public void setIndexAt(int position, int value)
+	{
+		atmIDs.set(position, value);
 	}
 	
 //------------------------------------------------------------------------------
 
 	/**
-	 * @return the list of atom indexes that defines this constraint (0-based).
+	 * @return the list of atom indexes that defines this tuple (0-based).
 	 */
 	public List<Integer> getAtomIDs()
 	{
@@ -95,7 +127,7 @@ public class AnnotatedAtomTuple implements Comparable<AnnotatedAtomTuple>
 //------------------------------------------------------------------------------
 
 	/**
-	 * @return the number of indexes that define this constraint. 
+	 * @return the number of indexes that define this tuple. 
 	 */
 	public int getNumberOfIDs()
 	{
@@ -111,32 +143,32 @@ public class AnnotatedAtomTuple implements Comparable<AnnotatedAtomTuple>
 
     public void setValuelessAttribute(String key)
     {
-    	valuelessAttributes.add(key);
+    	valuelessAttributes.add(key.toUpperCase());
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * Remove a value-less attribute in this tuple.
+     * Remove a value-less attribute in this tuple. Case insensitive.
      * @param key the name of the attribute to remove
      */
 
     public void removeValuelessAttribute(String key)
     {
-    	valuelessAttributes.remove(key);
+    	valuelessAttributes.remove(key.toUpperCase());
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * @param key the name of the attribute to get.
+     * @param key the name of the attribute to get. Case insensitive.
      * @return <code>true</code> if the keyword was found, <code>false</code> if
      * it was not found.
      */
 
     public boolean hasValuelessAttribute(String key)
     {
-        return valuelessAttributes.contains(key);
+        return valuelessAttributes.contains(key.toUpperCase());
     }
     
 //------------------------------------------------------------------------------
@@ -154,13 +186,13 @@ public class AnnotatedAtomTuple implements Comparable<AnnotatedAtomTuple>
 
     /**
      * Sets the value associated to an attribute of this tuple.
-     * @param key the name of the attribute to set.
+     * @param key the name of the attribute to set. Case insensitive.
      * @param value the value to set.
      */
 
     public void setValueOfAttribute(String key, String value)
     {
-        valuedAttributes.put(key, value);
+        valuedAttributes.put(key.toUpperCase(), value);
     }
     
 //------------------------------------------------------------------------------
@@ -175,7 +207,19 @@ public class AnnotatedAtomTuple implements Comparable<AnnotatedAtomTuple>
 
     public String getValueOfAttribute(String key)
     {
-        return valuedAttributes.get(key);
+        return valuedAttributes.get(key.toUpperCase());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Gets all the keys of attribute that are associated with a value in this 
+     * tuple.
+     */
+
+    public Set<String> getValuedAttributeKeys()
+    {
+    	return valuedAttributes.keySet();
     }
     
 //------------------------------------------------------------------------------
@@ -184,43 +228,33 @@ public class AnnotatedAtomTuple implements Comparable<AnnotatedAtomTuple>
      * Gets all the attribute that are associated with a value in this tuple.
      */
 
-    public Set<String> getValuedAttribute()
+    public Map<String,String> getValuedAttributes()
     {
-    	return valuedAttributes.keySet();
+    	return valuedAttributes;
     }
 	
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * <br><br>
-	 * Note: this class has a natural ordering that is inconsistent with equals.
-	 * This because attributes are not considered by natural ordering.
-	 */
-	@Override
-	public int compareTo(AnnotatedAtomTuple other) 
-	{
-		if (this.atmIDs.size() != other.atmIDs.size())
-			return Integer.compare(this.atmIDs.size(), other.atmIDs.size());
-		
-		List<Integer> thisSorted = new ArrayList<Integer>();
-		thisSorted.addAll(atmIDs);
-		Collections.sort(thisSorted);
-		
-		List<Integer> otherSorted = new ArrayList<Integer>();
-		otherSorted.addAll(other.atmIDs);
-		Collections.sort(otherSorted);
-		
-		for (int i=0; i<atmIDs.size(); i++)
-		{
-			if (thisSorted.get(i)!=otherSorted.get(i))
-				return Integer.compare(thisSorted.get(i), otherSorted.get(i));
-		}
-		
-		//NB: attributes are not considered in natural ordering.
-		return 0;
-	}
+  	@Override
+  	public AnnotatedAtomTuple clone()
+  	{
+  		int[] ids = new int[this.atmIDs.size()];
+  		for (int i=0; i<atmIDs.size(); i++)
+  		{
+  			ids[i] = atmIDs.get(i).intValue();
+  		}
+  		
+  		Set<String> clonedValuelessAtts = new HashSet<String>();
+  		for (String key : valuelessAttributes)
+  			clonedValuelessAtts.add(key);
+  		
+  		Map<String,String> clonedValuedAtts = new HashMap<String, String>();
+  		for (String key : valuedAttributes.keySet())
+  			clonedValuedAtts.put(key, valuedAttributes.get(key));
+  		
+  		return new AnnotatedAtomTuple(ids, 
+  				clonedValuelessAtts, clonedValuedAtts);
+  	}
 
 //------------------------------------------------------------------------------
 

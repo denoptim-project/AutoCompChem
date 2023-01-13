@@ -378,7 +378,7 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     				sbFrz.append(NL).append(SpartanConstants.INDENT);
     			}
     			sbFrz.append(String.format(Locale.ENGLISH, "%5d",
-    					c.getAtomIDs()[0]+1));
+    					c.getAtomIDs().get(0)+1));
             }
 			lines.add(sbFrz.toString());
             lines.add(SpartanConstants.FREEZEEND);
@@ -419,10 +419,10 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     		for (Iterator<Constraint> iter = cs.iterator(); iter.hasNext(); ) 
     		{
     			Constraint cstr = iter.next();
-    			int[] ids = cstr.getAtomIDs();
+    			List<Integer> ids = cstr.getAtomIDs();
     			
     			// Frozen atoms are specified in a dedicated directive.
-    			if (ids.length<2)
+    			if (ids.size()<2)
     				continue;
     			
     			StringBuilder sbLine = new StringBuilder();
@@ -432,7 +432,7 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     			for (int i=0; i<4; i++)
     			{
     				if (i<cstr.getNumberOfIDs())
-    					sbLine.append(formatConstrainIds(ids[i]+1));
+    					sbLine.append(formatConstrainIds(ids.get(i)+1));
     				else
     					break;
     			}
@@ -462,7 +462,7 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     		for (Iterator<Constraint> iter = cs.iterator(); iter.hasNext(); ) 
     		{
     			Constraint cstr = iter.next();
-    			int[] ids = cstr.getAtomIDs();
+    			List<Integer> ids = cstr.getAtomIDs();
     			
     			// Here we get rid of redundant dynamic constraints
     			if (!isNewDynamicConstraint(ids, unique))
@@ -473,13 +473,13 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     			for (int i=0; i<4; i++)
     			{
     				if (i<cstr.getNumberOfIDs())
-    					sbLine.append(formatConstrainIds(ids[i]+1));
+    					sbLine.append(formatConstrainIds(ids.get(i)+1));
     				else
     					sbLine.append(formatConstrainIds(0));
     			}
     			if (cstr.hasOpt())
     			{
-    				sbLine.append(" ").append(cstr.getOpt());
+    				sbLine.append(" ").append(cstr.getOpts());
     			}
     			lines.add(sbLine.toString());
     		}
@@ -534,47 +534,48 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
 
 //------------------------------------------------------------------------------
     
-    private boolean isNewDynamicConstraint(int[] ids, Set<List<Integer>> unique) 
+    private boolean isNewDynamicConstraint(List<Integer> ids, 
+    		Set<List<Integer>> unique) 
     {
     	List<Integer> candidate = new ArrayList<Integer>();
-    	switch (ids.length)
+    	switch (ids.size())
     	{
     		case 1:
-    			candidate.add(ids[0]);
+    			candidate.add(ids.get(0));
     			break;
     			
 	    	case 2:
-	        	candidate.add(ids[0]);
-	        	candidate.add(ids[1]);
+	        	candidate.add(ids.get(0));
+	        	candidate.add(ids.get(1));
 	        	Collections.sort(candidate);
 	    		break;
 	
 	    	case 3:
-	    		if (ids[0]>ids[2])
+	    		if (ids.get(0)>ids.get(2))
 	    		{
-	            	candidate.add(ids[2]);
-	            	candidate.add(ids[1]);
-	            	candidate.add(ids[0]);
+	            	candidate.add(ids.get(2));
+	            	candidate.add(ids.get(1));
+	            	candidate.add(ids.get(0));
 	    		} else {
-	            	candidate.add(ids[0]);
-	            	candidate.add(ids[1]);
-	            	candidate.add(ids[2]);
+	            	candidate.add(ids.get(0));
+	            	candidate.add(ids.get(1));
+	            	candidate.add(ids.get(2));
 	    		}
 	    		break;
 	    		
 	    	case 4:
 	    		// NB: the identity of the first and last index is irrelevant
 	    		// Therefore, we set first and last index to -1.
-	    		if (ids[1]>ids[2])
+	    		if (ids.get(1)>ids.get(2))
 	    		{
 	            	candidate.add(-1);
-	            	candidate.add(ids[2]);
-	            	candidate.add(ids[1]);
+	            	candidate.add(ids.get(2));
+	            	candidate.add(ids.get(1));
 	            	candidate.add(-1);
 	    		} else {
 	            	candidate.add(-1);
-	            	candidate.add(ids[2]);
-	            	candidate.add(ids[1]);
+	            	candidate.add(ids.get(2));
+	            	candidate.add(ids.get(1));
 	            	candidate.add(-1);
 	    		}
 	    		break;

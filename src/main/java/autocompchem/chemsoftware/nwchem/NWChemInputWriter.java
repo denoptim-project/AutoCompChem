@@ -134,9 +134,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
                 {
             		if (cns.getType()==ConstraintType.FROZENATM)
             		{
-            			int[] arr = cns.getAtomIDs();
-            			for (int i=0; i<arr.length; i++)
-            				ids.add(arr[i]);
+            			ids.addAll(cns.getAtomIDs());
             		}
                 }
             	List<String> ranges = StringUtils.makeStringForIndexes(
@@ -449,13 +447,26 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         {
     		int[] ids = c.getSortedAtomIDs();
         	String str = "BOND " + (ids[0]+1) + " " + (ids[1]+1);
+
+        	if (c.hasValue() && c.hasCurrentValue())
+        	{
+        		throw new IllegalArgumentException("Ambiguity! It is not clear "
+        				+ "which value to report in NWChem input since "
+        				+ "constraint contains both current "
+        				+ "and assigned value. "
+        				+ "Please, check definition of constraint " + c);
+        	}
         	if (c.hasValue())
         	{
         		str = str + " " + c.getValue();
         	}
+        	if (c.hasCurrentValue())
+        	{
+        		str = str + " " + c.getCurrentValue();
+        	}
         	if (c.hasOpt())
         	{
-        		str = str + " " + c.getOpt();
+        		str = str + " " + c.getOpts();
         	}
         	lines.add(str);
         }
@@ -465,13 +476,26 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     		int[] ids = c.getSortedAtomIDs();
         	String str = "ANGLE " + (ids[0]+1) + " " + (ids[1]+1) + " " 
         			+ (ids[2]+1);
+
+        	if (c.hasValue() && c.hasCurrentValue())
+        	{
+        		throw new IllegalArgumentException("Ambiguity! It is not clear "
+        				+ "which value to report in NWChem input since "
+        				+ "constraint contains both current "
+        				+ "and assigned value. "
+        				+ "Please, check definition of constraint " + c);
+        	}
         	if (c.hasValue())
         	{
         		str = str + " " + c.getValue();
         	}
+        	if (c.hasCurrentValue())
+        	{
+        		str = str + " " + c.getCurrentValue();
+        	}
         	if (c.hasOpt())
         	{
-        		str = str + " " + c.getOpt();
+        		str = str + " " + c.getOpts();
         	}
         	lines.add(str);
         }
@@ -481,13 +505,26 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     		int[] ids = c.getSortedAtomIDs();
         	String str = "TORSION " + (ids[0]+1) + " " + (ids[1]+1) + " " 
         			+ (ids[2]+1) + " " + (ids[3]+1);
+
+        	if (c.hasValue() && c.hasCurrentValue())
+        	{
+        		throw new IllegalArgumentException("Ambiguity! It is not clear "
+        				+ "which value to report in NWChem input since "
+        				+ "constraint contains both current "
+        				+ "and assigned value. "
+        				+ "Please, check definition of constraint " + c);
+        	}
         	if (c.hasValue())
         	{
         		str = str + " " + c.getValue();
         	}
+        	if (c.hasCurrentValue())
+        	{
+        		str = str + " " + c.getCurrentValue();
+        	}
         	if (c.hasOpt())
         	{
-        		str = str + " " + c.getOpt();
+        		str = str + " " + c.getOpts();
         	}
         	lines.add(str);
         }

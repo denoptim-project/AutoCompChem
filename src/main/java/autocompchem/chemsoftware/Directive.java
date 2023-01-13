@@ -41,6 +41,8 @@ import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.AtomLabelsGenerator;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -929,30 +931,29 @@ public class Directive implements IDirectiveComponent, Cloneable
         		List<String> atmSpecValues = new ArrayList<String>();
                 ParameterStorage cnstrParams = params.clone();
                 
-                //TODO-gg should use Task "identify atoms tuples"
-                
                 //TODO-gg use WorkerConstant.TASK
-                cnstrParams.setParameter("TASK", 
-                		TaskID.GENERATECONSTRAINTS.toString());
+                cnstrParams.setParameter("TASK",
+                		TaskID.GENERATEATOMTUPLES.toString());
+                cnstrParams.setParameter("VALUEDKEYWORDS", 
+                		"options prefix suffix");
                 
             	Worker w = WorkerFactory.createWorker(cnstrParams);
-            	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
+            	AtomTupleGenerator cnstrg = (AtomTupleGenerator) w;
             	
-            	ConstraintsSet cs = new ConstraintsSet();
-            	try {
-					cs = cnstrg.createConstraints(mol);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Terminator.withMsgAndStatus("ERROR! Unable to create "
-							+ "constraints. Exception from the "
-							+ "ConstraintGenerator.", -1);
-				}
-            	for (Constraint c : cs.getConstrainsWithType(
-            			ConstraintType.FROZENATM))
+            	for (AnnotatedAtomTuple tuple : cnstrg.createTuples(mol))
             	{
-            		atmSpecValues.add(c.getPrefix() 
-            				+ pointers.get(c.getAtomIDs()[0]) 
-            				+ c.getSuffix());
+            		for (Integer id : tuple.getAtomIDs())
+            		{
+            			String prefix = tuple.getValueOfAttribute("prefix");
+            			if (prefix==null)
+            				prefix = "";
+
+            			String suffix = tuple.getValueOfAttribute("suffix");
+            			if (suffix==null)
+            				suffix = "";
+            			
+	            		atmSpecValues.add(prefix + pointers.get(id) + suffix);
+            		}
             	}
 	        	
 	        	// Make and append atom-specific keywords

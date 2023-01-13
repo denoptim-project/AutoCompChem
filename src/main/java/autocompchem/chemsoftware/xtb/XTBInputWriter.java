@@ -380,10 +380,10 @@ public class XTBInputWriter extends ChemSoftInputWriter
     	ArrayList<String> unqIDsStr = new ArrayList<String>();
     	for (Constraint c : cs)
     	{
-    		for (int i=0; i<c.getAtomIDs().length; i++)
+    		for (Integer idx : c.getAtomIDs())
             {
-    			String idStr = (c.getAtomIDs()[i]+1)+"";
-    			if (!unqIDsStr.contains(idStr) && !(c.getAtomIDs()[i] == -1))
+    			String idStr = (idx+1)+"";
+    			if (!unqIDsStr.contains(idStr) && !(idx == -1))
     			{
     				unqIDsStr.add(idStr);
     			}
@@ -417,11 +417,15 @@ public class XTBInputWriter extends ChemSoftInputWriter
         	String frozenBondsStr = XTBConstants.INDENT + "distance: ";
         	if (c.hasValue())
         	{
-        		frozenBondsStr = frozenBondsStr + (c.getAtomIDs()[0]+1) + ", "
-                		+ (c.getAtomIDs()[1]+1) + ", " + c.getValue();
+        		frozenBondsStr = frozenBondsStr + (c.getAtomIDs().get(0)+1) + ", "
+                		+ (c.getAtomIDs().get(1)+1) + ", " + c.getValue();
+        	} else if (c.hasCurrentValue())
+        	{
+        		frozenBondsStr = frozenBondsStr + (c.getAtomIDs().get(0)+1) + ", "
+                		+ (c.getAtomIDs().get(1)+1) + ", " + c.getCurrentValue();
         	} else {
-                frozenBondsStr = frozenBondsStr + (c.getAtomIDs()[0]+1) + ", "
-                		+ (c.getAtomIDs()[1]+1) 
+                frozenBondsStr = frozenBondsStr + (c.getAtomIDs().get(0)+1) + ", "
+                		+ (c.getAtomIDs().get(1)+1) 
                 		+ ", auto";
         	}
         	lines.add(frozenBondsStr);
@@ -432,13 +436,19 @@ public class XTBInputWriter extends ChemSoftInputWriter
             String frozenAngleStr = XTBConstants.INDENT + "angle: ";
             if (c.hasValue())
             {
-                frozenAngleStr = frozenAngleStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " 
-                		+ (c.getAtomIDs()[2]+1) + ", " 
+                frozenAngleStr = frozenAngleStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", " 
                 		+ c.getValue();
+            } else if (c.hasCurrentValue())
+            {
+                frozenAngleStr = frozenAngleStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", " 
+                		+ c.getCurrentValue();
             } else {
-                frozenAngleStr = frozenAngleStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " + (c.getAtomIDs()[2]+1) 
+                frozenAngleStr = frozenAngleStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " + (c.getAtomIDs().get(2)+1) 
                         + ", auto";
             }
             lines.add(frozenAngleStr);
@@ -449,15 +459,21 @@ public class XTBInputWriter extends ChemSoftInputWriter
             String frozenTorsStr = XTBConstants.INDENT + "dihedral: ";
             if (c.hasValue())
             {
-                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " 
-                		+ (c.getAtomIDs()[2]+1) + ", "
-                        + (c.getAtomIDs()[3]+1) + ", " + c.getValue();
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", "
+                        + (c.getAtomIDs().get(3)+1) + ", " + c.getValue();
+            } else if (c.hasCurrentValue())
+            {
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", "
+                        + (c.getAtomIDs().get(3)+1) + ", " + c.getCurrentValue();
             } else {
-                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " 
-                		+ (c.getAtomIDs()[2]+1) + ", "
-                        + (c.getAtomIDs()[3]+1)
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", "
+                        + (c.getAtomIDs().get(3)+1)
                         + ", auto";
             }
             lines.add(frozenTorsStr);
@@ -469,15 +485,21 @@ public class XTBInputWriter extends ChemSoftInputWriter
             String frozenTorsStr = XTBConstants.INDENT + "dihedral: ";
             if (c.hasValue())
             {
-                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " 
-                		+ (c.getAtomIDs()[2]+1) + ", "
-                        + (c.getAtomIDs()[3]+1) + ", " + c.getValue();
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", "
+                        + (c.getAtomIDs().get(3)+1) + ", " + c.getValue();
+            } else if (c.hasCurrentValue())
+            {
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", "
+                        + (c.getAtomIDs().get(3)+1) + ", " + c.getCurrentValue();
             } else {
-                frozenTorsStr = frozenTorsStr + (c.getAtomIDs()[0]+1) + ", "
-                        + (c.getAtomIDs()[1]+1) + ", " 
-                		+ (c.getAtomIDs()[2]+1) + ", "
-                        + (c.getAtomIDs()[3]+1)
+                frozenTorsStr = frozenTorsStr + (c.getAtomIDs().get(0)+1) + ", "
+                        + (c.getAtomIDs().get(1)+1) + ", " 
+                		+ (c.getAtomIDs().get(2)+1) + ", "
+                        + (c.getAtomIDs().get(3)+1)
                         + ", auto";
             }
             lines.add(frozenTorsStr);
@@ -489,16 +511,16 @@ public class XTBInputWriter extends ChemSoftInputWriter
         {
             String frozenGroups = XTBConstants.INDENT + "atoms: ";
             boolean first = true;
-            for (int i=0; i<c.getAtomIDs().length; i++)
+            for (Integer idx : c.getAtomIDs())
             {
-            	if (c.getAtomIDs()[i]<0)
+            	if (idx<0)
             		continue;
             	if (first)
             	{
             		first = false;
-            		frozenGroups = frozenGroups + (c.getAtomIDs()[i]+1);
+            		frozenGroups = frozenGroups + (idx+1);
             	} else {
-            		frozenGroups = frozenGroups + ", " + (c.getAtomIDs()[i]+1);
+            		frozenGroups = frozenGroups + ", " + (idx+1);
             	}
             }
             lines.add(frozenGroups);
@@ -509,16 +531,16 @@ public class XTBInputWriter extends ChemSoftInputWriter
         {
             String frozenGroups = XTBConstants.INDENT + "atoms: ";
             boolean first = true;
-            for (int i=0; i<c.getAtomIDs().length; i++)
+            for (Integer idx : c.getAtomIDs())
             {
-            	if (c.getAtomIDs()[i]<0)
+            	if (idx<0)
             		continue;
             	if (first)
             	{
             		first = false;
-            		frozenGroups = frozenGroups + (c.getAtomIDs()[i]+1);
+            		frozenGroups = frozenGroups + (idx+1);
             	} else {
-            		frozenGroups = frozenGroups + ", " + (c.getAtomIDs()[i]+1);
+            		frozenGroups = frozenGroups + ", " + (idx+1);
             	}
             }
             lines.add(frozenGroups);

@@ -40,28 +40,6 @@ import autocompchem.text.TextAnalyzer;
 
 public class StringUtilsTest 
 {
-	
-//------------------------------------------------------------------------------
-
-	//TODO-gg del
-    @Test
-    public void testMatchesAnyNewline() throws Exception
-    {
-    	String[] words = {"abc", "", // 2 * false
-    			"\n", "\r", "\r\n", "\n\r", //4 * true
-    			"a\n", "a\r", "a\r\n", "a\n\r", 
-    			"\na", "\ra", "\r\na", "\n\ra",
-    			System.getProperty("line.separator")};
-    	for (int i=0; i<words.length; i++)
-    		System.out.println(i+" "+words[i].matches("[\\r\\n]+"));
-    	
-    	System.out.println("----------------------");
-    	String txt = "This \n and \n\r and \r\n and "
-    			+ System.getProperty("line.separator") + " .";
-    	words = txt.split("[^\\S\\r\\n]");
-    	for (int i=0; i<words.length; i++)
-    		System.out.println(i+" "+words[i].matches("[\\r\\n]+"));
-    }
 
 //------------------------------------------------------------------------------
 

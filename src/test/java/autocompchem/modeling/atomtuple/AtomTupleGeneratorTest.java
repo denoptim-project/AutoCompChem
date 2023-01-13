@@ -117,18 +117,18 @@ public class AtomTupleGeneratorTest
     			new SMARTS[]{new SMARTS("[#1]"), new SMARTS("[#6]"),
     					new SMARTS("[O]"), new SMARTS("[Cl]")});
     	rules.add(rule4);
-    	rule2.setValuedAttribute("Key1:", "value1 value1b");
-    	rule2.setValuedAttribute("Key2:", "value2");
-    	rule2.setValuelessAttribute("Key3");
-    	rule4.setValuedAttribute("Key4:", "value4 value4b");
-    	rule4.setValuedAttribute("Key5:", "value5");
-    	rule4.setValuelessAttribute("Key6");
+    	rule2.setValuedAttribute("Key1:".toUpperCase(), "value1 value1b");
+    	rule2.setValuedAttribute("Key2:".toUpperCase(), "value2");
+    	rule2.setValuelessAttribute("Key3".toUpperCase());
+    	rule4.setValuedAttribute("Key4:".toUpperCase(), "value4 value4b");
+    	rule4.setValuedAttribute("Key5:".toUpperCase(), "value5");
+    	rule4.setValuelessAttribute("Key6".toUpperCase());
     	
     	List<AnnotatedAtomTuple> tuples = AtomTupleGenerator.createTuples(
     			getTestIAtomContainer(), rules);
     	
     	List<String> expected = Arrays.asList("1,",
-    			"1,3,5,7,Key3,Key1:=value1 value1b,Key2:=value2,",
+    			"1,3,5,7,KEY3,KEY1:=value1 value1b,KEY2:=value2,",
     			"0,1,",
     			"0,3,",
     			"6,0,",
@@ -140,9 +140,9 @@ public class AtomTupleGeneratorTest
     			"8,0,",
     			"8,1,",
     			"8,3,",
-    			"6,0,1,5,Key6,Key4:=value4 value4b,Key5:=value5,",
-    			"7,0,1,5,Key6,Key4:=value4 value4b,Key5:=value5,",
-    			"8,0,1,5,Key6,Key4:=value4 value4b,Key5:=value5,");
+    			"6,0,1,5,KEY6,KEY4:=value4 value4b,KEY5:=value5,",
+    			"7,0,1,5,KEY6,KEY4:=value4 value4b,KEY5:=value5,",
+    			"8,0,1,5,KEY6,KEY4:=value4 value4b,KEY5:=value5,");
     
     	List<String> results = new ArrayList<String>();
     	for (AnnotatedAtomTuple tuple : tuples)
@@ -256,7 +256,7 @@ public class AtomTupleGeneratorTest
 		s = s + StringUtils.mergeListToString(sortedValueless, ",");
 		
 		List<String> sortedValued = new ArrayList<String>();
-		sortedValued.addAll(tuple.getValuedAttribute());
+		sortedValued.addAll(tuple.getValuedAttributeKeys());
 		Collections.sort(sortedValued);
 		for (String key : sortedValued)
 		{
