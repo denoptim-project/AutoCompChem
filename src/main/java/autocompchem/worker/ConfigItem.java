@@ -97,14 +97,6 @@ public class ConfigItem
 		sb.append(indent);
 		for (int i=0; i<words.length; i++) 
 		{
-			//TODO-gg del
-			String word = words[i];
-			System.out.println(sb.toString());
-			if (words[i].equals("substructures"))
-			{
-				int ooo =0;
-			}
-			
 			int currentRowLength = sb.length() - (previousRowsLength);
 			int possibleLength = currentRowLength + words[i].length();
 			
