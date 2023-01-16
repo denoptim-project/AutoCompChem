@@ -40,6 +40,42 @@ import autocompchem.text.TextAnalyzer;
 
 public class StringUtilsTest 
 {
+	
+//------------------------------------------------------------------------------
+	
+	@Test
+	public void testParseArrayOfDoubles() throws Exception
+	{
+		String s = "1.234 5.678 -1.987 -23 -0.5";
+		double[] values = StringUtils.parseArrayOfDoubles(s, "\\s+");
+		
+		assertEquals(5, values.length);
+		assertTrue(NumberUtils.closeEnough(1.234, values[0]));
+		assertTrue(NumberUtils.closeEnough(5.678, values[1]));
+		assertTrue(NumberUtils.closeEnough(-1.987, values[2]));
+		assertTrue(NumberUtils.closeEnough(-23.0, values[3]));
+		assertTrue(NumberUtils.closeEnough(-0.5, values[4]));
+		
+		s = "1.234, 5.678, -1.987, -23, -0.5";
+		values = StringUtils.parseArrayOfDoubles(s, ",");
+
+		assertEquals(5, values.length);
+		assertTrue(NumberUtils.closeEnough(1.234, values[0]));
+		assertTrue(NumberUtils.closeEnough(5.678, values[1]));
+		assertTrue(NumberUtils.closeEnough(-1.987, values[2]));
+		assertTrue(NumberUtils.closeEnough(-23.0, values[3]));
+		assertTrue(NumberUtils.closeEnough(-0.5, values[4]));
+		
+		s = "val:1.234 blabla:5.678 tomi:-1.987 meni:-23 jacu:-0.5";
+		values = StringUtils.parseArrayOfDoubles(s, "(?i)\\w+:");
+
+		assertEquals(5, values.length);
+		assertTrue(NumberUtils.closeEnough(1.234, values[0]));
+		assertTrue(NumberUtils.closeEnough(5.678, values[1]));
+		assertTrue(NumberUtils.closeEnough(-1.987, values[2]));
+		assertTrue(NumberUtils.closeEnough(-23.0, values[3]));
+		assertTrue(NumberUtils.closeEnough(-0.5, values[4]));
+	}
 
 //------------------------------------------------------------------------------
 

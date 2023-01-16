@@ -257,6 +257,38 @@ public class StringUtils
 //------------------------------------------------------------------------------
     
     /**
+     * Parses a string to produce an array of doubles. This method assumes that
+     * any word (i.e., string delimited by the given delimiting regex) can be
+     * converted into a double. Ignores any blank string that is produced by the 
+     * regex-based splitting.
+     * @param txt the string to parse.
+     * @param regex the delimiting regular expression. Note that the delimiter 
+     * can be also any text. For instance, <code>"(?i)\\w+:"</code> identifies
+     * as separator any case-insensitive text ending with ":".
+     * @return the array of doubles in the order as they were found in the 
+     * given string.
+     */
+    public static double[] parseArrayOfDoubles(String txt, String regex)
+    {
+    	String[] words = txt.trim().split(regex);
+    	List<String> wordsList = new ArrayList<String>();
+    	for (int i=0; i<words.length; i++)
+        {
+        	if (words[i].trim().isBlank())
+        		continue;
+        	wordsList.add(words[i].trim());
+        }
+        double[] values = new double[wordsList.size()];
+        for (int i=0; i<wordsList.size(); i++)
+        {
+        	values[i] = Double.parseDouble(wordsList.get(i));
+        }
+        return values;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Checks is the given string can be an atom identifier of the form
      * "StringIndex" where the Index is an integer and the String is any
      * alphabetical string.

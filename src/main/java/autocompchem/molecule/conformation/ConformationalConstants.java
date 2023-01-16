@@ -26,19 +26,4 @@ package autocompchem.molecule.conformation;
 
 public class ConformationalConstants
 {
-    /**
-     * Type for bond rotation moves
-     */
-    public final static String ROTOTYPE = "TORS";
-
-    /**
-     * Type for flipping moves
-     */
-    public final static String FLIPTYPE = "FLIP";
-
-    /**
-     * Root of coordinate names
-     */
-    public final static String COORDNAMEROOT = "ConfCord";
-
 }

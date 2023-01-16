@@ -18,7 +18,12 @@ package autocompchem.molecule.conformation;
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.ConstraintsSet;
 
 
 /**
@@ -28,28 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Marco Foscato 
  */
 
-public class ConformationalSpace
+public class ConformationalSpace extends TreeSet<ConformationalCoordinate> 
+	implements Cloneable
 {
     /**
      * Unique counter for coordinates names
      */
     private final AtomicInteger CRDID = new AtomicInteger(0);
-
-    /**
-     * The list of conformational coordinates
-     */
-    private ArrayList<ConformationalCoordinate> coords;
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an empty ConformationalSpace
-     */
-
-    public ConformationalSpace()
-    {
-        this.coords = new ArrayList<ConformationalCoordinate>();
-    }
 
 //------------------------------------------------------------------------------
 
@@ -58,47 +48,10 @@ public class ConformationalSpace
      * @return a string unique within this ConformationalSpace
      */
 
+    @Deprecated
     public String getUnqCoordName()
     {
-        return ConformationalConstants.COORDNAMEROOT + CRDID.getAndIncrement();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Get the list of coordinates
-     * @return the list of conformational coordinates
-     */
-
-    public ArrayList<ConformationalCoordinate> coords()
-    {
-        return coords;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Add a conformational coordinated to this confromational space
-     * @param coord the coordinate to add
-     */
-
-    public void addCoord(ConformationalCoordinate coord)
-    {
-        coords.add(coord);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Check if the conformational space already contains a given conformational
-     * coord.
-     * @param queryCoord the given conformational coordinate to look for
-     * @return <code>true</code> if the move is already contined
-     */
-
-    public boolean contains(ConformationalCoordinate queryCoord)
-    {
-        return coords.contains(queryCoord);
+        return ConformationalCoordDefinition.BASENAME + CRDID.getAndIncrement();
     }
 
 //------------------------------------------------------------------------------
@@ -114,7 +67,7 @@ public class ConformationalSpace
     public int getSize()
     {
         int sz = 1;
-        for (ConformationalCoordinate cc : coords)
+        for (ConformationalCoordinate cc : this)
         {
             sz = sz * cc.getFold();
             int diff = Integer.MAX_VALUE - sz;
@@ -126,31 +79,45 @@ public class ConformationalSpace
         }
         return sz;
     }
-
+	
 //------------------------------------------------------------------------------
 
-    /**
-     * Get a string representation of this conformational space
-     * @return a string representation of this confomational space
-     */
+  	@Override
+  	public boolean equals(Object o)
+  	{
+  		if (!(o instanceof ConformationalSpace))
+  			return false;
+  		
+  		ConformationalSpace other = (ConformationalSpace) o;
+     	 
+  	   	if (this.size() != other.size())
+  	   		 return false;
+  	   	
+  	   	Iterator<ConformationalCoordinate> thisIter = this.iterator();
+  	   	Iterator<ConformationalCoordinate> otherIter = other.iterator();
+  	   	while (thisIter.hasNext())
+  	   	{
+   	        if (!thisIter.next().equals(otherIter.next()))
+   	            return false;
+  	   	}
+  	   	return true;
+  	}
 
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[ConformationalSpace coords=[");
-        boolean fist = true;
-        for (int i=0; i<coords.size(); i++)
-        {
-            if (i>0)
-            {
-                sb.append(", ");
-            }
-            sb.append(coords.get(i).toString());
-        }
-        sb.append("]");
-        sb.append("] ");
-        return sb.toString();
-    }
+//-----------------------------------------------------------------------------
+
+  	/**
+  	 * Prints all the conformational coordinates into stdout.
+  	 */
+  	
+  	public void printAll() 
+  	{
+  		System.out.println("Conformational space is defined by: ");
+  		for (ConformationalCoordinate c : this)
+  		{
+  			System.out.println(" -> "+c);
+  		}
+  	}
 
 //------------------------------------------------------------------------------
+    
 }

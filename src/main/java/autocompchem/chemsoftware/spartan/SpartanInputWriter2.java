@@ -395,7 +395,7 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     		lines.add(SpartanConstants.CONFDIROPN);
     		ConformationalSpace cs = (ConformationalSpace) confDir
     				.getAllDirectiveDataBlocks().get(0).getValue();
-    		for (ConformationalCoordinate coord : cs.coords())
+    		for (ConformationalCoordinate coord : cs)
             {
     			lines.add(SpartanConstants.INDENT 
     					+ coord.getAtomIDsAsString(true, "%5d")

@@ -172,7 +172,6 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      * atom tuple defining rules.
      * @param mol the molecular system we create constraints for.
      * @return the set of constraints.
-     * @throws Exception  
      */
 
     public ConstraintsSet createConstraints(IAtomContainer mol)
@@ -187,7 +186,6 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      * atom tuple defining rules.
      * @param mol the molecular system we create constraints for.
      * @return the set of constraints.
-     * @throws Exception  
      */
 
     public static ConstraintsSet createConstraints(IAtomContainer mol, 

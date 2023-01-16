@@ -1,4 +1,4 @@
-package autocompchem.modeling.constraints;
+package autocompchem.molecule.conformation;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -25,49 +25,39 @@ import java.util.List;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
-import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
-
+import autocompchem.utils.StringUtils;
 
 /**
  * Class representing the formatted definition of a rule to define 
- * {@link Constraint} from a given chemical structure.
+ * {@link ConformationalCoordinate} from a given chemical structure.
  */
 
-//TODO-gg rename to ConstraintDefinition (NB: the "t"!!!!!)
-
-public class ConstrainDefinition extends AtomTupleMatchingRule
+public class ConformationalCoordDefinition extends AtomTupleMatchingRule
 {
 	/**
 	 * Root of name used to identify any instance of this class.
 	 */
-	public static final String BASENAME = "CnstrRule-";
+	public static final String BASENAME = "ConfCoord-";
 
     /**
-     * Keyword used to identify values
+     * Keyword used to identify numerical values other than the fold number.
      */
-    public static final String KEYVALUES = "VALUE";
-    
-    //TODO.gg is notAnIC needed? So far it avoid assigning the type to 
-    // any among distance/angle/dihedral/inproperdihedral
+    public static final String KEYVALUES = "VALUES";
+   
     /**
-     * Keyword used to flag the request to decouple the list of center 
-     * identifiers
-     * from the definition of an internal coordinate. When this is found the
-     * constraint (whatever it is) will be applied to all atoms, and not to
-     * the internal coordinate type defined by the number of identifiers (e,g,
-     * distance from two ids, angle from 3, and so on).
-     * For example, the constraint could be a potential applies to displacements 
-     * from the initial position of the identified atoms.
+     * Keyword used to identify the fold number.
      */
-    public static final String KEYNOINTCOORD = "NOTANIC";
+    public static final String KEYFOLD = "FOLD";
+    
     /**
      * Keyword used to identify prefixes
      */
     public static final String KEYPREFIX = "PREFIX";
     
+    //TODO-gg are prefix and suffix needed???
     /**
      * Keyword used to identify suffix
      */
@@ -77,17 +67,16 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
 	 * Keywords that expect values and are used to annotate constraints.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json.
+    // at the resource inputdefinition/ConformationalSpaceGenerator.json.
 	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
-			KEYVALUES, KEYPREFIX, KEYSUFFIX);
+			KEYVALUES, KEYFOLD, KEYPREFIX, KEYSUFFIX);
 
 	/**
 	 * Keywords that do not expect values and are used to annotate constraints.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json.
-	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList(
-			KEYNOINTCOORD);
+    // at the resource inputdefinition/ConformationalSpaceGenerator.json.
+	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList();
 
 //------------------------------------------------------------------------------
 
@@ -95,8 +84,8 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
      * Constructor for a rule by parsing a formatted string of text. 
      * Default keywords that are interpreted to parse specific input
      * instructions are defined by
-     * {@link ConstrainDefinition#DEFAULTVALUEDKEYS} and 
-     * {@link ConstrainDefinition#DEFAULTVALUELESSKEYS}.
+     * {@link ConformationalCoordDefinition#DEFAULTVALUEDKEYS} and 
+     * {@link ConformationalCoordDefinition#DEFAULTVALUELESSKEYS}.
      * There defaults are added to the defaults of {@link AtomTupleMatchingRule}
      * namely,
      * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
@@ -106,7 +95,7 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
      * the reference name of the generated rule.
      */
 
-    public ConstrainDefinition(String txt, int i)
+    public ConformationalCoordDefinition(String txt, int i)
     {
     	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS);
     }
@@ -118,9 +107,10 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
      * @return the value
      */
 
-    public double getValue()
+    public double[] getValues()
     {
-    	return Double.parseDouble(getValueOfAttribute(KEYVALUES));
+    	return StringUtils.parseArrayOfDoubles(getValueOfAttribute(KEYVALUES),
+    			"\\s+");
     }
     
 //------------------------------------------------------------------------------
@@ -156,20 +146,6 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
   	public boolean limitToBonded() 
   	{
   		return hasValuelessAttribute(AtomTupleConstants.KEYONLYBONDED);
-  	}
-    	
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns the flag defining if this rule makes use of the a value.
-     * @return <code>true</code> if this constraints defined by this rule use
-     * a value.
-     */
-  	public boolean hasValue()
-  	{
-  		return hasValuelessAttribute(AtomTupleConstants.KEYUSECURRENTVALUE)
-  				|| getValueOfAttribute(AtomTupleConstants.KEYCURRENTVALUE)!=null
-  				|| getValueOfAttribute(KEYVALUES)!=null;
   	}
   	
 //------------------------------------------------------------------------------

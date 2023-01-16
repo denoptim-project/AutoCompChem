@@ -1164,7 +1164,7 @@ public class SpartanInputWriter extends Worker
 
         // Build text lines
         ArrayList<String> lines = new ArrayList<String>();
-        for (ConformationalCoordinate cc : confSpace.coords())
+        for (ConformationalCoordinate cc : confSpace)
         {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.getAtomIDsAsString(true,"%5d"));

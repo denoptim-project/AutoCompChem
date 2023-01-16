@@ -182,18 +182,8 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 //------------------------------------------------------------------------------
 
 	/**
-	 * Constructs a constraint of any kind offering the possibility to define
-	 * a specific value and options to assign to the constraint.
-	 * @param ids indexes (0-based) of centers (i.e., atoms) defining this 
-	 * constraint
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 * @param type the type of constraint. This defines how many of the indexes
-	 * are actually used.
-	 * @param options additional string usually used to tell the comp. chem.
-	 * software how to use the given information. For example,
-	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint). Or null, if no option has to be given.
+	 * Constructs a constraint from an annotated atom tuple.
+	 * @param tuple the annotated atom tuple to parse.
 	 */
 	
 	public Constraint(AnnotatedAtomTuple tuple)
@@ -649,8 +639,7 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	@Override
 	public boolean equals(Object o)
 	{
-
-    	if ( o== null)
+    	if (o== null)
     		return false;
     	
  	    if (o == this)

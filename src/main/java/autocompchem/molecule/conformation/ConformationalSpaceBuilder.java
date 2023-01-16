@@ -30,6 +30,7 @@ import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.silent.RingSet;
 
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 
@@ -192,19 +193,20 @@ public class ConformationalSpaceBuilder
                 }
 
                 //Coordination type dependent features (type, value, fold)
-                String coordType = "";
+                ConformationalCoordType coordType = 
+                		ConformationalCoordType.UNDEFINED;
                 double coordValue = 0.0;
                 boolean skip = false;
                 switch (n)
                 {
                    case 1:
-                        coordType = ConformationalConstants.FLIPTYPE;
+                        coordType = ConformationalCoordType.FLIP;
                         //For flipping atoms value is either + or -
                         coordValue = 1.0;
                         break;
 
                    case 2:
-                        coordType = ConformationalConstants.ROTOTYPE;
+                        coordType = ConformationalCoordType.TORSION;
                         IAtom atm0 = atomDef.get(0);
                         IAtom atm1 = atomDef.get(1);
                         IAtom nextTo0 = getNextTo(atomDef,0,mol);
@@ -256,7 +258,7 @@ public class ConformationalSpaceBuilder
                     {
                         System.out.println("Added to ConformationalSpace.");
                     }
-                    confSpace.addCoord(newCoord);
+                    confSpace.add(newCoord);
                 }
                 else
                 {
