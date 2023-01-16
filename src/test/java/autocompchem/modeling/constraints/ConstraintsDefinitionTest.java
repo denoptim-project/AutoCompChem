@@ -206,7 +206,7 @@ public class ConstraintsDefinitionTest
     	
     	
     	def = new ConstrainDefinition("1 2 3 4 5 getCurrentValue notanic "
-    			+ "onlybonded options: A B C D ", 0);
+    			+ "onlybonded suffix: A B C D ", 0);
     	assertEquals(RuleType.ID,def.getType());
     	assertNull(def.getSMARTS());
     	assertEquals(5, def.getAtomIDs().size());
@@ -215,13 +215,13 @@ public class ConstraintsDefinitionTest
     	assertEquals(3, def.getAtomIDs().get(2));
     	assertEquals(4, def.getAtomIDs().get(3));
     	assertEquals(5, def.getAtomIDs().get(4));
-    	assertEquals("A B C D", def.getOpts());
+    	assertEquals("A B C D", def.getSuffix());
     	assertTrue(def.limitToBonded());
     	assertTrue(def.usesCurrentValue());
     	assertTrue(def.hasValue());
 
     	def = new ConstrainDefinition("[#1] [#2] [#3] [#4,$([*]:Cl)]"
-    			+ " value:-1.23 notanic options: A B C D "
+    			+ " value:-1.23 notanic suffix: A B C D "
     			+ "onlybonded getCurrentValue", 0);
     	assertEquals(RuleType.SMARTS,def.getType());
     	assertNull(def.getAtomIDs());
@@ -230,47 +230,13 @@ public class ConstraintsDefinitionTest
     	assertEquals(new SMARTS("[#2]"), def.getSMARTS().get(1));
     	assertEquals(new SMARTS("[#3]"), def.getSMARTS().get(2));
     	assertEquals(new SMARTS("[#4,$([*]:Cl)]"), def.getSMARTS().get(3));
-    	assertEquals("A B C D", def.getOpts());
+    	assertEquals("A B C D", def.getSuffix());
     	assertTrue(def.limitToBonded());
     	assertTrue(def.usesCurrentValue());
-    	assertTrue(def.hasValue());
     	
     	
     	def = new ConstrainDefinition("1 2 3 4 5 getCurrentValue notanic "
-    			+ "onlybonded options: A B C D prefix:BEFORE BEFORE2", 0);
-    	assertEquals(RuleType.ID,def.getType());
-    	assertNull(def.getSMARTS());
-    	assertEquals(5, def.getAtomIDs().size());
-    	assertEquals(1, def.getAtomIDs().get(0));
-    	assertEquals(2, def.getAtomIDs().get(1));
-    	assertEquals(3, def.getAtomIDs().get(2));
-    	assertEquals(4, def.getAtomIDs().get(3));
-    	assertEquals(5, def.getAtomIDs().get(4));
-    	assertEquals("A B C D", def.getOpts());
-    	assertEquals("BEFORE BEFORE2", def.getPrefix());
-    	assertTrue(def.limitToBonded());
-    	assertTrue(def.usesCurrentValue());
-    	assertTrue(def.hasValue());
-
-    	def = new ConstrainDefinition("[#1] [#2] [#3] [#4,$([*]:Cl)]"
-    			+ " prefix:BEFORE BEFORE2 value:  -1.23 notanic options: A B C D "
-    			+ "onlybonded getCurrentValue", 0);
-    	assertEquals(RuleType.SMARTS,def.getType());
-    	assertNull(def.getAtomIDs());
-    	assertEquals(4, def.getSMARTS().size());
-    	assertEquals(new SMARTS("[#1]"), def.getSMARTS().get(0));
-    	assertEquals(new SMARTS("[#2]"), def.getSMARTS().get(1));
-    	assertEquals(new SMARTS("[#3]"), def.getSMARTS().get(2));
-    	assertEquals(new SMARTS("[#4,$([*]:Cl)]"), def.getSMARTS().get(3));
-    	assertEquals("A B C D", def.getOpts());
-    	assertEquals("BEFORE BEFORE2", def.getPrefix());
-    	assertTrue(def.limitToBonded());
-    	assertTrue(def.usesCurrentValue());
-    	assertTrue(def.hasValue());
-    	
-    	
-    	def = new ConstrainDefinition("1 2 3 4 5 getCurrentValue notanic "
-    			+ "onlybonded options:  A B C D suffix: AFTER  AFTER1  "
+    			+ "onlybonded suffix: AFTER  AFTER1  "
     			+ "prefix: BEFORE BEFORE2", 0);
     	assertEquals(RuleType.ID,def.getType());
     	assertNull(def.getSMARTS());
@@ -280,7 +246,6 @@ public class ConstraintsDefinitionTest
     	assertEquals(3, def.getAtomIDs().get(2));
     	assertEquals(4, def.getAtomIDs().get(3));
     	assertEquals(5, def.getAtomIDs().get(4));
-    	assertEquals("A B C D", def.getOpts());
     	assertEquals("BEFORE BEFORE2", def.getPrefix());
     	assertEquals("AFTER AFTER1", def.getSuffix());
     	assertTrue(def.limitToBonded());
@@ -288,7 +253,7 @@ public class ConstraintsDefinitionTest
     	assertTrue(def.hasValue());
 
     	def = new ConstrainDefinition("[#1] [#2] [#3] [#4,$([*]:Cl)]"
-    			+ " prefix:BEFORE BEFORE2 value:-1.23 notanic options: A B C D "
+    			+ " prefix:BEFORE BEFORE2 value:-1.23 notanic "
     			+ "onlybonded getCurrentValue suffix:AFTER  AFTER1", 0);
     	assertEquals(RuleType.SMARTS,def.getType());
     	assertNull(def.getAtomIDs());
@@ -297,7 +262,6 @@ public class ConstraintsDefinitionTest
     	assertEquals(new SMARTS("[#2]"), def.getSMARTS().get(1));
     	assertEquals(new SMARTS("[#3]"), def.getSMARTS().get(2));
     	assertEquals(new SMARTS("[#4,$([*]:Cl)]"), def.getSMARTS().get(3));
-    	assertEquals("A B C D", def.getOpts());
     	assertEquals("BEFORE BEFORE2", def.getPrefix());
     	assertEquals("AFTER AFTER1", def.getSuffix());
     	assertTrue(def.limitToBonded());

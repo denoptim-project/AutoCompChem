@@ -31,6 +31,10 @@ import autocompchem.utils.NumberUtils;
 
 public class ConstrainDefinition extends AtomTupleMatchingRule
 {
+	/**
+	 * Root of name used to identify any instance of this class.
+	 */
+	public static final String BASENAME = "CnstrRule-";
 
     /**
      * Keyword used to identify values
@@ -48,12 +52,6 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
      * from the initial position of the identified atoms.
      */
     public static final String KEYNOINTCOORD = "NOTANIC";
-    
-    /**
-     * Keyword used to flag the identification of options.
-     */
-    public static final String KEYOPTIONS = "OPTIONS";
-    
     /**
      * Keyword used to identify prefixes
      */
@@ -67,19 +65,30 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
 	/**
 	 * Keywords that expect values and are used to annotate constraints.
 	 */
-	private static final List<String> cnstrDefValuedKeys = Arrays.asList(
-			KEYVALUES, KEYOPTIONS, KEYPREFIX, KEYSUFFIX);
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json.
+	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
+			KEYVALUES, KEYPREFIX, KEYSUFFIX);
 
 	/**
 	 * Keywords that do not expect values and are used to annotate constraints.
 	 */
-	private static final List<String> cnstrDefValuelessKeys = Arrays.asList(
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json.
+	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList(
 			KEYNOINTCOORD);
 
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for a rule by parsing a formatted string of text. 
+     * Default keywords that are interpreted are defined in
+     * {@link ConstrainDefinition#DEFAULTVALUEDKEYS} and 
+     * {@link ConstrainDefinition#DEFAULTVALUELESSKEYS}.
+     * There defaults are added to the defaults of {@link AtomTupleMatchingRule}
+     * namely,
+     * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
+     * {@link AtomTupleConstants#DEFAULTVALUELESSKEYS}.
      * @param txt the string to be parsed
      * @param i a unique integer used to identify the rule. Is used to build
      * the reference name of the generated rule.
@@ -87,7 +96,7 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
 
     public ConstrainDefinition(String txt, int i)
     {
-    	super(txt, "CnstrRule-"+i, cnstrDefValuedKeys, cnstrDefValuelessKeys);
+    	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS);
     }
     
 //------------------------------------------------------------------------------
@@ -100,17 +109,6 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
     public double getValue()
     {
     	return Double.parseDouble(getValueOfAttribute(KEYVALUES));
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * @return the string collecting options
-     */
-
-    public String getOpts()
-    {
-        return getValueOfAttribute(KEYOPTIONS);
     }
     
 //------------------------------------------------------------------------------

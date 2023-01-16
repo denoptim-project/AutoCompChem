@@ -290,7 +290,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
         	{
         		frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs().get(0) + " "
                 		+ c.getAtomIDs().get(1) + " " + c.getCurrentValue();
-        	} else{
+        	} else {
                 frozenBondsStr = frozenBondsStr + " " + c.getAtomIDs().get(0) + " "
                 		+ c.getAtomIDs().get(1);
         	}

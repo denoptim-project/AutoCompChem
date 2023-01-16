@@ -2,7 +2,7 @@ package autocompchem.modeling.atomtuple;
 
 /**
  * Constants useful in the manipulation of tuple of atoms.
- * @author Marco Foscat
+ * @author Marco Foscato
  *
  */
 public class AtomTupleConstants 
@@ -18,6 +18,9 @@ public class AtomTupleConstants
 	 * require to use current value of internal
 	 * coordinates definable from atom tuples. 
 	 */
+	// WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
 	public static final String KEYUSECURRENTVALUE = "GETCURRENTVALUE";
 
 	/**
@@ -25,5 +28,24 @@ public class AtomTupleConstants
 	 * require to restrict the generation of annotated tuples of atoms 
 	 * to those that contain atoms bonded in the order given by the tuple.
 	 */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
 	public static final String KEYONLYBONDED = "ONLYBONDED";
+	
+    /**
+     * List of default valued keywords recognized in text-like definition of 
+     * atom tuple matching rules.
+     */
+    public static final String[] DEFAULTVALUEDKEYS = {};
+    
+    /**
+     * List of default value-less keywords recognized in text-like definition of 
+     * atom tuple matching rules.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
+    public static final String[] DEFAULTVALUELESSKEYS = {
+    		KEYONLYBONDED, KEYUSECURRENTVALUE};
 }

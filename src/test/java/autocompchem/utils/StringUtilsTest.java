@@ -61,6 +61,24 @@ public class StringUtilsTest
 //------------------------------------------------------------------------------
 
     @Test
+    public void testMergeIntListToString() throws Exception
+    {
+        List<Integer> lst = new ArrayList<Integer>();
+        lst.add(0);
+        lst.add(3);
+        lst.add(-3);
+        String sep = ", ";
+        
+        String expected = "1, 4, -2";
+        assertEquals(expected, StringUtils.mergeListToString(lst, sep, true, 1));
+
+        expected = "0, 3, -3, ";
+        assertEquals(expected, StringUtils.mergeListToString(lst, sep, false, 0));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
     public void testMergeListToStringTrimmed() throws Exception
     {
         ArrayList<String> lst = new ArrayList<String>();

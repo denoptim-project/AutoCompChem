@@ -118,6 +118,9 @@ public class AtomTupleMatchingRule
 
     /**
      * Constructor for a rule by parsing a formatted string of text. 
+     * Default keywords that are recognized in the syntax are defined in
+     * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
+     * {@link AtomTupleConstants#DEFAULTVALUELESSKEYS}.
      * @param txt the string to be parsed.
      * @param ruleName a unique name used to identify this rule. We do not check
      * for uniqueness.
@@ -130,23 +133,42 @@ public class AtomTupleMatchingRule
     		List<String> valuedKeywords, List<String> booleanKeywords)
     {
         this.refName = ruleName;
+        
+        // These are default attribute keywords that we always have
+        for (String defValuedKey : AtomTupleConstants.DEFAULTVALUEDKEYS)
+        {
+        	if (!attributeKeywords.contains(defValuedKey))
+    			attributeKeywords.add(defValuedKey.toUpperCase());
+        }
         if (valuedKeywords!=null)
         {
         	for (String key : valuedKeywords)
-        		attributeKeywords.add(key.toUpperCase());
+        	{
+        		if (!attributeKeywords.contains(key))
+        			attributeKeywords.add(key.toUpperCase());
+        	}
         }
+        
         Map<String,Boolean> booleanAttributes = new HashMap<String,Boolean>();
     	// These are default keywords that we always have
-        booleanAttributes.put(AtomTupleConstants.KEYONLYBONDED, false);
-        booleanAttributes.put(AtomTupleConstants.KEYUSECURRENTVALUE, false);
-        attributeKeywords.add(AtomTupleConstants.KEYONLYBONDED);
-        attributeKeywords.add(AtomTupleConstants.KEYUSECURRENTVALUE);
+        for (String defValuelessKey : AtomTupleConstants.DEFAULTVALUELESSKEYS)
+        {
+        	if (!attributeKeywords.contains(defValuelessKey))
+        	{
+	        	booleanAttributes.put(defValuelessKey.toUpperCase(), false);
+	            attributeKeywords.add(defValuelessKey.toUpperCase());
+        	}
+        }
         if (booleanKeywords!=null)
         {
-	        for (String key : booleanKeywords)
-        		attributeKeywords.add(key.toUpperCase());
-	        for (String key : booleanKeywords)
-	        	booleanAttributes.put(key.toUpperCase(), false);
+        	for (String key : booleanKeywords)
+        	{
+        		if (!attributeKeywords.contains(key))
+		        {
+		        	attributeKeywords.add(key.toUpperCase());
+		        	booleanAttributes.put(key.toUpperCase(), false);
+		        }
+        	}
         }
         
         String[] p = txt.trim().split("\\s+");

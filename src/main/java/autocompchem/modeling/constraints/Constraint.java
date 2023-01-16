@@ -155,13 +155,17 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * if no value is to be set.
 	 * @param type the type of constraint. This defines how many of the indexes
 	 * are actually used.
-	 * @param options additional string usually used to tell the comp. chem.
-	 * software how to use the given information. For example,
+	 * @param suffix string appended to the list of atom indexes and usually 
+	 * used to tell the comp. chem. software how to use the given information. 
+	 * For example,
 	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint). Or null, if no option has to be given.
+	 * (add constraint). 
+	 * Or NWChem's 'constant' to constraint that internal coordinate to the 
+	 * current value.
+	 * Use <code>null</code>, if no suffix has to be given.
 	 */
 	public Constraint(int[] ids,
-			ConstraintType type, Double value, String options)
+			ConstraintType type, Double value, String suffix)
 	{
 		super(ids);
 		this.type = type;
@@ -169,9 +173,9 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 		{
 			setValue(value);
 		}
-		if (options != null)
+		if (suffix != null)
 		{
-			setOpts(options);
+			setSuffix(suffix);
 		}
 	}
 	
@@ -248,7 +252,7 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	public static Constraint buildConstraint(ArrayList<Integer> ids, 
 			boolean areLinearlyConnected) throws Exception
 	{
-		return buildConstraint(ids, null, null, areLinearlyConnected, null, null);
+		return buildConstraint(ids, null, areLinearlyConnected, null, null);
 	}
 	
 //------------------------------------------------------------------------------
@@ -259,10 +263,6 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * constraint.
 	 * @param value a numerical value to be assigned to the constraint. Or null
 	 * if no value is to be set.
-	 * @param opts additional string usually used to tell the comp. chem.
-	 * software how to use the given information. For example,
-	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint). Or null, if no option has to be given.
 	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
 	 * represent a set of centers that are connected in the order given, e.g.
 	 * 1-j-k-l.
@@ -274,10 +274,10 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * @throws Exception
 	 */
 	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, String opts, boolean areLinearlyConnected,
+			Double value, boolean areLinearlyConnected,
 			String prefix, String suffix) throws Exception
 	{
-		return buildConstraint(ids, value, opts, areLinearlyConnected,
+		return buildConstraint(ids, value, areLinearlyConnected,
 				 prefix, suffix, true);
 	}
 //------------------------------------------------------------------------------
@@ -288,10 +288,6 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * constraint.
 	 * @param value a numerical value to be assigned to the constraint. Or null
 	 * if no value is to be set.
-	 * @param opts additional string usually used to tell the comp. chem.
-	 * software how to use the given information. For example,
-	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint). Or null, if no option has to be given.
 	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
 	 * represent a set of centers that are connected in the order given, e.g.
 	 * 1-j-k-l.
@@ -305,7 +301,7 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * @throws Exception
 	 */
 	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, String opts, boolean areLinearlyConnected,
+			Double value, boolean areLinearlyConnected,
 			String prefix, String suffix, boolean notAnIC) throws Exception
 	{
 		ConstraintType type = ConstraintType.UNDEFINED;
@@ -348,9 +344,8 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 		for (int i=0; i<ids.size(); i++)
 			idsArr[i] = ids.get(i);
 	
-		Constraint cstr = new Constraint(idsArr, type, value, opts);
+		Constraint cstr = new Constraint(idsArr, type, value, suffix);
 		cstr.setPrefix(prefix);
-		cstr.setSuffix(suffix);
 		return cstr;
 	}
 	
@@ -395,46 +390,34 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 //------------------------------------------------------------------------------
 
     /**
-     * @return the string collecting options or null.
-     */
-
-    public String getOpts()
-    {
-        return getValueOfAttribute(ConstrainDefinition.KEYOPTIONS);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * @return the string collecting prefix or null.
+     * @return the string collecting prefix or an empty string is no prefix
+     * is available.
      */
 
     public String getPrefix()
     {
-        return getValueOfAttribute(ConstrainDefinition.KEYPREFIX);
+    	String value = getValueOfAttribute(ConstrainDefinition.KEYPREFIX);
+    	if (value != null)
+    		return value;
+    	else
+    		return "";
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * @return the string collecting suffix or null.
+     * @return the string collecting suffix or an empty string is no suffix
+     * is available.
      */
 
     public String getSuffix()
     {
-        return getValueOfAttribute(ConstrainDefinition.KEYSUFFIX);
+    	String value = getValueOfAttribute(ConstrainDefinition.KEYSUFFIX);
+    	if (value != null)
+    		return value;
+    	else
+    		return "";
     }
-    
-//------------------------------------------------------------------------------
-
-  	/**
-  	 * Changes the value associated with this constraint.
-  	 * @param value the new value.
-  	 */
-  	public void setOpts(String opts) 
-  	{
-  		setValueOfAttribute(ConstrainDefinition.KEYOPTIONS, opts);
-  	}
     	
 //------------------------------------------------------------------------------
     
@@ -467,17 +450,6 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	public void setValue(double value) 
 	{
 		setValueOfAttribute(ConstrainDefinition.KEYVALUES, value+"");
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * @return <code>true</code> is this constraint is associated with any 
-	 * additional optional string.
-	 */
-	public boolean hasOpt() 
-	{
-		return getValueOfAttribute(ConstrainDefinition.KEYOPTIONS)!=null;
 	}
 		
 //------------------------------------------------------------------------------
@@ -522,9 +494,10 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 				sb.append(",");
 		}
 		sb.append("], value=").append(hasValue() ? getValue() : "null");
-		sb.append("], options=").append(getOpts());
-		sb.append("], prefix=").append(getPrefix());
-		sb.append("], suffix=").append(getSuffix());
+		sb.append("], prefix=").append(
+				getValueOfAttribute(ConstrainDefinition.KEYPREFIX));
+		sb.append("], suffix=").append(
+				getValueOfAttribute(ConstrainDefinition.KEYSUFFIX));
 		sb.append("] ");
 		return sb.toString();
 	}
@@ -695,14 +668,6 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 		if (this.hasValue() && other.hasValue() 
 				&& !NumberUtils.closeEnough(this.getValue(), other.getValue()))
 	   		 return false;
-		
-		if ((this.hasOpt() && !other.hasOpt())
-				|| (!this.hasOpt() && other.hasOpt()))
-			return false;
-		
-		if (this.getOpts()!=null && other.getOpts()!=null
-				&& !this.getOpts().equals(other.getOpts()))
-			return false;
 		
 		if ((this.getPrefix()!=null && other.getPrefix()==null)
 				|| (this.getPrefix()==null && other.getPrefix()!=null))

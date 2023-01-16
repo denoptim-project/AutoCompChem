@@ -10,5 +10,6 @@ $END
 AtomIDS:$START 2 3
 4 5 value:99.0
 2 3 4 5 getcurrentvalue
+0 1 2 3 value=999.0
 24
 $END 

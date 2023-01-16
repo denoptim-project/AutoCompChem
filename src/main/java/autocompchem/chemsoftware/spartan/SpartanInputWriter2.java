@@ -436,7 +436,10 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     				else
     					break;
     			}
-    			sbLine.append(formatConstrainValue(cstr.getValue()));
+    			if (cstr.hasValue())
+    				sbLine.append(formatConstrainValue(cstr.getValue()));
+    			else if (cstr.hasCurrentValue())
+    				sbLine.append(formatConstrainValue(cstr.getCurrentValue()));
     			lines.add(sbLine.toString());
     		}
             lines.add(SpartanConstants.CSTRDIREND);
@@ -477,9 +480,9 @@ public class SpartanInputWriter2 extends ChemSoftInputWriter
     				else
     					sbLine.append(formatConstrainIds(0));
     			}
-    			if (cstr.hasOpt())
+    			if (!cstr.getSuffix().isBlank())
     			{
-    				sbLine.append(" ").append(cstr.getOpts());
+    				sbLine.append(" ").append(cstr.getSuffix());
     			}
     			lines.add(sbLine.toString());
     		}

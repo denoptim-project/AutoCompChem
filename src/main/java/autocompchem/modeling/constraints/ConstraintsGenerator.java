@@ -34,6 +34,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.molecule.MolecularMeter;
@@ -73,8 +74,26 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      */
     public ConstraintsGenerator()
     {
-    	//TODO-gg
-        //super("inputdefinition/ConstraintsGenerator.json");
+    	super("inputdefinition/ConstraintsGenerator.json");
+    	ruleRoot = ConstrainDefinition.BASENAME;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses the formatted text defining {@link ConstrainDefinition} and adds
+     * the resulting rules to this instance of atom tuple generator.
+     * @param lines the lines of text to be parsed into 
+     * {@link AtomTupleMatchingRule}s.
+     */
+
+    @Override
+    public void parseAtomTupleMatchingRules(List<String> lines)
+    {
+        for (String line : lines)
+        {
+        	rules.add(new ConstrainDefinition(line, ruleID.getAndIncrement()));
+        }
     }
     
 //-----------------------------------------------------------------------------

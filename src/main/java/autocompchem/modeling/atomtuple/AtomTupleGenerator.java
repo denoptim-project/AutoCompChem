@@ -88,6 +88,22 @@ public class AtomTupleGenerator extends Worker
     		new ArrayList<List<AnnotatedAtomTuple>>();
     
     /**
+     * String used as root for any atom tuple matching rule defined in this 
+     * instance.
+     */
+    protected String ruleRoot = "AtmMatcher-";
+    
+	/**
+	 * Keywords that expect values and are used to annotate tuples.
+	 */
+	protected List<String> valuedKeywords = new ArrayList<String>();
+
+	/**
+	 * Keywords that do not expect values and are used to annotate tuples.
+	 */
+	protected List<String> valuelessKeywords = new ArrayList<String>();
+    
+    /**
      * Verbosity level
      */
     protected int verbosity = 0;
@@ -95,7 +111,7 @@ public class AtomTupleGenerator extends Worker
     /**
      * Unique identifier for rules
      */
-	private AtomicInteger ruleID = new AtomicInteger(0);
+	protected AtomicInteger ruleID = new AtomicInteger(0);
 
 
 //-----------------------------------------------------------------------------
@@ -106,6 +122,17 @@ public class AtomTupleGenerator extends Worker
     public AtomTupleGenerator()
     {
         super("inputdefinition/AtomTupleGenerator.json");
+    }
+    
+//-----------------------------------------------------------------------------
+	
+    /**
+     * Constructor that allows to change the pathname to the JSON file that 
+     * contains the definition of the input settings as {@link ConfigItem}s.
+     */
+    public AtomTupleGenerator(String knownInputDefinition)
+    {
+        super(knownInputDefinition);
     }
 
 //-----------------------------------------------------------------------------
@@ -130,24 +157,21 @@ public class AtomTupleGenerator extends Worker
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
         
-        String ruleRoot = "AtmMatcher-";
         if (params.contains("RULENAMEROOT"))
         {
         	ruleRoot = params.getParameter("RULENAMEROOT").getValueAsString();
         }
         
-        List<String> valKeys = new ArrayList<String>();
         if (params.contains("VALUEDKEYWORDS"))
         {
-        	valKeys.addAll(Arrays.asList(
+        	valuedKeywords.addAll(Arrays.asList(
         			params.getParameter("VALUEDKEYWORDS").getValueAsString()
         			.trim().toUpperCase().split("\\s+")));
         }
 
-        List<String> boolKeys = new ArrayList<String>();
         if (params.contains("BOOLEANKEYWORDS"))
         {
-        	boolKeys.addAll(Arrays.asList(
+        	valuelessKeywords.addAll(Arrays.asList(
         			params.getParameter("BOOLEANKEYWORDS").getValueAsString()
         			.trim().toUpperCase().split("\\s+")));
         }
@@ -155,13 +179,13 @@ public class AtomTupleGenerator extends Worker
         if (params.contains("SMARTS"))
         {
         	String all = params.getParameter("SMARTS").getValueAsString();
-        	parseAtomTupleMatchingRules(all, ruleRoot, valKeys, boolKeys);
+        	parseAtomTupleMatchingRules(all);
         }
         
         if (params.contains("ATOMIDS"))
         {
         	String all = params.getParameter("ATOMIDS").getValueAsString();
-        	parseAtomTupleMatchingRules(all, ruleRoot, valKeys, boolKeys);
+        	parseAtomTupleMatchingRules(all);
         }
     }
     
@@ -198,51 +222,45 @@ public class AtomTupleGenerator extends Worker
 
     /**
      * Parses the formatted text defining {@link AtomTupleMatchingRule} and adds
-     * the resulting rules to this instance of atom tuple generator.
+     * the resulting rules to this instance of atom tuple generator. Uses the
+     * list of keywords defined in this instance.
      * @param text the text (i.e., multiple lines) to be parsed into 
      * {@link AtomTupleMatchingRule}s.
-     * @param ruleRoot the string used as root for defining rule names.
-     * @param valuedKeywords List of keywords expected to have a value.
-     * @param booleanKeywords List of keywords expected to have no value, 
-     * i.e., their presence is sufficient to convey meaning.
      */
 
-    public void parseAtomTupleMatchingRules(String text, String ruleRoot, 
-    		List<String> valuedKeywords, List<String> booleanKeywords)
+    public void parseAtomTupleMatchingRules(String text)
     {
         String[] arr = text.split(System.getProperty("line.separator"));
-        parseAtomTupleMatchingRules(new ArrayList<String>(Arrays.asList(arr)),
-        		ruleRoot, valuedKeywords, booleanKeywords);
+        parseAtomTupleMatchingRules(new ArrayList<String>(Arrays.asList(arr)));
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Parses the formatted text defining {@link AtomTupleMatchingRule} and adds
-     * the resulting rules to this instance of atom tuple generator.
+     * the resulting rules to this instance of atom tuple generator. Uses the
+     * list of keywords defined in this instance.
      * @param lines the lines of text to be parsed into 
-     * {@link AtomTupleMatchingRule}s
-     * @param ruleRoot the string used as root for defining rule names.
-     * @param valuedKeywords list of keywords expected to have a value.
-     * @param booleanKeywords list of keywords expected to have no value, 
-     * i.e., their presence is sufficient to convey meaning.
+     * {@link AtomTupleMatchingRule}s.
      */
 
-    public void parseAtomTupleMatchingRules(List<String> lines, String ruleRoot,
-    		List<String> valuedKeywords, List<String> booleanKeywords)
+    public void parseAtomTupleMatchingRules(List<String> lines)
     {
         for (String line : lines)
         {
             rules.add(new AtomTupleMatchingRule(line, ruleRoot 
             		+ ruleID.getAndIncrement(), valuedKeywords, 
-            		booleanKeywords));
+            		valuelessKeywords));
         }
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * Sets the rules used by this instance to generate 
+     * Sets the rules used by this instance to generate. Ignores the list of
+     * keywords defined in this instance. WARNING! This allows to create
+     * inconsistency between this class and the atom tuple matching rules is
+     * contains! Use with caution.
      * {@link AnnotatedAtomTuple}s. Replaces previously set rules.
      * @param rules the rules to import.
      */

@@ -45,7 +45,7 @@
             },
             {
               "reference": "SMARTS",
-              "value": "[C] [N] onlybonded getCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded value: 60.0\n[C] [Ru] [C] [N] onlybonded getCurrentValue options:key5 key6 key7"
+              "value": "[C] [N] onlybonded getCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded value: 60.0\n[C] [Ru] [C] [N] onlybonded getCurrentValue suffix:key5 key6 key7"
             }
           ],
           "reference": "constrain-generation task"

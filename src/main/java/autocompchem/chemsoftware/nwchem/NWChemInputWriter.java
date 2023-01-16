@@ -446,7 +446,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     	for (Constraint c : cs.getConstrainsWithType(ConstraintType.DISTANCE))
         {
     		int[] ids = c.getSortedAtomIDs();
-        	String str = "BOND " + (ids[0]+1) + " " + (ids[1]+1);
+        	String str = "BOND " + c.getPrefix() + (ids[0]+1) + " " + (ids[1]+1);
 
         	if (c.hasValue() && c.hasCurrentValue())
         	{
@@ -464,9 +464,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         	{
         		str = str + " " + c.getCurrentValue();
         	}
-        	if (c.hasOpt())
+        	if (!c.getSuffix().isBlank())
         	{
-        		str = str + " " + c.getOpts();
+        		str = str + " " + c.getSuffix();
         	}
         	lines.add(str);
         }
@@ -474,7 +474,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.ANGLE))
         {
     		int[] ids = c.getSortedAtomIDs();
-        	String str = "ANGLE " + (ids[0]+1) + " " + (ids[1]+1) + " " 
+        	String str = "ANGLE " + c.getPrefix()
+        			+ (ids[0]+1) + " " + (ids[1]+1) + " " 
         			+ (ids[2]+1);
 
         	if (c.hasValue() && c.hasCurrentValue())
@@ -493,9 +494,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         	{
         		str = str + " " + c.getCurrentValue();
         	}
-        	if (c.hasOpt())
+        	if (!c.getSuffix().isBlank())
         	{
-        		str = str + " " + c.getOpts();
+        		str = str + " " + c.getSuffix();
         	}
         	lines.add(str);
         }
@@ -503,7 +504,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.DIHEDRAL))
         {
     		int[] ids = c.getSortedAtomIDs();
-        	String str = "TORSION " + (ids[0]+1) + " " + (ids[1]+1) + " " 
+        	String str = "TORSION " + c.getPrefix()
+        			+ (ids[0]+1) + " " + (ids[1]+1) + " " 
         			+ (ids[2]+1) + " " + (ids[3]+1);
 
         	if (c.hasValue() && c.hasCurrentValue())
@@ -522,9 +524,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         	{
         		str = str + " " + c.getCurrentValue();
         	}
-        	if (c.hasOpt())
+        	if (!c.getSuffix().isBlank())
         	{
-        		str = str + " " + c.getOpts();
+        		str = str + " " + c.getSuffix();
         	}
         	lines.add(str);
         }

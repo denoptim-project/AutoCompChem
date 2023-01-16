@@ -101,6 +101,27 @@ public class StringUtils
         }
         return result;
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Appends all integers of a list to obtain a single string that uses the 
+     * given separator. 
+     * @param list the integers to append
+     * @param sep separator to use between entries.
+     * @param trim if <code>true</code> avoids to write separator after the
+     * last entry.
+     * @param offset an integer to add to each item in the list.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     */
+    
+    public static String mergeListToString(List<Integer> list, String sep, 
+    		boolean trim, int offset)
+    {
+    	List<Integer> modList = new ArrayList<Integer>();
+    	list.stream().forEach(i -> modList.add(i + offset));
+    	return mergeListToString(modList, sep, trim);
+    }
     
 //------------------------------------------------------------------------------
 

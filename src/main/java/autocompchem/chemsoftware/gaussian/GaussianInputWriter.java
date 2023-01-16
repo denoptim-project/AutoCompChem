@@ -54,6 +54,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -661,65 +662,54 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	                    for (Constraint cns : cs)
 	                    {
 	                    	String str = "";
-	                    	switch (cns.getType())
+	                    	if (cns.getPrefix().isBlank())
+	                    	{	
+		                    	switch (cns.getType())
+		                    	{
+									case ANGLE:
+										str = "A ";
+										break;
+									case DIHEDRAL:
+										str = "D ";
+										break;
+									case IMPROPERTORSION:
+										str = "D ";
+										break;
+									case DISTANCE:
+										str = "B ";
+										break;
+									case FROZENATM:
+										str = "X ";
+										break;
+									case UNDEFINED:
+										switch (cns.getAtomIDs().size())
+										{
+										case 1:
+											str = "X ";
+											break;
+										case 2:
+											str = "B ";
+											break;
+										case 3:
+											str = "A ";
+											break;
+										case 4:
+											str = "D ";
+											break;
+										}
+										break;
+									default:
+										break;
+		                    	}
+	                    	}
+	                    	str = str + StringUtils.mergeListToString(
+	                    			cns.getAtomIDs(), " ", true, 1);
+	                    	
+	                    	if (!cns.getSuffix().isBlank())
 	                    	{
-								case ANGLE:
-									str = "A " + (cns.getAtomIDs().get(0)+1) + " "
-											+ (cns.getAtomIDs().get(1)+1) + " "
-											+ (cns.getAtomIDs().get(2)+1);
-									
-									break;
-								case DIHEDRAL:
-									str = "D " + (cns.getAtomIDs().get(0)+1) + " "
-											+ (cns.getAtomIDs().get(1)+1) + " "
-											+ (cns.getAtomIDs().get(2)+1) + " "
-											+ (cns.getAtomIDs().get(3)+1);
-									break;
-								case IMPROPERTORSION:
-									str = "D " + (cns.getAtomIDs().get(0)+1) + " "
-											+ (cns.getAtomIDs().get(1)+1) + " "
-											+ (cns.getAtomIDs().get(2)+1) + " "
-											+ (cns.getAtomIDs().get(3)+1);
-									break;
-								case DISTANCE:
-									str = "B " + (cns.getAtomIDs().get(0)+1) + " "
-											+ (cns.getAtomIDs().get(1)+1);
-									break;
-								case FROZENATM:
-									str = "X " + (cns.getAtomIDs().get(0)+1);
-									break;
-								case UNDEFINED:
-									switch (cns.getAtomIDs().size())
-									{
-									case 1:
-										str = "X " + (cns.getAtomIDs().get(0)+1);
-										break;
-									case 2:
-										str = "B " + (cns.getAtomIDs().get(0)+1) 
-											+ " " + (cns.getAtomIDs().get(1)+1);
-										break;
-									case 3:
-										str = "A " + (cns.getAtomIDs().get(0)+1) 
-											+ " " + (cns.getAtomIDs().get(1)+1) 
-											+ " " + (cns.getAtomIDs().get(2)+1);
-										break;
-									case 4:
-										str = "D " + (cns.getAtomIDs().get(0)+1) 
-											+ " " + (cns.getAtomIDs().get(1)+1) 
-											+ " " + (cns.getAtomIDs().get(2)+1) 
-											+ " " + (cns.getAtomIDs().get(3)+1);
-										break;
-										
-									}
-									break;
-								default:
-									break;
+	                    		str = str + " " + cns.getSuffix();
 	                    	}
 	                    	
-	                    	if (cns.hasOpt())
-	                    	{
-	                    		str = str + " " + cns.getOpts();
-	                    	}
 	                    	lines.add(str);
 	                    }
 	        			lines.add(""); //empty line that terminates this part of option section
