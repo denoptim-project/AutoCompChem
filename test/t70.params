@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 1
-TASK: PrepareInputSpartan2
+TASK: PrepareInputSpartan
 INPUTGEOMETRIESFILE: ../t70-mol.sdf
 JOBDETAILSFILE: ../t70-jobDetails.json
 #$STARTROTATABLEBONDS:

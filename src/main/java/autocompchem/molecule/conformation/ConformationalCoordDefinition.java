@@ -57,7 +57,6 @@ public class ConformationalCoordDefinition extends AtomTupleMatchingRule
      */
     public static final String KEYPREFIX = "PREFIX";
     
-    //TODO-gg are prefix and suffix needed???
     /**
      * Keyword used to identify suffix
      */

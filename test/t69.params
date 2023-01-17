@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 3
-TASK: PrepareInputSpartan2
+TASK: PrepareInputSpartan
 INPUTGEOMETRIESFILE: ../t69-mol.sdf
 ROOTPATHNAMEOUTPUT: t69-sp14
 JOBDETAILSFILE: ../t69-jobDetails.json

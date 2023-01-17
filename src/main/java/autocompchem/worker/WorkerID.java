@@ -58,7 +58,6 @@ public enum WorkerID
     XTBOutputHandler,
     QMMMInputWriter,
     SpartanInputWriter,
-    SpartanInputWriter2, //TODO-gg keep only this and rename
     SpartanOutputHandler,
     VibModuleOutputHandler,
     ZMatrixHandler,

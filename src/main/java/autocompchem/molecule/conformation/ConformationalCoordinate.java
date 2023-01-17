@@ -110,43 +110,6 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a ConformationalCoordinate with external definition of
-     * all the fields
-     * @param refName the reference name
-     * @param coordType the type (torsion, inversion)
-     * @param atomDef the vector of atoms defining the coordinate
-     * @param atomIdDef the vector of defining atom IDs (0-based)
-     * @param value the current numerical value
-     * @param fold the fold imposed
-     */
-
-    public ConformationalCoordinate(String refName, ConformationalCoordType coordType, 
-                         List<IAtom> atomDef, List<Integer> atomIdDef,
-                                                         double value, int fold)
-    {
-    	super(atomIdDef, new HashSet<String>(), new HashMap<String, String>());
-    	//TODO-gg delete
-    	/*
-        this.refName = refName;
-        this.type = type;
-        this.atomDef = atomDef;
-        this.atomIdDef = atomIdDef;
-        this.value = value;
-        this.fold = fold;
-        */
-    	//TODO-gg change into buildConfCoord as to return a confcoord object
-    	
-    	/*
-    	throw new IllegalArgumentException("Unexpected number of "
-				+ "atom IDs (" + getNumberOfIDs() + "). "
-				+ "Cannot define the type of this conformational "
-				+ "coordinate: " + tuple);
-    	*/
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Returns the fold number.
      * @return the fold number.
      */

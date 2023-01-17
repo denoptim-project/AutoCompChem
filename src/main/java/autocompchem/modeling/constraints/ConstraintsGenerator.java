@@ -42,6 +42,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -150,8 +151,9 @@ public class ConstraintsGenerator extends AtomTupleGenerator
                 //Assign Constraints
                 ConstraintsSet cs = createConstraints(mol);
                 
-                if (verbosity > 1)
+                if (verbosity > 0)
                 {
+                	System.out.println("# " + MolecularUtils.getNameOrID(mol));
                 	cs.printAll();
                 }
                 output.add(cs);

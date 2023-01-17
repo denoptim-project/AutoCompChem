@@ -153,8 +153,9 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
                 //Assign Constraints
                 ConformationalSpace cs = createConformationalSpace(mol);
                 
-                if (verbosity > 1)
+                if (verbosity > 0)
                 {
+                	System.out.println("# " + MolecularUtils.getNameOrID(mol));
                 	cs.printAll();
                 }
                 output.add(cs);
