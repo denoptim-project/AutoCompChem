@@ -185,6 +185,19 @@ public class AnnotatedAtomTuple implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * @param key the name of the attribute to get. Case insensitive.
+     * @return <code>true</code> if the keyword was found, <code>false</code> if
+     * it was not found.
+     */
+
+    public boolean hasValueledAttribute(String key)
+    {
+        return valuedAttributes.containsKey(key.toUpperCase());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Sets the value associated to an attribute of this tuple.
      * @param key the name of the attribute to set. Case insensitive.
      * @param value the value to set.
@@ -313,7 +326,7 @@ public class AnnotatedAtomTuple implements Cloneable
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.getClass().getSimpleName()).append(" [atmIDs:[");
-		sb.append(StringUtils.mergeListToString(atmIDs,","));
+		sb.append(StringUtils.mergeListToString(atmIDs, ",", true));
 		sb.append("], valuelessAttributes:[").append(
 				valuelessAttributes.toString());
 		sb.append("], valuedAttributes:[").append(valuedAttributes.toString());

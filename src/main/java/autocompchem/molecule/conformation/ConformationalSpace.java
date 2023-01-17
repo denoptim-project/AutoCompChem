@@ -1,34 +1,19 @@
 package autocompchem.molecule.conformation;
 
-/*   
- *   Copyright (C) 2016  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.ConstraintsSet;
-
 
 /**
- * The conformational space as the combination of a list of conformational
- * changes (i.e., the conformational coordinates).
+ * The conformational space as the ordered list of non-redundant conformational
+ * changes (i.e., the {@link ConformationalCoordinate}). The entries are kept 
+ * non-redundant
+ * by the {@link Comparator} given upon construction, which also controls the
+ * ordering of the coordinates returned by the iterator. 
+ * The default comparator is {@link ConfCoordComparator}.
  * 
  * @author Marco Foscato 
  */
@@ -39,8 +24,18 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
     /**
      * Unique counter for coordinates names
      */
-    private final AtomicInteger CRDID = new AtomicInteger(0);
+    private final AtomicInteger CRDID = new AtomicInteger(0);  
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Constructor using default comparator
+     */
+    public ConformationalSpace()
+    {
+    	super(new ConfCoordComparator());
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

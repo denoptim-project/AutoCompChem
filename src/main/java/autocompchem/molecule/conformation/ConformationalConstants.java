@@ -24,6 +24,7 @@ package autocompchem.molecule.conformation;
  * @author Marco Foscato
  */
 
+//TODO-gg delete class
 public class ConformationalConstants
 {
 }

@@ -125,7 +125,7 @@ public class AtomTupleMatchingRule
      * @param ruleName a unique name used to identify this rule. We do not check
      * for uniqueness.
      * @param valuedKeywords list of keywords expected to have a value.
-     * @param booleanAttributes list of keywords expected to have no value, 
+     * @param booleanKeywords list of keywords expected to have no value, 
      * i.e., their presence is sufficient to convey meaning.
      */
 

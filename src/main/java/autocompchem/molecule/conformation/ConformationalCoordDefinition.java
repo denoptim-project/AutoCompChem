@@ -98,6 +98,7 @@ public class ConformationalCoordDefinition extends AtomTupleMatchingRule
     public ConformationalCoordDefinition(String txt, int i)
     {
     	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS);
+    	this.setValuelessAttribute(AtomTupleConstants.KEYONLYBONDED);
     }
     
 //------------------------------------------------------------------------------

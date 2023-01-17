@@ -35,6 +35,8 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
  * To illustrate, fold=3 for a conformational coordinate corresponding to the
  * torsion of a bond defined an exploration of three cases where the bond is
  * twisted by 0, 120, and 240 DEG.
+ * We assume that {@link ConformationalCoordinate} can be defined only 
+ * by 1, 2, or 4 atoms.
  *
  * @author Marco Foscato 
  */
@@ -99,7 +101,10 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 						+ "Cannot define the type of this conformational "
 						+ "coordinate: " + tuple);
 		}
-  		//TODO-gg ensure relevant attributes are present in tuple (e.g. fold)
+  		if (!this.hasValueledAttribute(ConformationalCoordDefinition.KEYFOLD))
+  		{
+  			this.setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD,"1");
+  		}
   	}
 
 //------------------------------------------------------------------------------
@@ -130,18 +135,38 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
         this.fold = fold;
         */
     	//TODO-gg change into buildConfCoord as to return a confcoord object
+    	
+    	/*
+    	throw new IllegalArgumentException("Unexpected number of "
+				+ "atom IDs (" + getNumberOfIDs() + "). "
+				+ "Cannot define the type of this conformational "
+				+ "coordinate: " + tuple);
+    	*/
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the fold number
-     * @return the fold number
+     * Returns the fold number.
+     * @return the fold number.
      */
 
     public int getFold()
     {
         return fold;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the type of motion among those defined by 
+     * {@link ConformationalCoordType}.
+     * @return the type of motion.
+     */
+
+    public ConformationalCoordType getType()
+    {
+        return type;
     }
 
 //------------------------------------------------------------------------------
