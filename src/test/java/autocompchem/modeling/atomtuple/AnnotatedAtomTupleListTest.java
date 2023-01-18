@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.molecule.connectivity.ConnectivityTable;
 
 public class AnnotatedAtomTupleListTest 
 {
@@ -41,8 +43,17 @@ public class AnnotatedAtomTupleListTest
 	    valuedAttributes.put("AttC".toUpperCase(), "valueC valueC2");
 	    valuedAttributes.put("AttD".toUpperCase(), "valueD");
 	    valuedAttributes.put("AttE".toUpperCase(), "");
+    	ConnectivityTable ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new ArrayList<Integer>(
+    			Arrays.asList(2)));
+    	ct.addNeighborningRelation(2, new ArrayList<Integer>(
+    			Arrays.asList(3,5)));
+    	ct.addNeighborningRelation(3, new ArrayList<Integer>(
+    			Arrays.asList(4,6)));
+    	ct.addNeighborningRelation(5, new ArrayList<Integer>(
+    			Arrays.asList(6)));
 	    AnnotatedAtomTuple aatA = new AnnotatedAtomTuple(new int[] {1,2,3,4,5,6},
-	                    booleanAttributes, valuedAttributes);
+	                    booleanAttributes, valuedAttributes, ct);
 	
 	    Set<String> booleanAttributesB = new HashSet<String>();
 	    booleanAttributesB.add("AttBA".toUpperCase());
@@ -52,7 +63,7 @@ public class AnnotatedAtomTupleListTest
 	    valuedAttributesB.put("AttBD".toUpperCase(), "valueBD");
 	    valuedAttributesB.put("AttBE".toUpperCase(), "B");
 	    AnnotatedAtomTuple aatB = new AnnotatedAtomTuple(new int[] {10,22},
-	                    booleanAttributesB, valuedAttributesB);
+	                    booleanAttributesB, valuedAttributesB, null);
 	
 	    Set<String> booleanAttributesC = new HashSet<String>();
 	    booleanAttributesC.add("AttCA".toUpperCase());
@@ -62,7 +73,7 @@ public class AnnotatedAtomTupleListTest
 	    valuedAttributesC.put("AttCD".toUpperCase(), "valueCD");
 	    valuedAttributesC.put("AttCE".toUpperCase(), "C");
 	    AnnotatedAtomTuple aatC = new AnnotatedAtomTuple(new int[] {33,44,55},
-	                    booleanAttributesC, valuedAttributesC);
+	                    booleanAttributesC, valuedAttributesC, null);
 	    AnnotatedAtomTupleList result = new AnnotatedAtomTupleList();
 	    result.add(aatA);
 	    result.add(aatB);
@@ -93,6 +104,10 @@ public class AnnotatedAtomTupleListTest
     	
     	s2 = getTestAnnotatedAtomTupleList();
     	s2.get(0).setValueOfAttribute("myne", "123");
+    	assertFalse(s1.equals(s2));
+    	
+    	s2 = getTestAnnotatedAtomTupleList();
+    	s2.get(0).getNeighboringRelations().clear();
     	assertFalse(s1.equals(s2));
     }
     

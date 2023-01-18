@@ -80,7 +80,7 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   	public ConformationalCoordinate(AnnotatedAtomTuple tuple)
   	{
   		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
-  				tuple.getValuedAttributes());
+  				tuple.getValuedAttributes(), tuple.getNeighboringRelations());
   		switch (getNumberOfIDs())
 		{
 			case 1:
@@ -93,6 +93,7 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 				
 			case 4:
 				type = ConformationalCoordType.TORSION;
+				//TODO-gg use neighboring relations to define type
 				break;
 				
 			default:

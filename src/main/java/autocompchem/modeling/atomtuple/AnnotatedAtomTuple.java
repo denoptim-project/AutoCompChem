@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import autocompchem.molecule.connectivity.ConnectivityTable;
 import autocompchem.utils.StringUtils;
 
 /**
@@ -57,9 +58,10 @@ public class AnnotatedAtomTuple implements Cloneable
     /**
      * Connectivity map for the given indexes. This is a snapshot of the
      * connectivity as it is the moment this tuple is created. It does not 
-     * reflect any changes occurring afterwards. It does not report 
+     * reflect any changes occurring afterwards. It does not consider the kind
+     * of connection between the atoms.
      */
-	private Map<Integer,Integer> connections;
+	private ConnectivityTable connectionTable;
 	
 //------------------------------------------------------------------------------
 
@@ -85,13 +87,15 @@ public class AnnotatedAtomTuple implements Cloneable
   	 * @param ids 0-based indexes defining the tuple of atoms.
   	 * @param valuelessAttributes value-less attributes.
   	 * @param valuedAttributes map of attributes with their (String) value.
+  	 * @param ct defines the neighboring relation between atoms in the tupla.
   	 */
   	public AnnotatedAtomTuple(int[] ids, 
   			Set<String> valuelessAttributes, 
-  			Map<String, String> valuedAttributes)
+  			Map<String, String> valuedAttributes,
+  			ConnectivityTable ct)
   	{
   		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
-  				valuelessAttributes, valuedAttributes);
+  				valuelessAttributes, valuedAttributes, ct);
   	}
   	
 //------------------------------------------------------------------------------
@@ -101,20 +105,24 @@ public class AnnotatedAtomTuple implements Cloneable
 	 * @param ids 0-based indexes defining the tuple of atoms.
 	 * @param valuelessAttributes value-less attributes.
 	 * @param valuedAttributes map of attributes with their (String) value.
+  	 * @param ct defines the neighboring relation between atoms in the tuple.
 	 */
 	public AnnotatedAtomTuple(List<Integer> ids, 
 			Set<String> valuelessAttributes, 
-			Map<String, String> valuedAttributes)
+			Map<String, String> valuedAttributes,
+			ConnectivityTable ct)
 	{
 		this.atmIDs = ids;
 		this.valuelessAttributes = valuelessAttributes;
 		this.valuedAttributes = valuedAttributes;
+		this.connectionTable = ct;
 	}
 
 //------------------------------------------------------------------------------
 
 	/**
-	 * Sets the value of the index at the given positiion.
+	 * Sets the value of the index at the given position. 
+	 * <b>WARNING!</b> does not update the neighboring relations.
 	 */
 	public void setIndexAt(int position, int value)
 	{
@@ -233,7 +241,7 @@ public class AnnotatedAtomTuple implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Gets all the keys of attribute that are associated with a value in this 
+     *@return all the keys of attribute that are associated with a value in this 
      * tuple.
      */
 
@@ -245,12 +253,24 @@ public class AnnotatedAtomTuple implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Gets all the attribute that are associated with a value in this tuple.
+     * @return the attribute that are associated with a value in this tuple.
      */
 
     public Map<String,String> getValuedAttributes()
     {
     	return valuedAttributes;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the table defining the which atom is connected to which other one
+     * in terms of their atom indexes.
+     */
+
+    public ConnectivityTable getNeighboringRelations()
+    {
+    	return connectionTable;
     }
 	
 //-----------------------------------------------------------------------------
@@ -272,8 +292,12 @@ public class AnnotatedAtomTuple implements Cloneable
   		for (String key : valuedAttributes.keySet())
   			clonedValuedAtts.put(key, valuedAttributes.get(key));
   		
+  		ConnectivityTable ct = null;
+  		if (connectionTable!=null)
+  			ct = connectionTable.clone();
+  		
   		return new AnnotatedAtomTuple(ids, 
-  				clonedValuelessAtts, clonedValuedAtts);
+  				clonedValuelessAtts, clonedValuedAtts, ct);
   	}
 
 //------------------------------------------------------------------------------
@@ -323,6 +347,11 @@ public class AnnotatedAtomTuple implements Cloneable
 					other.valuedAttributes.get(key)))
 				return false;
 		}
+		
+		if (connectionTable!=null)
+			if (!this.connectionTable.equals(other.connectionTable))
+				return false;
+		
 		return true;
 	}
 	

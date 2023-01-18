@@ -189,7 +189,7 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	public Constraint(AnnotatedAtomTuple tuple)
 	{
 		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
-				tuple.getValuedAttributes());
+				tuple.getValuedAttributes(), tuple.getNeighboringRelations());
 		if (!hasValuelessAttribute(ConstrainDefinition.KEYNOINTCOORD))
 		{
 			switch (getNumberOfIDs())

@@ -501,13 +501,8 @@ public class AtomTupleGenerator extends Worker
         		Set<IAtom> uniqueAtoms = new HashSet<IAtom>(atoms);
         		if (atoms.size() != uniqueAtoms.size())
         			continue;
-
-        		List<Integer> atmIds = new ArrayList<Integer>();
-        		for (IAtom atm : atoms)
-        		{
-        			atmIds.add(mol.indexOf(atm));
-        		}
-        		AnnotatedAtomTuple tuple = r.makeAtomTupleFromIDs(atmIds);
+        		
+        		AnnotatedAtomTuple tuple = r.makeAtomTupleFromIDs(atoms, mol);
         		
         		if (r.hasValuelessAttribute(AtomTupleConstants.KEYONLYBONDED))
         		{

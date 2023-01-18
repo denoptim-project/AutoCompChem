@@ -39,6 +39,7 @@ import com.google.common.collect.Lists;
 //TODO-gg rename neighboring map
 
 public class ConnectivityTable extends HashMap<Integer, List<Integer>>
+	 implements Cloneable
 {
 
 //------------------------------------------------------------------------------
@@ -102,6 +103,25 @@ public class ConnectivityTable extends HashMap<Integer, List<Integer>>
     public void addNeighborningRelation(int srcId, List<Integer> nbrs)
     {
     	addNeighborningRelation(srcId, nbrs, true);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Add a neighboring relation in this table. Does not overwrite existing
+     * relations. This method assumes the indexes are all 0-based.
+     * @param srcId the index of the item from witch we are setting the 
+     * neighbors.
+     * @param nbrs the list of item Ids of the neighbors. The list will be 
+     * copied, not used as it is.
+     */
+
+    public void addNeighborningRelation(int srcId, int[] nbrs)
+    {
+    	List<Integer> ids = new ArrayList<Integer>();
+    	for (int i=0; i<nbrs.length; i++)
+    		ids.add(nbrs[i]);
+    	addNeighborningRelation(srcId, ids, true);
     }
     
 //------------------------------------------------------------------------------
@@ -194,22 +214,18 @@ public class ConnectivityTable extends HashMap<Integer, List<Integer>>
     
 //------------------------------------------------------------------------------
 
-    /*
-  	@Override
-  	public boolean equals(Object o)
+  	public ConnectivityTable clone()
   	{
-      	if (o== null)
-      		return false;
-      	
-   	    if (o == this)
-   		    return true;
-   	   
-   	    if (o.getClass() != getClass())
-       		return false;
-   	    
-  		Constraint other = (Constraint) o;
+  		ConnectivityTable clone = new ConnectivityTable();
+  		for (Integer key : this.keySet())
+  		{
+  			List<Integer> nbrs = new ArrayList<Integer>();
+  			for (Integer trg : this.get(key))
+  				nbrs.add(trg);
+  			clone.put(key,  nbrs);
+  		}
+  		return clone;
   	}
-  	*/
 
 //------------------------------------------------------------------------------
 

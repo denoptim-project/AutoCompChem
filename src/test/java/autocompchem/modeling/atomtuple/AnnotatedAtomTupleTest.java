@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.molecule.connectivity.ConnectivityTable;
 
 public class AnnotatedAtomTupleTest 
 {
@@ -28,6 +30,13 @@ public class AnnotatedAtomTupleTest
 //------------------------------------------------------------------------------
 
 	/**
+	 * Return a tuple with this connectivity fingerprint:
+	 * <pre>
+	 *   1-2-3-4
+	 *     \  \
+	 *      5--6
+	 * </pre>
+	 * 
 	 * @return an object good for testing, but otherwise meaningless.
 	 */
     public static AnnotatedAtomTuple getTestAnnotatedAtomTuple()
@@ -39,8 +48,17 @@ public class AnnotatedAtomTupleTest
     	valuedAttributes.put("AttC".toUpperCase(), "valueC valueCC");
     	valuedAttributes.put("AttD".toUpperCase(), "valueD");
     	valuedAttributes.put("AttE".toUpperCase(), "");
+    	ConnectivityTable ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new ArrayList<Integer>(
+    			Arrays.asList(2)));
+    	ct.addNeighborningRelation(2, new ArrayList<Integer>(
+    			Arrays.asList(3,5)));
+    	ct.addNeighborningRelation(3, new ArrayList<Integer>(
+    			Arrays.asList(4,6)));
+    	ct.addNeighborningRelation(5, new ArrayList<Integer>(
+    			Arrays.asList(6)));
     	AnnotatedAtomTuple aat = new AnnotatedAtomTuple(new int[] {1,2,3,4,5,6},
-    			booleanAttributes, valuedAttributes);
+    			booleanAttributes, valuedAttributes, ct);
     	return aat;
     }
 //------------------------------------------------------------------------------
@@ -75,6 +93,17 @@ public class AnnotatedAtomTupleTest
     	c2.getAtomIDs().set(0, -1);
     	assertFalse(c1.equals(c2));
     	
+    	c2 = getTestAnnotatedAtomTuple();
+    	c2.getNeighboringRelations().getNbrsId(2).add(6);
+    	assertFalse(c1.equals(c2));
+    	
+    	c2 = getTestAnnotatedAtomTuple();
+    	c2.getNeighboringRelations().addNeighborningRelation(2, new int[] {6});
+    	assertFalse(c1.equals(c2));
+
+    	c2 = getTestAnnotatedAtomTuple();
+    	c2.getNeighboringRelations().clear();
+    	assertFalse(c1.equals(c2));
     }
     
 //------------------------------------------------------------------------------

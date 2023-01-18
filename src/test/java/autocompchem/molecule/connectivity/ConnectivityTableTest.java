@@ -283,6 +283,17 @@ public class ConnectivityTableTest
 //------------------------------------------------------------------------------
 
     @Test
+    public void testClone() throws Exception
+    {
+    	ConnectivityTable c1 = getTestTable();
+    	ConnectivityTable clone = c1.clone();
+    	assertEquals(c1, clone);
+    	assertFalse(c1==clone);
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
     public void testAddNeighborningRelation() throws Exception
     {
     	ConnectivityTable ct = new ConnectivityTable();
@@ -307,6 +318,16 @@ public class ConnectivityTableTest
     	assertTrue(ct.getNbrsId(11).contains(13));
     	assertTrue(ct.getNbrsId(15).contains(13));
     	assertTrue(ct.getNbrsId(-15).contains(13));
+    	
+    	ct.addNeighborningRelation(23, new int[]{21,25,20});
+    	
+    	assertTrue(ct.getNbrsId(23).contains(21));
+    	assertTrue(ct.getNbrsId(23).contains(25));
+    	assertTrue(ct.getNbrsId(23).contains(20));
+    	
+    	assertTrue(ct.getNbrsId(21).contains(23));
+    	assertTrue(ct.getNbrsId(25).contains(23));
+    	assertTrue(ct.getNbrsId(20).contains(23));
     }
     
 //------------------------------------------------------------------------------
