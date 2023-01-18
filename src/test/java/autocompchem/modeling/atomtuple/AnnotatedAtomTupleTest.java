@@ -58,7 +58,7 @@ public class AnnotatedAtomTupleTest
     	ct.addNeighborningRelation(5, new ArrayList<Integer>(
     			Arrays.asList(6)));
     	AnnotatedAtomTuple aat = new AnnotatedAtomTuple(new int[] {1,2,3,4,5,6},
-    			booleanAttributes, valuedAttributes, ct);
+    			booleanAttributes, valuedAttributes, ct, 12);
     	return aat;
     }
 //------------------------------------------------------------------------------
@@ -103,6 +103,10 @@ public class AnnotatedAtomTupleTest
 
     	c2 = getTestAnnotatedAtomTuple();
     	c2.getNeighboringRelations().clear();
+    	assertFalse(c1.equals(c2));
+
+    	c2 = getTestAnnotatedAtomTuple();
+    	c2.setNumAtoms(3);
     	assertFalse(c1.equals(c2));
     }
     

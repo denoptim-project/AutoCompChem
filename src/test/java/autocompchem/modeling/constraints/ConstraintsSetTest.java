@@ -26,14 +26,10 @@ public class ConstraintsSetTest
     			ConstraintType.UNDEFINED, 0.1, "opt"));
     	cs.add(new Constraint(new int[] {4, 1, 2, 3}, 
     			ConstraintType.DIHEDRAL, 0.1, "opt"));
-    	cs.add(new Constraint(new int[] {6, 1, 2,-1}, 
+    	cs.add(new Constraint(new int[] {6, 1, 2}, 
     			ConstraintType.ANGLE, 0.1, "opt"));
-    	cs.add(new Constraint(new int[] {4, 1,-1,-1}, 
+    	cs.add(new Constraint(new int[] {4, 1}, 
     			ConstraintType.DISTANCE, 0.1, "opt"));
-    	cs.add(new Constraint(0, 1, 2, 3, true));
-    	cs.add(new Constraint(5, 3, 2, 3, false));
-    	cs.add(new Constraint(4, 1, 2));
-    	cs.add(new Constraint(6, 1));
     	return cs;
     }
     
@@ -54,7 +50,8 @@ public class ConstraintsSetTest
     	assertFalse(c1.equals(c2));
 
     	c2 = getTestConstraintSet();
-    	c2.add(new Constraint(1));
+    	c2.add(new Constraint(new int[] {42, 11}, 
+    			ConstraintType.DISTANCE, 0.1, "opt"));
     	assertFalse(c1.equals(c2));
     }
 	

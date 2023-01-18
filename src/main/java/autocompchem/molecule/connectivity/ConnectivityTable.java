@@ -185,6 +185,22 @@ public class ConnectivityTable extends HashMap<Integer, List<Integer>>
 //------------------------------------------------------------------------------
 
     /**
+     * Checks the neighboring relation between two items.
+     * @param e1 one item.
+     * @param e2 the other item.
+     * @return <code>true</code> if the two items are neighbors.
+     */
+
+    public boolean areNeighbors(Integer e1, Integer e2)
+    {
+    	if (!containsKey(e1))
+    		return false;
+    	return get(e1).contains(e2);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Get a copy of the neighboring relations for a given item.
      * @param srcId the index of the central atom (always 0-based)
      * @param zeroBased set to <code>true</code> if 0-based indexes are wanted

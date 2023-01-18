@@ -28,6 +28,7 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.basisset.Primitive;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.molecule.connectivity.ConnectivityTable;
 import autocompchem.utils.NumberUtils;
 
 /**
@@ -57,93 +58,6 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 */
 	private ConstraintType type = ConstraintType.UNDEFINED;
 	
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a frozen atom.
-	 * @param i the index of the atom to freeze.
-	 */
-	public Constraint(int i)
-	{
-		this(new int[] {i}, ConstraintType.FROZENATM, null, null);
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a distance
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 */
-	public Constraint(int i, int j)
-	{
-		this(new int[] {i, j}, ConstraintType.DISTANCE, null, null);
-	}
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for an angle.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 */
-	public Constraint(int i, int j, int k)
-	{
-		this(new int[] {i, j, k}, ConstraintType.ANGLE, null, null);
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a dihedral.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 * @param l forth index (0-based)
-	 * @param isDihedral use <code>true<code> to indicate that this 4-tupla 
-	 * indicates a proper dihedral where the connectivity is i-j-k-l.
-	 */
-	public Constraint(int i, int j, int k, int l, boolean isDihedral)
-	{
-		this(new int[] {i, j, k, l}, null, null, null);
-		if (isDihedral)
-			type = ConstraintType.DIHEDRAL;
-		else
-			type = ConstraintType.IMPROPERTORSION;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a distance
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 */
-	public Constraint(int i, int j, double value)
-	{
-		this(new int[] {i, j}, ConstraintType.DISTANCE, Double.valueOf(value),
-				null);
-	}
-	
-//------------------------------------------------------------------------------
-	
-	/**
-	 * Constructs a constraint for an angle.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 */
-	public Constraint(int i, int j, int k, double value)
-	{
-		this(new int[] {i, j, k}, ConstraintType.ANGLE, Double.valueOf(value), 
-				null);
-	}
-	
 //------------------------------------------------------------------------------
 
 	/**
@@ -151,10 +65,10 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * a specific value and options to assign to the constraint.
 	 * @param ids indexes (0-based) of centers (i.e., atoms) defining this 
 	 * constraint
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
 	 * @param type the type of constraint. This defines how many of the indexes
 	 * are actually used.
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
 	 * @param suffix string appended to the list of atom indexes and usually 
 	 * used to tell the comp. chem. software how to use the given information. 
 	 * For example,
@@ -162,10 +76,10 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	 * (add constraint). 
 	 * Or NWChem's 'constant' to constraint that internal coordinate to the 
 	 * current value.
-	 * Use <code>null</code>, if no suffix has to be given.
+	 * Use <code>null</code>, if no suffix has to be set.
 	 */
-	public Constraint(int[] ids,
-			ConstraintType type, Double value, String suffix)
+	public Constraint(int[] ids, ConstraintType type, Double value, 
+			String suffix)
 	{
 		super(ids);
 		this.type = type;
@@ -189,154 +103,71 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	public Constraint(AnnotatedAtomTuple tuple)
 	{
 		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
-				tuple.getValuedAttributes(), tuple.getNeighboringRelations());
+				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
+				tuple.getNumAtoms());
 		if (!hasValuelessAttribute(ConstrainDefinition.KEYNOINTCOORD))
 		{
-			switch (getNumberOfIDs())
-			{
-				case 1:
-					type = ConstraintType.FROZENATM;
-					break;
-					
-				case 2:
-					type = ConstraintType.DISTANCE;
-					break;
-					
-				case 3:
-					type = ConstraintType.ANGLE;
-					break;
-					
-				case 4:
-					//TODO-gg test me!
-					if (hasValuelessAttribute(AtomTupleConstants.KEYONLYBONDED))
-					{
-						type = ConstraintType.DIHEDRAL;
-					} else {
-						//TODO-gg use connectivity matrix instead of 
-						// areLinearlyConnected so that we can distinguish the
-						// improper torsion from undefined 4-tuples.
-						// Also, add option to ignore the typing of the constraint.
-						type = ConstraintType.IMPROPERTORSION;
-					}
-					break;
-					
-				default:
-					throw new IllegalArgumentException("Unexpected number of "
-							+ "atom IDs (" + getNumberOfIDs() + "). "
-							+ "Cannot construct a Constraint.");
-			}
+			defineType();
 		}
 	}
-
+	
 //------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constrain.
-	 * @param ids atom IDs. The number of value determines the type of 
-	 * constraint.
-	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
-	 * represent a set of centers that are connected in the order given, e.g.
-	 * 1-j-k-l.
-	 * @throws Exception
-	 */
-	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			boolean areLinearlyConnected) throws Exception
+	
+	private void defineType()
 	{
-		return buildConstraint(ids, null, areLinearlyConnected, null, null);
+		type = getConstraintType(getAtomIDs(), getNeighboringRelations());
 	}
 	
 //------------------------------------------------------------------------------
 
 	/**
-	 * Constructs a constrain.
-	 * @param ids atom IDs. The number of value determines the type of 
-	 * constraint.
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
-	 * represent a set of centers that are connected in the order given, e.g.
-	 * 1-j-k-l.
-	 * @param prefix a string associated with the constraint and flagged as 
-	 * prefix.
-	 * @param suffix a string associated with the constraint and flagged as 
-	 * suffix.
-	 * @return the constraint.
-	 * @throws Exception
+	 * Determines the type of an hypothetical constraint generated from the given
+	 * set of indexes and the corresponding neighboring relations
+	 * @param ids the list of indexes
+	 * @param ct the neighboring relations. Note, the indexes in this table are
+	 * assumed to be consistent to those given in in other argument.
+	 * @return the type that can be assigned to the given input.
 	 */
-	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, boolean areLinearlyConnected,
-			String prefix, String suffix) throws Exception
-	{
-		return buildConstraint(ids, value, areLinearlyConnected,
-				 prefix, suffix, true);
-	}
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constrain.
-	 * @param ids atom IDs. The number of value determines the type of 
-	 * constraint.
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
-	 * represent a set of centers that are connected in the order given, e.g.
-	 * 1-j-k-l.
-	 * @param prefix a string associated with the constraint and flagged as 
-	 * prefix.
-	 * @param suffix a string associated with the constraint and flagged as 
-	 * suffix.
-	 * @param notAnIC use <code>true</code> to prevent processing this 
-	 * constraint as an internal coordinate.
-	 * @return the constraint.
-	 * @throws Exception
-	 */
-	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, boolean areLinearlyConnected,
-			String prefix, String suffix, boolean notAnIC) throws Exception
+	public static ConstraintType getConstraintType(List<Integer> ids,
+			ConnectivityTable ct)
 	{
 		ConstraintType type = ConstraintType.UNDEFINED;
-		if (!notAnIC)
+		if (ids.size()==1)
 		{
-			switch (ids.size())
+			type = ConstraintType.FROZENATM;
+		} else if (ids.size()==2) {
+			type = ConstraintType.DISTANCE;
+		} else if (ids.size()==3) {
+			type = ConstraintType.ANGLE;
+		} else if (ids.size()==4) {
+			
+			if (ct==null)
+				return ConstraintType.UNDEFINED;
+			
+			if (ct.areNeighbors(ids.get(0), ids.get(1))
+					&& ct.areNeighbors(ids.get(1), ids.get(2))
+					&& ct.areNeighbors(ids.get(2), ids.get(3)))
 			{
-				case 1:
-					type = ConstraintType.FROZENATM;
-					break;
-					
-				case 2:
-					type = ConstraintType.DISTANCE;
-					break;
-					
-				case 3:
-					type = ConstraintType.ANGLE;
-					break;
-					
-				case 4:
-					if (areLinearlyConnected)
-					{
-						type = ConstraintType.DIHEDRAL;
-					} else {
-						//TODO-gg use connectivity matrix instead of 
-						// areLinearlyConnected so that we can distinguish the
-						// improper torsion from undefined 4-tuples.
-						// Also, add option to ignore the typing of the constraint.
-						type = ConstraintType.IMPROPERTORSION;
-					}
-					break;
-					
-				default:
-					throw new Exception("Unexpected number of atom IDs (" 
-							+ ids.size() + "). Cannot construct a Constraint.");
+				type = ConstraintType.DIHEDRAL;
+			} else if (ct.areNeighbors(ids.get(0), ids.get(1))
+					&& ct.areNeighbors(ids.get(1), ids.get(2))
+					&& ct.areNeighbors(ids.get(1), ids.get(3)))
+			{
+				type = ConstraintType.IMPROPERTORSION;
+			} else if (ct.areNeighbors(ids.get(0), ids.get(2))
+					&& ct.areNeighbors(ids.get(1), ids.get(2))
+					&& ct.areNeighbors(ids.get(2), ids.get(3)))
+			{
+				type = ConstraintType.IMPROPERTORSION;
+			} else {
+				type = ConstraintType.UNDEFINED;
 			}
-		} 
-
-		int[] idsArr = new int[ids.size()];
-		for (int i=0; i<ids.size(); i++)
-			idsArr[i] = ids.get(i);
-	
-		Constraint cstr = new Constraint(idsArr, type, value, suffix);
-		cstr.setPrefix(prefix);
-		return cstr;
+		} else {
+			throw new IllegalArgumentException(
+					"Unexpected number of atom IDs (" + ids.size() + "). "
+					+ "Cannot construct a Constraint.");
+		}
+		return type;
 	}
 	
 //------------------------------------------------------------------------------

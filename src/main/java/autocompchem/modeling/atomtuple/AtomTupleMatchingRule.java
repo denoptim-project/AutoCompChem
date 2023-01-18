@@ -379,48 +379,6 @@ public class AtomTupleMatchingRule
     {
         return valuedAttributes.get(key);
     }
-
-//------------------------------------------------------------------------------
-
-  	/**
-  	 * Creates an atom tuple combining the attributes defined in this rule with 
-  	 * the given list of atom indexes. Note that new instances of each 
-  	 * attribute and value are created to be assigned to the tuple instance.
-  	 * @param ids the list of indexes.
-  	 * @param ct defines the neighboring relation between atoms in the tuple.
-  	 * @return the atom tuple decorated by the attributes defined in this rule.
-  	 */
-  	public AnnotatedAtomTuple makeAtomTupleFromIDs(int[] ids, 
-  			ConnectivityTable ct) 
-  	{
-  		Set<String> myValueless = new HashSet<String>(valuelessAttributes);
-		
-  		Map<String, String> myValued = new HashMap<String, String>();
-		for (String key : valuedAttributes.keySet())
-			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
-		
-		return new AnnotatedAtomTuple(ids, myValueless, myValued, ct);
-  	}
-  	
-//------------------------------------------------------------------------------
-
-  	/**
-  	 * Creates an atom tuple combining the attributes defined in this rule with 
-  	 * the given list of atom indexes. Note that new instances of each 
-  	 * attribute and value are created to be assigned to the tuple instance.
-  	 * @param ids the list of indexes. Only the primitive int value is taken.
-  	 * @param ct defines the neighboring relation between atoms in the tuple.
-  	 * @return the atom tuple decorated by the attributes defined in this rule.
-  	 */
-  	public AnnotatedAtomTuple makeAtomTupleFromIDs(List<Integer> idsList,
-  			ConnectivityTable ct) 
-  	{
-  		int[] ids = new int[idsList.size()];
-  		for (int i=0; i<idsList.size(); i++)
-  			ids[i] = idsList.get(i).intValue();
-  		
-  		return makeAtomTupleFromIDs(ids, ct);
-  	}
   	
 //------------------------------------------------------------------------------
 
@@ -444,7 +402,14 @@ public class AtomTupleMatchingRule
   		for (int i=0; i<atoms.size(); i++)
   			ids[i] = mol.indexOf(atoms.get(i));
   		
-  		return makeAtomTupleFromIDs(ids, new ConnectivityTable(atoms, mol));
+  		Set<String> myValueless = new HashSet<String>(valuelessAttributes);
+		
+  		Map<String, String> myValued = new HashMap<String, String>();
+		for (String key : valuedAttributes.keySet())
+			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
+		
+		return new AnnotatedAtomTuple(ids, myValueless, myValued, 
+				new ConnectivityTable(atoms, mol), mol.getAtomCount());
   	}
 
 //------------------------------------------------------------------------------	

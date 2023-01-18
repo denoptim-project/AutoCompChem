@@ -351,12 +351,10 @@
           "keywords": [
             {
               "reference": "geometry:actlist",
-              "type": "UNDEFINED",
-              "value": "Type is not JSON-able",
               "accTaskParams": [
                 {
                   "reference": "TASK",
-                  "value": "GENERATECONSTRAINTS"
+                  "value": "GENERATEATOMTUPLES"
                 },
                 {
                   "reference": "SMARTS",
@@ -497,12 +495,10 @@
           "keywords": [
             {
               "reference": "geometry:actlist",
-              "type": "UNDEFINED",
-              "value": "Type is not JSON-able",
               "accTaskParams": [
                 {
                   "reference": "TASK",
-                  "value": "GENERATECONSTRAINTS"
+                  "value": "GENERATEATOMTUPLES"
                 },
                 {
                   "reference": "SMARTS",

@@ -62,6 +62,13 @@ public class AnnotatedAtomTuple implements Cloneable
      * of connection between the atoms.
      */
 	private ConnectivityTable connectionTable;
+
+	/**
+	 * Total number of atoms in the system. This is NOT the number of items in
+	 * the tuple, but the number of items in the container from which the tuple
+	 * has been taken.
+	 */
+	private int numAtoms = 0;
 	
 //------------------------------------------------------------------------------
 
@@ -87,15 +94,17 @@ public class AnnotatedAtomTuple implements Cloneable
   	 * @param ids 0-based indexes defining the tuple of atoms.
   	 * @param valuelessAttributes value-less attributes.
   	 * @param valuedAttributes map of attributes with their (String) value.
-  	 * @param ct defines the neighboring relation between atoms in the tupla.
+  	 * @param ct defines the neighboring relation between atoms in the tuple.
+  	 * @param numAtoms the number of atoms in the container from which the tuple
+  	 * is extracted.
   	 */
   	public AnnotatedAtomTuple(int[] ids, 
   			Set<String> valuelessAttributes, 
   			Map<String, String> valuedAttributes,
-  			ConnectivityTable ct)
+  			ConnectivityTable ct, int numAtoms)
   	{
   		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
-  				valuelessAttributes, valuedAttributes, ct);
+  				valuelessAttributes, valuedAttributes, ct, numAtoms);
   	}
   	
 //------------------------------------------------------------------------------
@@ -106,22 +115,26 @@ public class AnnotatedAtomTuple implements Cloneable
 	 * @param valuelessAttributes value-less attributes.
 	 * @param valuedAttributes map of attributes with their (String) value.
   	 * @param ct defines the neighboring relation between atoms in the tuple.
+  	 * @param numAtoms the number of atoms in the container from which the tuple
+  	 * is extracted.
 	 */
 	public AnnotatedAtomTuple(List<Integer> ids, 
 			Set<String> valuelessAttributes, 
 			Map<String, String> valuedAttributes,
-			ConnectivityTable ct)
+			ConnectivityTable ct, int numAtoms)
 	{
 		this.atmIDs = ids;
 		this.valuelessAttributes = valuelessAttributes;
 		this.valuedAttributes = valuedAttributes;
 		this.connectionTable = ct;
+		this.numAtoms = numAtoms;
 	}
 
 //------------------------------------------------------------------------------
 
 	/**
 	 * Sets the value of the index at the given position. 
+	 * <br>
 	 * <b>WARNING!</b> does not update the neighboring relations.
 	 */
 	public void setIndexAt(int position, int value)
@@ -147,6 +160,30 @@ public class AnnotatedAtomTuple implements Cloneable
 	public int getNumberOfIDs()
 	{
 		return atmIDs.size();
+	}
+	
+	
+//-----------------------------------------------------------------------------
+	
+	/**
+	 * @return the number of atoms in the system from which these tuples
+	 * are generated.
+	 */
+	public int getNumAtoms() 
+	{
+		return numAtoms;
+	}
+	
+//-----------------------------------------------------------------------------
+
+	/**
+	 * Sets the number of atoms in the system from which these tuples
+	 * are generated.
+	 * @param numAtoms the number of atoms.
+	 */
+	protected void setNumAtoms(int numAtoms) 
+	{
+		this.numAtoms = numAtoms;
 	}
     
 //------------------------------------------------------------------------------
@@ -297,7 +334,7 @@ public class AnnotatedAtomTuple implements Cloneable
   			ct = connectionTable.clone();
   		
   		return new AnnotatedAtomTuple(ids, 
-  				clonedValuelessAtts, clonedValuedAtts, ct);
+  				clonedValuelessAtts, clonedValuedAtts, ct, numAtoms);
   	}
 
 //------------------------------------------------------------------------------
@@ -317,6 +354,9 @@ public class AnnotatedAtomTuple implements Cloneable
 		AnnotatedAtomTuple other = (AnnotatedAtomTuple) o;
    	 
 	   	if (this.atmIDs.size() != other.atmIDs.size())
+	   		 return false;
+
+ 	    if (this.numAtoms != other.numAtoms)
 	   		 return false;
 	   				 
 		for (int i=0; i<this.atmIDs.size(); i++)

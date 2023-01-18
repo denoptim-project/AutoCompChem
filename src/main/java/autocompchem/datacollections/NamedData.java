@@ -410,7 +410,7 @@ public class NamedData implements Cloneable
     			tp = NamedDataType.CONSTRAINTSSET;
     			break;
     			
-    		case ("AnnotatedAtomTupleSet"):
+    		case ("AnnotatedAtomTupleList"):
     			tp = NamedDataType.ANNOTATEDATOMTUPLELIST;
     			break;
     		

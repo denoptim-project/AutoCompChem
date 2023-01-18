@@ -41,9 +41,28 @@ import autocompchem.molecule.intcoords.InternalCoord;
 public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple> 
 	implements Cloneable
 {
-	
+
 //------------------------------------------------------------------------------
 
+	/**
+	 * Constructor for an empty list.
+	 */
+	public AnnotatedAtomTupleList()
+	{}
+		
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructor from a list of tuples.
+	 * @param tuples tuples to add to this collection.
+	 */
+	public AnnotatedAtomTupleList(List<AnnotatedAtomTuple> tuples) 
+	{
+		this.addAll(tuples);
+	}
+
+//------------------------------------------------------------------------------
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -56,8 +75,8 @@ public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple>
  	    if (o.getClass() != getClass())
      		return false;
  	    
- 	   AnnotatedAtomTupleList other = (AnnotatedAtomTupleList) o;
-   	   	
+ 	    AnnotatedAtomTupleList other = (AnnotatedAtomTupleList) o;
+ 	   
 	   	if (this.size() != other.size())
 	   		 return false;
 	   	

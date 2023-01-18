@@ -182,7 +182,7 @@ public class NamedDataTest
     			ZMatrixTest.getTestZMatrix()));
     	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
     			ConstraintsSetTest.getTestConstraintSet()));
-    	nds.add(new NamedData("AnnotatedAtomTupleSet", 
+    	nds.add(new NamedData("AnnotatedAtomTupleList", 
     			NamedDataType.ANNOTATEDATOMTUPLELIST,
     			AnnotatedAtomTupleListTest.getTestAnnotatedAtomTupleList()));
     	

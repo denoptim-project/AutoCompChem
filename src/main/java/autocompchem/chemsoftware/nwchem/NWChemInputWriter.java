@@ -39,6 +39,8 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.CenterBasisSet;
@@ -126,20 +128,17 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             			kStr + k.getValueAsString());
             	break;
             	
-            case CONSTRAINTSSET:
-            	// We expect this only as a way to specify atom lists
-            	ConstraintsSet cs = (ConstraintsSet) k.getValue();
+            case ANNOTATEDATOMTUPLELIST:
+            	AnnotatedAtomTupleList tuples = 
+            		(AnnotatedAtomTupleList) k.getValue();
         		Set<Integer> ids = new HashSet<Integer>();
-            	for (Constraint cns : cs)
+            	for (AnnotatedAtomTuple tuple : tuples)
                 {
-            		if (cns.getType()==ConstraintType.FROZENATM)
-            		{
-            			ids.addAll(cns.getAtomIDs());
-            		}
+            		ids.addAll(tuple.getAtomIDs());
                 }
             	List<String> ranges = StringUtils.makeStringForIndexes(
             			NumberUtils.getComplementaryIndexes(ids, 
-            					cs.getNumAtoms()), ":", 
+            					tuples.get(0).getNumAtoms()), ":", 
             			1); // From 0-based to 1-based
             	boolean first = true;
             	for (String range : ranges)

@@ -4,9 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.molecule.connectivity.ConnectivityTable;
 
 public class ConstraintsTest 
 {
@@ -53,11 +58,6 @@ public class ConstraintsTest
     	c2 = new Constraint(new int[] {0, 1, 2, 3}, 
     			ConstraintType.DIHEDRAL, 0.1, "opts");
     	assertFalse(c1.equals(c2));
-
-    	c1 = new Constraint(new int[] {2, 3}, 
-    			ConstraintType.DISTANCE, 123.4, null);
-    	c2 = new Constraint(2, 3, 123.4);
-    	assertTrue(c1.equals(c2));
     }
 	
 //------------------------------------------------------------------------------
@@ -105,6 +105,119 @@ public class ConstraintsTest
     	assertEquals(1,c2.compareTo(c1));
     }
     
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetConstraintType() throws Exception
+    {
+    	List<Integer> ids = new ArrayList<>(Arrays.asList(1));
+    	ConnectivityTable ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {});
+    	assertEquals(ConstraintType.FROZENATM, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1));
+    	assertEquals(ConstraintType.FROZENATM, 
+    			Constraint.getConstraintType(ids, null));
+    	
+    	ids = new ArrayList<>(Arrays.asList(1, 2));
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	assertEquals(ConstraintType.DISTANCE, 
+    			Constraint.getConstraintType(ids, null));
+    	
+    	ids = new ArrayList<>(Arrays.asList(1, 2));
+    	ct = new ConnectivityTable();
+    	assertEquals(ConstraintType.DISTANCE, 
+    			Constraint.getConstraintType(ids, ct));
+    	
+    	ids = new ArrayList<>(Arrays.asList(1, 2));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	assertEquals(ConstraintType.DISTANCE, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
+    	assertEquals(ConstraintType.ANGLE, 
+    			Constraint.getConstraintType(ids, null));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
+    	ct = new ConnectivityTable();
+    	assertEquals(ConstraintType.ANGLE, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	assertEquals(ConstraintType.ANGLE, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	ct.addNeighborningRelation(2, new int[] {3});
+    	assertEquals(ConstraintType.ANGLE, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	ct.addNeighborningRelation(1, new int[] {3});
+    	assertEquals(ConstraintType.ANGLE, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    	assertEquals(ConstraintType.UNDEFINED, 
+    			Constraint.getConstraintType(ids, null));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    	ct = new ConnectivityTable();
+    	assertEquals(ConstraintType.UNDEFINED, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	ct.addNeighborningRelation(2, new int[] {3});
+    	ct.addNeighborningRelation(3, new int[] {4});
+    	assertEquals(ConstraintType.DIHEDRAL, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {2});
+    	ct.addNeighborningRelation(2, new int[] {3});
+    	ct.addNeighborningRelation(2, new int[] {4});
+    	assertEquals(ConstraintType.IMPROPERTORSION, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+    	ct = new ConnectivityTable();
+    	ct.addNeighborningRelation(1, new int[] {3});
+    	ct.addNeighborningRelation(2, new int[] {3});
+    	ct.addNeighborningRelation(3, new int[] {4});
+    	assertEquals(ConstraintType.IMPROPERTORSION, 
+    			Constraint.getConstraintType(ids, ct));
+
+    	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5));
+    	boolean hasThrown = false;
+    	try {
+    		Constraint.getConstraintType(ids, null);
+    	} catch (IllegalArgumentException e) {
+    		if (e.getMessage().startsWith("Unexpected number of atom IDs"))
+    			hasThrown = true;
+    	}
+    	assertTrue(hasThrown);
+    	
+    	ids = new ArrayList<>();
+    	hasThrown = false;
+    	try {
+    		Constraint.getConstraintType(ids, null);
+    	} catch (IllegalArgumentException e) {
+    		if (e.getMessage().startsWith("Unexpected number of atom IDs"))
+    			hasThrown = true;
+    	}
+    	assertTrue(hasThrown);
+    }
 //------------------------------------------------------------------------------
 
 }

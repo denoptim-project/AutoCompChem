@@ -53,7 +53,7 @@ public class AnnotatedAtomTupleListTest
     	ct.addNeighborningRelation(5, new ArrayList<Integer>(
     			Arrays.asList(6)));
 	    AnnotatedAtomTuple aatA = new AnnotatedAtomTuple(new int[] {1,2,3,4,5,6},
-	                    booleanAttributes, valuedAttributes, ct);
+	                    booleanAttributes, valuedAttributes, ct, 60);
 	
 	    Set<String> booleanAttributesB = new HashSet<String>();
 	    booleanAttributesB.add("AttBA".toUpperCase());
@@ -63,7 +63,7 @@ public class AnnotatedAtomTupleListTest
 	    valuedAttributesB.put("AttBD".toUpperCase(), "valueBD");
 	    valuedAttributesB.put("AttBE".toUpperCase(), "B");
 	    AnnotatedAtomTuple aatB = new AnnotatedAtomTuple(new int[] {10,22},
-	                    booleanAttributesB, valuedAttributesB, null);
+	                    booleanAttributesB, valuedAttributesB, null, 60);
 	
 	    Set<String> booleanAttributesC = new HashSet<String>();
 	    booleanAttributesC.add("AttCA".toUpperCase());
@@ -73,7 +73,7 @@ public class AnnotatedAtomTupleListTest
 	    valuedAttributesC.put("AttCD".toUpperCase(), "valueCD");
 	    valuedAttributesC.put("AttCE".toUpperCase(), "C");
 	    AnnotatedAtomTuple aatC = new AnnotatedAtomTuple(new int[] {33,44,55},
-	                    booleanAttributesC, valuedAttributesC, null);
+	                    booleanAttributesC, valuedAttributesC, null, 60);
 	    AnnotatedAtomTupleList result = new AnnotatedAtomTupleList();
 	    result.add(aatA);
 	    result.add(aatB);

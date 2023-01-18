@@ -42,6 +42,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
@@ -1233,14 +1234,39 @@ public class Directive implements IDirectiveComponent, Cloneable
             	((IValueContainer) dirComp).setValue(labels);
             	break;
             }
+            
+          //TODO-gg use TaskID.GENERATEATOMTUPLES
+            case "GENERATEATOMTUPLES":
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+                
+                ParameterStorage atmTuplesParams = params.clone();
+                
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                atmTuplesParams.setParameter("TASK", 
+                		TaskID.GENERATEATOMTUPLES.toString());
+                
+            	Worker w = WorkerFactory.createWorker(atmTuplesParams);
+            	AtomTupleGenerator labelsGenerator = (AtomTupleGenerator) w;
+            	
+            	AnnotatedAtomTupleList tuples = new AnnotatedAtomTupleList(
+            			labelsGenerator.createTuples(mol));
+            	
+            	// Replace value of component that triggered this task
+            	((IValueContainer) dirComp).setValue(tuples);
+            	break;
+            }
                 
             //TODO: add here other atom/molecule specific option
             
                 
             default:
                 String msg = "WARNING! Task '" + task + "' is not a "
-                       + "known task when updating atom/molecule-specific "
-                       + "directives in a comp.chem. job.";
+                       + "known task when performing ACC tasks from within "
+                       + "a directive in a comp.chem. job.";
                 
                 //TODO verbosity/logging
                 System.out.println(msg);
