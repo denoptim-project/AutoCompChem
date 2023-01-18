@@ -106,7 +106,11 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
   	
   	public void printAll() 
   	{
-  		System.out.println("Conformational space is defined by: ");
+  		String numConformers = "is TOO LARGE TO COMPUTE!";
+  		if (getSize()>0)
+  			numConformers = "= " + getSize();
+  		System.out.println("Conformational space is defined by " + this.size()
+  				+ " coordinates (#Conformers " + numConformers + "):");
   		for (ConformationalCoordinate c : this)
   		{
   			System.out.println(" -> "+c);

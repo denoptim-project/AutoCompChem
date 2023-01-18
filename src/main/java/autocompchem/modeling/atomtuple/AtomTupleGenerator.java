@@ -42,6 +42,7 @@ import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
@@ -339,8 +340,8 @@ public class AtomTupleGenerator extends Worker
     	
     	//Here we collect all atom tuples (without annotation) by the name of
     	// the matching AtomTupleMatchingRule (below called MR for brevity)
-        Map<String,List<List<IAtom>>> allIDsForEachMR =
-                new HashMap<String,List<List<IAtom>>>();
+        Map<String,List<MatchingIdxs>> allIDsForEachMR =
+                new HashMap<String,List<MatchingIdxs>>();
     	
         //Handling differs for SMARTS- and ID-based rules
     	Set<String> sortedKeys = new TreeSet<String>();
@@ -363,12 +364,12 @@ public class AtomTupleGenerator extends Worker
             // For ID-based we just collect the atoms
             else if (r.getType() == RuleType.ID)
             {
-            	// We use the nested list to be consistent with the processing
-            	// of SMARTS-based rules.
-            	List<List<IAtom>> nestedList = new ArrayList<List<IAtom>>();
+            	List<MatchingIdxs> nestedList = new ArrayList<MatchingIdxs>();
             	for (Integer atmId : r.getAtomIDs())
             	{
-            		nestedList.add(Arrays.asList(mol.getAtom(atmId)));
+            		MatchingIdxs mps = new MatchingIdxs();
+            		mps.add(Arrays.asList(atmId));
+            		nestedList.add(mps);
             	}
             	allIDsForEachMR.put(r.getRefName(), nestedList);
             }
@@ -387,27 +388,14 @@ public class AtomTupleGenerator extends Worker
 	        }
 	        
 	        //Get matches grouped by the ref names of SMARTS queries
-	        Map<String,ArrayList<IAtom>> groupedByRule = 
-                    new HashMap<String, ArrayList<IAtom>>();
+	        Map<String,MatchingIdxs> groupedByRule = new HashMap<String,MatchingIdxs>();
 	        for (String rulRef : smarts.keySet())
 	        {
 	            if (msq.getNumMatchesOfQuery(rulRef) == 0)
 	            {
 	                continue;
 	            }
-	
-	            ArrayList<IAtom> atomsMatched = new ArrayList<IAtom>();
-	            //TODO-gg replace deprecated
-	            List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(rulRef);
-	            for (List<Integer> innerList : allMatches)
-	            {
-	                for (Integer iAtm : innerList)
-	                {
-                        IAtom targetAtm = mol.getAtom(iAtm);
-                        atomsMatched.add(targetAtm);
-	                }
-	            }
-	            groupedByRule.put(rulRef,atomsMatched);
+	            groupedByRule.put(rulRef, msq.getMatchingIdxsOfSMARTS(rulRef));
 	        }
 
             // Collect matches that belong to same AtomTupleMatchingRule (MR)
@@ -422,8 +410,7 @@ public class AtomTupleGenerator extends Worker
                     }
                 }
                 boolean allComponentsMatched = true;;
-                List<List<IAtom>> atmsForMR =
-                                new ArrayList<List<IAtom>>();
+                List<MatchingIdxs> atmsForMR = new ArrayList<MatchingIdxs>();
                 for (int ig = 0; ig<smartsRefNamesForMR.size(); ig++)
                 {
                 	//NB: here we assume the format of the SMARTS ref names
@@ -446,26 +433,67 @@ public class AtomTupleGenerator extends Worker
         for (AtomTupleMatchingRule r : rules)
         {
         	String key = r.getRefName();
-        	
-        	
         	if (!allIDsForEachMR.containsKey(key))
         		continue;
         	
-            List<List<IAtom>> atmsForMR = allIDsForEachMR.get(key);
-
-            if (atmsForMR.size() == 0)
+            List<MatchingIdxs> atmIdxsForMR = allIDsForEachMR.get(key);
+            if (atmIdxsForMR.size() == 0)
             {
             	continue;
             }
-            
             if (r.getType() == RuleType.SMARTS &&
-            		r.getSMARTS().size() != atmsForMR.size())
+            		r.getSMARTS().size() != atmIdxsForMR.size())
             {
+            	//There are SMARTS that were not matched
             	continue;
             }
             
-            Iterator<List<IAtom>> iter = new ListOfListsCombinations<IAtom>(
-            		atmsForMR);
+            // Allow multi-atom SMARTS to behave as an ordered list of 
+            // single-atom SMARTS. However, we cannot mix the two approaches.
+            boolean useMultiAtomMAtches = false;
+            for (MatchingIdxs mIdxs : atmIdxsForMR)
+            {
+            	if (mIdxs.hasMultiCenterMatches())
+            	{
+            		useMultiAtomMAtches = true;
+            		break;
+            	}
+            }
+            // Then we choose what to iterate over according to whether we 
+            // have single-/multi-atom matches
+            Iterator<List<IAtom>> iter = null;
+            List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
+            if (useMultiAtomMAtches)
+            {
+            	if (atmIdxsForMR.size()>1)
+            	{
+            		throw new IllegalArgumentException("ERROR! Only one "
+            				+ "multi-atom SMARTS can be used. Found multiple"
+            				+ "ones in rule '" + key + "'.");
+            	}
+            	for (List<Integer> multiAtomLst : atmIdxsForMR.get(0))
+            	{
+            		List<IAtom> atoms = new ArrayList<IAtom>();
+            		for (Integer idx : multiAtomLst)
+            		{
+            			atoms.add(mol.getAtom(idx));
+            		}
+	            	atmsForMR.add(atoms);
+            	}
+            	iter = atmsForMR.iterator();
+            } else {
+	            for (MatchingIdxs mIdxs : atmIdxsForMR)
+	            {
+	            	List<IAtom> atoms = new ArrayList<IAtom>();
+	            	for (List<Integer> lst : mIdxs)
+	            	{
+	            		for (Integer idx : lst)
+	            			atoms.add(mol.getAtom(idx));
+	            	}
+	            	atmsForMR.add(atoms);
+	            }
+	            iter = new ListOfListsCombinations<IAtom>(atmsForMR);
+            }
         	while (iter.hasNext())
         	{
         		List<IAtom> atoms = iter.next();
@@ -473,7 +501,6 @@ public class AtomTupleGenerator extends Worker
         		Set<IAtom> uniqueAtoms = new HashSet<IAtom>(atoms);
         		if (atoms.size() != uniqueAtoms.size())
         			continue;
-        		
 
         		List<Integer> atmIds = new ArrayList<Integer>();
         		for (IAtom atm : atoms)

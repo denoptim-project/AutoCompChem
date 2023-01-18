@@ -13,6 +13,7 @@ BooleanKeywords: boolKey0 boolKey1:@ boolKey1
 SMARTS:$START[#7]
 [#17] key=1: One One1 key:2=1.234 key0:Zero  Zero1    Zero_far boolKey1
 [#1] [#6;X3;$([#6](~[#7])(~[#1])~[#6])] [#7] [$([#6;X3]~[Ru])] [Ru] onlybonded getcurrentvalue boolKey0 boolKey1 key=1: One One1
+[#6](~[#7])(~[#1])~[#6] key0=999999999999999
 $END
 AtomIDS:$START 2 3
 4 key=1= One One1 key:2:1.234 key0:Zero  Zero1    Zero_far boolKey1

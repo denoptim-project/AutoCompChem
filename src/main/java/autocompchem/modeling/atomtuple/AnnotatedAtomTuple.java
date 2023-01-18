@@ -327,11 +327,26 @@ public class AnnotatedAtomTuple implements Cloneable
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.getClass().getSimpleName()).append(" [atmIDs:[");
 		sb.append(StringUtils.mergeListToString(atmIDs, ",", true));
-		sb.append("], valuelessAttributes:[").append(
+		sb.append("], ");
+		String otherFields = gerToStringOfFields();
+		if (!otherFields.isBlank())
+			sb.append(otherFields);
+		sb.append("valuelessAttributes:[").append(
 				valuelessAttributes.toString());
 		sb.append("], valuedAttributes:[").append(valuedAttributes.toString());
 		sb.append("]]");
 		return sb.toString();
+	}
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Overwrite this method to include fields of subclasses in the string
+	 * representation of a subclass without having to overwrite the toString() 
+	 * method. The returned string must end with ", ".
+	 */
+	protected String gerToStringOfFields() {
+		return "";
 	}
 	
 //------------------------------------------------------------------------------

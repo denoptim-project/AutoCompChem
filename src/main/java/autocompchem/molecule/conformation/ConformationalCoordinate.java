@@ -105,6 +105,8 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   		{
   			this.setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD,"1");
   		}
+  		this.fold = Integer.parseInt(this.getValueOfAttribute(
+  				ConformationalCoordDefinition.KEYFOLD));
   	}
 
 //------------------------------------------------------------------------------
@@ -204,6 +206,14 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
         return super.equals(o);
     }
 
+//------------------------------------------------------------------------------
+    
+    @Override
+    protected String gerToStringOfFields()
+    {
+    	return "type:" + type + ", fold:" + fold + ", ";
+    }
+    
 //------------------------------------------------------------------------------
     
 }

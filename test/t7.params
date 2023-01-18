@@ -1,0 +1,9 @@
+TASK: GenerateConformationalSpace
+verbosity:1
+INFILE: ../t7-mol.sdf
+SMARTS:$START[#7] fold=2
+[#7] [#7]
+[#6]-[#6] fold=3
+[#6]~[Ru] fold=4
+C=COC fold=5
+$END
