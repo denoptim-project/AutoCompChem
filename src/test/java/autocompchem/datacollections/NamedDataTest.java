@@ -39,10 +39,14 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.ACCJson;
 import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainer;
 import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainerTest;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleListTest;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetTest;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.modeling.constraints.ConstraintsSetTest;
+import autocompchem.molecule.conformation.ConformationalSpace;
+import autocompchem.molecule.conformation.ConformationalSpaceTest;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixTest;
 import autocompchem.molecule.vibrations.NormalMode;
@@ -149,6 +153,23 @@ public class NamedDataTest
     	nd.setValue(a);
     	assertTrue(NamedDataType.ACTION.equals(nd.getType()),
     			"Detecting Action");  
+
+    	AnnotatedAtomTupleList aatl = 
+    			AnnotatedAtomTupleListTest.getTestAnnotatedAtomTupleList();
+    	nd.setValue(aatl);
+    	assertTrue(NamedDataType.ANNOTATEDATOMTUPLELIST.equals(nd.getType()),
+    			"Detecting AnnotatedAtomTupleList"); 
+
+    	ConstraintsSet cset = ConstraintsSetTest.getTestConstraintSet();
+    	nd.setValue(cset);
+    	assertTrue(NamedDataType.CONSTRAINTSSET.equals(nd.getType()),
+    			"Detecting ConformationalSpace"); 
+    	
+    	ConformationalSpace cs = 
+    			ConformationalSpaceTest.getTestConformationalSpace();
+    	nd.setValue(cs);
+    	assertTrue(NamedDataType.CONFORMATIONALSPACE.equals(nd.getType()),
+    			"Detecting ConformationalSpace"); 
     	
     	Object o = new Object();
     	nd.setValue(o);
@@ -185,6 +206,9 @@ public class NamedDataTest
     	nds.add(new NamedData("AnnotatedAtomTupleList", 
     			NamedDataType.ANNOTATEDATOMTUPLELIST,
     			AnnotatedAtomTupleListTest.getTestAnnotatedAtomTupleList()));
+    	nds.add(new NamedData("ConformationalSpace", 
+    			NamedDataType.CONFORMATIONALSPACE,
+    			ConformationalSpaceTest.getTestConformationalSpace()));
     	
     	// The following ones are non-JSON-able
     	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 

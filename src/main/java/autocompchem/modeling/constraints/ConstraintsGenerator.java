@@ -194,7 +194,6 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     		List<AtomTupleMatchingRule> rules)
     {
     	ConstraintsSet cLst = new ConstraintsSet();
-    	cLst.setNumAtoms(mol.getAtomCount());
     	
     	List<AnnotatedAtomTuple> tuples = createTuples(mol, rules);
     	for (AnnotatedAtomTuple tuple : tuples)

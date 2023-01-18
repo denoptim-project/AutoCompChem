@@ -6,6 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
+
+import autocompchem.io.ACCJson;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 
 public class ConstraintsSetTest 
@@ -21,7 +25,6 @@ public class ConstraintsSetTest
     public static ConstraintsSet getTestConstraintSet()
     {
     	ConstraintsSet cs = new ConstraintsSet();
-    	cs.setNumAtoms(26);
     	cs.add(new Constraint(new int[] {0, 1, 2, 3},
     			ConstraintType.UNDEFINED, 0.1, "opt"));
     	cs.add(new Constraint(new int[] {4, 1, 2, 3}, 
@@ -46,13 +49,59 @@ public class ConstraintsSetTest
     	assertTrue(c1.equals(c1));
     	
     	c2 = getTestConstraintSet();
-    	c2.setNumAtoms(c1.getNumAtoms()+1);
+    	c2.last().setPrefix("blabla");
+    	assertFalse(c1.equals(c2));
+    	
+    	c2 = getTestConstraintSet();
+    	c2.first().setPrefix("blabla");
     	assertFalse(c1.equals(c2));
 
     	c2 = getTestConstraintSet();
     	c2.add(new Constraint(new int[] {42, 11}, 
     			ConstraintType.DISTANCE, 0.1, "opt"));
     	assertFalse(c1.equals(c2));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	ConstraintsSet original = getTestConstraintSet();
+    	ConstraintsSet cloned = original.clone();
+      	assertEquals(original, cloned);
+      	
+      	cloned.first().setIndexAt(0, -10);
+      	assertFalse(original.equals(cloned));
+      	
+      	cloned = original.clone();
+      	cloned.first().setPrefix("blabla");
+      	assertFalse(original.equals(cloned));
+      	
+      	cloned = original.clone();
+      	cloned.first().setValue(0.123);
+      	assertFalse(original.equals(cloned));
+      	
+      	cloned = original.clone();
+      	cloned.first().setSuffix("blabla");
+      	assertFalse(original.equals(cloned));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testJsonRoundTrip() throws Exception
+    {
+    	ConstraintsSet original = getTestConstraintSet();
+    	Gson writer = ACCJson.getWriter();
+    	Gson reader = ACCJson.getReader();
+    	
+	    String json = writer.toJson(original);
+	    ConstraintsSet fromJson = reader.fromJson(json, ConstraintsSet.class);
+	    assertEquals(original, fromJson);
+
+	    ConstraintsSet clone = original.clone();
+	    assertEquals(clone, fromJson);
     }
 	
 //------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ import java.util.List;
 import javax.print.attribute.SetOfIntegerSyntax;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.basisset.Primitive;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
@@ -44,7 +45,8 @@ import autocompchem.utils.NumberUtils;
  * @author Marco Foscato
  */
 
-public class Constraint extends AnnotatedAtomTuple implements Comparable<Constraint>
+public class Constraint extends AnnotatedAtomTuple 
+	implements Comparable<Constraint>,Cloneable
 {
 	/**
 	 * Classes of the constraints according to the corresponding internal 
@@ -509,6 +511,18 @@ public class Constraint extends AnnotatedAtomTuple implements Comparable<Constra
 	   		return false;
 	   	
 	   	return super.equals(o);
+	}
+	
+//-----------------------------------------------------------------------------
+
+	@Override
+	public Constraint clone()
+	{
+		Constraint clone = new Constraint(super.clone());
+		// Type is inferred from super but is can be overwritten by this class
+		// so we set it here:
+		clone.type = this.type; 
+		return clone;
 	}
 	
 //------------------------------------------------------------------------------

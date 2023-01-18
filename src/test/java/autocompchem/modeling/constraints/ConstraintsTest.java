@@ -10,6 +10,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
+
+import autocompchem.io.ACCJson;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.connectivity.ConnectivityTable;
 
@@ -60,6 +64,45 @@ public class ConstraintsTest
     	assertFalse(c1.equals(c2));
     }
 	
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	Constraint c1 = new Constraint(new int[] {0, 1, 2, 3},
+    			ConstraintType.DIHEDRAL, 0.1, "opt");
+    	
+    	Constraint cl1 = c1.clone();
+    	assertTrue(c1.equals(cl1));
+    	
+    	Constraint c2 = new Constraint(new int[] {0, 1, 2, 3},
+    			ConstraintType.UNDEFINED, 0.1, "opt");
+
+    	Constraint cl2 = c2.clone();
+    	assertTrue(c2.equals(cl2));
+    	assertFalse(cl2.equals(cl1));
+    }
+   
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testJsonRoundTrip() throws Exception
+    {
+    	Constraint original = new Constraint(new int[] {0, 1, 2, 3},
+    			ConstraintType.DIHEDRAL, 0.1, "opt");
+    	original.setNumAtoms(26);
+    	
+    	Gson writer = ACCJson.getWriter();
+    	Gson reader = ACCJson.getReader();
+    	
+	    String json = writer.toJson(original);
+	    Constraint fromJson = reader.fromJson(json, Constraint.class);
+	    assertEquals(original, fromJson);
+
+	    Constraint clone = original.clone();
+	    assertEquals(clone, fromJson);
+    }
+    
 //------------------------------------------------------------------------------
 
     @Test

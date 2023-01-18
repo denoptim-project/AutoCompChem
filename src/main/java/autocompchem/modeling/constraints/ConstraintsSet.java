@@ -33,6 +33,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.intcoords.InternalCoord;
 
@@ -41,34 +43,6 @@ import autocompchem.molecule.intcoords.InternalCoord;
  */
 public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 {
-
-	/**
-	 * total number of atoms in the system.
-	 */
-	private int numAtoms = 0;
-	
-//-----------------------------------------------------------------------------
-	
-	/**
-	 * @return the number of atoms in the system from which these constraints
-	 * are generated.
-	 */
-	public int getNumAtoms() 
-	{
-		return numAtoms;
-	}
-	
-//-----------------------------------------------------------------------------
-
-	/**
-	 * Sets the number of atoms in the system from which these constraints
-	 * are generated.
-	 * @param numAtoms the number of atoms.
-	 */
-	protected void setNumAtoms(int numAtoms) 
-	{
-		this.numAtoms = numAtoms;
-	}
 	
 //------------------------------------------------------------------------------
 
@@ -79,9 +53,6 @@ public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 			return false;
 		
 		ConstraintsSet other = (ConstraintsSet) o;
-   	 
-	   	if (this.numAtoms != other.numAtoms)
-	   		 return false;
 	   	
 	   	if (this.size() != other.size())
 	   		 return false;
@@ -94,6 +65,19 @@ public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 	   	                return false;
 	   	}
 	   	return true;
+	}
+	
+//-----------------------------------------------------------------------------
+
+	@Override
+	public ConstraintsSet clone()
+	{
+		ConstraintsSet clone = new ConstraintsSet();
+		for(Constraint c : this)
+	   	{
+	   		clone.add(c.clone());
+	   	}
+		return clone;
 	}
 
 //-----------------------------------------------------------------------------
@@ -130,43 +114,6 @@ public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 		}
 		return subset;
 	}
-
-//-----------------------------------------------------------------------------
-
-    public static class ConstraintsSetSerializer 
-    implements JsonSerializer<ConstraintsSet>
-    {
-		@Override
-		public JsonElement serialize(ConstraintsSet src, Type typeOfSrc, 
-				JsonSerializationContext context) 
-		{
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("numAtoms", src.numAtoms);
-            jsonObject.add("constraints", context.serialize(src.toArray()));
-            return jsonObject;
-		}
-    }
-    
-//-----------------------------------------------------------------------------
-
-    public static class ConstraintsSetDeserializer 
-      implements JsonDeserializer<ConstraintsSet>
-    {
-		@Override
-		public ConstraintsSet deserialize(JsonElement json, Type typeOfT, 
-				JsonDeserializationContext context)
-				throws JsonParseException 
-		{
-			JsonObject jo = json.getAsJsonObject();
-			ConstraintsSet cs = new ConstraintsSet();
-			cs.setNumAtoms(Integer.parseInt(jo.get("numAtoms").getAsString()));
-			for (JsonElement jel : jo.get("constraints").getAsJsonArray())
-			{
-				cs.add(context.deserialize(jel, Constraint.class));
-			}
-			return cs;
-		}
-    }
 
 //-----------------------------------------------------------------------------
 

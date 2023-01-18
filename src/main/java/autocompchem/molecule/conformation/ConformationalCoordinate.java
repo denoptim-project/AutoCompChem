@@ -25,6 +25,7 @@ import java.util.List;
 import org.openscience.cdk.interfaces.IAtom;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.constraints.Constraint;
 
 
 /**
@@ -41,13 +42,15 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
  * @author Marco Foscato 
  */
 
-public class ConformationalCoordinate extends AnnotatedAtomTuple
+public class ConformationalCoordinate extends AnnotatedAtomTuple 
+	implements Cloneable
 {
 
     /**
      * The ordered list of defining atoms.
      */
-    private ArrayList<IAtom> atomDef = new ArrayList<IAtom>();
+    //TODO: keep or trash (left over from refactoring)
+	//private ArrayList<IAtom> atomDef = new ArrayList<IAtom>();
 
     /**
      * The number that specifies how extensively the coordinate is explored. 
@@ -69,6 +72,21 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 	 * The type of this constraint
 	 */
 	private ConformationalCoordType type = ConformationalCoordType.UNDEFINED;
+	
+	
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * Constructs a coordinate from an annotated atom tuple.
+  	 * @param tuple the tuple to parse into a conformational coordinate.
+  	 */
+  	
+  	public ConformationalCoordinate(int[] ids)
+  	{
+  		super(ids);
+  		defineType();
+  		parseFold();
+  	}
   
 //------------------------------------------------------------------------------
 
@@ -82,7 +100,42 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
   				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
 				tuple.getNumAtoms());
-  		switch (getNumberOfIDs())
+  		defineType();
+  		parseFold();
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	private void defineType()
+  	{
+  		this.type = getType(getAtomIDs());
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	private void parseFold()
+  	{
+  		if (!hasValueledAttribute(ConformationalCoordDefinition.KEYFOLD))
+  		{
+  			setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD,"1");
+  		}
+  		fold = Integer.parseInt(getValueOfAttribute(
+  				ConformationalCoordDefinition.KEYFOLD));
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Define the type that would a conformational coordinate get when defined
+  	 * by the given list of atom indexes.
+  	 * @param ids the list of center indexes defining the conformational
+  	 *  coordinate.
+  	 * @return the type of conformational coordinate.
+  	 */
+  	public static ConformationalCoordType getType(List<Integer> ids)
+  	{
+  		ConformationalCoordType type = ConformationalCoordType.UNDEFINED;
+  		switch (ids.size())
 		{
 			case 1:
 				type = ConformationalCoordType.FLIP;
@@ -99,16 +152,11 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 				
 			default:
 				throw new IllegalArgumentException("Unexpected number of "
-						+ "atom IDs (" + getNumberOfIDs() + "). "
+						+ "atom IDs (" + ids.size() + "). "
 						+ "Cannot define the type of this conformational "
-						+ "coordinate: " + tuple);
+						+ "coordinate.");
 		}
-  		if (!this.hasValueledAttribute(ConformationalCoordDefinition.KEYFOLD))
-  		{
-  			this.setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD,"1");
-  		}
-  		this.fold = Integer.parseInt(this.getValueOfAttribute(
-  				ConformationalCoordDefinition.KEYFOLD));
+  		return type;
   	}
 
 //------------------------------------------------------------------------------
@@ -126,6 +174,18 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 //------------------------------------------------------------------------------
 
     /**
+     * Sets the fold number.
+     * @param fold the new fold of this coordinate.
+     */
+
+    public void setFold(int fold)
+    {
+        this.fold = fold;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the type of motion among those defined by 
      * {@link ConformationalCoordType}.
      * @return the type of motion.
@@ -134,6 +194,21 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
     public ConformationalCoordType getType()
     {
         return type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets he type of motion among irrespectively on the number of centers
+     * defining this coordinate. <b>WARNING:</b> using this method can create 
+     * inconsistency between the type and the number of centers defining this
+     * coordinate.
+     * @param type the new type.
+     */
+
+    public void setType(ConformationalCoordType type)
+    {
+        this.type = type;
     }
 
 //------------------------------------------------------------------------------
@@ -194,6 +269,13 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
  	    
  	    ConformationalCoordinate other = (ConformationalCoordinate) o;
  	   
+ 	    if (this.fold!=other.fold)
+ 	    	return false;
+ 	    
+ 	   if (this.type!=other.type)
+	    	return false;
+ 	    
+ 	    /*
  	    if (this.atomDef.size() != other.atomDef.size())
  	    	return false;
         
@@ -204,9 +286,24 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
         	if (tAtm != oAtm)
         		return false;
         }
+        */
         
         return super.equals(o);
     }
+    
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public ConformationalCoordinate clone()
+  	{
+  		ConformationalCoordinate clone = new ConformationalCoordinate(
+  				super.clone());
+  		// Type and fold are  inferred from super but they can be overwritten 
+  		// by this class, so we set it here:
+  		clone.type = this.type; 
+  		clone.fold = this.fold; 
+  		return clone;
+  	}
 
 //------------------------------------------------------------------------------
     

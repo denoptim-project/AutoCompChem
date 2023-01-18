@@ -181,7 +181,7 @@ public class AnnotatedAtomTuple implements Cloneable
 	 * are generated.
 	 * @param numAtoms the number of atoms.
 	 */
-	protected void setNumAtoms(int numAtoms) 
+	public void setNumAtoms(int numAtoms) 
 	{
 		this.numAtoms = numAtoms;
 	}

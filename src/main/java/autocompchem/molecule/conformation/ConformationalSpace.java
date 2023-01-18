@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.ConstraintsSet;
+
 
 /**
  * The conformational space as the ordered list of non-redundant conformational
@@ -96,6 +99,20 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
    	            return false;
   	   	}
   	   	return true;
+  	}
+  	
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public ConformationalSpace clone()
+  	{
+  		ConformationalSpace clone = new ConformationalSpace();
+  		for(ConformationalCoordinate coord : this)
+  	   	{
+  	   		clone.add(coord.clone());
+  	   	}
+  		clone.CRDID.set(this.CRDID.get());
+  		return clone;
   	}
 
 //-----------------------------------------------------------------------------
