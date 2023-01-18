@@ -53,6 +53,13 @@ public class AnnotatedAtomTuple implements Cloneable
      * value.
      */
     private Map<String,String> valuedAttributes;
+    
+    /**
+     * Connectivity map for the given indexes. This is a snapshot of the
+     * connectivity as it is the moment this tuple is created. It does not 
+     * reflect any changes occurring afterwards. It does not report 
+     */
+	private Map<Integer,Integer> connections;
 	
 //------------------------------------------------------------------------------
 

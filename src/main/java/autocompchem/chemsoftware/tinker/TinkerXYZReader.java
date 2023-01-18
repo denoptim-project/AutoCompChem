@@ -18,6 +18,7 @@ package autocompchem.chemsoftware.tinker;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -100,7 +101,7 @@ public class TinkerXYZReader
                     {
                         nbrs.add(Integer.parseInt(parts[j]));
                     }
-                    cTab.setNeighborsRelation(atmId-1,nbrs,true);
+                    cTab.addNeighborningRelation(atmId-1,nbrs,true);
                 }
             }
             i++;
@@ -110,7 +111,7 @@ public class TinkerXYZReader
         for (int k=0; k<natoms; k++)
         {
             IAtom atmK = iac.getAtom(k);
-            ArrayList<Integer> nbrIds = cTab.getNbrsId(k,true);
+            List<Integer> nbrIds = cTab.getNbrsId(k,true);
             for (Integer j : nbrIds)
             {
                 IAtom atmJ = iac.getAtom(j);
