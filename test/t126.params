@@ -6,6 +6,8 @@ SMARTS:$START[#7]
 [Ru] [#7] onlyBonded value:5.678
 [$([#6;X3](~[Ru])~[#7])] [Ru] [#17] onlyBonded value:180 getcurrentvalue
 [#6;X3;$([#6](~[#7])(~[#1])~[#6])] [#7] [$([#6;X3]~[Ru])] [Ru] value:-123.09 onlyBonded
+[#6]~[#7]~!@[#6]~[#6] value=999999
+[$([#6]~[Ru])]~[#7](~!@[#6])~[#6] value=111111
 $END
 AtomIDS:$START 2 3
 4 5 value:99.0

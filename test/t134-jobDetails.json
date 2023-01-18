@@ -40,7 +40,7 @@
             },
             {
               "reference": "ATOMIDS",
-              "value": "2 3 value:1.234\n2 3 4\n2 3 4 5 value:-0.123\n1 2 3 4 5 notAnIC"
+              "value": "2 3 value:1.234\n2 3 4\n2 3 4 5 value:-0.123\n4 3 1 2 value:-0.123\n1 2 3 4 5 notAnIC"
             }
           ],
           "reference": "constraints",
