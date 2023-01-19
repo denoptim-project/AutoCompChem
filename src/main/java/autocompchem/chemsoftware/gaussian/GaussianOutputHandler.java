@@ -523,7 +523,7 @@ public class GaussianOutputHandler extends Worker
             patterns = new ArrayList<String>();
             if (analyseEnergy)
             {
-                patterns.add(GaussianConstants.OUTTOTDFTENERGY);
+                patterns.add(GaussianConstants.OUTSCFENERGY);
                 patterns.add(GaussianConstants.OUTCORRH);
                 patterns.add(GaussianConstants.OUTTOTS);
                 patterns.add(GaussianConstants.OUTTEMP);
@@ -625,7 +625,7 @@ public class GaussianOutputHandler extends Worker
 
                 if (analyseEnergy)
                 {
-                    if (matchesMap.containsKey(GaussianConstants.OUTTOTDFTENERGY))
+                    if (matchesMap.containsKey(GaussianConstants.OUTSCFENERGY))
                     {
                         double temp = 0.0d;
                         double e = 0.0d;
@@ -638,9 +638,9 @@ public class GaussianOutputHandler extends Worker
                         double vibSGau = 0.0d;
                         String line = tail.get(
                                  matchesMap.get(
-                                  GaussianConstants.OUTTOTDFTENERGY).get(
+                                  GaussianConstants.OUTSCFENERGY).get(
                                       matchesMap.get(
-                                    GaussianConstants.OUTTOTDFTENERGY).size()-1));
+                                    GaussianConstants.OUTSCFENERGY).size()-1));
                         String[] p = line.trim().split("\\s+");
                         e = Double.parseDouble(p[4]);
                         res = "DFT Energy: " + e + " ";

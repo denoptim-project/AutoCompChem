@@ -1,0 +1,287 @@
+package autocompchem.chemsoftware.gaussian;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.vecmath.Point3d;
+
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftOutputHandler;
+import autocompchem.datacollections.ListOfDoubles;
+import autocompchem.datacollections.ListOfIntegers;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.io.IOtools;
+import autocompchem.molecule.vibrations.NormalMode;
+import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.run.Terminator;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
+
+/**
+ * Reader for Gaussian output data files. This class implements all
+ * the software specific features that are needed to extract information
+ * from the output of Gaussian jobs. 
+ * The rest of the functionality is in the superclass
+ * {@link ChemSoftOutputHandler}.
+ * 
+ * @author Marco Foscato
+ */
+public class GaussianOutputHandler2 extends ChemSoftOutputHandler
+{
+    /**
+     * Declaration of the capabilities of this subclass of {@link Worker}.
+     */
+    public static final Set<TaskID> capabilities =
+                    Collections.unmodifiableSet(new HashSet<TaskID>(
+                                    Arrays.asList(TaskID.ANALYSEGAUSSIANOUTPUT)));
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Method that parses the given log file from XTB and collects all 
+     * possible data in local fields.
+     * @throws CloneNotSupportedException 
+     */
+    
+    @Override
+    protected void readLogFile(File file) throws Exception
+    {
+        BufferedReader buffRead = null;
+        try {
+            buffRead = new BufferedReader(new FileReader(file));
+            String line = null;
+            NamedDataCollector stepData = new NamedDataCollector();
+            ListOfIntegers stepScfConvSteps = new ListOfIntegers();
+            ListOfDoubles stepScfConvEnergies = new ListOfDoubles();
+            AtomContainerSet stepGeoms = new AtomContainerSet();
+            
+        	int stepInitLineNum = 0;
+            int stepId = 0;
+            boolean first = true;
+            int lineNum = -1;
+            while ((line = buffRead.readLine()) != null)
+            {
+            	lineNum++;
+            	if (line.matches(".*" +GaussianConstants.LOGJOBSTEPSTART+ ".*"))
+            	{
+            		if (first)
+            		{
+            			first = false;
+            		} else {
+            			// NB: we do this here because we o not want this to 
+            			// be dependent on the "Normal termination" line.
+            			
+            			storeDataOfOneStep(stepId, 
+            					stepData, stepInitLineNum, 
+            					lineNum-1, stepScfConvSteps, 
+            					stepScfConvEnergies, stepGeoms);
+            			
+            			// ...clear local storage...
+            			stepData = new NamedDataCollector();
+            			stepScfConvSteps = new ListOfIntegers();
+                        stepScfConvEnergies = new ListOfDoubles();
+                        stepGeoms = new AtomContainerSet();
+                        
+                    	//...and move on to next step.
+            			stepId++;
+            			stepInitLineNum = lineNum;
+            		}
+            	} else if (line.matches(".*" + GaussianConstants.LOGJOBSTEPEND 
+            			+ ".*"))
+            	{
+            		normalTerminated = true;
+            	} else if (line.matches(".*" + GaussianConstants.OUTSTARTXYZ 
+            			+ ".*")) 
+            	{
+            		IAtomContainer iac = new AtomContainer();
+            		int skipped = 0;
+            		while ((line = buffRead.readLine()) != null)
+                    {
+                		lineNum++;
+                		if (skipped<2)
+                		{
+                    		skipped++;
+                    		continue;
+                		}
+                    	if (line.matches("^ -----------------.*$"))
+                    	{
+                    		// NB: the first such lines was skilled above
+                    		break;
+                    	}
+                        String[] parts = line.trim().split("\\s+");
+                        String el = AtomUtils.getElementalSymbol(
+                        		Integer.parseInt(parts[1]));
+                        Point3d p3d = new Point3d(Double.parseDouble(parts[3]),
+                                                  Double.parseDouble(parts[4]),
+                                                  Double.parseDouble(parts[5]));
+                        IAtom atm = new Atom(el, p3d);
+                        iac.addAtom(atm);
+                    }
+            		stepGeoms.addAtomContainer(iac);
+            	} else if (line.matches(".*" + GaussianConstants.OUTSCFENERGY
+            			+ ".*"))
+            	{
+            		String[] p = line.trim().split("\\s+");
+            		stepScfConvEnergies.add(Double.parseDouble(p[4]));
+            		stepScfConvSteps.add(Integer.parseInt(p[7]));
+            		stepData.putNamedData(new NamedData(
+        					ChemSoftConstants.JOBDATASCFCONVERGED,true));
+            	} else if (line.matches(".*" + 
+            			GaussianConstants.OUTENDCONVGEOMOPTSTEP + ".*"))
+            	{
+            	    stepData.putNamedData(new NamedData(
+        					ChemSoftConstants.JOBGEOMOPTCONVERGED, true));
+            	} else if (line.matches(GaussianConstants.OUTFREQHEADER + ".*"))
+            	{
+            		NormalModeSet listNormModes = 
+            				GaussianUtils.parseNormalModesFromLog(buffRead);
+
+            		ListOfDoubles listFreqs = new ListOfDoubles();
+            		for (NormalMode nm : listNormModes)
+            		{
+            			listFreqs.add(nm.getFrequency());
+            		}
+            		
+            	    stepData.putNamedData(new NamedData(
+        					ChemSoftConstants.JOBDATAVIBFREQ, listFreqs));
+            	    stepData.putNamedData(new NamedData(
+        					ChemSoftConstants.JOBDATAVIBMODES, listNormModes));
+            	} else if (line.matches(".*" + GaussianConstants.OUTCORRH+ ".*"))
+                {
+                    String[] p = line.trim().split("\\s+");
+                    Double val = Double.parseDouble(p[4]);
+                    stepData.putNamedData(new NamedData(
+                            ChemSoftConstants.JOBDATTHERMOCHEM_H_CORR,
+                            val));
+                } else if (line.matches(".*" + GaussianConstants.OUTTEMP + ".*"))
+                {
+                    String[] p = line.trim().split("\\s+");
+                    Double val = Double.parseDouble(p[1]);
+                    stepData.putNamedData(new NamedData(
+                            ChemSoftConstants.JOBDATTHERMOCHEM_TEMP,
+                            val));
+                } else if (line.matches(".*" + GaussianConstants.OUTTOTS + ".*"))
+                {
+                    String[] p = line.trim().split("\\s+");
+                    Double val = Double.parseDouble(p[3]);
+                    stepData.putNamedData(new NamedData(
+                            ChemSoftConstants.JOBDATTHERMOCHEM_S_TOT,
+                            val));
+                } else if (line.matches(".*" + GaussianConstants.OUTTRAS + ".*"))
+                {
+                    String[] p = line.trim().split("\\s+");
+                    Double val = Double.parseDouble(p[3]);
+                    stepData.putNamedData(new NamedData(
+                            ChemSoftConstants.JOBDATTHERMOCHEM_S_TRANS,
+                            val));
+                } else if (line.matches(".*" + GaussianConstants.OUTROTS + ".*"))
+                {
+                    String[] p = line.trim().split("\\s+");
+                    Double val = Double.parseDouble(p[3]);
+                    stepData.putNamedData(new NamedData(
+                            ChemSoftConstants.JOBDATTHERMOCHEM_S_ROT,
+                            val));
+                } else if (line.matches(".*" + GaussianConstants.OUTVIBS + ".*"))
+                {
+                    String[] p = line.trim().split("\\s+");
+                    Double val = Double.parseDouble(p[3]);
+                    stepData.putNamedData(new NamedData(
+                            ChemSoftConstants.JOBDATTHERMOCHEM_S_VIB,
+                            val));
+                }
+            	
+            	
+            	// There is plenty of other data in the Gaussian log file. 
+            	// So, this list of parsed data will grow as needed...
+            	// Here is a template of code to be added to parse some data
+            	
+            	/*
+
+            	  else if (line.matches(".*" + GaussianConstants.____+ ".*"))
+            	{
+            		String[] p = line.trim().split("\\s+");
+            		//TODO: write code that parses data
+            		 
+            	    stepData.putNamedData(new NamedData(
+        					ChemSoftConstants.____,
+        					__data__));
+            	}
+            	 */
+            }
+            
+    		// Store data of last job, which ended with the end of the file
+    		storeDataOfOneStep(stepId, stepData, stepInitLineNum, 
+    				lineNum-1, stepScfConvSteps, stepScfConvEnergies, 
+    				stepGeoms);
+			
+        } catch (FileNotFoundException fnf) {
+        	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
+        			+ file.getAbsolutePath(),-1);
+        } catch (IOException ioex) {
+        	Terminator.withMsgAndStatus("ERROR! While reading file '" 
+        			+ file.getAbsolutePath() + "'. Details: "
+        			+ ioex.getMessage(),-1);
+        } finally {
+            try {
+                if (buffRead != null)
+                    buffRead.close();
+            } catch (IOException ioex2) {
+                System.err.println(ioex2.getMessage());
+                System.exit(-1);
+            }
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    private void storeDataOfOneStep(
+    		int stepId, NamedDataCollector stepData, 
+    		int stepInitLineNum, int stepEndLineNum, 
+    		ListOfIntegers stepScfConvSteps, ListOfDoubles stepScfConvEnergies,
+    		AtomContainerSet stepGeoms) throws CloneNotSupportedException
+    {
+		stepData.putNamedData(new NamedData(
+				ChemSoftConstants.JOBDATAINITLINE,
+				stepInitLineNum));
+		stepData.putNamedData(new NamedData(
+				ChemSoftConstants.JOBDATAENDLINE,
+				stepEndLineNum));
+		stepData.putNamedData(new NamedData(
+				ChemSoftConstants.JOBDATASCFENERGIES,
+				stepScfConvEnergies));
+		if (!stepScfConvSteps.isEmpty())
+		{
+    		stepData.putNamedData(new NamedData(
+    				ChemSoftConstants.JOBDATASCFSTEPS,
+    				stepScfConvSteps));
+		}
+		if (!stepGeoms.isEmpty())
+		{
+			stepData.putNamedData(new NamedData(
+					ChemSoftConstants.JOBDATAGEOMETRIES,
+					stepGeoms.clone()));
+		}
+		
+		stepsData.put(stepId, stepData.clone());
+    }
+
+//-----------------------------------------------------------------------------
+    
+}

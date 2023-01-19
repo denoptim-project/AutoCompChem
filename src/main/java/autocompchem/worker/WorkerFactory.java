@@ -22,6 +22,7 @@ import java.util.Set;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
+import autocompchem.chemsoftware.gaussian.GaussianOutputHandler2;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
@@ -273,6 +274,7 @@ public class WorkerFactory
     
     public static Set<TaskID> getWorkerCapabilities(WorkerID wid)
 	{
+    	//TODO: evaluate registering the workers in other ways
 		switch (wid)
 		{
 		case DummyWorker:
@@ -303,6 +305,8 @@ public class WorkerFactory
 			return GaussianInputWriter.capabilities;
         case GaussianOutputHandler:
             return GaussianOutputHandler.capabilities;
+        case GaussianOutputHandler2:
+            return GaussianOutputHandler2.capabilities;
         case GaussianReStarter:
             return GaussianReStarter.capabilities; 
         /*
@@ -394,6 +398,8 @@ public class WorkerFactory
 			return new GaussianInputWriter();
         case GaussianOutputHandler:
             return new GaussianOutputHandler();
+        case GaussianOutputHandler2:
+            return new GaussianOutputHandler2();
         case GaussianReStarter:
             return new GaussianReStarter();
         /*

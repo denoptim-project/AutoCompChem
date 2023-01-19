@@ -4,6 +4,7 @@
 # Just evaluate the output and identify the error (if any)
 #
 VERBOSITY: 2
-TASK: EvaluateGaussianOutput
-INFILE: ../t1-mol.out
-GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03
+TASK: AnalyseGaussianOutput
+JobOutputFile: ../t1-mol.out
+#TODO-gg
+#GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03

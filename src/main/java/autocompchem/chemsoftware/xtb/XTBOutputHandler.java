@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.AtomContainerSet;
@@ -95,7 +96,7 @@ public class XTBOutputHandler extends ChemSoftOutputHandler
                     		File xyzOpt = new File(path + "xtbopt.log");
                     		if (xyzOpt.exists())
                     		{
-                    			ArrayList<IAtomContainer> mols = IOtools.readXYZ(
+                    			List<IAtomContainer> mols = IOtools.readXYZ(
                     				xyzOpt.getAbsolutePath());
                     		
                     			for (IAtomContainer mol : mols)
@@ -405,7 +406,7 @@ public class XTBOutputHandler extends ChemSoftOutputHandler
 					stepGeoms.clone()));
 		}
 		
-		stepsData.put(stepId,stepData.clone());
+		stepsData.put(stepId, stepData.clone());
     }
 
 //-----------------------------------------------------------------------------

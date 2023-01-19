@@ -971,7 +971,6 @@ public abstract class ChemSoftOutputHandler extends Worker
     		}
         }
         
-     	
         if (verbosity > 0)
         {
         	System.out.println(" ");

@@ -427,6 +427,16 @@ public class ChemSoftConstants
 	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
 	
 	/**
+	 * Name of data containing the temperature for thermochemical corrections.
+	 */
+	public static final String JOBDATTHERMOCHEM_TEMP = "THERMOCHEM_TEMP";
+
+	/**
+	 * Name of data containing the total entropy
+	 */
+	public static final String JOBDATTHERMOCHEM_S_TOT = "ENTROPY_TOT";
+	
+	/**
 	 * Name of data containing the electronic entropy
 	 */
 	public static final String JOBDATTHERMOCHEM_S_ELECTR = "ENTROPY_ELE";
@@ -452,6 +462,11 @@ public class ChemSoftConstants
 	 * Name of data containing the total enthalpy
 	 */
 	public static final String JOBDATTHERMOCHEM_H = "ENTHALPY";
+
+	/**
+	 * Name of data containing the thermal correction to the enthalpy
+	 */
+	public static final String JOBDATTHERMOCHEM_H_CORR = "ENTHALPY_CORR";
 
 	/**
 	 * Name of data containing the zero point energy

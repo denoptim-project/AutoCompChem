@@ -76,7 +76,6 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENT;
 
-    
     /**
      * Flaq requesting to overwrite geometry names
      */

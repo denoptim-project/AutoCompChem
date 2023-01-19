@@ -168,6 +168,16 @@ public class GaussianConstants
      * JobDetails keyword for modRedundant section
      */
     public final static String MODREDUNDANTKEY = LABMUTEKEY + "MODREDUNDANT";
+    
+	/**
+	 * String identifying the beginning of a single job step in the Gaussian log.
+	 */
+	public static final String LOGJOBSTEPSTART = "Initial command:";
+
+	/**
+	 * String identifying the beginning of a single job step in the Gaussian log.
+	 */
+	public static final String LOGJOBSTEPEND = "Normal termination";
 
     /**
      * String identifying the beginning of a geometry block.
@@ -194,7 +204,7 @@ public class GaussianConstants
     /**
      * String identifying total DFT energy
      */
-    public final static String OUTTOTDFTENERGY = "^\\s* SCF Done:  E(.*) =(.*)";
+    public final static String OUTSCFENERGY = "^\\s* SCF Done:  E(.*) =(.*)";
 
     /**
      * String identifying thermal correction to enthalpy
@@ -226,6 +236,11 @@ public class GaussianConstants
      */
     public final static String OUTTEMP = "^ Temperature  (.*) Kelvin. (.*)";
 
+    /**
+     * String identifying the headed of the frequency and modes report.
+     */
+    public final static String OUTFREQHEADER = "^ Harmonic frequencies ";
+    
     /**
      * String identifying projected frequencies
      */

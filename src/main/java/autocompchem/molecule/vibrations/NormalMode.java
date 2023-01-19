@@ -23,7 +23,7 @@ import java.util.Locale;
 import javax.vecmath.Point3d;
 
 /**
- * Class representing an single normal mode
+ * Class representing an single normal mode.
  * 
  * @author Marco Foscato
  */
@@ -52,8 +52,7 @@ public class NormalMode implements Cloneable
      */
 
     public NormalMode()
-    {
-    }
+    {}
  
 //------------------------------------------------------------------------------
 
@@ -108,6 +107,26 @@ public class NormalMode implements Cloneable
     		components.get(atmId).z = value;
     		break;
     	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the value of the frequency. 
+     */
+    public double getFrequency()
+    {
+    	return freq;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return <code>true</code> if this mode is imaginary.
+     */
+    public boolean isImaginary()
+    {
+    	return isImaginary;
     }
     
 //------------------------------------------------------------------------------
