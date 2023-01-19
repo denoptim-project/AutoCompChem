@@ -1,224 +1,192 @@
 #!/bin/bash
 
-#TODO-gg
-echo skipped
-exit 0
-
-if [ ! -f "t70_mol1.spardir/_spartandir" ]
+if [ ! -f "t70-mol-0.spardir/_spartandir" ]
 then
-echo NOT Passes ERROR 1
-exit -1
+  echo NOT Passes ERROR 1
+  exit -1
 fi
 
-if [ ! -f "t70_mol1.spardir/t70_mol1/_spartan" ] ; then
-echo NOT Passes ERROR 2
-exit -1
+if [ ! -f "t70-mol-0.spardir/t70_mol1/_spartan" ] ; then
+  echo NOT Passes ERROR 2
+  exit -1
 fi
 
-grep -q "cdk:Title=t70_mol1" t70_mol1.spardir/t70_mol1/cell
+grep -q "cdk:Title=t70_mol1" t70-mol-0.spardir/t70_mol1/cell
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 3
-exit -1
+  echo NOT Passed ERROR 3
+  exit -1
 fi
 
-if [ ! -f "t70_mol2.spardir/_spartandir" ]
+if [ ! -f "t70-mol-1.spardir/_spartandir" ]
 then
-echo NOT Passes ERROR 4
-exit -1
+  echo NOT Passes ERROR 4
+  exit -1
 fi
 
-if [ ! -f "t70_mol2.spardir/t70_mol2/_spartan" ] ; then
-echo NOT Passes ERROR 5
-exit -1
+if [ ! -f "t70-mol-1.spardir/t70_mol2/_spartan" ] ; then
+  echo NOT Passes ERROR 5
+  exit -1
 fi
 
-grep -q "cdk:Title=t70_mol2" t70_mol2.spardir/t70_mol2/cell
+grep -q "cdk:Title=t70_mol2" t70-mol-1.spardir/t70_mol2/cell
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 6
-exit -1
+  echo NOT Passed ERROR 6
+  exit -1
 fi
 
 #
 # Mol-1
 #
 
-grep -q "\-5 70" t70_mol1.spardir/t70_mol1/input
+grep -q "\-5 70" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 7
-exit -1
+  echo NOT Passed ERROR 7
+  exit -1
 fi
 
-grep -q "CHARGE=\-5" t70_mol1.spardir/t70_mol1/input
+grep -q "^ * 35 * 2$" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 8
-exit -1
+  echo NOT Passed ERROR 10
+  exit -1
 fi
 
-grep -q "SPIN_MULTIPLICITY=70" t70_mol1.spardir/t70_mol1/input
+grep -q "^ * 38 * 2$" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 9
-exit -1
+  echo NOT Passed ERROR 11
+  exit -1
 fi
 
-grep -q "^ * 35 * 2$" t70_mol1.spardir/t70_mol1/input
+grep -q "^ * 41 * 42 * 3$" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 10
-exit -1
+  echo NOT Passed ERROR 12
+  exit -1
 fi
 
-grep -q "^ * 38 * 2$" t70_mol1.spardir/t70_mol1/input
+grep -q "^  BOND * 13 * 14 * 1.3365" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 11
-exit -1
+  echo NOT Passed ERROR 13
+  exit -1
 fi
 
-grep -q "^ * 41 * 42 * 3$" t70_mol1.spardir/t70_mol1/input
+grep -q "^  ANGL * 13 * 10 * 1 * 101.716" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 12
-exit -1
+  echo NOT Passed ERROR 14
+  exit -1
 fi
 
-grep -q "^  BOND * 13 * 14 * 1.3365" t70_mol1.spardir/t70_mol1/input
+grep -q "^  TORS * 1 * 10 * 13 * 14 * 3.699" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 13
-exit -1
+  echo NOT Passed ERROR 15
+  exit -1
 fi
 
-grep -q "^  ANGL * 1 * 10 * 13 * 101.716" t70_mol1.spardir/t70_mol1/input
+grep -q "FFHINT=Ru1~~210" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 14
-exit -1
+  echo NOT Passed ERROR 16
+  exit -1
 fi
 
-grep -q "^  TORS * 1 * 10 * 13 * 14 * 3.699" t70_mol1.spardir/t70_mol1/input
+grep -q "\"H32\"" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 15
-exit -1
+  echo NOT Passed ERROR 17
+  exit -1
 fi
 
-grep -q "FFHINT=Ru1~~210" t70_mol1.spardir/t70_mol1/input
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 16
-exit -1
+if ! grep -A1 "^FROZEN" t70-mol-0.spardir/t70_mol1/input | grep -q "^ * 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10 * 11 * 12$" ; then
+  echo NOT Passed ERROR 18
+  exit -1
 fi
 
-grep -q "\"H32\"" t70_mol1.spardir/t70_mol1/input
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 17
-exit -1
+if ! grep -A2 "^FROZEN" t70-mol-0.spardir/t70_mol1/input | grep -q "^ * 13 * 14 * 15 * 35 * 38 * 41 * 42$" ; then
+  echo NOT Passed ERROR 19
+  exit -1
 fi
 
-grep -q "10 *11 *12 *13 *14 *15 *16 *22 *35 *38 *41 *42" t70_mol1.spardir/t70_mol1/input
+grep -q "FROZEN" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 18
-exit -1
+  echo NOT Passed ERROR 20
+  exit -1
 fi
 
-grep -q "43 *49" t70_mol1.spardir/t70_mol1/input
+grep -q "PARTIAL" t70-mol-0.spardir/t70_mol1/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 19
-exit -1
-fi
-
-grep -q "FROZEN" t70_mol1.spardir/t70_mol1/input
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 20
-exit -1
-fi
-
-grep -q "PARTIAL" t70_mol1.spardir/t70_mol1/input
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 21
-exit -1
+  echo NOT Passed ERROR 21
+  exit -1
 fi
 
 #
 # Mol-2
 #
 
-grep -q "\-222 \-333" t70_mol2.spardir/t70_mol2/input
+grep -q "^0 1$" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 22
-exit -1
+  echo NOT Passed ERROR 22
+  exit -1
 fi
 
-grep -q "CHARGE" t70_mol2.spardir/t70_mol2/input
+grep -q "^ * 1 * 2 * 5$" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 1 ] ; then
-echo NOT Passed ERROR 23
-exit -1
+  echo NOT Passed ERROR 24
+  exit -1
 fi
 
-grep -q "SPIN_MULTIPLICITY" t70_mol2.spardir/t70_mol2/input
-if [ $? != 1 ] ; then
-echo NOT Passed ERROR 23
-exit -1
-fi
-
-grep -q "^ * 1 * 2 * 5$" t70_mol2.spardir/t70_mol2/input
-if [ $? != 1 ] ; then
-echo NOT Passed ERROR 24
-exit -1
-fi
-
-grep -q "^ * 1 * 2$" t70_mol2.spardir/t70_mol2/input
+grep -q "^ * 1 * 2$" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 25
-exit -1
+  echo NOT Passed ERROR 25
+  exit -1
 fi
 
-grep -q "^ * 5 * 2$" t70_mol2.spardir/t70_mol2/input
+grep -q "^ * 5 * 2$" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 26
-exit -1
+  echo NOT Passed ERROR 26
+  exit -1
 fi
 
-grep -q "^ * 9 * 10 * 5$" t70_mol2.spardir/t70_mol2/input
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 27
-exit -1
+if ! grep -A6 "^CONFORMER" t70-mol-1.spardir/t70_mol2/input | grep -q "^ * 9 * 10 * 6$" ; then
+  echo NOT Passed ERROR 27
+  exit -1
 fi
 
-grep -q "^  BOND * 1 * 6 * 1.509" t70_mol2.spardir/t70_mol2/input
+grep -q "^  BOND * 1 * 6 * 1.509" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 28
-exit -1
+  echo NOT Passed ERROR 28
+  exit -1
 fi
 
-grep -q "SCONFANAL MMFF CONSTRAIN CONFSEXAMINED=10  KEYWORD=C2partB partC partD  KEYWORD=O1partB partC partD  KEYWORD=C3partB partC partD" t70_mol2.spardir/t70_mol2/input
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 29
-exit -1
+if ! grep -q "SCONFANAL MMFF CONSTRAIN PARTIAL CONFSEXAMINED=10" t70-mol-1.spardir/t70_mol2/input ; then 
+  echo NOT Passed ERROR 29
+  exit -1
 fi
 
-grep -q "\"O1\"" t70_mol2.spardir/t70_mol2/input
+grep -q "\"O1\"" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 30
-exit -1
+  echo NOT Passed ERROR 30
+  exit -1
 fi
 
-grep -q "FROZEN" t70_mol2.spardir/t70_mol2/input
+grep -q "FROZEN" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 31
-exit -1
+  echo NOT Passed ERROR 31
+  exit -1
 fi
 
-grep -q "1 *5 *6" t70_mol2.spardir/t70_mol2/input
+grep -q "1 *5 *6" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 32
-exit -1
+  echo NOT Passed ERROR 32
+  exit -1
 fi
 
-grep -q "PARTIAL" t70_mol2.spardir/t70_mol2/input
+grep -q "PARTIAL" t70-mol-1.spardir/t70_mol2/input
 if [ $? != 0 ] ; then
-echo NOT Passed ERROR 33
-exit -1
+  echo NOT Passed ERROR 33
+  exit -1
 fi
 
 grep -q 'Termination status: 0' t70.log
 if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 34
-exit -1
+  echo NOT Passed ERROR 34
+  exit -1
 fi

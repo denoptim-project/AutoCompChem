@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 /*   
@@ -101,6 +102,33 @@ public class StringUtils
         }
         return result;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Appends all string versions of the items in the list as to obtain a 
+     * single string that uses the given separator and the given format for the
+     * items.
+     * @param list the items to append
+     * @param the locale settings (e.g., use comma or point as decimal). See
+     * {@link Locale}.
+     * @param format the format to use when converting the each item to string.
+     * We assume this format is compatible with the type of items.
+     * @param sep separator to use between formatted entries.
+     * @param trim if <code>true</code> avoids to write separator after the
+     * last entry.
+     * @param offset an integer to add to each item in the list.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     */
+    
+    public static String mergeListToString(List<Integer> list, 
+    		Locale loc, String format, String sep, boolean trim, int offset)
+    {
+    	List<String> modList = new ArrayList<String>();
+    	list.stream().forEach(i -> modList.add(String.format(loc, format, 
+    			i + offset)));
+    	return mergeListToString(modList, sep, trim);
+    }
 
 //------------------------------------------------------------------------------
 
@@ -118,9 +146,7 @@ public class StringUtils
     public static String mergeListToString(List<Integer> list, String sep, 
     		boolean trim, int offset)
     {
-    	List<Integer> modList = new ArrayList<Integer>();
-    	list.stream().forEach(i -> modList.add(i + offset));
-    	return mergeListToString(modList, sep, trim);
+    	return mergeListToString(list, Locale.ENGLISH, "%d", sep, trim, offset);
     }
     
 //------------------------------------------------------------------------------

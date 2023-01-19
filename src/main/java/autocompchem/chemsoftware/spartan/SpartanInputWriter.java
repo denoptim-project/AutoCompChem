@@ -47,6 +47,8 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.CenterBasisSet;
@@ -65,6 +67,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -88,7 +91,6 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     /**
      * Constructor sets the parameters that depend on Spartan conventions.
      */
-
     public SpartanInputWriter() 
     {
     	inpExtrension = ".spardir";
@@ -362,14 +364,35 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		ensureSingleDirectiveData(frzDir);
     		
     		lines.add(SpartanConstants.FREEZEOPN);
-    		ConstraintsSet cs = (ConstraintsSet) frzDir
-    				.getAllDirectiveDataBlocks().get(0).getValue();
+
+    		List<Integer> frozenIDs = new ArrayList<>();
+    		DirectiveData dd = frzDir.getAllDirectiveDataBlocks().get(0);
+    		if (dd.getType().equals(NamedDataType.ANNOTATEDATOMTUPLELIST))
+    		{
+	    		for (AnnotatedAtomTuple tuple : 
+	    			(AnnotatedAtomTupleList) dd.getValue())
+	            {
+	    			for (Integer id : tuple.getAtomIDs())
+	    				if (!frozenIDs.contains(id))
+	    					frozenIDs.add(id);
+	            }
+    		} else if (dd.getType().equals(NamedDataType.CONSTRAINTSSET)) 
+    		{
+    			for (Constraint cns : ((ConstraintsSet) dd.getValue())
+    					.getConstrainsWithType(ConstraintType.FROZENATM))
+    			{
+    				Integer id = cns.getAtomIDs().get(0);
+    				if (!frozenIDs.contains(id))
+	    					frozenIDs.add(id);
+    			}
+    					
+    		}
+    		Collections.sort(frozenIDs);
 
             StringBuilder sbFrz = new StringBuilder();
             sbFrz.append(SpartanConstants.INDENT);
             int indexCounter = 0;
-    		for (Constraint c : cs.getConstrainsWithType(
-    				ConstraintType.FROZENATM))
+    		for (Integer id : frozenIDs)
             {
     			indexCounter++;
     			if (indexCounter>12)
@@ -377,8 +400,8 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     				indexCounter = 0;
     				sbFrz.append(NL).append(SpartanConstants.INDENT);
     			}
-    			sbFrz.append(String.format(Locale.ENGLISH, "%5d",
-    					c.getAtomIDs().get(0)+1));
+    			// adapting to 1-based indexing
+    			sbFrz.append(String.format(Locale.ENGLISH, "%5d", id+1));
             }
 			lines.add(sbFrz.toString());
             lines.add(SpartanConstants.FREEZEEND);
@@ -397,6 +420,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     				.getAllDirectiveDataBlocks().get(0).getValue();
     		for (ConformationalCoordinate coord : cs)
             {
+    			//TODO-gg fixme
     			lines.add(SpartanConstants.INDENT 
     					+ coord.getAtomIDsAsString(true, "%5d")
     					+ String.format(Locale.ENGLISH, "%5d", coord.getFold()));

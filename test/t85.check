@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-echo Skipped TODO FIXME
-exit 0
-
 if [ ! -f "t85.spardir/_spartandir" ]
 then
   echo NOT Passes ERROR 1
@@ -64,10 +61,20 @@ if [ "$n" -ne 2 ] ; then
   exit -1
 fi
 
+if ! grep -A1 "^FROZEN" t85.spardir/M0001/input | grep -q "^ * 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 18 * 19 * 20 * 21$" ; then
+  echo NOT Passed ERROR 8
+  exit -1
+fi
+
+if ! grep -A2 "^FROZEN" t85.spardir/M0001/input | grep -q "^ * 22 * 27$" ; then
+  echo NOT Passed ERROR 9
+  exit -1
+fi
+
 if grep -q 'Termination status: 0' t85.log ; then
   echo Passed
   exit 0
 else
-  echo NOT Passed ERROR 8
+  echo NOT Passed ERROR 99
   exit -1
 fi

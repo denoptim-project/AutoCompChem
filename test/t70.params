@@ -5,10 +5,3 @@ VERBOSITY: 1
 TASK: PrepareInputSpartan
 INPUTGEOMETRIESFILE: ../t70-mol.sdf
 JOBDETAILSFILE: ../t70-jobDetails.json
-#$STARTROTATABLEBONDS:
-#[#6]!@-[#6] 6
-#[C]~[#6] 5
-#[#7]!@~[#6] 3
-#[$([#6]1~[#7]~[*]~[*]~[*]~[*]1)] 2
-#[$([#6;X4]1-[#6;X4]~[#7;X3]~[#6;X3](~[Ru])~[#7;X3]1)] 2
-#$END

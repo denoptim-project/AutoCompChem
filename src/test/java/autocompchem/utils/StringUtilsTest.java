@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -106,10 +107,18 @@ public class StringUtilsTest
         String sep = ", ";
         
         String expected = "1, 4, -2";
-        assertEquals(expected, StringUtils.mergeListToString(lst, sep, true, 1));
+        assertEquals(expected, StringUtils.mergeListToString(lst,sep,true,1));
 
         expected = "0, 3, -3, ";
-        assertEquals(expected, StringUtils.mergeListToString(lst, sep, false, 0));
+        assertEquals(expected, StringUtils.mergeListToString(lst,sep,false,0));
+
+        expected = "   1@   4@  -2";
+        assertEquals(expected, StringUtils.mergeListToString(lst, 
+        		Locale.ENGLISH, "%4d", "@", true, 1));
+        
+        expected = "__    0@__    3@__   -3@";
+        assertEquals(expected, StringUtils.mergeListToString(lst, 
+        		Locale.ENGLISH, "__%5d", "@", false, 0));
     }
     
 //------------------------------------------------------------------------------

@@ -35,6 +35,24 @@
       ]
     },
     {
+      "name": "Conformer",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GenerateConformationalSpace"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[#6]!@-[#6] fold:2\n[#7]!@~[#6] fold:4"
+            }
+          ],
+          "reference": "ConformationalSpace-generation task"
+        }
+      ]
+    },
+    {
       "name": "Constraints",
       "dirData": [
         {

@@ -1159,10 +1159,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	
             	// Replace value of component that triggered this task
             	((IValueContainer) dirComp).setValue(cs);
-                
-                //TODO-gg verbosity/logging
-                cs.printAll();
-            	break;
+                break;
             }
             
           //TODO make this work on enum, and create TaskIDs for all other tasks
@@ -1187,8 +1184,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	
             	ConformationalSpace cs = new ConformationalSpace();
             	try {
-					//TOGO-dd reactivate
-            		//cs = csGen.createConformationalSpace(mol);
+            		cs = csGen.createConformationalSpace(mol);
 				} catch (Exception e) {
 					e.printStackTrace();
 					Terminator.withMsgAndStatus("ERROR! Unable to create "
