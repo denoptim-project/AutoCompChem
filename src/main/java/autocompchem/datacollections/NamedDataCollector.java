@@ -232,21 +232,27 @@ public class NamedDataCollector implements Cloneable
     @Override
     public boolean equals(Object o) 
     {
+    	if (o == null)
+    		return false;
+    	
  	    if (o == this)
  		    return true;
  	   
- 	    if (!(o instanceof NamedDataCollector))
-     		return false;
+ 	    if (o.getClass() != getClass())
+    		return false;
  	   
  	    NamedDataCollector other = (NamedDataCollector) o;
+ 	    
+ 	    if (this.allData.size()!=other.allData.size())
+ 	    	return false;
  	  
  	    for (String nameOfData : this.allData.keySet())
  	    {
- 		    NamedData oND = other.getNamedData(nameOfData);
- 		    if (oND==null)
+ 		    NamedData oND = other.getNamedData(nameOfData, true);
+ 		    if (oND == null)
  		    	return false;
  		    
- 		    NamedData tND = this.getNamedData(nameOfData);
+ 		    NamedData tND = this.getNamedData(nameOfData, true);
  		    if (!tND.equals(oND))
  		    	return false;
  	    }

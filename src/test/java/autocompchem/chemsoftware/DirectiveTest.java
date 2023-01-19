@@ -1,6 +1,7 @@
 package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /*   
@@ -25,9 +26,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
 import autocompchem.text.TextBlock;
 
@@ -40,12 +48,15 @@ import autocompchem.text.TextBlock;
 
 public class DirectiveTest 
 {
-	private final String NL = System.getProperty("line.separator");
+	private final static String NL = System.getProperty("line.separator");
+
+    private IChemObjectBuilder chemBuilder = 
+    		DefaultChemObjectBuilder.getInstance();
 	
 //------------------------------------------------------------------------------
 
     @Test
-    public void testCustomEquals() throws Exception
+    public void testEqualsViaBuild() throws Exception
     {
     	ArrayList<String> lines = new ArrayList<String>();
     	lines.add(ChemSoftConstants.JDLABLOUDKEY + "key1"
@@ -57,24 +68,45 @@ public class DirectiveTest
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD1 ");
     	lines.add(ChemSoftConstants.JDLABDIRECTIVE + "subD2 ");
     	lines.add(ChemSoftConstants.JDLABDATA + "dat1 "
-    			+ ChemSoftConstants.JDDATAVALSEPARATOR + "bla");
-    	
-    	ArrayList<String> linesB = new ArrayList<String>();
-    	linesB.add(ChemSoftConstants.JDLABLOUDKEY + "key1b"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val1");
-    	linesB.add(ChemSoftConstants.JDLABLOUDKEY + "key2b"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val2");
-    	linesB.add(ChemSoftConstants.JDLABMUTEKEY + "key3b"
-    			+ ChemSoftConstants.JDKEYVALSEPARATOR + "val3");
-    	linesB.add(ChemSoftConstants.JDLABDIRECTIVE + "subD1b");
-    	linesB.add(ChemSoftConstants.JDLABDIRECTIVE + "subD2bb");
-    	linesB.add(ChemSoftConstants.JDLABDATA + "dat1b"
-    			+ ChemSoftConstants.JDDATAVALSEPARATOR + "blabla");    	
+    			+ ChemSoftConstants.JDDATAVALSEPARATOR + "bla");   	
     	
     	Directive dA = DirectiveFactory.buildFromJDText("test",lines);
-    	Directive dB = DirectiveFactory.buildFromJDText("test",linesB);
+    	Directive dB = DirectiveFactory.buildFromJDText("test",lines);
     	
-    	assertTrue(dA.equals(dB),"Custom Equality");
+    	assertTrue(dA.equals(dB));
+    }
+	
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testEquals() throws Exception
+    {   
+    	Directive dA = getTestDirective();
+    	Directive dB = getTestDirective();
+    	
+    	assertTrue(dA.equals(dA));
+    	assertTrue(dA.equals(dB));
+    	assertTrue(dB.equals(dA));
+    	assertFalse(dA.equals(null));
+    	
+    	dB.addKeyword(new Keyword("added", true, "changed"));
+    	assertFalse(dA.equals(dB));
+    	
+    	dB = getTestDirective();
+    	dB.addDirectiveData(new DirectiveData("data",  
+    			new ArrayList<String>(Arrays.asList("A1","A2","A3"))));
+    	assertFalse(dA.equals(dB));
+    	
+    	dB = getTestDirective();
+    	Directive sa = new Directive("subA");
+    	sa.addKeyword(new Keyword("sKey", false, 
+    			new ArrayList<String>(Arrays.asList("0","1"))));
+    	dB.addSubDirective(sa);
+    	assertFalse(dA.equals(dB));
+    	
+    	dB = getTestDirective();
+    	dB.setTaskParams(new ParameterStorage());
+    	assertFalse(dA.equals(dB));
     }
     
 //------------------------------------------------------------------------------
@@ -88,8 +120,7 @@ public class DirectiveTest
     	d.addDirectiveData(new DirectiveData("data",  
     			new ArrayList<String>(Arrays.asList("A1","A2","A3"))));
     	Directive sa = new Directive("subA");
-    	sa.addKeyword(new Keyword("sKey", false, 
-    			new ArrayList<String>(Arrays.asList("0","1"))));
+    	sa.addKeyword(new Keyword("sKey", false, "$START0" + NL + "1$END"));
     	d.addSubDirective(sa);
     	
     	assertEquals(7,d.toLinesJobDetails().size(),"Number of lines in JD.");
@@ -116,7 +147,51 @@ public class DirectiveTest
     	
     	assertTrue(d.equals(d2),"Equality of regenerated from JD string.");
     }
-    
+
+//------------------------------------------------------------------------------
+
+    public static Directive getTestDirective()
+    {    
+    	Directive d = new Directive("testDirective");
+    	
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key2", true, 
+    			new ArrayList<String>(Arrays.asList("c","d"))));
+    	
+    	String ddString = "data" 
+    			+ ChemSoftConstants.JDDATAVALSEPARATOR
+				+ ChemSoftConstants.JDLABACCTASK
+				+ ParameterConstants.SEPARATOR
+				+ ChemSoftConstants.PARGETFILENAMEROOT + NL
+				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
+				+ ParameterConstants.SEPARATOR + ".sfx";
+    	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
+    	
+    	Directive embedded = new Directive("embeddedDirective");
+    	embedded.addKeyword(new Keyword("key1EMB", true, 
+    			new ArrayList<String>(Arrays.asList("aEMB","bEMB"))));
+    	d.addSubDirective(embedded);
+    	
+    	ParameterStorage taskParams = new ParameterStorage();
+    	taskParams.setParameter("TASK", "DummyTask");
+    	taskParams.setParameter("Value1", 1);
+    	taskParams.setParameter("Value2", 1.23);
+    	taskParams.setParameter("Value3", "abc");
+    	d.setTaskParams(taskParams);
+    	
+    	return d;
+    }
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	Directive original = getTestDirective();
+    	Directive cloned = original.clone();
+    	assertTrue(original.equals(cloned));
+    }
+    	
 //------------------------------------------------------------------------------
 
     @Test
@@ -160,6 +235,37 @@ public class DirectiveTest
     			"filenameRoot_job2.xyz"),
     			"Task changing keyword");
     	
+
+    	Directive d3 = getTestDirective();
+    	d3.removeACCTasks();
+    	d3.deleteComponent(d3.getAllDirectiveDataBlocks().get(0));
+
+    	ParameterStorage taskParams = new ParameterStorage();
+    	taskParams.setParameter("TASK", 
+    			ChemSoftConstants.PARADDATOMSPECIFICKEYWORD);
+    	taskParams.setParameter("KeywordName", "ATMSPECKW");
+    	taskParams.setParameter("SMARTS", "[#6] options:~~@#BLA");
+    	d3.setTaskParams(taskParams);
+    	
+    	IAtomContainer mol = chemBuilder.newAtomContainer();
+    	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
+    	mol.addAtom(new Atom("O",new Point3d(5.0,0,0)));
+    	mol.addAtom(new Atom("N",new Point3d(10.0,0,0)));
+    	mol.addAtom(new Atom("C",new Point3d(12.0,0,0.0)));
+    	mol.addAtom(new Atom("C",new Point3d(14.0,0,0.0)));
+    	mol.addAtom(new Atom("N",new Point3d(10.0,10,0)));
+    	mol.addAtom(new Atom("C",new Point3d(12.0,10,0.0)));
+    	
+    	d3.performACCTasks(new ArrayList<IAtomContainer>(Arrays.asList(mol)), j);
+    	
+    	assertEquals(6, d3.getAllKeywords().size());
+    	int newKeys = 0;
+    	for (Keyword k : d3.getAllKeywords())
+    	{
+    		if (k.getName().startsWith("ATMSPECKW"))
+    			newKeys++;
+    	}
+    	assertEquals(4, newKeys);
     }
     
 //------------------------------------------------------------------------------

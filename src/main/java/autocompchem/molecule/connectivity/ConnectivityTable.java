@@ -17,149 +17,231 @@ package autocompchem.molecule.connectivity;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.common.collect.Lists;
+
 /** 
- * This object contains the list of neighbours per each atom in the system.
- * Both 0-based and 1-based connectivity can be generated.
+ * Map of neighbors defining which item is connected to with other items. 
+ * Items are identified by 0-based indexes. 
  *          
  * @author Marco Foscato
  */
 
 
-public class ConnectivityTable
+//TODO-gg rename neighboring map
+
+public class ConnectivityTable extends HashMap<Integer, List<Integer>>
+	 implements Cloneable
 {
-    /**
-     * List of connected atom IDs per each atom ID. The IDs are zero-based.
-     */
-    private ArrayList<ArrayList<Integer>> cnTab;
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for empty ConnectivityTable object
+     * Constructor for an empty table.
      */
 
     public ConnectivityTable()
-    {
-        cnTab = new ArrayList<ArrayList<Integer>>();
-    }
-
+    {}
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an Connectivity table from the CDK representation of
-     * the chemical system.
-     * @param mol the chemical system for which the connectivity table is to
+     * Constructor a table to the given atom container. Considers all atoms
+     * in the container.
+     * @param mol the chemical system for which the table is to
      * be generated.
      */
 
     public ConnectivityTable(IAtomContainer mol)
     {
-        cnTab = new ArrayList<ArrayList<Integer>>();
-        for (IAtom atm : mol.atoms())
-        {
-            ArrayList<Integer> nbrs = new ArrayList<Integer>();
-            for (IAtom nbr : mol.getConnectedAtomsList(atm))
-            {
-                nbrs.add(mol.indexOf(nbr));
-            }
-            cnTab.add(nbrs);
-        }
+    	this(Lists.newArrayList(mol.atoms()), mol);
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Add a neighbourning role to the connectivity table
-     * @param srcId the index of the src atom
-     * @param nbrs the list of atom Ids of the neighbours
-     * @param zeroBased set <code>true</code> if the input is 0-based
+     * Constructor a table to the given set of atoms. Note that the 
+     * Neighboring relations will only consider atoms in the subset.
+     * @param subset the set of atoms to include in the table.
+     * @param mol the chemical system for which the table is to
+     * be generated.
      */
 
-    public void setNeighboursRelation(int srcId, ArrayList<Integer> nbrs, 
-                                                              boolean zeroBased)
+    public ConnectivityTable(Collection<IAtom> subset, IAtomContainer mol)
     {
-        //scale to 0-based IDs
-        ArrayList<Integer> locNbrs = new ArrayList<Integer>();
-        if (!zeroBased)
+        for (IAtom atm : subset)
         {
-            srcId = srcId - 1;
-            for (Integer i : nbrs)
+            List<Integer> nbrs = new ArrayList<Integer>();
+            for (IAtom nbr : mol.getConnectedAtomsList(atm))
             {
-                locNbrs.add(i - 1);
+            	if (subset.contains(nbr))
+            		nbrs.add(mol.indexOf(nbr));
             }
+            put(mol.indexOf(atm), nbrs);
         }
-        else
-        {
-            locNbrs.addAll(nbrs);
-        }
-
-        // ensure size
-        if (cnTab.size() < (srcId+1))
-        {
-            for (int i=0; i<(srcId - cnTab.size() + 1); i++)
-            {
-                cnTab.add(new ArrayList<Integer>());
-            }
-        }
-
-        // add neghbours ids
-        cnTab.set(srcId,locNbrs);
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Get index of neighbours of an atom. Both 0-based and 1-based
-     * output indexes can be produced.
+     * Add a neighboring relation in this table. Does not overwrite existing
+     * relations. This method assumes the indexes are all 0-based.
+     * @param srcId the index of the item from witch we are setting the 
+     * neighbors.
+     * @param nbrs the list of item Ids of the neighbors. The list will be 
+     * copied, not used as it is.
+     */
+
+    public void addNeighborningRelation(int srcId, List<Integer> nbrs)
+    {
+    	addNeighborningRelation(srcId, nbrs, true);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Add a neighboring relation in this table. Does not overwrite existing
+     * relations. This method assumes the indexes are all 0-based.
+     * @param srcId the index of the item from witch we are setting the 
+     * neighbors.
+     * @param nbrs the list of item Ids of the neighbors. The list will be 
+     * copied, not used as it is.
+     */
+
+    public void addNeighborningRelation(int srcId, int[] nbrs)
+    {
+    	List<Integer> ids = new ArrayList<Integer>();
+    	for (int i=0; i<nbrs.length; i++)
+    		ids.add(nbrs[i]);
+    	addNeighborningRelation(srcId, ids, true);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Add a neighboring relation in this table. Does not overwrite existing
+     * relations.
+     * @param srcId the index of the item from witch we are setting the 
+     * neighbors.
+     * @param nbrs the list of item Ids of the neighbors. The list will be 
+     * copied, not used as it is.
+     * @param zeroBased set <code>true</code> if the given indexes are 0-based.
+     */
+
+    public void addNeighborningRelation(int srcId, List<Integer> nbrs, 
+    		boolean zeroBased)
+    {
+    	int offset = 0;
+    	if (!zeroBased)
+    		offset = -1;
+    	
+    	int zeroBasedIdSrc = srcId + offset;
+
+		List<Integer> zeroBasedNbrs = new ArrayList<Integer>();
+		for (Integer id : nbrs)
+			zeroBasedNbrs.add(id+offset);
+		
+    	if (this.containsKey(zeroBasedIdSrc))
+    	{
+    		this.get(zeroBasedIdSrc).addAll(zeroBasedNbrs);
+    	} else {
+    		this.put(zeroBasedIdSrc, zeroBasedNbrs);
+    	}
+    	for (Integer nbr : nbrs)
+    	{
+    		int zeroBasedNbr = nbr+offset;
+    		if (this.containsKey(zeroBasedNbr))
+        	{
+        		this.get(zeroBasedNbr).add(zeroBasedIdSrc);
+        	} else {
+        		this.put(zeroBasedNbr, new ArrayList<Integer>(
+        				Arrays.asList(zeroBasedIdSrc)));
+        	}
+    	}
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Get neighboring relations for a given item.
+     * @param srcId the (0-based) index of the item from which we want to get  
+     * the indexes of the neighbors.
+     * @return the list of IDs of neighbor atoms (0-based).
+     */
+
+    public List<Integer> getNbrsId(int srcId)
+    {
+    	return get(srcId);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks the neighboring relation between two items.
+     * @param e1 one item.
+     * @param e2 the other item.
+     * @return <code>true</code> if the two items are neighbors.
+     */
+
+    public boolean areNeighbors(Integer e1, Integer e2)
+    {
+    	if (!containsKey(e1))
+    		return false;
+    	return get(e1).contains(e2);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Get a copy of the neighboring relations for a given item.
      * @param srcId the index of the central atom (always 0-based)
      * @param zeroBased set to <code>true</code> if 0-based indexes are wanted
      * or <code>false</code> for 1-based. 
-     * @return the list of IDs of neighbour atoms
+     * @return a copy of the list of IDs of neighbors to the given item. Note,
+     * this is a copy is not the data structure where those indexes are
+     * stored.
      */
 
-    public ArrayList<Integer> getNbrsId(int srcId, boolean zeroBased)
+    public List<Integer> getNbrsId(int srcId, boolean zeroBased)
     {
-        ArrayList<Integer> ids = new ArrayList<Integer>();
-        for (int i=0; i<cnTab.get(srcId).size(); i++)
+    	int offset = 0;
+    	if (!zeroBased)
+    		offset = 1;
+    	
+        List<Integer> ids = new ArrayList<Integer>();
+        
+        if (!containsKey(srcId))
+        	return ids;
+        
+        for (int i=0; i<get(srcId).size(); i++)
         {
-            int base = 1;
-            if (zeroBased)
-            {
-                base = 0;
-            }
-            ids.add(cnTab.get(srcId).get(i) + base);
+            ids.add(get(srcId).get(i) + offset);
         }
         return ids;
     }
-
+    
 //------------------------------------------------------------------------------
 
-    /**
-     * Get index of neighbours of an atom in a formatted form. 
-     * Both 0-based and 1-based
-     * output indexes can be produced.
-     * @param srcId the index of the central atom (always 0-based)
-     * @param zeroBased set to <code>true</code> if 0-based indexes are wanted
-     * or <code>false</code> for 1-based.
-     * @param sep the separator to be used between the indexes
-     * @return the IDs of the neighbour atoms as a string
-     */
-
-    public String getNbrsIdAsString(int srcId, boolean zeroBased, String sep) 
-    {
-        String form = " %1$" + String.valueOf(cnTab.size()).length() + "s";
-        String s = "";
-        for (Integer id : getNbrsId(srcId,zeroBased))
-        {
-            s = s + String.format(form,id) + sep;
-        }
-        return s;                
-    }
+  	public ConnectivityTable clone()
+  	{
+  		ConnectivityTable clone = new ConnectivityTable();
+  		for (Integer key : this.keySet())
+  		{
+  			List<Integer> nbrs = new ArrayList<Integer>();
+  			for (Integer trg : this.get(key))
+  				nbrs.add(trg);
+  			clone.put(key,  nbrs);
+  		}
+  		return clone;
+  	}
 
 //------------------------------------------------------------------------------
 

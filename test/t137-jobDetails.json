@@ -105,7 +105,7 @@
                 },
                 {
                   "reference": "SMARTS",
-                  "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded\n[#6] [#8] options:F more"
+                  "value": "[#8]\n[$([#6](~[#1])(~[#1])~[#1])]\n[#6] [#8] [#6] onlybonded\n[#6] [#8] suffix:F more"
                 },
                 {
                   "reference": "VERBOSITY",
@@ -113,7 +113,7 @@
                 },
                 {
                   "reference": "ATOMIDS",
-                  "value": "1\n2 3 A\n2 3 4 126.0 F\n2 3 4 5 -0.123 options:A b c d"
+                  "value": "1\n2 3 suffix: A\n2 3 4 value: 126.0 suffix:F\n2 3 4 5 value:-0.123 suffix:A b c d"
                 }
               ],
               "reference": "MODREDUNDANT",

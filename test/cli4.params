@@ -17,14 +17,15 @@ $DIR_! $MT_model=XTB2
 $DIR_! $MT_calculation=Opt
 $DIR_geom $DIR_constraints $DATA_constraints=$START$ACCTASK: GenerateConstraints
 VERBOSITY: 1
+VALUEDKEYWORDS: value
 SMARTS:$START[#8]
 [$([#6](~[#1])(~[#1])~[#1])]
 [#6] [#8] [#6] onlybonded
 $END
 AtomIDS:$START 1
-2 3 1.234
-2 3 4 126.0
-2 3 4 5 -0.123 NotAnIC
+2 3 value:1.234
+2 3 4 value:126.0
+2 3 4 5 value:-0.123
 12$END
 $END
 $DIR_geom $DIR_InHess $MT_hessSource=Read

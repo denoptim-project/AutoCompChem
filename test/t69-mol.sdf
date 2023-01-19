@@ -128,4 +128,10 @@ t69_mol1
   3  1  1  0  0  0  0
   1  4  1  0  0  0  0
 M  END
+> <CHARGE>
+-222
+
+> <SPIN_MULTIPLICITY>
+333
+
 $$$$

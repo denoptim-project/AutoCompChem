@@ -23,9 +23,6 @@ import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserialize
 import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.modeling.constraints.ConstraintsSet.ConstraintsSetDeserializer;
-import autocompchem.modeling.constraints.ConstraintsSet.ConstraintsSetSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -91,8 +88,6 @@ public class ACCJson
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
-    	        .registerTypeAdapter(ConstraintsSet.class, 
-    	        		new ConstraintsSetSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
     			.create();
@@ -108,8 +103,6 @@ public class ACCJson
     	        		new KeywordDeserializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageDeserializer())
-    	        .registerTypeAdapter(ConstraintsSet.class, 
-    	        		new ConstraintsSetDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerDeserializer())
     			.create();

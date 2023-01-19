@@ -70,7 +70,7 @@ n=0;n=$(grep -c "^ *elements: C,O,1$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 30; exit -1 ; fi
 n=0;n=$(grep -c "^ *angle: 3, 4, 5, auto$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 31; exit -1 ; fi
-n=0;n=$(grep -c "^ *dihedral: 3, 4, 5, 6, -0.123$" t134-mol-1.xcontrol)
+n=0;n=$(grep -c "^ *dihedral: 5, 4, 2, 3, -0.123$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 32; exit -1 ; fi
 n=0;n=$(grep -c "^ *atoms: 2, 3, 4, 5, 6$" t134-mol-1.xcontrol)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 33; exit -1 ; fi

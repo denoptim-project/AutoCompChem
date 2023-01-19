@@ -86,7 +86,7 @@
                     },
                     {
                       "reference": "SMARTS",
-                      "value": "[#1] [Ru] onlybonded options:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded options:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded options:constant"
+                      "value": "[#1] [Ru] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded suffix:constant"
                     }
                   ],
                   "reference": "zcoordconstraints"

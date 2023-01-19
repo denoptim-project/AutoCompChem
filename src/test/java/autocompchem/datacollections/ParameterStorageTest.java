@@ -2,6 +2,7 @@ package autocompchem.datacollections;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
+import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.ACCJson;
 
@@ -84,6 +86,56 @@ public class ParameterStorageTest
         assertTrue(rp2.getValue() instanceof Double);
         assertTrue(rp3.getValue() instanceof Integer);
         assertTrue(rp4==null);
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static ParameterStorage getTestParameterStorage()
+    {
+    	ParameterStorage ps = new ParameterStorage();
+    	ps.setParameter("KEY1", NamedDataType.STRING, "1.123");
+    	ps.setParameter("KEY2", NamedDataType.DOUBLE, 1.123);
+    	ps.setParameter("KEY3", NamedDataType.INTEGER, 206);
+    	return ps;
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testEquals() throws Exception
+    {
+    	ParameterStorage psA = getTestParameterStorage();
+    	ParameterStorage psB = getTestParameterStorage();
+
+    	assertTrue(psA.equals(psA));
+    	assertTrue(psA.equals(psB));
+    	assertTrue(psB.equals(psA));
+    	assertFalse(psA.equals(null));
+    	
+    	psB.setParameter("newParam", null);
+    	assertFalse(psA.equals(psB));
+    	
+    	psB = getTestParameterStorage();
+    	psB.getParameter("KEY1").setValue("changed");
+    	assertFalse(psA.equals(psB));
+    	
+    	psB = getTestParameterStorage();
+    	psB.getParameter("KEY2").setReference("changed");
+    	assertFalse(psA.equals(psB));
+    	
+    	psB = getTestParameterStorage();
+    	psB.removeData("KEY2");
+    	assertFalse(psA.equals(psB));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	ParameterStorage original = getTestParameterStorage();
+    	ParameterStorage cloned = original.clone();
+    	assertEquals(original, cloned);
     }
     
 //------------------------------------------------------------------------------

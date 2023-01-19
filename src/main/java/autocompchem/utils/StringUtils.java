@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 /*   
@@ -105,8 +106,55 @@ public class StringUtils
 //------------------------------------------------------------------------------
 
     /**
+     * Appends all string versions of the items in the list as to obtain a 
+     * single string that uses the given separator and the given format for the
+     * items.
+     * @param list the items to append
+     * @param the locale settings (e.g., use comma or point as decimal). See
+     * {@link Locale}.
+     * @param format the format to use when converting the each item to string.
+     * We assume this format is compatible with the type of items.
+     * @param sep separator to use between formatted entries.
+     * @param trim if <code>true</code> avoids to write separator after the
+     * last entry.
+     * @param offset an integer to add to each item in the list.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     */
+    
+    public static String mergeListToString(List<Integer> list, 
+    		Locale loc, String format, String sep, boolean trim, int offset)
+    {
+    	List<String> modList = new ArrayList<String>();
+    	list.stream().forEach(i -> modList.add(String.format(loc, format, 
+    			i + offset)));
+    	return mergeListToString(modList, sep, trim);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Appends all integers of a list to obtain a single string that uses the 
+     * given separator. 
+     * @param list the integers to append
+     * @param sep separator to use between entries.
+     * @param trim if <code>true</code> avoids to write separator after the
+     * last entry.
+     * @param offset an integer to add to each item in the list.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     */
+    
+    public static String mergeListToString(List<Integer> list, String sep, 
+    		boolean trim, int offset)
+    {
+    	return mergeListToString(list, Locale.ENGLISH, "%d", sep, trim, offset);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Appends all entries of a list to obtain a single string that uses the 
-     * given separator.
+     * given separator. Each object is converted into a string using the 
+     * corresponding <code>toString()</code> method.
      * @param list the entries to append.
      * @param sep separator to use between entries.
      * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
@@ -114,14 +162,15 @@ public class StringUtils
     
     public static String mergeListToString(List<? extends Object> list, String sep)
     {
-    	return mergeListToString(list,sep,false);
+    	return mergeListToString(list, sep, false);
     }
     
 //------------------------------------------------------------------------------
 
     /**
      * Appends all entries of a list to obtain a single string that uses the 
-     * given separator.
+     * given separator.  Each object is converted into a string using the 
+     * corresponding <code>toString()</code> method.
      * @param list the entries to append.
      * @param sep separator to use between entries.
      * @param trim if <code>true</code> avoids to write separator after the
@@ -229,6 +278,38 @@ public class StringUtils
             prevId = currentId;
         }
         return list;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Parses a string to produce an array of doubles. This method assumes that
+     * any word (i.e., string delimited by the given delimiting regex) can be
+     * converted into a double. Ignores any blank string that is produced by the 
+     * regex-based splitting.
+     * @param txt the string to parse.
+     * @param regex the delimiting regular expression. Note that the delimiter 
+     * can be also any text. For instance, <code>"(?i)\\w+:"</code> identifies
+     * as separator any case-insensitive text ending with ":".
+     * @return the array of doubles in the order as they were found in the 
+     * given string.
+     */
+    public static double[] parseArrayOfDoubles(String txt, String regex)
+    {
+    	String[] words = txt.trim().split(regex);
+    	List<String> wordsList = new ArrayList<String>();
+    	for (int i=0; i<words.length; i++)
+        {
+        	if (words[i].trim().isBlank())
+        		continue;
+        	wordsList.add(words[i].trim());
+        }
+        double[] values = new double[wordsList.size()];
+        for (int i=0; i<wordsList.size(); i++)
+        {
+        	values[i] = Double.parseDouble(wordsList.get(i));
+        }
+        return values;
     }
     
 //------------------------------------------------------------------------------

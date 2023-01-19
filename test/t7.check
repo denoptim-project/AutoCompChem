@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ ! -f "t7.log" ]
+then
+  echo NOT Passes ERROR 1
+  exit -1
+fi
+
+n=0;n=$(grep -c "ConformationalCoordinate" t7.log)
+if [ $n -ne 15 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{FOLD=1}" t7.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{FOLD=2}" t7.log)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{FOLD=3}" t7.log)
+if [ $n -ne 5 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{FOLD=4}" t7.log)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "{FOLD=5}" t7.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[[0-9]*\]" t7.log)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[[0-9]*,[0-9]*\]" t7.log)
+if [ $n -ne 8 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[[0-9]*,[0-9]*,[0-9]*,[0-9]*\]" t7.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t7.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 12
+  exit -1
+fi

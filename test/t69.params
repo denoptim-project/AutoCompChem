@@ -3,19 +3,6 @@
 #
 VERBOSITY: 3
 TASK: PrepareInputSpartan
-INFILE: ../t69-mol.sdf
-OUTFILE: t69-sp14.input
-CHARGE: -222
-SPIN_MULTIPLICITY: -333
-KeyWords:  SCONFANAL MMFF CONSTRAIN CONFSEXAMINED=10
-$STARTROTATABLEBONDS:
-[#6]!@-[#6] 2
-[#7]!@~[#6] 4
-$END
-$STARTCONSTRAINTS:
-[C] [N]
-
-[C] [Ru] [$(C(~[Ru])~C)] 60.0 key3
-
-[C] [Ru] [C] [N] key5 key6 key7
-$END
+INPUTGEOMETRIESFILE: ../t69-mol.sdf
+ROOTPATHNAMEOUTPUT: t69-sp14
+JOBDETAILSFILE: ../t69-jobDetails.json

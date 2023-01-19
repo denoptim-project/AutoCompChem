@@ -36,6 +36,8 @@ import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.chemsoftware.xtb.XTBOutputHandler;
 import autocompchem.datacollections.JobDetailsFileConverter;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.modeling.AtomLabelsGenerator;
+import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
@@ -47,6 +49,7 @@ import autocompchem.molecule.MolecularPruner;
 import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.atomclashes.AtomClashAnalyzer;
 import autocompchem.molecule.chelation.ChelateAnalyzer;
+import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.connectivity.ConnectivityGenerator;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
@@ -280,6 +283,10 @@ public class WorkerFactory
             return AtomClashAnalyzer.capabilities;
         case AtomTypeMatcher:
             return AtomTypeMatcher.capabilities;
+        case AtomLabelsGenerator:
+            return AtomLabelsGenerator.capabilities;
+        case AtomTupleGenerator:
+            return AtomTupleGenerator.capabilities;
         case BasisSetGenerator:
             return BasisSetGenerator.capabilities;
         case ChelateAnalyzer:
@@ -288,6 +295,8 @@ public class WorkerFactory
             return ConnectivityGenerator.capabilities;
         case ConstraintsGenerator:
         	return ConstraintsGenerator.capabilities;
+        case ConformationalSpaceGenerator:
+        	return ConformationalSpaceGenerator.capabilities;
         case DummyObjectsHandler:
             return DummyObjectsHandler.capabilities;
         case ForceFieldEditor:
@@ -369,10 +378,16 @@ public class WorkerFactory
             return new AtomClashAnalyzer();
         case AtomTypeMatcher:
             return new AtomTypeMatcher();
+        case AtomLabelsGenerator:
+            return new AtomLabelsGenerator();
+        case AtomTupleGenerator:
+            return new AtomTupleGenerator();
         case BasisSetGenerator:
             return new BasisSetGenerator();
         case ChelateAnalyzer:
             return new ChelateAnalyzer();
+        case ConformationalSpaceGenerator:
+        	return new ConformationalSpaceGenerator();
         case ConnectivityGenerator:
             return new ConnectivityGenerator();
         case ConstraintsGenerator:

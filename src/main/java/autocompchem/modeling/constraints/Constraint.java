@@ -22,8 +22,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.print.attribute.SetOfIntegerSyntax;
+
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.basisset.Primitive;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.molecule.connectivity.ConnectivityTable;
 import autocompchem.utils.NumberUtils;
 
 /**
@@ -39,8 +45,13 @@ import autocompchem.utils.NumberUtils;
  * @author Marco Foscato
  */
 
-public class Constraint implements Comparable<Constraint>
+public class Constraint extends AnnotatedAtomTuple 
+	implements Comparable<Constraint>,Cloneable
 {
+	/**
+	 * Classes of the constraints according to the corresponding internal 
+	 * coordinate possibly represented.
+	 */
 	public enum ConstraintType {FROZENATM, DISTANCE, ANGLE, DIHEDRAL, 
 		IMPROPERTORSION, UNDEFINED}
 	
@@ -49,232 +60,116 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	private ConstraintType type = ConstraintType.UNDEFINED;
 	
-	/**
-	 * The 0-based atom ids
-	 */
-	private int[] atmIDs = new int[]{-1,-1,-1,-1};
-	
-	/**
-	 * A given value for this constraint
-	 */
-	private double value;
-	
-	/**
-	 * Flag signaling this constrain uses a value
-	 */
-	private boolean hasValue = false;
-	
-	/**
-	 * A given optional setting for this constraint. Examples are the options
-	 * telling the comp. chem. software what to do with this constraints, i.e.,
-	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint).
-	 */
-	private String options;
-	
-	/**
-	 * Flag signaling this constrain uses options.
-	 */
-	private boolean hasOpt = false;
-
-//------------------------------------------------------------------------------
-
-	/**
-	 * Builds an undefined constraint
-	 */
-	public Constraint()
-	{}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a frozen atom.
-	 * @param i the index of the atom to freeze.
-	 */
-	public Constraint(int i)
-	{
-		this(i, -1, -1, -1, ConstraintType.FROZENATM, null, null);
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a distance
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 */
-	public Constraint(int i, int j)
-	{
-		this(i, j, -1, -1, ConstraintType.DISTANCE, null, null);
-	}
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for an angle.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 */
-	public Constraint(int i, int j, int k)
-	{
-		this(i, j, k, -1, ConstraintType.ANGLE, null, null);
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a dihedral.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 * @param l forth index (0-based)
-	 * @param isDihedral use <code>true<code> to indicate that this 4-tupla 
-	 * indicates a proper dihedral where the connectivity is i-j-k-l.
-	 */
-	public Constraint(int i, int j, int k, int l, boolean isDihedral)
-	{
-		this(i, j, k, l, null, null, null);
-		if (isDihedral)
-			type = ConstraintType.DIHEDRAL;
-		else
-			type = ConstraintType.IMPROPERTORSION;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constraint for a distance
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 */
-	public Constraint(int i, int j, double value)
-	{
-		this(i, j, -1, -1, ConstraintType.DISTANCE, Double.valueOf(value),null);
-	}
-	
-//------------------------------------------------------------------------------
-	
-	/**
-	 * Constructs a constraint for an angle.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 */
-	public Constraint(int i, int j, int k, double value)
-	{
-		this(i, j, k, -1, ConstraintType.ANGLE, Double.valueOf(value), null);
-	}
-	
 //------------------------------------------------------------------------------
 
 	/**
 	 * Constructs a constraint of any kind offering the possibility to define
 	 * a specific value and options to assign to the constraint.
-	 * @param i first index (0-based)
-	 * @param j second index (0-based)
-	 * @param k third index (0-based)
-	 * @param l forth index (0-based)
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
+	 * @param ids indexes (0-based) of centers (i.e., atoms) defining this 
+	 * constraint
 	 * @param type the type of constraint. This defines how many of the indexes
 	 * are actually used.
-	 * @param options additional string usually used to tell the comp. chem.
-	 * software how to use the given information. For example,
+	 * @param value a numerical value to be assigned to the constraint. Or null
+	 * if no value is to be set.
+	 * @param suffix string appended to the list of atom indexes and usually 
+	 * used to tell the comp. chem. software how to use the given information. 
+	 * For example,
 	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint). Or null, if no option has to be given.
+	 * (add constraint). 
+	 * Or NWChem's 'constant' to constraint that internal coordinate to the 
+	 * current value.
+	 * Use <code>null</code>, if no suffix has to be set.
 	 */
-	public Constraint(int i, int j, int k, int l, 
-			ConstraintType type, Double value, String options)
+	public Constraint(int[] ids, ConstraintType type, Double value, 
+			String suffix)
 	{
-		this.atmIDs[0] = i;
-		this.atmIDs[1] = j;
-		this.atmIDs[2] = k;
-		this.atmIDs[3] = l;
+		super(ids);
+		this.type = type;
 		if (value != null)
 		{
-			this.value = value.doubleValue();
-			this.hasValue = true;
+			setValue(value);
 		}
-		if (options != null)
+		if (suffix != null)
 		{
-			this.options = options;
-			this.hasOpt = true;
+			setSuffix(suffix);
 		}
-		this.type = type;
-	}
-
-//------------------------------------------------------------------------------
-
-	/**
-	 * Constructs a constrain.
-	 * @param ids atom IDs. The number of value determines the type of 
-	 * constraint.
-	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
-	 * represent a set of centers that are connected in the order given, e.g.
-	 * 1-j-k-l.
-	 * @throws Exception
-	 */
-	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			boolean areLinearlyConnected) throws Exception
-	{
-		return buildConstraint(ids, null, null, areLinearlyConnected);
 	}
 	
 //------------------------------------------------------------------------------
 
 	/**
-	 * Constructs a constrain.
-	 * @param ids atom IDs. The number of value determines the type of 
-	 * constraint.
-	 * @param value a numerical value to be assigned to the constraint. Or null
-	 * if no value is to be set.
-	 * @param opts additional string usually used to tell the comp. chem.
-	 * software how to use the given information. For example,
-	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint). Or null, if no option has to be given.
-	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
-	 * represent a set of centers that are connected in the order given, e.g.
-	 * 1-j-k-l.
-	 * @return the constraint.
-	 * @throws Exception
+	 * Constructs a constraint from an annotated atom tuple.
+	 * @param tuple the annotated atom tuple to parse.
 	 */
-	public static Constraint buildConstraint(ArrayList<Integer> ids, 
-			Double value, String opts, boolean areLinearlyConnected) 
-					throws Exception
+	
+	public Constraint(AnnotatedAtomTuple tuple)
 	{
-		switch (ids.size())
+		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
+				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
+				tuple.getNumAtoms());
+		if (!hasValuelessAttribute(ConstrainDefinition.KEYNOINTCOORD))
 		{
-			case 1:
-				return new Constraint(ids.get(0), -1, -1, -1,
-						ConstraintType.FROZENATM, value, opts);
-			case 2:
-				return new Constraint(ids.get(0), ids.get(1), -1, -1,
-						ConstraintType.DISTANCE, value, opts);
-			case 3:
-				return new Constraint(ids.get(0), ids.get(1), ids.get(2), -1,
-						ConstraintType.ANGLE, value, opts);
-			case 4:
-				if (areLinearlyConnected)
-				{
-					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
-						ids.get(3), ConstraintType.DIHEDRAL, value, opts);
-				} else {
-					//TODO-gg use connectivity matrix instead of 
-					// areLinearlyConnected so that we can distinguish the
-					// improper torsion from undefined 4-tuples.
-					// Also, add option to ignore the typing of the constraint.
-					return new Constraint(ids.get(0), ids.get(1), ids.get(2),
-							ids.get(3), ConstraintType.IMPROPERTORSION, value, 
-							opts);
-				}
-			default:
-				throw new Exception("Unexpected number of atom IDs (" 
-						+ ids.size() + "). Cannot construct a Constraint.");
+			defineType();
 		}
+	}
+	
+//------------------------------------------------------------------------------
+	
+	private void defineType()
+	{
+		type = getConstraintType(getAtomIDs(), getNeighboringRelations());
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Determines the type of an hypothetical constraint generated from the given
+	 * set of indexes and the corresponding neighboring relations
+	 * @param ids the list of indexes
+	 * @param ct the neighboring relations. Note, the indexes in this table are
+	 * assumed to be consistent to those given in in other argument.
+	 * @return the type that can be assigned to the given input.
+	 */
+	public static ConstraintType getConstraintType(List<Integer> ids,
+			ConnectivityTable ct)
+	{
+		ConstraintType type = ConstraintType.UNDEFINED;
+		if (ids.size()==1)
+		{
+			type = ConstraintType.FROZENATM;
+		} else if (ids.size()==2) {
+			type = ConstraintType.DISTANCE;
+		} else if (ids.size()==3) {
+			type = ConstraintType.ANGLE;
+		} else if (ids.size()==4) {
+			
+			if (ct==null)
+				return ConstraintType.UNDEFINED;
+			
+			if (ct.areNeighbors(ids.get(0), ids.get(1))
+					&& ct.areNeighbors(ids.get(1), ids.get(2))
+					&& ct.areNeighbors(ids.get(2), ids.get(3)))
+			{
+				type = ConstraintType.DIHEDRAL;
+			} else if (ct.areNeighbors(ids.get(0), ids.get(1))
+					&& ct.areNeighbors(ids.get(1), ids.get(2))
+					&& ct.areNeighbors(ids.get(1), ids.get(3)))
+			{
+				type = ConstraintType.IMPROPERTORSION;
+			} else if (ct.areNeighbors(ids.get(0), ids.get(2))
+					&& ct.areNeighbors(ids.get(1), ids.get(2))
+					&& ct.areNeighbors(ids.get(2), ids.get(3)))
+			{
+				type = ConstraintType.IMPROPERTORSION;
+			} else {
+				type = ConstraintType.UNDEFINED;
+			}
+		} else {
+			throw new IllegalArgumentException(
+					"Unexpected number of atom IDs (" + ids.size() + "). "
+					+ "Cannot construct a Constraint.");
+		}
+		return type;
 	}
 	
 //------------------------------------------------------------------------------
@@ -286,26 +181,88 @@ public class Constraint implements Comparable<Constraint>
 	{
 		return type;
 	}
-	
-//------------------------------------------------------------------------------
-	
-	/**
-	 * @return <code>true</code> if this constraint has an associated value.
-	 */
-	public boolean hasValue()
-	{
-		return hasValue;
-	}
-	
+
 //------------------------------------------------------------------------------
 
-	/**
-	 * @return the value associated with this constraint.
-	 */
-	public double getValue()
-	{
-		return value;
-	}
+    /**
+     * Returns the value associated to constraints defined by this rule
+     * @return the value or null.
+     */
+
+    public double getValue()
+    {
+    	return hasValue() ? Double.parseDouble(getValueOfAttribute(
+    			ConstrainDefinition.KEYVALUES)) : null;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the value associated to constraints defined by this rule and
+     * corresponding to the current value in the geometry used to define the 
+     * constraint.
+     * @return the value or null.
+     */
+
+    public double getCurrentValue()
+    {
+    	return hasCurrentValue() ? Double.parseDouble(getValueOfAttribute(
+    		    			AtomTupleConstants.KEYCURRENTVALUE)) : null;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the string collecting prefix or an empty string is no prefix
+     * is available.
+     */
+
+    public String getPrefix()
+    {
+    	String value = getValueOfAttribute(ConstrainDefinition.KEYPREFIX);
+    	if (value != null)
+    		return value;
+    	else
+    		return "";
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the string collecting suffix or an empty string is no suffix
+     * is available.
+     */
+
+    public String getSuffix()
+    {
+    	String value = getValueOfAttribute(ConstrainDefinition.KEYSUFFIX);
+    	if (value != null)
+    		return value;
+    	else
+    		return "";
+    }
+    	
+//------------------------------------------------------------------------------
+    
+  	/**
+  	 * Set any optional string marked to be a prefix.
+  	 * @param prefix the string to use as prefix
+  	 */
+  	public void setPrefix(String prefix) 
+  	{
+  		setValueOfAttribute(ConstrainDefinition.KEYPREFIX, prefix);
+  	}
+  	
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * Set any optional string marked to be a suffix.
+  	 * @param suffix the string to use as suffix
+  	 */
+  	public void setSuffix(String suffix) 
+  	{
+  		setValueOfAttribute(ConstrainDefinition.KEYSUFFIX, suffix);
+  	}
 	
 //------------------------------------------------------------------------------
 
@@ -315,9 +272,34 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public void setValue(double value) 
 	{
-		this.hasValue = true;
-		this.value = value;
+		setValueOfAttribute(ConstrainDefinition.KEYVALUES, value+"");
 	}
+		
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the flag defining if this rule makes use of the a value that may
+     * not be the current value found in the geometry.
+     * @return <code>true</code> if this constraints defined by this rule use
+     * a value.
+     */
+  	public boolean hasValue()
+  	{
+  		return getValueOfAttribute(ConstrainDefinition.KEYVALUES)!=null;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the flag defining if this rule makes use of the the current value
+     * found in the geometry.
+     * @return <code>true</code> if this constraints defined by this rule use
+     * the current value found in the geometry.
+     */
+  	public boolean hasCurrentValue()
+  	{
+  		return getValueOfAttribute(AtomTupleConstants.KEYCURRENTVALUE)!=null;
+  	}
 	
 //------------------------------------------------------------------------------
 	
@@ -327,53 +309,20 @@ public class Constraint implements Comparable<Constraint>
 		StringBuilder sb = new StringBuilder();
 		sb.append("Constraint [Type=");
 		sb.append(type).append(", IDs=[");
-		for (int i=0; i<atmIDs.length; i++)
+		List<Integer> ids = getAtomIDs();
+		for (int i=0; i<ids.size(); i++)
 		{
-			sb.append(atmIDs[i]);
-			if (i<(atmIDs.length-1))
+			sb.append(ids.get(i));
+			if (i<(ids.size()-1))
 				sb.append(",");
 		}
-		sb.append("], value=").append(value);
-		sb.append("], options=").append(options);
+		sb.append("], value=").append(hasValue() ? getValue() : "null");
+		sb.append("], prefix=").append(
+				getValueOfAttribute(ConstrainDefinition.KEYPREFIX));
+		sb.append("], suffix=").append(
+				getValueOfAttribute(ConstrainDefinition.KEYSUFFIX));
 		sb.append("] ");
 		return sb.toString();
-	}
-
-//------------------------------------------------------------------------------
-
-	/**
-	 * Defines the atom indexes that define this constraint.
-	 * @param ids the list of 0-based indexes.
-	 */
-	public void setAtomIDs(int[] ids)
-	{
-		atmIDs = ids;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * @return the list of atom indexes that defines this constraint (0-based).
-	 */
-	public int[] getAtomIDs()
-	{
-		return atmIDs;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * @return the list of atom indexes that defines this constraint (0-based).
-	 */
-	public List<Integer> getAtomIDsList()
-	{
-		List<Integer> idList = new ArrayList<Integer>();
-		for(int i=0; i<atmIDs.length; i++)
-		{
-			if (atmIDs[i]>-1)
-				idList.add(atmIDs[i]);
-		}
-		return idList;
 	}
 	
 //------------------------------------------------------------------------------
@@ -393,81 +342,60 @@ public class Constraint implements Comparable<Constraint>
 	 */
 	public int[] getSortedAtomIDs()
 	{
-		int[] sorted = atmIDs;
+		List<Integer> ids = getAtomIDs();
+		int[] sorted = new int[ids.size()];
         switch (type)
         {
             case DISTANCE:
-                if (atmIDs[0] > atmIDs[1])
+                if (ids.get(0) > ids.get(1))
                 {
                 	sorted = new int[2];
-                	sorted[0] = atmIDs[1];
-                	sorted[1] = atmIDs[0];
+                	sorted[0] = ids.get(1);
+                	sorted[1] = ids.get(0);
                 } else {
                 	sorted = new int[2];
-                	sorted[0] = atmIDs[0];
-                	sorted[1] = atmIDs[1];
+                	sorted[0] = ids.get(0);
+                	sorted[1] = ids.get(1);
                 }
                 break;
 
             case ANGLE:
-                if (atmIDs[0] > atmIDs[2])
+                if (ids.get(0) > ids.get(2))
                 {
                 	sorted = new int[3];
-                	sorted[0] = atmIDs[2];
-                	sorted[1] = atmIDs[1];
-                	sorted[2] = atmIDs[0];
+                	sorted[0] = ids.get(2);
+                	sorted[1] = ids.get(1);
+                	sorted[2] = ids.get(0);
                 } else {
                 	sorted = new int[3];
-                	sorted[0] = atmIDs[0];
-                	sorted[1] = atmIDs[1];
-                	sorted[2] = atmIDs[2];
+                	sorted[0] = ids.get(0);
+                	sorted[1] = ids.get(1);
+                	sorted[2] = ids.get(2);
                 }
                 break;
 
             case DIHEDRAL:
-            	if (atmIDs[1] > atmIDs[2])
+            	if (ids.get(1) > ids.get(2))
                 {
                 	sorted = new int[4];
-                	sorted[0] = atmIDs[3];
-                	sorted[1] = atmIDs[2];
-                	sorted[2] = atmIDs[1];
-                	sorted[3] = atmIDs[0];
+                	sorted[0] = ids.get(3);
+                	sorted[1] = ids.get(2);
+                	sorted[2] = ids.get(1);
+                	sorted[3] = ids.get(0);
                 } else {
                 	sorted = new int[4];
-                	sorted[0] = atmIDs[0];
-                	sorted[1] = atmIDs[1];
-                	sorted[2] = atmIDs[2];
-                	sorted[3] = atmIDs[3];
+                	sorted[0] = ids.get(0);
+                	sorted[1] = ids.get(1);
+                	sorted[2] = ids.get(2);
+                	sorted[3] = ids.get(3);
                 }
                 break;
 			default:
-				//Nothing.
+				for (int i=0; i<ids.size(); i++)
+					sorted[i] = ids.get(i);
 				break;
         }
 		return sorted;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * Usually, 
-	 * one index is used to define a frozen atom, two for distances, 
-	 * three for angles, and four for dihedral of improper torsions. Yet, upon
-	 * demands from the user any number of indexes can be associated with an
-	 * {@value ConstraintType#UNDEFINED} type. So the number of indexes should
-	 * not be used as a replacement of the defined type. 
-	 * See {@link Constraint#getType()}
-	 * @return the number of indexes that define this constraint. 
-	 */
-	public int getNumberOfIDs()
-	{
-		int n = 0;
-		for (int i : atmIDs)
-		{
-			if (i>-1)
-				n++;
-		}
-		return n;
 	}
 	
 //------------------------------------------------------------------------------
@@ -480,6 +408,9 @@ public class Constraint implements Comparable<Constraint>
 		{
 			return this.getType().compareTo(o.getType());
 		}
+		
+		if (this.getNumberOfIDs()!=o.getNumberOfIDs())
+			return Integer.compare(this.getNumberOfIDs(), o.getNumberOfIDs());
 		
 		// In case of same type then we look at the main indexes
 		int[] ids1 = this.getSortedAtomIDs();
@@ -523,15 +454,12 @@ public class Constraint implements Comparable<Constraint>
 			}
 			default:
 			{
-				if (ids1[0]!=ids2[0])
-					return Integer.compare(ids1[0], ids2[0]);
-				else if (ids1[1]!=ids2[1])
-					return Integer.compare(ids1[1], ids2[1]);
-				else if (ids1[2]!=ids2[2])
-					return Integer.compare(ids1[2], ids2[2]);
-				else if (ids1[3]!=ids2[3])
-					return Integer.compare(ids1[3], ids2[3]);
-				break;
+				// At this stage we know this and o have the same number of ids
+				for (int i=0; i<this.getNumberOfIDs(); i++)
+				{
+					if (ids1[i]!=ids2[i])
+						return Integer.compare(ids1[i], ids2[i]);
+				}
 			}
 		}
 		
@@ -544,50 +472,57 @@ public class Constraint implements Comparable<Constraint>
 	@Override
 	public boolean equals(Object o)
 	{
-		if (!(o instanceof Constraint))
-			return false;
+    	if (o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	    
 		Constraint other = (Constraint) o;
-   	 
-	   	if (this.atmIDs.length != other.atmIDs.length)
-	   		 return false;
-	   				 
-		for (int i=0; i<this.atmIDs.length; i++)
-		{
-			if (this.atmIDs[i] != other.atmIDs[i])
-				return false;
-		}
 		
-		if (!NumberUtils.closeEnough(this.value, other.value))
+		if ((this.hasValue() && !other.hasValue())
+				|| (!this.hasValue() && other.hasValue()))
+			return false;
+		
+		if (this.hasValue() && other.hasValue() 
+				&& !NumberUtils.closeEnough(this.getValue(), other.getValue()))
 	   		 return false;
 		
-		if (this.options!=null && other.options!=null
-				&& !this.options.equals(other.options))
+		if ((this.getPrefix()!=null && other.getPrefix()==null)
+				|| (this.getPrefix()==null && other.getPrefix()!=null))
+			return false;
+		
+		if (this.getPrefix()!=null && other.getPrefix()!=null
+				&& !this.getPrefix().equals(other.getPrefix()))
+			return false;
+	
+		if ((this.getSuffix()!=null && other.getSuffix()==null)
+				|| (this.getSuffix()==null && other.getSuffix()!=null))
+			return false;
+		
+		if (this.getSuffix()!=null && other.getSuffix()!=null
+				&& !this.getSuffix().equals(other.getSuffix()))
 			return false;
 	   	 
-	   	return this.type == other.type
-	   			&& this.hasValue == other.hasValue 
-	   			&& this.hasOpt == other.hasOpt;
+	   	if (this.type!=other.type)
+	   		return false;
+	   	
+	   	return super.equals(o);
 	}
 	
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-	/**
-	 * @return <code>true</code> is this constraint is associated with any 
-	 * additional optional string.
-	 */
-	public boolean hasOpt() 
+	@Override
+	public Constraint clone()
 	{
-		return hasOpt;
-	}
-	
-//------------------------------------------------------------------------------
-
-	/**
-	 * @return the optional string associated with this constraint.
-	 */
-	public String getOpt() 
-	{
-		return options;
+		Constraint clone = new Constraint(super.clone());
+		// Type is inferred from super but is can be overwritten by this class
+		// so we set it here:
+		clone.type = this.type; 
+		return clone;
 	}
 	
 //------------------------------------------------------------------------------

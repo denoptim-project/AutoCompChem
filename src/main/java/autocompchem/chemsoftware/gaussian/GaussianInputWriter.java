@@ -54,6 +54,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -75,7 +76,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 //-----------------------------------------------------------------------------
 
     /**
-     * Constructor sets the parameters that depend on XTB conventions.
+     * Constructor sets the parameters that depend on Gaussian conventions.
      */
 
     public GaussianInputWriter() 
@@ -89,8 +90,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian the charge is defined in a {@link Keyword} named 
-     * {@value GaussianConstants.MSCHARGEKEY} of the 
-     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * {@value GaussianConstants#MSCHARGEKEY} of the 
+     * {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
      * Moreover, the specification of the charge cannot be omitted, so the
      * <code>omitIfPossible</code> parameter does not take effect.
      */
@@ -108,8 +109,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian the spin multiplicity is defined in a {@link Keyword} named 
-     * {@value GaussianConstants.MSSPINMLTKEY} of the 
-     * {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * {@value GaussianConstants#MSSPINMLTKEY} of the 
+     * {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
      * Moreover, the specification of the spin cannot be omitted, so the
      * <code>omitIfPossible</code> parameter does not take effect.
      */
@@ -127,7 +128,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian, a chemical system is defined in the {@link DirectiveData} of
-     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive}.
+     * the {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
      * 
      * WARNING: so far it works with only one molecule.
      */
@@ -159,7 +160,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * its input file or if it does not because it either takes it from the 
      * checkpoint file or there is a task adding a geometry to the molecule
      * specification section. We assume that any {@link DirectiveData} found in
-     * the {@value GaussianConstants.DIRECTIVEMOLSPEC} {@link Directive} is
+     * the {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive} is
      * about defining the geometry. Therefore, the existence of any such
      * {@link DirectiveData} is sufficient to make this method return 
      * <code>false</code>.
@@ -661,65 +662,54 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	                    for (Constraint cns : cs)
 	                    {
 	                    	String str = "";
-	                    	switch (cns.getType())
+	                    	if (cns.getPrefix().isBlank())
+	                    	{	
+		                    	switch (cns.getType())
+		                    	{
+									case ANGLE:
+										str = "A ";
+										break;
+									case DIHEDRAL:
+										str = "D ";
+										break;
+									case IMPROPERTORSION:
+										str = "D ";
+										break;
+									case DISTANCE:
+										str = "B ";
+										break;
+									case FROZENATM:
+										str = "X ";
+										break;
+									case UNDEFINED:
+										switch (cns.getAtomIDs().size())
+										{
+										case 1:
+											str = "X ";
+											break;
+										case 2:
+											str = "B ";
+											break;
+										case 3:
+											str = "A ";
+											break;
+										case 4:
+											str = "D ";
+											break;
+										}
+										break;
+									default:
+										break;
+		                    	}
+	                    	}
+	                    	str = str + StringUtils.mergeListToString(
+	                    			cns.getAtomIDs(), " ", true, 1);
+	                    	
+	                    	if (!cns.getSuffix().isBlank())
 	                    	{
-								case ANGLE:
-									str = "A " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1) + " "
-											+ (cns.getAtomIDs()[2]+1);
-									
-									break;
-								case DIHEDRAL:
-									str = "D " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1) + " "
-											+ (cns.getAtomIDs()[2]+1) + " "
-											+ (cns.getAtomIDs()[3]+1);
-									break;
-								case IMPROPERTORSION:
-									str = "D " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1) + " "
-											+ (cns.getAtomIDs()[2]+1) + " "
-											+ (cns.getAtomIDs()[3]+1);
-									break;
-								case DISTANCE:
-									str = "B " + (cns.getAtomIDs()[0]+1) + " "
-											+ (cns.getAtomIDs()[1]+1);
-									break;
-								case FROZENATM:
-									str = "X " + (cns.getAtomIDs()[0]+1);
-									break;
-								case UNDEFINED:
-									switch (cns.getAtomIDs().length)
-									{
-									case 1:
-										str = "X " + (cns.getAtomIDs()[0]+1);
-										break;
-									case 2:
-										str = "B " + (cns.getAtomIDs()[0]+1) 
-											+ " " + (cns.getAtomIDs()[1]+1);
-										break;
-									case 3:
-										str = "A " + (cns.getAtomIDs()[0]+1) 
-											+ " " + (cns.getAtomIDs()[1]+1) 
-											+ " " + (cns.getAtomIDs()[2]+1);
-										break;
-									case 4:
-										str = "D " + (cns.getAtomIDs()[0]+1) 
-											+ " " + (cns.getAtomIDs()[1]+1) 
-											+ " " + (cns.getAtomIDs()[2]+1) 
-											+ " " + (cns.getAtomIDs()[3]+1);
-										break;
-										
-									}
-									break;
-								default:
-									break;
+	                    		str = str + " " + cns.getSuffix();
 	                    	}
 	                    	
-	                    	if (cns.hasOpt())
-	                    	{
-	                    		str = str + " " + cns.getOpt();
-	                    	}
 	                    	lines.add(str);
 	                    }
 	        			lines.add(""); //empty line that terminates this part of option section
@@ -944,6 +934,20 @@ public class GaussianInputWriter extends ChemSoftInputWriter
         }
         return sortedKeys;
     }
+    
+//------------------------------------------------------------------------------
+	
+  	/**
+  	 * {@inheritDoc}
+  	 * 
+  	 * No special file structure required for Gaussian. This method does nothing.
+  	 */
+  	@Override
+  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+  			String outputFileName) 
+  	{
+  		return outputFileName;
+  	}
     
 //------------------------------------------------------------------------------
 

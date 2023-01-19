@@ -1,7 +1,6 @@
 package autocompchem.chemsoftware;
 
 
-import java.lang.reflect.Type;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -24,8 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.lang.reflect.Type;
 
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -37,18 +40,27 @@ import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.modeling.AtomLabelsGenerator;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
+import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.conformation.ConformationalSpace;
+import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.text.TextBlock;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -85,7 +97,11 @@ public class Directive implements IDirectiveComponent, Cloneable
      * Data attached directly to this directive.
      */
     private ArrayList<DirectiveData> dirData;
-
+    
+    /**
+     * Parameters defining task embedded in this directive.
+     */
+    private ParameterStorage accTaskParams;
 
 //-----------------------------------------------------------------------------
 
@@ -539,14 +555,41 @@ public class Directive implements IDirectiveComponent, Cloneable
     }
     
 //-----------------------------------------------------------------------------
+
+    /**
+     * @return the parameters defining the ACC task embedded in this directive.
+     */
+   	public ParameterStorage getTaskParams() 
+   	{
+   		return accTaskParams;
+   	}
+   	
+//-----------------------------------------------------------------------------
+
+    /**
+     * Sets the parameters defining the ACC task embedded in this directive.
+     * @param params
+     */
+   	public void setTaskParams(ParameterStorage params) 
+   	{
+   		accTaskParams=params;
+   	}
+    
+//-----------------------------------------------------------------------------
     
     /**
-     * Checks if there is any ACC task definition within this directive.
+     * Checks if there is any ACC task definition within this directive. Does
+     * not distinguished whether the task is in this directive or in any of its 
+     * components (i.e., {@link keyword}s, {@link DirectiveData} or embedded 
+     * {@link Directive}s).
      * @return <code>true</code> if there is at least one ACC task definition.
      */
     
     public boolean hasACCTask()
-    {	
+    {
+    	if (accTaskParams!=null)
+    		return true;
+    	
     	for (Keyword k : keywords)
     	{
     		if (k.hasACCTask())
@@ -578,6 +621,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      */
     public void removeACCTasks()
     {
+    	accTaskParams = null;
     	for (Keyword k : keywords)
     	{
     		k.removeACCTasks();
@@ -597,7 +641,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * Performs ACC tasks that are defined within this directive. Such
      * tasks are typically dependent on the chemical system at hand, so, by
-     * running this method, this job becomes system-specific. Moreover,
+     * running this method, this job may become system-specific. Moreover,
      * ACC may 
      * modify the content of any of its components, i.e., 
      * keywords, directive data, accordingly to the  
@@ -605,6 +649,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * Tasks are performed serially, one after the other, according to this
      * ordering scheme:
      * <ol>
+     * <li>tasks found in this very {@link Directive},</li>
      * <li>tasks found in {@link Keyword}s,</li>
      * <li>tasks found in {@link DirectiveData}s,</li>
      * <li>recursion into embedded (sub){@link Directive}s,</li>
@@ -617,10 +662,10 @@ public class Directive implements IDirectiveComponent, Cloneable
     
     public void performACCTasks(List<IAtomContainer> mols, Job job)
     {
-    	// For now we do not see any use case for tasks in the directive itself.
-    	// This because the directive holds no data/value by itself, and thus
-    	// any task aiming to add/modify data/values should belong to a
-    	// component that implements IValueContainer
+    	if (accTaskParams!=null)
+    	{
+    		performACCTask(mols, accTaskParams, this, job);
+    	}
     	
     	for (Keyword k : keywords)
     	{
@@ -631,7 +676,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     			{
     				ps = k.getTaskParams();
     			} else {
-    				ps = getACCTaskParams(k.getValueAsLines(), k);
+    				ps = parseACCTaskParams(k.getValueAsLines(), k);
     			}
 	    		performACCTask(mols, ps, k, job);
     		}
@@ -659,7 +704,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 		    			lines.set(lines.size()-1, lines.get(lines.size()-1) 
 		    					+ ChemSoftConstants.JDCLOSEBLOCK);
 	    			}
-	    			ps = getACCTaskParams(lines, dd);
+	    			ps = parseACCTaskParams(lines, dd);
     			}
 				performACCTask(mols, ps, dd, job);
     		}	
@@ -679,9 +724,9 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of parameter storage units.
      */
     
-    public static ParameterStorage getACCTaskParams(List<String> lines)
+    public static ParameterStorage parseACCTaskParams(List<String> lines)
     {	
-    	return getACCTaskParams(lines, null);
+    	return parseACCTaskParams(lines, null);
     }
     
 //-----------------------------------------------------------------------------
@@ -689,10 +734,11 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * Parses the block of lines as to find parameters defining an ACC tasks.
      * @param lines to parse.
+     * @param dirComp source of the parameters (used only for logging).
      * @return the list of parameter storage units.
      */
     
-    private static ParameterStorage getACCTaskParams(List<String> lines, 
+    private static ParameterStorage parseACCTaskParams(List<String> lines, 
     		IDirectiveComponent dirComp)
     {	
     	// This takes care of any $START/$END label needed to make all JD lines
@@ -861,8 +907,79 @@ public class Directive implements IDirectiveComponent, Cloneable
         
         switch (task.toUpperCase()) 
         {   
+	        case ChemSoftConstants.PARADDATOMSPECIFICKEYWORD:
+	        {
+	        	if (!(dirComp instanceof Directive))
+	        	{
+	        		throw new IllegalArgumentException("Task " + task 
+	        				+ " can be performed only from within a Directive. "
+	        				+ "Not from " + dirComp.getClass().getName() + ".");
+	        	}
+	        	Directive targetDir = (Directive) dirComp;
+	        	
+	        	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
+        		// Define atom pointers
+        		ParameterStorage labMakerParams = params.clone();
+        		labMakerParams.setParameter("TASK", 
+                		TaskID.GENERATEATOMLABELS.toString());
+            	AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
+            			WorkerFactory.createWorker(labMakerParams);
+        		List<String> pointers = labGenerator.generateAtomLabels(mol);
+        		
+	        	// Identify specific atoms to work with
+        		List<String> atmSpecValues = new ArrayList<String>();
+                ParameterStorage cnstrParams = params.clone();
+                
+                //TODO-gg use WorkerConstant.TASK
+                cnstrParams.setParameter("TASK",
+                		TaskID.GENERATEATOMTUPLES.toString());
+                cnstrParams.setParameter("VALUEDKEYWORDS", 
+                		"options prefix suffix");
+                
+            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	AtomTupleGenerator cnstrg = (AtomTupleGenerator) w;
+            	
+            	for (AnnotatedAtomTuple tuple : cnstrg.createTuples(mol))
+            	{
+            		for (Integer id : tuple.getAtomIDs())
+            		{
+            			String prefix = tuple.getValueOfAttribute("prefix");
+            			if (prefix==null)
+            				prefix = "";
+
+            			String suffix = tuple.getValueOfAttribute("suffix");
+            			if (suffix==null)
+            				suffix = "";
+            			
+	            		atmSpecValues.add(prefix + pointers.get(id) + suffix);
+            		}
+            	}
+	        	
+	        	// Make and append atom-specific keywords
+	        	String kwName = ""; 
+	        	boolean isLoud = false; // By default it's a "mute" keyword
+	        	if (params.contains(ChemSoftConstants.KEYWORDNAME))
+            	{
+            		kwName = params.getParameter(
+            				ChemSoftConstants.KEYWORDNAME).getValueAsString();
+            	}
+	        	if (params.contains(ChemSoftConstants.KWISLOUD))
+            	{
+            		isLoud = Boolean.parseBoolean(params.getParameter(
+            				ChemSoftConstants.KWISLOUD).getValueAsString());
+            	}
+	        	for (String value : atmSpecValues)
+	        	{
+	        		targetDir.addKeyword(new Keyword(kwName, isLoud, value));
+	        	}
+	        	break;
+	        }
             case ChemSoftConstants.PARGETFILENAMEROOT:
             {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	
             	String pathname = job.getParameter(
             			ChemSoftConstants.PAROUTFILEROOT)
             			.getValueAsString();
@@ -882,20 +999,14 @@ public class Directive implements IDirectiveComponent, Cloneable
             		pathname = q + pathname + q;
             	}
             	
-            	if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(pathname);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
+            	((IValueContainer) dirComp).setValue(pathname);
             	break;
             }
             
             case ChemSoftConstants.PARGEOMETRY:
-            {   
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	
             	CoordsType coordsType = CoordsType.XYZ;
             	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
             	{
@@ -979,6 +1090,8 @@ public class Directive implements IDirectiveComponent, Cloneable
             	
             case BasisSetConstants.ATMSPECBS:
             {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	
         		// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
@@ -1007,23 +1120,17 @@ public class Directive implements IDirectiveComponent, Cloneable
                 bsg.setAtmIdxAsId(true);
                 BasisSet bs = bsg.assignBasisSet(mol);
                 
-                if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(bs);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
-                break;
+                ((IValueContainer) dirComp).setValue(bs);
+            	break;
             }
             
             //TODO make this work on enum, and create TaskIDs for all other tasks
             //case TaskID.GENERATECONSTRAINTS:
             case "GENERATECONSTRAINTS":
             {
-        		// WARNING: uses only the first molecule
+            	ensureTaskIsInIValueContainer(task, dirComp);
+        	
+            	// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
             	String s = TaskID.GENERATECONSTRAINTS.toString();
@@ -1051,18 +1158,42 @@ public class Directive implements IDirectiveComponent, Cloneable
 				}
             	
             	// Replace value of component that triggered this task
-            	if (dirComp instanceof IValueContainer)
-            	{
-            		((IValueContainer) dirComp).setValue(cs);
-            	} else {
-            		throw new IllegalArgumentException("Task " + task 
-            				+ " can be performed only from within Keywords "
-            				+ "or DirectiveData. Not from " 
-            				+ dirComp.getClass().getName());
-            	}
+            	((IValueContainer) dirComp).setValue(cs);
+                break;
+            }
+            
+          //TODO make this work on enum, and create TaskIDs for all other tasks
+            //case TaskID.GENERATECONFORMATIONALSPACE:
+            case "GENERATECONFORMATIONALSPACE":
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+        	
+            	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+        		
+                ParameterStorage csGenParams = params.clone();
                 
-                //TODO-gg verbosity/logging
-                cs.printAll();
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                csGenParams.setParameter("TASK", 
+                		TaskID.GENERATECONFORMATIONALSPACE.toString());
+                
+            	Worker w = WorkerFactory.createWorker(csGenParams);
+            	ConformationalSpaceGenerator csGen = 
+            			(ConformationalSpaceGenerator) w;
+            	
+            	ConformationalSpace cs = new ConformationalSpace();
+            	try {
+            		cs = csGen.createConformationalSpace(mol);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Unable to create "
+							+ "conformational space. Exception from the "
+							+ "ConformationalSpaceGenerator.", -1);
+				}
+            	
+            	// Replace value of component that triggered this task
+            	((IValueContainer) dirComp).setValue(cs);
             	break;
             }
             
@@ -1074,15 +1205,64 @@ public class Directive implements IDirectiveComponent, Cloneable
         				+ "yet... sorry!",-1);
             	break;
             }
+            
+            //TODO-gg use TaskID.GENERATEATOMLABELS
+            case "GENERATEATOMLABELS":
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+                
+                ParameterStorage atmLabelsParams = params.clone();
+                
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                atmLabelsParams.setParameter("TASK", 
+                		TaskID.GENERATEATOMLABELS.toString());
+                
+            	Worker w = WorkerFactory.createWorker(atmLabelsParams);
+            	AtomLabelsGenerator labelsGenerator = (AtomLabelsGenerator) w;
             	
+            	TextBlock labels = new TextBlock(
+            			labelsGenerator.generateAtomLabels(mol));
+            	
+            	// Replace value of component that triggered this task
+            	((IValueContainer) dirComp).setValue(labels);
+            	break;
+            }
+            
+          //TODO-gg use TaskID.GENERATEATOMTUPLES
+            case "GENERATEATOMTUPLES":
+            {
+            	ensureTaskIsInIValueContainer(task, dirComp);
+            	// WARNING: uses only the first molecule
+        		IAtomContainer mol = mols.get(0);
+                
+                ParameterStorage atmTuplesParams = params.clone();
+                
+                //TODO: this should be avoided by using TASK instead of ACCTASK
+                //TODO-gg use WorkerConstant.TASK
+                atmTuplesParams.setParameter("TASK", 
+                		TaskID.GENERATEATOMTUPLES.toString());
+                
+            	Worker w = WorkerFactory.createWorker(atmTuplesParams);
+            	AtomTupleGenerator labelsGenerator = (AtomTupleGenerator) w;
+            	
+            	AnnotatedAtomTupleList tuples = new AnnotatedAtomTupleList(
+            			labelsGenerator.createTuples(mol));
+            	
+            	// Replace value of component that triggered this task
+            	((IValueContainer) dirComp).setValue(tuples);
+            	break;
+            }
                 
             //TODO: add here other atom/molecule specific option
-
+            
                 
             default:
                 String msg = "WARNING! Task '" + task + "' is not a "
-                       + "known task when updating atom/molecule-specific "
-                       + "directives in a comp.chem. job.";
+                       + "known task when performing ACC tasks from within "
+                       + "a directive in a comp.chem. job.";
                 
                 //TODO verbosity/logging
                 System.out.println(msg);
@@ -1091,32 +1271,82 @@ public class Directive implements IDirectiveComponent, Cloneable
     }
     
 //-----------------------------------------------------------------------------
-
-    /**
-     * Custom equality method. Only checks the name of the directive and the
-     * size of the lists of keywords, sub directives, and data blocks.
-     * @param other the directive to compare with this one
-     * @return <code>true</code> if the two objects are equal
-     */
+    
+    private void ensureTaskIsInIValueContainer(String task, 
+    		IDirectiveComponent dirComp)
+    {
+    	if (! (dirComp instanceof IValueContainer))
+    	{
+    		throw new IllegalArgumentException("Task " + task 
+    				+ " can be performed only from within Keywords "
+    				+ "or DirectiveData. Not from " 
+    				+ dirComp.getClass().getName() + ".");
+    	}
+    }
+    
+//-----------------------------------------------------------------------------
 
     @Override
-    public boolean equals(Object other)
+    public boolean equals(Object o)
     {
-        boolean res = false;
-        if (other instanceof Directive)
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	   
+ 	   Directive other = (Directive) o;
+ 	   
+        if (!this.getName().equals(other.getName()))
+        	return false;
+        
+        if ((this.accTaskParams!=null && other.accTaskParams==null)
+     		    || (this.accTaskParams==null && other.accTaskParams!=null))
         {
-            if (this.getName().equals(((Directive) other).getName()) 
-                && this.getAllKeywords().size() 
-                           == ((Directive) other).getAllKeywords().size()
-                && this.getAllSubDirectives().size()
-                      == ((Directive) other).getAllSubDirectives().size()
-                && this.getAllDirectiveDataBlocks().size() 
-                == ((Directive) other).getAllDirectiveDataBlocks().size())
-            {
-                res = true;
-            }
+        	return false;
         }
-        return res;
+ 	    if (this.accTaskParams!=null && other.accTaskParams!=null)
+ 	    {
+ 	    	if (!this.accTaskParams.equals(other.accTaskParams))
+ 	    		return false;
+ 	    }
+        
+        if (this.getAllKeywords().size() != other.getAllKeywords().size())
+        	return false;
+        for (int i=0; i<this.getAllKeywords().size(); i++)
+    	{
+    		Keyword tKey = this.getAllKeywords().get(i);
+    		Keyword oKey = other.getAllKeywords().get(i);
+    		if (!tKey.equals(oKey))
+    			return false;
+    	}
+        
+        if (this.getAllSubDirectives().size() 
+        		!= other.getAllSubDirectives().size())
+        	return false;
+        for (int i=0; i<this.getAllSubDirectives().size(); i++)
+    	{
+        	Directive tDir = this.getAllSubDirectives().get(i);
+        	Directive oDir = other.getAllSubDirectives().get(i);
+    		if (!tDir.equals(oDir))
+    			return false;
+    	}
+        
+        if (this.getAllDirectiveDataBlocks().size() != 
+        		other.getAllDirectiveDataBlocks().size())
+        	return false;
+        for (int i=0; i<this.getAllDirectiveDataBlocks().size(); i++)
+    	{
+        	DirectiveData tDd = this.getAllDirectiveDataBlocks().get(i);
+        	DirectiveData oDd = other.getAllDirectiveDataBlocks().get(i);
+    		if (!tDd.equals(oDd))
+    			return false;
+    	}
+        
+        return true;
     }
 
 //-----------------------------------------------------------------------------
@@ -1200,6 +1430,10 @@ public class Directive implements IDirectiveComponent, Cloneable
             if (dir.dirData!=null && dir.dirData.size()>0)
                 jsonObject.add("dirData", context.serialize(dir.dirData));
            
+			if (dir.getTaskParams()!=null)
+				jsonObject.add("accTaskParams", context.serialize(
+						dir.getTaskParams()));
+			
             return jsonObject;
         }
     }
@@ -1231,6 +1465,10 @@ public class Directive implements IDirectiveComponent, Cloneable
 		{
 			newDir.addSubDirective(d.clone());
 		}
+		if (accTaskParams!=null)
+        {
+			newDir.accTaskParams = accTaskParams.clone();
+        }
 		return newDir;
 	}
  

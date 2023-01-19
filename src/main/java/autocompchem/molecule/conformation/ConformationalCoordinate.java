@@ -18,94 +18,197 @@ package autocompchem.molecule.conformation;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import org.openscience.cdk.interfaces.IAtom;
 
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.constraints.Constraint;
+
 
 /**
- * The conformational coordinate as a predefined change in a molecular structure
- * 
+ * Class representing the a predefined change of an internal coordinate, which 
+ * is defined by a tuple of atoms that all belong to the same chemical 
+ * structure, typically a molecule. The coordinate can be associated with a 
+ * "fold" number that specifies how extensively the coordinate is explored. 
+ * To illustrate, fold=3 for a conformational coordinate corresponding to the
+ * torsion of a bond defined an exploration of three cases where the bond is
+ * twisted by 0, 120, and 240 DEG.
+ * We assume that {@link ConformationalCoordinate} can be defined only 
+ * by 1, 2, or 4 atoms.
+ *
  * @author Marco Foscato 
  */
 
-public class ConformationalCoordinate
+public class ConformationalCoordinate extends AnnotatedAtomTuple 
+	implements Cloneable
 {
-    /**
-     * Reference Name
-     */
-    private String refName = "noname";
 
     /**
-     * Type
+     * The ordered list of defining atoms.
      */
-    private String type = "notype";
+    //TODO: keep or trash (left over from refactoring)
+	//private ArrayList<IAtom> atomDef = new ArrayList<IAtom>();
 
     /**
-     * The list of defining atoms
-     */
-    private ArrayList<IAtom> atomDef = new ArrayList<IAtom>();
-
-    /**
-     * The list of defining atom indexes (0-based IDs)
-     */
-    private ArrayList<Integer> atomIdDef = new ArrayList<Integer>();
-
-    /**
-     * Current numerical value
-     */
-    private double value = 0.0;
-
-    /**
-     * Imposed fold
-     */
+     * The number that specifies how extensively the coordinate is explored. 
+	 * To illustrate, fold=3 for a conformational coordinate corresponding to the
+	 * torsion of a bond defined an exploration of three cases where the bond is
+	 * twisted by 0, 120, and 240 DEG. Fold=1 implies no change in this 
+	 * coordinate, which essentially means this coordinate is constant and
+	 * it does not extend define any new conformation.
+	 */
     private int fold = 1;
+    
+	/**
+	 * Classes of the constraints according to the corresponding internal 
+	 * coordinate possibly represented.
+	 */
+	public enum ConformationalCoordType {TORSION, FLIP, UNDEFINED}
+	
+	/**
+	 * The type of this constraint
+	 */
+	private ConformationalCoordType type = ConformationalCoordType.UNDEFINED;
+	
+	
+//------------------------------------------------------------------------------
 
+  	/**
+  	 * Constructs a coordinate from an annotated atom tuple.
+  	 * @param tuple the tuple to parse into a conformational coordinate.
+  	 */
+  	
+  	public ConformationalCoordinate(int[] ids)
+  	{
+  		super(ids);
+  		defineType();
+  		parseFold();
+  	}
+  
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * Constructs a coordinate from an annotated atom tuple.
+  	 * @param tuple the tuple to parse into a conformational coordinate.
+  	 */
+  	
+  	public ConformationalCoordinate(AnnotatedAtomTuple tuple)
+  	{
+  		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
+  				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
+				tuple.getNumAtoms());
+  		defineType();
+  		parseFold();
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	private void defineType()
+  	{
+  		this.type = getType(getAtomIDs());
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	private void parseFold()
+  	{
+  		if (!hasValueledAttribute(ConformationalCoordDefinition.KEYFOLD))
+  		{
+  			setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD,"1");
+  		}
+  		fold = Integer.parseInt(getValueOfAttribute(
+  				ConformationalCoordDefinition.KEYFOLD));
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Define the type that would a conformational coordinate get when defined
+  	 * by the given list of atom indexes.
+  	 * @param ids the list of center indexes defining the conformational
+  	 *  coordinate.
+  	 * @return the type of conformational coordinate.
+  	 */
+  	public static ConformationalCoordType getType(List<Integer> ids)
+  	{
+  		ConformationalCoordType type = ConformationalCoordType.UNDEFINED;
+  		switch (ids.size())
+		{
+			case 1:
+				type = ConformationalCoordType.FLIP;
+				break;
+				
+			case 2:
+				type = ConformationalCoordType.TORSION;
+				break;
+				
+			case 4:
+				type = ConformationalCoordType.TORSION;
+				//TODO-gg use neighboring relations to define type
+				break;
+				
+			default:
+				throw new IllegalArgumentException("Unexpected number of "
+						+ "atom IDs (" + ids.size() + "). "
+						+ "Cannot define the type of this conformational "
+						+ "coordinate.");
+		}
+  		return type;
+  	}
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for empty ConformationalCoordinate
-     */
-
-    public ConformationalCoordinate()
-    {
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for a ConformationalCoordinate with external definition of
-     * all the fields
-     * @param refName the reference name
-     * @param type the type (torsion, inversion)
-     * @param atomDef the vector of atoms defining the coordinate
-     * @param atomIdDef the vector of defining atom IDs (0-based)
-     * @param value the current numerical value
-     * @param fold the fold imposed
-     */
-
-    public ConformationalCoordinate(String refName, String type, 
-                         ArrayList<IAtom> atomDef, ArrayList<Integer> atomIdDef,
-                                                         double value, int fold)
-    {
-        this.refName = refName;
-        this.type = type;
-        this.atomDef = atomDef;
-        this.atomIdDef = atomIdDef;
-        this.value = value;
-        this.fold = fold;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns the fold number
-     * @return the fold number
+     * Returns the fold number.
+     * @return the fold number.
      */
 
     public int getFold()
     {
         return fold;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the fold number.
+     * @param fold the new fold of this coordinate.
+     */
+
+    public void setFold(int fold)
+    {
+        this.fold = fold;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the type of motion among those defined by 
+     * {@link ConformationalCoordType}.
+     * @return the type of motion.
+     */
+
+    public ConformationalCoordType getType()
+    {
+        return type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets he type of motion among irrespectively on the number of centers
+     * defining this coordinate. <b>WARNING:</b> using this method can create 
+     * inconsistency between the type and the number of centers defining this
+     * coordinate.
+     * @param type the new type.
+     */
+
+    public void setType(ConformationalCoordType type)
+    {
+        this.type = type;
     }
 
 //------------------------------------------------------------------------------
@@ -119,6 +222,7 @@ public class ConformationalCoordinate
      * @return the string containing the IDs
      */
 
+    @Deprecated
     public String getAtomIDsAsString(boolean oneBased, String format)
     {
         int base = 0;
@@ -127,10 +231,10 @@ public class ConformationalCoordinate
             base = 1;
         }
         StringBuilder sb = new StringBuilder();
-        int i0 = atomIdDef.get(0);
-        if (atomIdDef.size() > 1)
+        int i0 = getAtomIDs().get(0);
+        if (getAtomIDs().size() > 1)
         {
-            int i1 = atomIdDef.get(1);
+            int i1 = getAtomIDs().get(1);
             if (i0 > i1)
             {
                 sb.append(String.format(format,i1 + base));
@@ -151,53 +255,64 @@ public class ConformationalCoordinate
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Equals method considers only the type and the identity of the atoms
-     * involved in the definition of the ConformationalCoordinate
-     */
-
-    public boolean equals(Object obj)
+    @Override
+    public boolean equals(Object o)
     {
-        boolean res = false;
-        if (obj instanceof ConformationalCoordinate)
+    	if (o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	    
+ 	    ConformationalCoordinate other = (ConformationalCoordinate) o;
+ 	   
+ 	    if (this.fold!=other.fold)
+ 	    	return false;
+ 	    
+ 	   if (this.type!=other.type)
+	    	return false;
+ 	    
+ 	    /*
+ 	    if (this.atomDef.size() != other.atomDef.size())
+ 	    	return false;
+        
+        for (int iAtm=0; iAtm<this.atomDef.size();iAtm++)
         {
-            ConformationalCoordinate other = (ConformationalCoordinate) obj;
-            if (this.type.equals(other.type) && 
-                this.atomDef.size() == other.atomDef.size())
-            {
-                res = true;
-                for (int i=0; i<atomDef.size(); i++)
-                {
-                    if (!other.atomDef.contains(this.atomDef.get(i)))
-                    {
-                        res = false;
-                        break;
-                    }
-                }
-            }
+        	IAtom tAtm = this.atomDef.get(iAtm);
+        	IAtom oAtm = other.atomDef.get(iAtm);
+        	if (tAtm != oAtm)
+        		return false;
         }
-        return res;
+        */
+        
+        return super.equals(o);
     }
+    
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public ConformationalCoordinate clone()
+  	{
+  		ConformationalCoordinate clone = new ConformationalCoordinate(
+  				super.clone());
+  		// Type and fold are  inferred from super but they can be overwritten 
+  		// by this class, so we set it here:
+  		clone.type = this.type; 
+  		clone.fold = this.fold; 
+  		return clone;
+  	}
 
 //------------------------------------------------------------------------------
-
-    /**
-     * Get a string representation of this conformational coordinate
-     * @return a string representation of this confomational coordinate
-     */
-
-    public String toString()
+    
+    @Override
+    protected String gerToStringOfFields()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[ConformationalCoordinate ");
-        sb.append(" refName=").append(refName).append(", ");
-        sb.append(" type=").append(type).append(", ");
-        sb.append(" atomDef=").append(atomDef).append(", ");
-        sb.append(" atomIdDef=").append(atomIdDef).append(", ");
-        sb.append(" value=").append(value).append(", ");
-        sb.append(" fold=").append(fold).append("]");
-        return sb.toString();
+    	return "type:" + type + ", fold:" + fold + ", ";
     }
-
+    
 //------------------------------------------------------------------------------
+    
 }

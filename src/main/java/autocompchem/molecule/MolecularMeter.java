@@ -506,8 +506,8 @@ public class MolecularMeter extends Worker
 
                                 if (onlyBonded)
                                 {
-                                    if (
-                                !mol.getConnectedAtomsList(atmA).contains(atmB))
+                                    if (!mol.getConnectedAtomsList(
+                                    		atmA).contains(atmB))
                                     {
                                         continue;
                                     }
@@ -523,8 +523,8 @@ public class MolecularMeter extends Worker
 
                                     if (onlyBonded)
                                     {
-                                        if (
-                                !mol.getConnectedAtomsList(atmB).contains(atmC))
+                                        if (!mol.getConnectedAtomsList(
+                                        		atmB).contains(atmC))
                                         {
                                             continue;
                                         }
@@ -580,8 +580,8 @@ public class MolecularMeter extends Worker
 
                                 if (onlyBonded)
                                 {
-                                    if (
-                                !mol.getConnectedAtomsList(atmA).contains(atmB))
+                                    if (!mol.getConnectedAtomsList(
+                                    		atmA).contains(atmB))
                                     {
                                         continue;
                                     }
@@ -597,8 +597,8 @@ public class MolecularMeter extends Worker
 
                                     if (onlyBonded)
                                     {
-                                        if (
-                                !mol.getConnectedAtomsList(atmB).contains(atmC))
+                                        if (!mol.getConnectedAtomsList(
+                                        		atmB).contains(atmC))
                                         {
                                             continue;
                                         }
@@ -615,14 +615,14 @@ public class MolecularMeter extends Worker
 
                                         if (onlyBonded)
                                         {
-                                            if (
-                                !mol.getConnectedAtomsList(atmC).contains(atmD))
+                                            if (!mol.getConnectedAtomsList(
+                                            		atmC).contains(atmD))
                                             {                                   
                                                 continue;                       
                                             }
                                         }
 
-                                        double res = 
+                                        double res =
                                         MolecularUtils.calculateTorsionAngle(
                                                                         atmA,
                                                                         atmB,

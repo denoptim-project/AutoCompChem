@@ -1,56 +1,44 @@
 package autocompchem.molecule.conformation;
 
-/*   
- *   Copyright (C) 2016  Marco Foscato 
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import autocompchem.modeling.constraints.Constraint;
+import autocompchem.modeling.constraints.ConstraintsSet;
 
 
 /**
- * The conformational space as the combination of a list of conformational
- * changes (i.e., the conformational coordinates).
+ * The conformational space as the ordered list of non-redundant conformational
+ * changes (i.e., the {@link ConformationalCoordinate}). The entries are kept 
+ * non-redundant
+ * by the {@link Comparator} given upon construction, which also controls the
+ * ordering of the coordinates returned by the iterator. 
+ * The default comparator is {@link ConfCoordComparator}.
  * 
  * @author Marco Foscato 
  */
 
-public class ConformationalSpace
+public class ConformationalSpace extends TreeSet<ConformationalCoordinate> 
+	implements Cloneable
 {
     /**
      * Unique counter for coordinates names
      */
-    private final AtomicInteger CRDID = new AtomicInteger(0);
-
-    /**
-     * The list of conformational coordinates
-     */
-    private ArrayList<ConformationalCoordinate> coords;
-
+    private final AtomicInteger CRDID = new AtomicInteger(0);  
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty ConformationalSpace
+     * Constructor using default comparator
      */
-
     public ConformationalSpace()
     {
-        this.coords = new ArrayList<ConformationalCoordinate>();
+    	super(new ConfCoordComparator());
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -58,47 +46,10 @@ public class ConformationalSpace
      * @return a string unique within this ConformationalSpace
      */
 
+    @Deprecated
     public String getUnqCoordName()
     {
-        return ConformationalConstants.COORDNAMEROOT + CRDID.getAndIncrement();
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Get the list of coordinates
-     * @return the list of conformational coordinates
-     */
-
-    public ArrayList<ConformationalCoordinate> coords()
-    {
-        return coords;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Add a conformational coordinated to this confromational space
-     * @param coord the coordinate to add
-     */
-
-    public void addCoord(ConformationalCoordinate coord)
-    {
-        coords.add(coord);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Check if the conformational space already contains a given conformational
-     * coord.
-     * @param queryCoord the given conformational coordinate to look for
-     * @return <code>true</code> if the move is already contined
-     */
-
-    public boolean contains(ConformationalCoordinate queryCoord)
-    {
-        return coords.contains(queryCoord);
+        return ConformationalCoordDefinition.BASENAME + CRDID.getAndIncrement();
     }
 
 //------------------------------------------------------------------------------
@@ -114,7 +65,7 @@ public class ConformationalSpace
     public int getSize()
     {
         int sz = 1;
-        for (ConformationalCoordinate cc : coords)
+        for (ConformationalCoordinate cc : this)
         {
             sz = sz * cc.getFold();
             int diff = Integer.MAX_VALUE - sz;
@@ -126,31 +77,63 @@ public class ConformationalSpace
         }
         return sz;
     }
-
+	
 //------------------------------------------------------------------------------
 
-    /**
-     * Get a string representation of this conformational space
-     * @return a string representation of this confomational space
-     */
+  	@Override
+  	public boolean equals(Object o)
+  	{
+  		if (!(o instanceof ConformationalSpace))
+  			return false;
+  		
+  		ConformationalSpace other = (ConformationalSpace) o;
+     	 
+  	   	if (this.size() != other.size())
+  	   		 return false;
+  	   	
+  	   	Iterator<ConformationalCoordinate> thisIter = this.iterator();
+  	   	Iterator<ConformationalCoordinate> otherIter = other.iterator();
+  	   	while (thisIter.hasNext())
+  	   	{
+   	        if (!thisIter.next().equals(otherIter.next()))
+   	            return false;
+  	   	}
+  	   	return true;
+  	}
+  	
+//-----------------------------------------------------------------------------
 
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[ConformationalSpace coords=[");
-        boolean fist = true;
-        for (int i=0; i<coords.size(); i++)
-        {
-            if (i>0)
-            {
-                sb.append(", ");
-            }
-            sb.append(coords.get(i).toString());
-        }
-        sb.append("]");
-        sb.append("] ");
-        return sb.toString();
-    }
+  	@Override
+  	public ConformationalSpace clone()
+  	{
+  		ConformationalSpace clone = new ConformationalSpace();
+  		for(ConformationalCoordinate coord : this)
+  	   	{
+  	   		clone.add(coord.clone());
+  	   	}
+  		clone.CRDID.set(this.CRDID.get());
+  		return clone;
+  	}
+
+//-----------------------------------------------------------------------------
+
+  	/**
+  	 * Prints all the conformational coordinates into stdout.
+  	 */
+  	
+  	public void printAll() 
+  	{
+  		String numConformers = "is TOO LARGE TO COMPUTE!";
+  		if (getSize()>0)
+  			numConformers = "= " + getSize();
+  		System.out.println("Conformational space is defined by " + this.size()
+  				+ " coordinates (#Conformers " + numConformers + "):");
+  		for (ConformationalCoordinate c : this)
+  		{
+  			System.out.println(" -> "+c);
+  		}
+  	}
 
 //------------------------------------------------------------------------------
+    
 }

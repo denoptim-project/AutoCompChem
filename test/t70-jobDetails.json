@@ -1,0 +1,146 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "KEYWORDS",
+      "keywords": [
+        {
+          "reference": "JobType",
+          "value": "SCONFANAL",
+          "isLoud": false
+        },
+        {
+          "reference": "Potential",
+          "value": "MMFF",
+          "isLoud": false
+        },
+        {
+          "reference": "CONSTRAIN",
+          "value": "CONSTRAIN",
+          "isLoud": false
+        },
+        {
+          "reference": "Partial",
+          "value": "PARTIAL",
+          "isLoud": false
+        },
+        {
+          "reference": "CONFSEXAMINED",
+          "value": "10"
+        }
+      ],
+      "accTaskParams": [
+        {
+          "reference": "TASK",
+          "value": "ADDATOMSPECKEYWORDS"
+        },
+        {
+          "reference": "KeywordName",
+          "value": "FFHINT"
+        },
+        {
+          "reference": "KwIsLoud",
+          "value": "true"
+        },
+        {
+          "reference": "LABELTYPE",
+          "value": "ElementBased"
+        },
+        {
+          "reference": "ZEROBASED",
+          "value": "false"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[Ru] suffix: ~~210"
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "dirData": [
+        {
+          "reference": "text",
+          "value": "This is my comment"
+        }
+      ]
+    },
+    {
+      "name": "Conformer",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GenerateConformationalSpace"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[#6]!@-[#6] fold:6\n[#7]!@~[#6] fold:3\n[$([#6]1~[#7]~[*]~[*]~[*]~[*]1)] fold:2\n[$([#6;X4]1-[#6;X4]~[#7;X3]~[#6;X3](~[Ru])~[#7;X3]1)] fold:2\n"
+            }
+          ],
+          "reference": "ConformationalSpace-generation task"
+        }
+      ]
+    },
+    {
+      "name": "Frozen",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATEATOMTUPLES"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[Ru]1([#17])([#17])[#6]([#1])([#1])[#6]([#1])([#1])[#6]1([#1])[#1]\n[#6]~[#7]"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    },
+    {
+      "name": "Constraints",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[C] [N] onlybonded getCurrentValue\n[Cl] [Ru] onlybonded getCurrentValue\n[$([#6]~[#7])] [Ru] onlybonded getCurrentValue\n[$([#6]@~[Ru])] [Ru] onlybonded getCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded getCurrentValue\n[$([#6]@~[Ru])] [$([#1][#6]@~[Ru])] onlybonded getCurrentValue\n[$([#6]@~[#6]@~[Ru])] [#1] onlybonded getCurrentValue\n[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])] onlybonded getCurrentValue\n[C] [Ru] [$(C(~[Ru])~C)] onlybonded getCurrentValue\n[#17] [Ru] [#17] onlybonded getCurrentValue\n[#17] [Ru] [#6] onlybonded getCurrentValue\n[#1] [$([#6]@~[Ru])] [#1] onlybonded getCurrentValue\n[#1] [$([#6]@~[Ru])] [Ru] onlybonded getCurrentValue\n[#1] [$([#6]@~[Ru])] [#6] onlybonded getCurrentValue\n[C] [Ru] [C] [N] onlybonded getCurrentValue"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    },
+    {
+      "name": "AtomLabels",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GenerateAtomLabels"
+            },
+            {
+              "reference": "LABELTYPE",
+              "value": "ElementBased"
+            },
+            {
+              "reference": "ZEROBASED",
+              "value": "false"
+            }
+          ],
+          "reference": "label-generation task"
+        }
+      ]
+    }
+  ]
+}
+

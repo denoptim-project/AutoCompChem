@@ -69,7 +69,37 @@ public class SpartanConstants
      * End of cell directive
      */
     public final static String CELLEND = "END_CELL_DEFINITIONS";
-
+    
+    /**
+     * Name of directive collecting keywords
+     */
+    public final static String DIRKEYWORDS = "KEYWORDS";
+    
+    /**
+     * Name of directive defining the name of the system
+     */
+    public final static String DIRTITLE = "TITLE";
+    
+    /**
+     * Name of directive defining charge and spin.
+     */
+    public final static String DIRCHARGEANDSPIN = "CHARGEANDSPIN";
+    
+    /**
+     * Name of keyword defining charge.
+     */
+    public final static String KWCHARGE = "CHARGE";
+    
+    /**
+     * Name of keyword defining spin multiplicity.
+     */
+    public final static String KWSPIN = "SPIN_MULTIPLICITY";
+    
+    /**
+     * Name of directive collecting keywords
+     */
+    public final static String DIRCART = "CART";
+    
     /**
      * Begin of Cartesian coords directive
      */
@@ -91,6 +121,11 @@ public class SpartanConstants
     public final static String TOPOEND = "ENDHESS";
 
     /**
+     * Name of directive collecting comments
+     */
+    public final static String DIRCOMMENTS = "COMMENTS";
+    
+    /**
      * Begin of comment directive
      */
     public final static String COMMOPN = "BEGINCOMMENTS";
@@ -99,6 +134,11 @@ public class SpartanConstants
      * End of comment directive
      */
     public final static String COMMEND = "ENDCOMMENTS";
+    
+    /**
+     * Name of directive collecting atom labels
+     */
+    public final static String DIRATOMLABELS = "ATOMLABELS";
 
     /**
      * Begin of directive
@@ -109,6 +149,11 @@ public class SpartanConstants
      * End of directive
      */
     public final static String ATMLABELSEND = "ENDATOMLABELS";
+    
+    /**
+     * Name of directive collecting constraints
+     */
+    public final static String DIRCONSTRAINTS = "CONSTRAINTS";
 
     /**
      * Begin of constraints directive
@@ -119,6 +164,11 @@ public class SpartanConstants
      * End of constraints directive
      */
     public final static String CSTRDIREND = "ENDCONSTRAINTS";
+    
+    /**
+     * Name of directive collecting constraints
+     */
+    public final static String DIRDYNONSTRAINTS = "DYNCONSTRAINTS";
 
     /**
      * Begin of dynamic constraints directive
@@ -129,6 +179,11 @@ public class SpartanConstants
      * End of dynamic constraints directive
      */
     public final static String DYNCDIREND = "ENDDYNCON";
+    
+    /**
+     * Name of directive collecting frozen atoms
+     */
+    public final static String DIRFROZEN = "FROZEN";
 
     /**
      * Begin of constraints directive
@@ -139,6 +194,11 @@ public class SpartanConstants
      * End of constraints directive
      */
     public final static String FREEZEEND = "ENDFROZEN";
+    
+    /**
+     * Name of directive defining conformational space
+     */
+    public final static String DIRCONFORMER = "CONFORMER";
 
     /**
      * Begin of conformer directive
@@ -149,6 +209,11 @@ public class SpartanConstants
      * End of conformer directive
      */
     public final static String CONFDIREND = "ENDCONFORMER";
+    
+    /**
+     * Name of directive collecting frozen atoms
+     */
+    public final static String DIRPROPIN = "PROPIN";
 
     /**
      * Begin of "propin" directive

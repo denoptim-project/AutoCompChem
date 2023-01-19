@@ -20,8 +20,10 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
@@ -93,7 +95,9 @@ public class NamedData implements Cloneable
         NORMALMODESET, 
         ACTION,
         PARAMETERSTORAGE, 
-        CONSTRAINTSSET};
+        CONSTRAINTSSET,
+        ANNOTATEDATOMTUPLELIST,
+        CONFORMATIONALSPACE};
         
     /**
      * List of types that can be serailized to JSON
@@ -108,7 +112,9 @@ public class NamedData implements Cloneable
             		NamedDataType.BASISSET,
             		NamedDataType.IATOMCONTAINER,
             		NamedDataType.CONSTRAINTSSET,
-            		NamedDataType.ZMATRIX));
+            		NamedDataType.ZMATRIX,
+            		NamedDataType.ANNOTATEDATOMTUPLELIST,
+            		NamedDataType.CONFORMATIONALSPACE));
     // NB: when extending the above list, remember to add the corresponding case
     // in the NamedDataDeserializer!
     
@@ -406,6 +412,14 @@ public class NamedData implements Cloneable
     		case ("ConstraintsSet"):
     			tp = NamedDataType.CONSTRAINTSSET;
     			break;
+    			
+    		case ("AnnotatedAtomTupleList"):
+    			tp = NamedDataType.ANNOTATEDATOMTUPLELIST;
+    			break;
+    			
+    		case ("ConformationalSpace"):
+    			tp = NamedDataType.CONFORMATIONALSPACE;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -521,6 +535,12 @@ public class NamedData implements Cloneable
 	        	cVal = ((ConstraintsSet) value).clone();
 	        	break;
 	        	
+	        case ANNOTATEDATOMTUPLELIST:
+	        	cVal = ((AnnotatedAtomTupleList) value).clone();
+
+	        case CONFORMATIONALSPACE:
+	        	cVal = ((ConformationalSpace) value).clone();
+	        	
 	        default:
 	        	cVal = value.toString();
 	            break;
@@ -536,10 +556,13 @@ public class NamedData implements Cloneable
     @Override
     public boolean equals(Object o) 
     {
+    	if (o == null)
+    		return false;
+    	
  	    if (o == this)
  		    return true;
  	   
- 	    if (!(o instanceof NamedData))
+ 	    if (o.getClass() != getClass())
      		return false;
  	   
  	    NamedData other = (NamedData) o;
@@ -645,6 +668,11 @@ public class NamedData implements Cloneable
 			case ZMATRIX:
 				joValue = context.deserialize(je, ZMatrix.class);
 				break;
+			case ANNOTATEDATOMTUPLELIST:
+				joValue = context.deserialize(je, AnnotatedAtomTupleList.class);
+				break;
+			case CONFORMATIONALSPACE:
+				joValue = context.deserialize(je, ConformationalSpace.class);
 			default:
 				break;
 			}

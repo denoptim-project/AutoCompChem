@@ -102,7 +102,7 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Output name (input for comp.chem. software).
      */
-    private String outFileName;
+    protected String outFileName;
     
     /**
      * Flag deciding if we write the specific job-details file or not.
@@ -154,7 +154,7 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     protected String outExtension;
 
-    private final String NL = System.getProperty("line.separator");
+    protected final String NL = System.getProperty("line.separator");
     
 
 //-----------------------------------------------------------------------------
@@ -559,6 +559,9 @@ public abstract class ChemSoftInputWriter extends Worker
 		setChargeIfUnset(molSpecJob, charge+"", omitCharge);
 		setSpinMultiplicityIfUnset(molSpecJob, spinMult+"", omitSpinMult);
 		
+		// Manage output consisting of multiple files and/or folder trees
+		outFileName = manageOutputFileStructure(mols, outFileName);
+		
 		// Produce the actual main input file
 		FileUtils.mustNotExist(outFileName);
 		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), false);
@@ -576,10 +579,25 @@ public abstract class ChemSoftInputWriter extends Worker
 					writer.toJson(cleanCCJ), true);
 		}
     }
-    
+
 //------------------------------------------------------------------------------
     
     /**
+     * Generates additional output files and folder tree, if needed. Some 
+     * software requires input organized in specific folder trees and 
+     * accompanied by accessory files. This method deals with this demands.
+     * @param mols the structures to work with.
+     * @param outputFileName the original pathname of the main input file. This 
+     * may be modified as a result of the creation of the a structure-specific 
+     * folder tree.
+     * @return the pathname of the main input file.
+     */
+    protected abstract String manageOutputFileStructure(
+    		List<IAtomContainer> mols, String outputFileName);
+
+//------------------------------------------------------------------------------
+      
+	/**
      * Sets the strings that the given job needs to become specific.
      */
     protected abstract void setSystemSpecificNames(CompChemJob ccj);

@@ -49,7 +49,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 	IValueContainer, Cloneable
 {
     /**
-     * Parameters defining task embedded in this directive.
+     * Parameters defining task embedded in this directive data.
      */
     private ParameterStorage accTaskParams;
 
@@ -136,7 +136,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 				lines.set(lines.size()-1, lines.get(lines.size()-1) 
 						+ ChemSoftConstants.JDCLOSEBLOCK);
 			}
-			accTaskParams = Directive.getACCTaskParams(lines);
+			accTaskParams = Directive.parseACCTaskParams(lines);
 			accTaskParams.setParameter(ChemSoftConstants.JDACCTASK,
 					accTaskParams.getParameterValue(
 							ChemSoftConstants.JDLABACCTASK));
@@ -205,7 +205,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 //-----------------------------------------------------------------------------
 
     /**
-     * @return the parameters defining the ACC task embedded in this directive.
+     * @return the parameters defining the ACC task embedded in this directive
+     * data.
      */
 	public ParameterStorage getTaskParams() 
 	{
@@ -215,7 +216,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 //-----------------------------------------------------------------------------
 
     /**
-     * Sets the parameters defining the ACC task embedded in this directive.
+     * Sets the parameters defining the ACC task embedded in this directive 
+     * data.
      * @param params
      */
 	public void setTaskParams(ParameterStorage params) 
@@ -395,6 +397,36 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
          	
          	return dd;
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	   
+ 	    DirectiveData other = (DirectiveData) o;
+ 	   
+ 	    if ((this.accTaskParams!=null && other.accTaskParams==null)
+ 		    || (this.accTaskParams==null && other.accTaskParams!=null))
+ 	    {
+ 	    	return false;
+ 	    }
+ 	    if (this.accTaskParams!=null && other.accTaskParams!=null)
+ 	    {
+ 	    	if (!this.accTaskParams.equals(other.accTaskParams))
+ 	    		return false;
+ 	    }
+ 	   
+ 	    return super.equals(o);
     }
     
 //-----------------------------------------------------------------------------

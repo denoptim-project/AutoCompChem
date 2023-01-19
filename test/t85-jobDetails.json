@@ -1,0 +1,118 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "KEYWORDS",
+      "keywords": [
+        {
+          "reference": "JobType",
+          "value": "DYNCON",
+          "isLoud": false
+        },
+        {
+          "reference": "Potential",
+          "value": "MMFF",
+          "isLoud": false
+        },
+        {
+          "reference": "DYNCONMETHOD",
+          "value": "GRID"
+        },
+        {
+          "reference": "Partial",
+          "value": "PARTIAL",
+          "isLoud": false
+        },
+        {
+          "reference": "PRINTLEV",
+          "value": "2"
+        }
+      ],
+      "accTaskParams": [
+        {
+          "reference": "TASK",
+          "value": "ADDATOMSPECKEYWORDS"
+        },
+        {
+          "reference": "KeywordName",
+          "value": "FFHINT"
+        },
+        {
+          "reference": "KwIsLoud",
+          "value": "true"
+        },
+        {
+          "reference": "LABELTYPE",
+          "value": "ElementBased"
+        },
+        {
+          "reference": "ZEROBASED",
+          "value": "false"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[Ru] suffix: ~~210\n[$([#6;X3]([#1])(~[Ru])~[#6;X3](@~[#6;X3])@~[#6;X3])] suffix: ~~206\n[$([#6;X4]([#1])([#1])~[Ru])] suffix: ~~207\n[$([#7;X3](!@~[c])~[#6;X3](~[Ru])~[#7;X3](~[#6;X4])~[#6;X4]),$([#7;X3](!@~[c])~[#6;X3](~[Ru])~[#7;X3](~[#6;X4])~[#1]),$([#7;X3](!@~[c])~[#6;X3](~[Ru])~[#7;X3](@~[#6;X3])~[#6;X4])] suffix: ~~208\n[$([#7;X3](!@~[c])~[#6](~[Ru])~[#6;X4](~[#6])(~[#6])~[#6]),$([#7;X3]1~[#6;X3](~[Ru])~[#6]2~[#6]~[#6]~[#6]~[#6]~[#6]2~[#6]~1)] suffix: ~~208\n[$([#7;X3](~[#6;X4])(~[#6;X4])~[#6;X3](~[Ru])~[#7;X3]!@~[c]),$([#7;X3](~[#6;X4])([#1])~[#6;X3](~[Ru])~[#7;X3]!@~[c]),$([#7;X3](~[#6;X4])(@~[#6;X3])~[#6;X3](~[Ru])~[#7;X3]!@~[c])] suffix: ~~209\n[$([#7;X3](!@~[c])~[#6;X3](~[Ru])~[#7;X3]!@~[c]),$([#7;X3](!@~[c])~[#6;X3](~[Ru])~[#7;X3]([#1])[#1]),$([#7;X3]([#1])([#1])~[#6;X3](~[Ru])~[#7;X3]!@~[c])] suffix: ~~211\n[$([#7;X3](~[#6;X4])(~[#6;X4])~[#6;X3](~[Ru])~[#7;X3](~[#6;X4])~[#6;X4]),$([#7;X3](!@~[#6;X4])(@~[#6;X3])@~[#6;X3](~[Ru])@~[#7;X3](@~[#6;X3])!@~[#6;X4]),$([#7;X3](~[#6;X4])([#1])~[#6;X3](~[Ru])~[#7;X3](~[#6;X4])~[#6;X4]),$([#7;X3](~[#6;X4])(~[#6;X4])~[#6;X3](~[Ru])~[#7;X3]([#1])~[#6;X4]),$([#7;X3](~[#6;X4])(~[#6;X4])~[#6;X3](~[Ru])~[#7;X3]([#1])[#1]),$([#7;X3]([#1])([#1])~[#6;X3](~[Ru])~[#7;X3](~[#6;X4])~[#6;X4]),$([#7;X3](~[#6;X4])([#1])~[#6;X3](~[Ru])~[#7;X3]([#1])~[#6;X4]),$([#7;X3](~[#6;X4])([#1])~[#6;X3](~[Ru])~[#7;X3]([#1])[#1]),$([#7;X3]([#1])([#1])~[#6;X3](~[Ru])~[#7;X3](~[#6;X4])~[#1]),$([#7;X3]([#1])([#1])~[#6;X3](~[Ru])~[#7;X3]([#1])[#1]),$([#7;X3](~[#6;X4])(~[#6;X4])~[#6](~[Ru])~[#6;X4](~[#6])(~[#6])~[#6]),$([#7;X3](~[#6;X4])(~[#1])~[#6](~[Ru])~[#6;X4](~[#6])(~[#6])~[#6])] suffix: ~~212"
+        }
+      ]
+    },
+    {
+      "name": "DynConstraints",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[Ru] [$([#6]~[#7])] onlybonded suffix:1.7 0.0 2.7 3\n[$([#6](~[#1])~[Ru])] [Ru] [$([#6](~[#7])~[Ru])] onlybonded suffix:80.0 0.0 100.0 2\n[Ru] [$([#6](~[#7])~[Ru])] [$([#7]~[#6]~[Ru])] [$([#6]~[#7]~[#6]~[Ru])] onlybonded suffix:0.0 0.0 180.0 1"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    },
+    {
+      "name": "Frozen",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GENERATECONSTRAINTS"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[Ru]\n[$([#17,#8,#1,#6]~[Ru])]\n[$([#6,#1]~[#6]~[Ru]);!$([#6,#1]~[#6](~[Ru])~[#7])]\n[$([*]~[*]~[#6]~[Ru]);!$([*]~[*]~[#6](~[Ru])~[#7]);!$([*]~[#7]~[#6](~[Ru])~[#6,#7])]\n[$([*]~[*]~[*]~[#6]~[Ru]);!$([*]~[*]~[*]~[#6]~[#7]);!$([*]~[*]~[#7]~[#6](~[Ru])~[#6,#7])]\n[$([#6]1~[#6]~[#6]~[#6]~[#6]~[#6]~1~[#8](~[Ru])~[#6])]\n[$([#6]~[#8]~[Ru])]"
+            }
+          ],
+          "reference": "constrain-generation task"
+        }
+      ]
+    },
+    {
+      "name": "AtomLabels",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "GenerateAtomLabels"
+            },
+            {
+              "reference": "LABELTYPE",
+              "value": "ElementBased"
+            },
+            {
+              "reference": "ZEROBASED",
+              "value": "false"
+            }
+          ],
+          "reference": "label-generation task"
+        }
+      ]
+    }
+  ]
+}
+

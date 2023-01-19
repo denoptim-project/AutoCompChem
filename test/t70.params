@@ -3,43 +3,5 @@
 #
 VERBOSITY: 1
 TASK: PrepareInputSpartan
-INFILE: ../t70-mol.sdf
-OUTFILE: t70-sp14.input
-KeyWords:  SCONFANAL MMFF CONSTRAIN CONFSEXAMINED=10
-CHARGE: -222
-SPIN_MULTIPLICITY: -333
-$STARTFREEZEATOMS: [Ru]
-[#17]
-[#6;X3](~[#7,#6])~[#7]
-[#6]~[#7]
-$END
-$STARTATOMSPECIFICKEYWORDS:
-[Ru] FFHINT= ~~210
-[#6]-[$([#8]~[#6])]-[#6] KEYWORD= partB partC partD
-$END
-$STARTROTATABLEBONDS:
-[#6]!@-[#6] 6
-[C]~[#6] 5
-[#7]!@~[#6] 3
-[$([#6]1~[#7]~[*]~[*]~[*]~[*]1)] 2
-[$([#6;X4]1-[#6;X4]~[#7;X3]~[#6;X3](~[Ru])~[#7;X3]1)] 2
-$END
-$STARTCONSTRAINTS:
-[C] [N]
-[Cl] [Ru]
-[$([#6]~[#7])] [Ru]
-[$([#6]@~[Ru])] [Ru]
-[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])]
-[$([#6]@~[Ru])] [$([#1][#6]@~[Ru])]
-[$([#6]@~[#6]@~[Ru])] [#1]
-[$([#6]@~[#6]@~[Ru])] [$([#6]@~[Ru])]
-
-[C] [Ru] [$(C(~[Ru])~C)]
-[#17] [Ru] [#17]
-[#17] [Ru] [#6]
-[#1] [$([#6]@~[Ru])] [#1]
-[#1] [$([#6]@~[Ru])] [Ru]
-[#1] [$([#6]@~[Ru])] [#6]
-
-[C] [Ru] [C] [N]   
-$END
+INPUTGEOMETRIESFILE: ../t70-mol.sdf
+JOBDETAILSFILE: ../t70-jobDetails.json

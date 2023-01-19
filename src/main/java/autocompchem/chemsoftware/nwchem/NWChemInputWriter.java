@@ -39,6 +39,8 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.CenterBasisSet;
@@ -126,22 +128,17 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             			kStr + k.getValueAsString());
             	break;
             	
-            case CONSTRAINTSSET:
-            	// We expect this only as a way to specify atom lists
-            	ConstraintsSet cs = (ConstraintsSet) k.getValue();
+            case ANNOTATEDATOMTUPLELIST:
+            	AnnotatedAtomTupleList tuples = 
+            		(AnnotatedAtomTupleList) k.getValue();
         		Set<Integer> ids = new HashSet<Integer>();
-            	for (Constraint cns : cs)
+            	for (AnnotatedAtomTuple tuple : tuples)
                 {
-            		if (cns.getType()==ConstraintType.FROZENATM)
-            		{
-            			int[] arr = cns.getAtomIDs();
-            			for (int i=0; i<arr.length; i++)
-            				ids.add(arr[i]);
-            		}
+            		ids.addAll(tuple.getAtomIDs());
                 }
             	List<String> ranges = StringUtils.makeStringForIndexes(
             			NumberUtils.getComplementaryIndexes(ids, 
-            					cs.getNumAtoms()), ":", 
+            					tuples.get(0).getNumAtoms()), ":", 
             			1); // From 0-based to 1-based
             	boolean first = true;
             	for (String range : ranges)
@@ -448,14 +445,27 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     	for (Constraint c : cs.getConstrainsWithType(ConstraintType.DISTANCE))
         {
     		int[] ids = c.getSortedAtomIDs();
-        	String str = "BOND " + (ids[0]+1) + " " + (ids[1]+1);
+        	String str = "BOND " + c.getPrefix() + (ids[0]+1) + " " + (ids[1]+1);
+
+        	if (c.hasValue() && c.hasCurrentValue())
+        	{
+        		throw new IllegalArgumentException("Ambiguity! It is not clear "
+        				+ "which value to report in NWChem input since "
+        				+ "constraint contains both current "
+        				+ "and assigned value. "
+        				+ "Please, check definition of constraint " + c);
+        	}
         	if (c.hasValue())
         	{
         		str = str + " " + c.getValue();
         	}
-        	if (c.hasOpt())
+        	if (c.hasCurrentValue())
         	{
-        		str = str + " " + c.getOpt();
+        		str = str + " " + c.getCurrentValue();
+        	}
+        	if (!c.getSuffix().isBlank())
+        	{
+        		str = str + " " + c.getSuffix();
         	}
         	lines.add(str);
         }
@@ -463,15 +473,29 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.ANGLE))
         {
     		int[] ids = c.getSortedAtomIDs();
-        	String str = "ANGLE " + (ids[0]+1) + " " + (ids[1]+1) + " " 
+        	String str = "ANGLE " + c.getPrefix()
+        			+ (ids[0]+1) + " " + (ids[1]+1) + " " 
         			+ (ids[2]+1);
+
+        	if (c.hasValue() && c.hasCurrentValue())
+        	{
+        		throw new IllegalArgumentException("Ambiguity! It is not clear "
+        				+ "which value to report in NWChem input since "
+        				+ "constraint contains both current "
+        				+ "and assigned value. "
+        				+ "Please, check definition of constraint " + c);
+        	}
         	if (c.hasValue())
         	{
         		str = str + " " + c.getValue();
         	}
-        	if (c.hasOpt())
+        	if (c.hasCurrentValue())
         	{
-        		str = str + " " + c.getOpt();
+        		str = str + " " + c.getCurrentValue();
+        	}
+        	if (!c.getSuffix().isBlank())
+        	{
+        		str = str + " " + c.getSuffix();
         	}
         	lines.add(str);
         }
@@ -479,15 +503,29 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         for (Constraint c : cs.getConstrainsWithType(ConstraintType.DIHEDRAL))
         {
     		int[] ids = c.getSortedAtomIDs();
-        	String str = "TORSION " + (ids[0]+1) + " " + (ids[1]+1) + " " 
+        	String str = "TORSION " + c.getPrefix()
+        			+ (ids[0]+1) + " " + (ids[1]+1) + " " 
         			+ (ids[2]+1) + " " + (ids[3]+1);
+
+        	if (c.hasValue() && c.hasCurrentValue())
+        	{
+        		throw new IllegalArgumentException("Ambiguity! It is not clear "
+        				+ "which value to report in NWChem input since "
+        				+ "constraint contains both current "
+        				+ "and assigned value. "
+        				+ "Please, check definition of constraint " + c);
+        	}
         	if (c.hasValue())
         	{
         		str = str + " " + c.getValue();
         	}
-        	if (c.hasOpt())
+        	if (c.hasCurrentValue())
         	{
-        		str = str + " " + c.getOpt();
+        		str = str + " " + c.getCurrentValue();
+        	}
+        	if (!c.getSuffix().isBlank())
+        	{
+        		str = str + " " + c.getSuffix();
         	}
         	lines.add(str);
         }
@@ -1056,6 +1094,20 @@ public class NWChemInputWriter extends ChemSoftInputWriter
       	return lines;
   	}
     
+//------------------------------------------------------------------------------
+	
+  	/**
+  	 * {@inheritDoc}
+  	 * 
+  	 * No special file structure required for NWChem. This method does nothing.
+  	 */
+  	@Override
+  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
+			String outputFileName) 
+	{
+		return outputFileName;
+	}
+  	
 //------------------------------------------------------------------------------
 
 }

@@ -14,10 +14,16 @@ if [ $n -ne 6 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 n=0;n=$(grep -c "ANGLE" t126.log)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c "DIHEDRAL" t126.log)
+n=0;n=$(grep -c "DIHEDRAL.*-123.09" t126.log)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
-n=0;n=$(grep -c "IMPROPERTORSION" t126.log)
+n=0;n=$(grep -c "DIHEDRAL.*999999" t126.log)
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 4a ; exit -1 ; fi
+
+n=0;n=$(grep -c "IMPROPERTORSION.*7,14,16,17.*111111" t126.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4b ; exit -1 ; fi
+
+n=0;n=$(grep -c "IMPROPERTORSION.*7,15,27,25.*111111" t126.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4b ; exit -1 ; fi
 
 n=0;n=$(grep -c "=-123\.09]" t126.log)
@@ -31,9 +37,6 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
 n=0;n=$(grep -c "DIST.*=99\.0]" t126.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
-
-n=0;n=$(grep -c "IMPROPERTORSION.*=999\.0]" t126.log)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' t126.log
 if [ $? == 0 ] ; then 

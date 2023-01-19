@@ -39,6 +39,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityTable;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -1019,8 +1020,9 @@ public class QMMMInputWriter extends Worker
                 sb.append(String.format(Locale.ENGLISH," %5.8f",atm.getPoint3d().z));
                 sb.append(String.format(Locale.ENGLISH," %1$4s",atm.getProperty(
                         QMMMConstants.NUMERICALATMTYPFIELD).toString()));
-                sb.append(String.format(Locale.ENGLISH," %1$4s",ct.getNbrsIdAsString(atmId,
-                                                                   false," ")));
+                sb.append(String.format(Locale.ENGLISH," %1$4s",
+                		StringUtils.mergeListToString(ct.getNbrsId(atmId, false),
+                				" ", true)));
                 lines.add(sb.toString());
                 atmId++;
             }

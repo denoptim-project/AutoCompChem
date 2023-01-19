@@ -83,18 +83,10 @@ public class ManySMARTSQuery
             if (sp.matches(mol))
             {
                 Mappings listOfIds = sp.matchAll(mol);
-                allMatches.put(smartsRef,listOfIds);
-
-//CDK BUG here! this number is somehow wrong
-//                        int num = query.countMatches();
-                int num = 0;
-                Iterator<int[]> iter = listOfIds.iterator();
-                while (iter.hasNext()) {
-                	iter.next();
-                	num++;
-                }
+                int num = listOfIds.count();
+                allMatches.put(smartsRef, listOfIds);
+                numMatches.put(smartsRef, num);
                 
-                numMatches.put(smartsRef,num);
                 totNum = totNum + num;
                 if (verbosity >= 2)
                 {
@@ -212,9 +204,9 @@ public class ManySMARTSQuery
 //------------------------------------------------------------------------------
 
     /**
-     * Return all the matches for the specified SMARTS query
-     * @param ref the reference name of the SMARTS query
-     * @return the list of matches for the specified query
+     * Return all the matches for the specified SMARTS query.
+     * @param ref the reference name of the SMARTS query.
+     * @return the list of matches for the specified query.
      */
 
     public Mappings getMappingOfSMARTS(String ref)
@@ -225,9 +217,31 @@ public class ManySMARTSQuery
 //------------------------------------------------------------------------------
 
     /**
-     * Return all the matches for the specified SMARTS query
-     * @param ref the reference name of the SMARTS query
-     * @return the list of matches for the specified query
+     * Return all the matches for the specified SMARTS query.
+     * @param ref the reference name of the SMARTS query.
+     * @return the list of matches for the specified query.
+     */
+
+    public MatchingIdxs getMatchingIdxsOfSMARTS(String ref)
+    {
+    	MatchingIdxs matches = new MatchingIdxs();
+    	Iterator<int[]> iter = allMatches.get(ref).iterator();
+    	while (iter.hasNext()) {
+    		int[] m = iter.next();
+    		List<Integer> l = new ArrayList<Integer>();
+    		for (int i=0; i<m.length; i++)
+    			l.add(m[i]);
+    		matches.add(l);
+    	}
+        return matches;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Return all the matches for the specified SMARTS query.
+     * @param ref the reference name of the SMARTS query.
+     * @return the list of matches for the specified query.
      * @deprecated use {@link getMappingOfSMARTS}
      */
 

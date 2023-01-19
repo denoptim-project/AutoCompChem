@@ -1,0 +1,64 @@
+#!/bin/bash
+
+if [ ! -f "t3.log" ]
+then
+  echo NOT Passes ERROR 1
+  exit -1
+fi
+
+n=0;n=$(grep -c "AnnotatedAtomTuple" t3.log)
+if [ $n -ne 35 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+
+n=0;n=$(grep -c "^# " t3.log)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -c "BOOLKEY1" t3.log)
+if [ $n -ne 14 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c "BOOLKEY1:@" t3.log)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "KEY0=Zero Zero1 Zero_far" t3.log)
+if [ $n -ne 9 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "KEY=1=One One1" t3.log)
+if [ $n -ne 14 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "KEY:2=1.234" t3.log)
+if [ $n -ne 9 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c "CURRENTVALUE=" t3.log)
+if [ $n -ne 3 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[[0-9]*,[0-9]*,[0-9]*,[0-9]*,[0-9]*\].*GETCURRENTVALUE" t3.log)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[[0-9]\]" t3.log)
+if [ $n -ne 10 ] ; then echo NOT Passes ERROR 11a ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[[0-9][0-9]\]" t3.log)
+if [ $n -ne 8 ] ; then echo NOT Passes ERROR 11b ; exit -1 ; fi
+
+
+n=0;n=$(grep -c "KEY0=9999999" t3.log)
+if [ $n -ne 6 ] ; then echo NOT Passes ERROR 12 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[8,7,9,10\].*KEY0=9999999" t3.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 13 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[10,12,11,8\].*KEY0=9999999" t3.log)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 14 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[28,15,30,32\].*KEY0=9999999" t3.log)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 15 ; exit -1 ; fi
+
+n=0;n=$(grep -c "\[28,15,31,32\].*KEY0=9999999" t3.log)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 16 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t3.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

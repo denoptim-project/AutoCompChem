@@ -53,5 +53,9 @@ public class AtomConstants
                                 Arrays.asList(DUMMYATMLABEL,
                                               DUMMYATMLABELMOLDEN,
                                               ATTACHMENTPOINTLABEL));
-
+    
+    /**
+     * Name of property used to store atom label.
+     */
+    public final static String ATMLABEL = "ATMLABEL";
 }

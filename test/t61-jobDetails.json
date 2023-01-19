@@ -65,7 +65,7 @@
                     },
                     {
                       "reference": "SMARTS",
-                      "value": "[*] [$(C(~[Ru])~C)] onlybonded options:constant\n[*] [$(C~C~[Ru])] onlybonded options:constant\n[*] [$(C~C~C~[Ru])] onlybonded options:constant\n[$(C(~[Ru])~C)] [Ru] [$(C(~[Ru])~C)] onlybonded options:constant\n[*] [$(C(~[Ru])~C)] [*] onlybonded options:constant\n[*] [$(C~C~[Ru])] [*] onlybonded options:constant\n[*] [$(C~C~C~[Ru])] [*] onlybonded options:constant\n[*] [Ru] [$(C(~[Ru])~C)] [$(C(~[Ru])~C)] onlybonded options:constant\n[*] [$(C(~[Ru])~C)] [$(C~C~[Ru])] [*] onlybonded options:constant\n[*] [$(C~C~[Ru])] [$(C~C~C~[Ru])] [*] onlybonded options:constant"
+                      "value": "[*] [$(C(~[Ru])~C)] onlybonded suffix:constant\n[*] [$(C~C~[Ru])] onlybonded suffix:constant\n[*] [$(C~C~C~[Ru])] onlybonded suffix:constant\n[$(C(~[Ru])~C)] [Ru] [$(C(~[Ru])~C)] onlybonded suffix:constant\n[*] [$(C(~[Ru])~C)] [*] onlybonded suffix:constant\n[*] [$(C~C~[Ru])] [*] onlybonded suffix:constant\n[*] [$(C~C~C~[Ru])] [*] onlybonded suffix:constant\n[*] [Ru] [$(C(~[Ru])~C)] [$(C(~[Ru])~C)] onlybonded suffix:constant\n[*] [$(C(~[Ru])~C)] [$(C~C~[Ru])] [*] onlybonded suffix:constant\n[*] [$(C~C~[Ru])] [$(C~C~C~[Ru])] [*] onlybonded suffix:constant"
                     }
                   ],
                   "reference": "zcoordconstraints",

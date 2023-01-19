@@ -247,15 +247,41 @@ public class ChemSoftConstants
 
 	/**
 	 * Key for parameter defining if and what suffix append when
-	 * reporting the complete pathname in tasks {@link .PARGETFILENAMEROOT}
+	 * reporting the complete pathname in tasks {@link PARGETFILENAMEROOT}
 	 */
 	public static final String PARGETFILENAMEROOTSUFFIX = "SUFFIX";
 	
 	/**
 	 * Key for parameter defining if and what quotation mark to use for
-	 * reporting the complete pathname in tasks {@link .PARGETFILENAMEROOT}
+	 * reporting the complete pathname in tasks {@link PARGETFILENAMEROOT}
 	 */
 	public static final String PARGETFILENAMEROOTQUOTE = "QUOTATION";
+
+	/**
+	 * Task requesting the generation of atom specific keywords.
+	 */
+	public static final String PARADDATOMSPECIFICKEYWORD = "ADDATOMSPECKEYWORDS";
+	
+	/**
+	 * Key for parameter defining the reference name of a keyword generated in
+	 * atom-specific fashion.
+	 */
+	public static final String KEYWORDNAME = "KEYWORDNAME";
+	
+	/**
+	 * Key for parameter defining if a keyword generated in atom-specific 
+	 * fashion is "loud" (i.e., is supposed to be reported using the pair 
+	 * name:value) or not (i.e., only the value will be reported, but a name may
+	 *  still be non-blank).
+	 */
+	public static final String KWISLOUD = "KWISLOUD";
+	
+
+	/**
+	 * Key for parameter defining which type of pointer to use. Either "index" 
+	 * or "label".
+	 */
+	public static final String ATMPOINTER = "ATMPOINTER";
 	
 	/**
 	 * Key for parameter defining the type of coordinates used to define the

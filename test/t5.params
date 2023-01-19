@@ -1,0 +1,13 @@
+TASK: GenerateConformationalSpace
+VERBOSITY: 2
+INFILE: ../t5-mol.sdf
+SMARTS:$START[$([#7]F)] fold=2
+[#6] [#8]
+[#8] [Mo] fold=2
+[#7] [Mo] [#8] [#6] fold=4
+$END
+AtomIDS:$START10 fold=2
+1 2 fold=6
+0 6 10 12 
+6 10 12 15 fold=3
+$END 

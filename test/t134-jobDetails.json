@@ -40,7 +40,7 @@
             },
             {
               "reference": "ATOMIDS",
-              "value": "1\n2 3 1.234\n2 3 4\n2 3 4 5 -0.123\n1 2 3 4 5 notAnIC\n12"
+              "value": "2 3 value:1.234\n2 3 4\n2 3 4 5 value:-0.123\n4 3 1 2 value:-0.123\n1 2 3 4 5 notAnIC"
             }
           ],
           "reference": "constraints",
@@ -73,7 +73,7 @@
             },
             {
               "reference": "ATOMIDS",
-              "value": "10\n11 7\n10 11 9 12 13 notAnIC\n12"
+              "value": "10\n11 7\n10 11 9 12 notAnIC\n13"
             }
           ],
           "reference": "freeze",

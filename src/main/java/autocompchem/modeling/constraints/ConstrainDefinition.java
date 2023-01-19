@@ -18,19 +18,40 @@ package autocompchem.modeling.constraints;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
+import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
 
-public class ConstrainDefinition 
+
+/**
+ * Class representing the formatted definition of a rule to define 
+ * {@link Constraint} from a given chemical structure.
+ */
+
+//TODO-gg rename to ConstraintDefinition (NB: the "t"!!!!!)
+
+public class ConstrainDefinition extends AtomTupleMatchingRule
 {
 	/**
-	 * Keyword used to flag the request of considering only tuples of atoms 
-	 * that are bonded in the order given by the tuple.
+	 * Root of name used to identify any instance of this class.
 	 */
-    private static final Object PARONLYBONDED = "ONLYBONDED";
+	public static final String BASENAME = "CnstrRule-";
+
+    /**
+     * Keyword used to identify values
+     */
+    public static final String KEYVALUES = "VALUE";
     
+    //TODO.gg is notAnIC needed? So far it avoid assigning the type to 
+    // any among distance/angle/dihedral/inproperdihedral
     /**
      * Keyword used to flag the request to decouple the list of center 
      * identifiers
@@ -41,71 +62,45 @@ public class ConstrainDefinition
      * For example, the constraint could be a potential applies to displacements 
      * from the initial position of the identified atoms.
      */
-    private static final String PARNOINTCOORD = "NOTANIC";
+    public static final String KEYNOINTCOORD = "NOTANIC";
+    /**
+     * Keyword used to identify prefixes
+     */
+    public static final String KEYPREFIX = "PREFIX";
     
     /**
-     * Keyword used to flag the identification of options.
+     * Keyword used to identify suffix
      */
-    private static final String KEYOPTIONS = "OPTIONS:";
+    public static final String KEYSUFFIX= "SUFFIX";
+    
+	/**
+	 * Keywords that expect values and are used to annotate constraints.
+	 */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json.
+	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
+			KEYVALUES, KEYPREFIX, KEYSUFFIX);
 
 	/**
-     * Reference name 
-     */
-    private String refName = "noname";
-
-    /**
-     * Types of rules
-     */
-    protected enum RuleType {SMARTS, ID, UNDEFINED}
-    
-    /**
-     * Rule type
-     */
-    private RuleType type = RuleType.UNDEFINED;
-
-    /**
-     * The rule's SMARTS query
-     */
-    private ArrayList<SMARTS> smartsQry;
-    
-    /**
-     * The rules atom IDs query
-     */
-    private ArrayList<Integer> idsQry;
-    
-	/**
-	 * A given value for this constraint
+	 * Keywords that do not expect values and are used to annotate constraints.
 	 */
-	private double value;
-	
-	/**
-	 * Flag signalling that this rule defines value-based constraints
-	 */
-	private boolean hasValue = false;
-	
-	/**
-	 * Flag specifying that the tupla of atoms must be a bonded set
-	 */
-	private boolean onlyBonded = false;
-	
-	/**
-	 * Flag specifying that this tupla in not really a tupla, but an unordered
-	 * collection that does not define an internal coordinate.
-	 */
-	private boolean notAnIC = false;
-	
-	/**
-	 * A given optional setting for the constraint. Examples are the options
-	 * telling the comp. chem. software what to do with this constraints, i.e.,
-	 * Gaussian's "A" for activate (remove constraint) and "F" for freeze 
-	 * (add constraint).
-	 */
-	private String options;
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json.
+	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList(
+			KEYNOINTCOORD);
 
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for a rule by parsing a formatted string of text. 
+     * Default keywords that are interpreted to parse specific input
+     * instructions are defined by
+     * {@link ConstrainDefinition#DEFAULTVALUEDKEYS} and 
+     * {@link ConstrainDefinition#DEFAULTVALUELESSKEYS}.
+     * There defaults are added to the defaults of {@link AtomTupleMatchingRule}
+     * namely,
+     * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
+     * {@link AtomTupleConstants#DEFAULTVALUELESSKEYS}.
      * @param txt the string to be parsed
      * @param i a unique integer used to identify the rule. Is used to build
      * the reference name of the generated rule.
@@ -113,228 +108,84 @@ public class ConstrainDefinition
 
     public ConstrainDefinition(String txt, int i)
     {
-        String[] p = txt.trim().split("\\s+");
-        String msg = "ERROR! The following string does not look like a "
-        		+ "properly formatted rule for constraints generation. ";
-        
-        if (p.length < 1)
-        {
-            Terminator.withMsgAndStatus(msg + "Not enough words to make a "
-            		+ " constraint defining rule. Check line " + txt,-1);
-        }
-        
-        this.refName = "CnstrRule-"+i;
-        
-        //The first string distinguished between SMARTS (i.e., a alphanumeric
-        // string) and atom IDs (i.e., an integer).
-        
-        if (NumberUtils.isNumber(p[0]))
-        {
-        	this.type = RuleType.ID;
-        	this.idsQry = new ArrayList<Integer>();
-            boolean endOfIDs = false;
-            for (int j=0; j<p.length; j++)
-            {
-            	if (NumberUtils.isParsableToInt(p[j]))
-            	{
-            		// Reading atom IDs
-            		this.idsQry.add(Integer.parseInt(p[j]));
-            	} else {
-            		endOfIDs = true;
-	            	if (NumberUtils.isParsableToDouble(p[j]))
-	            	{
-	            		// Reading optional value
-	            		// WARNING! For now we expect only one double value
-	            		this.hasValue = true;
-	            		this.value = Double.parseDouble(p[j]);
-	            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
-	            		// Parsing ACC option
-	            		this.onlyBonded = true;
-	            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
-	            		// Parsing ACC option
-	            		this.notAnIC = true;
-	            	} else {
-	            		// Anything else is interpreted as an additional option,
-	            		// i.e., the "A" or "F" of Gaussian constraints
-	            		String s =  p[j];
-	            		if (p[j].toUpperCase().startsWith(KEYOPTIONS))
-	            			s = s.substring(KEYOPTIONS.length());
-	            		if (this.options!=null)
-	            		{
-	            			this.options = this.options + " " + s;
-	            		} else {
-	            			this.options = s;
-	            		}
-	            	}
-            	}
-            }
-        } else {
-        	this.type = RuleType.SMARTS;
-        	this.smartsQry = new ArrayList<SMARTS>();
-        	boolean endOfSmarts = false;
-        	boolean readOpts = false;
-            for (int j=0; j<p.length; j++)
-            {
-            	if (NumberUtils.isNumber(p[j]))
-            	{
-            		// WARNING! For now we expect only one numerical value
-            		// So, the last numerical we find is going to be the value.
-            		endOfSmarts = true;
-            		this.hasValue = true;
-            		this.value = Double.parseDouble(p[j]);
-            	} else if (PARONLYBONDED.equals(p[j].toUpperCase())) {
-            		endOfSmarts = true;
-            		this.onlyBonded = true;
-            	} else if (PARNOINTCOORD.equals(p[j].toUpperCase())) {
-            		endOfSmarts = true;
-            		this.notAnIC = true;
-            	} else {
-            		String s = p[j];
-            		if (p[j].toUpperCase().startsWith(KEYOPTIONS) || readOpts)
-            		{
-            			endOfSmarts = true;
-            			readOpts = true;
-            			if (p[j].toUpperCase().startsWith(KEYOPTIONS))
-            				s = s.substring(KEYOPTIONS.length());
-            			if (this.options!=null)
-	            		{
-	            			this.options = this.options + " " + s;
-	            		} else {
-	            			this.options = s;
-	            		}
-            		}
-            		if (!endOfSmarts)
-            		{
-            			this.smartsQry.add(new SMARTS(p[j]));
-            		}
-            	}
-            }
-        }
+    	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS);
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the reference name
-     * @return the reference name
+     * Returns the value associated to constraints defined by this rule
+     * @return the value
      */
 
-    public String getRefName()
+    public double getValue()
     {
-        return refName;
+    	return Double.parseDouble(getValueOfAttribute(KEYVALUES));
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the type of this rule
-     * @return the type
+     * @return the string collecting prefix
      */
 
-    public RuleType getType()
+    public String getPrefix()
     {
-        return type;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * @return the list of SMARTS queries of this rule
-     */
-    
-    public ArrayList<SMARTS> getSMARTS()
-    {
-    	return smartsQry;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * @return the list of atom IDs queries of this rule
-     */
-    
-    public ArrayList<Integer> getAtomIDs()
-    {
-    	return idsQry;
+        return getValueOfAttribute(KEYPREFIX);
     }
     
 //------------------------------------------------------------------------------
 
+    /**
+     * @return the string collecting suffix
+     */
+
+    public String getSuffix()
+    {
+        return getValueOfAttribute(KEYSUFFIX);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the flag defining if this rule applied only to linearly
+     * connected tuples of atoms.
+     * @return <code>true</code> if this constraints defined by this rule 
+     * are applied only to tuples of atoms that are linearly connected.
+     */
   	public boolean limitToBonded() 
   	{
-  		return onlyBonded;
+  		return hasValuelessAttribute(AtomTupleConstants.KEYONLYBONDED);
   	}
-
+    	
 //------------------------------------------------------------------------------
 
-  	public Constraint makeConstraint(boolean areLinearlyConnected) throws Exception 
+    /**
+     * Returns the flag defining if this rule makes use of the a value.
+     * @return <code>true</code> if this constraints defined by this rule use
+     * a value.
+     */
+  	public boolean hasValue()
   	{
-  		return makeConstraintFromIDs(idsQry, areLinearlyConnected);
+  		return hasValuelessAttribute(AtomTupleConstants.KEYUSECURRENTVALUE)
+  				|| getValueOfAttribute(AtomTupleConstants.KEYCURRENTVALUE)!=null
+  				|| getValueOfAttribute(KEYVALUES)!=null;
   	}
   	
 //------------------------------------------------------------------------------
 
-  	/**
-  	 * Creates a constraint from atom ids.
-  	 * @param ids the list of indexes
-  	 * @param areLinearlyConnected use <code>true</code> is the given IDs 
-	 * represent a set of centers that are connected in the order given, e.g.
-	 * i-j-k-l.
-  	 * @return
-  	 * @throws Exception
-  	 */
-  	//TODO-gg private?
-  	public Constraint makeConstraintFromIDs(ArrayList<Integer> idsList, 
-  			boolean areLinearlyConnected) 
-  			throws Exception 
+    /**
+     * Returns the flag defining if this rule makes use of the current value
+     * as the value set in the constraint.
+     * @return <code>true</code> if this constraints defined by this rule use
+     * as value of the generated constraints the value found in the system to 
+     * which this rule is applied.
+     */
+  	public boolean usesCurrentValue()
   	{
-  		if (notAnIC)
-  		{
-  			// type will be undefined
-  			Constraint c = new Constraint();
-  			int[] ids = new int[idsList.size()];
-  			for (int i=0; i<idsList.size(); i++)
-  			{
-  				ids[i] = idsList.get(i);
-  			}
-  			c.setAtomIDs(ids);
-  			if (hasValue)
-  				c.setValue(value);
-  			return c;
-  		} else {
-	  		if (!hasValue)
-	  			return Constraint.buildConstraint(idsList, null, options,
-	  					areLinearlyConnected);
-	  		else 
-	  			return Constraint.buildConstraint(idsList, value, options,
-	  					areLinearlyConnected);
-  		}
+  		return hasValuelessAttribute(AtomTupleConstants.KEYUSECURRENTVALUE);
   	}
 
 //------------------------------------------------------------------------------
-
-    @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(refName).append(" [");
-        sb.append(type).append(" = ");
-        if (type == RuleType.SMARTS)
-        {
-        	sb.append(smartsQry).append("] ");
-        } else {
-        	sb.append(idsQry).append("]");
-        }
-        if (hasValue)
-        {
-        	sb.append(", [value = ").append(value).append("]");
-        }
-        sb.append(", [options = ").append(options).append("]");
-        return sb.toString();
-    }
-
-//------------------------------------------------------------------------------
-
-	
 
 }

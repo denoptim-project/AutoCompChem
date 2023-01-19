@@ -1,11 +1,5 @@
 package autocompchem.modeling.constraints;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -23,6 +17,11 @@ import java.util.HashSet;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,24 +33,28 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
-import autocompchem.modeling.constraints.ConstrainDefinition.RuleType;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
+import autocompchem.modeling.atomtuple.AtomTupleGenerator;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
+import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 
 /**
- * Facility to generate geometric constraints
- * given list of matching rules.
+ * Facility to generate constraints given a list of matching rules.
  * 
  * @author Marco Foscato
  */
 
 
-public class ConstraintsGenerator extends Worker
+public class ConstraintsGenerator extends AtomTupleGenerator
 {
     /**
      * Declaration of the capabilities of this subclass of {@link Worker}.
@@ -61,31 +64,9 @@ public class ConstraintsGenerator extends Worker
                     Arrays.asList(TaskID.GENERATECONSTRAINTS)));
     
     /**
-     * The name of the input file (molecular structure files)
-     */
-    private String inFile = "noInFile";
-
-    /**
-     * List of atom-matching rules for definition of the constraints
-     */
-    private ArrayList<ConstrainDefinition> rules = 
-    		new ArrayList<ConstrainDefinition>();
-    
-    /**
      * Results
      */
     private ArrayList<ConstraintsSet> output = new ArrayList<ConstraintsSet>();
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
-
-    /**
-     * Unique identifier for rules
-     */
-	private AtomicInteger ruleID = new AtomicInteger(0);
-
 
 //-----------------------------------------------------------------------------
 	
@@ -94,45 +75,25 @@ public class ConstraintsGenerator extends Worker
      */
     public ConstraintsGenerator()
     {
-        super("inputdefinition/ConstraintsGenerator.json");
+    	super("inputdefinition/ConstraintsGenerator.json");
+    	ruleRoot = ConstrainDefinition.BASENAME;
     }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     /**
-     * Initialise the worker according to the parameters loaded by constructor.
+     * Parses the formatted text defining {@link ConstrainDefinition} and adds
+     * the resulting rules to this instance of atom tuple generator.
+     * @param lines the lines of text to be parsed into 
+     * {@link AtomTupleMatchingRule}s.
      */
 
     @Override
-    public void initialize()
+    public void parseAtomTupleMatchingRules(List<String> lines)
     {
-        // Define verbosity
-        if (params.contains("VERBOSITY"))
+        for (String line : lines)
         {
-            String v = params.getParameter("VERBOSITY").getValueAsString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to ConstraintstGenerator");
-
-        // Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
-        {
-            this.inFile = params.getParameter("INFILE").getValueAsString();
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
-        }
-
-        if (params.contains("SMARTS"))
-        {
-        	String all = params.getParameter("SMARTS").getValueAsString();
-        	setConstrainDefinitions(all);
-        }
-        
-        if (params.contains("ATOMIDS"))
-        {
-        	String all = params.getParameter("ATOMIDS").getValueAsString();
-        	setConstrainDefinitions(all);
+        	rules.add(new ConstrainDefinition(line, ruleID.getAndIncrement()));
         }
     }
     
@@ -140,7 +101,7 @@ public class ConstraintsGenerator extends Worker
 
     /**
      * Performs any of the registered tasks according to how this worker
-     * has been initialised.
+     * has been initialized.
      */
 
     @SuppressWarnings("incomplete-switch")
@@ -168,38 +129,8 @@ public class ConstraintsGenerator extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Sets the rules for defining constraints to each atom/element
-     * @param text the text (i.e., multiple lines) to be parsed into 
-     * {@link ConstrainDefinition}s.
-     */
-
-    public void setConstrainDefinitions(String text)
-    {
-        String[] arr = text.split(System.getProperty("line.separator"));
-        setConstrainDefinitions(new ArrayList<String>(Arrays.asList(arr)));
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Sets the rules for defining constraints to each atom/element
-     * @param lines the lines of text to be parsed into 
-     * {@link ConstrainDefinition}s
-     */
-
-    public void setConstrainDefinitions(ArrayList<String> lines)
-    {
-        for (String line : lines)
-        {
-            rules.add(new ConstrainDefinition(line,ruleID.getAndIncrement()));
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Define constraints for all structures found in the input structures feed.
-     * method is meant for working on structures taken from an input file.
+     * Define constraints for all structures found in the structures
+     * from the input file.
      */
 
     public void createConstrains()
@@ -207,7 +138,7 @@ public class ConstraintsGenerator extends Worker
         if (inFile.equals("noInFile"))
         {
             Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-                + " Cannot generate basis set.",-1);
+                + " Cannot generate constraints.",-1);
         }
 
         try {
@@ -217,11 +148,12 @@ public class ConstraintsGenerator extends Worker
                 //Get the molecule
                 IAtomContainer mol = sdfItr.next();
 
-                //Assign Basis Set
+                //Assign Constraints
                 ConstraintsSet cs = createConstraints(mol);
                 
-                if (verbosity > 1)
+                if (verbosity > 0)
                 {
+                	System.out.println("# " + MolecularUtils.getNameOrID(mol));
                 	cs.printAll();
                 }
                 output.add(cs);
@@ -239,280 +171,35 @@ public class ConstraintsGenerator extends Worker
 
     /**
      * Define constraints in a given molecule and using the currently loaded 
-     * constraint defining rules.
+     * atom tuple defining rules.
      * @param mol the molecular system we create constraints for.
      * @return the set of constraints.
-     * @throws Exception  
      */
 
-    public ConstraintsSet createConstraints(IAtomContainer mol) throws Exception 
+    public ConstraintsSet createConstraints(IAtomContainer mol)
+    {
+    	return createConstraints(mol, rules);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Define constraints in a given molecule and using the a given set of
+     * atom tuple defining rules.
+     * @param mol the molecular system we create constraints for.
+     * @return the set of constraints.
+     */
+
+    public static ConstraintsSet createConstraints(IAtomContainer mol, 
+    		List<AtomTupleMatchingRule> rules)
     {
     	ConstraintsSet cLst = new ConstraintsSet();
-    	cLst.setNumAtoms(mol.getAtomCount());
     	
-        //Collect all SMARTS queries
-    	Set<String> sortedKeys = new TreeSet<String>();
-    	Map<String,String> smarts = new HashMap<String,String>();
-        for (ConstrainDefinition r : rules)
-        {
-            if (r.getType() == RuleType.SMARTS)
-            {
-            	for (int i=0; i<r.getSMARTS().size(); i++)
-            	{
-            		SMARTS s = r.getSMARTS().get(i);
-            		
-            		//NB: this format is assumed here and elsewhere
-            		String refName = r.getRefName()+"_"+i;
-            		sortedKeys.add(r.getRefName());
-            		smarts.put(refName,s.getString());
-            	}
-            }
-            else if (r.getType() == RuleType.ID)
-            {
-            	ArrayList<Integer> ids = r.getAtomIDs();
-            	
-            	boolean areLinearlyConnected = false;
-            	if (ids.size()>1)
-            		areLinearlyConnected = mol.getConnectedAtomsList(
-            				mol.getAtom(ids.get(0))).contains(
-            						mol.getAtom(ids.get(1)));
-            	if (ids.size()>2 && areLinearlyConnected)
-            		areLinearlyConnected = mol.getConnectedAtomsList(
-            				mol.getAtom(ids.get(1))).contains(
-            						mol.getAtom(ids.get(2)));
-            	if (ids.size()>3 && areLinearlyConnected)
-            		areLinearlyConnected = mol.getConnectedAtomsList(
-            				mol.getAtom(ids.get(2))).contains(
-        						mol.getAtom(ids.get(3)));
-            	cLst.add(r.makeConstraint(areLinearlyConnected));
-            }
-        }
-        
-        //Get groups of atom IDs according to the SMARTS-based matching rules
-        // defined in the ConstraintDefinition (below called CD for brevity)
-        Map<String,ArrayList<ArrayList<IAtom>>> allIDsForEachCD =
-                new HashMap<String,ArrayList<ArrayList<IAtom>>>();
-        if (smarts.keySet().size()>0)
-        {
-        	//First apply all SMARTS in once, for the sake of efficiency
-	        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
-	        if (msq.hasProblems())
-	        {
-	            String cause = msq.getMessage();
-	            Terminator.withMsgAndStatus("ERROR! " +cause,-1);
-	        }
-	        
-	        //Get matches grouped by the ref names of SMARTS queries
-	        Map<String,ArrayList<IAtom>> groupedByRule = 
-                    new HashMap<String,ArrayList<IAtom>>();
-	        for (String rulRef : smarts.keySet())
-	        {
-	            if (msq.getNumMatchesOfQuery(rulRef) == 0)
-	            {
-	                continue;
-	            }
-	
-	            ArrayList<IAtom> atomsMatched = new ArrayList<IAtom>();
-	            List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(rulRef);
-	            for (List<Integer> innerList : allMatches)
-	            {
-	                for (Integer iAtm : innerList)
-	                {
-                        IAtom targetAtm = mol.getAtom(iAtm);
-                        atomsMatched.add(targetAtm);
-	                }
-	            }
-	            groupedByRule.put(rulRef,atomsMatched);
-	        }
-
-            // Collect matches that belong to same ConstraintDefinition (CD)
-            for (String key : sortedKeys)
-            {
-                ArrayList<String> smartsRefNamesForCD = new ArrayList<String>();
-                for (String k2 : groupedByRule.keySet())
-                {
-                    if (k2.toUpperCase().startsWith(key.toUpperCase()))
-                    {
-                        smartsRefNamesForCD.add(k2);
-                    }
-                }
-                boolean allComponentsMatched = true;;
-                ArrayList<ArrayList<IAtom>> atmsForCD =
-                                new ArrayList<ArrayList<IAtom>>();
-                for (int ig = 0; ig<smartsRefNamesForCD.size(); ig++)
-                {
-                	//NB: here we assume the format of the SMARTS ref names
-                    String k2qry = key + "_" + Integer.toString(ig);
-                    if (groupedByRule.containsKey(k2qry))
-                    {
-                    	atmsForCD.add(groupedByRule.get(k2qry));
-                    } else {
-                    	allComponentsMatched = false;
-                    }
-                }
-                if (allComponentsMatched)
-                {
-                	allIDsForEachCD.put(key,atmsForCD);
-                }
-            }
-           
-            if (verbosity>1)
-	        {
-	            System.out.println("Matches for each CD: ");
-	            for (String key : sortedKeys)
-	            {
-	            	if (!allIDsForEachCD.containsKey(key))
-	            		continue;
-	            	
-	            	String str = " -> "+key+":";
-	            	for (ArrayList<IAtom> lst : allIDsForEachCD.get(key))
-	            	{
-	            		str = str + " [";
-	            		boolean first = true;
-	            		for (IAtom atm : lst)
-	            		{
-	            			if (first)
-	            			{
-	            				str = str + MolecularUtils.getAtomRef(atm, mol);
-	            				first = false;
-	            			} else {
-	
-	            				str = str + "," + MolecularUtils.getAtomRef(atm,
-	            						mol);
-	            			}
-	            		}
-	            		str = str + "]";
-	            	}
-	            	System.out.println(str);
-	            }
-            }
-            
-            //Define constraints according to the matched atom IDs
-            for (ConstrainDefinition r : rules)
-            {
-            	String key = r.getRefName();
-            	
-            	if (!allIDsForEachCD.containsKey(key))
-            		continue;
-            	
-                ArrayList<ArrayList<IAtom>> atmsForCD =
-                		allIDsForEachCD.get(key);
-
-                if (atmsForCD.size() == 0)
-                {
-                	continue;
-                }
-                
-                if (r.getType() == RuleType.SMARTS &&
-                		r.getSMARTS().size() != atmsForCD.size())
-                {
-                	continue;
-                }
-                
-                for (IAtom atmA : atmsForCD.get(0))
-                {
-                	if (atmsForCD.size() == 1)
-                	{
-                		cLst.add(r.makeConstraintFromIDs(new ArrayList<Integer>(
-                				Arrays.asList(mol.indexOf(atmA))), false));
-                		continue;
-                	}
-                	
-                    for (IAtom atmB : atmsForCD.get(1))
-                    {
-                        if (atmA.equals(atmB))
-                            continue;
-                        
-                        boolean areLinearlyConnected = 
-                        		mol.getConnectedAtomsList(atmA).contains(atmB);
-
-                        if (r.limitToBonded() && !areLinearlyConnected)
-                        {
-                            continue;
-                        }
-                        
-                        if (atmsForCD.size() == 2)
-                    	{
-                    		cLst.add(r.makeConstraintFromIDs(
-                    				new ArrayList<Integer>(Arrays.asList(
-                    						mol.indexOf(atmA),
-                    						mol.indexOf(atmB))), 
-                    				areLinearlyConnected));
-                    		continue;
-                    	}
-                        
-                        for (IAtom atmC : atmsForCD.get(2))
-                        {
-                            if (atmB.equals(atmC))
-                                continue;
-
-                            if (atmA.equals(atmC))
-                                continue;
-
-                            areLinearlyConnected = 
-                            		mol.getConnectedAtomsList(atmA).contains(atmB)
-                            		&& mol.getConnectedAtomsList(atmB)
-                            		.contains(atmC);
-                            
-                            if (r.limitToBonded() && !areLinearlyConnected)
-                            {
-                                continue;
-                            }
-
-                            if (atmsForCD.size() == 3)
-                        	{
-                        		cLst.add(r.makeConstraintFromIDs(
-                        				new ArrayList<Integer>(Arrays.asList(
-                        						mol.indexOf(atmA),
-                        						mol.indexOf(atmB),
-                        						mol.indexOf(atmC))), 
-                        				areLinearlyConnected));
-                        		continue;
-                        	}
-                            
-                            for (IAtom atmD : atmsForCD.get(3))
-                            {
-                                if (atmC.equals(atmD))
-                                    continue;
-                                if (atmB.equals(atmD))
-                                    continue;
-                                if (atmA.equals(atmD))
-                                    continue;
-                                
-                                areLinearlyConnected = 
-                                		mol.getConnectedAtomsList(atmA).contains(atmB)
-                                		&& mol.getConnectedAtomsList(atmB)
-                                		.contains(atmC)
-                                		&& mol.getConnectedAtomsList(atmC)
-                                		.contains(atmD);
-
-                                if (r.limitToBonded() && !areLinearlyConnected)
-                                {
-                                    continue;
-                                }
-
-                                if (atmsForCD.size() == 4)
-                            	{
-                            		cLst.add(r.makeConstraintFromIDs(
-                            				new ArrayList<Integer>(
-                            						Arrays.asList(
-                            						mol.indexOf(atmA),
-                            						mol.indexOf(atmB),
-                            						mol.indexOf(atmC),
-                            						mol.indexOf(atmD))), 
-                            				areLinearlyConnected));
-                            		continue;
-                            	} else {
-                            		throw new Exception("Unexpectedly long "
-                            				+ "list of atom IDs");
-                            	}
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+    	List<AnnotatedAtomTuple> tuples = createTuples(mol, rules);
+    	for (AnnotatedAtomTuple tuple : tuples)
+    	{
+    		cLst.add(new Constraint(tuple));
+    	}
         return cLst;
     }
 

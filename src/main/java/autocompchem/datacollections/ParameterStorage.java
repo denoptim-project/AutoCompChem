@@ -34,6 +34,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
@@ -386,6 +387,23 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
             		value);
             setParameter(prm);
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	   
+ 	    return super.equals(o);
     }
     
 //------------------------------------------------------------------------------

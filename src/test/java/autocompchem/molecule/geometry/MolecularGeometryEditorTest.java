@@ -27,7 +27,9 @@ import javax.vecmath.Point3d;
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
  * Unit Test for MolecularGeometryEditor methods
@@ -38,12 +40,15 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 public class MolecularGeometryEditorTest 
 {
 	
+    private IChemObjectBuilder chemBuilder = 
+    		DefaultChemObjectBuilder.getInstance();
+	
 //------------------------------------------------------------------------------
 
 	@Test
 	public void testOptimizeScalingFactors() throws Exception
     {
-    	IAtomContainer mol = new AtomContainer();
+    	IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
     	mol.addAtom(new Atom("O",new Point3d(5.0,0,0)));
     	mol.addAtom(new Atom("N",new Point3d(10.0,0,0)));
@@ -65,7 +70,7 @@ public class MolecularGeometryEditorTest
     @Test
 	public void testOptimizeScalingFactorsDiverging() throws Exception
     {
-    	IAtomContainer mol = new AtomContainer();
+    	IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
     	mol.addAtom(new Atom("O",new Point3d(2.0,0,0)));
     	mol.addAtom(new Atom("N",new Point3d(4.0,0,0)));
@@ -89,7 +94,7 @@ public class MolecularGeometryEditorTest
     @Test
 	public void testOptimizeScalingFactorsDistribution() throws Exception
     {
-    	IAtomContainer mol = new AtomContainer();
+    	IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
     	mol.addAtom(new Atom("O",new Point3d(2.0,0,0)));
     	mol.addAtom(new Atom("N",new Point3d(4.0,0,0)));

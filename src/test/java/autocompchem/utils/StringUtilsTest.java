@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,42 @@ import autocompchem.text.TextAnalyzer;
 
 public class StringUtilsTest 
 {
+	
+//------------------------------------------------------------------------------
+	
+	@Test
+	public void testParseArrayOfDoubles() throws Exception
+	{
+		String s = "1.234 5.678 -1.987 -23 -0.5";
+		double[] values = StringUtils.parseArrayOfDoubles(s, "\\s+");
+		
+		assertEquals(5, values.length);
+		assertTrue(NumberUtils.closeEnough(1.234, values[0]));
+		assertTrue(NumberUtils.closeEnough(5.678, values[1]));
+		assertTrue(NumberUtils.closeEnough(-1.987, values[2]));
+		assertTrue(NumberUtils.closeEnough(-23.0, values[3]));
+		assertTrue(NumberUtils.closeEnough(-0.5, values[4]));
+		
+		s = "1.234, 5.678, -1.987, -23, -0.5";
+		values = StringUtils.parseArrayOfDoubles(s, ",");
+
+		assertEquals(5, values.length);
+		assertTrue(NumberUtils.closeEnough(1.234, values[0]));
+		assertTrue(NumberUtils.closeEnough(5.678, values[1]));
+		assertTrue(NumberUtils.closeEnough(-1.987, values[2]));
+		assertTrue(NumberUtils.closeEnough(-23.0, values[3]));
+		assertTrue(NumberUtils.closeEnough(-0.5, values[4]));
+		
+		s = "val:1.234 blabla:5.678 tomi:-1.987 meni:-23 jacu:-0.5";
+		values = StringUtils.parseArrayOfDoubles(s, "(?i)\\w+:");
+
+		assertEquals(5, values.length);
+		assertTrue(NumberUtils.closeEnough(1.234, values[0]));
+		assertTrue(NumberUtils.closeEnough(5.678, values[1]));
+		assertTrue(NumberUtils.closeEnough(-1.987, values[2]));
+		assertTrue(NumberUtils.closeEnough(-23.0, values[3]));
+		assertTrue(NumberUtils.closeEnough(-0.5, values[4]));
+	}
 
 //------------------------------------------------------------------------------
 
@@ -56,6 +93,32 @@ public class StringUtilsTest
         
         assertEquals(3,TextAnalyzer.countStringInLine(sep, res),
         		"Number of separators ");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testMergeIntListToString() throws Exception
+    {
+        List<Integer> lst = new ArrayList<Integer>();
+        lst.add(0);
+        lst.add(3);
+        lst.add(-3);
+        String sep = ", ";
+        
+        String expected = "1, 4, -2";
+        assertEquals(expected, StringUtils.mergeListToString(lst,sep,true,1));
+
+        expected = "0, 3, -3, ";
+        assertEquals(expected, StringUtils.mergeListToString(lst,sep,false,0));
+
+        expected = "   1@   4@  -2";
+        assertEquals(expected, StringUtils.mergeListToString(lst, 
+        		Locale.ENGLISH, "%4d", "@", true, 1));
+        
+        expected = "__    0@__    3@__   -3@";
+        assertEquals(expected, StringUtils.mergeListToString(lst, 
+        		Locale.ENGLISH, "__%5d", "@", false, 0));
     }
     
 //------------------------------------------------------------------------------
