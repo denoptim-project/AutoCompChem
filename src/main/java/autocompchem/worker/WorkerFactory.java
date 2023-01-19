@@ -33,7 +33,6 @@ import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.chemsoftware.xtb.XTBOutputHandler;
-import autocompchem.datacollections.JobDetailsFileConverter;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
@@ -348,8 +347,6 @@ public class WorkerFactory
             return VibModuleOutputHandler.capabilities;
         case ZMatrixHandler:
             return ZMatrixHandler.capabilities;
-        case JobDetailsConverter:
-        	return JobDetailsFileConverter.capabilities;
 
 		//NB: add cases of new workers according to alphabetic order, please.
             
@@ -441,8 +438,6 @@ public class WorkerFactory
             return new VibModuleOutputHandler();
         case ZMatrixHandler:
             return new ZMatrixHandler();
-        case JobDetailsConverter:
-            return new JobDetailsFileConverter();
             
 		//NB: add cases of new workers according to alphabetic order, please
             

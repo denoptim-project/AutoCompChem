@@ -74,8 +74,7 @@ public enum TaskID
     SORTSDFMOLECULES,         
     SUBTRACTZMATRICES, 
     IMPOSECONNECTIONTABLE,
-    CHECKBONDLENGTHS,   
-    CONVERTJOBDETAILS;
+    CHECKBONDLENGTHS;
 	
 //-----------------------------------------------------------------------------
 	
