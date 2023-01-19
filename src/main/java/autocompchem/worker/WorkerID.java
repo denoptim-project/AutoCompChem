@@ -56,7 +56,6 @@ public enum WorkerID
     OrcaOutputHandler,
     XTBInputWriter,
     XTBOutputHandler,
-    QMMMInputWriter,
     SpartanInputWriter,
     SpartanOutputHandler,
     VibModuleOutputHandler,

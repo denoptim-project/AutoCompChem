@@ -64,8 +64,7 @@ public enum TaskID
     PREPAREINPUTGAUSSIAN,    
     PREPAREINPUTNWCHEM,
     PREPAREINPUTORCA,
-    PREPAREINPUTXTB,
-    PREPAREINPUTQMMM,        
+    PREPAREINPUTXTB,        
     PREPAREINPUTSPARTAN,  
     PRINTZMATRIX,            
     PRUNEMOLECULES,           
@@ -75,8 +74,7 @@ public enum TaskID
     SORTSDFMOLECULES,         
     SUBTRACTZMATRICES, 
     IMPOSECONNECTIONTABLE,
-    CHECKBONDLENGTHS,
-    FINDATOMSETS,   //TODO check: is it implemented?    
+    CHECKBONDLENGTHS,   
     CONVERTJOBDETAILS;
 	
 //-----------------------------------------------------------------------------
