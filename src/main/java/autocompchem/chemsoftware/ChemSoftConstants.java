@@ -422,7 +422,7 @@ public class ChemSoftConstants
 
 	/**
 	 * Name of data containing Gibbs free energy already containing all
-	 * the thermochemical corrections.
+	 * the thermochemical corrections (a.u.).
 	 */
 	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
 	

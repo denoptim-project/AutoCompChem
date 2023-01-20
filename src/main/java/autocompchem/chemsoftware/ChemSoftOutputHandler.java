@@ -19,6 +19,7 @@ package autocompchem.chemsoftware;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,6 +27,7 @@ import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
+import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedDataCollector;
@@ -48,6 +50,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
+//TODO-gg refator to ChemSoftOutputAnalyzer
 public abstract class ChemSoftOutputHandler extends Worker
 {   
     /**
@@ -111,13 +114,6 @@ public abstract class ChemSoftOutputHandler extends Worker
      */
     private boolean useTemplateConnectivity = false;
     
-    //TODO del
-    /**
-     * Flag controlling whether to check consistency between connectivity and 
-     * interatomic distances,
-     */
-    private boolean connectivityCheckBL = false;
-    
     /**
      * Tolerance on the variation of interatomic distance of bonded atom pairs.
      * With a tolerance equal to <i>t</i> and a reference interatomic distance 
@@ -156,7 +152,7 @@ public abstract class ChemSoftOutputHandler extends Worker
         this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)
-            System.out.println(" Adding parameters to "
+            System.out.println("Adding parameters to "
             		+ "ChemSoftwareOutputHandler");
 
         //Get and check the input file (which is an output from a comp.chem. 
@@ -272,7 +268,6 @@ public abstract class ChemSoftOutputHandler extends Worker
             this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
             
             ParameterStorage ps = new ParameterStorage();
-            boolean checkBLvsCT = true;
             for (int i=1; i<(p.length); i++)
             {
                 String arg = p[i];
@@ -296,36 +291,30 @@ public abstract class ChemSoftOutputHandler extends Worker
 	                }
 	                //Silly: we check the conversion to double and then store a string...
 	                ps.setParameter(ChemSoftConstants.PARBONDLENGTHTOLETANCE, w);
-	                checkBLvsCT = true;
                 }
             }
-            //TODO-gg set use of the default if is not already defined without
-            // the need to have the parameter. If so, remove the associated fields.
-            if (checkBLvsCT)
-            {
-            	// We have to ensure that last geometry is extracted
-            	boolean addLastGeom = true;
-            	for (AnalysisTask at : analysisGlobalTasks)
-            	{
-            		if (at.getKind() == AnalysisKind.LASTGEOMETRY)
-            		{
-            			addLastGeom = false;
-            		}
-            	}
-            	if (addLastGeom)
-            	{
-            		analysisGlobalTasks.add(new AnalysisTask(
-            				AnalysisKind.LASTGEOMETRY));
-            	}
-            	
-                AnalysisTask a = new AnalysisTask(
-                		AnalysisKind.BLVSCONNECTIVITY,ps);
-                // WARNING: we assume that this analysis task as added AFTER
-                // the extraction of the last geometry!!!
-                analysisGlobalTasks.add(a);
-                // NB: here we could have the possibility to decide which 
-                // geometry to analyse: all or just the last one.
-            }
+        	// We have to ensure that last geometry is extracted
+        	boolean addLastGeom = true;
+        	for (AnalysisTask at : analysisGlobalTasks)
+        	{
+        		if (at.getKind() == AnalysisKind.LASTGEOMETRY)
+        		{
+        			addLastGeom = false;
+        		}
+        	}
+        	if (addLastGeom)
+        	{
+        		analysisGlobalTasks.add(new AnalysisTask(
+        				AnalysisKind.LASTGEOMETRY));
+        	}
+        	
+            AnalysisTask a = new AnalysisTask(
+            		AnalysisKind.BLVSCONNECTIVITY,ps);
+            // WARNING: we assume that this analysis task as added AFTER
+            // the extraction of the last geometry!!!
+            analysisGlobalTasks.add(a);
+            // NB: here we could have the possibility to decide which 
+            // geometry to analyse: all or just the last one.
         }
 
         if (params.contains(ChemSoftConstants.PARGETENERGY))
@@ -450,9 +439,9 @@ public abstract class ChemSoftOutputHandler extends Worker
         
         if (verbosity > -1)
         {
-        	System.out.println(" Log file '" + inFile + "' contains " 
+        	System.out.println("Log file '" + inFile + "' contains " 
         			+ numSteps + " steps.");
-        	System.out.println(" The overall run did " + strForlog 
+        	System.out.println("The overall run did " + strForlog 
         			+ "terminate normally!");
         }
         
@@ -465,7 +454,7 @@ public abstract class ChemSoftOutputHandler extends Worker
         ListOfDoubles qhGibbsEnergies = new ListOfDoubles();
         
         // Unless we have defined tasks for specific job steps, we take the 
-        // analysis tasks defined upon initialisation and perform them on all
+        // analysis tasks defined upon initialization and perform them on all
         // job steps.
         if (analysisTasks.size() == 0)
         {
@@ -523,7 +512,12 @@ public abstract class ChemSoftOutputHandler extends Worker
     		}
     		
         	// What do we have to do on the current step?
-        	ArrayList<AnalysisTask> todoList = analysisTasks.get(stepId);
+        	List<AnalysisTask> todoList = analysisTasks.get(stepId);
+        	if (todoList.size()==0)
+        	{
+        		resultsString.append(" -> No analysis has been requested." + NL);
+        		continue;
+        	}
         	for (AnalysisTask at : todoList)
         	{
         		ParameterStorage atParams = at.getParams();
@@ -628,7 +622,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        			lastGeomToExpose = mol;
 	        			
 	        			IOtools.writeAtomContainerToFile(outFileName, mol,
-	        					format,true);
+	        					format, true);
 
                         resultsString.append("-> extracting last geometry out"
                         		+ " of ")
@@ -731,7 +725,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 		        			{
 		        				System.out.println("No frequencies found in "
 		        						+ "step " + stepId 
-		        						+ ". Skipping QHThermochemistry.");
+		        						+ ". Skipping " + at +".");
 		        			}
 	        				break;
 	        			}
@@ -742,7 +736,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 		        			{
 		        				System.out.println("No Gibbs free energy found"
 		        						+ " in step " + stepId 
-		        						+ ". Skipping QHThermochemistry.");
+		        						+ ". Skipping " + at + ".");
 		        			}
 	        				break;
 	        			}
@@ -751,13 +745,16 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY)
 	        					.getValue();
 	        			
-	        			Double temp = 298.15;
+	        			Double temp = changeIfParameterIsFound(298.15,
+	        					ChemSoftConstants.JOBDATTHERMOCHEM_TEMP,atParams);
+	        			
 	        			@SuppressWarnings("unchecked")
 						Double vibS = CompChemComputer.vibrationalEntropyCorr(
 	        					(ArrayList<Double>) stepData.getNamedData(
 	    	        					ChemSoftConstants.JOBDATAVIBFREQ)
-	        					.getValue(), 
-	        					temp);
+	        					.getValue(), temp); // J/(mol*K)
+	        			vibS = vibS / ACCConstants.HARTREETOJOULEPERMOLE;
+	        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
 
 	        			Double qhThrsh = 0.0;
 	        			qhThrsh = changeIfParameterIsFound(qhThrsh,
@@ -772,10 +769,20 @@ public abstract class ChemSoftOutputHandler extends Worker
 						Double qhVibS = CompChemComputer.vibrationalEntropyCorr(
 	        					(ArrayList<Double>) stepData.getNamedData(
 	    	        					ChemSoftConstants.JOBDATAVIBFREQ)
-	        					.getValue(), 
-	        					temp, qhThrsh, imThrsh, ignThrsh, verbosity-1);
+	        					.getValue(), temp, qhThrsh, imThrsh, ignThrsh, 
+	        					verbosity-1); // J/(mol*K)
+	        			qhVibS = qhVibS / ACCConstants.HARTREETOJOULEPERMOLE;
+	        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
+
+	        			if (verbosity > 1)
+	        			{
+	        				System.out.println("Quasi-harmonic approx changes "
+	        						+ "vibrational entropy from "
+	        						+ vibS + " (a.u.) to " + qhVibS + " (a.u.).");
+	        			}
 	        			
-	        			gibbsFreeEnergy = gibbsFreeEnergy - vibS + qhVibS;
+	        			gibbsFreeEnergy = gibbsFreeEnergy + vibS*temp 
+	        					- qhVibS*temp;
 	        			
 	        			resultsString.append("-> Quasi-Harm. corrected "
 	        					+ "Gibbs free energy ").append(gibbsFreeEnergy);
@@ -830,9 +837,9 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        			{ 
 	        				if (all)
 	        				{
-	        					System.out.print("Esporting all normal modes");
+	        					System.out.print("Exporting all normal modes");
 	        				} else {
-	        					System.out.print("Esporting normal modes ");
+	        					System.out.print("Exporting normal modes ");
 	        				}
 	        			}
 	        			for (Integer id : idxs)
@@ -846,7 +853,7 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        			}
 	        			if (verbosity > 1)
 	        			{ 
-        					System.out.println(" to file '" + outFile + "'");
+        					System.out.println("to file '" + outFile + "'");
 	        			}
 	        			IOtools.writeTXTAppend(outFile, sb.toString(), true);
 	        			
@@ -854,6 +861,14 @@ public abstract class ChemSoftOutputHandler extends Worker
 	        					nms.size());
 	        			resultsString.append(NL);
 	        			break;
+	        		}
+	        		
+	        		case BLVSCONNECTIVITY:
+	        		{
+	        			// Nothing to do. This is assumed to be a global task:
+	        			// it is performed only on the overall final result, not
+	        			// in intermediate steps (i.e., not here).
+						break;
 	        		}
         		}
         		
@@ -864,7 +879,7 @@ public abstract class ChemSoftOutputHandler extends Worker
      	
         if (verbosity > 0)
         {
-        	System.out.println(" ");
+        	System.out.println("");
         	System.out.println("Summary of the results:");
             System.out.println(resultsString.toString());
         }
@@ -875,7 +890,7 @@ public abstract class ChemSoftOutputHandler extends Worker
         // WARNING: the LASTGEOMETRY analysis is expected to run before
         // the BLVSCONNECTIVITY
         
-        // Analyse one on the collection of steps takes as a whole
+        // Analyse the collection of steps takes as a whole
         for (AnalysisTask at : analysisGlobalTasks)
         {
         	ParameterStorage atParams = at.getParams();
@@ -935,9 +950,8 @@ public abstract class ChemSoftOutputHandler extends Worker
 				
 				case BLVSCONNECTIVITY:
 				{
-
-					double tolerance = 0.05;
-					tolerance = changeIfParameterIsFound(tolerance,
+					connectivityCheckTol = changeIfParameterIsFound(
+							connectivityCheckTol,
 							ChemSoftConstants.PARBONDLENGTHTOLETANCE, atParams);
 
 					String result = " compatible ";
@@ -955,8 +969,8 @@ public abstract class ChemSoftOutputHandler extends Worker
 								+ "lengths. ");
 						isCompatible = false;
 					} else if (!ConnectivityUtils.compareBondDistancesWithReference(
-							lastGeomToExpose, connectivityTemplate, tolerance, 
-							0, log))
+							lastGeomToExpose, connectivityTemplate, 
+							connectivityCheckTol, 0, log))
 					{
 						isCompatible = false;
 					}
@@ -973,7 +987,7 @@ public abstract class ChemSoftOutputHandler extends Worker
         
         if (verbosity > 0)
         {
-        	System.out.println(" ");
+        	System.out.println("");
         	System.out.println("Summary of final results:");
             System.out.println(finalResultsString.toString());
         }
@@ -982,15 +996,19 @@ public abstract class ChemSoftOutputHandler extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * @param original the original value
-     * @param key the reference name of the parameter to try to find
-     * @return either the original value, or, if the given parameter is found, 
-     * the value of that parameter
+     * Looks for a parameter named <code>key</code> in the given 
+     * {@link ParameterStorage} and return its value, if such parameter is found,
+     * or the given <code>default</code> is such parameter is not found in the
+     * {@link ParameterStorage}.
+     * @param defaultValue the default value.
+     * @param key the reference name of the parameter to try to find.
+     * @return either the default value, or, if the parameter is found, 
+     * the value of that parameter.
      */
-    private double changeIfParameterIsFound(double original, String key,
-    		ParameterStorage ps) 
+    protected static double changeIfParameterIsFound(double defaultValue, 
+    		String key, ParameterStorage ps) 
     {
-    	String iStr = Double.toString(original);
+    	String iStr = Double.toString(defaultValue);
     	iStr = changeIfParameterIsFound(iStr, key, ps);
     	return Double.parseDouble(iStr);
     }
@@ -998,33 +1016,42 @@ public abstract class ChemSoftOutputHandler extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * @param original the original value
-     * @param key the reference name of the parameter to try to find
-     * @return either the original value, or, if the given parameter is found, 
-     * the value of that parameter
+     * Looks for a parameter named <code>key</code> in the given 
+     * {@link ParameterStorage} and return its value, if such parameter is found,
+     * or the given <code>default</code> is such parameter is not found in the
+     * {@link ParameterStorage}.
+     * @param defaultValue the default value.
+     * @param key the reference name of the parameter to try to find.
+     * @return either the default value, or, if the parameter is found, 
+     * the value of that parameter.
      */
-    private ListOfIntegers changeIfParameterIsFound(ListOfIntegers original, 
+    protected static ListOfIntegers changeIfParameterIsFound(
+    		ListOfIntegers defaultValue, 
     		String key, ParameterStorage ps) 
     {
 		if (ps.contains(key))
 		{
 			return (ListOfIntegers) ps.getParameter(key).getValue();
 		}
-    	return original;
+    	return defaultValue;
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * @param original the original value
-     * @param key the reference name of the parameter to try to find
-     * @return either the original value, or, if the given parameter is found, 
-     * the value of that parameter
+     * Looks for a parameter named <code>key</code> in the given 
+     * {@link ParameterStorage} and return its value, if such parameter is found,
+     * or the given <code>default</code> is such parameter is not found in the
+     * {@link ParameterStorage}.
+     * @param defaultValue the default value.
+     * @param key the reference name of the parameter to try to find.
+     * @return either the default value, or, if the parameter is found, 
+     * the value of that parameter.
      */
-    private int changeIfParameterIsFound(int original, String key,
+    protected static int changeIfParameterIsFound(int defaultValue, String key,
     		ParameterStorage ps) 
     {
-    	String iStr = Integer.toString(original);
+    	String iStr = Integer.toString(defaultValue);
     	iStr = changeIfParameterIsFound(iStr, key, ps);
     	return Integer.parseInt(iStr);
     }
@@ -1032,19 +1059,23 @@ public abstract class ChemSoftOutputHandler extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * @param original the original value
-     * @param key the reference name of the parameter to try to find
-     * @return either the original value, or, if the given parameter is found, 
-     * the value of that parameter
+     * Looks for a parameter named <code>key</code> in the given 
+     * {@link ParameterStorage} and return its value, if such parameter is found,
+     * or the given <code>default</code> is such parameter is not found in the
+     * {@link ParameterStorage}.
+     * @param defaultValue the default value.
+     * @param key the reference name of the parameter to try to find.
+     * @return either the default value, or, if the parameter is found, 
+     * the value of that parameter.
      */
-    private String changeIfParameterIsFound(String original, String key,
-    		ParameterStorage ps) 
+    protected static String changeIfParameterIsFound(String defaultValue, 
+    		String key, ParameterStorage ps) 
     {
 		if (ps.contains(key))
 		{
 			return ps.getParameter(key).getValueAsString();
 		}
-		return original;
+		return defaultValue;
 	}
 
 //------------------------------------------------------------------------------

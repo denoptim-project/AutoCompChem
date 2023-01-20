@@ -41,6 +41,7 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileAnalyzer;
@@ -714,7 +715,9 @@ public class GaussianOutputHandler extends Worker
                                                             qhThrsh,
                                                             imThrsh,
                                                             0.01,
-                                                            verbosity);
+                                                            verbosity) 
+                                		/ ACCConstants.JOULEPERMOLETOCALPERMOL;
+                                
                                 corrS = traS + rotS + vibS;
 
                                 if (verbosity > 2)

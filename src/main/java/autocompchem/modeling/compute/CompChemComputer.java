@@ -22,23 +22,13 @@ import java.util.ArrayList;
 import autocompchem.constants.ACCConstants;
 
 /**
- * Toolbox to compute quantities deriving from computational chemistry jobs.
+ * Tools to compute quantities deriving from computational chemistry jobs.
  * 
  * @author Marco Foscato
  */
 
-
 public class CompChemComputer
 {
-    /**
-     * Pathname to the file containing the molecules to analyze
-     */
-    private String inFile;
-
-    /**
-     * Pathname to the file where to write the output
-     */
-    private String outFile;
 
 //------------------------------------------------------------------------------
 
@@ -47,8 +37,7 @@ public class CompChemComputer
      */
 
     public CompChemComputer()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -61,13 +50,13 @@ public class CompChemComputer
      * @param freqs list of frequencies (after projection of translations and
      * rotations of the center of mass) in cm<sup>-1</sup>
      * @param temp the temperature in Kelvin
-     * @return the correction in [cal/(K*mol))]
+     * @return the correction in [J/(K*mol))]
      */
 
     public static double vibrationalEntropyCorr(ArrayList<Double> freqs,
                                                                     double temp)
     {
-        return vibrationalEntropyCorr(freqs,temp,0.0,0.0,0.0001,0);
+        return vibrationalEntropyCorr(freqs, temp, 0.0, 0.0, 0.0001, 0);
     }
 
 //------------------------------------------------------------------------------
@@ -85,15 +74,16 @@ public class CompChemComputer
      * cm<sup>-1</sup> (see J. Phys. Chem. B, 2011, 115 (49), pp 14556-14562).
      *  Use 0.0 to
      * exclude application of quasi-harmonic approximation.
-     * @param imThrsh threshold for converting imaginary modes  
+     * @param imThrsh threshold in cm<sup>-1</sup> for converting imaginary 
+     * modes  
      * to real modes. If a mode has frequency 'i*v' lower than i*(imThrsh) it 
-     * will be threated as if its frequency was 'v'.
+     * will be treated as if its frequency was 'v'.
      * @param ignThrsh threshold for ignore modes: if the modulus of the
      * frequency in cm<sup>-1</sup> is below this value the mode is ignored.
      * This is meant for handling list of modes that include rotations and
      * translations and report them with close-to-zero frequencies.
      * @param verbosity the verbosity level
-     * @return the correction in [cal/(K*mol))]
+     * @return the correction in [J/(K*mol))]
      */
 
     public static double vibrationalEntropyCorr(ArrayList<Double> freqs, 
@@ -104,9 +94,7 @@ public class CompChemComputer
                                                 int verbosity)
     {
         double vibS = 0.0d;
-        double cR = ACCConstants.GASR 
-                    / ACCConstants.JOULEPERMOLETOCALPERMOL; 
-                    // cR units are [J/(K*mol)] / [J/cal] = [cal/(K*mol))]
+        double cR = ACCConstants.GASR; // cR units are [J/(K*mol)]
         double hck = ACCConstants.PLANKSK 
                      * ACCConstants.SPEEDOFLIGHT 
                      / ACCConstants.BOLTZMANNSK; 
@@ -122,7 +110,7 @@ public class CompChemComputer
                 {
                     if (verbosity > 1)
                     {
-                        System.out.println(w + " changing sing to "
+                        System.out.println(w + " changing sign to "
                                            + "imaginary mode "+freq);
                     }
                     freq = -freq;
@@ -162,10 +150,10 @@ public class CompChemComputer
             freq = hck * freq;  //[cm/K] * [1/cm] = 1/K
             double vs = cR*((freq/temp)/(Math.exp(freq/temp) - 1.0) 
                             - Math.log(1.0 - Math.exp(-1.0*freq/temp)));
-            vibS = vibS + vs;
+            vibS = vibS + vs; // units are [J/(K*mol))]
         }
         
-        return vibS;  // units are [cal/(K*mol))]
+        return vibS;  // units are [J/(K*mol))]
     }
 
 //------------------------------------------------------------------------------

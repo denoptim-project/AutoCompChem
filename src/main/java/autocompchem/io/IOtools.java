@@ -772,17 +772,19 @@ public class IOtools
 //------------------------------------------------------------------------------
 	
 	/**
-	 * Writes atom containers to file
-	 * file or appends to an existing one.
-	 * @param filename target XYZ file (new or existing)
-	 * @param acs set of atom containers to be written on the XYZ file
-	 * @param append <code>true</code> to append to existing file
+	 * Writes atom containers to file or appends to an existing one.
+	 * @param filename file where we want to write (new or existing).
+	 * @param acs set of atom containers to be written on the file.
+	 * @param format the format for writing the atom containers. Acceptable
+	 * values are 'SDF' and 'XYZ' (case insensitive).
+	 * @param append <code>true</code> to append to existing file. Otherwise,
+	 * we overwrite any existing content.
 	 */
 	
 	public static void writeAtomContainerToFile(String filename, 
 	  		IAtomContainer ac, String format, boolean append)
 	{
-	  	switch(format)
+	  	switch(format.toUpperCase())
 	  	{
 	  		case "XYZ":
 				writeXYZAppend(filename, ac, append);

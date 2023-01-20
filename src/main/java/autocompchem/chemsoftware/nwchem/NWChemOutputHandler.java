@@ -792,7 +792,7 @@ public class NWChemOutputHandler extends Worker
                                                                 verbosity);
                                 corrS = traS + rotS + vibS;
                                 res = res + String.format(Locale.ENGLISH,
-                                		"%.2f ",corrS); 
+                                		"%.2f ", corrS); 
                             }
                         }
                     }

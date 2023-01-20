@@ -210,6 +210,13 @@ public class GaussianConstants
      * String identifying thermal correction to enthalpy
      */
     public final static String OUTCORRH = "^ Thermal correction to Enthalpy(.*)";
+    
+    /**
+     * String identifying the Gibbs free energy including 
+	 * thermochemical corrections.
+     */
+    public final static String OUTGIBBSFREEENERGY = 
+    		"Sum of electronic and thermal Free Energies=";
 
     /**
      * String identifying total entropy

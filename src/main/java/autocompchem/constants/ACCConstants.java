@@ -18,52 +18,75 @@ package autocompchem.constants;
  */
 
 /**
- * Storage of predefined constants for general purposes
+ * Storage of predefined constants for general purposes.
  *
  * @author Marco Foscato
  */
 
 public class ACCConstants
-{
+{   
     /**
-     * Aangstroom to Bohr conversion factor
+     * Hartree to Joule conversion factor [J/Eh]. Source "
+     *  J. Phys. Chem. Ref. Data 50, 033105 (2021); 
+     *  https://doi.org/10.1063/5.0064853
      */
-    public final static double ANGSTOMTOBOHR = 1.889725989;
+    public final static double HARTREETOJOULE = 4.3597447222071E-18;
 
     /**
-     * Hartree to Kilo calories per mole conversion factor
-     */
-    public final static double HARTREETOKCALPERMOL = 627.5095;
-
-    /**
-     * Calories per mole to Joule per mole conversion factor
-     */
-    public final static double JOULEPERMOLETOCALPERMOL = 4.184;
-
-    /**
-     * Speed of light [cm/s]
+     * Speed of light [cm/s]. Source "
+     *  J. Phys. Chem. Ref. Data 50, 033105 (2021); 
+     *  https://doi.org/10.1063/5.0064853
      */
     public final static double SPEEDOFLIGHT = 2.99792458E10;
 
     /**
-     * Boltzman's constant [J/Kelvin]
+     * Plank's constant 'h' [J/Hz]. Source "
+     *  J. Phys. Chem. Ref. Data 50, 033105 (2021); 
+     *  https://doi.org/10.1063/5.0064853
      */
-    public final static double BOLTZMANNSK = 1.3806488E-23;
+    public final static double PLANKSK = 6.62607015E-34;
 
     /**
-     * Plank's contant [J*s]
+     * Avogadro's number [1/mol]. Source "
+     *  J. Phys. Chem. Ref. Data 50, 033105 (2021); 
+     *  https://doi.org/10.1063/5.0064853
      */
-    public final static double  PLANKSK = 6.62606957E-34;
+    public final static double NAVOGADRO = 6.02214076E23;
 
     /**
-     * Avogadro's number [1/mol]
+     * Boltzman's constant [J/Kelvin]. Source "
+     *  J. Phys. Chem. Ref. Data 50, 033105 (2021); 
+     *  https://doi.org/10.1063/5.0064853
      */
-    public final static double  NAVOGADRO = 6.02214129E23;
-
+    public final static double BOLTZMANNSK = 1.380649E-23;
+    
+    /**
+     * Hartree to kiloJ/mol conversion factor [J/(Eh*mol)].
+     */
+    public final static double HARTREETOJOULEPERMOLE = 
+    		HARTREETOJOULE * NAVOGADRO;
+   
     /**
      * Gas's constant [J/(Kelvin*mol)]
      */
     public final static double  GASR = NAVOGADRO * BOLTZMANNSK;
+    
+    /**
+     * Aangstrom to Bohr conversion factor
+     */
+    public final static double ANGSTOMTOBOHR = 1.889725989;
+
+    /**
+     * Hartree to kilo calories per mole conversion factor.
+     */
+    @Deprecated
+    public final static double HARTREETOKCALPERMOL = 627.5095;
+
+    /**
+     * Calories per mole to Joule per mole conversion factor.
+     */
+    @Deprecated
+    public final static double JOULEPERMOLETOCALPERMOL = 4.184;
 
     /**
      * Reference name for verbosity level parameter

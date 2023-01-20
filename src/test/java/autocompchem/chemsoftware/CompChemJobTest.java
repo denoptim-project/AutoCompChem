@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 
 /**
- * Unit Test for OrcaJob objects
+ * Unit Test for CompChemJob.
  * 
  * @author Marco Foscato
  */

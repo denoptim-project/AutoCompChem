@@ -55,7 +55,7 @@ public class GaussianOutputHandler2 extends ChemSoftOutputHandler
 //-----------------------------------------------------------------------------
     
     /**
-     * Method that parses the given log file from XTB and collects all 
+     * Method that parses the given log file from Gaussian and collects all 
      * possible data in local fields.
      * @throws CloneNotSupportedException 
      */
@@ -163,7 +163,15 @@ public class GaussianOutputHandler2 extends ChemSoftOutputHandler
         					ChemSoftConstants.JOBDATAVIBFREQ, listFreqs));
             	    stepData.putNamedData(new NamedData(
         					ChemSoftConstants.JOBDATAVIBMODES, listNormModes));
-            	} else if (line.matches(".*" + GaussianConstants.OUTCORRH+ ".*"))
+            	} else if (line.matches(".*" 
+	                        + GaussianConstants.OUTGIBBSFREEENERGY + ".*"))
+	            {
+	                String[] p = line.trim().split("\\s+");
+	                Double val = Double.parseDouble(p[7]);
+	                stepData.putNamedData(new NamedData(
+	                        ChemSoftConstants.JOBDATAGIBBSFREEENERGY,
+	                        val));
+	            } else if (line.matches(".*" + GaussianConstants.OUTCORRH+ ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
                     Double val = Double.parseDouble(p[4]);
@@ -180,7 +188,7 @@ public class GaussianOutputHandler2 extends ChemSoftOutputHandler
                 } else if (line.matches(".*" + GaussianConstants.OUTTOTS + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
-                    Double val = Double.parseDouble(p[3]);
+                    Double val = Double.parseDouble(p[3]); // Cal/Mol-Kelvin
                     stepData.putNamedData(new NamedData(
                             ChemSoftConstants.JOBDATTHERMOCHEM_S_TOT,
                             val));
