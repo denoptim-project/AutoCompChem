@@ -416,7 +416,7 @@ public class VibModuleOutputHandler extends Worker
         String msg = "noMsg";
 
         //Read the VibModule output file and collect counts and line numbers
-        ArrayList<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<String>();
         patterns.add(VibModuleConstants.NORMALCOMPLSTATUS); // 0
         patterns.add(VibModuleConstants.TITSTRSEC);         // 1
         patterns.add(VibModuleConstants.TITBENDSEC);        // 2
@@ -424,10 +424,10 @@ public class VibModuleOutputHandler extends Worker
         patterns.add(VibModuleConstants.TITTORSEC);         // 4
         patterns.add(VibModuleConstants.TITFFPARAMS);       // 5
         patterns.add(VibModuleConstants.TITFREQSEC);        // 6
-        ArrayList<ArrayList<Integer>> countsAndLineNum =
+        List<List<Integer>> countsAndLineNum =
                                            FileAnalyzer.count(vmFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
-        ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
+        List<Integer> counts = countsAndLineNum.get(indexOfCounts);
 
         // Check for normal termination
         if (counts.get(0) > 0)
@@ -452,7 +452,7 @@ public class VibModuleOutputHandler extends Worker
             }
 
             //Read selected lines
-            ArrayList<String> lines = IOtools.extractFromTo(vmFile,startLine,
+            List<String> lines = IOtools.extractFromTo(vmFile,startLine,
                                                                       stopLine);
 
             //Extract internal coordinated and force constants
@@ -782,7 +782,7 @@ public class VibModuleOutputHandler extends Worker
         IAtomContainer mol = new AtomContainer();
         try 
         {
-            ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
+            List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
             mols = IOtools.readSDF(molFile);
             if (mols.size() > 1)
             {

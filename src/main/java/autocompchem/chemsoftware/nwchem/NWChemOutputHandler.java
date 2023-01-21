@@ -17,6 +17,7 @@ package autocompchem.chemsoftware.nwchem;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,7 +94,7 @@ public class NWChemOutputHandler extends Worker
     /**
      * Selected vibrational modes
      */
-    private ArrayList<Integer> selectedVibModes;
+    private List<Integer> selectedVibModes;
 
     /**
      * Pathname where to print vibrational modes
@@ -103,7 +104,7 @@ public class NWChemOutputHandler extends Worker
     /**
      * List of known errors messages
      */
-    private ArrayList<ErrorMessage> errorDef;
+    private List<ErrorMessage> errorDef;
 
     /**
      * Verbosity level
@@ -153,7 +154,7 @@ public class NWChemOutputHandler extends Worker
     /**
      * Data structure containing the vibrational modes as a list
      */
-    private ArrayList<ArrayList<Double>> vibModes;
+    private List<List<Double>> vibModes;
 
     /**
      * Flag requiring calculation of vibrational S by quasi-harmonic approx.
@@ -163,7 +164,7 @@ public class NWChemOutputHandler extends Worker
     /**
      * Array of vibrational modes read from NWChem output
      */
-    private ArrayList<Double> projFrequencies = new ArrayList<Double>();
+    private List<Double> projFrequencies = new ArrayList<Double>();
 
     /**
      * Lowest value for non-zero frequencies
@@ -473,15 +474,15 @@ public class NWChemOutputHandler extends Worker
     public void evaluateOutputNWChem()
     {
         //Read the outfile and collect counts and line numbers
-        ArrayList<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<String>();
         patterns.add(NWChemConstants.OUTINITSTR);
         patterns.add(NWChemConstants.OUTNORMALENDSTR);
-        ArrayList<ArrayList<Integer>> countsAndLineNum = 
+        List<List<Integer>> countsAndLineNum = 
                                            FileAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
-        ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
-        ArrayList<ArrayList<Integer>> lineNums = 
-                                            new ArrayList<ArrayList<Integer>>();
+        List<Integer> counts = countsAndLineNum.get(indexOfCounts);
+        List<List<Integer>> lineNums = 
+                                            new ArrayList<List<Integer>>();
         //Keep all but the last array (which is the count)
         for (int i=0; i<(countsAndLineNum.size() - 1); i++)
             lineNums.add(countsAndLineNum.get(i));
@@ -525,7 +526,7 @@ public class NWChemOutputHandler extends Worker
         {
             System.out.println(" Analyzing tail (start at line "+lastInit+")");
         }
-        ArrayList<String> tail = IOtools.tailFrom(inFile,lastInit);
+        List<String> tail = IOtools.tailFrom(inFile,lastInit);
 
         //Error identififcation
         if (!normalTerminated && errorDef != null)
@@ -588,8 +589,8 @@ public class NWChemOutputHandler extends Worker
 
             if (analyseEnergy || checkTS)
             {
-                Map<String,ArrayList<Integer>> matchesMap =
-                                       new HashMap<String,ArrayList<Integer>>();
+                Map<String,List<Integer>> matchesMap =
+                                       new HashMap<String,List<Integer>>();
                 for (int i=0; i<tail.size(); i++)
                 {
                     String line = tail.get(i);
@@ -613,7 +614,7 @@ public class NWChemOutputHandler extends Worker
                             }
                             else
                             {
-                                ArrayList<Integer> lst = 
+                                List<Integer> lst = 
                                                        new ArrayList<Integer>();
                                 lst.add(i);
                                 matchesMap.put(pattern,lst);
@@ -629,13 +630,13 @@ public class NWChemOutputHandler extends Worker
                 }
                 String res = "Analysis: ";
 
-                ArrayList<Double> imgFreqs = new ArrayList<Double>();
+                List<Double> imgFreqs = new ArrayList<Double>();
                 if (readFrequencies)
                 {
                     String key = NWChemConstants.OUTPROJFREQ;
                     if (matchesMap.containsKey(key))
                     {
-                        vibModes = new ArrayList<ArrayList<Double>>();
+                        vibModes = new ArrayList<List<Double>>();
                         int iBlock = -1; // the count of blocks of freqs
                         for (Integer i : matchesMap.get(key))
                         {
@@ -659,7 +660,7 @@ public class NWChemOutputHandler extends Worker
                                 projFrequencies.add(freq);
 
                                 // Here we only add an empty mode: will be filled later
-                                ArrayList<Double> mode = new ArrayList<Double>();
+                                List<Double> mode = new ArrayList<Double>();
                                 vibModes.add(mode);
                             }
 
@@ -841,7 +842,7 @@ public class NWChemOutputHandler extends Worker
 
     public IAtomContainer extractLastOutputGeometry()
     {
-        ArrayList<IAtomContainer> allGeoms = getAllGeometries();
+        List<IAtomContainer> allGeoms = getAllGeometries();
         if (allGeoms.size() == 0)
         {
             Terminator.withMsgAndStatus("ERROR! No geometry found in '" 
@@ -903,7 +904,7 @@ public class NWChemOutputHandler extends Worker
 
     public void printTrajectory(boolean onlyOpt)
     {
-        ArrayList<IAtomContainer> allGeoms;
+        List<IAtomContainer> allGeoms;
         if (onlyOpt)
         {
             allGeoms = getAllOptGeometries();
@@ -1012,7 +1013,7 @@ public class NWChemOutputHandler extends Worker
             } else {
                 sb.append(">").append(System.getProperty("line.separator"));
             }
-            ArrayList<Double> mode = vibModes.get(vmId);
+            List<Double> mode = vibModes.get(vmId);
             for (int atmId=0; atmId<(mode.size()/3); atmId++)
             {
                 sb.append(String.format(Locale.ENGLISH," %5.5f",mode.get(atmId*3)));
@@ -1037,19 +1038,19 @@ public class NWChemOutputHandler extends Worker
      * step
      */
 
-    private void identifyErrorMessage(ArrayList<String> tail)
+    private void identifyErrorMessage(List<String> tail)
     {
         errorIsDecoded = false;
         for (ErrorMessage em : errorDef)
         {
             //Get the error message of this candidate error
-            ArrayList<String> emLines = em.getErrorMessage();
+            List<String> emLines = em.getErrorMessage();
 
             if (verbosity > 1)
                 System.out.println(" -> Trying with "+em.getName()+" <-");
 
             //Read .out file from bottom to top  looking for the error messages
-             ArrayList<Integer> counts = new ArrayList<Integer>();
+             List<Integer> counts = new ArrayList<Integer>();
             for ( int il=0; il<emLines.size(); il++)
             {
                 counts.add(0);
@@ -1092,7 +1093,7 @@ public class NWChemOutputHandler extends Worker
             if (errorIsDecoded)
             {
                 //Are there other conditions this .out has to fulfill?
-                ArrayList<String> conditions = em.getConditions();
+                List<String> conditions = em.getConditions();
                 int numberOfConditions = conditions.size();
                 if (numberOfConditions != 0)
                 {
@@ -1440,7 +1441,7 @@ TODO add other tasks here
     {
         IAtomContainer mol = new AtomContainer();
 
-        ArrayList<String> lines = FileAnalyzer.extractTxtWithDelimiters(inFile,
+        List<String> lines = FileAnalyzer.extractTxtWithDelimiters(inFile,
                                                 NWChemConstants.OUTSTARTINITXYZ,
                                                 NWChemConstants.OUTENDINITXYZ,
                                                                         false);
@@ -1468,9 +1469,9 @@ TODO add other tasks here
      * (no connectivity)
      */
 
-    public ArrayList<IAtomContainer> getAllOptGeometries()
+    public List<IAtomContainer> getAllOptGeometries()
     {
-        TreeMap<String,ArrayList<String>> mapBlocks =
+        TreeMap<String,List<String>> mapBlocks =
                       FileAnalyzer.extractMapOfTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                    NWChemConstants.OUTSTARTXYZ,
@@ -1481,8 +1482,8 @@ TODO add other tasks here
                                                                           false,
                                                                           true);
 
-        ArrayList<IAtomContainer> molList = new ArrayList<IAtomContainer>();
-        for (Map.Entry<String,ArrayList<String>> entry : mapBlocks.entrySet())
+        List<IAtomContainer> molList = new ArrayList<IAtomContainer>();
+        for (Map.Entry<String,List<String>> entry : mapBlocks.entrySet())
         {
             // We look only for keys identifying a converged geometry
             String key = entry.getKey();
@@ -1494,7 +1495,7 @@ TODO add other tasks here
 
             // WARNING! Assuming that the block before the current one is 
             // a block of Cartesian coordinates
-            ArrayList<String> xyzBlock = mapBlocks.lowerEntry(key).getValue();
+            List<String> xyzBlock = mapBlocks.lowerEntry(key).getValue();
             molList.add(getIAtomContainerFromXYZblock(xyzBlock));
         }
 
@@ -1509,9 +1510,9 @@ TODO add other tasks here
      * (no connectivity)
      */
 
-    public ArrayList<IAtomContainer> getAllGeometries()
+    public List<IAtomContainer> getAllGeometries()
     {
-        ArrayList<ArrayList<String>> blocks = 
+        List<List<String>> blocks = 
                        FileAnalyzer.extractMultiTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                    NWChemConstants.OUTSTARTXYZ,NWChemConstants.OUTHESSTARTXYZ)),
@@ -1520,8 +1521,8 @@ TODO add other tasks here
                                                                           false,
                                                                           true);
 
-        ArrayList<IAtomContainer> molList = new ArrayList<IAtomContainer>();
-        for (ArrayList<String> singleBlock : blocks)
+        List<IAtomContainer> molList = new ArrayList<IAtomContainer>();
+        for (List<String> singleBlock : blocks)
         {
             molList.add(getIAtomContainerFromXYZblock(singleBlock));
         }
@@ -1541,7 +1542,7 @@ TODO add other tasks here
      * @return the molecule obtained
      */
 
-    public IAtomContainer getIAtomContainerFromXYZblock(ArrayList<String> lines)
+    public IAtomContainer getIAtomContainerFromXYZblock(List<String> lines)
     {
         IAtomContainer mol = new AtomContainer();
         if (lines.size() < 3)

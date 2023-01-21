@@ -23,9 +23,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.perception.Perceptron;
 import autocompchem.perception.infochannel.FileAsSource;
@@ -37,6 +41,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.utils.NumberUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -54,6 +59,22 @@ public class JobEvaluator extends Worker
 	public static final Set<TaskID> capabilities = 
 			Collections.unmodifiableSet(new HashSet<TaskID>(
 					Arrays.asList(TaskID.EVALUATEJOB)));
+	
+	/**
+	 * Tasks about evaluating jobs of computational chemistry software.
+	 */
+	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
+			Collections.unmodifiableSet(new HashSet<TaskID>(
+					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
+	//TODO-gg add these 
+					/*
+					TaskID.EVALUATENWCHEMOUTPUT,
+					TaskID.EVALUATEORCAOUTPUT,
+					TaskID.EVALUATEXTBOUTPUT,
+					TaskID.EVALUATESPARTANOUTPUT,
+					*/
+							)));
+	
 	
 	/**
 	 * The string used to identify the perceived situation in the exposed 
@@ -262,12 +283,50 @@ public class JobEvaluator extends Worker
 					+ "is empty! Information is needed to do perception.",-1);
 		}
 		
-		//TODO Collect and prepare info
-		// e.g. parse output files to extract data and build info from it
+		if (EVALCOMPCHEMJOBTASKS.contains(task) || job instanceof CompChemJob)
+		{
+			ParameterStorage analysisParams = new ParameterStorage();
+			if (EVALCOMPCHEMJOBTASKS.contains(task))
+			{
+				TaskID analysisTask = TaskID.UNSET;
+				switch (task) {
+				case EVALUATEGAUSSIANOUTPUT:
+					analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
+					break;
+/*
+				case EVALUATENWCHEMOUTPUT:
+					analysisTask = TaskID.ANALYSENWCHEMOUTPUT;
+					break;
+				case EVALUATEORCAOUTPUT:
+					analysisTask = TaskID.ANALYSEORCAOUTPUT;
+					break;
+				case EVALUATENXTBOUTPUT:
+					analysisTask = TaskID.ANALYSEXTBOUTPUT;
+					break;
+				case EVALUATESPAARTANOUTPUT:
+					analysisTask = TaskID.ANALYSESPARTANOUTPUT;
+					break;
+*/
+				default:
+					break;
+				}
+				analysisParams.setParameter("TASK", analysisTask);
+				//TODO-gg add any AnalisisTask?
+			}
+			
+			ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
+					WorkerFactory.createWorker(params);
+			outputParser.setSituationBase(sitsDB);
+			outputParser.performTask();
+			//TODO-gg 
+			//scoreCircumstances(outputParser.getCircumnstanceMatches());
+			
+			//TODO-gg put exposed output into information channels
+		}
 
 		
 		// Attempt perception
-		Perceptron p = new Perceptron(sitsDB,icDB);
+		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setVerbosity(verbosity-1);
 		
 		try {
@@ -305,6 +364,9 @@ public class JobEvaluator extends Worker
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
 						NamedDataType.ACTION, a));
 				//TODO: alter master job with reaction triggered by outcome of analysis
+				//
+				// TODO-gg: repetition of a step should occur by adding new 
+				// steps in between the evaluation one and its originally-next step
 			}
 		}
 	}

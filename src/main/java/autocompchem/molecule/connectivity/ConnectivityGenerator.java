@@ -207,7 +207,7 @@ public class ConnectivityGenerator extends Worker
 
       public void checkBondLengthsAgainstConnectivity()
       {
-          ArrayList<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
+          List<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
           try 
           { 
         	  refMols = IOtools.readMultiMolFiles(refFile);
@@ -380,7 +380,7 @@ public class ConnectivityGenerator extends Worker
         if (verbosity > 1)
             System.out.println(" Imposing connectivity on file " + inFile);
 
-        ArrayList<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
+        List<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
         
         //TODO: what to do when there is more than one template?
         

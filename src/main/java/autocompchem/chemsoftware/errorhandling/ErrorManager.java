@@ -21,6 +21,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import autocompchem.files.FileComparatorByName;
 import autocompchem.files.FileUtils;
@@ -41,8 +42,7 @@ public class ErrorManager
 //------------------------------------------------------------------------------
 
     public ErrorManager()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -53,10 +53,10 @@ public class ErrorManager
      * @return the list of error messages as objects
      */
 
-    public static ArrayList<ErrorMessage> getAll(String path)
+    public static List<ErrorMessage> getAll(String path)
     {
-        ArrayList<ErrorMessage> listErrors = new ArrayList<ErrorMessage>();
-        ArrayList<File> listFiles = FileUtils.find(path,"*.err");
+        List<ErrorMessage> listErrors = new ArrayList<ErrorMessage>();
+        List<File> listFiles = FileUtils.find(path,"*.err");
 
         //sort ascending=true
         Collections.sort(listFiles, new FileComparatorByName(true));
@@ -65,7 +65,7 @@ public class ErrorManager
         {
             //Read file
             String fname = f.toString();
-            ArrayList<ArrayList<String>> form = IOtools.readFormattedText(
+            List<List<String>> form = IOtools.readFormattedText(
                                                 fname,
                                                 ":", //key-value separator
                                                 "#", //comment
@@ -75,14 +75,14 @@ public class ErrorManager
 /*
             String refName = "";
             String action = "";
-            ArrayList<String> errLines = new ArrayList<String>();
-            ArrayList<String> conditions = new ArrayList<String>();
+            List<String> errLines = new List<String>();
+            List<String> conditions = new List<String>();
             Map<String,String> details = new HashMap<String,String>();
             boolean refNameFound = false;
             boolean actionFound = false;
             for (int i=0; i<form.size(); i++)
             {
-                ArrayList<String> signleBlock = form.get(i);
+                List<String> signleBlock = form.get(i);
                 String key = signleBlock.get(0);
                 String value = signleBlock.get(1);
 

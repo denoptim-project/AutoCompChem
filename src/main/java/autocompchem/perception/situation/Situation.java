@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import autocompchem.files.FileUtils;
@@ -60,7 +61,7 @@ public class Situation extends Concept
      * The context that characterise this situation is defined by a set 
      * of circumstances
      */
-     private ArrayList<ICircumstance> context = new ArrayList<ICircumstance>();
+     private List<ICircumstance> context = new ArrayList<ICircumstance>();
 
     /**
      * Default logical expression for evaluating overall context
@@ -97,7 +98,7 @@ public class Situation extends Concept
 
     public Situation(String conceptType)
     {
-        super(conceptType,"noRefName");
+        this(conceptType, "noRefName", null, null);
     }
 
 //------------------------------------------------------------------------------
@@ -108,10 +109,9 @@ public class Situation extends Concept
      * @param context the context as a list of circumstances
      */
 
-    public Situation(String conceptType, ArrayList<ICircumstance> context)
+    public Situation(String conceptType, List<ICircumstance> context)
     {
-        super(conceptType,"noRefName");
-        this.context = context;
+        this(conceptType, "noRefName", context, null);
     }
 
 //------------------------------------------------------------------------------
@@ -124,10 +124,9 @@ public class Situation extends Concept
      */
 
     public Situation(String conceptType, String refName,
-    		ArrayList<ICircumstance> context)
+    		List<ICircumstance> context)
     {
-        super(conceptType,refName);
-        this.context = context;
+        this(conceptType, refName, context, null);
     }
     
 //------------------------------------------------------------------------------
@@ -142,10 +141,11 @@ public class Situation extends Concept
      */
 
     public Situation(String conceptType, String refName,
-    		ArrayList<ICircumstance> context, Action reaction)
+    		List<ICircumstance> context, Action reaction)
     {
         super(conceptType,refName);
-        this.context = context;
+        if (context!=null)
+        	this.context = context;
         this.reaction = reaction;
     }
     
@@ -194,7 +194,7 @@ public class Situation extends Concept
     	    
 	    //Read file
 	    String fname = f.toString();
-	    ArrayList<ArrayList<String>> form = IOtools.readFormattedText(
+	    List<List<String>> form = IOtools.readFormattedText(
 	    		fname,
 	    		SituationConstants.SEPARATOR, //key-value separator
 	    		SituationConstants.COMMENTLINE,
@@ -211,7 +211,7 @@ public class Situation extends Concept
      * @param form the formatted text
      */
     
-    public void configure(ArrayList<ArrayList<String>> form) throws Exception
+    public void configure(List<List<String>> form) throws Exception
     {
     	configure(form,"given form");
     }
@@ -223,14 +223,14 @@ public class Situation extends Concept
      * @param form the formatted text
      */
     
-    private void configure(ArrayList<ArrayList<String>> form, String source) 
+    private void configure(List<List<String>> form, String source) 
     		throws Exception
     {
         boolean refNameFound = false;
         boolean actionFound = false;
         for (int i=0; i<form.size(); i++)
         {
-            ArrayList<String> singleBlock = form.get(i);
+            List<String> singleBlock = form.get(i);
             String key = singleBlock.get(0);
             String value = singleBlock.get(1);
             value = value.trim();
@@ -328,7 +328,7 @@ public class Situation extends Concept
      * @return the circumstances
      */
 
-    public ArrayList<ICircumstance> getCircumstances()
+    public List<ICircumstance> getCircumstances()
     {
         return context;
     }

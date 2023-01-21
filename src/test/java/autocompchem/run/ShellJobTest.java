@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -89,7 +90,7 @@ See {@Link JobTest} for a possible solution.
             assertTrue(outFile.exists(), "Log file should exist");
             
 
-            ArrayList<String> resLines = FileAnalyzer.grep(outFile.getAbsolutePath(), 
+            List<String> resLines = FileAnalyzer.grep(outFile.getAbsolutePath(), 
             		new HashSet<String>(Arrays.asList("RESULT")));
             
             assertEquals(2,resLines.size(),"Number of matches in log file");

@@ -294,7 +294,7 @@ public class MolecularMeter extends Worker
     {
         int i = 0;
         try {
-            ArrayList<IAtomContainer> mols = IOtools.readMultiMolFiles(inFile);
+            List<IAtomContainer> mols = IOtools.readMultiMolFiles(inFile);
             for (IAtomContainer mol : mols) 
             {
                 // Get the molecule

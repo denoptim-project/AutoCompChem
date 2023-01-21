@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -93,8 +94,7 @@ public class Action implements Cloneable
     
     public Action(ActionType type, ActionObject object)
     {
-    	this.type = type;
-    	this.object = object;
+    	this(type, object, null);
     }
     
 //------------------------------------------------------------------------------
@@ -187,14 +187,14 @@ public class Action implements Cloneable
     			break;
     			
     		case (ActionConstants.DETAILSKEY):
-    		    ArrayList<ArrayList<String>> inFrm = TextAnalyzer.readKeyValue(
+    		    List<List<String>> inFrm = TextAnalyzer.readKeyValue(
     		    	new ArrayList<String>(Arrays.asList(
     		    	form.get(key).split(System.getProperty("line.separator")))),
     	                ActionConstants.SEPARATOR,
     	                ActionConstants.COMMENTLINE,
     	                ActionConstants.STARTMULTILINE,
     	                ActionConstants.ENDMULTILINE);
-    		    for (ArrayList<String> arr : inFrm)
+    		    for (List<String> arr : inFrm)
     		    {
     		    	details.put(arr.get(0), arr.get(1));
     		    }

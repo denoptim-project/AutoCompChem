@@ -1045,7 +1045,7 @@ public class Job implements Runnable
    {
 	   if (o == this)
 		   return true;
-	   
+	   //TODO-gg verify that we do not need comparison based on getClass()
 	   if (!(o instanceof Job))
     		return false;
 	   

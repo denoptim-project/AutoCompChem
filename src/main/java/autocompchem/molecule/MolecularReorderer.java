@@ -239,7 +239,7 @@ public class MolecularReorderer extends Worker
     {
 
         //Get the reference molecule
-        ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
+        List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
         mols = IOtools.readSDF(refFile);
         if (mols.size() > 1)
         {

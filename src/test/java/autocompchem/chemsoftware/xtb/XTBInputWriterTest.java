@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -147,7 +148,7 @@ public class XTBInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),
         		"elements: O,C,P"),"Keyword specific separator");
         
-        ArrayList<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
  
         // Now we do the almost the same, but we give the job details 
         // just a nested block
@@ -185,7 +186,7 @@ public class XTBInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile2.getAbsolutePath(),
         		"elements: O,C,P"),"Keyword specific separator");
         
-        ArrayList<String> linesInp2 = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp2 = IOtools.readTXT(inpFile.getAbsolutePath());
         
         assertEquals(linesInp.size(),linesInp2.size(), 
         		"Number of lines in generated input file");

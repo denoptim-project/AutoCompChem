@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -142,10 +143,10 @@ public class TextAnalyzer
      * command 
      * <code> ... | grep -c "some pattern" AND grep -n "some pattern" </code>
      * The returned array contains both the line number of the matches
-     * and the counts. The last ArrayList in the returned
-     * ArrayList of ArrayLists is the one that contains the counts, 
+     * and the counts. The last List in the returned
+     * List of Lists is the one that contains the counts, 
      * while all the other
-     * ArrayLists contain the line numbers
+     * Lists contain the line numbers
      * @param buffRead the source of text
      * @param lsStr list of pattern strings. '*' is used
      * as usual to specify the continuation of the string with any number of 
@@ -157,17 +158,16 @@ public class TextAnalyzer
      * (1-n, does not work as .size()!) 
      */
 
-    public static ArrayList<ArrayList<Integer>> count(BufferedReader buffRead,
-                                                        ArrayList<String> lsStr)
+    public static List<List<Integer>> count(BufferedReader buffRead,
+    		List<String> lsStr)
     {
         //Prepare storage of counts
-        ArrayList<Integer> counts = new ArrayList<Integer>(lsStr.size());
-        ArrayList<ArrayList<Integer>> lineNums = 
-                                            new ArrayList<ArrayList<Integer>>();
+        List<Integer> counts = new ArrayList<Integer>(lsStr.size());
+        List<List<Integer>> lineNums = new ArrayList<List<Integer>>();
         for (int i=0; i<lsStr.size(); i++)
         {
             counts.add(0);
-            ArrayList<Integer> ln = new ArrayList<Integer>();
+            List<Integer> ln = new ArrayList<Integer>();
             lineNums.add(ln);
         }
         
@@ -213,14 +213,13 @@ public class TextAnalyzer
      * @return the target section as array of lines
      */
 
-    public static ArrayList<String> extractTxtWithDelimiters(
+    public static List<String> extractTxtWithDelimiters(
                                                      BufferedReader buffRead,
                                                              String pattern1,
                                                              String pattern2,
                                                              boolean inclPatts)
     {
-        ArrayList<ArrayList<String>> blocks = 
-                                     extractMultiTxtBlocksWithDelimiters(
+        List<List<String>> blocks = extractMultiTxtBlocksWithDelimiters(
                                                                       buffRead,
                                                                       pattern1,
                                                                       pattern2,
@@ -246,7 +245,7 @@ public class TextAnalyzer
      * @return the list of target sections, each as an array of lines
      */
 
-    public static ArrayList<ArrayList<String>>
+    public static List<List<String>>
                          extractMultiTxtBlocksWithDelimiters(
                                                        BufferedReader buffRead,
                                                                String pattern1,
@@ -280,27 +279,22 @@ public class TextAnalyzer
      * @return the list of target sections, each as an array of lines
      */
 
-    public static ArrayList<ArrayList<String>> 
+    public static List<List<String>> 
                          extractMultiTxtBlocksWithDelimiters(
                                                        BufferedReader buffRead,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-        ArrayList<ArrayList<String>> blocks =
-                                             new ArrayList<ArrayList<String>>();
+        List<List<String>> blocks = new ArrayList<List<String>>();
 
-        Map<String,ArrayList<String>> mapBlocks =
-                                  extractMapOfTxtBlocksWithDelimiters(
-                                                              buffRead,
-                                                              startPattrns,
-                                                              endPattrns,
-                                                              onlyFirst,
-                                                              inclPatts);
+        Map<String,List<String>> mapBlocks =
+        		extractMapOfTxtBlocksWithDelimiters(buffRead, startPattrns,
+        				endPattrns, onlyFirst, inclPatts);
 
 //TODO check leftover?
-        ArrayList<String> sortKeys = new ArrayList<String>();
+        List<String> sortKeys = new ArrayList<String>();
         Collections.sort(sortKeys);
         
         TreeMap<Integer,String> keysMap = new TreeMap<Integer,String>();
@@ -384,11 +378,11 @@ public class TextAnalyzer
      * [i.e., an integer 0-n].
      */
 
-    public static TreeMap<String,ArrayList<String>>
+    public static TreeMap<String,List<String>>
                         extractMapOfTxtBlocksWithDelimiters(
                                                        BufferedReader buffRead,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
@@ -423,15 +417,15 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlockIndexed> extractTextBlocks(
+    public static List<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
                                                             String startPattrn,
                                                               String endPattrn,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-        ArrayList<String> startPattrns = new ArrayList<String>();
-        ArrayList<String> endPattrns = new ArrayList<String>();
+        List<String> startPattrns = new ArrayList<String>();
+        List<String> endPattrns = new ArrayList<String>();
         startPattrns.add(startPattrn);
         endPattrns.add(endPattrn);
 
@@ -466,10 +460,10 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlockIndexed> extractTextBlocks(
+    public static List<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
@@ -506,11 +500,11 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlockIndexed> extractTextBlocks(
+    public static List<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
-                                                   ArrayList<String> slPattrns,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                   List<String> slPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
@@ -548,26 +542,25 @@ public class TextAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlockIndexed> extractTextBlocks(
+    public static List<TextBlockIndexed> extractTextBlocks(
                                                        BufferedReader buffRead,
-                                                   ArrayList<String> slPattrns,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                   List<String> slPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts,
                                                       boolean expandBeyondNests)
     {
         // This is what we well return
-        ArrayList<TextBlockIndexed> blocks = new ArrayList<TextBlockIndexed>();
+        List<TextBlockIndexed> blocks = new ArrayList<TextBlockIndexed>();
 
         // Initialise counters
-        ArrayList<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
+        List<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
         for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
         {
             countsSL.add(-1);
         }
-        ArrayList<Integer> countsML =
-                                    new ArrayList<Integer>(startPattrns.size());
+        List<Integer> countsML = new ArrayList<Integer>(startPattrns.size());
         for (int pattIdx=0; pattIdx<startPattrns.size(); pattIdx++)
         {
             countsML.add(-1);
@@ -621,7 +614,7 @@ public class TextAnalyzer
                                 firstSlMatch = false;
                             }
                             countsSL.set(pattIdx,1 + countsSL.get(pattIdx));
-                            ArrayList<String> block = new ArrayList<String>();
+                            List<String> block = new ArrayList<String>();
                             block.add(line);
 
                             //
@@ -677,7 +670,7 @@ public class TextAnalyzer
                         {
                             // We close the newest open block of this specific
                             // pattIdx. Find it by sorting list of open blocks
-                            ArrayList<Integer> sortedOpnBlkKeys =
+                            List<Integer> sortedOpnBlkKeys =
                                                        new ArrayList<Integer>();
                             for (Integer k : oBKey2PId.keySet())
                             {
@@ -842,24 +835,23 @@ public class TextAnalyzer
      * [i.e., an integer 0-n].
      */
 
-    public static TreeMap<String,ArrayList<String>>
+    public static TreeMap<String,List<String>>
                         extractMapOfTxtBlocksWithDelimiters(
                                                         BufferedReader buffRead,
-                                                   ArrayList<String> slPattrns,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                   List<String> slPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-        TreeMap<String,ArrayList<String>> blocks = 
-                new TreeMap<String,ArrayList<String>>(new MetchKeyComparator());
-        ArrayList<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
+        TreeMap<String,List<String>> blocks = 
+                new TreeMap<String,List<String>>(new MetchKeyComparator());
+        List<Integer> countsSL = new ArrayList<Integer>(slPattrns.size());
         for (int pattIdx=0; pattIdx<slPattrns.size(); pattIdx++)
         {
             countsSL.add(-1);
         }
-        ArrayList<Integer> countsML = 
-                                    new ArrayList<Integer>(startPattrns.size());
+        List<Integer> countsML = new ArrayList<Integer>(startPattrns.size());
         for (int pattIdx=0; pattIdx<startPattrns.size(); pattIdx++)
         {
             countsML.add(-1);
@@ -871,8 +863,8 @@ public class TextAnalyzer
             outerLoopOnLines: 
             {
                 AtomicInteger opnBlkKey = new AtomicInteger(0);
-                Map<Integer,ArrayList<String>> openBlocks = 
-                                       new HashMap<Integer,ArrayList<String>>();
+                Map<Integer,List<String>> openBlocks = 
+                		new HashMap<Integer,List<String>>();
                 Map<Integer,Integer> oBKey2PId = new HashMap<Integer,Integer>();
                 Map<Integer,String> oBKey2Key= new HashMap<Integer,String>();
                 Set<Integer> justOpenBlocks = new HashSet<Integer>();
@@ -952,7 +944,7 @@ public class TextAnalyzer
                                     }
                                 }
                             }
-                            ArrayList<String> block = openBlocks.get(newstOBlk);
+                            List<String> block = openBlocks.get(newstOBlk);
                             if (inclPatts)
                             {
                                 block.add(line);
@@ -1282,15 +1274,15 @@ public class TextAnalyzer
      */
 
     public static TreeMap<String,String> readKeyValuePairs(
-                        ArrayList<String> lines,
+                        List<String> lines,
                         String separator, String commentLab,
                         String start, String end) throws Exception
     {
     	TreeMap<String,String> kvMap = new TreeMap<String,String>();
     	
-    	ArrayList<ArrayList<String>> form = readKeyValue(lines,separator,
+    	List<List<String>> form = readKeyValue(lines,separator,
     			commentLab,start,end);
-    	for (ArrayList<String> pair : form)
+    	for (List<String> pair : form)
     	{
     		String key = pair.get(0);
     		String value = pair.get(1);
@@ -1344,12 +1336,12 @@ public class TextAnalyzer
      * labels.
      */
 
-    public static ArrayList<ArrayList<String>> readKeyValue(
-                        ArrayList<String> lines,
+    public static List<List<String>> readKeyValue(
+                        List<String> lines,
                         String separator, String commentLab,
                         String start, String end)
     {   
-        ArrayList<String> condencedLines = readTextWithMultilineBlocks(lines, 
+        List<String> condencedLines = readTextWithMultilineBlocks(lines, 
         		commentLab, start, end);
         
         return readKeyValue(condencedLines, separator, commentLab);
@@ -1371,11 +1363,10 @@ public class TextAnalyzer
      * labels.
      */
 
-    public static ArrayList<ArrayList<String>> readKeyValue(
-    		ArrayList<String> lines, String separator, String commentLab)
+    public static List<List<String>> readKeyValue(
+    		List<String> lines, String separator, String commentLab)
     {
-        ArrayList<ArrayList<String>> keysValues =
-                                new ArrayList<ArrayList<String>>();
+        List<List<String>> keysValues = new ArrayList<List<String>>();
         
         for (int i=0; i<lines.size(); i++)
         {
@@ -1411,7 +1402,7 @@ public class TextAnalyzer
             }
 
             //Store
-            ArrayList<String> singleBlock = new ArrayList<String>();
+            List<String> singleBlock = new ArrayList<String>();
             singleBlock.add(key);
             singleBlock.add(value);
             keysValues.add(singleBlock);
@@ -1447,15 +1438,15 @@ public class TextAnalyzer
      * @return a list with all strings extracted 
      */
 
-    public static ArrayList<String> readTextWithMultilineBlocks(
-                        ArrayList<String> lines, String commentLab,
+    public static List<String> readTextWithMultilineBlocks(
+                        List<String> lines, String commentLab,
                         String start, String end)
     {
         //Start interpretation of the formatted text
-        ArrayList<String> newLines = new ArrayList<String>();
+        List<String> newLines = new ArrayList<String>();
         
         int nestingLevel = 0;
-        ArrayList<String> blockOpeninglines = new ArrayList<String>();
+        List<String> blockOpeninglines = new ArrayList<String>();
         String growingLine = "";
         boolean isGrowing = false;
         for (int i=0; i<lines.size(); i++)

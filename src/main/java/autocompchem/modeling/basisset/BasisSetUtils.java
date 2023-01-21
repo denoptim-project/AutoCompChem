@@ -58,7 +58,7 @@ public class BasisSetUtils
         {
             System.out.println(" Importing basis set from GBS file " + inFile);
         }
-        ArrayList<String> lines = IOtools.readTXT(inFile);
+        List<String> lines = IOtools.readTXT(inFile);
         for (int i=0; i<lines.size(); i++)
         {
             // File is read line-by-line sequentially

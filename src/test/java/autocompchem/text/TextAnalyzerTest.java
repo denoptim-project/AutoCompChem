@@ -6,10 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -65,11 +67,11 @@ public class TextAnalyzerTest
         + "l28 text b1-2 b2-1" + NL + "l29 text CLB2 CLB1 KEY1" + NL 
         + "l30 text" + NL + "" + NL + ""; 
 
-    private final ArrayList<String> slPts = new ArrayList<String>(Arrays.asList(
+    private final List<String> slPts = new ArrayList<String>(Arrays.asList(
                 "(.*)KEY1(.*)","(.*)NESTEDKEY(.*)"));
-    private final ArrayList<String> sPats = new ArrayList<String>(Arrays.asList(
+    private final List<String> sPats = new ArrayList<String>(Arrays.asList(
                 "(.*)OPB1(.*)","(.*)OPB2(.*)","(.*)OPB3(.*)"));
-    private final ArrayList<String> ePats = new ArrayList<String>(Arrays.asList(
+    private final List<String> ePats = new ArrayList<String>(Arrays.asList(
                 "(.*)CLB1(.*)","(.*)CLB2(.*)","(.*)CLB3(.*)"));
 
 //------------------------------------------------------------------------------
@@ -139,12 +141,12 @@ public class TextAnalyzerTest
     @Test
     public void testCountMultiMatches() throws Exception
     {
-        ArrayList<String> queries = new ArrayList<String>();
+        List<String> queries = new ArrayList<String>();
         queries.add("here");
         queries.add("line");
 
         BufferedReader br = new BufferedReader(new StringReader(TEXT));
-        ArrayList<ArrayList<Integer>> counts = TextAnalyzer.count(br,queries);
+        List<List<Integer>> counts = TextAnalyzer.count(br,queries);
         br.close();
 
         assertEquals(2,counts.get(0).size(),"Total matches of 'here'");
@@ -160,7 +162,7 @@ public class TextAnalyzerTest
     public void testExtractionMapOfTxtBlocks() throws Exception
     {
         BufferedReader br = new BufferedReader(new StringReader(LONGTEXT));
-        TreeMap<String,ArrayList<String>> blocks =
+        TreeMap<String,List<String>> blocks =
                     TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
                                                 slPts,sPats,ePats,false,false);
         br.close();
@@ -208,7 +210,7 @@ public class TextAnalyzerTest
                 + "outside 1" + NL
                 + "#end ";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
-        ArrayList<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
+        List<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
@@ -289,7 +291,7 @@ public class TextAnalyzerTest
                  + "after nested block 3" + NL
                 + "CLB1";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
-        ArrayList<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
+        List<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
                                                 slPts,sPats,ePats,false,false);
         br.close();
 
@@ -328,7 +330,7 @@ public class TextAnalyzerTest
 
 //------------------------------------------------------------------------------
 
-    private final ArrayList<String> KEYVALKUELINES = 
+    private final List<String> KEYVALKUELINES = 
     		new ArrayList<String>(Arrays.asList(
     		"#comment",
     		"key1: value1",
@@ -353,26 +355,26 @@ public class TextAnalyzerTest
     @Test
     public void testReadKeyValueEmbeddedStartOfMultiline() throws Exception
     {
-       	ArrayList<String> linesA = new ArrayList<String>(Arrays.asList(
+       	List<String> linesA = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"$END"));
        	
-       	ArrayList<String> linesB = new ArrayList<String>(Arrays.asList(
+       	List<String> linesB = new ArrayList<String>(Arrays.asList(
         		"n1: $STARTv1: vv1",
         		"v1b: vv1b",
         		"$END"));
        	
-       	ArrayList<ArrayList<String>> equivalentForms = 
-       			new ArrayList<ArrayList<String>>();
+       	List<List<String>> equivalentForms = 
+       			new ArrayList<List<String>>();
        	equivalentForms.add(linesA);
        	equivalentForms.add(linesB);
        	
     	for (int i=0; i<equivalentForms.size(); i++)
     	{
-    		ArrayList<String> lines = equivalentForms.get(i);
+    		List<String> lines = equivalentForms.get(i);
        	
-    		ArrayList<ArrayList<String>>form = TextAnalyzer.readKeyValue(lines,
+    		List<List<String>>form = TextAnalyzer.readKeyValue(lines,
     			":","#","$START","$END");
     		
 	       	assertEquals(1,form.size(), "Number of key:val pairs");
@@ -383,24 +385,24 @@ public class TextAnalyzerTest
 	    			"No leftover $END "+i);
     	}
        	
-    	ArrayList<String> linesC = new ArrayList<String>(Arrays.asList(
+    	List<String> linesC = new ArrayList<String>(Arrays.asList(
         		"$STARTn1:$STARTn2: v2 vv2",
         		"v2b: vv2",
         		"$END$END"));
-    	ArrayList<String> linesD = new ArrayList<String>(Arrays.asList(
+    	List<String> linesD = new ArrayList<String>(Arrays.asList(
         		"n1:$STARTn2:$STARTv2 vv2",
         		"v2b: vv2",
         		"$END$END"));
     	
-       	equivalentForms = new ArrayList<ArrayList<String>>();
+       	equivalentForms = new ArrayList<List<String>>();
        	equivalentForms.add(linesC);
        	equivalentForms.add(linesD);
        	
     	for (int i=0; i<equivalentForms.size(); i++)
     	{
-    		ArrayList<String> lines = equivalentForms.get(i);
+    		List<String> lines = equivalentForms.get(i);
        	
-    		ArrayList<ArrayList<String>>form = TextAnalyzer.readKeyValue(lines,
+    		List<List<String>>form = TextAnalyzer.readKeyValue(lines,
     			":","#","$START","$END");
 	       	assertEquals(1,form.size(), "Number of key:val pairs (B) "+i);
 	       	assertEquals("n1",form.get(0).get(0), "First key (B) "+i);
@@ -428,7 +430,7 @@ public class TextAnalyzerTest
     public void testReadKeyValue() throws Exception
     {
     	// Here we test equivalent notations for ending nested multiline blocks
-       	ArrayList<String> linesA = new ArrayList<String>(Arrays.asList(
+       	List<String> linesA = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"$STARTn2: v2: vv2",
@@ -436,7 +438,7 @@ public class TextAnalyzerTest
         		"$STARTn3: v3",
         		"v3b$END$END$END"));
        	
-       	ArrayList<String> linesB = new ArrayList<String>(Arrays.asList(
+       	List<String> linesB = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"$STARTn2: v2: vv2",
@@ -447,7 +449,7 @@ public class TextAnalyzerTest
         		"$END",
         		"$END"));
        	
-       	ArrayList<String> linesC = new ArrayList<String>(Arrays.asList(
+       	List<String> linesC = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"$STARTn2: v2: vv2",
@@ -457,7 +459,7 @@ public class TextAnalyzerTest
         		"$END$END",
         		"$END"));
        	
-       	ArrayList<String> linesD = new ArrayList<String>(Arrays.asList(
+       	List<String> linesD = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"$STARTn2: v2: vv2",
@@ -467,8 +469,8 @@ public class TextAnalyzerTest
         		"$END",
         		"$END$END"));
        	
-       	ArrayList<ArrayList<String>> equivalentForms = 
-       			new ArrayList<ArrayList<String>>();
+       	List<List<String>> equivalentForms = 
+       			new ArrayList<List<String>>();
        	equivalentForms.add(linesA);
        	equivalentForms.add(linesB);
        	equivalentForms.add(linesC);
@@ -476,9 +478,9 @@ public class TextAnalyzerTest
        		
     	for (int iList=0; iList<equivalentForms.size(); iList++)
     	{
-    		ArrayList<String> lines = equivalentForms.get(iList);
+    		List<String> lines = equivalentForms.get(iList);
     	
-    		ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
+    		List<List<String>> form = TextAnalyzer.readKeyValue(
     			lines,":","#","$START","$END");
 	    	
 	    	assertEquals(1,form.size(),"Number of key:value pairs (Nest 1-List"
@@ -516,14 +518,14 @@ public class TextAnalyzerTest
     	}
     
     	// Here we consider the equivalent ways of starting nested blocks
-    	ArrayList<String> linesAA = new ArrayList<String>(Arrays.asList(
+    	List<String> linesAA = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"$STARTn2: v2: vv2",
         		"v2b: vv2",
         		"$STARTn3: v3",
         		"v3b$END$END$END"));
-    	ArrayList<String> linesAB = new ArrayList<String>(Arrays.asList(
+    	List<String> linesAB = new ArrayList<String>(Arrays.asList(
         		"$STARTn1:$STARTn2: v2: vv2",
         		"v2b: vv2",
         		"$STARTn3: v3",
@@ -531,7 +533,7 @@ public class TextAnalyzerTest
         		"v1: vv1",
          		"v1b: vv1b",
          		"$END"));
-    	ArrayList<String> linesAC = new ArrayList<String>(Arrays.asList(
+    	List<String> linesAC = new ArrayList<String>(Arrays.asList(
         		"$STARTn1:$STARTn2:$STARTn3: v3",
         		"v3b$END",
         		"v2: vv2",
@@ -540,7 +542,7 @@ public class TextAnalyzerTest
         		"v1: vv1",
         		"v1b: vv1b",
         		"$END"));
-    	ArrayList<String> linesAD = new ArrayList<String>(Arrays.asList(
+    	List<String> linesAD = new ArrayList<String>(Arrays.asList(
         		"$STARTn1: v1: vv1",
         		"v1b: vv1b",
         		"n2: $STARTv2: vv2",
@@ -548,7 +550,7 @@ public class TextAnalyzerTest
         		"$STARTn3: v3",
         		"v3b$END$END$END"));
     	
-    	equivalentForms = new ArrayList<ArrayList<String>>();
+    	equivalentForms = new ArrayList<List<String>>();
        	equivalentForms.add(linesAA);
        	equivalentForms.add(linesAB);
        	equivalentForms.add(linesAC);
@@ -556,9 +558,9 @@ public class TextAnalyzerTest
        
     	for (int iList=0; iList<equivalentForms.size(); iList++)
     	{
-    		ArrayList<String> lines = equivalentForms.get(iList);
+    		List<String> lines = equivalentForms.get(iList);
     	
-    		ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
+    		List<List<String>> form = TextAnalyzer.readKeyValue(
     			lines,":","#","$START","$END");
     		
 	    	assertEquals(1,form.size(),"Number of key:value pairs (Nest 1-List"
@@ -567,7 +569,7 @@ public class TextAnalyzerTest
 	    	int iN1 = -1;
 	    	for (int iAr=0; iAr<form.size(); iAr++)
 	    	{
-	    		ArrayList<String> a = form.get(iAr);
+	    		List<String> a = form.get(iAr);
 	    		if (a.get(0).equals("n1"))
 	    			iN1 = iAr;
 	    	}
@@ -584,7 +586,7 @@ public class TextAnalyzerTest
 	    	int iN2 = -1;
 	    	for (int iAr=0; iAr<form.size(); iAr++)
 	    	{
-	    		ArrayList<String> a = form.get(iAr);
+	    		List<String> a = form.get(iAr);
 	    		if (a.get(0).equals("n2"))
 	    			iN2 = iAr;
 	    	}
@@ -601,7 +603,7 @@ public class TextAnalyzerTest
 	    	int iN3 = -1;
 	    	for (int iAr=0; iAr<form.size(); iAr++)
 	    	{
-	    		ArrayList<String> a = form.get(iAr);
+	    		List<String> a = form.get(iAr);
 	    		if (a.get(0).equals("n3"))
 	    			iN3 = iAr;
 	    	}
@@ -612,7 +614,7 @@ public class TextAnalyzerTest
     	}
     	
     	// Here we mix all together
-    	ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
+    	List<List<String>> form = TextAnalyzer.readKeyValue(
     			KEYVALKUELINES,":","#","$START","$END");
     	
     	assertEquals(5,form.size(),"Number of key:value pairs.");
@@ -659,7 +661,7 @@ public class TextAnalyzerTest
     @Test
     public void testReadTextWithMultilineBlocksBis() throws Exception
     {
-    	ArrayList<String> lines = new ArrayList<String>();
+    	List<String> lines = new ArrayList<String>();
     	lines.add("A B C");
     	lines.add("#commented");
     	lines.add("$STARTMLB_1.1");
@@ -695,7 +697,7 @@ public class TextAnalyzerTest
     	lines.add("MLB_N3.3");
     	lines.add("$ENDMLB_6.2$END");
     	
-    	ArrayList<String> form = TextAnalyzer.readTextWithMultilineBlocks(lines,
+    	List<String> form = TextAnalyzer.readTextWithMultilineBlocks(lines,
     			"#","$START","$END");
     	
     	assertEquals(8,form.size());
@@ -734,7 +736,7 @@ public class TextAnalyzerTest
     @Test
     public void testReadTextWithMultilineBlocks() throws Exception
     {
-    	ArrayList<String> lines = new ArrayList<String>();
+    	List<String> lines = new ArrayList<String>();
     	lines.add(ChemSoftConstants.JDCOMMENT+ " ot-comment one");
     	lines.add(ChemSoftConstants.JDOPENBLOCK + "first");
     	lines.add(ChemSoftConstants.JDCOMMENT+ " in-comment one");
@@ -811,7 +813,7 @@ public class TextAnalyzerTest
     {
     	BufferedReader br = new BufferedReader(new StringReader(TEXT));
     	Set<String> p = new HashSet<String>(Arrays.asList("bla","here"));
-    	ArrayList<String> m = TextAnalyzer.grep(br, p);
+    	List<String> m = TextAnalyzer.grep(br, p);
     	
     	assertEquals(3,m.size(),"Size of matches list");
     	assertTrue(m.contains("Second line bla bla"),"First match");

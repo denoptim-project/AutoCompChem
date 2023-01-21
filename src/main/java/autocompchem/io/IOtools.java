@@ -74,10 +74,10 @@ public class IOtools
      * files!)
      *
      * @param filename file to be read
-     * @return all the lines into an <code>ArrayList</code>
+     * @return all the lines as a list.
      */
 
-    public static ArrayList<String> readTXT(String filename)
+    public static List<String> readTXT(String filename)
     {
         return readTXT(filename, false);
     }
@@ -89,12 +89,12 @@ public class IOtools
      * files!)
      * @param filename file to be read
      * @param escape set tu <code>true</code> to escape special characters
-     * @return all the lines into an <code>ArrayList</code>
+     * @return all the lines as a list.
      */
 
-    public static ArrayList<String> readTXT(String filename, boolean escape)
+    public static List<String> readTXT(String filename, boolean escape)
     {
-        ArrayList<String> allLines = new ArrayList<String>();
+        List<String> allLines = new ArrayList<String>();
         BufferedReader buffRead = null;
         try {
             buffRead = new BufferedReader(new FileReader(filename));
@@ -137,14 +137,13 @@ public class IOtools
      *
      * @param filename file to be read
      * @param keyword label identifying the wanted lines
-     * @return all the lines beginning with the <code>keyword</code> into an 
-     * <code>ArrayList</code>
+     * @return all the lines beginning with the <code>keyword</code> into a 
+     * list.
      */
 
-    public static ArrayList<String> readTXTKeyword(String filename,
-                                                                String keyword)
+    public static List<String> readTXTKeyword(String filename, String keyword)
     {
-        ArrayList<String> allLines = new ArrayList<String>();
+        List<String> allLines = new ArrayList<String>();
         BufferedReader buffRead = null;
         try {
             buffRead = new BufferedReader(new FileReader(filename));
@@ -224,16 +223,16 @@ public class IOtools
      * labels.
      */
 
-    public static ArrayList<ArrayList<String>> readFormattedText(
+    public static List<List<String>> readFormattedText(
                         String filename,
                         String separator, String commentLab,
                         String start, String end)
     {
         //Read file line by line
-        ArrayList<String> lines = IOtools.readTXT(filename);
+        List<String> lines = IOtools.readTXT(filename);
 
         //Start interpretation of the formatted text
-        ArrayList<ArrayList<String>> filledForm = readFormattedText(
+        List<List<String>> filledForm = readFormattedText(
                                                         filename,
                                                         lines, 
                                                         separator, 
@@ -282,13 +281,13 @@ public class IOtools
      * labels.
      */
 
-    public static ArrayList<ArrayList<String>> readFormattedText(
+    public static List<List<String>> readFormattedText(
                         String filename,
-                        ArrayList<String> lines, 
+                        List<String> lines, 
                         String separator, String commentLab, 
                         String start, String end)
     {
-        ArrayList<ArrayList<String>> filledForm = TextAnalyzer.readKeyValue(
+        List<List<String>> filledForm = TextAnalyzer.readKeyValue(
                                                         lines,
                                                         separator,
                                                         commentLab,
@@ -366,10 +365,10 @@ public class IOtools
      * @return the array with the tail of the text file.
      */
 
-    public static ArrayList<String> extractFromTo(String filename, int start, 
-                                                                       int stop)
+    public static List<String> extractFromTo(String filename, int start, 
+    		int stop)
     {
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<String>();
 
         int num = 0;
         BufferedReader buffRead = null;
@@ -420,9 +419,9 @@ public class IOtools
      * @return the array with the tail of the text file.
      */
 
-    public static ArrayList<String> tailFrom(String filename, int start)
+    public static List<String> tailFrom(String filename, int start)
     {
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<String>();
 
         int num = 0;
         BufferedReader buffRead = null;
@@ -464,14 +463,13 @@ public class IOtools
      * <a href="http://en.wikipedia.org/wiki/Chemical_table_file#SDF">MDL format</a>
      * ) and returns all the molecules as an array.
      * @param filename SDF file to be read
-     * @return all the chemical objects into an <code>ArrayList</code>
+     * @return all the chemical objects into an <code>List</code>
      */
 
-    public static ArrayList<IAtomContainer> readSDF(String filename)
+    public static List<IAtomContainer> readSDF(String filename)
     {
         MDLV2000Reader mdlreader = null;
-        ArrayList<IAtomContainer> lstContainers = 
-                                                new ArrayList<IAtomContainer>();
+        List<IAtomContainer> lstContainers = new ArrayList<IAtomContainer>();
         try {
             mdlreader = new MDLV2000Reader(new FileReader(new File(filename)));
             ChemFile chemFile = (ChemFile) mdlreader.read((ChemObject) 
@@ -498,7 +496,7 @@ public class IOtools
     public static void writeZMatAppend(String filename, ZMatrix zmat,
                                                                  boolean append)
     {
-        ArrayList<String> txt = zmat.toLinesOfText(false,false);
+        List<String> txt = zmat.toLinesOfText(false,false);
         txt.add(0,"Molecule: " + zmat.getTitle());
         txt.add(ZMatrixConstants.ZMATMOLSEP); //separator
         IOtools.writeTXTAppend(filename,txt,append);
@@ -513,15 +511,15 @@ public class IOtools
      * @return all the ZMatrixes
      */
 
-    public static ArrayList<ZMatrix> readZMatrixFile(String filename)
+    public static List<ZMatrix> readZMatrixFile(String filename)
     {
-        ArrayList<ZMatrix> allZMats = new ArrayList<ZMatrix>();
+        List<ZMatrix> allZMats = new ArrayList<ZMatrix>();
         BufferedReader buffRead = null;
         try {
             buffRead = new BufferedReader(new FileReader(filename));
             String line = null;
             String title = "";
-            ArrayList<String> oneBlock = new ArrayList<String>();
+            List<String> oneBlock = new ArrayList<String>();
             while ((line = buffRead.readLine()) != null)
             {
                 line = line.trim();
@@ -575,14 +573,13 @@ public class IOtools
      * <a href="http://en.wikipedia.org/wiki/XYZ_file_format">XYZ format</a>
      * ) and returns all the molecules as an array.
      * @param filename XYZ file to be read
-     * @return all the chemical objects into an <code>ArrayList</code>
+     * @return all the chemical objects into an <code>List</code>
      */
 
-    public static ArrayList<IAtomContainer> readXYZ(String filename)
+    public static List<IAtomContainer> readXYZ(String filename)
     {
         XYZReader reader = null;
-        ArrayList<IAtomContainer> lstContainers = 
-                                                new ArrayList<IAtomContainer>();
+        List<IAtomContainer> lstContainers = new ArrayList<IAtomContainer>();
         try {
             reader = new XYZReader(new FileReader(new File(filename)));
             ChemFile chemFile = (ChemFile) reader.read((ChemObject) 
@@ -605,9 +602,9 @@ public class IOtools
      * @param filename file to be read
      * @return all the chemical objects into an <code>ArrayList</code>
      */
-    public static ArrayList<IAtomContainer> readMultiMolFiles(String filename)
+    public static List<IAtomContainer> readMultiMolFiles(String filename)
     {
-        ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
+        List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
         if (filename.endsWith(".sdf"))
         {
             mols = IOtools.readSDF(filename);
@@ -636,7 +633,7 @@ public class IOtools
      * @param append <code>true</code> to append to existing file
      */
 
-    public static void writeSDFAppend(String filename, ArrayList<IAtomContainer> mols,
+    public static void writeSDFAppend(String filename, List<IAtomContainer> mols,
                                                                  boolean append)
     {
         SDFWriter sdfWriter = null;
@@ -1023,7 +1020,7 @@ public class IOtools
      * the target file
      */
 
-    public static void writeTXTAppend(String filename, ArrayList<String> txt,
+    public static void writeTXTAppend(String filename, List<String> txt,
                                                                  boolean append)
     {
         FileWriter writer = null;
@@ -1035,7 +1032,7 @@ public class IOtools
                 writer.write(txt.get(i) + newline);
             }
         } catch (Throwable t) {
-            System.err.println("Failure in writing ArrayList<String>: " + txt 
+            System.err.println("Failure in writing List<String>: " + txt 
                                                                            + t);
             System.exit(-1);
         } finally {

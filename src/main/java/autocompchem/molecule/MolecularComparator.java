@@ -177,7 +177,7 @@ public class MolecularComparator extends Worker
     public void compareTwoConnectivities()
     {
         //Get the molecules
-        ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
         if (inMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -186,7 +186,7 @@ public class MolecularComparator extends Worker
         }
         IAtomContainer inMol = inMols.get(0);
 
-        ArrayList<IAtomContainer> refMols = IOtools.readSDF(refFile);
+        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
         if (refMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -228,7 +228,7 @@ public class MolecularComparator extends Worker
     public void compareTwoGeometries()
     {
         //Get the molecules
-        ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
         if (inMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -237,7 +237,7 @@ public class MolecularComparator extends Worker
         }
         IAtomContainer inMol = inMols.get(0);
 
-        ArrayList<IAtomContainer> refMols = IOtools.readSDF(refFile);
+        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
         if (refMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -465,7 +465,7 @@ public class MolecularComparator extends Worker
 
     public void runComparisonOfMoleculesBySuperposition()
     {
-        ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
         if (inMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -474,7 +474,7 @@ public class MolecularComparator extends Worker
         }
         IAtomContainer inMol = inMols.get(0);
 
-        ArrayList<IAtomContainer> refMols = IOtools.readSDF(refFile);
+        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
         if (refMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "

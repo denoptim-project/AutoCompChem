@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -137,8 +138,8 @@ public class MolecularSorter extends Worker
     public void writeSortedSDF()
     {
         //Get input
-        ArrayList<IAtomContainer> mols = IOtools.readSDF(inFile);
-        ArrayList<SortableMolecule> smols = new ArrayList<SortableMolecule>();
+        List<IAtomContainer> mols = IOtools.readSDF(inFile);
+        List<SortableMolecule> smols = new ArrayList<SortableMolecule>();
         for (IAtomContainer mol : mols)
         {
             if (!MolecularUtils.hasProperty(mol,prop))

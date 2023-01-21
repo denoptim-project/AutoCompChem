@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -98,7 +99,7 @@ public class MolecularGeometryEditor extends Worker
     /**
      * Molecular representation of the final systems
      */
-    private ArrayList<IAtomContainer> outMols = new ArrayList<IAtomContainer>();
+    private List<IAtomContainer> outMols = new ArrayList<IAtomContainer>();
 
     /**
      * Pathname to SDF file with reference substructure
@@ -234,7 +235,7 @@ public class MolecularGeometryEditor extends Worker
             inpFromFile = true;
             this.inFile = params.getParameter("INFILE").getValue().toString();
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
-            ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+            List<IAtomContainer> inMols = IOtools.readSDF(inFile);
             if (inMols.size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "
@@ -263,7 +264,7 @@ public class MolecularGeometryEditor extends Worker
             String crtFile = 
                      params.getParameter("CARTESIANMOVE").getValue().toString();
             FileUtils.foundAndPermissions(crtFile,true,false,false);
-            ArrayList<String> all = IOtools.readTXT(crtFile);
+            List<String> all = IOtools.readTXT(crtFile);
             for (String line : all)
             {
                 if (line.trim().length() == 0)
@@ -391,7 +392,7 @@ public class MolecularGeometryEditor extends Worker
             this.refFile = params.getParameter("REFERENCESUBSTRUCTUREFILE")
                                                          .getValue().toString();
             FileUtils.foundAndPermissions(this.refFile,true,false,false);
-            ArrayList<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
+            List<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
             if (refMols.size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "

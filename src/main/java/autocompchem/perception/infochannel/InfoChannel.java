@@ -24,7 +24,7 @@ import java.io.Reader;
  *
  * @author Marco Foscato
  */
-
+//TODO: change to ReadableInfoChannel to distinguish from data collectors-like infochannels
 public abstract class InfoChannel
 {
     /**

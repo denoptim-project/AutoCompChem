@@ -297,7 +297,7 @@ public class AtomTypeMatcher extends Worker
 
     private void importAtomTypeMap()
     {
-        ArrayList<String> lines = IOtools.readTXT(atMapFile);
+        List<String> lines = IOtools.readTXT(atMapFile);
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);

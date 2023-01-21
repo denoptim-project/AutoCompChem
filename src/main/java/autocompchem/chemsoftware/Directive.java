@@ -86,17 +86,17 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * List of keywords.
      */
-    private ArrayList<Keyword> keywords;
+    private List<Keyword> keywords;
 
     /**
      * List of subordinate directives.
      */
-    private ArrayList<Directive> subDirectives;
+    private List<Directive> subDirectives;
 
     /**
      * Data attached directly to this directive.
      */
-    private ArrayList<DirectiveData> dirData;
+    private List<DirectiveData> dirData;
     
     /**
      * Parameters defining task embedded in this directive.
@@ -192,7 +192,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of sub directives.
      */
 
-    public ArrayList<Directive> getAllSubDirectives()
+    public List<Directive> getAllSubDirectives()
     {
         return subDirectives;
     }
@@ -237,7 +237,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of keywords.
      */
 
-    public ArrayList<Keyword> getAllKeywords()
+    public List<Keyword> getAllKeywords()
     {
         return keywords;
     }
@@ -287,7 +287,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of data blocks.
      */
 
-    public ArrayList<DirectiveData> getAllDirectiveDataBlocks()
+    public List<DirectiveData> getAllDirectiveDataBlocks()
     {
         return dirData;
     }
@@ -444,7 +444,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param subDirectives the new list of subordinate directives .
      */
 
-    public void setAllSubDirectives(ArrayList<Directive> subDirectives)
+    public void setAllSubDirectives(List<Directive> subDirectives)
     {
         this.subDirectives = subDirectives;
     }
@@ -497,7 +497,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param keywords the new list of keywords.
      */
 
-    public void setAllKeywords(ArrayList<Keyword> keywords)
+    public void setAllKeywords(List<Keyword> keywords)
     {
         this.keywords = keywords;
     }
@@ -529,7 +529,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dirData the new list of data.
      */
 
-    public void setAllDirectiveDataBlocks(ArrayList<DirectiveData> dirData)
+    public void setAllDirectiveDataBlocks(List<DirectiveData> dirData)
     {
         this.dirData = dirData;
     }
@@ -744,7 +744,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	// This takes care of any $START/$END label needed to make all JD lines
     	// fit into a single line for the purpose of making the 
     	// directive component line.
-    	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
+    	List<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
     			new ArrayList<String>(lines), ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	
@@ -1357,9 +1357,9 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of lines for a job details file
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<String>();
         String root = ChemSoftConstants.JDLABDIRECTIVE + name + " ";
         
         // Keywords are appended in the same line as the directive's name

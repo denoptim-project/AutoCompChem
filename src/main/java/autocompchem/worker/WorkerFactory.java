@@ -22,18 +22,18 @@ import java.util.Set;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
-import autocompchem.chemsoftware.gaussian.GaussianOutputHandler2;
+import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
-import autocompchem.chemsoftware.orca.OrcaOutputHandler;
+import autocompchem.chemsoftware.orca.OrcaOutputAnalyzer;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
-import autocompchem.chemsoftware.xtb.XTBOutputHandler;
+import autocompchem.chemsoftware.xtb.XTBOutputAnalyzer;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
@@ -304,9 +304,9 @@ public class WorkerFactory
 		case GaussianInputWriter:
 			return GaussianInputWriter.capabilities;
         case GaussianOutputHandler:
-            return GaussianOutputHandler.capabilities;
-        case GaussianOutputHandler2:
-            return GaussianOutputHandler2.capabilities;
+            return GaussianOutputHandler.capabilities; //TODO-gg del
+        case GaussianOutputAnalyzer:
+            return GaussianOutputAnalyzer.capabilities;
         case GaussianReStarter:
             return GaussianReStarter.capabilities; 
         /*
@@ -339,10 +339,10 @@ public class WorkerFactory
         	return OrcaInputWriter.capabilities;
         case XTBInputWriter:
         	return XTBInputWriter.capabilities;
-        case XTBOutputHandler:
-        	return XTBOutputHandler.capabilities;
-        case OrcaOutputHandler:
-        	return OrcaOutputHandler.capabilities;
+        case XTBOutputAnalyzer:
+        	return XTBOutputAnalyzer.capabilities;
+        case OrcaOutputAnalyzer:
+        	return OrcaOutputAnalyzer.capabilities;
         case SpartanInputWriter:
             return SpartanInputWriter.capabilities;
         case SpartanOutputHandler:
@@ -398,8 +398,8 @@ public class WorkerFactory
 			return new GaussianInputWriter();
         case GaussianOutputHandler:
             return new GaussianOutputHandler();
-        case GaussianOutputHandler2:
-            return new GaussianOutputHandler2();
+        case GaussianOutputAnalyzer:
+            return new GaussianOutputAnalyzer();
         case GaussianReStarter:
             return new GaussianReStarter();
         /*
@@ -430,12 +430,12 @@ public class WorkerFactory
             return new NWChemReStarter();
         case OrcaInputWriter:
         	return new OrcaInputWriter();
-        case OrcaOutputHandler:
-        	return new OrcaOutputHandler();
+        case OrcaOutputAnalyzer:
+        	return new OrcaOutputAnalyzer();
         case XTBInputWriter:
         	return new XTBInputWriter();
-        case XTBOutputHandler:
-        	return new XTBOutputHandler();
+        case XTBOutputAnalyzer:
+        	return new XTBOutputAnalyzer();
         case SpartanInputWriter:
             return new SpartanInputWriter();
         case SpartanOutputHandler:

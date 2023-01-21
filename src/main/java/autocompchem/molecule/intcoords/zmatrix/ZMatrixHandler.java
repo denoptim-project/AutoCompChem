@@ -113,7 +113,7 @@ public class ZMatrixHandler extends Worker
     /**
      * List of internal coordinates used in the Zmatrix
      */
-    private ArrayList<InternalCoord> intCoords = new ArrayList<InternalCoord>();
+    private List<InternalCoord> intCoords = new ArrayList<InternalCoord>();
 
     /**
      * Property used to stamp visited bonds
@@ -340,8 +340,8 @@ public class ZMatrixHandler extends Worker
             outFile = "output.zmat";
         }
 
-        ArrayList<ZMatrix> firstZMats = new ArrayList<ZMatrix>();
-        ArrayList<ZMatrix> secondZMats = new ArrayList<ZMatrix>();
+        List<ZMatrix> firstZMats = new ArrayList<ZMatrix>();
+        List<ZMatrix> secondZMats = new ArrayList<ZMatrix>();
         if (iac.getAtomCount() == 0 && null != inFile && null != inFile2)
         {
             if (inFile.endsWith(".sdf"))
@@ -785,7 +785,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
         }
         if (null != inFile)
         {
-            ArrayList<ZMatrix> zmats = IOtools.readZMatrixFile(inFile);
+            List<ZMatrix> zmats = IOtools.readZMatrixFile(inFile);
         int i = 0;
             for (ZMatrix zmat : zmats)
             {
@@ -1711,7 +1711,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
      * @return the list of internal coordinates defined in this handler.
      */
 
-    public ArrayList<InternalCoord> getIntCoords()
+    public List<InternalCoord> getIntCoords()
     {
         return intCoords;
     }

@@ -19,6 +19,7 @@ package autocompchem.run;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -139,7 +140,7 @@ public class EvaluationJob extends ACCJob
     		{
     			lines.add(parts[i]);
     		}
-    		ArrayList<ArrayList<String>> filledForm = TextAnalyzer.readKeyValue(
+    		List<List<String>> filledForm = TextAnalyzer.readKeyValue(
                     lines,
     	    		SituationConstants.SEPARATOR,
     	    		SituationConstants.COMMENTLINE,

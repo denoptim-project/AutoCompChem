@@ -22,7 +22,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftOutputHandler;
+import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
@@ -30,6 +30,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -39,11 +40,11 @@ import autocompchem.worker.Worker;
  * the software specific features that are needed to extract information
  * from the output of Gaussian jobs. 
  * The rest of the functionality is in the superclass
- * {@link ChemSoftOutputHandler}.
+ * {@link ChemSoftOutputAnalyzer}.
  * 
  * @author Marco Foscato
  */
-public class GaussianOutputHandler2 extends ChemSoftOutputHandler
+public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
 {
     /**
      * Declaration of the capabilities of this subclass of {@link Worker}.
@@ -61,7 +62,7 @@ public class GaussianOutputHandler2 extends ChemSoftOutputHandler
      */
     
     @Override
-    protected void readLogFile(File file) throws Exception
+    protected void readLogFile(File file, SituationBase situations) throws Exception
     {
         BufferedReader buffRead = null;
         try {
@@ -232,6 +233,10 @@ public class GaussianOutputHandler2 extends ChemSoftOutputHandler
         					__data__));
             	}
             	 */
+            	
+            	
+            	// Also call the parser for text needed by the situations
+            	parseLineForSituations(line, situations);
             }
             
     		// Store data of last job, which ended with the end of the file

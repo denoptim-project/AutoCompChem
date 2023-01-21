@@ -19,6 +19,7 @@ package autocompchem.chemsoftware;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TreeMap;
 
 import autocompchem.run.Terminator;
@@ -43,13 +44,12 @@ public class DirectiveFactory
      * @return the list of Directives.
      */
 
-    public static ArrayList<Directive> buildAllFromJDText(
-    		ArrayList<String> lines)
+    public static List<Directive> buildAllFromJDText(List<String> lines)
     {	
-        TreeMap<String,ArrayList<String>> dirStrings = 
-                new TreeMap<String,ArrayList<String>>();
+        TreeMap<String,List<String>> dirStrings = 
+                new TreeMap<String,List<String>>();
         
-        ArrayList<String> linesPack = 
+        List<String> linesPack = 
         		TextAnalyzer.readTextWithMultilineBlocks(lines,
         		ChemSoftConstants.JDCOMMENT, 
         		ChemSoftConstants.JDOPENBLOCK, 
@@ -113,7 +113,7 @@ public class DirectiveFactory
             }
     	}
         
-        ArrayList<Directive> allDirs = new ArrayList<Directive>();
+        List<Directive> allDirs = new ArrayList<Directive>();
         for (String dirName : dirStrings.keySet())
         {
             Directive dir = DirectiveFactory.buildFromJDText(dirName,
@@ -135,9 +135,9 @@ public class DirectiveFactory
      * @return the Directive.
      */
 
-    public static Directive buildFromJDText(ArrayList<String> lines)
+    public static Directive buildFromJDText(List<String> lines)
     {
-        ArrayList<String> linesPacked = 
+        List<String> linesPacked = 
         		TextAnalyzer.readTextWithMultilineBlocks(lines,
         		ChemSoftConstants.JDCOMMENT, 
         		ChemSoftConstants.JDOPENBLOCK, 
@@ -150,7 +150,7 @@ public class DirectiveFactory
     	// and we remove any line that does not pertain components of this
     	// directive.
     	boolean first = true;
-    	ArrayList<String> purgedLines = new ArrayList<String>();
+    	List<String> purgedLines = new ArrayList<String>();
     	for (String line : linesPacked)
     	{
     		line = line.trim();
@@ -225,14 +225,14 @@ public class DirectiveFactory
      * @return the target Directive.
      */
 
-    public static Directive buildFromJDText(String name, ArrayList<String> lines)
+    public static Directive buildFromJDText(String name, List<String> lines)
     {
     	Directive d = new Directive(name);
 
-        TreeMap<String,ArrayList<String>> subDirs = 
-                                       new TreeMap<String,ArrayList<String>>();
+        TreeMap<String,List<String>> subDirs = 
+                                       new TreeMap<String,List<String>>();
         
-        ArrayList<String> linesPacked = 
+        List<String> linesPacked = 
         		TextAnalyzer.readTextWithMultilineBlocks(lines,
         		ChemSoftConstants.JDCOMMENT, 
         		ChemSoftConstants.JDOPENBLOCK, 

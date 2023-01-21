@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -86,7 +87,7 @@ public class GaussianInputWriterTest
     	IOtools.writeTXTAppend(jdFile.getAbsolutePath(), 
     			ccj.toLinesJobDetails(), false);
     	
-    	ArrayList<String> parLines = new ArrayList<String>();
+    	List<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
         		+ TaskID.PREPAREINPUTGAUSSIAN);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
@@ -117,7 +118,7 @@ public class GaussianInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),
         		"elements: O,C,P"),"Keyword specific separator");
         
-        ArrayList<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
  
         //TODO-gg this test is not finished: finish it!
     }

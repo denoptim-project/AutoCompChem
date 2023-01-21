@@ -61,7 +61,8 @@ public class Circumstance implements ICircumstance
 
     public Circumstance(InfoChannelType ict)
     {
-        this.ict = ict;
+    	if (ict!=null)
+    		this.ict = ict;
     }
 
 //------------------------------------------------------------------------------

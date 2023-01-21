@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -191,7 +192,7 @@ public class DirectiveFactoryTest
     			+ ChemSoftConstants.JDCLOSEBLOCK);
     	lines.add(ChemSoftConstants.JDCLOSEBLOCK);
     	
-    	ArrayList<Directive> dirs = DirectiveFactory.buildAllFromJDText(lines);
+    	List<Directive> dirs = DirectiveFactory.buildAllFromJDText(lines);
     	
     	assertEquals(4,dirs.size(), "Numer of outermost Directives.");
     }

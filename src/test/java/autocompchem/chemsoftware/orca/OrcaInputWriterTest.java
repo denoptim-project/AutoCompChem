@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -139,7 +140,7 @@ public class OrcaInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(), COORDGEOM), 
         		"Generated input file contains "+COORDGEOM);
         
-        ArrayList<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
  
         // Now we do the almost the same, but we give the job details in a nested block
         // of text in side the job-defining parameters file (paramFile2)
@@ -172,7 +173,7 @@ public class OrcaInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile2.getAbsolutePath(), COORDGEOM),
         		"Generated input file 2 contains "+COORDGEOM);
         
-        ArrayList<String> linesInp2 = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp2 = IOtools.readTXT(inpFile.getAbsolutePath());
         
         assertEquals(linesInp.size(),linesInp2.size(), 
         		"Number of lines in generated input file");

@@ -47,22 +47,19 @@ public class MatchText extends Circumstance
 
     public MatchText()
     {
-        super();
-        this.hasTxtQuery = true;
+        this("", false, null);
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructs a MatchText defining the pattern to match
-     * @param pattern the pattern to be matches
+     * Constructs a MatchText defining the pattern to match.
+     * @param pattern the pattern to be matches.
      */
 
     public MatchText(String pattern)
     {
-        super();
-        this.hasTxtQuery = true;
-        this.pattern = pattern;
+        this(pattern, false, null);
     }
 
 //------------------------------------------------------------------------------
@@ -77,9 +74,7 @@ public class MatchText extends Circumstance
 
     public MatchText(String pattern, InfoChannelType ict)
     {
-        super(ict);
-        this.hasTxtQuery = true;
-        this.pattern = pattern;
+        this(pattern, false, ict);
     }
 
 //------------------------------------------------------------------------------
@@ -93,10 +88,7 @@ public class MatchText extends Circumstance
 
     public MatchText(String pattern, boolean negation)
     {
-        super();
-        this.hasTxtQuery = true;
-        this.pattern = pattern;
-        this.negation = negation;
+        this(pattern, negation, null);
     }
 
 //------------------------------------------------------------------------------

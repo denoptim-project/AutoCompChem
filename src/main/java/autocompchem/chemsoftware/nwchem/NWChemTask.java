@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import autocompchem.datacollections.ParameterStorage;
@@ -153,7 +154,7 @@ public class NWChemTask
     /**
      * List of directives
      */
-    private ArrayList<NWChemDirective> directives;
+    private List<NWChemDirective> directives;
 
     /**
      * List of actions and parameters specific to this task
@@ -180,7 +181,7 @@ public class NWChemTask
      * @param lines array of lines with formatted text
      */
 
-    public NWChemTask(ArrayList<String> lines)
+    public NWChemTask(List<String> lines)
     {
         //Initialize
         directives = new ArrayList<NWChemDirective>();
@@ -997,7 +998,7 @@ public class NWChemTask
      * @return the list of directives
      */
 
-    public ArrayList<NWChemDirective> getAllDirectives()
+    public List<NWChemDirective> getAllDirectives()
     {
         return directives;
     }

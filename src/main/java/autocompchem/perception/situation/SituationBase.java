@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -23,10 +25,16 @@ import java.util.HashMap;
  */
 
 import java.util.Map;
+import java.util.Set;
 
 import autocompchem.files.FileUtils;
+import autocompchem.perception.SCPair;
+import autocompchem.perception.TxtQuery;
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.InfoChannelTypeComparator;
 
 
 /**
@@ -40,13 +48,27 @@ public class SituationBase
     /**
      * List of situations
      */
-    private ArrayList<Situation> allSituations = new ArrayList<Situation>();
+    private List<Situation> allSituations = new ArrayList<Situation>();
 
     /**
      * Indexing of situations by info channel type
      */
-    private Map<InfoChannelType,ArrayList<Situation>> situationsByICType =
-                          new HashMap<InfoChannelType,ArrayList<Situation>>();
+    private Map<InfoChannelType,List<Situation>> situationsByICType =
+                          new HashMap<InfoChannelType,List<Situation>>();
+    
+    /**
+     * Collection (by actual string query) of text queries in any circumstance 
+     * contained here. 
+     */
+    private Map<String,TxtQuery> txtQueriesByQry = new HashMap<String,TxtQuery>();
+    
+    /**
+     * Collection (by {@link InfoChannelType}) of text queries in any  
+     * circumstance contained here. 
+     */
+    private Map<InfoChannelType,Set<TxtQuery>> txtQueriesByICT = 
+    		new HashMap<InfoChannelType,Set<TxtQuery>>();
+    
 
 //------------------------------------------------------------------------------
 
@@ -55,8 +77,7 @@ public class SituationBase
      */
 
     public SituationBase() 
-    {
-    }
+    {}
     
 //------------------------------------------------------------------------------
 
@@ -72,7 +93,7 @@ public class SituationBase
     {
     	// WARNING: we only look for files with the expected formats
     	
-        ArrayList<File> listFiles = FileUtils.find(rootFolder,
+        List<File> listFiles = FileUtils.find(rootFolder,
         		"*" + SituationConstants.SITUATIONTXTFILEEXT);
         //listFiles.addAll(FilesManager.find(pathNameRoot,
         //		SituationConstants.SITUATIONXMLFILEEXT));
@@ -94,8 +115,8 @@ public class SituationBase
 //------------------------------------------------------------------------------
 
     /**
-     * Add a situation
-     * @param situation the situation to be included in this situation base
+     * Add a situation.
+     * @param situation the situation to be included in this situation base.
      */
 
     public void addSituation(Situation situation)
@@ -115,13 +136,53 @@ public class SituationBase
                            new ArrayList<Situation>(Arrays.asList(situation)));
             }
         }
+        
+        //Collect any text query to make searching of strings more efficient
+        for (ICircumstance circ : situation.getCircumstances())
+        {
+            if (circ.requiresTXTMatch())
+            {
+                String queryStr = ((MatchText) circ).getPattern();
+            	InfoChannelType ict = circ.getChannelType();
+            	
+            	TxtQuery tq;
+                if (txtQueriesByQry.keySet().contains(queryStr))
+                {
+                    tq = txtQueriesByQry.get(queryStr);
+                    tq.addReference(situation, circ);
+                } else {
+                	tq = new TxtQuery(queryStr, situation, circ);
+                	txtQueriesByQry.put(queryStr, tq);
+                }
+                
+                if (txtQueriesByICT.containsKey(ict))
+                {
+                	txtQueriesByICT.get(ict).add(tq);
+                } else {
+                	Set<TxtQuery> tqs = new HashSet<TxtQuery>();
+                	tqs.add(tq);
+                	txtQueriesByICT.put(ict, tqs);
+                }
+            }
+        }  
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * Returns the number of situations in this collection
-     * @return the number of known situations
+     * @return the situation with the given index.
+     */
+    
+    public Situation getSituation(int i)
+    {
+    	return allSituations.get(i);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the number of situations in this collection.
+     * @return the number of known situations.
      */
     
     public int getSituationCount()
@@ -137,9 +198,58 @@ public class SituationBase
      * @return the set of relevant situations
      */
 
-    public ArrayList<Situation> getRelevantSituations(InfoChannelType ict)
+    public List<Situation> getRelevantSituations(InfoChannelType ict)
     {
         return situationsByICType.get(ict);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the text queries that are embedded in any circumstance that
+     * characterizes any situation contained in this collection of situations.
+     * @param ict the type of information channel for which the queries are 
+     * meant.
+     */
+    public Set<TxtQuery> getAllTxTQueriesForICT(InfoChannelType ict, 
+    		boolean includeCompatibleICT)
+    {
+    	if (includeCompatibleICT)
+    	{
+    		Set<TxtQuery> result = new HashSet<TxtQuery>();
+    		for (InfoChannelType candICT : txtQueriesByICT.keySet())
+    		{
+    			if (InfoChannelTypeComparator.checkCompatibility(ict, candICT))
+    			{
+    				result.addAll(txtQueriesByICT.get(candICT));
+    			}
+    		}
+    		return result;
+    	} else {
+    		return txtQueriesByICT.get(ict);
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the text queries that are embedded in any circumstance that
+     * characterizes any situation contained in this collection of situations.
+     */
+    public Map<String,TxtQuery> getAllTxTQueriesByQuery()
+    {
+    	return txtQueriesByQry;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the text queries that are embedded in any circumstance that
+     * characterizes any situation contained in this collection of situations.
+     */
+    public Map<InfoChannelType, Set<TxtQuery>> getAllTxTQueriesByICT()
+    {
+    	return txtQueriesByICT;
     }
 
 //------------------------------------------------------------------------------
@@ -150,11 +260,11 @@ public class SituationBase
      * @return the map of relevant situations by info channel type
      */
 
-    public Map<InfoChannelType,ArrayList<Situation>> 
-                                 getRelevantSituationsByICT(InfoChannelBase icb)
+    public Map<InfoChannelType,List<Situation>> 
+    	getRelevantSituationsByICT(InfoChannelBase icb)
     {
-        Map<InfoChannelType,ArrayList<Situation>> relevantSituations = 
-                           new HashMap<InfoChannelType,ArrayList<Situation>>();
+        Map<InfoChannelType,List<Situation>> relevantSituations = 
+                           new HashMap<InfoChannelType,List<Situation>>();
         for (InfoChannelType ict : icb.getAllChannelType())
         {
             if (situationsByICType.keySet().contains(ict))
@@ -173,9 +283,9 @@ public class SituationBase
      * @return the list of relevant situations
      */
 
-    public ArrayList<Situation> getRelevantSituations(InfoChannelBase icb) 
+    public List<Situation> getRelevantSituations(InfoChannelBase icb) 
     {
-        ArrayList<Situation> relevantSituations = new ArrayList<Situation>();
+        List<Situation> relevantSituations = new ArrayList<Situation>();
         for (InfoChannelType ict : icb.getAllChannelType())
         {
             if (situationsByICType.keySet().contains(ict))
@@ -195,7 +305,8 @@ public class SituationBase
 //------------------------------------------------------------------------------
 
     /**
-     * Prints the situations grouped by InfoChannelType. Prints on STDOUT
+     * Prints the situations grouped by {@link InfoChannelType}. 
+     * Prints on STDOUT
      */
 
     public void printSituationsByICT()

@@ -316,7 +316,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     public void importParameters(String paramFile) 
     {
         //Get filled form
-        ArrayList<ArrayList<String>> form = IOtools.readFormattedText(paramFile,
+        List<List<String>> form = IOtools.readFormattedText(paramFile,
                                                    ParameterConstants.SEPARATOR,
                                                  ParameterConstants.COMMENTLINE,
                                               ParameterConstants.STARTMULTILINE,
@@ -352,11 +352,10 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param lines the block of lines to read
      */
 
-    public void importParametersFromLines(String filename, 
-                                                        ArrayList<String> lines)
+    public void importParametersFromLines(String filename, List<String> lines)
     {
         //Get filled form
-        ArrayList<ArrayList<String>> form = IOtools.readFormattedText(filename,
+        List<List<String>> form = IOtools.readFormattedText(filename,
                                                                           lines,
                                                    ParameterConstants.SEPARATOR,
                                                  ParameterConstants.COMMENTLINE,
@@ -374,11 +373,11 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param blocks the block of text to read
      */
 
-    public void importParameterBlocks(ArrayList<ArrayList<String>> blocks)
+    public void importParameterBlocks(List<List<String>> blocks)
     {
         for (int i=0; i<blocks.size(); i++)
         {
-            ArrayList<String> signleBlock = blocks.get(i);
+            List<String> signleBlock = blocks.get(i);
             String key = signleBlock.get(0).toUpperCase();
             String value = signleBlock.get(1);
 

@@ -18,6 +18,7 @@ package autocompchem.text;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class representing a block of text. Typically a sorted collection of lines 
@@ -36,12 +37,12 @@ public class TextBlockIndexed
     /**
      * The lines of text of this block
      */
-    private ArrayList<String> lines;
+    private List<String> lines;
 
     /**
      * The lines of bested blocks (first level only)
      */
-    private ArrayList<TextBlockIndexed> nestedBlocks;
+    private List<TextBlockIndexed> nestedBlocks;
 
     /**
      * Extraction-dependent index A.
@@ -104,7 +105,7 @@ public class TextBlockIndexed
      * @param idC Index of this block among blocks of the same type.
      */
 
-    public TextBlockIndexed(ArrayList<String> lines, int idA, int idB, int idC)
+    public TextBlockIndexed(List<String> lines, int idA, int idB, int idC)
     {
         this.lines = lines;
         this.nestedBlocks = new ArrayList<TextBlockIndexed>();
@@ -152,7 +153,7 @@ public class TextBlockIndexed
      * Get the lines of text
      */
 
-    public ArrayList<String> getText()
+    public List<String> getText()
     {
         return lines;
     }
@@ -163,9 +164,9 @@ public class TextBlockIndexed
        * Get the lines of text from any recursion level below this one
        */
 
-      public ArrayList<String> getTextRecursive()
+      public List<String> getTextRecursive()
       {
-    	  ArrayList<String> recLines = new ArrayList<String>();
+    	  List<String> recLines = new ArrayList<String>();
     	  recLines.addAll(lines);
     	  for (TextBlockIndexed t : nestedBlocks)
     	  {
@@ -180,7 +181,7 @@ public class TextBlockIndexed
      * Get nested blocks
      */
 
-    public ArrayList<TextBlockIndexed> getNestedBlocks()
+    public List<TextBlockIndexed> getNestedBlocks()
     {
         return nestedBlocks;
     }

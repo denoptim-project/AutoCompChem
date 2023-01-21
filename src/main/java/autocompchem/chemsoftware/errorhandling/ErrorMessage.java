@@ -19,6 +19,7 @@ package autocompchem.chemsoftware.errorhandling;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import autocompchem.run.Terminator;
@@ -66,10 +67,10 @@ public class ErrorMessage
     private String name;
 
     //Error messages
-    private ArrayList<String> errMsg;
+    private List<String> errMsg;
 
     //Further conditions
-    private ArrayList<String> conditions;
+    private List<String> conditions;
 
     //Resolution action plan
     private String typeOfAction;
@@ -91,7 +92,7 @@ public class ErrorMessage
 
     /**
      * Construct an <code>ErrorMessage</code> from formatted text given as an
-     * <code>ArrayList</code> in which each item is a line of formatted text to
+     * <code>List</code> in which each item is a line of formatted text to
      * be interpreted. The lines are expected to be ordered only for 
      * Labelled blocks (see below), that is, the beginning of the block must
      * come before the end.
@@ -158,18 +159,18 @@ public class ErrorMessage
      * @param form the table of formatted text
      */
 
-    public ErrorMessage(ArrayList<ArrayList<String>> form)
+    public ErrorMessage(List<List<String>> form)
     {
         String refName = "";
         String action = "";
-        ArrayList<String> errLines = new ArrayList<String>();
-        ArrayList<String> conditions = new ArrayList<String>();
+        List<String> errLines = new ArrayList<String>();
+        List<String> conditions = new ArrayList<String>();
         Map<String,String> details = new HashMap<String,String>();
         boolean refNameFound = false;
         boolean actionFound = false;
         for (int i=0; i<form.size(); i++)
         {
-            ArrayList<String> signleBlock = form.get(i);
+            List<String> signleBlock = form.get(i);
             String key = signleBlock.get(0).toUpperCase();
             String value = signleBlock.get(1);
             switch (key)
@@ -240,7 +241,7 @@ public class ErrorMessage
      * @param errMsg the array of lines representing the error message
      */
 
-    public ErrorMessage(String name, ArrayList<String> errMsg)
+    public ErrorMessage(String name, List<String> errMsg)
     {
         this.name = name;
         this.errMsg = errMsg;
@@ -261,8 +262,8 @@ public class ErrorMessage
      * action
      */
 
-    public ErrorMessage(String name, ArrayList<String> errMsg,
-                                ArrayList<String> conditions, String action, 
+    public ErrorMessage(String name, List<String> errMsg,
+                                List<String> conditions, String action, 
                                 Map<String,String> details)
     {
         this.name = name;
@@ -303,7 +304,7 @@ public class ErrorMessage
      * @return the list of lines of text characterising this error message
      */
 
-    public ArrayList<String> getErrorMessage()
+    public List<String> getErrorMessage()
     {
         return this.errMsg;
     }
@@ -315,7 +316,7 @@ public class ErrorMessage
      * @return the list of additional conditions (as strings)
      */
 
-    public ArrayList<String> getConditions()
+    public List<String> getConditions()
     {
         return conditions;
     }
@@ -364,7 +365,7 @@ public class ErrorMessage
      * @param errMsg the list of lines of text identifying this error message
      */
 
-    public void setErrorMessage(ArrayList<String> errMsg)
+    public void setErrorMessage(List<String> errMsg)
     {
         this.errMsg = errMsg;
     }
@@ -376,7 +377,7 @@ public class ErrorMessage
      * @param conditions the list of additional conditions as strings
      */
 
-    public void setConditions(ArrayList<String> conditions)
+    public void setConditions(List<String> conditions)
     {
         this.conditions = conditions;
     }

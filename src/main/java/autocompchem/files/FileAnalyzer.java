@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -113,11 +114,9 @@ public class FileAnalyzer
      * (1-n, does not work as .size()!) 
      */
 
-    public static ArrayList<ArrayList<Integer>> count(String filename, 
-                                                        ArrayList<String> lsStr)
+    public static List<List<Integer>> count(String filename, List<String> lsStr)
     {
-        ArrayList<ArrayList<Integer>> counts = 
-                                            new ArrayList<ArrayList<Integer>>();
+        List<List<Integer>> counts = new ArrayList<List<Integer>>();
         BufferedReader buffRead = null;
         boolean badTermination = false;
         String msg = "";
@@ -157,13 +156,12 @@ public class FileAnalyzer
      * @return the target section as array of lines
      */
 
-    public static ArrayList<String> extractTxtWithDelimiters(String inFile,
+    public static List<String> extractTxtWithDelimiters(String inFile,
                                                              String pattern1,
                                                              String pattern2,
                                                              boolean inclPatts)
     {
-        ArrayList<ArrayList<String>> blocks = 
-                                     extractMultiTxtBlocksWithDelimiters(inFile,
+        List<List<String>> blocks = extractMultiTxtBlocksWithDelimiters(inFile,
                                                                        pattern1,
                                                                        pattern2,
                                                                            true,
@@ -188,7 +186,7 @@ public class FileAnalyzer
      * @return the list of target sections, each as an array of lines
      */
 
-    public static ArrayList<ArrayList<String>>
+    public static List<List<String>>
                          extractMultiTxtBlocksWithDelimiters(String inFile,
                                                              String pattern1,
                                                              String pattern2,
@@ -221,15 +219,14 @@ public class FileAnalyzer
      * @return the list of target sections, each as an array of lines
      */
 
-    public static ArrayList<ArrayList<String>> 
+    public static List<List<String>> 
                          extractMultiTxtBlocksWithDelimiters(String inFile,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-        ArrayList<ArrayList<String>> blocks =
-                                             new ArrayList<ArrayList<String>>();
+        List<List<String>> blocks = new ArrayList<List<String>>();
 
         BufferedReader buffRead = null;
         boolean badTermination = false;
@@ -283,20 +280,20 @@ public class FileAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static ArrayList<TextBlockIndexed> extractTextBlocks(String pathName,
+    public static List<TextBlockIndexed> extractTextBlocks(String pathName,
                                                             String startPattrn,
                                                               String endPattrn,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-        ArrayList<String> startPattrns = new ArrayList<String>();
-        ArrayList<String> endPattrns = new ArrayList<String>();
+        List<String> startPattrns = new ArrayList<String>();
+        List<String> endPattrns = new ArrayList<String>();
         startPattrns.add(startPattrn);
         endPattrns.add(endPattrn);
         
         FileUtils.foundAndPermissions(pathName,true,false,false);
         BufferedReader br = null;
-        ArrayList<TextBlockIndexed> blocks = null;
+        List<TextBlockIndexed> blocks = null;
         try
         {
             br = new BufferedReader(new FileReader(pathName));
@@ -387,10 +384,10 @@ public class FileAnalyzer
      * [i.e., an integer 0-n].
      */
 
-    public static TreeMap<String,ArrayList<String>>
+    public static TreeMap<String,List<String>>
                         extractMapOfTxtBlocksWithDelimiters(String inFile,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
@@ -433,16 +430,16 @@ public class FileAnalyzer
      * [i.e., an integer 0-n].
      */
 
-    public static TreeMap<String,ArrayList<String>>
+    public static TreeMap<String,List<String>>
                         extractMapOfTxtBlocksWithDelimiters(String inFile,
-                                                   ArrayList<String> slPattrns,
-                                                ArrayList<String> startPattrns,
-                                                  ArrayList<String> endPattrns,
+                                                   List<String> slPattrns,
+                                                List<String> startPattrns,
+                                                  List<String> endPattrns,
                                                              boolean onlyFirst,
                                                              boolean inclPatts)
     {
-        TreeMap<String,ArrayList<String>> blocks = 
-                new TreeMap<String,ArrayList<String>>(new MetchKeyComparator());
+        TreeMap<String,List<String>> blocks = 
+                new TreeMap<String,List<String>>(new MetchKeyComparator());
 
         BufferedReader buffRead = null;
         String msg = "";
@@ -484,13 +481,12 @@ public class FileAnalyzer
      * @return the target section as array of lines
      */
 
-    public static ArrayList<String> extractTxtWithDelimiters(
-                                                        ArrayList<String> lines,
+    public static List<String> extractTxtWithDelimiters(List<String> lines,
                                                         String pattern1,
                                                         String pattern2,
                                                         boolean inclPatts)
     {
-        ArrayList<String> target = new ArrayList<String>();
+        List<String> target = new ArrayList<String>();
         boolean found1st = false;
         for (String line : lines)
         {
@@ -531,14 +527,10 @@ public class FileAnalyzer
      * @return the list of target sections, each as an array of lines
      */
 
-    public static ArrayList<ArrayList<String>>
-                     extractMultiTxtBlocksWithDelimiterAndSize(String inFile,
-                                                               String pattern1,
-                                                               int size,
-                                                               boolean inclPatt)
+    public static List<List<String>> extractMultiTxtBlocksWithDelimiterAndSize(
+    		String inFile, String pattern1, int size, boolean inclPatt)
     {
-        ArrayList<ArrayList<String>> blocks =
-                                             new ArrayList<ArrayList<String>>();
+        List<List<String>> blocks = new ArrayList<List<String>>();
         BufferedReader buffRead = null;
         String msg = "";
         try {
@@ -592,9 +584,9 @@ public class FileAnalyzer
      * queries
      */
    
-    public static ArrayList<String> grep(String inFile, Set<String> patterns)
+    public static List<String> grep(String inFile, Set<String> patterns)
     {
-        ArrayList<String> matches = new ArrayList<String>();
+        List<String> matches = new ArrayList<String>();
         BufferedReader buffRead = null;
         boolean badTermination = false;
         String msg = "";

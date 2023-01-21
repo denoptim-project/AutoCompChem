@@ -20,8 +20,11 @@ import java.io.BufferedReader;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import autocompchem.perception.circumstance.ICircumstance;
@@ -75,7 +78,6 @@ public class Perceptron
      * Verbosity level
      */
     private int verbosity = 0;
-
 
     /**
      * New line character (for logging)
@@ -177,8 +179,8 @@ public class Perceptron
 //------------------------------------------------------------------------------
 
     /**
-     * Perception of situation occurring based on the available information 
-     * channels and situation base.
+     * Perception of situation that is occurring and do it based on the 
+     * available information channels and situation base.
      */
 
     public void perceive() throws Exception
@@ -275,10 +277,8 @@ public class Perceptron
 
         if (oldKey != null)
         {
-            //Previous evaluation exists in the scores collector 
-        }
-        else
-        {
+            //Previous evaluation exists in the scores collector. Nothing to do.
+        } else {
             SCPair scp = new SCPair(n,c);
 
             if (verbosity > 3)
@@ -301,7 +301,8 @@ System.out.println("has txt: " + c.requiresTXTMatch());
 System.out.println("     Child ICircumstance: "+c);
 System.out.println("     Parent Situation: " + n);
 this.printScores();
-            String msg = "ERROR! Evaluation of circumstances not based on text is still to be implemented.";
+            String msg = "ERROR! Evaluation of circumstances not based on text "
+            		+ "is still to be implemented.";
             Terminator.withMsgAndStatus(msg,-1);
 
             scoreCollector.addScore(scp, score);
@@ -315,7 +316,7 @@ this.printScores();
      * handling of text-matching queries. Different Situations may require 
      * to analyse the text of the same text-based source of information. Thus,
      * to avoid reading the same source multiple times, we collect all the
-     * text queries and analyse meant for a single source and read the source 
+     * text queries and analyses meant for a single source and read the source 
      * only one time. 
      * <b>WARNING: currently supporting only file-based InfoChannels.</b>
      * <b>WARNING: assuming all text-queries are single line. No new-line!</b>
@@ -324,8 +325,8 @@ this.printScores();
     private void analyzeAllText()
     {
         //Sort info source by type.
-        Map<InfoChannelType,ArrayList<Situation>> situationsByICType = 
-                                             sitsBase.getRelevantSituationsByICT(icb);
+        Map<InfoChannelType,List<Situation>> situationsByICType = 
+        		sitsBase.getRelevantSituationsByICT(icb);
 
 //TODO del
 //System.out.println("The relevant Situations are:");
@@ -355,9 +356,6 @@ this.printScores();
         }
 */
 
-        // Utility for comparing InfoChannelTypes
-        InfoChannelTypeComparator ictComparator =
-                                                new InfoChannelTypeComparator();
 
         // Explore all the information channels by type, so that we can take all
         // the Circumstances that involve such channel type
@@ -367,45 +365,11 @@ this.printScores();
             {
                 System.out.println(newline+newline+"InfoChannelType: "+ict);
             }
-
-            // Here we collect all the text queries removing duplicates
-            // The queries are collected also as objects to keep track of
-            // the combination of Situation and ICircumstance they belong to.
-            ArrayList<TxtQuery> txtQueries = new ArrayList<TxtQuery>();
-            // and in as plain strings to be send to text parser
-            ArrayList<String> txtQueriesAsStr = new ArrayList<String>();
-            for (Situation s : situationsByICType.get(ict))
-            {
-                for (ICircumstance c : s.getCircumstances())
-                {
-                    if (c.requiresTXTMatch() && 
-                        ictComparator.checkCompatibility(ict,
-                                                         c.getChannelType())) 
-                    {
-                        String queryStr = ((MatchText) c).getPattern();
-
-                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        //
-                        // WARNING!!!
-                        // No handling of multiline matches!!!!
-                        //
-                        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                        // Keep only one text query among duplicates
-                        if (txtQueriesAsStr.contains(queryStr))
-                        {
-                            TxtQuery tq = txtQueries.get(
-                                           txtQueriesAsStr.indexOf(queryStr));
-                            tq.addReference(s,c);
-                        }
-                        else
-                        {
-                            txtQueries.add(new TxtQuery(queryStr,s,c));
-                            txtQueriesAsStr.add(queryStr);
-                        }
-                    }
-                }  
-            }
+            
+            List<TxtQuery> txtQueries = new ArrayList<TxtQuery>(
+            		sitsBase.getAllTxTQueriesForICT(ict, true));
+            List<String> txtQueriesAsStr = new ArrayList<String>();
+            txtQueries.stream().forEach(tq -> txtQueriesAsStr.add(tq.query));
 
             // Scan all the input channels of the present type
             for (InfoChannel ic : icb.getChannelsOfType(ict))
@@ -416,36 +380,30 @@ this.printScores();
                 }
 
                 BufferedReader br = null;
-                TreeMap<String,ArrayList<String>> allMatches = null;
+                TreeMap<String,List<String>> allMatches = null;
                 try 
                 {
                     br = new BufferedReader(ic.getSourceReader());
 
                     // Extract potentially useful information from text
                     // WARNING!!! No attempt to match multiline blocks here!
-                     allMatches = 
-                           TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
+                    allMatches = 
+                    		TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
                                                         txtQueriesAsStr,
                                                         new ArrayList<String>(),
                                                         new ArrayList<String>(),
                                                         false,
                                                         true);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     String msg = "ERROR reading InfoChannel "+ic;
                     Terminator.withMsgAndStatus(msg,-1);
-                }
-                finally
-                {
+                } finally {
                     if (br != null)
                     {
                         try
                         {
                             br.close();
-                        }
-                        catch (Exception e)
-                        {
+                        } catch (Exception e) {
                             String msg = "ERROR closing InfoChannel "+ic;
                             Terminator.withMsgAndStatus(msg,-1);
                         }
@@ -528,7 +486,7 @@ this.printScores();
                         // been matched. For instance, when we don't want to 
                         // find a string in a log feed, but, instead, we find 
                         // it (i.e., negation of of a MatchText circumstance)
-                        // Therefore wi store also zero scores
+                        // Therefore we store also zero scores
 
                         // Finally store the score
                         scoreCollector.addScore(s,c,score);
@@ -539,8 +497,9 @@ this.printScores();
 
 /*
 TODO NOtes:
-- the same mathes can be on the same feed
-- there might be further analysis to be done on the extracted text (e.g., for loop counter of output file analysis)
+- the same matches can be on the same feed
+- there might be further analysis to be done on the extracted text (e.g., for 
+loop counter of output file analysis)
 */
         
     }
@@ -548,68 +507,6 @@ TODO NOtes:
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Utility class representing a text query that is associated with one or
-     * more pairs of situation:circumstance/s
-     */
-
-    private class TxtQuery
-    {
-        /**
-         * The text query
-         */
-        public String query = "";
-
-        /**
-         * List of sources as
-         * pairs of Situation and Circumstance that require matching
-         * this very same text.
-         */
-        public ArrayList<SCPair> sources = new ArrayList<SCPair>();
-
-    //-------------------------------------------------------------------------
-
-        /**
-         * Constructor with arguments
-         * @param query the actual text query 
-         * @param n the source situation that includes the circumstance 
-         * that include the query.
-         * @param c the circumstance that requires the query
-         */
-
-        public TxtQuery(String query, Situation n, ICircumstance c)
-        {
-            this.query = query;
-            this.sources.add(new SCPair(n,c));
-        }
-
-    //-------------------------------------------------------------------------
-
-        /**
-         * Add a pair of references
-         * @param n the source situation that includes the circumstance
-         * that include the query.
-         * @param c the circumstance that requires the query
-         */
-
-        public void addReference(Situation n, ICircumstance c)
-        {
-            this.sources.add(new SCPair(n,c));
-        }
-
-    //-------------------------------------------------------------------------
-        public String toString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[TxtQuery '"+query+"' in sources:").append(newline);
-            for (SCPair nc : sources)
-            {
-                sb.append("   -> "+nc.toString());
-            }
-            sb.append("]");
-            return sb.toString();
-        }
-    }
 
 //------------------------------------------------------------------------------
  

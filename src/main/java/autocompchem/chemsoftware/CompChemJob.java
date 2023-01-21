@@ -65,7 +65,7 @@ public class CompChemJob extends Job implements Cloneable
 	/**
 	 * List of settings, data, and keywords for the comp.chem. tool
 	 */
-	private ArrayList<Directive> directives = new ArrayList<Directive>();
+	private List<Directive> directives = new ArrayList<Directive>();
 
 //------------------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ public class CompChemJob extends Job implements Cloneable
      * @param lines array of lines to be read.
      */
 
-    public CompChemJob(ArrayList<String> lines)
+    public CompChemJob(List<String> lines)
     {
     	super();
 
@@ -109,7 +109,7 @@ public class CompChemJob extends Job implements Cloneable
     	
     	if (lines.toString().contains(ChemSoftConstants.JDLABSTEPSEPARATOR))
     	{
-	    	ArrayList<String> newLines = 
+	    	List<String> newLines = 
 	    			TextAnalyzer.readTextWithMultilineBlocks(lines, 
 	    			ChemSoftConstants.JDCOMMENT, 
 	    			ChemSoftConstants.JDOPENBLOCK, 

@@ -18,6 +18,7 @@ package autocompchem.run;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -52,7 +53,7 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName)
     {
-        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
         		pathName,
                 ParameterConstants.STARTJOB, //delimiter
                 ParameterConstants.ENDJOB, //delimiter
@@ -63,7 +64,7 @@ public class JobFactory
         {
         	// Since there are no JOBSTART/JOBEND blocks we interpret the text
         	// as parameters for a single job
-        	ArrayList<String> lines = IOtools.readTXT(pathName);
+        	List<String> lines = IOtools.readTXT(pathName);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
         			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
@@ -89,7 +90,7 @@ public class JobFactory
 
     public static Job buildFromFile(String pathName, String cliString)
     {
-        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
         		pathName,
                 ParameterConstants.STARTJOB, //delimiter
                 ParameterConstants.ENDJOB, //delimiter
@@ -105,7 +106,7 @@ public class JobFactory
         {
         	// Since there are no JOBSTART/JOBEND blocks we interpret the text
         	// as parameters for a single job
-        	ArrayList<String> lines = IOtools.readTXT(pathName);
+        	List<String> lines = IOtools.readTXT(pathName);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
         			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
@@ -126,7 +127,7 @@ public class JobFactory
      * @return the outermost job, with any nested job within it.
      */
     
-    public static Job createJob(ArrayList<TextBlockIndexed> blocks)
+    public static Job createJob(List<TextBlockIndexed> blocks)
     {
     	// Unless there is only one set of parameters the outermost job serves
         // as a container of a possibly nested structure of sub-jobs.

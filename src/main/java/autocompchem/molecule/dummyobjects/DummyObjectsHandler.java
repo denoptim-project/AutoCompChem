@@ -190,7 +190,7 @@ public class DummyObjectsHandler extends Worker
             this.tmplFile = 
                           params.getParameter("TEMPLATE").getValue().toString();
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
-            ArrayList<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);
+            List<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);
             if (inTmpls.size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! Can only accept a single "

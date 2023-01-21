@@ -18,6 +18,7 @@ package autocompchem.modeling.compute;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import autocompchem.constants.ACCConstants;
 
@@ -53,7 +54,7 @@ public class CompChemComputer
      * @return the correction in [J/(K*mol))]
      */
 
-    public static double vibrationalEntropyCorr(ArrayList<Double> freqs,
+    public static double vibrationalEntropyCorr(List<Double> freqs,
                                                                     double temp)
     {
         return vibrationalEntropyCorr(freqs, temp, 0.0, 0.0, 0.0001, 0);
@@ -86,7 +87,7 @@ public class CompChemComputer
      * @return the correction in [J/(K*mol))]
      */
 
-    public static double vibrationalEntropyCorr(ArrayList<Double> freqs, 
+    public static double vibrationalEntropyCorr(List<Double> freqs, 
                                                 double temp, 
                                                 double qhThrsh, 
                                                 double imThrsh, 

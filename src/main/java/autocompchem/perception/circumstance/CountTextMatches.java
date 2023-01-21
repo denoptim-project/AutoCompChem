@@ -74,9 +74,7 @@ public class CountTextMatches extends MatchText
 
     public CountTextMatches(String pattern, int num, InfoChannelType ict)
     {
-        super(pattern,ict);
-        this.num = num;
-        this.cnstrType = ConstrainType.EXACT; //not needed, but doesn't hurt
+    	this(pattern, num, ict, false);
     }
 
 //------------------------------------------------------------------------------
@@ -130,27 +128,26 @@ public class CountTextMatches extends MatchText
             this.cnstrType = ConstrainType.MAX;
         }
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
      * Constructs a CountTextMatches defining the pattern to match and
-     * the range (min and max, included) within which number of matches 
+     * the range (min and max, included) within which number of matches
      * required to satisfy this circumstance.
      * @param pattern the pattern to be matches
      * @param min the minimum number of matches (acceptable range is &ge; this)
      * @param max the maximum number of matches (acceptable range is &le; this)
+     * @param channel the information channel where to search for this loop
+     * counter.
      */
 
-    public CountTextMatches(String pattern, int min, int max, 
-                                                            InfoChannelType ict)
+    public CountTextMatches(String pattern, int min, int max,
+    		InfoChannelType ict)
     {
-        super(pattern,ict);
-        this.min = min;
-        this.max = max;
-        this.cnstrType = ConstrainType.RANGE;
+    	this(pattern, min, max, ict, false);
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -167,11 +164,13 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int min, int max,
-                                          InfoChannelType ict, boolean negation)
+    		InfoChannelType ict, boolean negation)
     {
         super(pattern,ict);
-        this.min = min;
-        this.max = max;
+    	if (min!=-1)
+    		this.min = min;
+    	if (max!=-1)
+    		this.max = max;
         this.cnstrType = ConstrainType.RANGE;
         super.negation = negation;
     }

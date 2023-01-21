@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.List;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -93,7 +93,7 @@ public class TextBlockIndexedTest
                 + "outside 1 " + ParameterConstants.STRINGFROMCLI + NL
                 + "#end ";
         BufferedReader br = new BufferedReader(new StringReader(NESTEDBLOCKS));
-        ArrayList<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
+        List<TextBlockIndexed> blocks = TextAnalyzer.extractTextBlocks(br,
                                                 slPts,sPats,ePats,false,false);
         
         final String NEWSTR = "MyNewString";

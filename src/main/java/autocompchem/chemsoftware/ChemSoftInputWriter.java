@@ -64,7 +64,7 @@ public abstract class ChemSoftInputWriter extends Worker
      * the list of molecules for which we want to make the input, or the list
      * of geometries used to make a multi-geometry input file.
      */
-    private ArrayList<IAtomContainer> inpGeom = new ArrayList<IAtomContainer>();
+    private List<IAtomContainer> inpGeom = new ArrayList<IAtomContainer>();
 
     /**
      * Definition of how to use multiple geometries
@@ -84,7 +84,7 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Geometry names
      */
-    protected ArrayList<String> geomNames = new ArrayList<String>(
+    protected List<String> geomNames = new ArrayList<String>(
     		Arrays.asList("geometry"));
 
     /**

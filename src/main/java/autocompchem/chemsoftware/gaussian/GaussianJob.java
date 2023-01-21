@@ -19,6 +19,7 @@ package autocompchem.chemsoftware.gaussian;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.CompChemJob;
@@ -66,7 +67,7 @@ public class GaussianJob
     /**
      * The list of steps in this job
      */
-    private ArrayList<GaussianStep> steps = new ArrayList<GaussianStep>();
+    private List<GaussianStep> steps = new ArrayList<GaussianStep>();
 
     /**
      * the total number of steps
@@ -116,7 +117,7 @@ public class GaussianJob
      * @param lines array of lines to be read
      */
 
-    public GaussianJob(ArrayList<String> lines)
+    public GaussianJob(List<String> lines)
     {
         numSteps = 0;
         ArrayList<String> linesOfAStep = new ArrayList<String>();
@@ -132,7 +133,8 @@ public class GaussianJob
                     i++;
                     String inLine = lines.get(i);
                     goon = !inLine.toUpperCase().contains(
-                                               ParameterConstants.ENDMULTILINE);                    line = line + System.getProperty("line.separator") + inLine;
+                                               ParameterConstants.ENDMULTILINE);
+                    line = line + System.getProperty("line.separator") + inLine;
                 }
                 if (goon)
                 {

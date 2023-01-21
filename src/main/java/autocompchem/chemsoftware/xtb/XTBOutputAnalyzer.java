@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.orca;
+package autocompchem.chemsoftware.xtb;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,56 +9,61 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftOutputHandler;
+import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.io.IOtools;
-import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**
- * Reader for Orca output data files. This class implements all
+ * Reader for XTB output data files. This class implements all
  * the software specific features that are needed to extract information
- * from the output of Orca. The rest of the functionality is in the superclass
- * {@link ChemSoftOutputHandler}.
+ * from the output of XTB. The rest of the functionality is in the superclass
+ * {@link ChemSoftOutputAnalyzer}.
  * 
  * @author Marco Foscato
  */
-public class OrcaOutputHandler extends ChemSoftOutputHandler
+public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
 {
     /**
      * Declaration of the capabilities of this subclass of {@link Worker}.
      */
     public static final Set<TaskID> capabilities =
                     Collections.unmodifiableSet(new HashSet<TaskID>(
-                                    Arrays.asList(TaskID.ANALYSEORCAOUTPUT)));
+                                    Arrays.asList(TaskID.ANALYSEXTBOUTPUT)));
     
 //-----------------------------------------------------------------------------
     
     /**
-     * Method that parses the given log file from Orca and collects all 
+     * Method that parses the given log file from XTB and collects all 
      * possible data in local fields.
      * @throws CloneNotSupportedException 
      */
     
     @Override
-    protected void readLogFile(File file) throws Exception
+    protected void readLogFile(File file, SituationBase sb) throws Exception
     {	
+    	// Extract the pathname of the log file: we'll use it to find output 
+    	// that is printed on other files
+		String path = "";
+		if (file.getParent() != null)
+		{
+        	path = file.getParent() + System.getProperty(
+        			"file.separator");
+		}
+    	
         BufferedReader buffRead = null;
         try {
             buffRead = new BufferedReader(new FileReader(file));
@@ -67,6 +72,9 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             ListOfIntegers stepScfConvSteps = new ListOfIntegers();
             ListOfDoubles stepScfConvEnergies = new ListOfDoubles();
             AtomContainerSet stepGeoms = new AtomContainerSet();
+            
+            boolean foundOptTrajectory = false;
+            
         	int stepInitLineNum = 0;
         	int stepEndLineNum = Integer.MAX_VALUE;
             int stepId = 0;
@@ -76,19 +84,29 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             {
             	lineNum++;
             	
-            	/*
-            	//TODO del
-        		System.out.println(" ");
-        		System.out.println("LINE: "+line);
-        		*/
-            	
-            	if (line.matches(".*" + OrcaConstants.LOGJOBSTEPSTART+ ".*"))
+            	if (line.matches(".*" + XTBConstants.LOGJOBSTEPSTART+ ".*"))
             	{
             		if (first)
             		{
             			first = false;
             		} else {
             			stepEndLineNum = lineNum-1;
+            			
+            			if (!foundOptTrajectory)
+            			{
+                    		File xyzOpt = new File(path + "xtbopt.log");
+                    		if (xyzOpt.exists())
+                    		{
+                    			List<IAtomContainer> mols = IOtools.readXYZ(
+                    				xyzOpt.getAbsolutePath());
+                    		
+                    			for (IAtomContainer mol : mols)
+                    			{
+                    				stepGeoms.addAtomContainer(mol);
+                    			}
+                            }
+            			}
+            			
             			storeDataOfOneStep(stepId, 
             					stepData, stepInitLineNum, 
             					stepEndLineNum, stepScfConvSteps, 
@@ -106,162 +124,75 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             		}
             	}
             	
-            	if (line.matches(".*" + OrcaConstants.LOGNORMALTERM+ ".*"))
+            	if (line.matches(".*" + XTBConstants.LOGNORMALTERM+ ".*"))
             	{
             		normalTerminated = true;
             	}
             	
-            	if (line.matches(".*" + OrcaConstants.LOGFINALSPENERGY+ ".*"))
+            	if (line.matches(".*" + XTBConstants.LOGFINALSPENERGY+ ".*"))
             	{
             		String[] p = line.trim().split("\\s+");
-            		stepScfConvEnergies.add(Double.parseDouble(p[4]));
+            		stepScfConvEnergies.add(Double.parseDouble(p[3]));
             	}
             	
-            	if (line.matches(".*" + OrcaConstants.LOGSCFSUCCESS + ".*"))
+            	if (line.matches(".*" + XTBConstants.LOGSCFSUCCESS + ".*"))
             	{
             		String[] p = line.trim().split("\\s+");
-            		stepScfConvSteps.add(Integer.parseInt(p[4]));
+            		stepScfConvSteps.add(Integer.parseInt(p[5]));
             		stepData.putNamedData(new NamedData(
         					ChemSoftConstants.JOBDATASCFCONVERGED,true));
             	}
             	
             	if (line.matches(".*" + 
-            			OrcaConstants.JOBLOGCURRENTGEOMETRY+ ".*"))
-            	{
-            		IAtomContainer mol = new AtomContainer();
-            		int skipped = 0;
-            		while ((line = buffRead.readLine()) != null)
-                    {
-                    	lineNum++;
-                    	skipped++;
-                    	if (skipped<2)
-                    	{
-                    		continue;
-                    	}
-                    	if (line.trim().equals(""))
-                    	{
-                    		break;
-                    	} else {
-                    		String[] p = line.trim().split("\\s+");
-                    		if (p.length < 4)
-                    		{
-                    			Terminator.withMsgAndStatus("ERROR! Cannot "
-                    					+ "read coordinates from line '" 
-                    					+ line + "'.",-1);
-                    		}
-                    		String sym = p[0];
-                    		Point3d p3d = new Point3d(Double.parseDouble(p[1]),
-                    				Double.parseDouble(p[2]),
-                    				Double.parseDouble(p[3]));
-                    		IAtom atm = new Atom(sym,p3d);
-                    		mol.addAtom(atm);
-                    	}
-                    }
-            		stepGeoms.addAtomContainer(mol);
-            	}
-            	
-            	if (line.matches(".*" + 
-            			OrcaConstants.LOGGEOMOPTCONVERGED+ ".*"))
+            			XTBConstants.LOGGEOMOPTCONVERGED+ ".*"))
             	{
             	    stepData.putNamedData(new NamedData(
         					ChemSoftConstants.JOBGEOMOPTCONVERGED,true));
             	}
 
-            	if (line.matches(".*" + OrcaConstants.LOGVIBFREQ+ ".*"))
+            	if (line.matches(".*" + XTBConstants.LOGVIBFREQ+ ".*"))
             	{
             		ListOfDoubles list = new ListOfDoubles();
             		int skipped = 0;
-            		int emptyLinesCount = 0;
             		while ((line = buffRead.readLine()) != null)
                     {
                     	lineNum++;
                     	skipped++;
-                    	if (skipped<4)
+                    	if (skipped<3)
                     	{
                     		continue;
                     	}
-                    	if (line.trim().equals(""))
+                    	if (line.contains("reduced masses"))
                     	{
-                    		emptyLinesCount++;
-                    		if (emptyLinesCount>2)
-                    		{
-                    			break;
-                    		}
-                    	} else {
-                    		String[] p = line.trim().split("\\s+");
-                    		if (p.length < 3)
-                    		{
-                    			Terminator.withMsgAndStatus("ERROR! Cannot "
-                    					+ "read coordinates from line '" 
-                    					+ line + "'.",-1);
-                    		}
-                    		list.add(Double.parseDouble(p[1]));
+                    		break;
                     	}
+                		String[] p = line.trim().split("\\s+");
+                		if (p.length < 3)
+                		{
+                			Terminator.withMsgAndStatus("ERROR! Cannot "
+                					+ "read vibrationsl frequencies from line '" 
+                					+ line + "'.",-1);
+                		}
+                		for (int i=2; i<p.length; i++)
+                		{
+                			list.add(Double.parseDouble(p[i]));
+                		}
                     }
             	    stepData.putNamedData(new NamedData(
         					ChemSoftConstants.JOBDATAVIBFREQ,list));
             	}
             	
-            	if (line.matches(".*" + OrcaConstants.LOGVIBMODES + ".*"))
-            	{
-            		NormalModeSet nms = new NormalModeSet();
-            		
-            		//WARNING! we can read up to 6 modes per block
-            		int[] currModes = new int[6];
-            		
-            		int skipped = 0;
-            		while ((line = buffRead.readLine()) != null)
-                    {
-                    	lineNum++;
-                    	skipped++;
-                    	if (skipped<7)
-                    	{
-                    		continue;
-                    	}
-                    	if (line.trim().equals(""))
-                    	{
-                    		// Initial empty lines were skipped, so they do not
-                    		// count
-                    		break;
-                    	} else if (line.startsWith("           ")) {
-                    		//This lines contain only the indexes of the modes
-                    		String[] p = line.trim().split("\\s+");
-                    		if (p.length < 2)
-                    		{
-                    			Terminator.withMsgAndStatus("ERROR! Cannot "
-                    					+ "read normal modes indexes from line"
-                    					+ " '" + line + "'.",-1);
-                    		}
-                    		currModes = new int[6]; //Cleanup previous numbers
-                    		for (int i=0; i<p.length; i++)
-                    		{
-                    			currModes[i] = Integer.parseInt(p[i]);
-                    		}
-                    	} else {
-                    		// This lines contain the actual components
-                    		String[] p = line.trim().split("\\s+");
-                    		int atmId = Integer.parseInt(p[0])/3;
-                    		int compId =  (Integer.parseInt(p[0]) % 3);
-                        	for (int k=1; k<p.length; k++)
-                        	{
-                        		nms.setComponent(currModes[k-1], atmId, 
-                    					compId, Double.parseDouble(p[k]));
-                        	}
-                    	}
-                    }
-            	    stepData.putNamedData(new NamedData(
-        					ChemSoftConstants.JOBDATAVIBMODES,nms));
-            	}
-   
-            	if (line.matches(".*" + OrcaConstants.LOGGIBBSFREEENERGY+ ".*"))
+            	if (line.matches(".*" + XTBConstants.LOGGIBBSFREEENERGY+ ".*"))
             	{
             		String[] p = line.trim().split("\\s+");
             	    stepData.putNamedData(new NamedData(
         					ChemSoftConstants.JOBDATAGIBBSFREEENERGY,
-        					Double.parseDouble(p[5])));
+        					Double.parseDouble(p[4])));
             	}
             	
-                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ELECTR
+            	
+            	/*
+                if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_ELECTR
                         + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
@@ -271,7 +202,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                             val));
                 }
 
-                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_VIB
+                if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_VIB
                     + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
@@ -281,7 +212,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                             val));
                 }
 
-                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_TRANS
+                if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_TRANS
                     + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
@@ -291,7 +222,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                             val));
                 }
 
-                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_S_ROT
+                if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_S_ROT
                     + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
@@ -301,7 +232,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                             val));
                 }
 
-                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_H
+                if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_H
                     + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
@@ -311,7 +242,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                             val));
                 }
 
-                if (line.matches(".*" + OrcaConstants.LOGTHERMOCHEM_ZPE
+                if (line.matches(".*" + XTBConstants.LOGTHERMOCHEM_ZPE
                     + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
@@ -322,7 +253,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                 }
 
                 if (line.matches(".*" 
-                		+ OrcaConstants.LOGTHERMOCHEM_UCORR_VIB + ".*"))
+                		+ XTBConstants.LOGTHERMOCHEM_UCORR_VIB + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
                     Double val = Double.parseDouble(p[4]);
@@ -332,7 +263,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                 }
 
                 if (line.matches(".*" 
-                		+ OrcaConstants.LOGTHERMOCHEM_UCORR_ROT + ".*"))
+                		+ XTBConstants.LOGTHERMOCHEM_UCORR_ROT + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
                     Double val = Double.parseDouble(p[4]);
@@ -342,7 +273,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                 }
 
                 if (line.matches(".*" 
-                		+ OrcaConstants.LOGTHERMOCHEM_UCORR_TRANS + ".*"))
+                		+ XTBConstants.LOGTHERMOCHEM_UCORR_TRANS + ".*"))
                 {
                     String[] p = line.trim().split("\\s+");
                     Double val = Double.parseDouble(p[4]);
@@ -350,40 +281,29 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
                             ChemSoftConstants.JOBDATTHERMOCHEM_UCORR_TRANS,
                             val));
                 }
+            	*/
             	
-            	if (line.matches(".*" + OrcaConstants.LOGJOBEXTNAMESPACE + ".*") 
-            			&& stepGeoms.getAtomContainerCount()==0)
+            	
+            	if (line.matches(".*" + XTBConstants.LOGOPTTRJFILENAME + ".*"))
             	{
             		String[] p = line.trim().split("\\s+");
-					String path = "";
-					if (file.getParent() != null)
-					{
-		            			path = file.getParent() + System.getProperty(
-		            				"file.separator");
-					}
-            		String nameSpace = p[3];
-            		File xyzOpt = new File(path + nameSpace+"_trj.xyz");
+            		String optGeomFileName = p[5];
+            		optGeomFileName = optGeomFileName.replace("\'","");
+            		optGeomFileName = optGeomFileName.replace("\'","");
+            		
+            		File xyzOpt = new File(path + optGeomFileName);
             		if (!xyzOpt.exists())
             		{
-                		File xyzSP = new File(path + nameSpace + ".xyz");
-                		if (!xyzSP.exists())
-                		{
-                			System.out.println("WARNING! Found redirection"
-                					+ " to additional output files, " 
-                					+ "but neither '" 
-                					+ xyzSP.getAbsolutePath() + "' nor '"
+            			System.out.println("WARNING! Found redirection"
+                					+ " to additional output file, " 
+                					+ "but '"
                 					+ xyzOpt.getAbsolutePath() + "' could "
                 					+ "be found! " + System.getProperty(
                 							"line.separator") 
                 					+ "I cannot find geometries for step "
 							+  (stepId+1) + "!");
-                		}
-                		xyzOpt = xyzSP;
-            		}
-            		
-            		if (xyzOpt.exists())
-                    {
-            			ArrayList<IAtomContainer> mols = IOtools.readXYZ(
+            		} else {
+            			List<IAtomContainer> mols = IOtools.readXYZ(
             				xyzOpt.getAbsolutePath());
             		
             			for (IAtomContainer mol : mols)
@@ -391,15 +311,16 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             				stepGeoms.addAtomContainer(mol);
             			}
                     }
+            		foundOptTrajectory = true;
             	}
         	
-            	// There is plenty of other data in the Orca log file. 
+            	// There is plenty of other data in the XTB log file. 
             	// So, this list of parsed data will grow as needed...
             	// Here is a template of code to be added to parse some data
             	
             	/*
 
-            	if (line.matches(".*" + OrcaConstants.____+ ".*"))
+            	if (line.matches(".*" + XTBConstants.____+ ".*"))
             	{
             		String[] p = line.trim().split("\\s+");
             		//TODO: write code that parses data
@@ -410,6 +331,27 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
             	}
             	 */
             }
+            
+            if (!foundOptTrajectory)
+			{
+        		File xyzOpt = new File(path + "xtbopt.log");
+        		if (xyzOpt.exists())
+        		{
+        			List<IAtomContainer> mols = IOtools.readXYZ(
+        				xyzOpt.getAbsolutePath());
+        		
+        			for (IAtomContainer mol : mols)
+        			{
+        				stepGeoms.addAtomContainer(mol);
+        			}
+                }
+			}
+            
+            //TOTO read vib modes from g98.out (a.k.a. the fake output)
+            /*
+    	    stepData.putNamedData(new NamedData(
+					ChemSoftConstants.JOBDATAVIBMODES,nms));
+    	    */
             
     		// Store data of last job, which ended with the end of the file
     		stepEndLineNum = lineNum-1;
@@ -465,7 +407,7 @@ public class OrcaOutputHandler extends ChemSoftOutputHandler
 					stepGeoms.clone()));
 		}
 		
-		stepsData.put(stepId,stepData.clone());
+		stepsData.put(stepId, stepData.clone());
     }
 
 //-----------------------------------------------------------------------------
