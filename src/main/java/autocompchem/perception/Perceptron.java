@@ -1,6 +1,7 @@
 package autocompchem.perception;
 
 import java.io.BufferedReader;
+import java.io.Reader;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -368,9 +369,7 @@ this.printScores();
             
             List<TxtQuery> txtQueries = new ArrayList<TxtQuery>(
             		sitsBase.getAllTxTQueriesForICT(ict, true));
-            List<String> txtQueriesAsStr = new ArrayList<String>();
-            txtQueries.stream().forEach(tq -> txtQueriesAsStr.add(tq.query));
-
+            
             // Scan all the input channels of the present type
             for (InfoChannel ic : icb.getChannelsOfType(ict))
             {
@@ -378,135 +377,181 @@ this.printScores();
                 {
                     System.out.println(newline +"Scanning InfoChannel: "+ic);
                 }
-
-                BufferedReader br = null;
-                TreeMap<String,List<String>> allMatches = null;
-                try 
+                Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(
+                		txtQueries, ic, 0);
+                for (TxtQuery tq : matches.keySet())
                 {
-                    br = new BufferedReader(ic.getSourceReader());
-
-                    // Extract potentially useful information from text
-                    // WARNING!!! No attempt to match multiline blocks here!
-                    allMatches = 
-                    		TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
-                                                        txtQueriesAsStr,
-                                                        new ArrayList<String>(),
-                                                        new ArrayList<String>(),
-                                                        false,
-                                                        true);
-                } catch (Exception e) {
-                    String msg = "ERROR reading InfoChannel "+ic;
-                    Terminator.withMsgAndStatus(msg,-1);
-                } finally {
-                    if (br != null)
-                    {
-                        try
-                        {
-                            br.close();
-                        } catch (Exception e) {
-                            String msg = "ERROR closing InfoChannel "+ic;
-                            Terminator.withMsgAndStatus(msg,-1);
-                        }
-                    }
-                }
-
-                // Identify the queries that have matches
-                Map<Integer,ArrayList<String>> textQueriesWMatches = 
-                                       new HashMap<Integer,ArrayList<String>>();
-                for (String strQuery : allMatches.keySet())
-                {
-                    // The matches are returned with a key that contains
-                    // numerical indexes a_b_c.  For details,
-                    // see TextAnalyzer.extractMapOfTxtBlocksWithDelimiters.
-                    // First, we deal with the indexes
-                    String[] parts = strQuery.split("_");
-                    //...and get the index of the query given to FileAnalyzer
-                    int qID = Integer.parseInt(parts[1]); // the 'b'
-                    if (textQueriesWMatches.keySet().contains(qID))
-                    {
-                        textQueriesWMatches.get(qID).add(strQuery);
-                    }
-                    else
-                    {
-                        ArrayList<String> strQryKeys = new ArrayList<String>();
-                        strQryKeys.add(strQuery);
-                        textQueriesWMatches.put(qID,strQryKeys);
-                    }
-                }
-
-                // Process matched and unmatched queries
-                for (int qID = 0; qID < txtQueriesAsStr.size(); qID++)
-                {
-                    TxtQuery tq = txtQueries.get(qID);
                     if (verbosity > 4)
                     {
                         System.out.println("Result for text query "+tq);
                     }
-
-                    ArrayList<String> matches = new ArrayList<String>(0);
-                    if (textQueriesWMatches.keySet().contains(qID))
+                    
+                    if (matches.get(tq).size()!=0)
                     {
-                        // This text query has been matched 
-                        for (String strQuery : textQueriesWMatches.get(qID))
-                        {
-                            matches.addAll(allMatches.get(strQuery));
-                        }
-
                         if (verbosity > 3)
                         {        
-                             System.out.println("Matches for text query '" 
-                            		 + txtQueriesAsStr.get(qID) + "' = "
+                             System.out.println("#Matches for text query '" 
+                            		 + tq.query + "' = "
                             		 + matches.size() + ". Lines:");
-                            for (String m : matches)
+                            for (String m : matches.get(tq))
                             {
                                 System.out.println("  ->  " + m);
                             }
                         }
-                    }
-                    else 
-                    {
-                        //This is a text query that does NOT have any match
+                    } else {
                         if (verbosity > 3)
                         {        
                             System.out.println("No matches for text query '"
-                                             + txtQueriesAsStr.get(qID) + "'");
+                                             + tq.query + "'");
                         }
                     }
 
-                    // Add scores for all the Situation:ICircumnstance that 
-                    // include this text query
-                    for (SCPair sc: tq.sources)
-                    {
-                        Situation s = sc.getSituation();
-                        ICircumstance c = sc.getCircumstance();
-
-                        double score = ((MatchText)c).calculateScore(matches);
-
-                        //The resulting score can be zero even if the text has
-                        // been matched. For instance, when we don't want to 
-                        // find a string in a log feed, but, instead, we find 
-                        // it (i.e., negation of of a MatchText circumstance)
-                        // Therefore we store also zero scores
-
-                        // Finally store the score
-                        scoreCollector.addScore(s,c,score);
-                    }
+                    // Collect scores afterwards
+                    collectPerceptionScoresForTxtMatchers(tq, matches.get(tq));
                 } //End loop over queries
             } // end loop over InfoChannels
-        } // End loop over InfoChannelTypes
-
-/*
-TODO NOtes:
-- the same matches can be on the same feed
-- there might be further analysis to be done on the extracted text (e.g., for 
-loop counter of output file analysis)
-*/
-        
+        } // End loop over InfoChannelTypes   
     }
+    
+//------------------------------------------------------------------------------
+    
+    private void collectPerceptionScoresForTxtMatchers(TxtQuery tq, 
+    		List<String> matches)
+    {
+        // Add scores for all the Situation:ICircumnstance that 
+        // include this text query
+        for (SCPair sc: tq.sources)
+        {
+            Situation s = sc.getSituation();
+            ICircumstance c = sc.getCircumstance();
 
+            double score = ((MatchText)c).calculateScore(matches);
 
+            //The resulting score can be zero even if the text has
+            // been matched. For instance, when we don't want to 
+            // find a string in a log feed, but, instead, we find 
+            // it (i.e., negation of a MatchText circumstance)
+            // Therefore we store also zero scores.
+
+            // Finally store the score
+            scoreCollector.addScore(s,c,score);
+        }
+    }
+    
 //------------------------------------------------------------------------------
 
+    /**
+     * Reads a feed searching for lines matching the given list of queries.
+     * @param txtQueries the queries defining what to search for in the text.
+     * @param ic channel we are reading now (only for logging).
+     * @param verbosity the level of verbosity (only for logging).
+     * @return a mapping of what lines matches which query.
+     */
+    public static Map<TxtQuery,List<String>> getTxtMatchesFromICReader(
+    		List<TxtQuery> txtQueries, InfoChannel ic, int verbosity)
+    {	
+    	List<String> txtQueriesAsStr = new ArrayList<String>();
+        txtQueries.stream().forEach(tq -> txtQueriesAsStr.add(tq.query));
+
+        // The keys are "a_b_c" where b is the index of the string query
+        // in txtQueriesAsStr
+        TreeMap<String,List<String>> allMatches = null;
+        BufferedReader br = new BufferedReader(ic.getSourceReader());
+        try 
+        {   // Extract potentially useful information from text
+            // WARNING!!! No attempt to match multi-line blocks here!
+            allMatches = 
+            		TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
+                                                txtQueriesAsStr,
+                                                new ArrayList<String>(),
+                                                new ArrayList<String>(),
+                                                false,
+                                                true);
+        } catch (Exception e) {
+            String msg = "ERROR reading InfoChannel "+ic;
+            Terminator.withMsgAndStatus(msg, -1);
+        } finally {
+            if (br != null)
+            {
+                try
+                {
+                    br.close();
+                } catch (Exception e) {
+                    String msg = "ERROR closing InfoChannel "+ic;
+                    Terminator.withMsgAndStatus(msg,-1);
+                }
+            }
+        }
+        
+        // We now need to convert the "a_b_c" string from allMatches into
+        // references to the TxtQuery objects.
+        
+        // First create a mapping between TxtQuery identifier (key) and the 
+        // "a_b_c" strings (value. The key on this map is the
+        // index of the TxtQuery.patterm string in txtQueriesAsStr and of the 
+        // corresponding TxtQuery object in txtQueries. 
+        // The value is the list of "a_b_c"
+        // Strings that identify the matches. They are many because the string
+        // may have been found multiple times in the channel.
+        Map<Integer,List<String>> matchesIDsbyTxtQueryIdx = 
+                               new HashMap<Integer,List<String>>();
+        for (String strQuery : allMatches.keySet())
+        {
+            // The matches are returned with a key that contains
+            // numerical indexes a_b_c.  For details,
+            // see TextAnalyzer.extractMapOfTxtBlocksWithDelimiters.
+            // First, we deal with the indexes
+            String[] parts = strQuery.split("_");
+            //...and get the index of the query given to TextAnalyzer
+            int qID = Integer.parseInt(parts[1]); // the 'b'
+            if (matchesIDsbyTxtQueryIdx.keySet().contains(qID))
+            {
+            	matchesIDsbyTxtQueryIdx.get(qID).add(strQuery);
+            } else {
+                List<String> strQryKeys = new ArrayList<String>();
+                strQryKeys.add(strQuery);
+                matchesIDsbyTxtQueryIdx.put(qID,strQryKeys);
+            }
+        }
+    	
+        Map<TxtQuery,List<String>> mapOfMatches = 
+        		new HashMap<TxtQuery,List<String>>();
+        for (int qIdx = 0; qIdx < txtQueriesAsStr.size(); qIdx++)
+        {
+            TxtQuery tq = txtQueries.get(qIdx);
+
+            // The lines that match the present text query
+            List<String> matches = new ArrayList<String>();
+            if (matchesIDsbyTxtQueryIdx.keySet().contains(qIdx))
+            {
+                // This text query has been matched, so collect matching lines.
+                for (String strQuery : matchesIDsbyTxtQueryIdx.get(qIdx))
+                {
+                    matches.addAll(allMatches.get(strQuery));
+                }
+
+                if (verbosity > 3)
+                {        
+                     System.out.println("Matches for text query '" 
+                    		 + txtQueriesAsStr.get(qIdx) + "' = "
+                    		 + matches.size() + ". Lines:");
+                    for (String m : matches)
+                    {
+                        System.out.println("  ->  " + m);
+                    }
+                }
+            } else {
+                //This is a text query that does NOT have any match
+                if (verbosity > 3)
+                {        
+                    System.out.println("No matches for text query '"
+                                     + txtQueriesAsStr.get(qIdx) + "'");
+                }
+            }
+            mapOfMatches.put(tq, matches);
+        }
+    	return mapOfMatches;
+    }
 
 //------------------------------------------------------------------------------
  

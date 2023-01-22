@@ -18,6 +18,7 @@ package autocompchem.perception.circumstance;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import autocompchem.perception.infochannel.InfoChannelType;
 
@@ -133,7 +134,7 @@ public class MatchText extends Circumstance
      * @return numerical score
      */
 
-    public double calculateScore(ArrayList<String> matches)
+    public double calculateScore(List<String> matches)
     {
         double score = 0.0;
         if (negation)

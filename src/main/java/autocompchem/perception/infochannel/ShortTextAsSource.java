@@ -80,7 +80,7 @@ public class ShortTextAsSource extends InfoChannel
     /**
      * Returns the Reader of the string source.
      * The stream is typically closed outside of the information channel, by
-     * whatever reads the Reader and defined that the Reader is no longer 
+     * whatever reads the Reader and defines that the Reader is no longer 
      * needed.
      * @return a readed for reading the character-info from the source
      */

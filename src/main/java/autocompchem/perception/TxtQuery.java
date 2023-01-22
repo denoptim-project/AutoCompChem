@@ -30,30 +30,29 @@ public class TxtQuery
     /**
      * Constructor with arguments
      * @param query the actual text query 
-     * @param n the source situation that includes the circumstance 
+     * @param s the source situation that includes the circumstance 
      * that include the query.
      * @param c the circumstance that requires the query
-     * @param perceptron TODO
      */
 
-    public TxtQuery(String query, Situation n, ICircumstance c)
+    public TxtQuery(String query, Situation s, ICircumstance c)
     {
 		this.query = query;
-        this.sources.add(new SCPair(n,c));
+        this.sources.add(new SCPair(s,c));
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Add a pair of references
-     * @param n the source situation that includes the circumstance
+     * @param s the source situation that includes the circumstance
      * that include the query.
      * @param c the circumstance that requires the query
      */
 
-    public void addReference(Situation n, ICircumstance c)
+    public void addReference(Situation s, ICircumstance c)
     {
-        this.sources.add(new SCPair(n,c));
+        this.sources.add(new SCPair(s,c));
     }
 
 //------------------------------------------------------------------------------

@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +49,41 @@ import autocompchem.perception.situation.SituationBase;
 public class PerceptronTest 
 {
     private final String NL = System.getProperty("line.separator");
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetTxtMatchesFromReader() throws Exception
+    {
+    	ArrayList<String> a = new ArrayList<String>();
+        a.add("line0: Text to analyze");
+        a.add("line1: array contains QRY@1 and QRY@2...");
+        a.add("line2: more lnes with QRY@1, but this time with QRY@3");
+        a.add("line3: QRY@4 in text");
+
+        ShortTextAsSource ic = new ShortTextAsSource(a);
+        ic.setType(InfoChannelType.OUTPUTFILE);
+        
+        TxtQuery tq1 = new TxtQuery(".*QRY@1.*", null, null);
+        TxtQuery tq2 = new TxtQuery(".*QRY@2.*", null, null);
+        TxtQuery tq3 = new TxtQuery(".*QRY@3.*", null, null);
+        TxtQuery tq4 = new TxtQuery(".*QRY@4.*", null, null);
+        TxtQuery tq5 = new TxtQuery(".*NOMATCH.*", null, null);
+        List<TxtQuery> queries = new ArrayList<TxtQuery>(Arrays.asList(
+        		tq1, tq2, tq3, tq4, tq5));
+        
+    	Map<TxtQuery,List<String>> map = Perceptron.getTxtMatchesFromICReader(
+    			queries, ic, 0);
+    	
+    	assertEquals(queries.size(), map.size());
+    	assertEquals(2, map.get(tq1).size());
+    	assertEquals(1, map.get(tq2).size());
+    	assertEquals(1, map.get(tq3).size());
+    	assertEquals(1, map.get(tq4).size());
+    	assertEquals(0, map.get(tq5).size());
+    }
+    
+//------------------------------------------------------------------------------
 
     @Test
     public void testSourceStreams() throws Exception

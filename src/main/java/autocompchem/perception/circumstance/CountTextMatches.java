@@ -18,6 +18,7 @@ package autocompchem.perception.circumstance;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import autocompchem.perception.infochannel.InfoChannelType;
 
@@ -186,7 +187,7 @@ public class CountTextMatches extends MatchText
      */
 
     @Override
-    public double calculateScore(ArrayList<String> matches)
+    public double calculateScore(List<String> matches)
     {
         double score = 0.0;
         int numMatches = matches.size();
