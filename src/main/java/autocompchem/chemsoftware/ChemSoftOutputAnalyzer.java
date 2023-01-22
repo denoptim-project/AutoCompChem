@@ -20,6 +20,10 @@ import java.io.BufferedReader;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +45,7 @@ import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.SCPair;
+import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
@@ -64,10 +69,10 @@ import autocompchem.worker.Worker;
 public abstract class ChemSoftOutputAnalyzer extends Worker
 {   
     /**
-     * Name of the output file from comp.chem. software, i.e., 
-     * the input for this class.
+     * Name of the log (commonly referred to as the "output") file from 
+     * comp.chem. software, i.e., the input for this class.
      */
-    private File inFile;
+    protected File inFile;
     
     /**
      * Root pathname for any potential output file
@@ -88,14 +93,6 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
      * Flag recording normal termination of job under analysis
      */
     protected boolean normalTerminated = false;
-    
-    /**
-     * Collection of situations that may be identified by analyzing the output
-     * from the comp. chem. software. For efficiency, we take any query from
-     * the situations and use it to parse the output files and collect info, but
-     * without attempting any perception in this class.
-     */
-    protected SituationBase perceivedSituations;
     
     /**
      * Data structure holding all data parsed from the job output files
@@ -139,6 +136,20 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
      * seen as incompatible. Default <i>t = 0.05</i>.
      */
     private double connectivityCheckTol = 0.05;
+    
+    /**
+     * Text-based queries associated to perception of any event that requires
+     * the analysis of some comp.chem. software log.
+     */
+    private List<TxtQuery> perceptionTxtQueriesForLog;
+    
+    /**
+     * Collection of lines matching the text-based queries associated with 
+     * perception and involving the parsing of comp. chem. software log.
+     */
+    private Map<TxtQuery,List<String>> perceptionTQMatches = 
+    		new HashMap<TxtQuery,List<String>>();
+    
     
     private static String NL = System.getProperty("line.separator");
 
@@ -437,15 +448,34 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
     private void analyzeFiles()
     {	
         //Read and parse log files (typically called "output file")
+    	LogReader logReader = null;
     	try {
-    		//software-specificity encapsulated in here
-			readLogFile(inFile, perceivedSituations);
-		} catch (Exception e) {
+    		// This encapsulated any perception-related parsing of strings
+    		logReader = new LogReader(new FileReader(inFile));
+    		// This encapsulated any software-specificity in the log format
+			readLogFile(logReader);
+		} catch (FileNotFoundException fnf) {
+        	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
+        			+ inFile.getAbsolutePath(),-1);
+        } catch (IOException ioex) {
+        	Terminator.withMsgAndStatus("ERROR! While reading file '" 
+        			+ inFile.getAbsolutePath() + "'. Details: "
+        			+ ioex.getMessage(),-1);
+        } catch (Exception e) {
 			e.printStackTrace();
 			Terminator.withMsgAndStatus("ERROR! Unable to parse data from "
 					+ "file '" + inFile + "'. Cause: " + e.getCause() 
 					+ ". Message: " + e.getMessage(), -1);
-		}
+        } finally {
+            try {
+                if (logReader != null)
+                	logReader.close();
+            } catch (IOException ioex2) {
+                System.err.println(ioex2.getMessage());
+                Terminator.withMsgAndStatus("ERROR! Unable to close comp. "
+                		+ "chem. software log file reader!",-1);
+            }
+        }
     	
         String strForlog = "NOT ";
         if (normalTerminated)
@@ -1100,183 +1130,95 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	/**
      * Method that parses the log file of a comp.chem. software.
      * This method is meant to be overwritten by subclasses. 
-     * @param file the log file (sometimes called "the output")
-     * @param perceivedSituations situations that may involve parsing the log 
-     * file. If they need parsing of the file, then we do it all in once:
-     * parsing for analysis and parsing for identifying situations. 
-     * The implementations of this method are expected to include a call
-     * to {@link #parseLineForSituations(String, SituationBase)} to which this 
-     * argument is passed.
+     * @param reader the line-by-line reader that reads the log file.
      */
+    protected abstract void readLogFile(LogReader reader) throws Exception;
     
-    //TODO-gg instead of the situationBase use List<TxtQuery>
-    protected abstract void readLogFile(File file, SituationBase 
-    		perceivedSituations) throws Exception;
-
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Defines the set of situations that may be perceived by analyzing the 
-     * comp. chem. software output.
-     * @param sitsDB the situations to consider.
+     * A text file reader that overwrites the {@link #readLine()} method so that
+     * every line that is read is also checked for matches to any of the
+     * {@link TxtQuery}s associated with perceptions tasks.
      */
-  	public void setSituationBase(SituationBase sitsDB) 
-  	{
-  		List<Situation> situatsInvolvingOut = sitsDB.getRelevantSituations(
-  				InfoChannelType.OUTPUTFILE);
-  		List<Situation> situatsInvolvingLog = sitsDB.getRelevantSituations(
-  				InfoChannelType.LOGFEED);
-        
-  		//TODO-gg this should be a method in the SituationBase class
-  		// like getAllTxTQueries for ICtype
-  		
-  		/*
-        // Here we collect all the text queries removing duplicates
-        // The queries are collected also as objects to keep track of
-        // the combination of Situation and ICircumstance they belong to.
-        List<TxtQuery> txtQueries = new ArrayList<TxtQuery>();
-        // and in as plain strings to be send to text parser
-        ArrayList<String> txtQueriesAsStr = new ArrayList<String>();
-  		for (Situation sit : situatsInvolvingOut)
-        {
-            for (Situation s : situationsByICType.get(ict))
-            {
-                for (ICircumstance c : s.getCircumstances())
-                {
-                    if (c.requiresTXTMatch() && 
-                        ictComparator.checkCompatibility(ict,
-                                                         c.getChannelType())) 
-                    {
-                        String queryStr = ((MatchText) c).getPattern();
-
-                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        //
-                        // WARNING!!!
-                        // No handling of multiline matches!!!!
-                        //
-                        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                        // Keep only one text query among duplicates
-                        if (txtQueriesAsStr.contains(queryStr))
-                        {
-                            TxtQuery tq = txtQueries.get(
-                                           txtQueriesAsStr.indexOf(queryStr));
-                            tq.addReference(s,c);
-                        }
-                        else
-                        {
-                            txtQueries.add(new TxtQuery(queryStr,s,c));
-                            txtQueriesAsStr.add(queryStr);
-                        }
-                    }
-                }  
-            }
-            
-            //TODO-gg save allTxtQueries
-
-            /*
-                // Identify the queries that have matches
-                Map<Integer,ArrayList<String>> textQueriesWMatches = 
-                                       new HashMap<Integer,ArrayList<String>>();
-                for (String strQuery : allMatches.keySet())
-                {
-                    // The matches are returned with a key that contains
-                    // numerical indexes a_b_c.  For details,
-                    // see TextAnalyzer.extractMapOfTxtBlocksWithDelimiters.
-                    // First, we deal with the indexes
-                    String[] parts = strQuery.split("_");
-                    //...and get the index of the query given to FileAnalyzer
-                    int qID = Integer.parseInt(parts[1]); // the 'b'
-                    if (textQueriesWMatches.keySet().contains(qID))
-                    {
-                        textQueriesWMatches.get(qID).add(strQuery);
-                    }
-                    else
-                    {
-                        ArrayList<String> strQryKeys = new ArrayList<String>();
-                        strQryKeys.add(strQuery);
-                        textQueriesWMatches.put(qID,strQryKeys);
-                    }
-                }
-
-                // Process matched and unmatched queries
-                for (int qID = 0; qID < txtQueriesAsStr.size(); qID++)
-                {
-                    TxtQuery tq = txtQueries.get(qID);
-                    if (verbosity > 4)
-                    {
-                        System.out.println("Result for text query "+tq);
-                    }
-
-                    ArrayList<String> matches = new ArrayList<String>(0);
-                    if (textQueriesWMatches.keySet().contains(qID))
-                    {
-                        // This text query has been matched 
-                        for (String strQuery : textQueriesWMatches.get(qID))
-                        {
-                            matches.addAll(allMatches.get(strQuery));
-                        }
-
-                        if (verbosity > 3)
-                        {        
-                             System.out.println("Matches for text query '" 
-                            		 + txtQueriesAsStr.get(qID) + "' = "
-                            		 + matches.size() + ". Lines:");
-                            for (String m : matches)
-                            {
-                                System.out.println("  ->  " + m);
-                            }
-                        }
-                    }
-                    else 
-                    {
-                        //This is a text query that does NOT have any match
-                        if (verbosity > 3)
-                        {        
-                            System.out.println("No matches for text query '"
-                                             + txtQueriesAsStr.get(qID) + "'");
-                        }
-                    }
-
-                    // Add scores for all the Situation:ICircumnstance that 
-                    // include this text query
-                    for (SCPair sc: tq.sources)
-                    {
-                        Situation s = sc.getSituation();
-                        ICircumstance c = sc.getCircumstance();
-
-                        double score = ((MatchText)c).calculateScore(matches);
-
-                        //The resulting score can be zero even if the text has
-                        // been matched. For instance, when we don't want to 
-                        // find a string in a log feed, but, instead, we find 
-                        // it (i.e., negation of of a MatchText circumstance)
-                        // Therefore we store also zero scores
-
-                        // Finally store the score
-                        scoreCollector.addScore(s,c,score);
-                    }
-                } //End loop over queries
-            } // end loop over InfoChannels
-        } // End loop over InfoChannelTypes
-
-  		*/
-  	}
-  	
-//------------------------------------------------------------------------------
-  	
-    /**
-     * Checks is any of the text-queries required for perceptions have matches
-     * in the given line of text, and, if they do, then the matches are 
-     * processed to allow accounting of matching circumstances during 
-     * perception.
-     * @param line the line of text to analyze.
-     * @param situations
-     */
-    protected void parseLineForSituations(String line, SituationBase situations)
+    public class LogReader extends BufferedReader
     {
+		public LogReader(Reader in) {
+			super(in);
+		}
+		
+		@Override
+		public String readLine() throws IOException
+		{
+			String line = super.readLine();
+			if (line!=null)
+			{
+				parseLogLineForPerceptionRelevantQueries(line);
+			}
+			return line;
+		}
+    }
+
+//------------------------------------------------------------------------------
     	
+    /**
+     * Sets a collection of known situations that can be perceived and that may
+     * involve analysis of the log/output file from comp chem software.
+     * When the analysis
+     * of result is associated with automated perception, it is often 
+     * needed to search for strings in a log file. Such 
+     * {@link TxtQuery}s are embedded in the situations and by giving 
+     * the situations here we make the analyzer aware of the
+     * strings that should be searched in the files. 
+     * This way we search them while parsing the 
+     * log/output, thus avoiding to read the file one or more times after the 
+     * parsing of the output.
+     * @param sitsBase the collection of known situations, each defined by a 
+     * context that may include circumstances involving the matching of test
+     * if the log or output files from a comp. chem. software.
+     */
+	public void setSituationBaseForPerception(SituationBase sitsBase) 
+	{
+		perceptionTxtQueriesForLog = new ArrayList<TxtQuery>(
+				sitsBase.getAllTxTQueriesForICT(InfoChannelType.LOGFEED, 
+						true));
+		for (TxtQuery tq : perceptionTxtQueriesForLog)
+			perceptionTQMatches.put(tq, new ArrayList<String>());
+		
+		//NB: the handling of the output is not yet implemented but will involve
+		// this definition of the TxtQueries.
+		/*
+		perceptionTxtQueriesForOut = new ArrayList<TxtQuery>(
+				sitsBase.getAllTxTQueriesForICT(InfoChannelType.OUTPUTFILE, 
+						true));
+						
+		for (TxtQuery tq : perceptionTxtQueriesForOut)
+			perceptionTQMatchesOut.put(tq, new ArrayList<String>());
+		*/
+	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses a single line looking for strings matching any of the 
+     * {@link TxtQuery}s that are associated with perception tasks needed to 
+     * analyze the log of a comp. chem. software.
+     * @param line the line of text to analyze.
+     */
+    protected void parseLogLineForPerceptionRelevantQueries(String line)
+    {
+    	if (perceptionTxtQueriesForLog!=null)
+    	{
+			for (TxtQuery tq : perceptionTxtQueriesForLog)
+			{
+				if (line.matches(tq.query))
+				{
+					perceptionTQMatches.get(tq).add(line);
+				}
+			}
+		}
     }
     
 //------------------------------------------------------------------------------
+	
 }

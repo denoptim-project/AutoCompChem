@@ -18,9 +18,12 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
@@ -32,6 +35,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.perception.Perceptron;
+import autocompchem.perception.TxtQuery;
 import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
@@ -283,51 +287,15 @@ public class JobEvaluator extends Worker
 					+ "is empty! Information is needed to do perception.",-1);
 		}
 		
-		if (EVALCOMPCHEMJOBTASKS.contains(task) || job instanceof CompChemJob)
-		{
-			ParameterStorage analysisParams = new ParameterStorage();
-			if (EVALCOMPCHEMJOBTASKS.contains(task))
-			{
-				TaskID analysisTask = TaskID.UNSET;
-				switch (task) {
-				case EVALUATEGAUSSIANOUTPUT:
-					analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
-					break;
-/*
-				case EVALUATENWCHEMOUTPUT:
-					analysisTask = TaskID.ANALYSENWCHEMOUTPUT;
-					break;
-				case EVALUATEORCAOUTPUT:
-					analysisTask = TaskID.ANALYSEORCAOUTPUT;
-					break;
-				case EVALUATENXTBOUTPUT:
-					analysisTask = TaskID.ANALYSEXTBOUTPUT;
-					break;
-				case EVALUATESPAARTANOUTPUT:
-					analysisTask = TaskID.ANALYSESPARTANOUTPUT;
-					break;
-*/
-				default:
-					break;
-				}
-				analysisParams.setParameter("TASK", analysisTask);
-				//TODO-gg add any AnalisisTask?
-			}
-			
-			ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
-					WorkerFactory.createWorker(params);
-			outputParser.setSituationBase(sitsDB);
-			outputParser.performTask();
-			//TODO-gg 
-			//scoreCircumstances(outputParser.getCircumnstanceMatches());
-			
-			//TODO-gg put exposed output into information channels
-		}
-
-		
-		// Attempt perception
+		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setVerbosity(verbosity-1);
+		
+		if (EVALCOMPCHEMJOBTASKS.contains(task) || job instanceof CompChemJob)
+		{
+			// Parse information from Comp Chem results
+			analyzeCompChemJobResults();
+		}
 		
 		try {
 			p.perceive();
@@ -369,6 +337,55 @@ public class JobEvaluator extends Worker
 				// steps in between the evaluation one and its originally-next step
 			}
 		}
+	}
+	
+//-----------------------------------------------------------------------------
+	
+	private void analyzeCompChemJobResults()
+	{
+		ParameterStorage analysisParams = new ParameterStorage();
+		if (EVALCOMPCHEMJOBTASKS.contains(task))
+		{
+			TaskID analysisTask = TaskID.UNSET;
+			switch (task) {
+			case EVALUATEGAUSSIANOUTPUT:
+				analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
+				break;
+/*
+			case EVALUATENWCHEMOUTPUT:
+				analysisTask = TaskID.ANALYSENWCHEMOUTPUT;
+				break;
+			case EVALUATEORCAOUTPUT:
+				analysisTask = TaskID.ANALYSEORCAOUTPUT;
+				break;
+			case EVALUATENXTBOUTPUT:
+				analysisTask = TaskID.ANALYSEXTBOUTPUT;
+				break;
+			case EVALUATESPAARTANOUTPUT:
+				analysisTask = TaskID.ANALYSESPARTANOUTPUT;
+				break;
+*/
+			default:
+				break;
+			}
+			analysisParams.setParameter("TASK", analysisTask);
+			//TODO-gg add any AnalisisTask? Perhaps, depending on what the 
+			// ICircumbstances want to check during perception.
+		}
+		
+		// Prepare a worker that parses data and searches for strings that may
+		// be requested by the perceptron.
+		ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
+				WorkerFactory.createWorker(params);
+		outputParser.setSituationBaseForPerception(sitsDB);
+		outputParser.performTask();
+		//TODO-gg 
+		//scoreCircumstances(outputParser.getCircumnstanceMatches());
+		
+		//TODO-gg put exposed output into information channels
+		
+		//TODO-gg get Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(...)
+		// and feed it to the perceptron
 	}
 	
 //-----------------------------------------------------------------------------	
