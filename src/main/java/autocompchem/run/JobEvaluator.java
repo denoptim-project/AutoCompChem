@@ -26,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
@@ -43,6 +44,7 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
@@ -62,14 +64,15 @@ public class JobEvaluator extends Worker
 	 */
 	public static final Set<TaskID> capabilities = 
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEJOB)));
+					Arrays.asList(TaskID.EVALUATEJOB, 
+							TaskID.EVALUATEGAUSSIANOUTPUT2)));
 	
 	/**
 	 * Tasks about evaluating jobs of computational chemistry software.
 	 */
 	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
+					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT2
 	//TODO-gg add these 
 					/*
 					TaskID.EVALUATENWCHEMOUTPUT,
@@ -101,6 +104,11 @@ public class JobEvaluator extends Worker
      * Information channels base: list of available information channels
      */
     private InfoChannelBase icDB;
+    
+    /**
+     * Info channels that have been read prior to start the perceptron.
+     */
+    private Set<InfoChannel> icAlreadyRead = new HashSet<InfoChannel>();
     
     /**
      * The job being evaluated
@@ -293,16 +301,14 @@ public class JobEvaluator extends Worker
 		
 		if (EVALCOMPCHEMJOBTASKS.contains(task) || job instanceof CompChemJob)
 		{
-			// Parse information from Comp Chem results
-			analyzeCompChemJobResults();
+			analyzeCompChemJobResults(p);
 		}
 		
 		try {
 			p.perceive();
 			
-			if (verbosity > 0)
+			if (verbosity == 1)
 			{
-				//TODO use logger
 				if (p.isAware())
 				{
 					Situation sit = p.getOccurringSituations().get(0);
@@ -341,14 +347,21 @@ public class JobEvaluator extends Worker
 	
 //-----------------------------------------------------------------------------
 	
-	private void analyzeCompChemJobResults()
+	/**
+	 * Deals with the parsing of data from log/output files of comp. chem jobs.
+	 * For efficiency, we also search for matches for any query that operates on
+	 * such info channels. Thus, we read and collect scores from those 
+	 * information channels before perceptions. Therefore, we need to 
+	 * communicate the findings to the perceptron.
+	 */
+	private void analyzeCompChemJobResults(Perceptron p)
 	{
 		ParameterStorage analysisParams = new ParameterStorage();
 		if (EVALCOMPCHEMJOBTASKS.contains(task))
 		{
 			TaskID analysisTask = TaskID.UNSET;
 			switch (task) {
-			case EVALUATEGAUSSIANOUTPUT:
+			case EVALUATEGAUSSIANOUTPUT2:
 				analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
 				break;
 /*
@@ -369,23 +382,57 @@ public class JobEvaluator extends Worker
 				break;
 			}
 			analysisParams.setParameter("TASK", analysisTask);
+			List<InfoChannel> logChannels = icDB.getChannelsOfType(
+					InfoChannelType.LOGFEED);
+			String msg = "";
+			if (logChannels.size()>1)
+			{
+				msg = "more than one";
+			} else if (logChannels.size()>1)
+			{
+				msg = "no";
+			}
+			if (!msg.equals(""))
+			{
+				Terminator.withMsgAndStatus("ERROR: Found "+ msg + " info "
+						+ "channel for type " + InfoChannelType.LOGFEED + ". "
+						+ "This type of channel is expected to contain the log"
+						+ "from a comp. chem. software. "
+						+ "Please, check your input.",-1);
+			}
+
+			//TODO-gg del
+			//icReadByCompChemOutAnalyser.add(logChannels.get(0));
+			analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
+					((FileAsSource)logChannels.get(0)).getPathName());
+			p.setInfoChannelAsRead(logChannels.get(0));
+			
 			//TODO-gg add any AnalisisTask? Perhaps, depending on what the 
 			// ICircumbstances want to check during perception.
+		} else {
+			// For the moment we do not try to detect the kind of job.
+			Terminator.withMsgAndStatus("ERROR: cannot yet detect type of comp."
+					+ "chem. job. Please, specify one of these tasks to your"
+					+ "JobEvaluator: "
+					+ StringUtils.mergeListToString(Arrays.asList(
+							EVALCOMPCHEMJOBTASKS), ", ", true), -1);
 		}
 		
 		// Prepare a worker that parses data and searches for strings that may
 		// be requested by the perceptron.
 		ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
-				WorkerFactory.createWorker(params);
+				WorkerFactory.createWorker(analysisParams);
 		outputParser.setSituationBaseForPerception(sitsDB);
+		NamedDataCollector results = new NamedDataCollector();
+		outputParser.setDataCollector(results);
 		outputParser.performTask();
-		//TODO-gg 
-		//scoreCircumstances(outputParser.getCircumnstanceMatches());
 		
-		//TODO-gg put exposed output into information channels
-		
-		//TODO-gg get Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(...)
-		// and feed it to the perceptron
+		@SuppressWarnings("unchecked")
+		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)
+				results.getNamedData(ChemSoftConstants
+						.MATCHESTOTEXTQRYSFORPERCEPTION).getValue();
+		for (TxtQuery tq : matchesByTQ.keySet())
+			p.collectPerceptionScoresForTxtMatchers(tq, matchesByTQ.get(tq));
 	}
 	
 //-----------------------------------------------------------------------------	

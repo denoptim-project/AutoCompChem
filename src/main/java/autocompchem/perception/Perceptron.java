@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,7 @@ import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.utils.StringUtils;
 
 /**
  * Perceptron is a neuron that collects information from a given list of 
@@ -59,6 +61,11 @@ public class Perceptron
      * Information channels base: list of available information channels
      */
     private InfoChannelBase icb;
+    
+    /**
+     * Information channels that have been visited
+     */
+    private Set<InfoChannel> previouslyReadInfoChannels = new HashSet<>();
 
     /**
      * Data structure collecting actual satisfaction scores
@@ -123,6 +130,24 @@ public class Perceptron
     public void setVerbosity(int l)
     {
         this.verbosity = l;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds the given info channel to the set of those that are not explored as
+     * they have been read before perception occurs. Info channels may be read
+     * prior to perception when further data has to be parsed from them. 
+     * To avoid reading them twice, we read them before perception and store
+     * the corresponding scores with 
+     * {@link Perceptron#collectPerceptionScoresForTxtMatchers(TxtQuery, List)}.
+     * Then we add them to the list of previously visited ones to avoid reading
+     * them again.
+     */
+    
+    public void setInfoChannelAsRead(InfoChannel ic)
+    {
+    	previouslyReadInfoChannels.add(ic);    	
     }
 
 //------------------------------------------------------------------------------
@@ -236,27 +261,28 @@ public class Perceptron
                     System.out.println(init + "Unknown situation");
                 }
                 break;
+                
             case 1:
                 iamaware = true;
-                if (verbosity > 1)
+                if (verbosity > 0)
                 {
                     System.out.println(init + "Known situation is " 
-                                                  + occurringSituations.get(0));
+                    		+ occurringSituations.get(0).getRefName());
                 }
                 break;
+                
            default:
-                if (verbosity > 1)
+                if (verbosity > 0)
                 {
-                	StringBuilder sb = new StringBuilder();
-                	sb.append(init + "Confusion - The situation matches "
+                	List<String> names = new ArrayList<String>();
+                	occurringSituations.stream().forEach(s -> names.add(
+                			s.getRefName()));
+                	String msg = init + "Confusion - The situation matches "
                 			+ "multiple known situation. You may have to make "
                             + "the situations more specific as to "
-                            + "disctiminate between these: ");
-                	for (Situation s : occurringSituations)
-                	{
-                		sb.append(s.getRefName()).append(" ");
-                	}
-                    System.out.println(sb.toString());
+                            + "disctiminate between these: " 
+                            + StringUtils.mergeListToString(names, ", ", true);
+                    System.out.println(msg);
                 }
                 break;
         }
@@ -373,10 +399,14 @@ this.printScores();
             // Scan all the input channels of the present type
             for (InfoChannel ic : icb.getChannelsOfType(ict))
             {
+            	if (previouslyReadInfoChannels.contains(ic))
+            		continue;
+            	
                 if (verbosity > 2)
                 {
                     System.out.println(newline +"Scanning InfoChannel: "+ic);
                 }
+                
                 Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(
                 		txtQueries, ic, 0);
                 for (TxtQuery tq : matches.keySet())
@@ -415,7 +445,7 @@ this.printScores();
     
 //------------------------------------------------------------------------------
     
-    private void collectPerceptionScoresForTxtMatchers(TxtQuery tq, 
+    public void collectPerceptionScoresForTxtMatchers(TxtQuery tq, 
     		List<String> matches)
     {
         // Add scores for all the Situation:ICircumnstance that 

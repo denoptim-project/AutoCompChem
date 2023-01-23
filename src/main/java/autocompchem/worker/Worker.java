@@ -98,8 +98,8 @@ public abstract class Worker implements IOutputExposer
     protected NamedDataCollector inputCollector;
     
     /**
-     * Collector for output data exposed to the outside world (i.e., is the Job
-     * this worker is part of).
+     * Collector for output data that is exposed to the outside world (i.e., is 
+     * the Job this worker is part of).
      */
     protected NamedDataCollector exposedOutputCollector;
 

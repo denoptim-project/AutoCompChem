@@ -1,0 +1,5 @@
+#
+REFERENCENAME: error that does not match situation
+SITUATIONTYPE: error
+CIRCUMSTANCE: logfeed matches  blabla did not lower the energy significantly.
+CIRCUMSTANCE: logfeed matches No lower point found -- run aborted.

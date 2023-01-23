@@ -1,0 +1,10 @@
+#
+REFERENCENAME: e0010-QCNoLowerPoint
+SITUATIONTYPE: error
+CIRCUMSTANCE: logfeed matches Search did not lower the energy significantly.
+CIRCUMSTANCE: logfeed matches No lower point found -- run aborted.
+#ACTION: $STARTACTIONTYPE: redo
+#ACTIONOBJ: paralleljob
+#$STARTACTIONDETAILS: maxRestart: 3
+#$END
+#$END

@@ -37,6 +37,7 @@ import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
@@ -177,8 +178,11 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
     	//we could change the params and re-initialize this class.
     	
         //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValueAsString();
-        this.verbosity = Integer.parseInt(vStr);
+    	if (params.contains(ChemSoftConstants.PARVERBOSITY))
+    	{
+	        String vStr = params.getParameter("VERBOSITY").getValueAsString();
+	        this.verbosity = Integer.parseInt(vStr);
+    	} 
 
         if (verbosity > 0)
             System.out.println("Adding parameters to "
@@ -415,7 +419,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 //-----------------------------------------------------------------------------
 
     /**
-     * Performs any of the analysis tasks set upon initialisation
+     * Performs any of the analysis tasks set upon initialization.
      */
 
     @Override
@@ -429,6 +433,9 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 
         if (exposedOutputCollector != null)
         {
+        	exposeOutputData(new NamedData(
+        			ChemSoftConstants.MATCHESTOTEXTQRYSFORPERCEPTION, 
+        			perceptionTQMatches));
 /*
 //TODO
             String refName = "";
@@ -1032,7 +1039,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
     		}
         }
         
-        if (verbosity > 0)
+        if (verbosity > 0 && !finalResultsString.toString().isBlank())
         {
         	System.out.println("");
         	System.out.println("Summary of final results:");
@@ -1211,7 +1218,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
     	{
 			for (TxtQuery tq : perceptionTxtQueriesForLog)
 			{
-				if (line.matches(tq.query))
+				if (line.matches(".*"+tq.query+".*"))
 				{
 					perceptionTQMatches.get(tq).add(line);
 				}

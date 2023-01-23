@@ -79,11 +79,12 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
         	lineNum++;
         	if (line.matches(".*" +GaussianConstants.LOGJOBSTEPSTART+ ".*"))
         	{
+        		normalTerminated = false;
         		if (first)
         		{
         			first = false;
         		} else {
-        			// NB: we do this here because we o not want this to 
+        			// NB: we do this here because we do not want this to 
         			// be dependent on the "Normal termination" line.
         			
         			storeDataOfOneStep(stepId, 

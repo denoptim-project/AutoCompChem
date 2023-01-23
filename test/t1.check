@@ -1,25 +1,29 @@
 #!/bin/bash
 
-echo FIXME
-exit 0
-
-grep -q "WARNING! No JOBDETAILS provided." t1.log
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
+if [ ! -f  t1.log ]; then
+  echo NOT Passed ERROR 1
+  exit -1
 fi
 
-grep -q "Step 7 returned Error Message: e0010-QCNoLowerPoint" t1.log
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
+if ! grep -q "overall run did NOT terminate normally!" t1.log ; then
+  echo NOT Passed ERROR 2
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t1.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if ! grep -q "contains 7 steps." t1.log ; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if ! grep -q "Known situation is e0010-QCNoLowerPoint" t1.log ; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if grep -q 'Termination status: 0' t1.log; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi

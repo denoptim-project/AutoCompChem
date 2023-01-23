@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware;
 
+import autocompchem.perception.TxtQuery;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -544,5 +546,12 @@ public class ChemSoftConstants
 	 * the geometries.
 	 */
 	public static final String EXTERNALFILEGEOMETRIES = "EXTERNALGEOMSFILE";
+	
+	/**
+	 * Name of data containing the matches to {@link TxtQuery}s involved in 
+	 * perception and detected upon analysis of chem. soft. output files.
+	 */
+	public static final String MATCHESTOTEXTQRYSFORPERCEPTION = 
+			"PERCEPTIONTXTWUERYMATCHES";
 
 }

@@ -1,10 +1,8 @@
 #
-# Parameters for Automated Computational Chemistry
-#
 # Just evaluate the output and identify the error (if any)
 #
 VERBOSITY: 2
-TASK: AnalyseGaussianOutput
-JobOutputFile: ../t1-mol.out
-#TODO-gg
-#GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03
+#TODO-gg remove "2"
+TASK: EvaluateGaussianOutput2
+SITUATIONSDBROOT: ../t1_KB
+IC-LOGS: ../t1-mol.out
