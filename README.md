@@ -15,11 +15,11 @@ AutoCompChem (or ACC) is a collection of tools used to automatize computational 
     mvn -version
     javac -version
     ```
-2) Download the latest release and unzip/untar-gs the resulting archive. Alternatively, clone this github repository.
+2) Download the latest release from [the releases page](https://github.com/denoptim-project/AutoCompChem/releases) and unzip/untar-gz the resulting archive.
 
 3) move inside the resulting folder, which we'll call `$ACC_HOME`
     ```
-    cd AutoCompChem
+    cd $ACC_HOME
     ```
 4) Build the project and run all tests.
     ```
