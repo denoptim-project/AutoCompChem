@@ -303,8 +303,6 @@ public class WorkerFactory
             return ForceFieldEditor.capabilities;
 		case GaussianInputWriter:
 			return GaussianInputWriter.capabilities;
-        case GaussianOutputHandler:
-            return GaussianOutputHandler.capabilities; //TODO-gg del
         case GaussianOutputAnalyzer:
             return GaussianOutputAnalyzer.capabilities;
         case GaussianReStarter:
@@ -396,8 +394,6 @@ public class WorkerFactory
             return new ForceFieldEditor();
 		case GaussianInputWriter:
 			return new GaussianInputWriter();
-        case GaussianOutputHandler:
-            return new GaussianOutputHandler();
         case GaussianOutputAnalyzer:
             return new GaussianOutputAnalyzer();
         case GaussianReStarter:

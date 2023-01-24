@@ -38,10 +38,8 @@ public enum WorkerID
     DummyObjectsHandler,
     ForceFieldEditor,
 	GaussianInputWriter,
-    GaussianOutputHandler, //TODO-gg remove
     GaussianOutputAnalyzer,
     GaussianReStarter,
-    //GenericToolOutputHandler,
     JobEvaluator,
     MolecularComparator,
     MolecularGeometryEditor,

@@ -67,7 +67,8 @@ public class GaussianOutputHandler extends Worker
      */
     public static final Set<TaskID> capabilities =
                     Collections.unmodifiableSet(new HashSet<TaskID>(
-                                    Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT)));
+                                 //   Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT)));
+                            Arrays.asList()));
     
     /**
      * Name of the .out file from Gaussian (the input of this class)
@@ -423,7 +424,8 @@ public class GaussianOutputHandler extends Worker
     {
         switch (task)
         {
-        case EVALUATEGAUSSIANOUTPUT:
+        //case EVALUATEGAUSSIANOUTPUT:
+        	default:
         	evaluateGaussianOutput();
                 break;
         }

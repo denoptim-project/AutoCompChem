@@ -60,19 +60,11 @@ import autocompchem.worker.WorkerFactory;
 public class JobEvaluator extends Worker
 {
 	/**
-	 * Declaration of what this worker is capable of.
-	 */
-	public static final Set<TaskID> capabilities = 
-			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEJOB, 
-							TaskID.EVALUATEGAUSSIANOUTPUT2)));
-	
-	/**
 	 * Tasks about evaluating jobs of computational chemistry software.
 	 */
 	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT2
+					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
 	//TODO-gg add these 
 					/*
 					TaskID.EVALUATENWCHEMOUTPUT,
@@ -81,6 +73,17 @@ public class JobEvaluator extends Worker
 					TaskID.EVALUATESPARTANOUTPUT,
 					*/
 							)));
+	// WARNING: what you add 
+	
+	/**
+	 * Declaration of what this worker is capable of.
+	 */
+	public static final Set<TaskID> capabilities;
+	static {
+		Set<TaskID> tmpSet = new HashSet<TaskID>(EVALCOMPCHEMJOBTASKS);
+		tmpSet.add(TaskID.EVALUATEJOB);
+		capabilities = Collections.unmodifiableSet(tmpSet);
+	}
 	
 	
 	/**
@@ -104,11 +107,6 @@ public class JobEvaluator extends Worker
      * Information channels base: list of available information channels
      */
     private InfoChannelBase icDB;
-    
-    /**
-     * Info channels that have been read prior to start the perceptron.
-     */
-    private Set<InfoChannel> icAlreadyRead = new HashSet<InfoChannel>();
     
     /**
      * The job being evaluated
@@ -361,7 +359,7 @@ public class JobEvaluator extends Worker
 		{
 			TaskID analysisTask = TaskID.UNSET;
 			switch (task) {
-			case EVALUATEGAUSSIANOUTPUT2:
+			case EVALUATEGAUSSIANOUTPUT:
 				analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
 				break;
 /*

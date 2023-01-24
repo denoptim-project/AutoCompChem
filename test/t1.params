@@ -2,7 +2,6 @@
 # Just evaluate the output and identify the error (if any)
 #
 VERBOSITY: 2
-#TODO-gg remove "2"
-TASK: EvaluateGaussianOutput2
+TASK: EvaluateGaussianOutput
 SITUATIONSDBROOT: ../t1_KB
 IC-LOGS: ../t1-mol.out

@@ -803,8 +803,10 @@ public class IOtools
     /**
      * Writes atom containers to file
      * file or appends to an existing one.
-     * @param filename target XYZ file (new or existing)
-     * @param acs set of atom containers to be written on the XYZ file
+     * @param filename target file (new or existing).
+     * @param acs set of atom containers to be written on the output file.
+     * @param format the format to use. Available formats are 'SDF', 'XYZ, and 
+     * 'ORCATRAJECTORY'.
      * @param append <code>true</code> to append to existing file
      */
 
