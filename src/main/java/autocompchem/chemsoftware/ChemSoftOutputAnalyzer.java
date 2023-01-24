@@ -53,6 +53,7 @@ import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.JobEvaluator;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
@@ -150,6 +151,13 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
      */
     private Map<TxtQuery,List<String>> perceptionTQMatches = 
     		new HashMap<TxtQuery,List<String>>();
+    
+	/**
+	 * Name of data containing the matches to {@link TxtQuery}s involved in 
+	 * perception and detected upon analysis of chem. soft. output files.
+	 */
+	public static final String MATCHESTOTEXTQRYSFORPERCEPTION = 
+			"PERCEPTIONTXTWUERYMATCHES";
     
     
     private static String NL = System.getProperty("line.separator");
@@ -433,8 +441,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 
         if (exposedOutputCollector != null)
         {
-        	exposeOutputData(new NamedData(
-        			ChemSoftConstants.MATCHESTOTEXTQRYSFORPERCEPTION, 
+        	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
         			perceptionTQMatches));
 /*
 //TODO
@@ -1131,6 +1138,30 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 		}
 		return defaultValue;
 	}
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns a flag indicating if the analyzed output describes a normally 
+     * terminated job or not. Calling this method before performing the analysis
+     *  task will always return <code>false</code>.
+     * @return the normal termination flag.
+     */
+    public boolean getNormalTerminationFlag()
+    {
+    	return normalTerminated;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the number of steps found in the analyzed output.
+     * @return the number of steps found in the analyzed output.
+     */
+    public int getStepsFound()
+    {
+    	return stepsData.size();
+    }
 
 //------------------------------------------------------------------------------
     

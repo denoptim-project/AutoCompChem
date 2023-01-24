@@ -258,7 +258,7 @@ public class Perceptron
             case 0:
                 if (verbosity > 1)
                 {
-                    System.out.println(init + "Unknown situation");
+                    System.out.println(init + "No situation has been detected");
                 }
                 break;
                 

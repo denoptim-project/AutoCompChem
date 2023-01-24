@@ -2,8 +2,10 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 2
-TASK: FixAndRestartGaussian 
-INFILE: ../t1-mol.out
-NEWINPFILE: restart-t11.inp
-JOBDETAILSFILE: ../t11-jobDetails.json
-GAUSSIANERRORS: ../data/errorsDefAndFix/
+TASK: CureGaussianJob
+SITUATIONSDBROOT: ../t11_KB
+IC-LOGS: ../t11-mol.out
+# add list of files (with wildcard) to archive and list of those to copy
+#NEWINPFILE: restart-t11.inp
+#TODO-gg create test with system-specific job details file 
+IC-JOBDETAILS: ../t11-jobDetails.json

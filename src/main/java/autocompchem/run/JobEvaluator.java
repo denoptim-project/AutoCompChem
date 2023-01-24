@@ -43,6 +43,7 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.Action.ActionObject;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
@@ -64,7 +65,8 @@ public class JobEvaluator extends Worker
 	 */
 	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
+					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT,
+							TaskID.CUREGAUSSIANJOB
 	//TODO-gg add these 
 					/*
 					TaskID.EVALUATENWCHEMOUTPUT,
@@ -82,9 +84,20 @@ public class JobEvaluator extends Worker
 	static {
 		Set<TaskID> tmpSet = new HashSet<TaskID>(EVALCOMPCHEMJOBTASKS);
 		tmpSet.add(TaskID.EVALUATEJOB);
+		//TODO-gg tmpSet.add(TaskID.CUREJOB);
 		capabilities = Collections.unmodifiableSet(tmpSet);
 	}
 	
+	/**
+	 * The string used to identify the kind of termination of the evaluated job.
+	 */
+	public static final String NORMALTERMKEY = "PerceivedNormalTermination";
+	
+	/**
+	 * The string used to identify the value indicating how many steps where
+	 * found in the evaluated job.
+	 */
+	public static final String NUMSTEPSKEY = "NumberOfStepsFoundInEvaluatedJob";
 	
 	/**
 	 * The string used to identify the perceived situation in the exposed 
@@ -237,6 +250,13 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
+		//NB: ParameterConstants.INFOSRCJOBDETAILS is not really equivalent to
+		// ParameterConstants.JOBDEF even though they will probably have
+		// the same content, but INFOSRCJOBDETAILS allows to include more
+		// so we keep it separated.
+		// Moreover, if JOBDEF==null then we know we are not supposed to perform
+		// any action that changes the focus job.
+		
 		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
 			String pathName = params.getParameter(
@@ -259,7 +279,7 @@ public class JobEvaluator extends Worker
 			{
 				whatIsNull=whatIsNull + ", and ";
 			}
-			whatIsNull=whatIsNull + "the collection of known situations";
+			whatIsNull=whatIsNull + "a collection of known situations";
 		}
 		if (icDB==null)
 		{
@@ -267,12 +287,12 @@ public class JobEvaluator extends Worker
 			{
 				whatIsNull=whatIsNull + ", and ";
 			}
-			whatIsNull=whatIsNull + "the collection of information channels";
+			whatIsNull=whatIsNull + "a collection of information channels";
 		}
 		if (!whatIsNull.equals(""))
 		{
 			Terminator.withMsgAndStatus("ERROR! Cannot evaluate job. Missing "
-					+ "data in " + whatIsNull + ".", -1);
+					+ whatIsNull + ".", -1);
 		}
 	}
 	
@@ -335,10 +355,27 @@ public class JobEvaluator extends Worker
 				Action a = s.getReaction();
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
 						NamedDataType.ACTION, a));
-				//TODO: alter master job with reaction triggered by outcome of analysis
-				//
-				// TODO-gg: repetition of a step should occur by adding new 
-				// steps in between the evaluation one and its originally-next step
+				
+				// In case of interacting curation, i.e., we only ask to
+				// create a new job that applies the error-curating action,
+				// we do not expect to modify the worflow that includes this
+				// evaluation job.
+				if (a.getObject()==ActionObject.FOCUSJOB && job!=null 
+						&& job.getParent()==null)
+				{
+					// Copy original JOB
+					
+					// create additional steps
+					
+					// remove previous steps
+					
+					// report new job details/input
+				} else {
+				//TODO: alter master job with reaction triggered by outcome of 
+				// analysis. Repetition of a step should occur by adding new 
+				// steps in between the evaluation one and its originally-next 
+				// step
+				}
 			}
 		}
 	}
@@ -359,19 +396,28 @@ public class JobEvaluator extends Worker
 		{
 			TaskID analysisTask = TaskID.UNSET;
 			switch (task) {
+
+			case CUREGAUSSIANJOB:
 			case EVALUATEGAUSSIANOUTPUT:
 				analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
 				break;
 /*
+			case CURENWCHEMJOB:
 			case EVALUATENWCHEMOUTPUT:
 				analysisTask = TaskID.ANALYSENWCHEMOUTPUT;
 				break;
+				
+			case CUREORCAJOB:	
 			case EVALUATEORCAOUTPUT:
 				analysisTask = TaskID.ANALYSEORCAOUTPUT;
 				break;
+				
+			case CUREXTBJOB:
 			case EVALUATENXTBOUTPUT:
 				analysisTask = TaskID.ANALYSEXTBOUTPUT;
 				break;
+				
+			case CURESPARTANJOB:
 			case EVALUATESPAARTANOUTPUT:
 				analysisTask = TaskID.ANALYSESPARTANOUTPUT;
 				break;
@@ -425,10 +471,16 @@ public class JobEvaluator extends Worker
 		outputParser.setDataCollector(results);
 		outputParser.performTask();
 		
+		exposeOutputData(new NamedData(NORMALTERMKEY, NamedDataType.BOOLEAN, 
+				outputParser.getNormalTerminationFlag()));		
+		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
+				outputParser.getStepsFound()));
+		
 		@SuppressWarnings("unchecked")
 		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)
-				results.getNamedData(ChemSoftConstants
-						.MATCHESTOTEXTQRYSFORPERCEPTION).getValue();
+				results.getNamedData(
+						ChemSoftOutputAnalyzer.MATCHESTOTEXTQRYSFORPERCEPTION)
+				.getValue();
 		for (TxtQuery tq : matchesByTQ.keySet())
 			p.collectPerceptionScoresForTxtMatchers(tq, matchesByTQ.get(tq));
 	}

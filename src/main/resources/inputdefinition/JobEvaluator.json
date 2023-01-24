@@ -27,7 +27,7 @@
   {
     "key": "JOBDEFINITION",
     "type": "<String>",
-    "doc": "Pathname to the job details file defining the job being evaluated."
+    "doc": "Pathname to the job details file defining the job being evaluated. If this is not given error-curating actions that alter the job being evaluated cannot be performed."
   },
   {
     "key": "VERBOSITY",
