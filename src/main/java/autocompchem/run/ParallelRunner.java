@@ -53,7 +53,7 @@ public class ParallelRunner
     /**
      * List of jobs to run
      */
-    final ArrayList<Job> todoJobs;
+    final List<Job> todoJobs;
 
     /**
      * List of references to the submitted subtasks
@@ -63,7 +63,7 @@ public class ParallelRunner
     /**
      * List of references to the submitted subjobs.
      */
-    final ArrayList<Job> submittedJobs;
+    final List<Job> submittedJobs;
     
     /**
      * List of references to the submitted monitoting subtasks
@@ -73,7 +73,7 @@ public class ParallelRunner
     /**
      * List of references to the submitted monitoting subjobs.
      */
-    final ArrayList<Job> submittedMonitoringJobs;
+    final List<Job> submittedMonitoringJobs;
     
     /**
      * Index of notifications. Used to avoid concurrent notifications by
@@ -163,7 +163,7 @@ public class ParallelRunner
      * @param master the job that creates this {@link ParallelRunner}.
      */
 
-    public ParallelRunner(ArrayList<Job> todoJobs, int poolSize, int queueSize, 
+    public ParallelRunner(List<Job> todoJobs, int poolSize, int queueSize, 
     		Job master)
     {
     	this.master = master;
@@ -204,7 +204,7 @@ public class ParallelRunner
      * @return the number of instances of {@link MonitoringJob}
      */
     
-    private int countMonitoringJobs(ArrayList<Job> todoJobs)
+    private int countMonitoringJobs(List<Job> todoJobs)
     {
     	int num = 0;
     	for (Job j : todoJobs)

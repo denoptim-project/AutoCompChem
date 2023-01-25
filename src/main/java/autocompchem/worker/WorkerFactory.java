@@ -78,34 +78,6 @@ import autocompchem.run.Terminator;
 
 public class WorkerFactory
 {
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the given task.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(TaskID taskID)
-    {
-    	return createWorker(taskID, null);
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the given task.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(String task)
-    {
-    	// Convert string-based task into enum
-    	TaskID taskID = TaskID.getFromString(task);
-    	
-    	return createWorker(taskID);
-    }
 	
 //-----------------------------------------------------------------------------
 

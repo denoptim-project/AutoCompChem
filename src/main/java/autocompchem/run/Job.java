@@ -82,7 +82,7 @@ public class Job implements Runnable
      * List of steps. Steps are jobs nested in this very job. Each step can,
      * therefore, have further nesting levels.
      */
-    protected ArrayList<Job> steps;
+    protected List<Job> steps;
 
     /**
      * Application meant to do the job
@@ -661,7 +661,7 @@ public class Job implements Runnable
      * @return the steps
      */
 
-    public ArrayList<Job> getSteps()
+    public List<Job> getSteps()
     {
         return steps;
     }
@@ -1012,6 +1012,7 @@ public class Job implements Runnable
      * @return the list of lines ready to print a jobDetails file.
      */
 
+    @Deprecated
     public TextBlockIndexed toTextBlockJobDetails()
     {
     	return new TextBlockIndexed(toLinesJobDetails(), 0, 0, 0);
@@ -1025,9 +1026,9 @@ public class Job implements Runnable
      * @return the list of lines ready to print a jobDetails file.
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
-        ArrayList<String> lines= new ArrayList<String>();
+        List<String> lines= new ArrayList<String>();
         lines.add(ParameterConstants.STARTJOB);
         lines.addAll(params.toLinesJobDetails());
         for (int step = 0; step<steps.size(); step++)
