@@ -38,6 +38,8 @@ import autocompchem.worker.WorkerConstants;
  * @author Marco Foscato
  */
 
+//TODO-gg remove is not used
+
 public class EvaluationJob extends ACCJob 
 {
 	/**

@@ -128,7 +128,7 @@ public class WorkerFactory
     /**
      * Create a new worker capable of performing the task defined by the given 
      * job.
-     * @param job the job that defined the task to be done by the worker.
+     * @param job the job that defines the task to be done by the worker.
      * @param initializeIt if <code>true</code> the worker is also initialized.
      * This requires that the parameters are consistent with the requirements
      * of the worker.
@@ -154,36 +154,36 @@ public class WorkerFactory
 //-----------------------------------------------------------------------------
 
     /**
-     * Create a new worker capable of performing the given task for a master 
-     * job.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @param masterJob the job that is creating a worker to perform a task.
+     * Create a new worker capable of performing the given task, which is 
+     * defined by by the given job. 
+     * @param task the task to be performed by the worker.
+     * @param job the job that is creating a worker to perform a task.
      * @return a suitable worker for the task or null.
      */ 
 
-    private static Worker createWorker(TaskID task, Job masterJob)
+    private static Worker createWorker(TaskID task, Job job)
     {
-    	// We first find out which worker is meant to take care of the given 
-    	// task
+    	// We first find out which kind of worker is meant to do the task.
     	List<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
     	if (suitableWorkerIDs.size() > 1)
     	{
     		Terminator.withMsgAndStatus("ERROR! Multiple workers are "
     		 		+ "capable of task '"+task+"'. Unable to choose a "
-    		 		+ "worker.",-1);
+    		 		+ "worker.", -1);
     	}
     	else if (suitableWorkerIDs.size() == 0)
     	{
     		 Terminator.withMsgAndStatus("ERROR! Unable to find a worker "
-    		 		+ "capable of task '"+task+"'.",-1);
+    		 		+ "capable of task '"+task+"'.", -1);
     	}
     	
     	// Now we make the actual worker
     	Worker worker = getNewWorkerInstance(suitableWorkerIDs.get(0));
+    	worker.myJob = job;
     	
-    	if (masterJob != null)
+    	if (job != null)
     	{
-    	    worker.setDataCollector(masterJob.getOutputCollector());
+    	    worker.setDataCollector(job.getOutputCollector());
     	}
     	
     	return worker;
