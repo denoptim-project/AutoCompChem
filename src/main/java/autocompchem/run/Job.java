@@ -233,7 +233,7 @@ public class Job implements Runnable
     /**
      * Constructor for an undefined job
      */
-
+//TODO-gg make protected
     public Job()
     {
         this.params = new ParameterStorage();
@@ -761,7 +761,7 @@ public class Job implements Runnable
      * This method is overwritten by subclasses.
      */
 
-    public void runThisJobSubClassSpecific()
+    protected void runThisJobSubClassSpecific()
     {
         // Subclasses overwrites this method, so if we are here
         // it is because we tried to run a job of an app for which there is
@@ -800,7 +800,7 @@ public class Job implements Runnable
     private void runSubJobsPararelly()
     {
         ParallelRunner parallRun = 
-        		new ParallelRunner(steps,nThreads,nThreads,this);
+        		new ParallelRunner(steps, nThreads, nThreads, this);
         if (hasParameter(ParallelRunner.WALLTIMEPARAM))
         {
         	parallRun.setWallTime(Long.parseLong(

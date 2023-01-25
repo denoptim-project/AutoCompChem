@@ -19,6 +19,7 @@ package autocompchem.run;
 
 import java.util.Date;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
@@ -42,6 +43,19 @@ public class ACCJob extends Job
     {
         super();
         this.appID = RunnableAppID.ACC;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a job given its parameters.
+     * @param params the parameters to append to this job.
+     */
+
+    public ACCJob(ParameterStorage params)
+    {
+        this();
+        setParameters(params);
     }
 
 //------------------------------------------------------------------------------
@@ -75,8 +89,7 @@ public class ACCJob extends Job
                             + task + "' - "+date.toString());
         }
         
-        Worker worker = getWorker();
-        worker.initialize();
+        Worker worker = WorkerFactory.createWorker(this);
         worker.performTask();
        
 
@@ -90,18 +103,17 @@ public class ACCJob extends Job
 //------------------------------------------------------------------------------
     
     /**
-     * 
      * @return the {@link Worker} that can perform the task required in this job
      * or null.
      */
-    public Worker getWorker()
+    public Worker getUninitializedWorker()
     {
     	// Check for any ACC task...
     	if (!hasParameter(WorkerConstants.PARTASK))
     	{
     		return null;
     	}
-       return WorkerFactory.createWorker(params, this, false);
+       return WorkerFactory.createWorker(this, false);
     }
     
 //------------------------------------------------------------------------------

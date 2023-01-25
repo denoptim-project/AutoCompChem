@@ -119,7 +119,7 @@ public class ACCMain
         	{
 	        	if (job instanceof ACCJob)
 	        	{
-	        		Worker w = ((ACCJob) job).getWorker();
+	        		Worker w = ((ACCJob) job).getUninitializedWorker();
 	        		System.out.println(w.getTaskSpecificHelp());
 	        	} else {
 	        		//TODO-gg what here?

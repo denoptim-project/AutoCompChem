@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
-import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
 import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
@@ -55,12 +54,14 @@ import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
+import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
+import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 
 /**
- * Factory building AutoCompChem workers. In this factory we chose the worker
+ * Factory building workers. In this factory we chose the worker
  * type based on the tasks that each worker type declares in its implementation.
  * As such declaration of suitable tasks is meant to live only in one place
  * (i.e., in the subclass implementing that capability), and we want to have no
@@ -79,50 +80,69 @@ import autocompchem.run.Terminator;
 
 public class WorkerFactory
 {
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Create a new worker that is meant to do the task in the given job. 
+     * This method initializes the worker, i.e., 
+     * it make the worker read the parameters and load the corresponding input
+     * and configurations.
+     * @param job the job to be done by the worker. We assume the parameters of 
+     * this job include the {@link WorkerConstants#PARTASK}.
+     * @return a suitable worker for the task.
+     */ 
+
+    public static Worker createWorker(Job job)
+    {
+    	return createWorker(job, true);
+    }
     
 //-----------------------------------------------------------------------------
 
     /**
      * Create a new worker capable of performing the task given in the 
-     * parameters storage unit. This method initialised the worker, i.e., 
+     * parameters storage unit, which is expected to define an {@link ACCJob} 
+     * to be embedded in the given main job. Effectively we use the given
+     * parameters to create a subjob that is appended to the main job's steps, 
+     * and we return a worker that can perform the task defined in the subjob.
+     * This method initializes the worker, i.e., 
      * it make the worker read the parameters and load the corresponding input
      * and configurations.
      * @param params the parameters that define the task and all related 
-     * settings and input data.
-     * @param masterJob the job that is creating a worker to perform a task.
+     * settings and input data of the subjob.
+     * @param mainJob the job that needs a task to be performed by a subjob.
      * @return a suitable worker for the task.
      */ 
 
-    public static Worker createWorker(ParameterStorage params, Job masterJob)
+    //TODO-gg needed?
+    public static Worker createWorker(ParameterStorage params, Job mainJob)
     {
-    	return createWorker(params, masterJob, true);
+    	Job subjob = new ACCJob(params);
+    	subjob.setParent(mainJob);
+    	return createWorker(subjob, true);
     }
 
 //-----------------------------------------------------------------------------
 
     /**
-     * Create a new worker capable of performing the task given in the 
-     * parameters storage unit. This method initialised the worker, i.e., 
-     * it make the worker read the parameters and load the corresponding input
-     * and configurations.
-     * @param params the parameters that define the task and all related 
-     * settings and input data.
-     * @param masterJob the job that is creating a worker to perform a task.
+     * Create a new worker capable of performing the task defined by the given 
+     * job.
+     * @param job the job that defined the task to be done by the worker.
      * @param initializeIt if <code>true</code> the worker is also initialized.
      * This requires that the parameters are consistent with the requirements
      * of the worker.
-     * @return a suitable worker for the task.
+     * @return a suitable worker for the task defined by the job.
      */ 
 
-    public static Worker createWorker(ParameterStorage params, Job masterJob, 
-    		boolean initializeIt)
+    public static Worker createWorker(Job job, boolean initializeIt)
     {
-    	String taskStr = params.getParameter(
+    	String taskStr = job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString();
     	TaskID taskID = TaskID.getFromString(taskStr);
     	
-    	Worker worker = createWorker(taskID, masterJob);
-    	worker.setParameters(params);
+    	Worker worker = createWorker(taskID, job);
+    	worker.setParameters(job.getParameters());
     	if (initializeIt)
     	{
     		worker.initialize();
