@@ -406,7 +406,7 @@ public class ForceFieldEditor extends Worker
                 	ps.setParameter( 
                 			params.getParameter("VERBOSITY"));
                 	
-                	Worker w = WorkerFactory.createWorker(ps);
+                	Worker w = WorkerFactory.createWorker(ps, this.getMyJob());
                 	VibModuleOutputHandler vmoh = (VibModuleOutputHandler) w;
                 	
                 	/*

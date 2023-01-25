@@ -383,7 +383,8 @@ public class NWChemReStarter extends Worker
     			"EVALUATENWCHEMOUTPUT");
     	
         //Gather information on the error job
-    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);
+    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler, 
+    			this.getMyJob());
     	NWChemOutputHandler oEval = (NWChemOutputHandler) w;
     	
                                                   

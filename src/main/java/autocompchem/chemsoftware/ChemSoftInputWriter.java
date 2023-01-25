@@ -552,7 +552,7 @@ public abstract class ChemSoftInputWriter extends Worker
 		}
 		
 		// These calls take care also of the sub-jobs/directives
-		molSpecJob.processDirectives(mols);
+		molSpecJob.processDirectives(mols, this.getMyJob());
 		
 		// Ensure a value of charge and spin has been defined
 		setChargeIfUnset(molSpecJob, charge+"", omitCharge);

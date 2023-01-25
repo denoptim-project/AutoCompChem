@@ -378,7 +378,8 @@ public class GaussianReStarter extends Worker
     			WorkerConstants.PARTASK, "EVALUATEGAUSSIANOUTPUT");
     	
         //Gather information on the error job
-    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);
+    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler, 
+    			this.getMyJob());
         GaussianOutputHandler oEval = (GaussianOutputHandler) w;
                                                   
         oEval.evaluateGaussianOutput();

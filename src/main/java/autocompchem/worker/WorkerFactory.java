@@ -18,6 +18,7 @@ package autocompchem.worker;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
@@ -78,41 +79,6 @@ import autocompchem.run.Terminator;
 
 public class WorkerFactory
 {
-	
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the given task for a master 
-     * job.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @param masterJob the job that is creating a worker to perform a task.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(String task, Job masterJob)
-    {
-    	// Convert string-based task in to enum
-    	TaskID taskID = TaskID.getFromString(task);
-    	
-    	return createWorker(taskID, masterJob);
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the task given in the 
-     * parameters storage unit. This method initialised the worker, i.e., 
-     * it make the worker read the parameters and load the corresponding input
-     * and configurations.
-     * @param params the parameters that define the task and all related 
-     * settings and input data.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(ParameterStorage params)
-    {    	
-    	return createWorker(params,null);
-    }
     
 //-----------------------------------------------------------------------------
 
@@ -175,11 +141,11 @@ public class WorkerFactory
      * @return a suitable worker for the task or null.
      */ 
 
-    public static Worker createWorker(TaskID task, Job masterJob)
+    private static Worker createWorker(TaskID task, Job masterJob)
     {
     	// We first find out which worker is meant to take care of the given 
     	// task
-    	ArrayList<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
+    	List<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
     	if (suitableWorkerIDs.size() > 1)
     	{
     		Terminator.withMsgAndStatus("ERROR! Multiple workers are "

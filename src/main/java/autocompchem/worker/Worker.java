@@ -41,7 +41,8 @@ import autocompchem.run.Job;
 
 
 /**
- * A worker is anything that can perform any task. This abstract class serves 
+ * A worker is anything that can perform any task or job. 
+ * This abstract class serves 
  * as starting point for all other workers. 
  * Subclasses of this class need to respect these constraints:
  * <ul>
@@ -82,6 +83,11 @@ public abstract class Worker implements IOutputExposer
     protected TaskID task = TaskID.UNSET;
     
     /**
+     * The job that this worker is charged with.
+     */
+    protected Job myJob;
+    
+    /**
      * The pathname of the resource collecting the documentation of any
      * setting that this worker can take as input.
      */
@@ -117,7 +123,7 @@ public abstract class Worker implements IOutputExposer
      * as {@link ConfigItem}s.
      */
 
-    public Worker(String knownInputDefinition)
+    protected Worker(String knownInputDefinition)
     {
     	this.knownInputDefinition = knownInputDefinition;
     }
@@ -142,7 +148,7 @@ public abstract class Worker implements IOutputExposer
     /**
      * Checks if a parameter has been set.
      * @param refName the reference name of the parameter.
-     * @return <code>true</code if the parameter exists, of <code>false</code>
+     * @return <code>true</code> if the parameter exists, of <code>false</code>
      * if it is not set or if the parameter storage is null.
      */
 
@@ -153,6 +159,17 @@ public abstract class Worker implements IOutputExposer
     		return params.contains(refName);
     	}
         return false;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Gets the job this worker is assigned to.
+     * @return the job this worker is assigned to.
+     */
+    public Job getMyJob()
+    {
+    	return myJob;
     }
     
 //------------------------------------------------------------------------------

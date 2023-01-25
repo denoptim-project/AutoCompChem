@@ -214,7 +214,7 @@ public class DirectiveTest
     	Job j = new Job();
     	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
-    	d.performACCTasks(null, j);
+    	d.performACCTasks(null, j, null);
     	
     	assertTrue(d.getDirectiveData("data").getValue().toString()
     			.contains(".sfx"),
@@ -229,7 +229,7 @@ public class DirectiveTest
     					ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
     					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
 
-    	d2.performACCTasks(null, j);
+    	d2.performACCTasks(null, j, null);
     	
     	assertTrue(d2.getKeyword("key1").getValue().toString().contains(
     			"filenameRoot_job2.xyz"),
@@ -256,7 +256,8 @@ public class DirectiveTest
     	mol.addAtom(new Atom("N",new Point3d(10.0,10,0)));
     	mol.addAtom(new Atom("C",new Point3d(12.0,10,0.0)));
     	
-    	d3.performACCTasks(new ArrayList<IAtomContainer>(Arrays.asList(mol)), j);
+    	d3.performACCTasks(new ArrayList<IAtomContainer>(Arrays.asList(mol)), j,
+    			null);
     	
     	assertEquals(6, d3.getAllKeywords().size());
     	int newKeys = 0;

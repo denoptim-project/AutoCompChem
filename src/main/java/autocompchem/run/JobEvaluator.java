@@ -465,7 +465,7 @@ public class JobEvaluator extends Worker
 		// Prepare a worker that parses data and searches for strings that may
 		// be requested by the perceptron.
 		ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
-				WorkerFactory.createWorker(analysisParams);
+				WorkerFactory.createWorker(analysisParams, this.getMyJob());
 		outputParser.setSituationBaseForPerception(sitsDB);
 		NamedDataCollector results = new NamedDataCollector();
 		outputParser.setDataCollector(results);

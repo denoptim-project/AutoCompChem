@@ -159,11 +159,12 @@ public class CompChemJob extends Job implements Cloneable
      * Depending on the task, some directives may be changed as a result of the
      * ACC tasks. 
      * @param mols the molecular representation given to mol-dependent tasks.
+     * @param masterJob the job that requires to process directives of this job.
      */
     
     //TODO rename so that it is clear that this makes the job mol-dependent
     
-    public void processDirectives(List<IAtomContainer> mols)
+    public void processDirectives(List<IAtomContainer> mols, Job masterJob)
     {
     	for (Directive d : directives)
     	{
@@ -171,11 +172,11 @@ public class CompChemJob extends Job implements Cloneable
     		{
     			continue;
     		}
-    		d.performACCTasks(mols, this);
+    		d.performACCTasks(mols, this, masterJob);
     	}
     	for (Job step : steps)
     	{
-    		((CompChemJob) step).processDirectives(mols);
+    		((CompChemJob) step).processDirectives(mols, masterJob);
     	}
     }
 

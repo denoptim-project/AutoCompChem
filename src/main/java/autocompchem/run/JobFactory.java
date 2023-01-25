@@ -31,7 +31,7 @@ import autocompchem.worker.WorkerConstants;
 
 
 /**
- * Factory building jobs
+ * Factory building jobs.
  * 
  * @author Marco Foscato
  */
@@ -141,7 +141,6 @@ public class JobFactory
         	job = createJob(RunnableAppID.ACC);
             for (TextBlockIndexed tb : blocks)
             {
-                
                 Job subJob = createJob(tb);
                 job.addStep(subJob);
             }

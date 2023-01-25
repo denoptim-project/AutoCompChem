@@ -657,14 +657,17 @@ public class Directive implements IDirectiveComponent, Cloneable
      * In each case, when multiple components are present, the ordering of 
      * components is respected when searching and performing tasks.
      * @param mols the chemical system/s given to any system-dependent tasks.
-     * @param job the job that called this method.
+     * @param job the job containing this directive and that required to perform
+     * the task.
+     * @param masterJob the job that requests the update of the job containing 
+     * this directive.
      */
     
-    public void performACCTasks(List<IAtomContainer> mols, Job job)
+    public void performACCTasks(List<IAtomContainer> mols, Job job, Job masterJob)
     {
     	if (accTaskParams!=null)
     	{
-    		performACCTask(mols, accTaskParams, this, job);
+    		performACCTask(mols, accTaskParams, this, job, masterJob);
     	}
     	
     	for (Keyword k : keywords)
@@ -678,7 +681,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     			} else {
     				ps = parseACCTaskParams(k.getValueAsLines(), k);
     			}
-	    		performACCTask(mols, ps, k, job);
+	    		performACCTask(mols, ps, k, job, masterJob);
     		}
     	}
     	for (DirectiveData dd : dirData)
@@ -706,13 +709,13 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    			}
 	    			ps = parseACCTaskParams(lines, dd);
     			}
-				performACCTask(mols, ps, dd, job);
+				performACCTask(mols, ps, dd, job, masterJob);
     		}	
     	}
     	for (Directive d : subDirectives)
     	{
-    		// This is effectively a recursion into nested directives
-    		d.performACCTasks(mols, job);
+    		//Recursion into nested directives
+    		d.performACCTasks(mols, job, masterJob);
     	}
     }
     
@@ -880,10 +883,12 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dirComp the directive component that required performing the task.
      * @param job the job containing the directive component that required 
      * performing the task.
+     * @param masterJob the job that requests the update of the job containing 
+     * this directive.
      */
     
     private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
-    		IDirectiveComponent dirComp, Job job)
+    		IDirectiveComponent dirComp, Job job, Job masterJob)
     {	
     	String task = "none";
     	if (params.contains(ChemSoftConstants.JDLABACCTASK))
@@ -925,7 +930,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		labMakerParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
             	AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
-            			WorkerFactory.createWorker(labMakerParams);
+            			WorkerFactory.createWorker(labMakerParams, masterJob);
         		List<String> pointers = labGenerator.generateAtomLabels(mol);
         		
 	        	// Identify specific atoms to work with
@@ -938,7 +943,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 cnstrParams.setParameter("VALUEDKEYWORDS", 
                 		"options prefix suffix");
                 
-            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	AtomTupleGenerator cnstrg = (AtomTupleGenerator) w;
             	
             	for (AnnotatedAtomTuple tuple : cnstrg.createTuples(mol))
@@ -1034,7 +1039,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 		zmatMakerTask.setParameter("MOL", 
                 				NamedDataType.IATOMCONTAINER, 
                 				mols.get(geometryId));
-                        Worker w = WorkerFactory.createWorker(zmatMakerTask);
+                        Worker w = WorkerFactory.createWorker(zmatMakerTask,
+                        		masterJob);
                         ZMatrixHandler zmh = (ZMatrixHandler) w;
                         ZMatrix zmat = zmh.makeZMatrix();
                         if (params.contains(ZMatrixConstants.SELECTORMODE))
@@ -1047,7 +1053,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                         			TaskID.GENERATECONSTRAINTS.toString());
                         	
                             ConstraintsGenerator cnstrg = (ConstraintsGenerator)
-                            		WorkerFactory.createWorker(cnstMakerTask);
+                            		WorkerFactory.createWorker(cnstMakerTask,
+                            				masterJob);
                         	ConstraintsSet cs = new ConstraintsSet();
                         	try {
             					cs = cnstrg.createConstraints(mols.get(
@@ -1114,7 +1121,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO-gg this simplifies if we use TaskID as it should 
                 bsGenParams.setParameter("TASK", "GENERATEBASISSET");
-            	Worker w = WorkerFactory.createWorker(bsGenParams);
+            	Worker w = WorkerFactory.createWorker(bsGenParams, masterJob);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
                 bsg.setAtmIdxAsId(true);
@@ -1144,7 +1151,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 cnstrParams.setParameter("TASK", 
                 		TaskID.GENERATECONSTRAINTS.toString());
                 
-            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
             	
             	ConstraintsSet cs = new ConstraintsSet();
@@ -1178,7 +1185,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 csGenParams.setParameter("TASK", 
                 		TaskID.GENERATECONFORMATIONALSPACE.toString());
                 
-            	Worker w = WorkerFactory.createWorker(csGenParams);
+            	Worker w = WorkerFactory.createWorker(csGenParams, masterJob);
             	ConformationalSpaceGenerator csGen = 
             			(ConformationalSpaceGenerator) w;
             	
@@ -1220,7 +1227,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 atmLabelsParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
                 
-            	Worker w = WorkerFactory.createWorker(atmLabelsParams);
+            	Worker w = WorkerFactory.createWorker(atmLabelsParams, 
+            			masterJob);
             	AtomLabelsGenerator labelsGenerator = (AtomLabelsGenerator) w;
             	
             	TextBlock labels = new TextBlock(
@@ -1245,7 +1253,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 atmTuplesParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMTUPLES.toString());
                 
-            	Worker w = WorkerFactory.createWorker(atmTuplesParams);
+            	Worker w = WorkerFactory.createWorker(atmTuplesParams, 
+            			masterJob);
             	AtomTupleGenerator labelsGenerator = (AtomTupleGenerator) w;
             	
             	AnnotatedAtomTupleList tuples = new AnnotatedAtomTupleList(

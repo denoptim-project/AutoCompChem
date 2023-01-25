@@ -56,7 +56,7 @@ import autocompchem.text.TextBlockIndexed;
 public class Job implements Runnable
 {
 	/**
-	 * Reference to the parent job. This is null for the outermost, master job
+	 * Reference to the parent job. This is null for the outermost, master job.
 	 */
 	private Job parentJob = null;
 	
@@ -575,6 +575,17 @@ public class Job implements Runnable
     public Job getParent()
     {
     	return parentJob;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if there is a parent job. 
+     * @return <code>true</code> if this job has a parent.
+     */
+    public boolean hasParent()
+    {
+    	return parentJob!=null;
     }
     
 //------------------------------------------------------------------------------
