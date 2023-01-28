@@ -8,4 +8,4 @@ IC-LOGS: ../t11-mol.out
 # add list of files (with wildcard) to archive and list of those to copy
 #NEWINPFILE: restart-t11.inp
 #TODO-gg create test with system-specific job details file 
-IC-JOBDETAILS: ../t11-jobDetails.json
+JOBDEFINITION: ../t11-jobDetails.json

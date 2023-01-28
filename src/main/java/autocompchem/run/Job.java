@@ -995,7 +995,7 @@ public class Job implements Runnable
 
     /**
      * Sets the status to 'complete' and notifies any listener that might be 
-     * listening to this job
+     * listening to this job.
      */
     private void finalizeStatusAndNotifications(boolean notify) 
     {

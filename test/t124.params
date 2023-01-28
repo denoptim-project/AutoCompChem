@@ -7,7 +7,7 @@ VERBOSITY: 1
 TASK: EvaluateJob
 SITUATIONSDBROOT: ../t124_KB
 IC-LOGS: ../t124.appLog:../t124.appLog2
-JOBDEFINITION: ../t124_jobToEvaluate.jd
+JOBDEFINITION: ../t124_jobToEvaluate.json
 JOBEND
 JOBSTART
 APP: SHELL

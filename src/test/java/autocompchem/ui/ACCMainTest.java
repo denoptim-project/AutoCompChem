@@ -92,7 +92,7 @@ public class ACCMainTest
         		+RunnableAppID.ACC+NL);
         sb.append(WorkerConstants.PARTASK
         		+ParameterConstants.SEPARATOR
-        		+TaskID.DummyTask+NL);
+        		+TaskID.DUMMYTASK+NL);
         sb.append("CUSTOM_PAR"
         		+ParameterConstants.SEPARATOR
         		+"bla bla ribla"+NL);
@@ -111,7 +111,7 @@ public class ACCMainTest
     	Job job = ACCMain.parseCLIArgs(args);
     	
     	assertEquals(RunnableAppID.ACC,job.getAppID(),"Job APP");
-    	assertEquals(TaskID.DummyTask.toString(),job.getParameter(
+    	assertEquals(TaskID.DUMMYTASK.toString(),job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString(),
     			"Task ID");
     	assertEquals("bla bla ribla",job.getParameter(

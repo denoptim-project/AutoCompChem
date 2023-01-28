@@ -515,6 +515,8 @@ public class ParallelRunner
 	            } else {
 	            	if (verbosity > 0)
 	            	{
+	            		System.out.println("Checking completion of parallel "
+	            				+ "jobs:");
 		            	for (Job j : submittedJobs)
 		            		System.out.println(j + " " +j.isCompleted());
 		            	for (Job j : submittedMonitoringJobs)

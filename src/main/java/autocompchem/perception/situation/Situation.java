@@ -191,7 +191,6 @@ public class Situation extends Concept
     
     private void makeFromTxtFile(File f) throws Exception
     {
-    	    
 	    //Read file
 	    String fname = f.toString();
 	    List<List<String>> form = IOtools.readFormattedText(
@@ -361,7 +360,7 @@ public class Situation extends Concept
     /**
      * Returns the expected reaction to this situation, or null if no reaction
      * is known.
-     * @return the behaviour in response of the occurrence of this situation
+     * @return the behavior in response of the occurrence of this situation
      */
     
     public Action getReaction()

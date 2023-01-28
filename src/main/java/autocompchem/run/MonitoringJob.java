@@ -17,9 +17,6 @@ import autocompchem.perception.situation.SituationBase;
  */
 
 
-//TODO: implement choice of this class in JobFactory
-
-
 public class MonitoringJob extends EvaluationJob
 {
 	/**
@@ -73,7 +70,7 @@ public class MonitoringJob extends EvaluationJob
     public MonitoringJob(Job jobToEvaluate, SituationBase sitsDB,
     		InfoChannelBase icDB, long delay, long period)
     {
-        super(jobToEvaluate,sitsDB,icDB);
+        super(jobToEvaluate, sitsDB, icDB);
         this.delay = delay;
         this.period = period;
     }

@@ -18,7 +18,7 @@ package autocompchem.run;
  */
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,6 +35,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
 import autocompchem.perception.Perceptron;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.infochannel.FileAsSource;
@@ -43,7 +44,8 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Action.ActionObject;
+import autocompchem.perception.situation.SituationConstants;
+import autocompchem.text.TextAnalyzer;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
@@ -124,7 +126,13 @@ public class JobEvaluator extends Worker
     /**
      * The job being evaluated
      */
-    private Job job;
+    private Job jobBeingEvaluated;
+    
+    /**
+     * The index of the job step that is last, whether it is failed or not.
+     * By default this value is 0.
+     */
+    private int lastJobStepId = 0;
 
     
 //-----------------------------------------------------------------------------
@@ -150,7 +158,7 @@ public class JobEvaluator extends Worker
     	this();
         this.sitsDB = sitsDB;
         this.icDB = icDB;
-        this.job = job;
+        this.jobBeingEvaluated = job;
     }
     
 //-----------------------------------------------------------------------------
@@ -169,13 +177,58 @@ public class JobEvaluator extends Worker
 						+ ParameterConstants.VERBOSITY, -1);
 			}
 			verbosity = Integer.parseInt(vStr);
-		}		
+		}
+		
+		if (hasParameter(ParameterConstants.SITUATION)) 
+		{
+			String multilines = params.getParameter(
+					ParameterConstants.SITUATION).getValueAsString();
+			String[] parts = multilines.trim().split(
+					System.getProperty("line.separator"));
+			List<String> lines = Arrays.asList(parts);
+			List<List<String>> filledForm = TextAnalyzer.readKeyValue(lines,
+					SituationConstants.SEPARATOR,
+					SituationConstants.COMMENTLINE,
+					SituationConstants.STARTMULTILINE,
+					SituationConstants.ENDMULTILINE);
+			Situation situation = new Situation();
+			try {
+				situation.configure(filledForm);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Terminator.withMsgAndStatus("ERROR! Unable to create Situation "
+						+ "from the given parameters. " + e.getMessage(), -1);
+			}
+			if (sitsDB==null)
+			{
+				sitsDB = new SituationBase();
+			}
+			sitsDB.addSituation(situation);
+		}
 		
 		if (hasParameter(ParameterConstants.SITUATIONSDBROOT)) 
 		{
+			if (sitsDB!=null)
+			{
+				Terminator.withMsgAndStatus("ERROR! A database of known "
+						+ "situations has been provided to the job evaluation, "
+						+ "but there is an attempt to overwrite this data by "
+						+ "using the '" + ParameterConstants.SITUATIONSDBROOT 
+						+ "' parameter. Check your input.", -1);
+			}
 			String pathName = params.getParameter(
 					ParameterConstants.SITUATIONSDBROOT).getValueAsString();
 			sitsDB = new SituationBase(new File(pathName));
+		} else if (hasParameter(ParameterConstants.SITUATIONSDB)) 
+		{
+			sitsDB = (SituationBase) params.getParameter(
+					ParameterConstants.SITUATIONSDB).getValue();
+		}
+		
+		if (hasParameter(ParameterConstants.INFOCHANNELSDB)) 
+		{
+			icDB = (InfoChannelBase) params.getParameter(
+					ParameterConstants.INFOCHANNELSDB).getValue();
 		}
 		
 		if (hasParameter(ParameterConstants.INFOSRCINPUTFILES)) 
@@ -254,15 +307,37 @@ public class JobEvaluator extends Worker
 		// ParameterConstants.JOBDEF even though they will probably have
 		// the same content, but INFOSRCJOBDETAILS allows to include more
 		// so we keep it separated.
+		
 		// Moreover, if JOBDEF==null then we know we are not supposed to perform
 		// any action that changes the focus job.
+		// TODO-gg keep this comment of not?
 		
 		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
 			String pathName = params.getParameter(
 					ParameterConstants.JOBDEF).getValueAsString();
 			FileUtils.foundAndPermissions(pathName, true, false, false);
-			job = JobFactory.buildFromFile(pathName);
+			try {
+				jobBeingEvaluated = (Job) IOtools.readJsonFile(pathName, Job.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+				Terminator.withMsgAndStatus("ERROR! could not read JSON file "
+						+ "with definitiong of job to evaluate.", -1);
+			}
+		}
+		
+		if (hasParameter(ParameterConstants.JOBTOEVALUATE)) 
+		{
+			if (jobBeingEvaluated!=null)
+			{
+				Terminator.withMsgAndStatus("ERROR! A job to evaluate "
+						+ "been provided to the evaluation job, "
+						+ "but there is an attempt to overwrite this data by "
+						+ "using the '" + ParameterConstants.JOBTOEVALUATE 
+						+ "' parameter. Check your input.", -1);
+			}
+			jobBeingEvaluated = (Job) params.getParameter(
+					ParameterConstants.JOBTOEVALUATE).getValue();
 		}
     	
 		String whatIsNull = "";
@@ -298,6 +373,35 @@ public class JobEvaluator extends Worker
 	
 //-----------------------------------------------------------------------------
 
+	/**
+	 * @return the collection of known situations that this evaluate can use.
+	 */
+	public SituationBase getSitsDB() 
+	{
+		return sitsDB;
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * @return the collection of information channels that this evaluator can 
+	 * use.
+	 */
+	public InfoChannelBase getIcDB() {
+		return icDB;
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * @return the job this evaluation is meant to evaluate.
+	 */
+	public Job getJobBeingEvaluated() {
+		return jobBeingEvaluated;
+	}
+
+//-----------------------------------------------------------------------------
+	
 	@Override
 	public void performTask() 
 	{
@@ -317,16 +421,20 @@ public class JobEvaluator extends Worker
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setVerbosity(verbosity-1);
 		
-		if (EVALCOMPCHEMJOBTASKS.contains(task) || job instanceof CompChemJob)
+		if (EVALCOMPCHEMJOBTASKS.contains(task) || jobBeingEvaluated instanceof CompChemJob)
 		{
 			analyzeCompChemJobResults(p);
 		}
+		
+		//TODO: need parsing of ACCJob log files to detect number of steps
+		// which is otherwise assumed to be 1 (see lastJobStepId)
 		
 		try {
 			p.perceive();
 			
 			if (verbosity == 1)
 			{
+				// Minimal log that is done by Perceptron if the verbosity is higher
 				if (p.isAware())
 				{
 					Situation sit = p.getOccurringSituations().get(0);
@@ -352,30 +460,29 @@ public class JobEvaluator extends Worker
 			
 			if (s.hasReaction())
 			{
-				Action a = s.getReaction();
+				Action reaction = s.getReaction();
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
-						NamedDataType.ACTION, a));
+						NamedDataType.ACTION, reaction));
 				
-				// In case of interacting curation, i.e., we only ask to
-				// create a new job that applies the error-curating action,
-				// we do not expect to modify the worflow that includes this
-				// evaluation job.
-				if (a.getObject()==ActionObject.FOCUSJOB && job!=null 
-						&& job.getParent()==null)
+				/*
+				 TODO-gg delete
+				if (jobBeingEvaluated!=null && jobBeingEvaluated.getParent()==null)
 				{
-					// Copy original JOB
-					
+					// curting actions can only operate on the job, not
+					// on the mater job
+					 
+					this cannot work if the job has no steps!!!
+					Job failingStep = jobBeingEvaluated.getStep(lastJobStepId);
+							
+					//TODO-gg: This should be done where?
 					// create additional steps
 					
 					// remove previous steps
 					
 					// report new job details/input
-				} else {
-				//TODO: alter master job with reaction triggered by outcome of 
-				// analysis. Repetition of a step should occur by adding new 
-				// steps in between the evaluation one and its originally-next 
-				// step
+				
 				}
+				*/
 			}
 		}
 	}
@@ -445,8 +552,6 @@ public class JobEvaluator extends Worker
 						+ "Please, check your input.",-1);
 			}
 
-			//TODO-gg del
-			//icReadByCompChemOutAnalyser.add(logChannels.get(0));
 			analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
 					((FileAsSource)logChannels.get(0)).getPathName());
 			p.setInfoChannelAsRead(logChannels.get(0));
@@ -472,9 +577,17 @@ public class JobEvaluator extends Worker
 		outputParser.performTask();
 		
 		exposeOutputData(new NamedData(NORMALTERMKEY, NamedDataType.BOOLEAN, 
-				outputParser.getNormalTerminationFlag()));		
+				outputParser.getNormalTerminationFlag()));
+		lastJobStepId = outputParser.getStepsFound();
+		/*
+		This is done for any job type, so outside of this method
 		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
 				outputParser.getStepsFound()));
+		*/
+		
+		//TODO-gg we should put any of the data exposed by the outputParser
+		// into info channels, so that it can be used by perception.
+		// This may need to add a data feed-like type of info channel
 		
 		@SuppressWarnings("unchecked")
 		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)

@@ -1,0 +1,13 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "SOMEPARAMETER",
+      "value": "with values and stuff"
+    },
+    {
+      "reference": "ANOTHERPAR",
+      "value": "this is my initial content"
+    }
+  ]
+}

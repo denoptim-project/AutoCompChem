@@ -250,17 +250,20 @@ public class JobFactory
         }
         job = createJob(appId);
 
-        if (locPar.contains(WorkerConstants.PARTASK) 
-        		&& locPar.getParameterValue(WorkerConstants.PARTASK)
-        		.toUpperCase().equals(TaskID.EVALUATEJOB.toString()))
+        if (locPar.contains(WorkerConstants.PARTASK))
         {
-        	if (locPar.contains(MonitoringJob.PERIODPAR) 
-        			|| locPar.contains(MonitoringJob.DELAYPAR))
-        	{
-        		job = new MonitoringJob();
-        	} else {
-        		job = new EvaluationJob();
-        	}
+        	TaskID task = TaskID.valueOf(locPar.getParameterValue(
+        			WorkerConstants.PARTASK).toUpperCase());
+        	if (JobEvaluator.capabilities.contains(task))
+	        {
+	        	if (locPar.contains(MonitoringJob.PERIODPAR) 
+	        			|| locPar.contains(MonitoringJob.DELAYPAR))
+	        	{
+	        		job = new MonitoringJob();
+	        	} else {
+	        		job = new EvaluationJob();
+	        	}
+	        }
         }
         
         if (locPar.contains(ParameterConstants.VERBOSITY))

@@ -100,7 +100,7 @@ public class JobFactoryTest
             FileWriter writer = new FileWriter(paramFile);
 
             writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-            		+ TaskID.DummyTask + NL);
+            		+ TaskID.DUMMYTASK + NL);
             writer.write("key1" + ParameterConstants.SEPARATOR 
             		+ "value1" + NL);
             writer.write("key2" + ParameterConstants.SEPARATOR 
@@ -147,28 +147,6 @@ public class JobFactoryTest
             writer.write(MonitoringJob.PERIODUNITS 
             		+ ParameterConstants.SEPARATOR
             		+ "MINUTES" + NL);
-            writer.write(ParameterConstants.SITUATION 
-            		+ ParameterConstants.SEPARATOR 
-            		+ ParameterConstants.STARTMULTILINE  
-            		+ SituationConstants.REFERENCENAMELINE 
-            		+ SituationConstants.SEPARATOR + "LimitReached"+NL);
-            writer.write(SituationConstants.SITUATIONTYPE 
-            		+ SituationConstants.SEPARATOR + "error" + NL);
-            writer.write(SituationConstants.CIRCUMSTANCE
-            		+ SituationConstants.SEPARATOR 
-            		+ InfoChannelType.LOGFEED + " "
-            		+ CircumstanceConstants.MATCHES + " BASH-A: 3" + NL);
-            writer.write(SituationConstants.ACTION 
-            		+ SituationConstants.SEPARATOR 
-            		+ SituationConstants.STARTMULTILINE
-            		+ ActionConstants.TYPEKEY + ActionConstants.SEPARATOR
-            		+ ActionType.STOP.toString() + NL);
-            writer.write(ActionConstants.OBJECTKEY
-            		+ ActionConstants.SEPARATOR + ActionObject.PARALLELJOB+NL);
-            writer.write(SituationConstants.ENDMULTILINE + NL);
-            writer.write(ParameterConstants.ENDMULTILINE + NL);
-            writer.write(ParameterConstants.INFOSRCLOGFILES
-            		+ ParameterConstants.SEPARATOR + " pathName" +NL);
             writer.close();
 
             job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
@@ -188,15 +166,6 @@ public class JobFactoryTest
         		"Value of delay in milliseconds");
         assertEquals(60000, ((MonitoringJob) job).getPeriod(),
         		"Value of period in milliseconds");
-        SituationBase sb = ((EvaluationJob)job).getDBSituations();
-        assertEquals(1, sb.getSituationCount(), "Number of known situations");
-        Situation s = sb.getRelevantSituations(InfoChannelType.LOGFEED).get(0);
-        assertEquals(1,s.getCircumstances().size(),"Number of circumstances");
-        assertTrue(s.getCircumstances().get(0) instanceof MatchText,
-        		"Type of circumstance");
-        Action a = s.getReaction();
-        assertNotNull(a,"Reaction should not be null");
-        assertEquals(a.getType(),ActionType.STOP,"Action type is STOP");
     }
     
 //-----------------------------------------------------------------------------

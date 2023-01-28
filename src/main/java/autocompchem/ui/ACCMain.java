@@ -391,7 +391,7 @@ public class ACCMain
     		switch (t) 
     		{
 				case UNSET:
-				case DummyTask: 
+				case DUMMYTASK: 
 					break;
 				default:
 					s = s + NL + indent + t;

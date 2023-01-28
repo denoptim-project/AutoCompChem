@@ -27,7 +27,7 @@ import autocompchem.run.Terminator;
 public enum TaskID 
 {
 	UNSET,
-	DummyTask,
+	DUMMYTASK,
     ADDBONDSFORSINGLEELEMENT,
     ADDDUMMYATOMS,           
     ALIGNATOMLISTS,          

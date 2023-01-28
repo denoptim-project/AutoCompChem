@@ -66,7 +66,7 @@ public class ACCJob extends Job
 
     @Override
     public void runThisJobSubClassSpecific()
-    {   
+    {
     	// Check for any ACC task...
     	if (!hasParameter(WorkerConstants.PARTASK))
     	{
@@ -86,17 +86,17 @@ public class ACCJob extends Job
         if (getVerbosity() > 0)
         {
             System.out.println(" AutoCompChem is initiating the ACC task '" 
-                            + task + "' - "+date.toString());
+                            + task + "' - " + date.toString());
         }
-        
+
         Worker worker = WorkerFactory.createWorker(this);
         worker.performTask();
-       
 
         date = new Date();
         if (getVerbosity() > 0)
         {
-            System.out.println("Done with ACC job (" + task	+ ") - "+date.toString());
+            System.out.println("Done with ACC job (" + task	+ ") - " 
+            		+ date.toString());
         }
     }
     

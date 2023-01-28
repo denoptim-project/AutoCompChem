@@ -91,6 +91,11 @@ public class ParallelRunnerTest
     	protected SimpleDateFormat df = 
     			new SimpleDateFormat(" HH:mm:ss.SSS ");
     	
+    	/**
+    	 * 
+    	 * @param logPathName
+    	 * @param wallTime
+    	 */
     	public TestJob(String logPathName, int wallTime)
     	{
     		super();
@@ -100,6 +105,13 @@ public class ParallelRunnerTest
     		setNumberOfThreads(1);
     	}
     	
+    	/**
+    	 * 
+    	 * @param logPathName
+    	 * @param wallTime
+    	 * @param delay
+    	 * @param period
+    	 */
     	public TestJob(String logPathName, int wallTime, int delay, int period)
     	{
     		super();
@@ -357,7 +369,7 @@ public class ParallelRunnerTest
         master.run();
         
         int iPingFiles = FileUtils.find(tempDir, baseName).size();
-        assertEquals(2,iPingFiles,"Number of initiated TestJobs");
+        assertEquals(2, iPingFiles, "Number of initiated TestJobs");
     }
     
 //-----------------------------------------------------------------------------
