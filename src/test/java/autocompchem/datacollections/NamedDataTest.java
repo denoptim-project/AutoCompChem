@@ -149,7 +149,7 @@ public class NamedDataTest
     	assertTrue(NamedDataType.NORMALMODESET.equals(nd.getType()),
     			"Detecting NormalModeSet");  
     	
-    	Action a = new Action(ActionType.STOP,ActionObject.MASTERJOB);
+    	Action a = new Action(ActionType.STOP,ActionObject.FOCUSJOB);
     	nd.setValue(a);
     	assertTrue(NamedDataType.ACTION.equals(nd.getType()),
     			"Detecting Action");  

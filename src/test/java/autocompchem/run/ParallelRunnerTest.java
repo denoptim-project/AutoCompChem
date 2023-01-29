@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -47,6 +48,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Action.ActionObject;
 import autocompchem.run.Action.ActionType;
 import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.JobEditTask.TargetType;
 
 
 /**
@@ -69,6 +71,11 @@ public class ParallelRunnerTest
     private Situation s = new Situation("SituationType","TestSituation", 
     		new ArrayList<ICircumstance>(Arrays.asList(c)),a);
     
+    /**
+     * The name of the parameter determining the prefic in the test job logs.
+     */
+    private String PREFIX = "prefixForLogRecords";
+    
     private final boolean debug = false;
     
 
@@ -86,7 +93,6 @@ public class ParallelRunnerTest
     	protected int wallTime = 0;
     	protected int delay = 500;
     	protected int period = 490;
-    	protected String logPathName = "noLogName";
     	protected Date date = new Date();
     	protected SimpleDateFormat df = 
     			new SimpleDateFormat(" HH:mm:ss.SSS ");
@@ -99,10 +105,11 @@ public class ParallelRunnerTest
     	public TestJob(String logPathName, int wallTime)
     	{
     		super();
-    		this.logPathName = logPathName;
+    		stdout = new File(logPathName);
     		this.wallTime = wallTime;
     		setParallelizable(true);
     		setNumberOfThreads(1);
+    		setParameter(PREFIX, "");
     	}
     	
     	/**
@@ -114,9 +121,7 @@ public class ParallelRunnerTest
     	 */
     	public TestJob(String logPathName, int wallTime, int delay, int period)
     	{
-    		super();
-    		this.logPathName = logPathName;
-    		this.wallTime = wallTime;
+    		this(logPathName, wallTime);
     		this.delay = delay;
     		this.period = period;
     		setParallelizable(true);
@@ -130,15 +135,17 @@ public class ParallelRunnerTest
     		{
 	    		date = new Date();
 	    		System.out.println("RUNNING TestJobLog: "+df.format(date));
-	    		System.out.println("Pathname: "+logPathName);
+	    		System.out.println("Pathname: "+stdout);
     		}
     		
-    		// The dummy command will just ping every half second
+    		// The dummy command will just ping every N-milliseconds
     		ScheduledThreadPoolExecutor stpe = 
     				new ScheduledThreadPoolExecutor(1);
     		stpe.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
     		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-    		stpe.scheduleAtFixedRate( new Task(), delay, period,
+    		Task tsk = new Task();
+    		tsk.prefix = getParameter(PREFIX).getValueAsString();
+    		stpe.scheduleAtFixedRate(tsk, delay, period,
     				TimeUnit.MILLISECONDS);
     		
     		CountDownLatch cdl = new CountDownLatch(1);
@@ -158,11 +165,15 @@ public class ParallelRunnerTest
     	
     	private class Task implements Runnable
     	{
+    		public String prefix = "";
+    		
 			@Override
 			public void run() 
 			{
 				i++;
-				IOtools.writeTXTAppend(logPathName, "Iteration "+i, true);
+				IOtools.writeTXTAppend(stdout.getAbsolutePath(), 
+						prefix + "Iteration " + i, 
+						true);
 			}
     	}
     }
@@ -368,8 +379,96 @@ public class ParallelRunnerTest
         
         master.run();
         
-        int iPingFiles = FileUtils.find(tempDir, baseName).size();
+        int iPingFiles = FileUtils.find(tempDir, baseName, false).size();
         assertEquals(2, iPingFiles, "Number of initiated TestJobs");
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /*
+     * Here we test the request to redo (re-submit) the parallel batch upon
+     * force-terminating all of it. This is the scenario where a monitoring
+     * job detects a situation that an redo-type of action.
+     */
+    @Test
+    public void testRedoUponNotification() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	String baseName ="testjob.log";
+        String roothName = tempDir.getAbsolutePath() + SEP + baseName;
+        
+        //TODO-gg del
+        System.out.println("WDIR: "+tempDir.getAbsolutePath());
+        
+        // A "long-lasting" job that will be evaluated
+        String logOnProductionJob = roothName+"_production";
+        TestJob productionJob = new TestJob(logOnProductionJob,5,0,240);
+        productionJob.setUserDir(tempDir);
+        
+        // Conditional rerun 1
+        ICircumstance c = new MatchText("Iteration 4", 
+        		InfoChannelType.LOGFEED);
+        Action act = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
+        String newPrefix = "RESTART-";
+        act.addJobEditingTask(PREFIX, TargetType.PARAMETER, newPrefix);
+        Situation sit1 = new Situation("SitTyp", "Sit-ONE", 
+        		new ArrayList<ICircumstance>(Arrays.asList(c)),act);
+        
+        // Conditional rerun 2
+        ICircumstance c2 = new MatchText("RESTART-Iteration 10", 
+        		InfoChannelType.LOGFEED);
+        Action act2 = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
+        newPrefix = "LAST-";
+        act2.addJobEditingTask(PREFIX, TargetType.PARAMETER, newPrefix);
+        Situation sit2 = new Situation("SitTyp", "Sit-TWO", 
+        		new ArrayList<ICircumstance>(Arrays.asList(c2)),act2);
+        
+        // Conditional stop all, i.e., end before reaching walltime.
+        ICircumstance c3 = new MatchText("LAST-Iteration 15", 
+        		InfoChannelType.LOGFEED);
+        Action act3 = new Action(ActionType.STOP, ActionObject.PARALLELJOB);
+        Situation sit3 = new Situation("SitTyp", "Sit-THREE",
+        		new ArrayList<ICircumstance>(Arrays.asList(c3)),act3);
+        
+        SituationBase sitsDB = new SituationBase();
+        sitsDB.addSituation(sit3);
+        sitsDB.addSituation(sit2);
+        sitsDB.addSituation(sit1);
+        InfoChannelBase icDB = new InfoChannelBase();
+        icDB.addChannel(new FileAsSource(logOnProductionJob, 
+        		InfoChannelType.LOGFEED));
+        
+        // Make the job that will monitor the ongoing job and trigger an action
+        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
+        		750, 500);
+        //monitoringJob.setParameter(ParameterConstants.VERBOSITY, "1");
+        
+        // The main job
+        Job main = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "10");
+        //main.setParameter(ParameterConstants.VERBOSITY, "3");
+        main.addStep(productionJob);
+        main.addStep(monitoringJob);
+        
+        // Other 'whatever' jobs (i.e., the siblings) that will be killed too
+        // and restarted too
+        for (int i=1; i<5; i++) 
+        {
+        	TestJob j = new TestJob(roothName+i,3,0,200);
+        	j.setUserDir(tempDir);
+        	main.addStep(j);
+        }
+        
+        assertEquals(6,main.getNumberOfSteps(), "Number of parallel jobs");
+        
+        main.run();
+        
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.1*", true).size(), 
+        		"Number of folders for production job");
+        assertEquals(3, FileUtils.find(tempDir, "testjob.log_production").size(), 
+        		"Number of files for production job");
+        assertEquals(2, FileUtils.find(tempDir, "*_1", true).size(), 
+        		"Number of folders from first run");
     }
     
 //-----------------------------------------------------------------------------
@@ -402,7 +501,7 @@ public class ParallelRunnerTest
         
         master.run();
 
-        int iPingFiles = FileUtils.find(tempDir, baseName).size();
+        int iPingFiles = FileUtils.find(tempDir, baseName, false).size();
         assertEquals(3,iPingFiles,"Number of initiated TestJobs");
         
         //TODO add more checking. This will be made available once we'll
@@ -466,8 +565,8 @@ public class ParallelRunnerTest
             t.printStackTrace();
             assertFalse(true, "Unable to work with tmp files.");
         }
-    }
-
+    }  
+    
 //------------------------------------------------------------------------------
 
 }

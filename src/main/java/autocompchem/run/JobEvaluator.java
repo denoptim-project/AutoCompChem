@@ -108,10 +108,16 @@ public class JobEvaluator extends Worker
 	public static final String SITUATIONOUTKEY = "PerceivedSituation";
 	
 	/**
-	 * The string used to identify the reaction to the perceived situation the
-	 * exposed job output data structure.
+	 * The string used to identify the reaction to the perceived situation in 
+	 * the exposed job output data structure.
 	 */
 	public static final String REACTIONTOSITUATION = "ReactionToSituation";
+	
+	/**
+	 * The string used to identify the details of the job being evaluated in the
+	 * exposed job output data structure.
+	 */
+	public static final String EVALUATEDJOB = "evaluatedJob";
 	
     /**
      * Situation base: list of known situations/concepts
@@ -460,29 +466,13 @@ public class JobEvaluator extends Worker
 			
 			if (s.hasReaction())
 			{
+				//TODO-gg this is probably not needed
 				Action reaction = s.getReaction();
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
 						NamedDataType.ACTION, reaction));
 				
-				/*
-				 TODO-gg delete
-				if (jobBeingEvaluated!=null && jobBeingEvaluated.getParent()==null)
-				{
-					// curting actions can only operate on the job, not
-					// on the mater job
-					 
-					this cannot work if the job has no steps!!!
-					Job failingStep = jobBeingEvaluated.getStep(lastJobStepId);
-							
-					//TODO-gg: This should be done where?
-					// create additional steps
-					
-					// remove previous steps
-					
-					// report new job details/input
-				
-				}
-				*/
+				exposeOutputData(new NamedData(EVALUATEDJOB,
+						NamedDataType.JOB, jobBeingEvaluated));
 			}
 		}
 	}

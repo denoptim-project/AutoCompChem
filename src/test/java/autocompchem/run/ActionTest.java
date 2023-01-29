@@ -47,34 +47,12 @@ public class ActionTest
     {
     	
     	String str = ActionConstants.TYPEKEY+SEP+" "+ActionType.REDO+NL
-    			+ ActionConstants.OBJECTKEY+SEP+" "+ActionObject.PREVIOUSJOB+NL
-    			+ ActionConstants.STARTMULTILINE+ActionConstants.DETAILSKEY+SEP
-    				+ ActionConstants.STARTMULTILINE+"KEEP"+SEP+" optA"+NL
-    				+"optB"+NL+ActionConstants.ENDMULTILINE+NL
-    				+ ActionConstants.STARTMULTILINE+"CHANGE"+SEP+" optD 123"+NL
-    				+"optE 456"+NL+"optF ABC"+ActionConstants.ENDMULTILINE+NL
-    			+ActionConstants.ENDMULTILINE;
+    			+ ActionConstants.OBJECTKEY+SEP+" "+ActionObject.PREVIOUSJOB+NL;
     	
     	Action a = new Action(str);
     	
     	assertEquals(ActionType.REDO,a.getType(),"ActionType");
     	assertEquals(ActionObject.PREVIOUSJOB,a.getObject(),"ActionObject");
-    	assertNotNull(a.getDetail("CHANGE"),"Detail exists: Change");
-    	assertTrue(a.getDetail("CHANGE").contains("optD 123"),
-    			"Detail content: Change-1");
-    	assertTrue(a.getDetail("CHANGE").contains("optF ABC"),
-    			"Detail content: Change-2");
-    	assertEquals(3,a.getDetail("CHANGE").split(NL).length,
-    			"Detail content: Change-3");
-
-    	assertNotNull(a.getDetail("KEEP"),"Detail exists: Keep");
-    	assertTrue(a.getDetail("KEEP").contains("optA"),
-    			"Detail content: Keep-1");
-    	assertTrue(a.getDetail("KEEP").contains("optB"),
-    			"Detail content: Keep-2");
-    	assertEquals(2,a.getDetail("KEEP").split(NL).length,
-    			"Detail content: Keep-3");
-    	
     }
     
 //------------------------------------------------------------------------------

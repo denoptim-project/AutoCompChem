@@ -82,7 +82,7 @@ See {@Link JobTest} for a possible solution.
 */
 
             Job job = new ShellJob(shellFlvr,script.getAbsolutePath(),"");
-            job.setUserDir(tempDir);
+            job.setUserDirAndStdFiles(tempDir);
             job.setRedirectOutErr(true);
             job.run();
             

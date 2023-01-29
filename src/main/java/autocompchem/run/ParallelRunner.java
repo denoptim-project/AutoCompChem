@@ -1,5 +1,8 @@
 package autocompchem.run;
 
+import java.io.File;
+import java.io.IOException;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -20,8 +23,10 @@ package autocompchem.run;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -31,8 +36,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.io.Files;
+
 import autocompchem.datacollections.NamedData;
+import autocompchem.files.FileUtils;
 import autocompchem.run.Action.ActionObject;
+import autocompchem.run.Action.ActionType;
 
 
 /**
@@ -44,7 +53,7 @@ import autocompchem.run.Action.ActionObject;
 public class ParallelRunner
 {
 	/**
-	 * The job that requred the serives of this class
+	 * The job that required the services of this class.
 	 */
 	private final Job master;
 	
@@ -53,27 +62,27 @@ public class ParallelRunner
     /**
      * List of jobs to run
      */
-    final List<Job> todoJobs;
+    private List<Job> todoJobs;
 
     /**
-     * List of references to the submitted subtasks
+     * List of references to the submitted subtasks.
      */
-    final List<Future<?>> futureJobs;
+    private List<Future<?>> futureJobs;
     
     /**
      * List of references to the submitted subjobs.
      */
-    final List<Job> submittedJobs;
+    private List<Job> submittedJobs;
     
     /**
      * List of references to the submitted monitoting subtasks
      */
-    final List<Future<?>> futureMonitoringJobs;
+    private List<Future<?>> futureMonitoringJobs;
     
     /**
      * List of references to the submitted monitoting subjobs.
      */
-    final List<Job> submittedMonitoringJobs;
+    private List<Job> submittedMonitoringJobs;
     
     /**
      * Index of notifications. Used to avoid concurrent notifications by
@@ -84,12 +93,12 @@ public class ParallelRunner
     /**
      * Asynchronous execution service with a queue
      */
-    final ScheduledThreadPoolExecutor tpExecutor;
+    private ScheduledThreadPoolExecutor tpExecutor;
     
     /**
      * Asynchronous execution service with a queue. Dedicated to monitoring.
      */
-    final ScheduledThreadPoolExecutor stpeMonitoring;
+    private ScheduledThreadPoolExecutor stpeMonitoring;
 
     /**
      * Number of threads
@@ -121,6 +130,27 @@ public class ParallelRunner
 	 * The time when we started running
 	 */
 	private long startTime;
+	
+	/**
+	 * Flag reporting the presence of any non-handled request to run the
+	 * parallel batch.
+	 */
+	private boolean requestedToStart = true;
+	
+    /**
+     * Restart counter. counts how many times the parallel batch was restarted.
+     */
+    private final AtomicInteger restartCounter = new AtomicInteger();
+	
+	/**
+	 * The action requested by any of the jobs we are asked to run.
+	 */
+	private Action reaction;
+	
+	/**
+	 * The job that triggered the request for action
+	 */
+	private Job trigger;
 	
 	/**
 	 * Lock for synchronisation of main thread with notifications from jobs
@@ -170,6 +200,23 @@ public class ParallelRunner
         this.todoJobs = todoJobs;
         this.nThreads = Math.min(poolSize,todoJobs.size());
         
+        initializeExecutor();
+
+        // Add a shutdown mechanism to kill the master thread and its subjobs
+        // including planned ones.
+        Runtime.getRuntime().addShutdownHook(new ShutDownHook());
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * WARNING!
+     * This initialization has to be done after defining the list of jobs to do,
+     * i.e., after assigning a value to <code>todoJobs</code>.
+     */
+    private void initializeExecutor()
+    {
+    	notificationId.set(0);
         futureJobs = new ArrayList<>();
         submittedJobs = new ArrayList<Job>();
         futureMonitoringJobs = new ArrayList<>();
@@ -190,10 +237,6 @@ public class ParallelRunner
         
         tpExecutor = new ScheduledThreadPoolExecutor(nThreads, threadFactory, 
          	new RejectedExecHandlerImpl());
-
-        // Add a shutdown mechanism to kill the master thread and its subjobs
-        // including planned ones.
-        Runtime.getRuntime().addShutdownHook(new ShutDownHook());
     }
     
 //------------------------------------------------------------------------------
@@ -445,6 +488,32 @@ public class ParallelRunner
 
     public void start()
     {
+        startTime = System.currentTimeMillis();
+    	requestedToStart = true;
+    	while (requestedToStart && !weRunOutOfTime())
+    	{
+    		mainIteration();
+    		
+    		if (reaction!=null)
+    			applyReaction();
+    	}
+    }
+  
+//------------------------------------------------------------------------------
+
+    /**
+     * Runs a parallel run iteration, i.e., an attempt to complete all 
+     * the jobs to run in parallel.
+     * This assumes that the executor has been initialized and is ready to go.
+     */
+
+    private void mainIteration()
+    {
+    	restartCounter.getAndIncrement();
+    	
+    	// Mark request to start as taken care of
+    	requestedToStart = false;
+    	
     	// Initialise empty threads that will be used for the sub-jobs
         tpExecutor.prestartAllCoreThreads();
         if (stpeMonitoring!=null)
@@ -452,9 +521,6 @@ public class ParallelRunner
         	stpeMonitoring.prestartAllCoreThreads();
         }
         
-        startTime = System.currentTimeMillis();
-        boolean withinTime = true;
-
         // Submit all sub-jobs in once. Those that do not fit because of all
         // thread pool is filled-up are dealt with by RejectedExecHandlerImp
         Iterator<Job> it = todoJobs.iterator();
@@ -488,6 +554,7 @@ public class ParallelRunner
         
         //Wait for completion
         int ii = 0;
+        boolean withinTime = true;
         while (withinTime)
         {
         	synchronized (lock) 
@@ -510,7 +577,8 @@ public class ParallelRunner
 	                    		+ " sub-jobs are completed. Parallelized "
 	                    		+ "jobs done.");
 	                }
-	            	shutDownExecutionService();
+	            	if (!requestedToStart)
+	            		shutDownExecutionService();
 	                break;
 	            } else {
 	            	if (verbosity > 0)
@@ -525,7 +593,7 @@ public class ParallelRunner
 	            }
 	
 	            // Check wall time
-	            if(checkAgainstWalltime(startTime))
+	            if(weRunOutOfTime())
 	            {
 	            	if (verbosity > 0)
 	            	{
@@ -567,33 +635,47 @@ public class ParallelRunner
 		{
 			if (notificationId.getAndIncrement() == 0)
 			{
+				//This is the very first notification: we take it into account
+				
+				reaction = action;
+				trigger = sender;
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.ACTIONREQUESTBYSUBJOB, action));
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.SUBJOBREQUESTINGACTION, sender));
 				
-				//This is the very first notification: we take it into account
 				if (action.getObject().equals(ActionObject.PARALLELJOB))
 				{
 					switch (action.getType())
     				{
-						case STOP:
-						case REDO:
-						case REDOAFTER:
-							if (verbosity > 0)
-							{
-								System.out.println("KILLING ALL sub-jobs upon "
-										+ "job's request.");
-							}
-							synchronized (lock)
-			            	{
-								cancellAllRunningThreadsAndShutDown();
-			            		lock.notify();
-			            	}
-							break;
-							
-						default:
-							break;
+					case REDO:
+						if (verbosity > 0)
+						{
+							System.out.println("KILLING ALL sub-jobs upon "
+									+ "job's request to re-run parallel batch.");
+						}
+						synchronized (lock)
+		            	{
+							cancellAllRunningThreadsAndShutDown();
+							requestedToStart = true;
+		            		lock.notify();
+		            	}
+						// Refresh status of runner to prepare for new start
+						initializeExecutor();
+						break;
+						
+					case STOP:
+						if (verbosity > 0)
+						{
+							System.out.println("KILLING ALL sub-jobs upon "
+									+ "job's request.");
+						}
+						synchronized (lock)
+		            	{
+							cancellAllRunningThreadsAndShutDown();
+		            		lock.notify();
+		            	}
+						break;
     				}
 				}
 			} else {
@@ -615,12 +697,11 @@ public class ParallelRunner
 
    /**
     * Stop all if the maximum run time has been reached.
-    * @param startTime the initial time in milliseconds single EPOCH.
     * @return <code>true</code> if the wall time has been reached and we are 
     * killing sub-jobs.
     */
 
-    private boolean checkAgainstWalltime(long startTime)
+    private boolean weRunOutOfTime()
     {
         boolean res = false;
         long endTime = System.currentTimeMillis();
@@ -638,6 +719,82 @@ public class ParallelRunner
         return res;
     }
 
+//------------------------------------------------------------------------------
+
+    /**
+     * The job editing tasks defined in the action are applied to the job which
+     * was evaluated.
+     */
+    private void applyReaction()
+    {
+    	// No need to archive or edit if the reaction is just to stop.
+    	if (reaction.getType()==ActionType.STOP)
+    		return;
+    	
+    	// Create copy of previous data from jobs
+    	for (Job j : todoJobs)
+    	{
+    		if (!j.isStarted() || j instanceof MonitoringJob)
+    			continue;
+    		
+    		String path = ".";
+    		if (j.customUserDir!=null)
+    			path = j.customUserDir.getAbsolutePath();
+        	File archiveFolder = new File(path + File.separator 
+        			+ "Job_" + j.getId() + "_" + restartCounter.get());
+            if (!archiveFolder.mkdirs())
+            {
+                Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
+                		+ archiveFolder+ "' for archiving partial results of "
+                		+ "job.", -1);
+            }
+            String pathToArchive = archiveFolder.getAbsolutePath() 
+            		+ File.separator;
+            
+            Set<File> filesToArchive = new HashSet<File>();
+            if (j.stdout!=null)
+            	filesToArchive.add(j.stdout);
+            if (j.stderr!=null)
+            	filesToArchive.add(j.stderr);
+            //TODO-gg add some from rules defined in Action
+            
+            Set<File> filesToKeep = new HashSet<File>();
+            //TODO-gg add some from rules defined in Action
+            
+            for (File file : filesToArchive)
+            {
+            	File newFile = new File(pathToArchive + file.getName());
+            	try {
+					Files.copy(file, newFile);
+				} catch (IOException e) {
+					System.out.println("WARNING: cannot copy file '" + file 
+							+ "' to '" + newFile + "'. " + e.getMessage());
+				}
+            	if (!filesToKeep.contains(file))
+            		file.delete();
+            }
+    	}
+    	
+    	Job focusJob = (Job) trigger.exposedOutput.getNamedData(
+    			JobEvaluator.EVALUATEDJOB).getValue();
+    	
+    	for (JobEditTask jet : reaction.jobEditTasks)
+    	{
+    		jet.apply(focusJob);
+    	}
+    	
+    	//NB: any data that may be needed to restart of fix things should be taken
+    	// before resetting the jobs.
+    	
+    	// Reset status of all jobs to re-run them.
+    	for (Job job : todoJobs)
+    	{
+    		job.resetRunStatus();
+    	}
+    	reaction = null;
+    	trigger = null;
+    }
+    
 //------------------------------------------------------------------------------
 
 }

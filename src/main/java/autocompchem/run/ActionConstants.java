@@ -55,9 +55,5 @@ public class ActionConstants
      */
     public final static String OBJECTKEY = "ACTIONOBJ";
     
-    /**
-     * Label of line containing the action details
-     */
-    public final static String DETAILSKEY = "ACTIONDETAILS";
 
 }

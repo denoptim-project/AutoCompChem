@@ -218,7 +218,7 @@ public class ShellJob extends Job
     		}
     		System.out.println("WARNING: setting work directory to '"
     				+ workDir + "'.");
-    		this.setUserDir(workDir);
+    		this.setUserDirAndStdFiles(workDir);
     	}
     	
     	if (params.contains(ShellJobConstants.COPYTOWORKDIR))

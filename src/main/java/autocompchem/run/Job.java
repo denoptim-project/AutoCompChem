@@ -136,12 +136,12 @@ public class Job implements Runnable
     private JobNotificationListener observer;
 
     /**
-     * Flag signalling that this job has been interrupted
+     * Flag signaling that this job has been interrupted
      */
     protected boolean isInterrupted = false;
     
     /**
-     * Flag signalling that this job has thrown an exception
+     * Flag signaling that this job has thrown an exception
      */
     protected boolean hasException = false;
 
@@ -149,14 +149,19 @@ public class Job implements Runnable
      * Exception thrown by this job.
      */
     protected Throwable thrownExc;
+    
+    /**
+     * Flag signaling that this job had been started.
+     */
+    private boolean started = false;
 
     /**
-     * Flag signalling the completion of this job
+     * Flag signaling the completion of this job
      */
     private boolean completed = false;
 
     /**
-     * Flag signalling an action intended to kill this job
+     * Flag signaling an action intended to kill this job
      */
     protected boolean jobIsBeingKilled = false;
     
@@ -462,6 +467,18 @@ public class Job implements Runnable
     public void setUserDir(File customUserDir)
     {
     	this.customUserDir = customUserDir;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the directory from which the job should be executed and assigns
+     * values to STDERR and STDOUT accordingly.
+     * @param customUserDir the new directory
+     */
+    public void setUserDirAndStdFiles(File customUserDir)
+    {
+    	setUserDir(customUserDir);
     	updateStdoutStdErr();
     }
     
@@ -729,6 +746,8 @@ public class Job implements Runnable
 
     public final void run()
     {
+    	started = true;
+    	
     	//TODO use logger
     	if (verbosity > 0)
     	{
@@ -964,12 +983,40 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * @return <code>true</code> if the job has been completed
+     * @return <code>true</code> if the job has been completed.
      */
 
     public boolean isCompleted()
     {
         return completed;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return <code>true</code> if the job has been started.
+     */
+
+    public boolean isStarted()
+    {
+        return started;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * This method resets any information about the running of this job so that
+     * it looks as if it had never run.
+     */
+    public void resetRunStatus()
+    {
+    	started = false;
+    	completed = false;
+    	jobIsBeingKilled = false;
+    	isInterrupted = false;
+    	hasException = false;
+    	thrownExc = null;
+    	exposedOutput.clear();
     }
 
 //------------------------------------------------------------------------------

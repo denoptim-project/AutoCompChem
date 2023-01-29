@@ -118,11 +118,15 @@ public class NamedDataCollector implements Cloneable
         if (!this.contains(ref))
         {
         	if (tolerant)
+        	{
         		return null;
-        	else
+        	} else {
+        		Exception e = new Exception("Key not found");
+        		e.printStackTrace();
         		Terminator.withMsgAndStatus("ERROR! Key '" + ref 
         				+ "' not found in " + this.getClass().getSimpleName(),
         				-1);
+        	}
         }
         return allData.get(ref);
     }
@@ -285,6 +289,17 @@ public class NamedDataCollector implements Cloneable
      */
   	public void removeData(String ref) {
   		allData.remove(ref);
+  	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Removes all the data from this collector. This collector will be empty
+     * after calling this method.
+     */
+  	public void clear() 
+  	{
+  		allData.clear();
   	}
 
 //------------------------------------------------------------------------------

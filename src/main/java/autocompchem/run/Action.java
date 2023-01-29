@@ -25,53 +25,123 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import autocompchem.run.JobEditTask.TargetType;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.WorkerConstants;
 
 /**
- * Action to be taken in a job workflow.
+ * This class defines actions altering a workflow, i.e., a
+ * chain of jobs. Actions are events triggered upon  
+ * perception of a situation when evaluating a job. 
+ * Since the evaluation itself is an {@link EvaluationJob},
+ * there are two jobs an action is related to: the <i>evaluating job</i> (i.e., 
+ * an {@link EvaluationJob}), and the <i>evaluated job</i>, a.k.a the 
+ * <i>focus job</i>.
+ * The action uses the <i>focus job</i> as a reference point 
+ * in the workflow on which to operate, so if the <i>focus job</i> is step 
+ * <i>i</i> in the workflow, the action can be instructed to operate on step
+ * <i>i+/-N</i>.
  * 
- * Naming conventions for job relations in  workflow:
- * <ul>
- *   <li>EVALJOB: is the job evaluation job itself.</li>
- *   <li>FOCUS: is the job that is being or has been evaluated.</li>
- *   <li>MASTER: is the job of which the FOCUS job is a sub job.</li>
- *   <li>PREVIUS (or PREV): is the job that was done before starting the FOCUS job.</li>
- *   <li>SUBSEQUENT (or SUBSQ): is the job that comes sequentially after the FOCUS job.</li>
- *   <li>SUBJOB (or SUBJ): is any job of which the FOCUS job is the master job.</li>
- *   <li>PARALLEL (or PARJOB): is any job that was started in parallel to the FOCUS job.</li>
- * </ul>
- *
  * @author Marco Foscato
  */
+
+
+//TODO-gg for the moment, action's objects can only in the workflow of the focus
+// job, not in that of the evaluating job.
+//TODO-gg Should we add the possibility to have the evaluating job (and job in
+// its workflow, i.e., +/-N in the evaluating job's workflow or the parent of 
+// the evaluating job) as action's object? 
+// This could allow to repeat (and modify) a sequence of jobs
+// by adding a nest of new steps while flagging the original 
+// "sequence of next steps"
+// as to-be-skipped.
 
 public class Action implements Cloneable
 {
     /**
-     * Type of action
+     * The type of this action.
      */
-    private ActionType type = ActionType.GOON;
+    private ActionType type = ActionType.SKIP;
     
     /**
-     * Thing on which we do the action
+     * Job on which we do the action.
      */
     private ActionObject object = ActionObject.FOCUSJOB;
     
+    
+    //TODO-gg these could be subclasses!
     /**
-     * Known actions
+     * Action types define the main feature of the action.
      */
-    public enum ActionType {REDO, REDOAFTER, GOON, STOP, WAIT};
+    public enum ActionType {
+    	/**
+    	 * Requests to re-run the action's object. This may or may not require:
+    	 * <ul>
+    	 * <li>alteration of the action's object,</li>
+    	 * <li>addition of steps before the action's object,</li>
+    	 * <li>addition of steps after the action's object.</li>
+    	 * </ul>
+    	 */
+    	REDO, 
+    	
+    	/**
+    	 * Requests to skip the action's object and move to the next step, 
+    	 * if any.
+    	 */
+    	SKIP, 
+    	
+    	/**
+    	 * Requests to stop the action's object. This request is passed to a
+    	 * manager of the action's object, if any. 
+    	 */
+    	STOP
+    
+    };
     
     /**
-     * Possible Action objects (i.e., the thing on which we do the action)
+     * Possible target of the action defined with respect to the job that has 
+     * been evaluated.
      */
-    public enum ActionObject {FOCUSJOB, MASTERJOB, PREVIOUSJOB, PARALLELJOB, 
-    	SUBSEQUENTJOB, EVALJOB};
+    public enum ActionObject {
+    	/**
+    	 * The job that has been evaluated.
+    	 */
+    	FOCUSJOB, 
     	
+    	/**
+    	 * The parent of the job that has been evaluated.
+    	 */
+    	FOCUSJOBPARENT, 
+    	
+    	/**
+    	 * The job that is step <i>i-1</i> if the job that has been evaluated 
+    	 * is step <i>i</i> in a list of jobs.
+    	 */
+    	PREVIOUSJOB, 
+    	
+    	/**
+    	 * Any job that is parallel to the job that has been evaluated.
+    	 */
+    	PARALLELJOB, 
+    	
+    	/**
+    	 * The job that is step <i>i+1</i> if the job that has been evaluated 
+    	 * is step <i>i</i> in a list of jobs.
+    	 */
+    	SUBSEQUENTJOB
+    };
+    
     /**
-     * Details pertaining this action
+     * Tasks to perform on action's object jobs
      */
-    private Map<String,String> details = new HashMap<String,String>();
+    List<JobEditTask> jobEditTasks = new ArrayList<JobEditTask>();
+    
+    /**
+     * Task to perform to archive previous data from action's object job.
+     * Here "archive" means "keep a copy so we do not overwrite previous data".
+     */
+    List<JobArchiviationTask> jobArchiviationTasks = 
+    		new ArrayList<JobArchiviationTask>();
     
     
 //------------------------------------------------------------------------------
@@ -94,24 +164,8 @@ public class Action implements Cloneable
     
     public Action(ActionType type, ActionObject object)
     {
-    	this(type, object, null);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor for an Action with given fields.
-     * @param type the type of action to perform.
-     * @param object the object on which the action is to be performed.
-     * @param details the map of details associated to this action.
-     */
-    
-    public Action(ActionType type, ActionObject object, 
-    		Map<String,String> details)
-    {
     	this.type = type;
     	this.object = object;
-    	this.details = details;
     }
 
 //------------------------------------------------------------------------------
@@ -130,7 +184,7 @@ public class Action implements Cloneable
 
     public Action(String txt) throws Exception
     {
-    	ArrayList<String> lines = new ArrayList<String>();
+    	List<String> lines = new ArrayList<String>();
     	String[] parts = txt.split(System.getProperty("line.separator"));
     	Collections.addAll(lines, parts);
     	makeFromLines(lines);
@@ -149,7 +203,7 @@ public class Action implements Cloneable
      * @throws Exception if unable to interpret text.
      */
 
-    public Action(ArrayList<String> lines) throws Exception
+    public Action(List<String> lines) throws Exception
     {
     	makeFromLines(lines);
     }
@@ -163,10 +217,10 @@ public class Action implements Cloneable
      * @throws Exception if unable to interpret text.
      */
     
-    private void makeFromLines(ArrayList<String> lines) throws Exception 
+    private void makeFromLines(List<String> lines) throws Exception 
     {
     	//If needed to parse multiple instances of the same KEY, then use
-        //ArrayList<ArrayList<String>> form = TextAnalyzer.readKeyValue(
+        //List<List<String>> form = TextAnalyzer.readKeyValue(
     	TreeMap<String,String> form = TextAnalyzer.readKeyValuePairs(
                 lines,
                 ActionConstants.SEPARATOR,
@@ -186,25 +240,22 @@ public class Action implements Cloneable
     			object = ActionObject.valueOf(form.get(key).toUpperCase());
     			break;
     			
-    		case (ActionConstants.DETAILSKEY):
-    		    List<List<String>> inFrm = TextAnalyzer.readKeyValue(
-    		    	new ArrayList<String>(Arrays.asList(
-    		    	form.get(key).split(System.getProperty("line.separator")))),
-    	                ActionConstants.SEPARATOR,
-    	                ActionConstants.COMMENTLINE,
-    	                ActionConstants.STARTMULTILINE,
-    	                ActionConstants.ENDMULTILINE);
-    		    for (List<String> arr : inFrm)
-    		    {
-    		    	details.put(arr.get(0), arr.get(1));
-    		    }
-    			break;
-    			
     		default:
     			throw new Exception("Unable to understand keyword '" + key 
     					+ "' while creation an Action.");
     		}
     	}
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Appends a task that edits a feature of the action's object job.
+     */
+    public void addJobEditingTask(String targetRef, TargetType targetType, 
+    		Object newValue)
+    {
+    	jobEditTasks.add(new JobEditTask(targetRef, targetType, newValue));
     }
     
 //------------------------------------------------------------------------------
@@ -233,30 +284,6 @@ public class Action implements Cloneable
     }
     
 //------------------------------------------------------------------------------
-
-    /**
-     * Return the details attached to this action.
-     * @return the details.
-     */
-
-    public Map<String, String> getDetails()
-    {
-        return details;
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Return a specific detail attached to this action.
-     * @return the detail or null
-     */
-
-    public String getDetail(String ref)
-    {
-        return details.get(ref);
-    }
-    
-//------------------------------------------------------------------------------
     
     /**
      * Returns a deep copy of this object
@@ -265,13 +292,7 @@ public class Action implements Cloneable
     
     public Action clone()
     {
-    	Map<String,String> newMap = new HashMap<String,String>();
-    	for (String key : details.keySet())
-    	{
-    		newMap.put(key, details.get(key).toString());
-    	}
-    	Action a = new Action(type, object, newMap);
-    	return a;
+    	return new Action(type, object);
     }
     
 //------------------------------------------------------------------------------

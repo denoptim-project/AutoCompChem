@@ -76,7 +76,7 @@ public class SituationBaseTest
 								InfoChannelType.LOGFEED),
 						new CountTextMatches("counterB", 10, 
 								InfoChannelType.OUTPUTFILE))), 
-				new Action(ActionType.GOON, ActionObject.FOCUSJOB)));
+				new Action(ActionType.SKIP, ActionObject.FOCUSJOB)));
 
 		sb.addSituation(new Situation("Sit", "B", 
 				new ArrayList<ICircumstance>(Arrays.asList(
@@ -87,7 +87,7 @@ public class SituationBaseTest
 								InfoChannelType.LOGFEED),
 						new MatchText("txtQuery3", true, 
 								InfoChannelType.ANY))), 
-				new Action(ActionType.STOP, ActionObject.MASTERJOB)));
+				new Action(ActionType.STOP, ActionObject.FOCUSJOBPARENT)));
 		
 		sb.addSituation(new Situation("Sit", "C", 
 				new ArrayList<ICircumstance>(Arrays.asList(
@@ -97,7 +97,7 @@ public class SituationBaseTest
 								InfoChannelType.ANY),
 						new MatchText("txtQuery3C", true, 
 								InfoChannelType.ANY))), 
-				new Action(ActionType.STOP, ActionObject.MASTERJOB)));
+				new Action(ActionType.STOP, ActionObject.PREVIOUSJOB)));
 		
 		return sb;
 	}
@@ -374,7 +374,7 @@ public class SituationBaseTest
 								InfoChannelType.LOGFEED),
 						new CountTextMatches("counterB", 10, 
 								InfoChannelType.OUTPUTFILE))), 
-				new Action(ActionType.GOON, ActionObject.FOCUSJOB));
+				new Action(ActionType.SKIP, ActionObject.FOCUSJOB));
 
 		Situation s2 = new Situation("Sit", "B", 
 				new ArrayList<ICircumstance>(Arrays.asList(
@@ -385,7 +385,7 @@ public class SituationBaseTest
 								InfoChannelType.LOGFEED),
 						new MatchText("txtQuery3", true, 
 								InfoChannelType.LOGFEED))), 
-				new Action(ActionType.STOP, ActionObject.MASTERJOB));
+				new Action(ActionType.STOP, ActionObject.PREVIOUSJOB));
 		
 		Situation s3 = new Situation("Sit", "C", 
 				new ArrayList<ICircumstance>(Arrays.asList(
@@ -394,7 +394,7 @@ public class SituationBaseTest
 								InfoChannelType.INPUTFILE),
 						new MatchText("txtQuery3C", true, 
 								InfoChannelType.INPUTFILE))), 
-				new Action(ActionType.STOP, ActionObject.MASTERJOB));
+				new Action(ActionType.STOP, ActionObject.PREVIOUSJOB));
 
 		sb.addSituation(s1);
 		sb.addSituation(s2);
