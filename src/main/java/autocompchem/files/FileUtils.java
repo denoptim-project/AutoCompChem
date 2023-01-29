@@ -20,6 +20,9 @@ package autocompchem.files;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import com.hp.hpl.jena.reasoner.FinderUtil;
 
 import autocompchem.run.Terminator;
 
@@ -88,9 +91,11 @@ public class FileUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Find all files in a folder tree and keep only those with a filename 
+     * Find all files in a folder tree and keep only those with a 
+     * filename 
      * containing the given string. It assumes an existing folder if given
-     * as argument.
+     * as argument. This method does not lists folders. 
+     * See {@link #find(File, String, boolean)} to include also folders.
      * @param path root folder from where the search should start
      * @param str string to be contained in the target file's name. '*' is used
      * as usual to specify the continuation of the string with any number of 
@@ -100,17 +105,19 @@ public class FileUtils
      * @return the list of files
      */
 
-    public static ArrayList<File> find(String path, String str)
+    public static List<File> find(String path, String str)
     {
-    	return find(new File(path),str);
+    	return find(new File(path), str, false);
     }
-    
-//------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------
 
     /**
-     * Find all files in a folder tree and keep only those with a filename 
+     * Find all files in a folder tree and keep only those with a 
+     * filename 
      * containing the given string. It assumes an existing folder if given
-     * as argument.
+     * as argument. This method does not list folders. 
+     * See {@link #find(File, String, boolean)} to include also folders.
      * @param root folder from where the search should start
      * @param str string to be contained in the target file's name. '*' is used
      * as usual to specify the continuation of the string with any number of 
@@ -120,7 +127,29 @@ public class FileUtils
      * @return the list of files
      */
 
-    public static ArrayList<File> find(File root, String str)
+    public static List<File> find(File root, String str)
+    {
+    	return find(root, str, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Find all files/folders in a folder tree and keep only those with a 
+     * filename 
+     * containing the given string. It assumes an existing folder if given
+     * as argument.
+     * @param root folder from where the search should start
+     * @param str string to be contained in the target file's name. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
+     * case is chosen by default: filename must contain the query string.
+     * @param countFolders <code>true</code> to count also folders.
+     * @return the list of files
+     */
+
+    public static List<File> find(File root, String str, boolean countFolders)
     {
         String originalStr = str;
         boolean starts = false;
@@ -150,18 +179,33 @@ public class FileUtils
         }
 
         //Get the list of files in it
-        ArrayList<File> ls = new ArrayList<File>(Arrays.asList(
-                                                             root.listFiles()));
+        List<File> ls = new ArrayList<File>(Arrays.asList(root.listFiles()));
 
         //Loop on files in root and collect targets
-        ArrayList<File> targets = new ArrayList<File>();
+        List<File> targets = new ArrayList<File>();
         for (File f : ls)
         {
             if (f.isDirectory())
             {
                 //recursion for folders
-                ArrayList<File> fromInnerLevel = find(f,originalStr);
+                List<File> fromInnerLevel = find(f,originalStr);
                 targets.addAll(fromInnerLevel);
+                if (countFolders)
+                {
+                    if (starts)
+                    {
+                        if (f.getName().startsWith(str))
+                            targets.add(f);
+                    } else if (ends) 
+                    {
+                        if (f.getName().endsWith(str))
+                            targets.add(f);
+                    } else if (mid)
+                    {
+                        if (f.getName().contains(str))
+                            targets.add(f);
+                    }
+                }
             } else {
                 if (starts)
                 {

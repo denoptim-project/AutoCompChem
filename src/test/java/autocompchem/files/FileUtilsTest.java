@@ -18,10 +18,14 @@ package autocompchem.files;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import autocompchem.io.IOtools;
 
 
 /**
@@ -33,6 +37,43 @@ import org.junit.jupiter.api.Test;
 public class FileUtilsTest 
 {
 	private static String fileSeparator = System.getProperty("file.separator");
+
+    @TempDir 
+    protected File tempDir;
+
+//------------------------------------------------------------------------------
+
+	@Test
+    public void testFind() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+		String basePath = tempDir.getAbsolutePath() + fileSeparator ;
+    	for (int i=0; i<3; i++)
+    	{
+    		IOtools.writeTXTAppend(basePath + "ttt"+i+".log", "text", false);
+    		IOtools.writeTXTAppend(basePath + i, "text", false);
+    	}
+    	for (int i=0; i<3; i++)
+    	{
+    		assertEquals(2, FileUtils.find(tempDir, i+"").size());
+    	}
+    	assertEquals(3, FileUtils.find(tempDir, "*.log").size());
+    	assertEquals(3, FileUtils.find(tempDir, "ttt*").size());
+		
+    	for (int i=0; i<3; i++)
+    	{
+    		File folder = new File(basePath + "tt" + i);
+    		folder.mkdir();
+    		IOtools.writeTXTAppend(folder.getAbsolutePath() + fileSeparator 
+    				+ "ttt"+i+".in", "text", false);
+    	}
+    	assertEquals(9, FileUtils.find(tempDir, "tt*", true).size());
+    	assertEquals(6, FileUtils.find(tempDir, "tt*", false).size());
+    	assertEquals(6, FileUtils.find(tempDir, "ttt*").size());
+    	assertEquals(3, FileUtils.find(tempDir, "*.log").size());
+    }
+	
+//------------------------------------------------------------------------------
 	
     @Test
     public void testGetExtension() throws Exception
@@ -49,6 +90,8 @@ public class FileUtilsTest
         assertEquals(null,FileUtils.getFileExtension(f),
         		"Extention of filename with no dot");
     }
+    
+//------------------------------------------------------------------------------
     
     @Test
     public void testGetPathToPatent() throws Exception
