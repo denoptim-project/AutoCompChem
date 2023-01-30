@@ -397,9 +397,6 @@ public class ParallelRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        //TODO-gg del
-        System.out.println("WDIR: "+tempDir.getAbsolutePath());
-        
         // A "long-lasting" job that will be evaluated
         String logOnProductionJob = roothName+"_production";
         TestJob productionJob = new TestJob(logOnProductionJob,5,0,240);

@@ -19,14 +19,21 @@ package autocompchem.run;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.chemsoftware.AnalysisTask;
+import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedData;
@@ -50,6 +57,7 @@ import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 
@@ -67,8 +75,7 @@ public class JobEvaluator extends Worker
 	 */
 	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT,
-							TaskID.CUREGAUSSIANJOB
+					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
 	//TODO-gg add these 
 					/*
 					TaskID.EVALUATENWCHEMOUTPUT,
@@ -77,7 +84,12 @@ public class JobEvaluator extends Worker
 					TaskID.EVALUATESPARTANOUTPUT,
 					*/
 							)));
-	// WARNING: what you add 
+	/**
+	 * Tasks about evaluating jobs of computational chemistry software.
+	 */
+	public static final Set<TaskID> CURECOMPCHEMJOBTASKS =
+			Collections.unmodifiableSet(new HashSet<TaskID>(
+					Arrays.asList(TaskID.CUREGAUSSIANJOB)));
 	
 	/**
 	 * Declaration of what this worker is capable of.
@@ -85,6 +97,7 @@ public class JobEvaluator extends Worker
 	public static final Set<TaskID> capabilities;
 	static {
 		Set<TaskID> tmpSet = new HashSet<TaskID>(EVALCOMPCHEMJOBTASKS);
+		tmpSet.addAll(CURECOMPCHEMJOBTASKS);
 		tmpSet.add(TaskID.EVALUATEJOB);
 		//TODO-gg tmpSet.add(TaskID.CUREJOB);
 		capabilities = Collections.unmodifiableSet(tmpSet);
@@ -427,7 +440,9 @@ public class JobEvaluator extends Worker
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setVerbosity(verbosity-1);
 		
-		if (EVALCOMPCHEMJOBTASKS.contains(task) || jobBeingEvaluated instanceof CompChemJob)
+		if (EVALCOMPCHEMJOBTASKS.contains(task) 
+				|| CURECOMPCHEMJOBTASKS.contains(task)
+				|| jobBeingEvaluated instanceof CompChemJob)
 		{
 			analyzeCompChemJobResults(p);
 		}
@@ -457,6 +472,9 @@ public class JobEvaluator extends Worker
 			e.printStackTrace();
 		}
 		
+		exposeOutputData(new NamedData(NUMSTEPSKEY,
+				NamedDataType.INTEGER, lastJobStepId));
+		
 		// Expose conclusions of the evaluation
 		if (p.isAware())
 		{
@@ -466,13 +484,54 @@ public class JobEvaluator extends Worker
 			
 			if (s.hasReaction())
 			{
-				//TODO-gg this is probably not needed
-				Action reaction = s.getReaction();
+				// NB: this triggers notification of a request of action on the
+				// observer (if any observer is present)
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
-						NamedDataType.ACTION, reaction));
-				
+						NamedDataType.ACTION, s.getReaction()));
+				// ...and these are used when performing the action
 				exposeOutputData(new NamedData(EVALUATEDJOB,
 						NamedDataType.JOB, jobBeingEvaluated));
+				
+				// In case this is a stand-alone CURE-job we do the action here,
+				// but this is has limited capability: it cannot restart the job.
+				if (myJob.getObserver()==null 
+						&& CURECOMPCHEMJOBTASKS.contains(task))
+				{
+					ActionApplier.performAction(s.getReaction(), myJob, 
+							Arrays.asList(jobBeingEvaluated), 1);
+					
+					// Get geometry/ies for restart
+					List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
+							s.getReaction(), myJob);
+					
+					
+					// Prepare generation of new input file
+					ParameterStorage makeInputPars = new ParameterStorage();
+					TaskID task = TaskID.UNSET;
+					switch (jobBeingEvaluated.getAppID())
+					{
+					//TODO-gg add apps
+					default:
+						task = TaskID.PREPAREINPUTGAUSSIAN;
+						break;
+					
+					}
+					makeInputPars.setParameter(WorkerConstants.PARTASK, task);
+					makeInputPars.setParameter(
+							ChemSoftConstants.PARJOBDETAILSOBJ, 
+							NamedDataType.JOB, jobBeingEvaluated);
+					makeInputPars.setParameter(ChemSoftConstants.PARGEOM, 
+							NamedDataType.UNDEFINED, iacs);
+					if (hasParameter(ChemSoftConstants.PAROUTFILE))
+					{
+						makeInputPars.setParameter(ChemSoftConstants.PAROUTFILE,
+							params.getParameter(ChemSoftConstants.PAROUTFILE)
+								.getValueAsString());
+					}
+					ChemSoftInputWriter worker = (ChemSoftInputWriter) 
+							WorkerFactory.createWorker(makeInputPars, myJob);
+					worker.performTask();
+				}
 			}
 		}
 	}
@@ -489,13 +548,18 @@ public class JobEvaluator extends Worker
 	private void analyzeCompChemJobResults(Perceptron p)
 	{
 		ParameterStorage analysisParams = new ParameterStorage();
-		if (EVALCOMPCHEMJOBTASKS.contains(task))
+		if (EVALCOMPCHEMJOBTASKS.contains(task)
+				|| CURECOMPCHEMJOBTASKS.contains(task))
 		{
+			//TODO-gg this conversion should be a functionality of the TaskID
+			// coupled with appId
+			
 			TaskID analysisTask = TaskID.UNSET;
 			switch (task) {
 
 			case CUREGAUSSIANJOB:
 			case EVALUATEGAUSSIANOUTPUT:
+				
 				analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
 				break;
 /*
@@ -545,9 +609,14 @@ public class JobEvaluator extends Worker
 			analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
 					((FileAsSource)logChannels.get(0)).getPathName());
 			p.setInfoChannelAsRead(logChannels.get(0));
-			
+			/*
+			List<AnalysisTask> tasks = new ArrayList<AnalysisTask>();
+			tasks.add(new AnalysisTask(AnalysisKind....));
+			analysisParams.setParameter(ChemSoftConstants.PARANALYSISTASKS,
+					tasks);
 			//TODO-gg add any AnalisisTask? Perhaps, depending on what the 
 			// ICircumbstances want to check during perception.
+			*/
 		} else {
 			// For the moment we do not try to detect the kind of job.
 			Terminator.withMsgAndStatus("ERROR: cannot yet detect type of comp."
@@ -562,13 +631,15 @@ public class JobEvaluator extends Worker
 		ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
 				WorkerFactory.createWorker(analysisParams, this.getMyJob());
 		outputParser.setSituationBaseForPerception(sitsDB);
-		NamedDataCollector results = new NamedDataCollector();
-		outputParser.setDataCollector(results);
+		NamedDataCollector exposedByAnalzer = new NamedDataCollector();
+		outputParser.setDataCollector(exposedByAnalzer);
 		outputParser.performTask();
 		
 		exposeOutputData(new NamedData(NORMALTERMKEY, NamedDataType.BOOLEAN, 
 				outputParser.getNormalTerminationFlag()));
-		lastJobStepId = outputParser.getStepsFound();
+		exposeOutputData(exposedByAnalzer.getNamedData(
+				ChemSoftConstants.JOBOUTPUTDATA));
+		lastJobStepId = outputParser.getStepsFound()-1;
 		/*
 		This is done for any job type, so outside of this method
 		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
@@ -581,7 +652,7 @@ public class JobEvaluator extends Worker
 		
 		@SuppressWarnings("unchecked")
 		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)
-				results.getNamedData(
+				exposedByAnalzer.getNamedData(
 						ChemSoftOutputAnalyzer.MATCHESTOTEXTQRYSFORPERCEPTION)
 				.getValue();
 		for (TxtQuery tq : matchesByTQ.keySet())

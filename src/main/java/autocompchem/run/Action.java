@@ -137,11 +137,22 @@ public class Action implements Cloneable
     List<JobEditTask> jobEditTasks = new ArrayList<JobEditTask>();
     
     /**
+     * List of job steps to prepend to the action's object job.
+     */
+    List<Job> preliminarySteps = new ArrayList<Job>();
+    
+    /**
      * Task to perform to archive previous data from action's object job.
      * Here "archive" means "keep a copy so we do not overwrite previous data".
      */
     List<JobArchiviationTask> jobArchiviationTasks = 
     		new ArrayList<JobArchiviationTask>();
+    
+    /**
+     * List of settings that prepended job steps should inherit from the 
+     * action's object job.
+     */
+    List<JobEditTask> inheritedSettings = new ArrayList<JobEditTask>();
     
     
 //------------------------------------------------------------------------------

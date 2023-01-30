@@ -461,6 +461,17 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
+     * Gets the observer that watches for notifications from this job.
+     * @return the listener to notifications from this job.
+     */
+    public JobNotificationListener getObserver() 
+    {
+		return observer;
+	}
+
+//------------------------------------------------------------------------------
+    
+	/**
      * Sets the directory from which the job should be executed.
      * @param customUserDir the new directory
      */

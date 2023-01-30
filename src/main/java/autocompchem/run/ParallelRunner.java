@@ -495,7 +495,12 @@ public class ParallelRunner
     		mainIteration();
     		
     		if (reaction!=null)
-    			applyReaction();
+    		{
+    			ActionApplier.performAction(reaction, trigger, todoJobs, 
+    					restartCounter.get());
+    			reaction = null;
+    			trigger = null;
+    		}
     	}
     }
   
@@ -725,6 +730,7 @@ public class ParallelRunner
      * The job editing tasks defined in the action are applied to the job which
      * was evaluated.
      */
+    /*
     private void applyReaction()
     {
     	// No need to archive or edit if the reaction is just to stop.
@@ -794,7 +800,7 @@ public class ParallelRunner
     	reaction = null;
     	trigger = null;
     }
-    
+    */
 //------------------------------------------------------------------------------
 
 }

@@ -251,7 +251,6 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param value the value of the parameter to be stored.
      */
 
-    //TODO-gg ***MUST** rename to reflect that this converts the Object to string!!!
     public void setParameter(String ref, String value)
     {
         setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 
@@ -269,6 +268,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param value the value of the parameter to be stored as a string.
      */
 
+    //TODO-gg ***MUST** rename to reflect that this converts the Object to string!!!
     public void setParameter(String ref, Object value)
     {
         setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 

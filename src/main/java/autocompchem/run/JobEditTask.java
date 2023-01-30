@@ -49,7 +49,7 @@ public class JobEditTask
 	 * Applies this editing task to the given job.
 	 * @param job the job to edit.
 	 */
-	public void apply(Job job)
+	public void applyChange(Job job)
 	{
 		switch (targetType) {
 		case DIRECTIVECOMPONENT:
@@ -66,6 +66,45 @@ public class JobEditTask
 		case PARAMETER:
 			//TODO-gg this will change with the refactoring of setParameter(String, Object);
 			job.setParameter(targetRef, NamedDataType.STRING, newValue.toString());
+			break;
+		}
+	}
+	
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Inherit the defined setting from a given job and applying it onto 
+	 * another job.
+	 * @param original the job from which we take the value of the property.
+	 * @param receiving the job where we try to impose the inherited setting.
+	 */
+	public void inheritSettings(Job original, Job receiving)
+	{
+		switch (targetType) {
+		case DIRECTIVECOMPONENT:
+			if (original instanceof CompChemJob 
+					&& receiving instanceof CompChemJob)
+			{
+				CompChemJob ccOri = (CompChemJob) original;
+				CompChemJob ccRec = (CompChemJob) receiving;
+				//TODO-gg
+				/*
+				if (original.has directive)
+				{
+					receiving.setDirective(...);
+				}
+				*/
+			}
+			break;
+			
+		case PARAMETER:
+			if (original.hasParameter(targetRef))
+			{
+				//TODO-gg this will change with the refactoring of setParameter(String, Object);
+				receiving.setParameter(targetRef, NamedDataType.STRING, 
+						original.getParameterValue(targetRef));
+			}
 			break;
 		}
 	}

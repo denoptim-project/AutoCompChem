@@ -38,6 +38,7 @@ import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
@@ -226,7 +227,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
             {
                 ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.PRINTLASTGEOMETRY,ps);
             analysisAllTasks.add(a);
         }
         
@@ -241,7 +242,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
             {
                 ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.LASTGEOMETRY,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.PRINTLASTGEOMETRY,ps);
             analysisGlobalTasks.add(a);
         }
         
@@ -256,7 +257,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
             {
                 ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.ALLGEOM,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.PRINTALLGEOM, ps);
             analysisAllTasks.add(a);
         }
 
@@ -334,19 +335,21 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	                ps.setParameter(ChemSoftConstants.PARBONDLENGTHTOLETANCE, w);
                 }
             }
+            
         	// We have to ensure that last geometry is extracted
         	boolean addLastGeom = true;
         	for (AnalysisTask at : analysisGlobalTasks)
         	{
-        		if (at.getKind() == AnalysisKind.LASTGEOMETRY)
+        		if (at.getKind() == AnalysisKind.PRINTLASTGEOMETRY)
         		{
         			addLastGeom = false;
         		}
         	}
         	if (addLastGeom)
         	{
+        		//TODO-gg distinguish between PRINT and GET (which is supposed to get the data without printing to file)
         		analysisGlobalTasks.add(new AnalysisTask(
-        				AnalysisKind.LASTGEOMETRY));
+        				AnalysisKind.PRINTLASTGEOMETRY));
         	}
         	
             AnalysisTask a = new AnalysisTask(
@@ -414,6 +417,14 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         	analysisAllTasks.add(a);
         }
         
+        if (params.contains(ChemSoftConstants.PARANALYSISTASKS))
+        {
+        	@SuppressWarnings("unchecked")
+			List<AnalysisTask> tasks = (List<AnalysisTask>) params.getParameter(
+            		ChemSoftConstants.PARANALYSISTASKS).getValue();
+        	analysisAllTasks.addAll(tasks);
+        }
+        
         if (verbosity > 2)
         {
         	System.out.println("Settings from parameter storage");
@@ -443,6 +454,8 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         {
         	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
         			perceptionTQMatches));
+        	exposeOutputData(new NamedData(ChemSoftConstants.JOBOUTPUTDATA, 
+        			stepsData));
 /*
 //TODO
             String refName = "";
@@ -539,6 +552,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         	NamedDataCollector stepData = stepsData.get(stepId);
         	resultsString.append(NL + "Step " + stepId + ":" + NL);
         	
+        	//TODO-gg move outside of loop over analysis: do it as long as a templateconnectivity has been given.
             // We inherit connectivity here so all analysis of geometries can
             // make use of the connectivity
     		if (useTemplateConnectivity)
@@ -583,8 +597,8 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         	{
         		ParameterStorage atParams = at.getParams();
         		switch (at.getKind())
-        		{
-	        		case ALLGEOM:
+        		{		
+	        		case PRINTALLGEOM:
 	        		{
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGEOMETRIES))
@@ -636,7 +650,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        			break;
 	        		}
 	        		
-	        		case LASTGEOMETRY:
+	        		case PRINTLASTGEOMETRY:
 	        		{
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGEOMETRIES))
@@ -957,7 +971,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         	ParameterStorage atParams = at.getParams();
     		switch (at.getKind())
     		{
-				case LASTGEOMETRY:
+				case PRINTLASTGEOMETRY:
 				{
 					String format = "XYZ";
 					format = changeIfParameterIsFound(format,
@@ -1045,6 +1059,10 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 				}
     		}
         }
+        
+        //TODO-gg expose more
+        exposeOutputData(new NamedData(ChemSoftConstants.JOBDATAGEOMETRIES,
+        		NamedDataType.UNDEFINED, geomsToExpose));
         
         if (verbosity > 0 && !finalResultsString.toString().isBlank())
         {

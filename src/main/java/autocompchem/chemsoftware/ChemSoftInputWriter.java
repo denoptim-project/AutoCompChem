@@ -235,6 +235,11 @@ public abstract class ChemSoftInputWriter extends Worker
                     + "format and extension.", -1);
             }
         } 
+        if (params.contains(ChemSoftConstants.PARGEOM))
+        {
+            this.inpGeom = (List<IAtomContainer>) params.getParameter(
+                    ChemSoftConstants.PARGEOM).getValue();
+        }
         //TODO: deal with stream-like input
         if (inpGeom.size()==0)
         {
@@ -297,6 +302,11 @@ public abstract class ChemSoftInputWriter extends Worker
             } else {
             	this.ccJob = new CompChemJob(jdFile);
             }
+        }
+        else if (params.contains(ChemSoftConstants.PARJOBDETAILSOBJ))
+        {
+        	this.ccJob = (CompChemJob) params.getParameter(
+                    ChemSoftConstants.PARJOBDETAILSOBJ).getValue();
         }
         else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {

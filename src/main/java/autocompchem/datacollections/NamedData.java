@@ -150,7 +150,6 @@ public class NamedData implements Cloneable
         this.setValue(value);
     }
 
-
 //------------------------------------------------------------------------------
 
     /**
