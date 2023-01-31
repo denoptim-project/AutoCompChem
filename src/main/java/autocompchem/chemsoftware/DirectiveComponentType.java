@@ -27,6 +27,7 @@ import java.util.Set;
  */
 public enum DirectiveComponentType 
 {
+	ANY("*"),
 	KEYWORD("Key"),
 	DIRECTIVEDATA("Dat"),
 	DIRECTIVE("Dir");
@@ -65,15 +66,10 @@ public enum DirectiveComponentType
 	 */
 	public static DirectiveComponentType getEnum(String shortForm)
 	{
-		switch (shortForm.toUpperCase()) {
-		case "KEY":
-			return KEYWORD;
-			
-		case "DAT":
-			return DIRECTIVEDATA;
-
-		case "DIR":
-			return DIRECTIVE;
+		for (DirectiveComponentType typ : values())
+		{
+			if (typ.shortString.toUpperCase().equals(shortForm.toUpperCase()))
+				return typ;
 		}
 		return null;
 	}

@@ -216,7 +216,8 @@ public class CompChemJob extends Job implements Cloneable
     		return matches;
     	} 
     	if (address.size()==1 &&
-    			!address.get(0).type.equals(DirectiveComponentType.DIRECTIVE))
+    			!(address.get(0).type.equals(DirectiveComponentType.DIRECTIVE)
+    				|| address.get(0).type.equals(DirectiveComponentType.ANY)))
     	{
     		//No keyword of directiveData can be found at level 0
 			return matches;
@@ -225,7 +226,7 @@ public class CompChemJob extends Job implements Cloneable
     	List<Directive> candDirectives = new ArrayList<Directive>();
 		for (Directive d : directives)
 		{
-			if (d.getName().toUpperCase().equals(
+			if (address.get(0).name=="*" || d.getName().toUpperCase().equals(
 					address.get(0).name.toUpperCase()))
 			{
 				candDirectives.add(d);
@@ -247,31 +248,44 @@ public class CompChemJob extends Job implements Cloneable
 			{
 				List<IDirectiveComponent> candidateComponents = 
 						new ArrayList<IDirectiveComponent>();
-    			if (levType==DirectiveComponentType.KEYWORD)
-    			{
-    				candidateComponents.addAll(parentDir.getAllKeywords());
-    			} else if (levType==DirectiveComponentType.DIRECTIVEDATA) {
-    				candidateComponents.addAll(
+				switch (levType) 
+				{
+				case KEYWORD:
+					candidateComponents.addAll(parentDir.getAllKeywords());
+					break;
+				case DIRECTIVEDATA:
+					candidateComponents.addAll(
     						parentDir.getAllDirectiveDataBlocks());
-    			} else if (levType==DirectiveComponentType.DIRECTIVE) {
+					break;
+				case DIRECTIVE:
     				candidateComponents.addAll(
     						parentDir.getAllSubDirectives());
-    			}
+    				break;
+				case ANY:
+					candidateComponents.addAll(parentDir.getAllKeywords());
+					candidateComponents.addAll(
+    						parentDir.getAllDirectiveDataBlocks());
+    				candidateComponents.addAll(
+    						parentDir.getAllSubDirectives());
+    				break;
+				}
     			for (IDirectiveComponent candComp : candidateComponents)
     			{
-    				if (candComp.getName().toUpperCase().equals(
-						name.toUpperCase()))
+    				if (address.get(iLevel).name=="*" || candComp.getName()
+    						.toUpperCase().equals(name.toUpperCase()))
     				{
     					matchingComponents.add(candComp);
     				}
     			}
 			}
 			candDirectives.clear();
-			if (levType==DirectiveComponentType.DIRECTIVE)
+			if (levType==DirectiveComponentType.DIRECTIVE
+					|| levType==DirectiveComponentType.ANY)
 			{
 				for (IDirectiveComponent c : matchingComponents)
 				{
-					candDirectives.add((Directive) c);
+					if (c instanceof Directive)
+						candDirectives.add((Directive) c);
 				}
 			}
 			

@@ -188,8 +188,14 @@ public class CompChemJobTest
     	dB2.addSubDirective(dB3);
     	dB3.addSubDirective(dB4);
     	dB4.addSubDirective(dB5);
-    	dB5.addKeyword(new Keyword("K6"));
-    	dB5.addDirectiveData(new DirectiveData("data6"));
+    	Keyword k6 = new Keyword("K6");
+    	dB5.addKeyword(k6);
+    	DirectiveData dd6 = new DirectiveData("data6");
+    	dB5.addDirectiveData(dd6);
+    	Keyword k3b = new Keyword("K3");
+    	Keyword k3c = new Keyword("K3");
+    	dB2.addKeyword(k3b);
+    	dB2.addKeyword(k3c);
     	ccj.addDirective(dB1);
     	
     	Directive dC1 = new Directive("C");
@@ -210,6 +216,19 @@ public class CompChemJobTest
     	ccj.addDirective(dC1);
     	ccj.addDirective(dC2);
     	ccj.addDirective(dC3);
+    	
+    	Directive dE1 = new Directive("E");
+    	Directive dE2 = new Directive("E");
+    	Directive dE3 = new Directive("E");
+    	Keyword ke3 = new Keyword("KE");
+    	DirectiveData dde3 = new DirectiveData("KE");
+    	Directive dKE3 = new Directive("KE");
+    	dE3.addKeyword(ke3);
+    	dE3.addDirectiveData(dde3);
+    	dE3.addSubDirective(dKE3);
+    	dE2.addSubDirective(dE3);
+    	dE1.addSubDirective(dE2);
+    	ccj.addDirective(dE1);
     	
     	DirComponentAddress adrs = new DirComponentAddress();
     	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
@@ -269,6 +288,102 @@ public class CompChemJobTest
     	expected.add(k31);
     	expected.add(k32);
     	expected.add(k33);
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("B1","Dir");
+    	adrs.addStep("B2","Dir");
+    	adrs.addStep("B3","Dir");
+    	adrs.addStep("B4","Dir");
+    	adrs.addStep("B5","Dir");
+    	adrs.addStep("K6","KEY");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(k6);
+    	assertEquals(expected, matches);
+    	
+    	// From here with wildcard
+
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("*","*");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(dA);
+    	expected.add(dB1);
+    	expected.add(dC1);
+    	expected.add(dC2);
+    	expected.add(dC3);
+    	expected.add(dE1);
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("K3","key");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	// WARNING: order matters
+    	expected.add(k3b);
+    	expected.add(k3c);
+    	expected.add(k31);
+    	expected.add(k32);
+    	expected.add(k33);
+    	assertEquals(expected, matches);
+
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(k6);
+    	expected.add(dd6);
+    	assertEquals(expected, matches);
+
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("none","*");
+    	adrs.addStep("none","*");
+    	adrs.addStep("none","*");
+    	adrs.addStep("none","*");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("KE","*");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(ke3);
+    	expected.add(dde3);
+    	expected.add(dKE3);
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("E","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","*");
+    	adrs.addStep("*","key");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(ke3);
     	assertEquals(expected, matches);
     }
     

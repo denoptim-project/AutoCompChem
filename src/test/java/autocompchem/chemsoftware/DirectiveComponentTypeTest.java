@@ -55,6 +55,8 @@ public class DirectiveComponentTypeTest
     			DirectiveComponentType.getEnum("KEY"));
     	assertEquals(DirectiveComponentType.DIRECTIVEDATA, 
     			DirectiveComponentType.getEnum("dat"));
+    	assertEquals(DirectiveComponentType.ANY, 
+    			DirectiveComponentType.getEnum("*"));
     	DirectiveComponentType c = DirectiveComponentType.getEnum("invalid");
     	assertNull(c);
     }
