@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -149,6 +150,126 @@ public class CompChemJobTest
     	assertTrue(((CompChemJob)job.getStep(2)).getDirective("*")
     			.hasComponent("geom-2",DirectiveComponentType.DIRECTIVEDATA),
     			"Existence of data block (2)");
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetDirectiveComponent() throws Exception
+    {
+    	CompChemJob ccj = new CompChemJob();
+    	Directive dA = new Directive("A1");
+    	Keyword k1 = new Keyword("K2");
+    	Keyword k2 = new Keyword("K2");
+    	Keyword k3 = new Keyword("K2");
+    	dA.addKeyword(k1);
+    	dA.addKeyword(k2);
+    	dA.addKeyword(k3);
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addSubDirective(new Directive("subdir2"));
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addSubDirective(new Directive("subdir2"));
+    	Directive dA2 = new Directive("A2");
+    	Keyword k22 = new Keyword("K2");
+    	dA2.addKeyword(k22);
+    	DirectiveData dd2 = new DirectiveData("data2");
+    	dA2.addDirectiveData(dd2);
+    	dA.addSubDirective(dA2);
+    	ccj.addDirective(dA);
+    	
+    	Directive dB1 = new Directive("B1");
+    	Directive dB2 = new Directive("B2");
+    	Directive dB3 = new Directive("B3");
+    	Directive dB4 = new Directive("B4");
+    	Directive dB5 = new Directive("B5");
+    	dB1.addSubDirective(dB2);
+    	dB2.addSubDirective(dB3);
+    	dB3.addSubDirective(dB4);
+    	dB4.addSubDirective(dB5);
+    	dB5.addKeyword(new Keyword("K6"));
+    	dB5.addDirectiveData(new DirectiveData("data6"));
+    	ccj.addDirective(dB1);
+    	
+    	Directive dC1 = new Directive("C");
+    	Directive dC2 = new Directive("C");
+    	Directive dC3 = new Directive("C");
+    	Directive dC12 = new Directive("C");
+    	Directive dC22 = new Directive("C");
+    	Directive dC32 = new Directive("C");
+    	Keyword k31 = new Keyword("K3", false, "val1");
+    	Keyword k32 = new Keyword("K3", true, "val2");
+    	Keyword k33 = new Keyword("K3", false, "val3");
+    	dC12.addKeyword(k31);
+    	dC22.addKeyword(k32);
+    	dC32.addKeyword(k33);
+    	dC1.addSubDirective(dC12);
+    	dC1.addSubDirective(dC22);
+    	dC1.addSubDirective(dC32);
+    	ccj.addDirective(dC1);
+    	ccj.addDirective(dC2);
+    	ccj.addDirective(dC3);
+    	
+    	DirComponentAddress adrs = new DirComponentAddress();
+    	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
+    	List<IDirectiveComponent> expected = new ArrayList<IDirectiveComponent>();
+    	
+    	matches = ccj.getDirectiveComponents(adrs);
+    	assertEquals(0, matches.size());
+    	assertEquals(expected, matches);
+    	
+    	adrs.addStep("A1","Dir");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.add(dA);
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("A1","Dir");
+    	adrs.addStep("A2","Dir");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(dA2);
+    	assertEquals(expected, matches);
+
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("A1","Dir");
+    	adrs.addStep("K2","KEY");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(k1);
+    	expected.add(k2);
+    	expected.add(k3);
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("A1","Dir");
+    	adrs.addStep("A2","Dir");
+    	adrs.addStep("K2","KEY");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(k22);
+    	assertEquals(expected, matches);
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("A1","Dir");
+    	adrs.addStep("A2","Dir");
+    	adrs.addStep("data2","Dat");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(dd2);
+    	assertEquals(expected, matches);
+
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("C","Dir");
+    	adrs.addStep("C","Dir");
+    	adrs.addStep("K3","key");
+    	matches = ccj.getDirectiveComponents(adrs);
+    	expected.clear();
+    	expected.add(k31);
+    	expected.add(k32);
+    	expected.add(k33);
+    	assertEquals(expected, matches);
     }
     
 //------------------------------------------------------------------------------

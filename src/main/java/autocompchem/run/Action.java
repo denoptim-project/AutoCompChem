@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.run.JobEditTask.TargetType;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.WorkerConstants;
@@ -68,8 +69,6 @@ public class Action implements Cloneable
      */
     private ActionObject object = ActionObject.FOCUSJOB;
     
-    
-    //TODO-gg these could be subclasses!
     /**
      * Action types define the main feature of the action.
      */
@@ -193,6 +192,7 @@ public class Action implements Cloneable
      * @throws Exception if unable to interpret text.
      */
 
+    @Deprecated
     public Action(String txt) throws Exception
     {
     	List<String> lines = new ArrayList<String>();
@@ -214,6 +214,7 @@ public class Action implements Cloneable
      * @throws Exception if unable to interpret text.
      */
 
+    @Deprecated
     public Action(List<String> lines) throws Exception
     {
     	makeFromLines(lines);
@@ -228,6 +229,7 @@ public class Action implements Cloneable
      * @throws Exception if unable to interpret text.
      */
     
+    @Deprecated
     private void makeFromLines(List<String> lines) throws Exception 
     {
     	//If needed to parse multiple instances of the same KEY, then use
@@ -284,6 +286,17 @@ public class Action implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * Sets the type of this action.
+     */
+
+    public void setType(ActionType type)
+    {
+        this.type = type;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Return the object of this action. I.e., the thing on which the action is 
      * performed.
      * @return the object of the action.
@@ -292,6 +305,51 @@ public class Action implements Cloneable
     public ActionObject getObject()
     {
         return object;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the object on whcih to perform this action in relation to the 
+     * focus job, i.e., the job that triggered the action.
+     */
+
+    public void setObject(ActionObject obj)
+    {
+        this.object = obj;
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+    	if (o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	    
+ 	   Action other = (Action) o;
+ 	   
+ 	    if (this.type!=other.type)
+ 	    	return false;
+ 	    
+ 	   if (this.object!=other.object)
+	    	return false;
+ 	   
+ 	   if (this.jobEditTasks.size()!=other.jobEditTasks.size())
+ 		   return false;
+ 	   
+ 	   for (int i=0; i<this.jobEditTasks.size(); i++)
+ 		   if (!this.jobEditTasks.get(i).equals(other.jobEditTasks.get(i)))
+ 			   return false;
+ 	   
+ 	   
+ 	   return true;
     }
     
 //------------------------------------------------------------------------------

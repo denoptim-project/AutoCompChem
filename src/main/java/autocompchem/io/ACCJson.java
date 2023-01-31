@@ -7,6 +7,9 @@ import com.google.gson.GsonBuilder;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.CompChemJob.CompChemJobSerializer;
+import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.DirComponentAddress.DirComponentAddressDeserializer;
+import autocompchem.chemsoftware.DirComponentAddress.DirComponentAddressSerializer;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
 import autocompchem.chemsoftware.DirectiveData;
@@ -88,6 +91,8 @@ public class ACCJson
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
+    	        .registerTypeAdapter(DirComponentAddress.class, 
+    	        		new DirComponentAddressSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
     			.create();
@@ -101,6 +106,8 @@ public class ACCJson
     	        		new NamedDataDeserializer())
     	        .registerTypeAdapter(Keyword.class, 
     	        		new KeywordDeserializer())
+    	        .registerTypeAdapter(DirComponentAddress.class, 
+    	        		new DirComponentAddressDeserializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 

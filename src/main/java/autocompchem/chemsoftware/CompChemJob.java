@@ -195,6 +195,93 @@ public class CompChemJob extends Job implements Cloneable
     		((CompChemJob) step).sortDirectivesBy(c);
     	}
     }
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return directive component that are found in a given location
+     * of the directive component's structure.
+     * @param address the location of the components to fetch, starting with the
+     * outermost directive and ending with the component to fetch.
+     * @return the directive components that match the path. 
+     * The result can be an empty list.
+     */
+    
+    public List<IDirectiveComponent> getDirectiveComponents(
+    		DirComponentAddress address)
+    {
+    	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
+    	if (address.size()==0)
+    	{
+    		return matches;
+    	} 
+    	if (address.size()==1 &&
+    			!address.get(0).type.equals(DirectiveComponentType.DIRECTIVE))
+    	{
+    		//No keyword of directiveData can be found at level 0
+			return matches;
+    	}
+
+    	List<Directive> candDirectives = new ArrayList<Directive>();
+		for (Directive d : directives)
+		{
+			if (d.getName().toUpperCase().equals(
+					address.get(0).name.toUpperCase()))
+			{
+				candDirectives.add(d);
+			}
+		}
+		if (address.size()==1)
+		{
+			matches.addAll(candDirectives);
+			return matches;
+		}
+    	
+    	for (int iLevel=1; iLevel<address.size(); iLevel++)
+    	{
+    		DirectiveComponentType levType = address.get(iLevel).type;
+    		String name = address.get(iLevel).name;
+    		List<IDirectiveComponent> matchingComponents = 
+					new ArrayList<IDirectiveComponent>();
+			for (Directive parentDir : candDirectives)
+			{
+				List<IDirectiveComponent> candidateComponents = 
+						new ArrayList<IDirectiveComponent>();
+    			if (levType==DirectiveComponentType.KEYWORD)
+    			{
+    				candidateComponents.addAll(parentDir.getAllKeywords());
+    			} else if (levType==DirectiveComponentType.DIRECTIVEDATA) {
+    				candidateComponents.addAll(
+    						parentDir.getAllDirectiveDataBlocks());
+    			} else if (levType==DirectiveComponentType.DIRECTIVE) {
+    				candidateComponents.addAll(
+    						parentDir.getAllSubDirectives());
+    			}
+    			for (IDirectiveComponent candComp : candidateComponents)
+    			{
+    				if (candComp.getName().toUpperCase().equals(
+						name.toUpperCase()))
+    				{
+    					matchingComponents.add(candComp);
+    				}
+    			}
+			}
+			candDirectives.clear();
+			if (levType==DirectiveComponentType.DIRECTIVE)
+			{
+				for (IDirectiveComponent c : matchingComponents)
+				{
+					candDirectives.add((Directive) c);
+				}
+			}
+			
+			if (iLevel==(address.size()-1))
+			{
+				matches.addAll(matchingComponents);
+			}
+    	}
+    	return matches;
+    }
     
 //-----------------------------------------------------------------------------
     

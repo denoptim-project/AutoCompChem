@@ -36,46 +36,24 @@ import autocompchem.run.JobEditTask.TargetType;
 
 
 /**
- * Unit Test for Action 
+ * Unit Test for job editing tasks 
  * 
  * @author Marco Foscato
  */
 
-public class ActionTest 
+public class JobEditTaskTest 
 {
-
-    private final String NL = System.getProperty("line.separator");
-    private final String SEP = ActionConstants.SEPARATOR;
 
 //------------------------------------------------------------------------------
 
     /**
      * Creates an action filled with content meant only for testing.
      */
-    public Action getTestAction()
+    public JobEditTask getTestJobEditingTask()
     {
-    	Action act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
-    	act.addJobEditingTask("TrgProp", TargetType.PARAMETER, "NEWVALUE");
-    	act.addJobEditingTask("TrgProp2", TargetType.PARAMETER, "OTHER");
-    	act.addJobEditingTask("TrgKey", TargetType.DIRECTIVECOMPONENT, "NEWKEY");
-    	act.addJobEditingTask("TrgDD", TargetType.DIRECTIVECOMPONENT, "NEWDD");
-    	
-    	return act;
-    }
-    
-//------------------------------------------------------------------------------
-
-    @Test
-    public void testConstructorFromText() throws Exception
-    {
-    	
-    	String str = ActionConstants.TYPEKEY+SEP+" "+ActionType.REDO+NL
-    			+ ActionConstants.OBJECTKEY+SEP+" "+ActionObject.PREVIOUSJOB+NL;
-    	
-    	Action a = new Action(str);
-    	
-    	assertEquals(ActionType.REDO,a.getType(),"ActionType");
-    	assertEquals(ActionObject.PREVIOUSJOB,a.getObject(),"ActionObject");
+    	JobEditTask jet = new JobEditTask("TrgProp", TargetType.PARAMETER, 
+    			"NEWVALUE");
+    	return jet;
     }
 
 //------------------------------------------------------------------------------
@@ -83,32 +61,23 @@ public class ActionTest
     @Test
     public void testEquals() throws Exception
     {
-    	Action a1 = getTestAction();
-    	Action a2 = getTestAction();
+    	JobEditTask jet1 = getTestJobEditingTask();
+    	JobEditTask jet2 = getTestJobEditingTask();
 
-    	assertTrue(a1.equals(a2));
-    	assertTrue(a2.equals(a1));
-    	assertTrue(a1.equals(a1));
-    	assertFalse(a1.equals(null));
+    	assertTrue(jet1.equals(jet2));
+    	assertTrue(jet2.equals(jet1));
+    	assertTrue(jet1.equals(jet1));
+    	assertFalse(jet1.equals(null));
     	
-    	a2 = getTestAction();
-    	a2.setType(ActionType.STOP);
-    	assertFalse(a1.equals(a2));
-
-    	a2 = getTestAction();
-    	a2.setObject(ActionObject.PARALLELJOB);
-    	assertFalse(a1.equals(a2));
+    	jet2 = new JobEditTask("blabla", jet1.targetType, jet1.newValue);
+    	assertFalse(jet1.equals(jet2));
     	
-    	a2 = getTestAction();
-    	a2.addJobEditingTask("New", TargetType.PARAMETER, "neVal");
-    	assertFalse(a1.equals(a2));
+    	jet2 = new JobEditTask(jet1.targetRef, TargetType.DIRECTIVECOMPONENT, 
+    			jet1.newValue);
+    	assertFalse(jet1.equals(jet2));
     	
-    	a2 = getTestAction();
-    	a2.jobEditTasks.set(0, 
-    			new JobEditTask("bb",TargetType.PARAMETER,"blabla"));
-    	assertFalse(a1.equals(a2));
-    	
-    	//TODO-gg add clauses comparing other fields
+    	jet2 = new JobEditTask(jet1.targetRef, jet1.targetType, "blabla");
+    	assertFalse(jet1.equals(jet2));
     }
     
 //------------------------------------------------------------------------------
@@ -119,13 +88,14 @@ public class ActionTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	Action act = getTestAction();
+    	JobEditTask act = getTestJobEditingTask();
     	String json = writer.toJson(act);
     	
-    	Action fromJson = reader.fromJson(json, Action.class);
+    	JobEditTask fromJson = reader.fromJson(json, JobEditTask.class);
     	assertEquals(act,fromJson);
     	
     	//TODO-gg del
+    	System.out.println("JobEditTask:");
     	System.out.println(json);
     }
     

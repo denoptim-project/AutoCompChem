@@ -42,6 +42,34 @@ public class JobEditTask
 		this.targetType = targetType;
 		this.newValue = newValue;
 	}
+	
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+    	if (o == null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	    
+ 	    JobEditTask other = (JobEditTask) o;
+ 	   
+ 	    if (!this.targetRef.equals(other.targetRef))
+ 	    	return false;
+ 	    
+ 	    if (!this.targetType.equals(other.targetType))
+ 	    	return false;
+ 	    
+ 	    if (!this.newValue.equals(other.newValue))
+ 	    	return false;
+ 	    
+ 	    return true;
+    }
 
 //------------------------------------------------------------------------------
 
