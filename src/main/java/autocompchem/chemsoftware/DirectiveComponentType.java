@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -18,16 +21,74 @@ package autocompchem.chemsoftware;
  */
 
 /**
- * Collection of all registered components for a Directive
+ * Collection of all registered types of {@link Directive}'s components.
  * 
  * @author Marco Foscato
  */
 public enum DirectiveComponentType 
 {
-	KEYWORD,
-	DIRECTIVEDATA,
-	DIRECTIVE;
+	KEYWORD("Key"),
+	DIRECTIVEDATA("Dat"),
+	DIRECTIVE("Dir");
 	
-//-----------------------------------------------------------------------------
+	/**
+	 * A string to use as a short identification of this component type.
+	 */
+	public final String shortString;
+	
+	/**
+	 * Storage of possible short forms. All in Uppercase!
+	 */
+	private static final Set<String> possibleShortForms;
+	
+	static {
+		Set<String> collector = new HashSet<String>();
+		for (DirectiveComponentType dct : values())
+		{
+			collector.add(dct.shortString.toUpperCase());
+		}
+		possibleShortForms = new HashSet<String>(collector);
+	}
+	
+//------------------------------------------------------------------------------
+
+	private DirectiveComponentType(String shortString) {
+        this.shortString = shortString;
+    }
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Returns the enum starting from its short string form.
+	 * @param shortForm the short form (case insensitive).
+	 * @return the enum or null if no enum is found with the given short form.
+	 */
+	public static DirectiveComponentType getEnum(String shortForm)
+	{
+		switch (shortForm.toUpperCase()) {
+		case "KEY":
+			return KEYWORD;
+			
+		case "DAT":
+			return DIRECTIVEDATA;
+
+		case "DIR":
+			return DIRECTIVE;
+		}
+		return null;
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Lists the possible short forms to define the value of this enum.
+	 * @return the possible short forms.
+	 */
+	public static Set<String> getShortForms()
+	{
+		return possibleShortForms;
+	}
+	
+//------------------------------------------------------------------------------
 
 }
