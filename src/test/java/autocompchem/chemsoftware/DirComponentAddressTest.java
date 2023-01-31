@@ -33,7 +33,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.run.Action;
+import autocompchem.run.jobediting.Action;
 import autocompchem.worker.TaskID;
 
 /**

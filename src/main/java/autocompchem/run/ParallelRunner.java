@@ -40,8 +40,10 @@ import com.google.common.io.Files;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
+import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.ActionApplier;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 
 
 /**

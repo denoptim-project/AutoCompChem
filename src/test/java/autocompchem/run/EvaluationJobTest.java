@@ -44,9 +44,9 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
 import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
 

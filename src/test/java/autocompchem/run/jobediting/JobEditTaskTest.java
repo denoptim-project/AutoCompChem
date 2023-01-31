@@ -1,4 +1,4 @@
-package autocompchem.run;
+package autocompchem.run.jobediting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,9 +30,10 @@ import com.google.gson.Gson;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
-import autocompchem.run.JobEditTask.TargetType;
+import autocompchem.run.jobediting.JobEditTask;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.jobediting.JobEditTask.TargetType;
 
 
 /**

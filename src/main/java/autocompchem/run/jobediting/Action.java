@@ -1,4 +1,4 @@
-package autocompchem.run;
+package autocompchem.run.jobediting;
 
 /*
  *   Copyright (C) 2017  Marco Foscato
@@ -26,7 +26,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import autocompchem.molecule.conformation.ConformationalCoordinate;
-import autocompchem.run.JobEditTask.TargetType;
+import autocompchem.run.ActionConstants;
+import autocompchem.run.EvaluationJob;
+import autocompchem.run.Job;
+import autocompchem.run.jobediting.JobEditTask.TargetType;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.WorkerConstants;
 

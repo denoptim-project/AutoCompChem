@@ -52,6 +52,7 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.perception.situation.SituationConstants;
+import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;

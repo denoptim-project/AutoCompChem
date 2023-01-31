@@ -35,8 +35,8 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.perception.situation.SituationConstants;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 

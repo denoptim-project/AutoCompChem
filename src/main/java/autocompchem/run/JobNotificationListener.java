@@ -1,5 +1,7 @@
 package autocompchem.run;
 
+import autocompchem.run.jobediting.Action;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *

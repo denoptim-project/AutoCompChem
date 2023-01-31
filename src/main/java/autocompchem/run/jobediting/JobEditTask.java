@@ -1,7 +1,8 @@
-package autocompchem.run;
+package autocompchem.run.jobediting;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.run.Job;
 
 /**
  * Class representing the editing of something in a {@link Job}.

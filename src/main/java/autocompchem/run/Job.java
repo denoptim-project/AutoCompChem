@@ -41,6 +41,7 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.run.jobediting.Action;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -195,7 +196,7 @@ public class Job implements Runnable
      * world /w.r.t. this job) via the {@link #getOutput} method. 
      * We say these data is "exposed".
      */
-    protected NamedDataCollector exposedOutput = new NamedDataCollector();
+    public NamedDataCollector exposedOutput = new NamedDataCollector();
     
     /**
      * Verbosity level: amount of logging from this jobs
@@ -469,6 +470,39 @@ public class Job implements Runnable
 		return observer;
 	}
 
+//------------------------------------------------------------------------------
+    
+	/**
+	 * @return the STDOUT of this job
+     */
+    public File getStdOut()
+    {
+    	return stdout;
+    }
+    
+//------------------------------------------------------------------------------
+      
+  	/**
+  	 * @return the STDERR of this job
+     */
+    public File getStdErr()
+    {
+      	return stderr;
+    }
+    
+//------------------------------------------------------------------------------
+    
+  	/**
+  	 * Gets the main folder (user dir) of this job.
+  	 * This is not guaranteed to be the same as the UserDir for the JAVA virtual 
+  	 * machine. Instead, it is a path that may have been set for this job.
+  	 * @return the the pathname to the main folder (user dir) of this job.
+     */
+    public File getUserDir()
+    {
+      	return customUserDir;
+    }
+      
 //------------------------------------------------------------------------------
     
 	/**

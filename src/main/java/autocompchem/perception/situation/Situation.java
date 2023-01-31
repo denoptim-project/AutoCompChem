@@ -32,7 +32,7 @@ import autocompchem.perception.circumstance.CircumstanceFactory;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.run.Action;
+import autocompchem.run.jobediting.Action;
 import jakarta.el.ELContext;
 import jakarta.el.ELException;
 import jakarta.el.ELResolver;

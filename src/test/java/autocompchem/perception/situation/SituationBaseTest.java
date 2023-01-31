@@ -48,9 +48,9 @@ import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.run.ActionConstants;
-import autocompchem.run.Action;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
+import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 
 /**
  * Unit Test

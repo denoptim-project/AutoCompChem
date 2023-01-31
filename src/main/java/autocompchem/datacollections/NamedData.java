@@ -27,7 +27,7 @@ import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
-import autocompchem.run.Action;
+import autocompchem.run.jobediting.Action;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 

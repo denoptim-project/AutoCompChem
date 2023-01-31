@@ -35,8 +35,8 @@ import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.run.ActionConstants;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 
 /**
  * Unit Test for Situation class

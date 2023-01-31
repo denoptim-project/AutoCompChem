@@ -1,4 +1,4 @@
-package autocompchem.run;
+package autocompchem.run.jobediting;
 
 public class JobArchiviationTask {
 
