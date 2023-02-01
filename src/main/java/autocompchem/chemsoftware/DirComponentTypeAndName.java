@@ -19,7 +19,6 @@ import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
-import autocompchem.run.jobediting.JobEditTask;
 
 /**
  * The pair of two bits of info: the type and the reference name of a directive

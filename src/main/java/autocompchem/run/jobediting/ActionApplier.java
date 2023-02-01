@@ -149,9 +149,10 @@ public class ActionApplier
     	for (int i=(action.preliminarySteps.size()-1); i>-1; i--)
     	{
     		Job preliminaryStep = action.preliminarySteps.get(i);
-    		for (JobEditTask jet : action.inheritedSettings)
+    		for (IJobEditingTask jet : action.inheritedSettings)
     		{
-    			jet.inheritSettings(orinallyFailingStep, preliminaryStep);
+    			//TODO-gg recover and generalize
+    			//jet.inheritSettings(orinallyFailingStep, preliminaryStep);
     		}
     		focusJob.getSteps().add(0, preliminaryStep);
     	}

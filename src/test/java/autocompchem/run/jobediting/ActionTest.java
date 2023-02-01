@@ -1,8 +1,5 @@
 package autocompchem.run.jobediting;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -22,23 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.run.ActionConstants;
-import autocompchem.run.jobediting.Action;
-import autocompchem.run.jobediting.JobEditTask;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.JobEditTask.TargetType;
 
 
 /**

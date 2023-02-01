@@ -25,12 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.run.ActionConstants;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
-import autocompchem.run.jobediting.JobEditTask.TargetType;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.WorkerConstants;
 
@@ -155,7 +152,7 @@ public class Action implements Cloneable
      * List of settings that prepended job steps should inherit from the 
      * action's object job.
      */
-    List<JobEditTask> inheritedSettings = new ArrayList<JobEditTask>();
+    List<IJobEditingTask> inheritedSettings = new ArrayList<IJobEditingTask>();
     
     
 //------------------------------------------------------------------------------

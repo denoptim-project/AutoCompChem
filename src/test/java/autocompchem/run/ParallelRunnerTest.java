@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -49,7 +49,7 @@ import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.JobEditTask.TargetType;
+import autocompchem.run.jobediting.SetJobParameter;
 
 
 /**
@@ -408,7 +408,8 @@ public class ParallelRunnerTest
         		InfoChannelType.LOGFEED);
         Action act = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
         String newPrefix = "RESTART-";
-        act.addJobEditingTask(PREFIX, TargetType.PARAMETER, newPrefix);
+        act.addJobEditingTask(new SetJobParameter(
+        		new NamedData(PREFIX, newPrefix)));
         Situation sit1 = new Situation("SitTyp", "Sit-ONE", 
         		new ArrayList<ICircumstance>(Arrays.asList(c)),act);
         
@@ -417,7 +418,8 @@ public class ParallelRunnerTest
         		InfoChannelType.LOGFEED);
         Action act2 = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
         newPrefix = "LAST-";
-        act2.addJobEditingTask(PREFIX, TargetType.PARAMETER, newPrefix);
+        act.addJobEditingTask(new SetJobParameter(
+        		new NamedData(PREFIX, newPrefix)));
         Situation sit2 = new Situation("SitTyp", "Sit-TWO", 
         		new ArrayList<ICircumstance>(Arrays.asList(c2)),act2);
         
