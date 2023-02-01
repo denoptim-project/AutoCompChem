@@ -226,7 +226,7 @@ public class CompChemJob extends Job implements Cloneable
     	List<Directive> candDirectives = new ArrayList<Directive>();
 		for (Directive d : directives)
 		{
-			if (address.get(0).name=="*" || d.getName().toUpperCase().equals(
+			if (address.get(0).name.equals("*") || d.getName().toUpperCase().equals(
 					address.get(0).name.toUpperCase()))
 			{
 				candDirectives.add(d);
@@ -271,7 +271,7 @@ public class CompChemJob extends Job implements Cloneable
 				}
     			for (IDirectiveComponent candComp : candidateComponents)
     			{
-    				if (address.get(iLevel).name=="*" || candComp.getName()
+    				if (address.get(iLevel).name.equals("*") || candComp.getName()
     						.toUpperCase().equals(name.toUpperCase()))
     				{
     					matchingComponents.add(candComp);
@@ -295,6 +295,103 @@ public class CompChemJob extends Job implements Cloneable
 			}
     	}
     	return matches;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Ensures the structure of directives contains the directives involved in
+     * the given address. Ignores any directive components that is not a
+     * {@link Directive}.
+     * @param address the address to create if not found already.
+     * @return <code>true</code> if any directive had to be created.
+     */
+    public boolean ensureDirectiveStructure(DirComponentAddress address)
+	{
+    	boolean result = false;
+    	if (address.size()==0)
+		{
+			return result;
+		} 
+		if (address.size()==1 &&
+				!(address.get(0).type.equals(DirectiveComponentType.DIRECTIVE)
+					|| address.get(0).type.equals(DirectiveComponentType.ANY)))
+		{
+			return result;
+		}
+		
+		List<Directive> candDirectives = new ArrayList<Directive>();
+		String wantedDirName = address.get(0).name;
+		if (wantedDirName.equals("*"))
+		{
+			candDirectives.addAll(directives);
+		} else {
+			for (Directive d : directives)
+			{
+				if (d.getName().toUpperCase().equals(
+						wantedDirName.toUpperCase()))
+				{
+					candDirectives.add(d);
+				}
+			}
+		}
+		if (candDirectives.size()==0 && !wantedDirName.equals("*"))
+		{
+			Directive wantedDir = new Directive(wantedDirName);
+			addDirective(wantedDir);
+			candDirectives.add(wantedDir);
+			result = true;
+		}
+		
+		for (int iLevel=1; iLevel<address.size(); iLevel++)
+		{
+			DirectiveComponentType levType = address.get(iLevel).type;
+			if (!(levType==DirectiveComponentType.DIRECTIVE
+					|| levType==DirectiveComponentType.ANY))
+			{
+				break;
+			}
+			wantedDirName = address.get(iLevel).name;
+
+			List<Directive> nextParDirs = new ArrayList<Directive>();
+			for (Directive parentDir : candDirectives)
+			{
+				if (wantedDirName.equals("*"))
+				{
+					nextParDirs.addAll(parentDir.getAllSubDirectives());
+				} else {
+					for (Directive d : parentDir.getAllSubDirectives())
+					{
+						if (d.getName().toUpperCase().equals(
+								wantedDirName.toUpperCase()))
+						{
+							nextParDirs.add(d);
+						}
+					}
+				}
+			}
+			
+			if (nextParDirs.size()==0 && !wantedDirName.equals("*"))
+			{
+				if (candDirectives.size()==1)
+				{
+					Directive wantedDir = new Directive(wantedDirName);
+					candDirectives.get(0).addSubDirective(wantedDir);
+					nextParDirs.add(wantedDir);
+					result = true;
+				} else if (candDirectives.size()>1) {
+					throw new IllegalArgumentException("Found multiple parent "
+							+ "directives at level " + (iLevel-1) 
+							+ " of address '" + address + "'. "
+							+ "Directive '" + wantedDirName + "' "
+							+ "will not be created under more than one parent.");
+				}
+			}
+
+			candDirectives.clear();
+			candDirectives.addAll(nextParDirs);
+		}
+		return result;
     }
     
 //-----------------------------------------------------------------------------
