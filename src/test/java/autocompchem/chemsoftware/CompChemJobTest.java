@@ -1,6 +1,7 @@
 package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -385,6 +386,126 @@ public class CompChemJobTest
     	expected.clear();
     	expected.add(ke3);
     	assertEquals(expected, matches);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testEnsureDirectiveStructure() throws Exception
+    {
+    	CompChemJob ccj = new CompChemJob();
+    	Directive dA1 = new Directive("A1");
+    	Directive dA2 = new Directive("A2");
+    	Keyword kA1 = new Keyword("KA1");
+    	Keyword kA2 = new Keyword("KA2");
+    	dA1.addKeyword(kA1);
+    	dA1.addSubDirective(dA2);
+    	dA2.addKeyword(kA2);
+    	ccj.addDirective(dA1);
+    	
+    	Directive dB1 = new Directive("B1");
+    	Directive dB2 = new Directive("B2");
+    	Directive dB3 = new Directive("B3");
+    	Directive dB4 = new Directive("B4");
+    	Directive dB5 = new Directive("B5");
+    	dB1.addSubDirective(dB2);
+    	dB2.addSubDirective(dB3);
+    	dB3.addSubDirective(dB4);
+    	dB4.addSubDirective(dB5);
+    	ccj.addDirective(dB1);
+    	
+    	Directive dC1 = new Directive("C");
+    	Directive dC2 = new Directive("C");
+    	Directive dC3 = new Directive("C");
+    	dC1.addSubDirective(dC2);
+    	dC1.addSubDirective(dC3);
+    	ccj.addDirective(dC1);
+    	
+    	/* The structure of directives is this one:
+    	 *  
+    	 *  A1 -- A2
+    	 *    \     \
+    	 *     kA1   kA2
+    	 *     
+    	 *  B1 -- B2 -- B3 -- B4 -- B5
+    	 *  
+    	 *  C -- C
+    	 *   \
+    	 *    -- C
+    	 *  
+    	 */
+    	
+    	DirComponentAddress adrs = DirComponentAddress.fromString(
+    			"Dir:D");
+    	List<IDirectiveComponent> before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(0, before.size());
+    	assertTrue(ccj.ensureDirectiveStructure(adrs));
+    	List<IDirectiveComponent> after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertEquals("D", after.get(0).getName());
+    	
+    	adrs = DirComponentAddress.fromString("Dir:A1|Dir:A2");
+     	before = ccj.getDirectiveComponents(adrs);
+     	assertEquals(1, before.size());
+     	assertFalse(ccj.ensureDirectiveStructure(adrs));
+     	after = ccj.getDirectiveComponents(adrs);
+     	assertEquals(1, after.size());
+     	assertEquals("A2", after.get(0).getName());
+    	
+    	adrs = DirComponentAddress.fromString("Dir:A1|Dir:A2|Key:KZ");
+     	before = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, before.size());
+     	assertEquals(1, dA2.getAllKeywords().size());
+     	assertEquals(0, dA2.getAllSubDirectives().size());
+     	assertEquals(0, dA2.getAllDirectiveDataBlocks().size());
+     	assertFalse(ccj.ensureDirectiveStructure(adrs));
+     	assertEquals(1, dA2.getAllKeywords().size());
+     	assertEquals(0, dA2.getAllSubDirectives().size());
+     	assertEquals(0, dA2.getAllDirectiveDataBlocks().size());
+     	after = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, after.size());
+     	
+     	adrs = DirComponentAddress.fromString("Dir:A1|Dir:A2|Dir:A3|Dir:A4");
+     	before = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, before.size());
+     	assertTrue(ccj.ensureDirectiveStructure(adrs));
+     	after = ccj.getDirectiveComponents(adrs);
+     	assertEquals(1, after.size());
+     	assertEquals("A4", after.get(0).getName());
+     	
+     	adrs = DirComponentAddress.fromString("*:*|*:*|*:*|Dir:B4b");
+     	before = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, before.size());
+     	boolean found = false;
+     	try {
+     		ccj.ensureDirectiveStructure(adrs);
+     	} catch (IllegalArgumentException e)
+     	{
+     		if (e.getMessage().contains("Found multiple parent"))
+     			found = true;
+     	}
+     	assertTrue(found);
+     	
+     	adrs = DirComponentAddress.fromString("*:*|*:*|*:B3|Dir:B4b");
+     	before = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, before.size());
+     	assertTrue(ccj.ensureDirectiveStructure(adrs));
+     	after = ccj.getDirectiveComponents(adrs);
+     	assertEquals(1, after.size());
+     	assertEquals("B4b", after.get(0).getName());
+     	
+    	// Make sure we do not create a structure if the names required are "*"
+    	// This DOES add directive "Z" but not its sub directive.
+     	adrs = DirComponentAddress.fromString("*:Z|*:*|Dir:ZZ");
+     	before = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, before.size());
+     	assertTrue(ccj.ensureDirectiveStructure(adrs)); // because it adds "Z"
+     	after = ccj.getDirectiveComponents(adrs);
+     	assertEquals(0, after.size());
+     	after = ccj.getDirectiveComponents(
+     			DirComponentAddress.fromString("*:Z|*:*"));
+     	assertEquals(0, after.size());
+    	
     }
     
 //------------------------------------------------------------------------------

@@ -373,7 +373,6 @@ public class Job implements Runnable
      * @param type the type of the parameter
      * @param value the value of the parameter.
      */
-
     public void setParameter(String ref, NamedDataType type, Object value)
     {
         setParameter(ref, type, value, false);
@@ -382,7 +381,7 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Sets a parameters.
+     * Sets a parameter.
      * @param ref the reference name of the parameter to add/set.
      * @param type the type of the parameter
      * @param value the value of the parameter.
@@ -394,6 +393,7 @@ public class Job implements Runnable
     public void setParameter(String ref, NamedDataType type, Object value, 
     		boolean recursive)
     {
+    	//TODO-gg replace with setParameter(NamedData param)
         params.setParameter(ref, type, value);
         if (recursive)
         {
@@ -402,6 +402,18 @@ public class Job implements Runnable
 	        	step.setParameter(ref, type, value, true);
 	        }
         }
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameter. It a parameter with the same reference name already
+     * exists it will be overwritten.
+     * @param param the parameter to add or overwrite
+     */
+    public void setParameter(NamedData param)
+    {
+    	params.setParameter(param);
     }
     
 //------------------------------------------------------------------------------

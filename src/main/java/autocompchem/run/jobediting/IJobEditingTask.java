@@ -52,7 +52,13 @@ public interface IJobEditingTask
 	        TaskType type = context.deserialize(jsonObject.get("task"),
 	                TaskType.class);
 	        
-	        //TODO-gg add other types
+	        
+	        
+	        
+	        //TODO-gg add other types with their test and the rests
+	        
+	        
+	        
 	        
 	        IJobEditingTask result = null;
 	        switch (type)

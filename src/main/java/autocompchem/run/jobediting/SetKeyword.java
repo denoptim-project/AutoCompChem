@@ -1,7 +1,11 @@
 package autocompchem.run.jobediting;
 
+import java.util.List;
+
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Job;
@@ -20,7 +24,6 @@ public class SetKeyword implements IJobEditingTask
 	 */
 	final Keyword keyword;
 	
-
 //------------------------------------------------------------------------------
 
 	public SetKeyword(DirComponentAddress parent, Keyword key)
@@ -51,7 +54,7 @@ public class SetKeyword implements IJobEditingTask
  	    if (o.getClass() != getClass())
      		return false;
  	    
- 	   SetKeyword other = (SetKeyword) o;
+ 	    SetKeyword other = (SetKeyword) o;
  	    
  	    if (!this.keyword.equals(other.keyword))
  	    	return false;
@@ -62,9 +65,33 @@ public class SetKeyword implements IJobEditingTask
 //------------------------------------------------------------------------------
 	
 	@Override
-	public void applyChange(Job job) {
-		// TODO Auto-generated method stub
-		
+	public void applyChange(Job job) 
+	{
+		if (!(job instanceof CompChemJob))
+			return;
+		CompChemJob ccj = (CompChemJob) job;
+		ccj.ensureDirectiveStructure(pathToDirective);
+		List<IDirectiveComponent> parents = ccj.getDirectiveComponents(
+    			pathToDirective);
+    	for (IDirectiveComponent parent : parents)
+    	{
+    		if (parent instanceof Directive)
+    		{
+    			Directive dir = (Directive) parent;
+    			Keyword old = (Keyword) dir.getComponent(keyword.getReference(), 
+    					DirectiveComponentType.KEYWORD);
+
+				//TODO-gg make optional by extending this class to have the
+    			// APPEND_KEYWORD task
+    			
+    			if (old!=null)
+    			{
+    				old.setValue(keyword.getValue());
+    			} else {
+    				dir.addKeyword(keyword);
+    			}
+    		}
+    	}
 	}
     
 //------------------------------------------------------------------------------

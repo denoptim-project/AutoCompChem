@@ -1,7 +1,6 @@
 package autocompchem.run.jobediting;
 
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Keyword;
+
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
 
@@ -44,9 +43,9 @@ public class SetJobParameter implements IJobEditingTask
 //------------------------------------------------------------------------------
 
 	@Override
-	public void applyChange(Job job) {
-		// TODO Auto-generated method stub
-
+	public void applyChange(Job job) 
+	{
+		job.setParameter(parameter);
 	}
 	
 //------------------------------------------------------------------------------
