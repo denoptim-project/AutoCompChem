@@ -137,7 +137,7 @@ public class Action implements Cloneable
     /**
      * Tasks to perform on action's object jobs
      */
-    List<IChangesSettings> jobEditTasks = new ArrayList<IChangesSettings>();
+    List<IJobEditingTask> jobEditTasks = new ArrayList<IJobEditingTask>();
     
     /**
      * List of job steps to prepend to the action's object job.
@@ -269,7 +269,7 @@ public class Action implements Cloneable
     /**
      * Appends a task that edits a feature of the action's object job.
      */
-    public void addJobEditingTask(IChangesSettings jet)
+    public void addJobEditingTask(IJobEditingTask jet)
     {
     	jobEditTasks.add(jet);
     }

@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.Keyword;
+import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
@@ -48,9 +50,6 @@ import autocompchem.run.jobediting.JobEditTask.TargetType;
 public class ActionTest 
 {
 
-    private final String NL = System.getProperty("line.separator");
-    private final String SEP = ActionConstants.SEPARATOR;
-
 //------------------------------------------------------------------------------
 
     /**
@@ -59,15 +58,11 @@ public class ActionTest
     public Action getTestAction()
     {
     	Action act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
-    	act.addJobEditingTask(new EditParameter("parName", "newValue", "SET"));
-    	DirComponentAddress path = new DirComponentAddress();
-    	path.addStep("*","*");
-    	path.addStep("*","*");
-    	path.addStep("KeyName","key");
-    	act.addJobEditingTask(new SetDirComponentValue(path, "newValComp"));
-    	DirComponentAddress path2 = new DirComponentAddress();
-    	path2.addStep("*","Dir");
-    	act.addJobEditingTask(new SetDirComponentParameter(path2, "newValPar"));
+    	act.addJobEditingTask(new SetKeyword("*:*|Dir:DirName", 
+    			new Keyword("KeyName", false, 1.234)));
+    	act.addJobEditingTask(new DeleteJobParameter("NameOfParamToRemove"));
+    	act.addJobEditingTask(new SetJobParameter(
+    			new NamedData("ParamToSet", "valueOfParam")));
     	return act;
     }
  
@@ -93,11 +88,11 @@ public class ActionTest
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
-    	a2.addJobEditingTask(new SetJobParameter("name","value","SET"));
+    	a2.addJobEditingTask(new DeleteJobParameter("different"));
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
-    	a2.jobEditTasks.set(0, new SetJobParameter("name","value","SET"));
+    	a2.jobEditTasks.set(0, new DeleteJobParameter("different"));
     	assertFalse(a1.equals(a2));
     	
     	//TODO-gg add clauses comparing other fields
@@ -113,12 +108,12 @@ public class ActionTest
     	
     	Action act = getTestAction();
     	String json = writer.toJson(act);
+
+    	//TODO-gg del
+    	System.out.println(json);
     	
     	Action fromJson = reader.fromJson(json, Action.class);
     	assertEquals(act,fromJson);
-    	
-    	//TODO-gg del
-    	System.out.println(json);
     }
     
 //------------------------------------------------------------------------------

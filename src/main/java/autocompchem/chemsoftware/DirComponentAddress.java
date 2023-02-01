@@ -10,6 +10,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -192,11 +193,8 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
         public JsonElement serialize(DirComponentAddress address, Type typeOfSrc,
               JsonSerializationContext context)
         {
-            JsonObject jsonObject = new JsonObject();
-            
-            jsonObject.addProperty(JSONFIELD, address.toString());
-
-            return jsonObject;
+            JsonPrimitive s = new JsonPrimitive(address.toString());
+            return s;
         }
     }
     
@@ -208,19 +206,8 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
         @Override
         public DirComponentAddress deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException
-        {
-            JsonObject jsonObject = json.getAsJsonObject();
-            
-            if (!jsonObject.has(JSONFIELD))
-            {
-                String msg = "Missing '" + JSONFIELD + "': found a "
-                        + "JSON string that cannot be converted into a "
-                        + "DirComponentAddress.";
-                throw new JsonParseException(msg);
-            }
-            
-            String path = context.deserialize(jsonObject.get(JSONFIELD),
-                    String.class);
+        {   
+            String path = context.deserialize(json, String.class);
             return fromString(path);
         }
     }

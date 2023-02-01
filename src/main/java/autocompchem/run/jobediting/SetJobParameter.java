@@ -1,25 +1,25 @@
 package autocompchem.run.jobediting;
 
+import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.Keyword;
+import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
 
-public class SetJobParameter extends JobParameterEditTask
+public class SetJobParameter implements IJobEditingTask
 {
+	final TaskType task = TaskType.SET_JOB_PARAMETER;
+	
 	/**
 	 * The value to set for the parameter.
 	 */
-	final Object newValue;
+	final NamedData parameter;
+
 	
 //------------------------------------------------------------------------------
 	
-	/**
-	 * Constructor
-	 * @param name the name of the job parameter to create or change.
-	 * @param newValue the value to assign to the parameter.
-	 */
-	public SetJobParameter(String name, Object newValue) 
+	public SetJobParameter(NamedData parameter) 
 	{
-		super(name, TaskType.SET);
-		this.newValue = newValue;
+		this.parameter = parameter;
 	}
 	
 //------------------------------------------------------------------------------
@@ -38,10 +38,7 @@ public class SetJobParameter extends JobParameterEditTask
  	    
  	    SetJobParameter other = (SetJobParameter) o;
  	    
- 	    if (!this.newValue.equals(other.newValue))
- 	    	return false;
- 	    
- 	    return super.equals(o);
+ 	    return this.parameter.equals(other.parameter);
     }
 	
 //------------------------------------------------------------------------------

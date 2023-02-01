@@ -151,7 +151,6 @@ public class DirComponentAddressTest
     	
     	DirComponentAddress act = getTestAddress();
     	String json = writer.toJson(act);
-    	
     	DirComponentAddress fromJson = reader.fromJson(json, 
     			DirComponentAddress.class);
     	assertEquals(act,fromJson);

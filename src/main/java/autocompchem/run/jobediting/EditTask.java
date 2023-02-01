@@ -27,10 +27,8 @@ import autocompchem.run.ShellJob;
 /**
  * Base class for any task wanting to edit jobs.
  */
-public abstract class EditTask implements IChangesSettings
+public abstract class EditTask implements IJobEditingTask
 {
-	public static enum TaskType {SET, DELETE, INHERIT}
-
 	/**
 	 * The thing to edit
 	 */
