@@ -157,10 +157,13 @@ public class ActionApplier
     	}
     	
     	// Modify job settings
+    	//TODO-gg
+    	/*
     	for (JobEditTask jet : action.jobEditTasks)
     	{
     		jet.applyChange(focusJob);
     	}
+    	*/
     	
     	//NB: any data that may be needed to restart of fix things should be taken
     	// before resetting the jobs.

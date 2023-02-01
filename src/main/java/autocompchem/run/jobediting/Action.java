@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.run.ActionConstants;
 import autocompchem.run.EvaluationJob;
@@ -136,7 +137,7 @@ public class Action implements Cloneable
     /**
      * Tasks to perform on action's object jobs
      */
-    List<JobEditTask> jobEditTasks = new ArrayList<JobEditTask>();
+    List<IChangesSettings> jobEditTasks = new ArrayList<IChangesSettings>();
     
     /**
      * List of job steps to prepend to the action's object job.
@@ -268,10 +269,9 @@ public class Action implements Cloneable
     /**
      * Appends a task that edits a feature of the action's object job.
      */
-    public void addJobEditingTask(String targetRef, TargetType targetType, 
-    		Object newValue)
+    public void addJobEditingTask(IChangesSettings jet)
     {
-    	jobEditTasks.add(new JobEditTask(targetRef, targetType, newValue));
+    	jobEditTasks.add(jet);
     }
     
 //------------------------------------------------------------------------------

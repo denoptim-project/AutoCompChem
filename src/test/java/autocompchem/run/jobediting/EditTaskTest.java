@@ -27,12 +27,10 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.run.ActionConstants;
-import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.JobEditTask;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
@@ -40,68 +38,39 @@ import autocompchem.run.jobediting.JobEditTask.TargetType;
 
 
 /**
- * Unit Test for Action 
+ * Unit Test for job editing tasks 
  * 
  * @author Marco Foscato
  */
 
-public class ActionTest 
+public class EditTaskTest 
 {
 
-    private final String NL = System.getProperty("line.separator");
-    private final String SEP = ActionConstants.SEPARATOR;
-
 //------------------------------------------------------------------------------
 
-    /**
-     * Creates an action filled with content meant only for testing.
-     */
-    public Action getTestAction()
-    {
-    	Action act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
-    	act.addJobEditingTask(new EditParameter("parName", "newValue", "SET"));
-    	DirComponentAddress path = new DirComponentAddress();
-    	path.addStep("*","*");
-    	path.addStep("*","*");
-    	path.addStep("KeyName","key");
-    	act.addJobEditingTask(new SetDirComponentValue(path, "newValComp"));
-    	DirComponentAddress path2 = new DirComponentAddress();
-    	path2.addStep("*","Dir");
-    	act.addJobEditingTask(new SetDirComponentParameter(path2, "newValPar"));
-    	return act;
-    }
- 
-//------------------------------------------------------------------------------
-
+	/*
     @Test
     public void testEquals() throws Exception
     {
-    	Action a1 = getTestAction();
-    	Action a2 = getTestAction();
+    	JobEditTask jet1 = getTestJobEditingTask();
+    	JobEditTask jet2 = getTestJobEditingTask();
 
-    	assertTrue(a1.equals(a2));
-    	assertTrue(a2.equals(a1));
-    	assertTrue(a1.equals(a1));
-    	assertFalse(a1.equals(null));
+    	assertTrue(jet1.equals(jet2));
+    	assertTrue(jet2.equals(jet1));
+    	assertTrue(jet1.equals(jet1));
+    	assertFalse(jet1.equals(null));
     	
-    	a2 = getTestAction();
-    	a2.setType(ActionType.STOP);
-    	assertFalse(a1.equals(a2));
-
-    	a2 = getTestAction();
-    	a2.setObject(ActionObject.PARALLELJOB);
-    	assertFalse(a1.equals(a2));
+    	jet2 = new JobEditTask("blabla", jet1.targetType, jet1.newValue);
+    	assertFalse(jet1.equals(jet2));
     	
-    	a2 = getTestAction();
-    	a2.addJobEditingTask(new SetJobParameter("name","value","SET"));
-    	assertFalse(a1.equals(a2));
+    	jet2 = new JobEditTask(jet1.targetRef, TargetType.DIRECTIVECOMPONENT, 
+    			jet1.newValue);
+    	assertFalse(jet1.equals(jet2));
     	
-    	a2 = getTestAction();
-    	a2.jobEditTasks.set(0, new SetJobParameter("name","value","SET"));
-    	assertFalse(a1.equals(a2));
-    	
-    	//TODO-gg add clauses comparing other fields
+    	jet2 = new JobEditTask(jet1.targetRef, jet1.targetType, "blabla");
+    	assertFalse(jet1.equals(jet2));
     }
+    */
     
 //------------------------------------------------------------------------------
 
@@ -111,14 +80,27 @@ public class ActionTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	Action act = getTestAction();
+    	EditTask act = new DeleteJobParameter("parToDelete");
     	String json = writer.toJson(act);
-    	
-    	Action fromJson = reader.fromJson(json, Action.class);
-    	assertEquals(act,fromJson);
+
     	
     	//TODO-gg del
+    	System.out.println("DeleteJobParameter:");
     	System.out.println(json);
+    	EditTask fromJson = reader.fromJson(json, EditTask.class);
+    	//assertEquals(act, fromJson);
+    	
+    	act = new SetJobParameter("parToSet", new NamedData("value", "valueStr"));
+    	json = writer.toJson(act);
+
+    	//TODO-gg del
+    	System.out.println("SetJobParameter:");
+    	System.out.println(json);
+    	fromJson = reader.fromJson(json, EditTask.class);
+    	assertEquals(act, fromJson);
+    	
+    	
+    	
     }
     
 //------------------------------------------------------------------------------

@@ -5,10 +5,9 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Job;
 
 /**
- * Class representing the editing of something in a {@link Job}.
- * 
- * @author Marco Foscato
+ * Class for any task that wants to change something in a {@link Job}.
  */
+
 public class JobEditTask 
 {
 	public enum TargetType {PARAMETER, DIRECTIVECOMPONENT};

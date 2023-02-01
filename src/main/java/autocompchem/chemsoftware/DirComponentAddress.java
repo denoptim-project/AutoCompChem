@@ -116,6 +116,10 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
 	
 //------------------------------------------------------------------------------
 
+	/**
+	 * Returns a customized string meant to be short and human readable, while 
+	 * easy to parse and compatible with JSON serialization.
+	 */
 	@Override
 	public String toString()
 	{
@@ -129,6 +133,26 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
 				sb.append(PLACESEPARATOR);
 		}
 		return sb.toString();
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Parses the string obtained by {@link #toString()} method into an 
+	 * instance.
+	 * @return the instance.
+	 */
+	public static DirComponentAddress fromString(String path)
+	{
+		DirComponentAddress address = new DirComponentAddress();
+        String[] places = path.trim().split("\\"+PLACESEPARATOR);
+        for (int i=0; i<places.length; i++)
+        {
+        	String[] parts = places[i].trim().split("\\"+TYPENAMESEPARATOR);
+        	address.addStep(new DirComponentTypeAndName(parts[1], 
+        			DirectiveComponentType.getEnum(parts[0])));
+        }
+        return address;
 	}
 	
 //------------------------------------------------------------------------------
@@ -193,20 +217,11 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
                         + "JSON string that cannot be converted into a "
                         + "DirComponentAddress.";
                 throw new JsonParseException(msg);
-            }       
-
-            DirComponentAddress address = new DirComponentAddress();
+            }
             
             String path = context.deserialize(jsonObject.get(JSONFIELD),
                     String.class);
-            String[] places = path.trim().split("\\"+PLACESEPARATOR);
-            for (int i=0; i<places.length; i++)
-            {
-            	String[] parts = places[i].trim().split("\\"+TYPENAMESEPARATOR);
-            	address.addStep(new DirComponentTypeAndName(parts[1], 
-            			DirectiveComponentType.getEnum(parts[0])));
-            }
-            return address;
+            return fromString(path);
         }
     }
   
