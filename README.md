@@ -10,16 +10,17 @@ AutoCompChem (or ACC) is a collection of tools used to automatize computational 
    ```
    conda activate acc_devel
    ```
-   Alternatively, if you do not want to use conda, you can install [Maven](https://maven.apache.org/) and JAVA (version 11 or higher) by yerself. You endironment should allow to run the following commands without errors.
+   Alternatively, if you do not want to use conda, you can install [Maven](https://maven.apache.org/) and JAVA (version 11 or higher) by yourself. Your environment should allow to run the following commands without errors.
     ```
     mvn -version
     javac -version
     ```
+    
 2) Download the latest release from [the releases page](https://github.com/denoptim-project/AutoCompChem/releases) and unzip/untar-gz the resulting archive.
 
-3) move inside the resulting folder, which we'll call `$ACC_HOME`
+3) move inside the resulting folder. The pathname of this folder is here represented by `<your_path_to_ACC>`. Remember to replace `<your_path_to_ACC>` with the appropriate pathname in any following command.
     ```
-    cd $ACC_HOME
+    cd <your_path_to_ACC>
     ```
 4) Build the project and run all tests.
     ```
@@ -28,10 +29,10 @@ AutoCompChem (or ACC) is a collection of tools used to automatize computational 
 5) If the above command terminates successfully, you are done. AutoCompChem is ready to be used.
 
 ## Usage
-Say you have installed AutoCompChem inside a folder that we'll refer to as the `$ACC_HOME` folder. This is how to launch any functionality of the tool by executing the Main class if the `$version` you have installed:
+To launch any functionality of the tool you execute the following command, where `<your_path_to_ACC>` and `<version>` have to be replaced with the appropriate strings that depend on your file system and on the version of AutoCompChem that you have installed:
 
 ```
-java -jar $ACC_HOME/target/autocompchem-${version}-jar-with-dependencies.jar
+java -jar <your_path_to_ACC>/target/autocompchem-<version>-jar-with-dependencies.jar
 ```
 Executing the above command will print the usage instructions. In particular, use the '-h' option to get help.
 
