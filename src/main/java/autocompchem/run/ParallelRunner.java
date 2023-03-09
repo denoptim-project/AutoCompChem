@@ -200,9 +200,9 @@ public class ParallelRunner
     {
     	this.master = master;
         this.todoJobs = todoJobs;
-        this.nThreads = Math.min(poolSize,todoJobs.size());
+        this.nThreads = Math.min(poolSize, todoJobs.size());
         
-        initializeExecutor();
+        initializeExecutor(true);
 
         // Add a shutdown mechanism to kill the master thread and its subjobs
         // including planned ones.
@@ -216,7 +216,7 @@ public class ParallelRunner
      * This initialization has to be done after defining the list of jobs to do,
      * i.e., after assigning a value to <code>todoJobs</code>.
      */
-    private void initializeExecutor()
+    private void initializeExecutor(boolean reserveThreadsForMonitors)
     {
     	notificationId.set(0);
         futureJobs = new ArrayList<>();
@@ -229,7 +229,10 @@ public class ParallelRunner
         int nMonitors = countMonitoringJobs(todoJobs);
         if (nMonitors > 0)
         {
-        	nThreads = nThreads - nMonitors;
+        	if (reserveThreadsForMonitors)
+        	{
+        		nThreads = nThreads - nMonitors;
+        	}
         	stpeMonitoring =  new ScheduledThreadPoolExecutor(nMonitors, 
         			threadFactory, 
                  	new RejectedExecHandlerImpl());
@@ -668,7 +671,7 @@ public class ParallelRunner
 		            		lock.notify();
 		            	}
 						// Refresh status of runner to prepare for new start
-						initializeExecutor();
+						initializeExecutor(false);
 						break;
 						
 					case STOP:

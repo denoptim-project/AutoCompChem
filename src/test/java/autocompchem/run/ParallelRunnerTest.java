@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -135,8 +136,7 @@ public class ParallelRunnerTest
     		if (debug)
     		{
 	    		date = new Date();
-	    		System.out.println("RUNNING TestJobLog: "+df.format(date));
-	    		System.out.println("Pathname: "+stdout);
+	    		System.out.println("RUNNING TestJobLog: "+df.format(date)+ " Pathname: "+stdout);
     		}
     		
     		// The dummy command will just ping every N-milliseconds
@@ -146,6 +146,7 @@ public class ParallelRunnerTest
     		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
     		Task tsk = new Task();
     		tsk.prefix = getParameter(PREFIX).getValueAsString();
+    		
     		stpe.scheduleAtFixedRate(tsk, delay, period,
     				TimeUnit.MILLISECONDS);
     		
@@ -184,7 +185,7 @@ public class ParallelRunnerTest
     /*
      * Only meant to test the private class TestJob
      */
-    
+
     public void testPrivateClass() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -389,7 +390,7 @@ public class ParallelRunnerTest
     /*
      * Here we test the request to redo (re-submit) the parallel batch upon
      * force-terminating all of it. This is the scenario where a monitoring
-     * job detects a situation that an redo-type of action.
+     * job detects a situation that triggers a redo-type of action.
      */
     @Test
     public void testRedoUponNotification() throws Exception
@@ -400,7 +401,7 @@ public class ParallelRunnerTest
         
         // A "long-lasting" job that will be evaluated
         String logOnProductionJob = roothName+"_production";
-        TestJob productionJob = new TestJob(logOnProductionJob,5,0,240);
+        TestJob productionJob = new TestJob(logOnProductionJob,5,0,100);
         productionJob.setUserDir(tempDir);
         
         // Conditional rerun 1
@@ -418,7 +419,7 @@ public class ParallelRunnerTest
         		InfoChannelType.LOGFEED);
         Action act2 = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
         newPrefix = "LAST-";
-        act.addJobEditingTask(new SetJobParameter(
+        act2.addJobEditingTask(new SetJobParameter(
         		new NamedData(PREFIX, newPrefix)));
         Situation sit2 = new Situation("SitTyp", "Sit-TWO", 
         		new ArrayList<ICircumstance>(Arrays.asList(c2)),act2);
@@ -444,9 +445,9 @@ public class ParallelRunnerTest
         //monitoringJob.setParameter(ParameterConstants.VERBOSITY, "1");
         
         // The main job
-        Job main = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job main = JobFactory.createJob(RunnableAppID.ACC, 5, true);
         main.setParameter("WALLTIME", "10");
-        //main.setParameter(ParameterConstants.VERBOSITY, "3");
+        //main.setParameter(ParameterConstants.VERBOSITY, "1");
         main.addStep(productionJob);
         main.addStep(monitoringJob);
         
@@ -454,7 +455,7 @@ public class ParallelRunnerTest
         // and restarted too
         for (int i=1; i<5; i++) 
         {
-        	TestJob j = new TestJob(roothName+i,3,0,200);
+        	TestJob j = new TestJob(roothName+i,3,0,100);
         	j.setUserDir(tempDir);
         	main.addStep(j);
         }
@@ -463,12 +464,28 @@ public class ParallelRunnerTest
         
         main.run();
         
+        /* Job_#0.1 is the production job (the one monitored)
+         * Job_#0.2 is the monitoring job
+         * Job_#0.3 is a sibling writing on testjob.log1
+         * Job_#0.4 is a sibling writing on testjob.log2
+         * Job_#0.5 is a sibling writing on testjob.log3
+         * Job_#0.6 is a sibling but does not run (not enough threads to start it)
+         */
+        
         assertEquals(2, FileUtils.find(tempDir, "Job_#0.1*", true).size(), 
         		"Number of folders for production job");
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.3*", true).size(), 
+        		"Number of folders for production job");
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.4*", true).size(), 
+        		"Number of folders for production job");
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.5*", true).size(), 
+        		"Number of folders for production job");
+        assertEquals(4, FileUtils.find(tempDir, "*_1", true).size(), 
+        		"Number of folders from first run");
+        assertEquals(4, FileUtils.find(tempDir, "*_2", true).size(), 
+        		"Number of folders from first run");
         assertEquals(3, FileUtils.find(tempDir, "testjob.log_production").size(), 
         		"Number of files for production job");
-        assertEquals(2, FileUtils.find(tempDir, "*_1", true).size(), 
-        		"Number of folders from first run");
     }
     
 //-----------------------------------------------------------------------------

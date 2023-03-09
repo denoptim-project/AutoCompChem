@@ -123,7 +123,7 @@ public class ActionApplier
     	if (aType==ActionType.STOP)
     		return;
     	
-    	//TODO-gg this is where action's setting will have to ass additional rules
+    	//TODO-gg this is where action's setting will have to add additional rules
     	Set<File> filesToKeep = new HashSet<File>();
     	
     	// Create copy of previous data from jobs
@@ -158,13 +158,10 @@ public class ActionApplier
     	}
     	
     	// Modify job settings
-    	//TODO-gg
-    	/*
-    	for (JobEditTask jet : action.jobEditTasks)
+    	for (IJobEditingTask jet : action.jobEditTasks)
     	{
     		jet.applyChange(focusJob);
     	}
-    	*/
     	
     	//NB: any data that may be needed to restart of fix things should be taken
     	// before resetting the jobs.
