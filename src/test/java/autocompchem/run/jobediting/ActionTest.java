@@ -31,6 +31,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.jobediting.DataArchivingRule.Type;
 
 
 /**
@@ -55,6 +56,8 @@ public class ActionTest
     	act.addJobEditingTask(new DeleteJobParameter("NameOfParamToRemove"));
     	act.addJobEditingTask(new SetJobParameter(
     			new NamedData("ParamToSet", "valueOfParam")));
+    	act.addJobArchivingDetails(new DataArchivingRule(Type.COPY, "toCp*"));
+    	act.addJobArchivingDetails(new DataArchivingRule(Type.DELETE, "toDel*"));
     	return act;
     }
  
@@ -87,7 +90,15 @@ public class ActionTest
     	a2.jobEditTasks.set(0, new DeleteJobParameter("different"));
     	assertFalse(a1.equals(a2));
     	
-    	//TODO-gg add clauses comparing other fields
+    	a2 = getTestAction();
+    	a2.jobArchivingRules.set(0, new DataArchivingRule(Type.MOVE, "toCp*"));
+    	assertFalse(a1.equals(a2));
+    	
+    	a2 = getTestAction();
+    	a2.addJobArchivingDetails(new DataArchivingRule(Type.MOVE, "toCp*"));
+    	assertFalse(a1.equals(a2));
+    	
+    	//TODO-gg add clauses comparing other fields, is the any missing one?
     }
     
 //------------------------------------------------------------------------------

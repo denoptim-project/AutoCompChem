@@ -23,11 +23,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import autocompchem.run.ActionConstants;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
+import autocompchem.run.jobediting.DataArchivingRule.Type;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.WorkerConstants;
 
@@ -137,16 +140,18 @@ public class Action implements Cloneable
     List<IJobEditingTask> jobEditTasks = new ArrayList<IJobEditingTask>();
     
     /**
-     * List of job steps to prepend to the action's object job.
+     * List of job steps to pre-pend (i.e., append before) to the action's 
+     * object job.
      */
     List<Job> preliminarySteps = new ArrayList<Job>();
     
     /**
-     * Task to perform to archive previous data from action's object job.
-     * Here "archive" means "keep a copy so we do not overwrite previous data".
+     * Details on how to archive previous data from action's object job.
+     * Here "archive" means "keep a copy so we do not overwrite previous data",
+     * and possibly remove unneeded data.
      */
-    List<JobArchiviationTask> jobArchiviationTasks = 
-    		new ArrayList<JobArchiviationTask>();
+    List<DataArchivingRule> jobArchivingRules = 
+    		new ArrayList<DataArchivingRule>();
     
     /**
      * List of settings that prepended job steps should inherit from the 
@@ -274,6 +279,35 @@ public class Action implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * Appends archiving details, i.e., rules defining what to do with files 
+     * found in the job's directory when performing the action. Typically, we
+     * want to archive some data (i.e., keep a copy to avoid overwrite data from
+     * previous runs of the job), copy (i.e., keep a snapshot of previous data),
+     * or delete previous data.
+     */
+    public void addJobArchivingDetails(DataArchivingRule jad)
+    {
+    	jobArchivingRules.add(jad);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Collects all the patterns for filenames for a given type of data 
+     * archiving task.
+     * @return the list of patterns.
+     */
+    public Set<String> getFilenamePatterns(Type type)
+    {
+    	return jobArchivingRules.stream()
+    		.filter(r -> r.getType().equals(type))
+    		.map(r -> r.getPattern())
+    		.collect(Collectors.toSet());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Return the type of this action.
      * @return the type.
      */
@@ -348,6 +382,12 @@ public class Action implements Cloneable
  		   if (!this.jobEditTasks.get(i).equals(other.jobEditTasks.get(i)))
  			   return false;
  	   
+ 	   if (this.jobArchivingRules.size()!=other.jobArchivingRules.size())
+ 		   return false;
+ 	   
+ 	   for (int i=0; i<this.jobArchivingRules.size(); i++)
+ 		   if (!this.jobArchivingRules.get(i).equals(other.jobArchivingRules.get(i)))
+ 			   return false;
  	   
  	   return true;
     }
