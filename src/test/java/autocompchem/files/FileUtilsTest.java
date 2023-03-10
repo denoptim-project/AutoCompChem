@@ -71,6 +71,12 @@ public class FileUtilsTest
     	assertEquals(6, FileUtils.find(tempDir, "tt*", false).size());
     	assertEquals(6, FileUtils.find(tempDir, "ttt*").size());
     	assertEquals(3, FileUtils.find(tempDir, "*.log").size());
+    	assertEquals(3, FileUtils.find(tempDir, "*.in").size());
+    	assertEquals(0, FileUtils.find(tempDir, "*.*", 0, true).size());
+    	assertEquals(3, FileUtils.find(tempDir, "*.*", 1, true).size());
+    	assertEquals(6, FileUtils.find(tempDir, "*.*", 2, true).size());
+    	assertEquals(3, FileUtils.find(tempDir, "ttt*", 1, true).size());
+    	assertEquals(6, FileUtils.find(tempDir, "ttt*", 2, true).size());
     }
 	
 //------------------------------------------------------------------------------

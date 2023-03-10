@@ -18,6 +18,9 @@ package autocompchem.files;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -137,7 +140,7 @@ public class FileUtils
     /**
      * Find all files/folders in a folder tree and keep only those with a 
      * filename 
-     * containing the given string. It assumes an existing folder if given
+     * containing the given string. It assumes an existing folder is given
      * as argument.
      * @param root folder from where the search should start
      * @param str string to be contained in the target file's name. '*' is used
@@ -145,84 +148,112 @@ public class FileUtils
      * any character. Use it only at the beginning (*blabla), at the end 
      * (blabla*), or in both places (*blabla*). If no '*' is given the third 
      * case is chosen by default: filename must contain the query string.
-     * @param countFolders <code>true</code> to count also folders.
+     * @param collectFolders <code>true</code> to collect also folders.
      * @return the list of files
      */
 
-    public static List<File> find(File root, String str, boolean countFolders)
+    public static List<File> find(File root, String str, boolean collectFolders)
     {
-        String originalStr = str;
-        boolean starts = false;
+    	return find(root, str, Integer.MAX_VALUE, collectFolders);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Find all files/folders in a folder tree and keep only those with a 
+     * filename 
+     * containing the given string. It assumes an existing folder is given
+     * as argument.
+     * @param root folder from where the search should start
+     * @param pattern string to be contained in the target file's name. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
+     * case is chosen by default: filename must contain the query string.
+     * @param collectFolders <code>true</code> to collect also folders.
+     * @return the list of files
+     */
+
+    public static List<File> find(File root, String pattern, Integer maxdepth, 
+    		boolean collectFolders)
+    {
+    	boolean starts = false;
         boolean ends = false;
         boolean mid = true;
-        if (str.startsWith("*") && (!str.endsWith("*")))
+        if (pattern.startsWith("*") && (!pattern.endsWith("*")))
         {
             ends = true;
             mid = false;
-            str = str.substring(1);        
-        } else if (str.endsWith("*") && (!str.startsWith("*")))
+            pattern = pattern.substring(1);        
+        } else if (pattern.endsWith("*") && (!pattern.startsWith("*")))
         {
             starts = true;
             mid = false;
-            str = str.substring(0,str.length() - 1);
-        } else if (str.startsWith("*") && str.endsWith("*"))
+            pattern = pattern.substring(0,pattern.length() - 1);
+        } else if (pattern.startsWith("*") && pattern.endsWith("*"))
         {
             starts = false;
             ends = false;
             mid = true;
-            str = str.substring(1,str.length() - 1);
-        } else if ((!str.startsWith("*")) && (!str.endsWith("*")))
+            pattern = pattern.substring(1,pattern.length() - 1);
+        } else if ((!pattern.startsWith("*")) && (!pattern.endsWith("*")))
         {
             starts = false;
             ends = false;
             mid = true;
         }
 
-        //Get the list of files in it
-        List<File> ls = new ArrayList<File>(Arrays.asList(root.listFiles()));
-
-        //Loop on files in root and collect targets
-        List<File> targets = new ArrayList<File>();
-        for (File f : ls)
+        String finalPattern = pattern;
+        boolean finalStart = starts;
+        boolean finalMid = mid;
+        boolean finalEnds = ends;
+        List<File> result = new ArrayList<File>();
+        try {
+			Files.walk(root.toPath(), maxdepth)
+				.filter(p -> !p.equals(root.toPath()))
+				.filter(p -> matchesPattern(p,
+						finalPattern, finalStart, finalMid, finalEnds, 
+						collectFolders))
+				.forEach(p -> result.add(p.toFile()));
+		} catch (IOException e) {
+			return result;
+		}
+        
+        return result;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks is a path matches the criteria for collecting it.
+     * @param path the candidate path
+     * @param pattern the pattern to match (without wild card)
+     * @param starts if the pattern should be at the beginning of the file name.
+     * @param contains if the pattern should be in the mids of the file name.
+     * @param ends if the pattern should be at the end of the file name.
+     * @param collectFolders if folders should be collected as well.
+     * @return <code>true</code> if the path matches the criteria.
+     */
+    private static boolean matchesPattern(Path path,
+    		String pattern, boolean starts, boolean contains, boolean ends,
+    		boolean collectFolders)
+    {
+    	File file = path.toFile();
+    	if (file.isDirectory() && !collectFolders)
         {
-            if (f.isDirectory())
-            {
-                //recursion for folders
-                List<File> fromInnerLevel = find(f,originalStr);
-                targets.addAll(fromInnerLevel);
-                if (countFolders)
-                {
-                    if (starts)
-                    {
-                        if (f.getName().startsWith(str))
-                            targets.add(f);
-                    } else if (ends) 
-                    {
-                        if (f.getName().endsWith(str))
-                            targets.add(f);
-                    } else if (mid)
-                    {
-                        if (f.getName().contains(str))
-                            targets.add(f);
-                    }
-                }
-            } else {
-                if (starts)
-                {
-                    if (f.getName().startsWith(str))
-                        targets.add(f);
-                } else if (ends) 
-                {
-                    if (f.getName().endsWith(str))
-                        targets.add(f);
-                } else if (mid)
-                {
-                    if (f.getName().contains(str))
-                        targets.add(f);
-                }
-            }
+    		return false;
         }
-        return targets;
+        if (starts)
+        {
+            return file.getName().startsWith(pattern);
+        } else if (ends) 
+        {
+            return file.getName().endsWith(pattern);
+        } else if (contains)
+        {
+            return file.getName().contains(pattern);
+        }
+        return false;
     }
     
 //------------------------------------------------------------------------------
