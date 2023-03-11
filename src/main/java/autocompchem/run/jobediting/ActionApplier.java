@@ -111,7 +111,7 @@ public class ActionApplier
 	 * @param action The action requested by the trigger.
 	 * @param focusJob The job that failed or caused the triggering of the 
 	 * action.
-	 * @param focusJobStepId the index of the focus job in its list of steps.
+	 * @param focusJobStepId the index of the failing step in the focus job.
 	 * @param todoJobs list of jobs that may be altered by the action. None
 	 * of these jobs should be running.
 	 * @param restartCounter an unique counter used to archive data from 
@@ -145,7 +145,7 @@ public class ActionApplier
     	Job orinallyFailingStep = null;
     	if (focusJob.getNumberOfSteps()>0)
     	{
-    		orinallyFailingStep = focusJob.getStep(0);
+    		orinallyFailingStep = focusJob.getStep(0); // we have trimmed the steps
     	} else {
     		orinallyFailingStep = focusJob;
     	}
@@ -214,12 +214,12 @@ public class ActionApplier
     		Set<String> fileNamePatternToArchive,
     		Set<String> fileNamePatternToTrash)
     {
-		for (Job j : jobs)
+		for (Job job : jobs)
 		{
-			if (j instanceof MonitoringJob)
+			if (job instanceof MonitoringJob)
 				continue;
 			
-			archivePreviousResults(j, restartCounter, fileNamePatternToCopy,
+			archivePreviousResults(job, restartCounter, fileNamePatternToCopy,
 					fileNamePatternToArchive, fileNamePatternToTrash);
 		}
     }
@@ -344,9 +344,23 @@ public class ActionApplier
     			+ "Job_" + job.getId() + "_" + restartCounter);
         if (!archiveFolder.mkdirs())
         {
-            Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
-            		+ archiveFolder+ "' for archiving partial results of "
-            		+ "job.", -1);
+        	//When jobs are not related to a common parent job, their IDs are
+        	//not guaranteed to be unique, so we try to use the hash.
+        	
+        	String str = "WARNING: folder '" + archiveFolder + "' exists. "
+        			+ "Trying to use folder.";
+        	
+        	archiveFolder = new File(path + File.separator 
+        			+ "Job_" + job.getHashCodeSnapshot() + "_" + restartCounter);
+
+        	System.out.println(str + archiveFolder + "'.");
+        			
+        	if (!archiveFolder.mkdirs())
+            {
+	            Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
+	            		+ archiveFolder+ "' for archiving partial results of "
+	            		+ "job.", -1);
+            }
         }
         String pathToArchive = archiveFolder.getAbsolutePath() 
         		+ File.separator;

@@ -68,6 +68,15 @@ public class Job implements Runnable
 	protected int jobId = 0;
 	
 	/**
+	 * An integer derived from the hashcode of this instance, but that is only a
+	 * snapshot of the hashcode at construction time. This is used to 
+	 * distinguish jobs that are nor related, i.e., are not siblings nor 
+	 * do they belong to the same family tree (connected by parent-child 
+	 * relations).
+	 */
+	private int jobHashCode;
+	
+	/**
 	 * Counter for subjobs
 	 */
 	private AtomicInteger idSubJob = new AtomicInteger(1);
@@ -245,6 +254,7 @@ public class Job implements Runnable
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = RunnableAppID.UNDEFINED;
+        this.jobHashCode = hashCode();
     }
 
 //------------------------------------------------------------------------------
@@ -565,11 +575,7 @@ public class Job implements Runnable
      */
     
     private void updateStdoutStdErr()
-    {
-        //TODO: replace with unique ID: atomInteger for all jobs
-        
-        int hc = this.hashCode();
-        
+    {   
         String dir;
         if (customUserDir != null)
         {
@@ -580,12 +586,18 @@ public class Job implements Runnable
         	dir = System.getProperty("user.dir");
         }
         
-        stdout = new File(dir + SEP + "Job" +hc+".log");
-        stderr = new File(dir + SEP + "Job" +hc+".err");
-        exposedOutput.putNamedData( 
-        		new NamedData("LOG", NamedDataType.FILE,stdout));
-        exposedOutput.putNamedData( 
-        		new NamedData("ERR", NamedDataType.FILE,stderr));
+        if (parentJob!=null)
+        {
+	        stdout = new File(dir + SEP + "Job" + getId() +".log");
+	        stderr = new File(dir + SEP + "Job" + getId() +".err");
+        } else {
+	        stdout = new File(dir + SEP + "Job" + jobHashCode +".log");
+	        stderr = new File(dir + SEP + "Job" + jobHashCode +".err");
+        }
+        exposedOutput.putNamedData(
+        		new NamedData("LOG", NamedDataType.FILE, stdout));
+        exposedOutput.putNamedData(
+        		new NamedData("ERR", NamedDataType.FILE, stderr));
     }
 
 //------------------------------------------------------------------------------   
@@ -636,6 +648,7 @@ public class Job implements Runnable
     public void setParent(Job parentJob)
     {
     	this.parentJob = parentJob;
+    	updateStdoutStdErr();
     }
     
 //------------------------------------------------------------------------------
@@ -695,6 +708,20 @@ public class Job implements Runnable
   			return steps.get(0).getInnermostFirstStep();
   		return this;
   	}
+   
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the hash code of this job. This is a sort of identifier but it is 
+     * not guaranteed to be unique. It most often is, but there is no guarantee.
+     * See {@link Object#hashCode()}.
+     * @return the hash code at construction time.
+     */
+    
+    public int getHashCodeSnapshot()
+    {
+    	return jobHashCode;
+    }
     
 //------------------------------------------------------------------------------
     

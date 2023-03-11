@@ -36,7 +36,7 @@ import autocompchem.worker.WorkerConstants;
 
 /**
  * This class defines actions altering a workflow, i.e., a
- * chain of jobs. Actions are events triggered upon  
+ * chain of jobs. Actions are typically events triggered upon  
  * perception of a situation when evaluating a job. 
  * Since the evaluation itself is an {@link EvaluationJob},
  * there are two jobs an action is related to: the <i>evaluating job</i> (i.e., 
@@ -51,7 +51,7 @@ import autocompchem.worker.WorkerConstants;
  */
 
 
-//TODO-gg for the moment, action's objects can only in the workflow of the focus
+//TODO-gg for the moment, action's objects can only operate in the workflow of the focus
 // job, not in that of the evaluating job.
 //TODO-gg Should we add the possibility to have the evaluating job (and job in
 // its workflow, i.e., +/-N in the evaluating job's workflow or the parent of 

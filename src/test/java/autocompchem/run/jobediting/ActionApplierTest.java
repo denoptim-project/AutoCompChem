@@ -2,6 +2,7 @@ package autocompchem.run.jobediting;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2023  Marco Foscato 
@@ -36,6 +37,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
+import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.JobFactory;
+import autocompchem.run.jobediting.DataArchivingRule.Type;
 
 
 /**
@@ -117,9 +121,6 @@ public class ActionApplierTest
     	Set<String> ratternaToTrash = new HashSet<>(Arrays.asList(
     			"*"+labD+"E", "*"+labD+"M*", labD+"S*"));
     	
-    	//TODO-gg del
-    	System.out.println(tempDir);
-    	
     	ActionApplier.archivePreviousResults(job, 6, ratternaToCopy, 
     			ratternaToArchive, ratternaToTrash);
     	
@@ -132,6 +133,74 @@ public class ActionApplierTest
         assertEquals(9, FileUtils.find(archiveDir, "*toMv*", true).size());
         assertEquals(18, FileUtils.find(tempDir, "*toCp*", 2, true).size());
         assertEquals(0, FileUtils.find(tempDir, "*toDel*", true).size());
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testPerformAction_ArchivingTasks()  throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
+        
+        // Make a dummy collection of jobs
+    	Job siblingJobA = JobFactory.createJob(RunnableAppID.ACC);
+    	siblingJobA.setUserDirAndStdFiles(tempDir);
+    	Job siblingJobB = JobFactory.createJob(RunnableAppID.ACC);
+    	siblingJobB.setUserDirAndStdFiles(tempDir);
+    	Job focusJob = JobFactory.createJob(RunnableAppID.ACC);
+    	focusJob.setUserDirAndStdFiles(tempDir);
+    	//NB: making the jobs be the steps of a parent job would make their IDs
+    	// be unique. Here, we want to test also the capability do deal with 
+    	// a list of jobs that are not related by a common parent jobs.
+    	//Job parentJob = JobFactory.createJob(RunnableAppID.ACC);
+    	List<Job> jobs = new ArrayList<>(Arrays.asList(siblingJobA, siblingJobB,
+    			focusJob));
+    	
+    	// Create some dummy files as if they had been created by the jobs
+    	String labM = "toMv";
+    	String labC = "toCp";
+    	String labD = "toDel";
+    	List<String> labels = new ArrayList<>(Arrays.asList(labM,labC,labD));
+    	for (int i=0; i<2; i++)
+    	{
+    		for (String label : labels)
+    		{
+    			writeDummyFile("file"+i+label+"M.dat", "i:"+i+" Label:"+label);
+    			writeDummyFile("file"+i+label+"E", "i:"+i+" Label:"+label);
+    			writeDummyFile(label+"Sfile"+i, "i:"+i+" Label:"+label);
+	    	}
+    	}
+    	writeDummyFile(focusJob.getStdErr(),"Content of focusJob STDERR");
+    	writeDummyFile(focusJob.getStdOut(),"Content of focusJob STDOUT");
+    	
+    	writeDummyFile(siblingJobA.getStdErr(),"Content of siblingJobA STDERR");
+    	writeDummyFile(siblingJobA.getStdOut(),"Content of siblingJobA STDOUT");
+    	
+    	writeDummyFile(siblingJobB.getStdErr(),"Content of siblingJobB STDERR");
+    	writeDummyFile(siblingJobB.getStdOut(),"Content of siblingJobB STDOUT");
+    	
+    	// Define the action
+    	Action action = new Action();
+    	action.addJobArchivingDetails(
+    			new DataArchivingRule(Type.DELETE, "*"+labD+"*"));
+    	action.addJobArchivingDetails(
+    			new DataArchivingRule(Type.MOVE, "*"+labM+"*"));
+    	action.addJobArchivingDetails(
+    			new DataArchivingRule(Type.COPY, "*"+labC+"*"));
+    	
+    	// Do the magic
+    	ActionApplier.performAction(action, focusJob, 0, jobs, 1);
+    	
+        assertEquals(3, FileUtils.find(tempDir, "Job_*", true).size());
+        assertEquals(0, FileUtils.find(tempDir, "*toMv*", 1, true).size());
+        assertEquals(6, FileUtils.find(tempDir, "*toMv*", 2, true).size());
+        assertEquals(6, FileUtils.find(tempDir, "*toCp*", 1, true).size());
+        assertEquals(24, FileUtils.find(tempDir, "*toCp*", 2, true).size());
+        assertEquals(0, FileUtils.find(tempDir, "*toDel*", true).size());
+        assertEquals(0, FileUtils.find(tempDir, "*.err", 1, true).size());
+        assertEquals(0, FileUtils.find(tempDir, "*.log", 1, true).size());
+        assertEquals(3, FileUtils.find(tempDir, "*.err", 2, true).size());
+        assertEquals(3, FileUtils.find(tempDir, "*.log", 2, true).size());
     }
     
 //------------------------------------------------------------------------------
