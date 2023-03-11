@@ -146,6 +146,10 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
 	public static DirComponentAddress fromString(String path)
 	{
 		DirComponentAddress address = new DirComponentAddress();
+		if (path.equals("."))
+		{
+			return address;
+		}
         String[] places = path.trim().split("\\"+PLACESEPARATOR);
         for (int i=0; i<places.length; i++)
         {

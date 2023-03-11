@@ -206,7 +206,6 @@ public class ActionApplierTest
         assertEquals(3, FileUtils.find(tempDir, "*.log", 2, true).size());
     }
     
-    
 //------------------------------------------------------------------------------
       
     @Test

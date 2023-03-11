@@ -51,7 +51,7 @@ public class ActionTest
     public Action getTestAction()
     {
     	Action act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
-    	act.addJobEditingTask(new SetKeyword("*:*|Dir:DirName", 
+    	act.addJobEditingTask(new SetDirectiveComponent("*:*|Dir:DirName", 
     			new Keyword("KeyName", false, 1.234)));
     	act.addJobEditingTask(new DeleteJobParameter("NameOfParamToRemove"));
     	act.addJobEditingTask(new SetJobParameter(

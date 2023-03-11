@@ -37,6 +37,8 @@ import autocompchem.run.ShellJob.ShellJobSerializer;
 import autocompchem.run.jobediting.IJobEditingTask;
 import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskDeserializer;
 import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskSerializer;
+import autocompchem.run.jobediting.SetDirectiveComponent;
+import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -117,6 +119,8 @@ public class ACCJson
     	        		new ParameterStorageDeserializer())
     	        .registerTypeAdapter(IJobEditingTask.class, 
     	        		new IJobEditingTaskDeserializer())
+    	        .registerTypeAdapter(SetDirectiveComponent.class, 
+    	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerDeserializer())
     			.create();

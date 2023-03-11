@@ -400,6 +400,48 @@ public class Directive implements IDirectiveComponent, Cloneable
     	}
     	return comp;
     }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Sets a component in this directive. If a component with the
+     * same name already exists the behavior is this:
+     * <ul>
+     * <li>for {@link Keyword} and {@link DirectiveData}, we set the value to 
+     * that of the argument,</li>
+     * <li>for {@link Directive}s, we overwrite any of the components of the 
+     * existing {@link Directive} with those of the argument.</li>
+     * </ul>
+     * 
+     * @param component
+     */
+    
+    public void setComponent(IDirectiveComponent component)
+    {
+    	switch (component.getComponentType())
+    	{
+	    	case KEYWORD:
+	    	{
+	    		Keyword key = (Keyword) component;
+	    		setKeyword(key);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVEDATA:
+	    	{
+	    		DirectiveData dd = (DirectiveData) component;
+	    		setDataDirective(dd);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVE:
+	    	{
+	    		Directive dir = (Directive) component;
+	    		setSubDirective(dir, true, true, true);
+	    		break;
+	    	}
+    	}
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -452,21 +494,27 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Set or overwrites a single sub directive of this directive. Methods
-     * calling this method must make sure the new sub directive is not a
-     * parent directive of <code>this</code>, otherwise a loop is created.
+     * Set or overwrites a single sub directive of this directive. 
+     * This method makes sure the given directive is not a
+     * parent directive of <code>this</code> or vice versa. This to prevent 
+     * loop-like directive structures.
      * @param dir the new directive.
-     * @param owKeys if <code>true</code> makes this method overwrite the
+     * @param owKeys if <code>true</code> makes this method overwrite all the
      * keywords of the existing directive. 
-     * @param owSubDirs if <code>true</code> makes this method overwrite the
+     * @param owSubDirs if <code>true</code> makes this method overwrite all the
      * sub-directives of the existing directive.
-     * @param owData if <code>true</code> makes this method overwrite the
+     * @param owData if <code>true</code> makes this method overwrite all the
      * data of the existing directive. 
      */
 
     public void setSubDirective(Directive dir, boolean owKeys,
     		boolean owSubDirs, boolean owData)
     {
+    	if (dir.embeds(this) || this.embeds(dir))
+		{
+			throw new IllegalArgumentException("Attempt to create loop "
+					+ "in directives structure.");
+		}
         Directive oldDir = getSubDirective(dir.getName());
         if (oldDir == null)
         {
@@ -485,9 +533,33 @@ public class Directive implements IDirectiveComponent, Cloneable
             if (owData)
             {
                 oldDir.setAllDirectiveDataBlocks(
-                                               dir.getAllDirectiveDataBlocks());
+                		dir.getAllDirectiveDataBlocks());
             }
         }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks if another directive is anywhere embedded in the directives 
+     * structure embedded in this directive.
+     * @param other
+     * @return <code>true</code> if the other directive is either a 
+     * sub-directive of this directive, or is further embedded at any level
+     * in the directives structure.
+     */
+    public boolean embeds(Directive other)
+    {
+    	if (subDirectives.contains(other))
+    	{
+    		return true;
+    	}
+    	for (Directive subDir : subDirectives)
+    	{
+    		if (subDir.embeds(other))
+    			return true;
+    	}
+    	return false;
     }
 
 //-----------------------------------------------------------------------------
@@ -1307,7 +1379,7 @@ public class Directive implements IDirectiveComponent, Cloneable
  	    if (o.getClass() != getClass())
      		return false;
  	   
- 	   Directive other = (Directive) o;
+ 	    Directive other = (Directive) o;
  	   
         if (!this.getName().equals(other.getName()))
         	return false;

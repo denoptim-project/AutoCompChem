@@ -63,20 +63,16 @@ public interface IJobEditingTask
 	        IJobEditingTask result = null;
 	        switch (type)
 	        {
-			case DELETE:
-				break;
-			case INHERIT:
-				break;
 			case REMOVE_JOB_PARAMETER:
 				result = context.deserialize(json, DeleteJobParameter.class);
-				break;
-			case SET:
 				break;
 			case SET_JOB_PARAMETER:
 				result = context.deserialize(json, SetJobParameter.class);
 				break;
 			case SET_KEYWORD:
-				result = context.deserialize(json, SetKeyword.class);
+			case SET_DIRECTIVE:
+			case SET_DIRECTIVEDATA:
+				result = context.deserialize(json, SetDirectiveComponent.class);
 				break;
 			default:
 				throw new IllegalArgumentException("Job editing task '" 

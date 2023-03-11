@@ -588,11 +588,15 @@ public class Job implements Runnable
         
         if (parentJob!=null)
         {
-	        stdout = new File(dir + SEP + "Job" + getId() +".log");
-	        stderr = new File(dir + SEP + "Job" + getId() +".err");
+        	if (stdout==null)
+        		stdout = new File(dir + SEP + "Job" + getId() +".log");
+	        if (stderr==null)
+	        	stderr = new File(dir + SEP + "Job" + getId() +".err");
         } else {
-	        stdout = new File(dir + SEP + "Job" + jobHashCode +".log");
-	        stderr = new File(dir + SEP + "Job" + jobHashCode +".err");
+        	if (stdout==null)
+        		stdout = new File(dir + SEP + "Job" + jobHashCode +".log");
+        	if (stderr==null)
+        		stderr = new File(dir + SEP + "Job" + jobHashCode +".err");
         }
         exposedOutput.putNamedData(
         		new NamedData("LOG", NamedDataType.FILE, stdout));
