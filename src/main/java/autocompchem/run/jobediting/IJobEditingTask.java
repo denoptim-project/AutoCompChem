@@ -82,7 +82,6 @@ public interface IJobEditingTask
 				throw new IllegalArgumentException("Job editing task '" 
         				+ type + "' is not known. Cannot deserialize JSON "
         				+ "element: " + json);
-	        
 	        }
         	return result;
 	    }

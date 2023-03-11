@@ -33,7 +33,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
 
-public class SetJobParameterTest 
+public class InheritJobParameterTest 
 {
 	
 //------------------------------------------------------------------------------
@@ -41,18 +41,15 @@ public class SetJobParameterTest
     @Test
     public void testEquals() throws Exception
     {
-    	SetJobParameter tA = new SetJobParameter(new NamedData("parName", 1.23));
-    	SetJobParameter tB = new SetJobParameter(new NamedData("parName", 1.23));
+    	InheritJobParameter tA = new InheritJobParameter("parName");
+    	InheritJobParameter tB = new InheritJobParameter("parName");
 
     	assertTrue(tA.equals(tA));
     	assertTrue(tA.equals(tB));
     	assertTrue(tB.equals(tA));
     	assertFalse(tA.equals(null));
     	
-    	tB = new SetJobParameter(new NamedData("different", 1.23));
-    	assertFalse(tA.equals(tB));
-    	
-    	tB = new SetJobParameter(new NamedData("parName", 4.56));
+    	tB = new InheritJobParameter("different");
     	assertFalse(tA.equals(tB));
     }
     
@@ -64,10 +61,10 @@ public class SetJobParameterTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	SetJobParameter original = new SetJobParameter(
-    			new NamedData("ParamToSet", "valueOfParam"));
+    	InheritJobParameter original = new InheritJobParameter("parName");
     	String json = writer.toJson(original);
-    	SetJobParameter fromJson = reader.fromJson(json, SetJobParameter.class);
+    	InheritJobParameter fromJson = reader.fromJson(json, 
+    			InheritJobParameter.class);
     	assertEquals(original, fromJson);
     	
     	//TODO-gg del (kept because it could be useful to create functionality tests and document the syntax)
@@ -79,24 +76,35 @@ public class SetJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job job = new Job();
-    	job.setParameter("ParamA", "valueA");
-    	job.setParameter("ParamB", "valueB");
+    	Job sourceJob = new Job();
+    	sourceJob.setParameter("ParamA", "valueA");
+    	sourceJob.setParameter("ParamB", "valueB");
+    	
+    	Job destinationJob = new Job();
+    	destinationJob.setParameter("ParamC", "valueC");
+    	destinationJob.setParameter("ParamB", "oldValueB");
+    	
+    	// Source does not have the parameter required
+    	InheritJobParameter task0 = new InheritJobParameter("NOT_THERE");
+    	task0.inheritSettings(sourceJob, destinationJob);
+    	assertFalse(sourceJob.hasParameter("NOT_THERE"));
+    	assertFalse(destinationJob.hasParameter("NOT_THERE"));
     	
     	// Add new parameter
-    	NamedData parC = new NamedData("ParamC", 1.23);
-    	SetJobParameter task = new SetJobParameter(parC);
-    	task.applyChange(job);
-    	assertTrue(job.hasParameter(parC.getReference()));
-    	assertTrue(parC==job.getParameter(parC.getReference()));
+    	InheritJobParameter task1 = new InheritJobParameter("ParamA");
+    	task1.inheritSettings(sourceJob, destinationJob);
+    	assertTrue(sourceJob.hasParameter("ParamA"));
+    	assertTrue(destinationJob.hasParameter("ParamA"));
+    	assertTrue(sourceJob.getParameter("ParamA").equals(
+    			destinationJob.getParameter("ParamA")));
     	
     	// Replace value of existing one
-    	NamedData newParA = new NamedData("ParamA", "newValue");
-    	SetJobParameter task2 = new SetJobParameter(newParA);
-    	task2.applyChange(job);
-    	assertTrue(job.hasParameter(newParA.getReference()));
-    	assertEquals(newParA.getValue(),
-    			job.getParameter(newParA.getReference()).getValue());
+    	InheritJobParameter task2 = new InheritJobParameter("ParamB");
+    	task2.inheritSettings(sourceJob, destinationJob);
+    	assertTrue(sourceJob.hasParameter("ParamB"));
+    	assertTrue(destinationJob.hasParameter("ParamB"));
+    	assertTrue(sourceJob.getParameter("ParamB").equals(
+    			destinationJob.getParameter("ParamB")));
     }
     
 //------------------------------------------------------------------------------

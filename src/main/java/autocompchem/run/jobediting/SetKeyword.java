@@ -10,6 +10,15 @@ import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Job;
 
+/**
+ * Task that set the {@link Keyword} defined somewhere among the 
+ * {@link Directive}s of a {@link CompChemJob}. Note the difference between
+ * {@link Job}'s parameters and {@link CompChemJob}'s {@link Directive}s and 
+ * their components.
+ */
+
+//TODO-gg make more general? SetDirComponent?
+
 public class SetKeyword implements IJobEditingTask
 {
 	final TaskType task = TaskType.SET_KEYWORD;

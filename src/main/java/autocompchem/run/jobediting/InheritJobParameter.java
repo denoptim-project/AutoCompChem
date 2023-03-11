@@ -8,26 +8,25 @@ import autocompchem.run.Job;
 
 
 /**
- * Task that sets a parameter in a {@link Job}. Note the difference between
- * {@link Job}'s parameters and {@link CompChemJob}'s and their components. This
- * task aims at editing only a single parameter of any job.
+ * Task that copies a parameter from a {@link Job} into another one.
+ * Note the difference between
+ * {@link Job}'s parameters and {@link CompChemJob}'s and their components.
  */
 
-public class SetJobParameter implements IJobEditingTask
+public class InheritJobParameter implements IJobSettingsInheritTask
 {
-	final TaskType task = TaskType.SET_JOB_PARAMETER;
+	final TaskType task = TaskType.INHERIT_JOB_PARAMETER;
 	
 	/**
-	 * The value to set for the parameter.
+	 * The name of the parameter to inherit.
 	 */
-	final NamedData parameter;
-
+	final String paramName;
 	
 //------------------------------------------------------------------------------
 	
-	public SetJobParameter(NamedData parameter) 
+	public InheritJobParameter(String paramName) 
 	{
-		this.parameter = parameter;
+		this.paramName = paramName;
 	}
 	
 //------------------------------------------------------------------------------
@@ -44,17 +43,21 @@ public class SetJobParameter implements IJobEditingTask
  	    if (o.getClass() != getClass())
      		return false;
  	    
- 	    SetJobParameter other = (SetJobParameter) o;
+ 	    InheritJobParameter other = (InheritJobParameter) o;
  	    
- 	    return this.parameter.equals(other.parameter);
+ 	    return this.paramName.equals(other.paramName);
     }
 	
 //------------------------------------------------------------------------------
 
 	@Override
-	public void applyChange(Job job) 
+	public void inheritSettings(Job source, Job destination)
+			throws CloneNotSupportedException 
 	{
-		job.setParameter(parameter);
+		if (source.hasParameter(paramName))
+		{
+			destination.setParameter(source.getParameter(paramName).clone());
+		}
 	}
 	
 //------------------------------------------------------------------------------

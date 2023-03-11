@@ -143,7 +143,7 @@ public class Action implements Cloneable
      * List of job steps to pre-pend (i.e., append before) to the action's 
      * object job.
      */
-    List<Job> preliminarySteps = new ArrayList<Job>();
+    List<Job> prerefinementSteps = new ArrayList<Job>();
     
     /**
      * Details on how to archive previous data from action's object job.
@@ -157,7 +157,8 @@ public class Action implements Cloneable
      * List of settings that prepended job steps should inherit from the 
      * action's object job.
      */
-    List<IJobEditingTask> inheritedSettings = new ArrayList<IJobEditingTask>();
+    List<IJobSettingsInheritTask> inheritedSettings = 
+    		new ArrayList<IJobSettingsInheritTask>();
     
     
 //------------------------------------------------------------------------------
@@ -277,10 +278,29 @@ public class Action implements Cloneable
     }
     
 //------------------------------------------------------------------------------
+    
+    /**
+     * Appends a step in the pre-restart data-refinement workflow. Such workflow
+     * is performed before restarting the original workflow (i.e., before 
+     * trying to re-run the step that failed in the original workflow) 
+     * that triggered this
+     * action: it takes the input that is available at restart time, and 
+     * typically tries to refine it to improve the performance of the original 
+     * workflow.
+     * @param prerefinementStep the job to append to the list of pre-refinement 
+     * steps.
+     */
+    public void addPrerefinementStep(Job prerefinementStep)
+    {
+    	prerefinementSteps.add(prerefinementStep);
+    }
+    
+//------------------------------------------------------------------------------
 
     /**
-     * Appends archiving details, i.e., rules defining what to do with files 
-     * found in the job's directory when performing the action. Typically, we
+     * Appends data archiving details, i.e., rules defining what to do with 
+     * files found in the job's directory when performing the action. 
+     * Typically, we
      * want to archive some data (i.e., keep a copy to avoid overwrite data from
      * previous runs of the job), copy (i.e., keep a snapshot of previous data),
      * or delete previous data.
@@ -288,6 +308,18 @@ public class Action implements Cloneable
     public void addJobArchivingDetails(DataArchivingRule jad)
     {
     	jobArchivingRules.add(jad);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Append a rule defining which settings to copy from the original
+     * workflow into the pre-refinement workflow performed upon restarting
+     * the original workflow from any step that triggered this action.
+     */
+    public void addSettingsInheritedTask(IJobSettingsInheritTask sit)
+    {
+    	inheritedSettings.add(sit);
     }
     
 //------------------------------------------------------------------------------
