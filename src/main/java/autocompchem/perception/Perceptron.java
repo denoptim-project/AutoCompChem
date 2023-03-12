@@ -324,7 +324,6 @@ public class Perceptron
 
             //TODO: write method
 //TODO del
-System.out.println("has txt: " + c.requiresTXTMatch());
 System.out.println("     Child ICircumstance: "+c);
 System.out.println("     Parent Situation: " + n);
 this.printScores();

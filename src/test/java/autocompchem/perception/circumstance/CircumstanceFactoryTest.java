@@ -43,8 +43,7 @@ public class CircumstanceFactoryTest
         assertTrue(c instanceof MatchText, "Subclass of circumstance 1.");
         assertTrue(c.getChannelType().equals(InfoChannelType.OUTPUTFILE), 
         "InfoChannelType for circumstance 1.");
-        
-        
+       
         
         s = InfoChannelType.LOGFEED + " "
         		+ CircumstanceConstants.NOMATCH + " PATTERN";
@@ -54,55 +53,7 @@ public class CircumstanceFactoryTest
 		assertTrue(((MatchText) c).negation, "Negation in circumstance 2");
 		assertTrue(c.getChannelType().equals(InfoChannelType.LOGFEED), 
 		"InfoChannelType for circumstance 2.");
-        
-		
-		
-		s = InfoChannelType.ANY + " "
-				+ CircumstanceConstants.LOOPCOUNTER + " LoopAB1 > 123";
-	    c = CircumstanceFactory.createFromString(s);
-	    assertTrue(((LoopCounter) c).getCounterID().equals("LoopAB1"),
-	    		"Counter name 1");
-	    assertTrue(1000000 < ((LoopCounter) c).getMax(),"Maximum limit 1");
-	    assertEquals(123, ((LoopCounter) c).getMin(),"Minimum limit 1");
-        
-		s = InfoChannelType.ANY + " "
-				+ CircumstanceConstants.LOOPCOUNTER + " LoopAB2 < 123";
-	    c = CircumstanceFactory.createFromString(s);
-	    assertTrue(((LoopCounter) c).getCounterID().equals("LoopAB2"),
-	    		"Counter name 2");
-	    assertTrue(-1000000 > ((LoopCounter) c).getMin(),"Minimum limit 2");
-	    assertEquals(123, ((LoopCounter) c).getMax(),"Maximum limit 2");
-	        
-	    
-	    
-		s = InfoChannelType.ANY + " "
-				+ CircumstanceConstants.LOOPCOUNTER + " 123 > ID";
-	    c = CircumstanceFactory.createFromString(s);
-	    assertTrue(-1000000 > ((LoopCounter) c).getMin(),"Minimum limit 3");
-	    assertEquals(123, ((LoopCounter) c).getMax(),"Maximum limit 3");
-	    
-	    s = InfoChannelType.ANY + " "
-				+ CircumstanceConstants.LOOPCOUNTER + " 123 < ID";
-	    c = CircumstanceFactory.createFromString(s);
-	    assertTrue(1000000 < ((LoopCounter) c).getMax(),"Maximum limit 4");
-	    assertEquals(123, ((LoopCounter) c).getMin(),"Minimum limit 4");
-	    
-	    
-	    
-	    s = InfoChannelType.ANY + " "
-				+ CircumstanceConstants.LOOPCOUNTER + " 123 < ID < 150";
-	    c = CircumstanceFactory.createFromString(s);
-	    assertEquals(123, ((LoopCounter) c).getMin(),"Minimum limit 5");
-	    assertEquals(150, ((LoopCounter) c).getMax(),"Minimum limit 5");
-	    
-	    s = InfoChannelType.ANY + " "
-				+ CircumstanceConstants.LOOPCOUNTER + " 150 > ID > 123";
-	    c = CircumstanceFactory.createFromString(s);
-
-	    assertEquals(123, ((LoopCounter) c).getMin(),"Minimum limit 6");
-	    assertEquals(150, ((LoopCounter) c).getMax(),"Minimum limit 6");
-
-	    
+        	    
 	    
 	    s = InfoChannelType.ANY + " "
 				+ CircumstanceConstants.MATCHESCOUNT + " myPattern 12";

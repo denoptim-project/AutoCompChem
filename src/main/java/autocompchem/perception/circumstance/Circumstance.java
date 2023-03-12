@@ -1,5 +1,15 @@
 package autocompchem.perception.circumstance;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -27,31 +37,11 @@ import autocompchem.perception.infochannel.InfoChannelType;
  */
 
 public class Circumstance implements ICircumstance
-{
+{	
     /**
      * Information channel where this circumstance occurs
      */
     private InfoChannelType ict = InfoChannelType.NOTDEFINED;
-
-    /**
-     * Threshold of the score allowing to consider this circumstance as
-     * manifested.
-     */
-    private double scoreThreshold = 1.0;
-
-    /**
-     * Flag identifying the circumstance as one that attempts to match text
-     */
-    protected boolean hasTxtQuery = false;
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs an empty Circumstance
-     */
-
-    public Circumstance()
-    {}
 
 //------------------------------------------------------------------------------
 
@@ -109,18 +99,6 @@ public class Circumstance implements ICircumstance
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Identifies the circumstance as one that requires to match strings
-     * @return <code>true</code> if there is a string query to be matched
-     */
-
-    public boolean requiresTXTMatch()
-    {
-        return hasTxtQuery;
-    }
-
-//------------------------------------------------------------------------------
-
     //TODO
     /**
      * Convert a score from numeric to boolean. Uses a threshold that can be set
@@ -132,7 +110,7 @@ public class Circumstance implements ICircumstance
     public boolean scoreToDecision(double dScore)
     {
         Boolean res = false;
-        if (dScore >= scoreThreshold)
+        if (dScore >= 1.0)
         {
             res = true;
         }
@@ -154,7 +132,17 @@ public class Circumstance implements ICircumstance
         return sb.toString();
     }
     
-    
+//------------------------------------------------------------------------------
+
+	@Override
+	public TreeMap<String, JsonElement>  getJsonMembers(
+			JsonSerializationContext context) 
+	{
+		TreeMap<String, JsonElement> map = new TreeMap<String, JsonElement>();
+		map.put("channel", context.serialize(ict));
+		return map;
+	}
+
 //------------------------------------------------------------------------------
 
     @Override
@@ -170,16 +158,9 @@ public class Circumstance implements ICircumstance
             return false;
          
         Circumstance other = (Circumstance) o;
-         
+        
         if (!this.ict.equals(other.ict))
             return false;
-        
-        if (Math.abs(this.scoreThreshold-other.scoreThreshold)>0.0001)
-            return false;
-
-        if ((this.hasTxtQuery && !other.hasTxtQuery) 
-        		|| (!this.hasTxtQuery && other.hasTxtQuery))
-        	return false;
         
         return true;
     }

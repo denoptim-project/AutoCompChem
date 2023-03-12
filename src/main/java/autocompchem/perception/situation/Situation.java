@@ -617,7 +617,7 @@ public class Situation extends Concept
     @Override
     public boolean equals(Object o)
     {
-        if (o== null)
+        if (o == null)
             return false;
         
         if (o == this)
@@ -631,7 +631,8 @@ public class Situation extends Concept
         if (!this.description.equals(other.description))
             return false;
 
-        if (!this.logicalExpression.equals(other.logicalExpression))
+        if (this.logicalExpression!=null 
+        		&& !this.logicalExpression.equals(other.logicalExpression))
             return false;
        
         if (this.context.size()!=other.context.size())

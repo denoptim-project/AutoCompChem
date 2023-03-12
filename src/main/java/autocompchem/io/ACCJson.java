@@ -26,6 +26,12 @@ import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserialize
 import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
+import autocompchem.perception.circumstance.CountTextMatches;
+import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesSerializer;
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.ICircumstance.ICircumstanceDeserializer;
+import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.circumstance.MatchText.MatchTextSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -105,6 +111,10 @@ public class ACCJson
     	        		new IJobEditingTaskSerializer())
     	        .registerTypeAdapter(IJobSettingsInheritTask.class, 
     	        		new IJobSettingsInheritTaskSerializer())
+    	        .registerTypeAdapter(MatchText.class, 
+    	        		new MatchTextSerializer())
+    	        .registerTypeAdapter(CountTextMatches.class, 
+    	        		new CountTextMatchesSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
     			.create();
@@ -126,6 +136,8 @@ public class ACCJson
     	        		new IJobEditingTaskDeserializer())
     	        .registerTypeAdapter(IJobSettingsInheritTask.class, 
     	        		new IJobSettingsInheritTaskDeserializer())
+    	        .registerTypeAdapter(ICircumstance.class, 
+    	        		new ICircumstanceDeserializer())
     	        .registerTypeAdapter(SetDirectiveComponent.class, 
     	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 

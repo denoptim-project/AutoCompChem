@@ -140,7 +140,7 @@ public class SituationBase
         //Collect any text query to make searching of strings more efficient
         for (ICircumstance circ : situation.getCircumstances())
         {
-            if (circ.requiresTXTMatch())
+            if (circ instanceof MatchText)
             {
                 String queryStr = ((MatchText) circ).getPattern();
             	InfoChannelType ict = circ.getChannelType();

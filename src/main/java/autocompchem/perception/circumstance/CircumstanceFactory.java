@@ -42,6 +42,7 @@ public class CircumstanceFactory
      * @throws Exception when decoding of string goes wrong.
      */ 
 
+	@Deprecated
     public static Circumstance createFromString(String str) throws Exception
     {
     	String[] parts = str.trim().split("\\s+");
@@ -81,106 +82,6 @@ public class CircumstanceFactory
     			
     		case CircumstanceConstants.NOMATCH:
     			c = new MatchText(restOfStr, true, ict);
-    			break;
-    			
-    		case CircumstanceConstants.LOOPCOUNTER:
-    			String counterId = "none";
-    			int n = 0;
-    			int m = 0;
-    			if (parts[2].matches("[0-9]*"))
-    			{
-    				String firstOp = "";
-    				String errMsg = "Cannot understand condition '" 
-							+ str + "'. Expecting 'ID >/< Num',"
-							+ " 'Num >/< ID', or 'N > ID > M'.";
-    				switch (parts.length)
-    				{
-    					case 5:
-    						// We have a string like: N >/< ID    	    				
-    	    				n = Integer.parseInt(parts[2]);
-    	    				firstOp = parts[3];
-    	    				counterId = parts[4];
-    	    				switch (firstOp)
-    	    				{
-    	    				    // WARNING: careful with the < and > as they are not
-    	    				    // the same as in other switch blocks of this kind!
-    	    					case "<":
-    	    						c = new LoopCounter(counterId, n, 
-    	    								Integer.MAX_VALUE, ict);
-    	    						break;
-    	    						
-    	    					case ">":
-    	    						c = new LoopCounter(counterId, 
-    	    								Integer.MIN_VALUE, n, ict);
-    	    						break;
-    	    						
-    	    					default:
-    	    						throw new Exception("Cannot undertsnd operator '" 
-    	    							+ firstOp + "' while reading "
-    	    		    				+ "string '" + str + "'."
-    	    		    				+ " Use either '>' or '<'.");
-    	    				}
-    						break;
-    						
-    					case 7:
-    						// We have a string like: N >/< ID >/< M
-    	    				n = Integer.parseInt(parts[2]);
-    	    				firstOp = parts[3];
-    	    				counterId = parts[4];
-    	    				String secondOp = parts[5];
-    	    				m = Integer.parseInt(parts[6]);
-    	    				if (firstOp.equals(">") && secondOp.equals(">"))
-    	    				{
-    	    					if (m>n)
-    	    					{
-    	    						throw new Exception("Inconsistent range "
-    	    								+ "limits in definition of loop "
-    	    								+ "counter range '" + str + "'.");
-    	    					}
-    	    					c = new LoopCounter(counterId, m, n, ict);
-    	    				} else if (firstOp.equals("<") && secondOp.equals("<"))
-    	    				{
-    	    					if (n>m)
-    	    					{
-    	    						throw new Exception("Inconsistent range "
-    	    								+ "limits in definition of loop "
-    	    								+ "counter range '" + str + "'.");
-    	    					}
-    	    					c = new LoopCounter(counterId, n, m, ict);
-    	    				} else {
-    	    					throw new Exception(errMsg);
-    	    				} 
-    	    				break;
-    						
-    					default:
-    						throw new Exception(errMsg);
-    				}
-       			} else {   				
-    				// We have a string like: ID <=> N
-    				counterId = parts[2];
-    				String operator = parts[3];
-    				n = Integer.parseInt(parts[4]); 
-    				
-    				// Value of M is put to the extreme
-    				switch (operator)
-    				{
-    					case ">":
-    						c = new LoopCounter(counterId, n, 
-    								Integer.MAX_VALUE, ict);
-    						break;
-    						
-    					case "<":
-    						c = new LoopCounter(counterId, 
-    								Integer.MIN_VALUE, n, ict);
-    						break;
-    						
-    					default:
-    						throw new Exception("Cannot undertsnd operator '" 
-    							+ operator + "' while reading "
-    		    				+ "string '" + str + "'."
-    		    				+ " Use either '>' or '<'.");
-    				}
-    			}
     			break;
     			
     		case CircumstanceConstants.MATCHESCOUNT:

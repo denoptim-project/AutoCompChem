@@ -37,11 +37,8 @@ import org.junit.jupiter.api.io.TempDir;
 import autocompchem.io.IOtools;
 import autocompchem.perception.SCPair;
 import autocompchem.perception.TxtQuery;
-import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.CircumstanceConstants;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.circumstance.LoopCounter;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
@@ -158,7 +155,7 @@ public class SituationBaseTest
 		ICircumstance c4 = new MatchText("q2", InfoChannelType.INPUTFILE);
 		ICircumstance c5 = new CountTextMatches("q2", 22, InfoChannelType.ANY);
 		ICircumstance c6 = new CountTextMatches("q2", 33, InfoChannelType.OUTPUTFILE);
-		ICircumstance c7 = new LoopCounter("q2", 1.0, 2.0, InfoChannelType.ANY);
+		ICircumstance c7 = new CountTextMatches("q2", 1, 2, InfoChannelType.ANY);
 		ICircumstance c8 = new MatchText("q3", InfoChannelType.ANY);
 		
 		sb.addSituation(new Situation("Sit", "A", new ArrayList<ICircumstance>(
@@ -299,7 +296,7 @@ public class SituationBaseTest
 		
 		// Further adding of text-based circumstance
 		ICircumstance c10 = new CountTextMatches("q2", 33, InfoChannelType.OUTPUTFILE);
-		ICircumstance c11 = new LoopCounter("q4", 1.0, 2.0, InfoChannelType.ANY);
+		ICircumstance c11 = new CountTextMatches("q4", 1, 2, InfoChannelType.ANY);
 		ICircumstance c12 = new MatchText("q3", InfoChannelType.JOBDETAILS);
 		sb.addSituation(new Situation("Sit", "C", new ArrayList<ICircumstance>(
 				Arrays.asList(c10, c11, c12))));

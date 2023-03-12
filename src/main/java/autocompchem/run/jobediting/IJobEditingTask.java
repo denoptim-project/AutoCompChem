@@ -27,6 +27,7 @@ public interface IJobEditingTask
 
 //------------------------------------------------------------------------------
 
+	//TODO-gg remove. this is not used! see also IInherit...
 	public static class IJobEditingTaskSerializer 
 	implements JsonSerializer<IJobEditingTask>
 	{

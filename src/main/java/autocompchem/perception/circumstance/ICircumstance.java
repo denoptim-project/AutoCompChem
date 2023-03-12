@@ -17,10 +17,22 @@ package autocompchem.perception.circumstance;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.lang.reflect.Type;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import autocompchem.perception.infochannel.InfoChannelType;
 
 /**
- * Interface for circumstance
+ * Interface for circumstance.
  *
  * @author Marco Foscato
  */
@@ -36,16 +48,16 @@ public interface ICircumstance
      */
 
     public InfoChannelType getChannelType();
-
+    
 //------------------------------------------------------------------------------
-
+    
     /**
-     * Identifies the circumstance as one that requires to match strings
-     * @return <code>true</code> if there is a string query to be matched
+     * Returns the type-specific elements to add to the JSON 
+     * representation of a ICircumstance.
      */
-
-    public boolean requiresTXTMatch();
-
+    public TreeMap<String, JsonElement> getJsonMembers(
+    		JsonSerializationContext context);
+    
 //------------------------------------------------------------------------------
 
     //TODO
@@ -57,16 +69,117 @@ public interface ICircumstance
      */
 
     public boolean scoreToDecision(double dScore);
-
+  	    
 //------------------------------------------------------------------------------
+	
+  	/**
+  	 * Constructs the JSON object of implementations of {@link ICircumstance}.
+  	 * This method is meant for Type-specific JSON serializers for
+  	 * types implementing ICircumstance.
+  	 * @param src the instance to serialize.
+  	 * @param context 
+  	 * @return the JSON object that a 
+  	 * {@link JsonSerializer#serialize(Object, Type, JsonSerializationContext)}
+  	 * can return.
+  	 */
+  	public static JsonObject getJsonObject(ICircumstance src, 
+  			JsonSerializationContext context)
+  	{
+      	JsonObject jsonObject = new JsonObject();
+      	jsonObject.addProperty("circumstance", 
+      			src.getClass().getSimpleName());
+      	for (Entry<String, JsonElement> e : src.getJsonMembers(
+      			context).entrySet())
+      	{
+      		jsonObject.add(e.getKey(), e.getValue());
+      	}
+      	return jsonObject;
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	public static class ICircumstanceDeserializer 
+  	implements JsonDeserializer<ICircumstance>
+  	{
+  	    @Override
+  	    public ICircumstance deserialize(JsonElement json, 
+  	    		Type typeOfT, JsonDeserializationContext context) 
+  	    				throws JsonParseException
+  	    {
+  	        JsonObject jsonObject = json.getAsJsonObject();
 
-    /**
-     * Return a human readable description
-     * @return a string
-     */
-
-    public String toString();
-
+  	        String type = context.deserialize(jsonObject.get("circumstance"),
+  	                String.class);
+  	        InfoChannelType ict = context.deserialize(jsonObject.get("channel"),
+  	        		InfoChannelType.class);
+  	        
+  	        ICircumstance result = null;
+  	        switch (type)
+  	        {
+  			case "MatchText":
+	  			{
+	  				String pattern = jsonObject.get("pattern").getAsString();
+	  				boolean negation = false;
+	  				if (jsonObject.has("negation"))
+	  				{	
+	  					negation = context.deserialize(jsonObject.get("negation"),
+	  							Boolean.class);
+	  				}
+	  				result = new MatchText(pattern, negation, ict);
+	  				break;
+	  			}
+  				
+  			case "CountTextMatches":
+	  			{
+	  				String pattern = jsonObject.get("pattern").getAsString();
+	  				boolean negation = false;
+	  				if (jsonObject.has("negation"))
+	  				{	
+	  					negation = context.deserialize(jsonObject.get("negation"),
+	  							Boolean.class);
+	  				}
+	  				if (jsonObject.has("value"))
+	  				{
+	  					//EXACT
+		  				result = new CountTextMatches(pattern,
+		  						jsonObject.get("value").getAsInt(),
+		  						ict, negation);
+	  				} else {
+	  					if (jsonObject.has("min") && jsonObject.has("max"))
+	  					{
+	  						// RANGE
+	  						result = new CountTextMatches(pattern,
+	  								jsonObject.get("min").getAsInt(),
+	  								jsonObject.get("max").getAsInt(),
+			  						ict, negation);
+	  					} else {
+	  						if (jsonObject.has("min"))
+	  						{
+	  							result = new CountTextMatches(pattern,
+		  								jsonObject.get("min").getAsInt(),
+		  								true,
+				  						ict);
+	  						} else {
+	  							//jsonObject.has("max") is true here
+	  							result = new CountTextMatches(pattern,
+		  								jsonObject.get("max").getAsInt(),
+		  								false,
+				  						ict);
+	  						}
+	  					}
+	  				}
+	  				break;	
+	  			}
+  			
+  			default:
+  				throw new IllegalArgumentException("Job settings inheriting "
+  						+ "task '" + type + "' is not known. "
+  						+ "Cannot deserialize JSON element: " + json);
+  	        }
+          	return result;
+  	    }
+  	}
+  	
 //------------------------------------------------------------------------------
 
 }

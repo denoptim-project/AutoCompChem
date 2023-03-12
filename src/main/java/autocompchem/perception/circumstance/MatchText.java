@@ -1,5 +1,7 @@
 package autocompchem.perception.circumstance;
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -18,7 +20,15 @@ package autocompchem.perception.circumstance;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import autocompchem.perception.infochannel.InfoChannelType;
 
@@ -29,16 +39,16 @@ import autocompchem.perception.infochannel.InfoChannelType;
  */
 
 public class MatchText extends Circumstance
-{
+{	
     /**
      * Pattern to match
      */
-    private String pattern = "";
+    private final String pattern;
 
     /**
      * Negation flag: if true then the condition is negated
      */
-    protected boolean negation = false;
+    protected final boolean negation;
 
 //------------------------------------------------------------------------------
 
@@ -46,6 +56,7 @@ public class MatchText extends Circumstance
      * Constructs an empty MatchText
      */
 
+    //TODO-gg del
     public MatchText()
     {
         this("", false, null);
@@ -58,6 +69,7 @@ public class MatchText extends Circumstance
      * @param pattern the pattern to be matches.
      */
 
+  //TODO-gg del
     public MatchText(String pattern)
     {
         this(pattern, false, null);
@@ -86,7 +98,8 @@ public class MatchText extends Circumstance
      * @param negation if true the condition is satisfied if the pattern is 
      * not matched.
      */
-
+    
+  //TODO-gg del
     public MatchText(String pattern, boolean negation)
     {
         this(pattern, negation, null);
@@ -95,7 +108,7 @@ public class MatchText extends Circumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Constructs a MatchText defining the pattern to match
+     * Constructs a MatchText.
      * @param pattern the pattern to be matches
      * @param negation if true the condition is satisfied if the pattern is
      * not matched.
@@ -103,15 +116,13 @@ public class MatchText extends Circumstance
      * counter.
      */
 
-    public MatchText(String pattern, boolean negation, 
-                                              InfoChannelType ict)
+    public MatchText(String pattern, boolean negation, InfoChannelType channel)
     {
-        super(ict);
-        this.hasTxtQuery = true;
+        super(channel);
         this.pattern = pattern;
         this.negation = negation;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -173,6 +184,33 @@ public class MatchText extends Circumstance
         sb.append("]]");
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
+
+  	@Override
+  	public TreeMap<String, JsonElement> getJsonMembers(
+			JsonSerializationContext context) 
+	{
+		TreeMap<String, JsonElement> map = new TreeMap<String, JsonElement>();
+		map.putAll(super.getJsonMembers(context));
+		map.put("pattern", context.serialize(pattern));
+		if (negation)
+			map.put("negation", context.serialize(negation));
+		return map;
+  	}
+  	
+//------------------------------------------------------------------------------
+
+  	public static class MatchTextSerializer 
+  	implements JsonSerializer<MatchText>
+  	{
+  	    @Override
+  	    public JsonElement serialize(MatchText src, Type typeOfSrc,
+  	          JsonSerializationContext context)
+  	    {
+  	    	return ICircumstance.getJsonObject(src, context);
+  	    }
+  	}
     
 //------------------------------------------------------------------------------
 

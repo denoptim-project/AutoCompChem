@@ -232,8 +232,7 @@ public class SituationTest
         fingerprint0.add(true);
         fingerprint0.add(true);
 
-        sit.setLogicalExpression("none");
-        assertEquals(true,sit.isOccurring(fingerprint0),"lack of expression");
+        assertEquals(true, sit.isOccurring(fingerprint0), "lack of expression");
         
         ArrayList<Boolean> fingerprint = new ArrayList<Boolean>();
         fingerprint.add(true);
@@ -259,7 +258,7 @@ public class SituationTest
 
         sit.setLogicalExpression("${v0 && (4 > 2)}");
         assertEquals(true,sit.isOccurring(fingerprint),
-                                                "mixing numerical and boolean");
+        		"mixing numerical and boolean");
     }
 
 //------------------------------------------------------------------------------
