@@ -219,11 +219,11 @@ public class SituationTest
     public void testIsOccurring() throws Exception
     {
         Situation sit = new Situation();
-        sit.addCircumstance(new Circumstance());
-        sit.addCircumstance(new Circumstance());
-        sit.addCircumstance(new Circumstance());
-        sit.addCircumstance(new Circumstance());
-        sit.addCircumstance(new Circumstance());
+        sit.addCircumstance(new Circumstance(InfoChannelType.ANY));
+        sit.addCircumstance(new Circumstance(InfoChannelType.LOGFEED));
+        sit.addCircumstance(new Circumstance(InfoChannelType.OUTPUTFILE));
+        sit.addCircumstance(new Circumstance(InfoChannelType.INPUTFILE));
+        sit.addCircumstance(new Circumstance(InfoChannelType.ENVIRONMENT));
 
         ArrayList<Boolean> fingerprint0 = new ArrayList<Boolean>();
         fingerprint0.add(true);

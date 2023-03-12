@@ -46,7 +46,8 @@ public class Concept implements Cloneable
      */
     public Concept()
     {
-        type = "none";
+        this.type = "none";
+        this.refName = "none";
     }
 
 //------------------------------------------------------------------------------

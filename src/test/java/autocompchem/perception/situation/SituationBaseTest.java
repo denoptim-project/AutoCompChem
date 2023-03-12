@@ -30,9 +30,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
 
 import autocompchem.io.IOtools;
 import autocompchem.perception.SCPair;
@@ -272,10 +276,12 @@ public class SituationBaseTest
 			public boolean scoreToDecision(double dScore) {
 				return false;
 			}
-			public boolean requiresTXTMatch() {
-				return false;
-			}
 			public InfoChannelType getChannelType() {
+				return null;
+			}
+			@Override
+			public TreeMap<String, JsonElement> getJsonMembers(
+					JsonSerializationContext context) {
 				return null;
 			}
 		};
