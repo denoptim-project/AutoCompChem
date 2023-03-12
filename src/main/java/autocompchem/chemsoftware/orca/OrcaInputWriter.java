@@ -422,7 +422,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		if (d.hasComponent(ChemSoftConstants.DIRDATAGEOMETRY, 
 				DirectiveComponentType.DIRECTIVEDATA))
 		{
-			DirectiveData dd = d.getDirectiveData(
+			DirectiveData dd = d.getFirstDirectiveData(
 					ChemSoftConstants.DIRDATAGEOMETRY);
 			switch (dd.getType())
 			{

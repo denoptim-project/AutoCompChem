@@ -155,7 +155,7 @@ public class GaussianInputWriterTest
     	dSCF.addKeyword(new Keyword("VShift", true, "1000"));
     	dSCF.addKeyword(new Keyword("Symm", false, "nosym"));
     	dSCF.addKeyword(new Keyword("MaxCycle", true, "180"));
-    	dRoute.setSubDirective(dSCF, false, false, false);
+    	dRoute.addSubDirective(dSCF);
 
     	dTitle.setKeyword(new Keyword("Title", false, "First step"));
     	
@@ -189,7 +189,7 @@ public class GaussianInputWriterTest
     	dSCF2.addKeyword(new Keyword("Symm", false, "nosym"));
     	dSCF2.addKeyword(new Keyword("varacc", false, "novaracc"));
     	dSCF2.addKeyword(new Keyword("MaxCycle", true, "180"));
-    	dRoute2.setSubDirective(dSCF2, false, false, false);
+    	dRoute2.addSubDirective(dSCF2);
 
     	dTitle2.setKeyword(new Keyword("Title", false, "Second step"));
     	
@@ -254,7 +254,7 @@ public class GaussianInputWriterTest
     	dOpt3.addKeyword(new Keyword("convergence", false, "loose"));
     	dOpt3.addKeyword(new Keyword("MaxCycles", true, "320"));
     	dOpt3.addKeyword(new Keyword("ModRedundant", false, "ModRedundant"));
-    	dRoute3.setSubDirective(dOpt3, false, false, false);
+    	dRoute3.addSubDirective(dOpt3);
     	
     	dTitle3.setKeyword(new Keyword("Title", false, "Third step"));
     	

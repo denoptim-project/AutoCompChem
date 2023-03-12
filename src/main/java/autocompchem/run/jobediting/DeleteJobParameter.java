@@ -26,7 +26,6 @@ public class DeleteJobParameter implements IJobEditingTask
 		this.paramReference = paramReference.toUpperCase();
 	}
 	
-	
 //------------------------------------------------------------------------------
 
 	@Override

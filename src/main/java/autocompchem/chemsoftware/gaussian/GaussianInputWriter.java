@@ -198,7 +198,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     {
     	if (routeDir!=null)
     	{
-	    	Keyword geomKey = routeDir.getKeyword(GaussianConstants.GAUKEYGEOM);
+	    	Keyword geomKey = routeDir.getFirstKeyword(GaussianConstants.GAUKEYGEOM);
 			if (geomKey!=null)
 			{
 				String value = geomKey.getValueAsString().toUpperCase();
@@ -308,7 +308,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     	Directive textHeader = step.getDirective(ChemSoftConstants.PARHEADER);
     	if (textHeader!=null)
     	{
-    		lines.add(textHeader.getDirectiveData(ChemSoftConstants.PARHEADER)
+    		lines.add(textHeader.getFirstDirectiveData(ChemSoftConstants.PARHEADER)
     				.getValueAsString());
     	}
     	
@@ -320,28 +320,28 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     	{
     		// First the special keywords
     		String firstLine = "";
-    		Keyword pKey = rouDir.getKeyword(GaussianConstants.KEYPRINT);
+    		Keyword pKey = rouDir.getFirstKeyword(GaussianConstants.KEYPRINT);
     		if (pKey!=null)
     		{
     			firstLine = "#"+pKey.getValueAsString();
     		}  else {
     			firstLine = "#P";
             }
-    		Keyword modKey = rouDir.getKeyword(GaussianConstants.KEYMODELMETHOD);
+    		Keyword modKey = rouDir.getFirstKeyword(GaussianConstants.KEYMODELMETHOD);
     		if (modKey!=null)
     		{
     			firstLine = firstLine + " " + modKey.getValueAsString() + "/";
     		} else {
     			firstLine = firstLine + " ";
     		}
-    		Keyword bsKey = rouDir.getKeyword(GaussianConstants.KEYMODELBASISET);
+    		Keyword bsKey = rouDir.getFirstKeyword(GaussianConstants.KEYMODELBASISET);
     		if (bsKey!=null)
     		{
     			// space has been already added, if needed
     			firstLine = firstLine + bsKey.getValueAsString();
     		}
     		lines.add(firstLine);
-    		Keyword jtKey = rouDir.getKeyword(GaussianConstants.KEYJOBTYPE);
+    		Keyword jtKey = rouDir.getFirstKeyword(GaussianConstants.KEYJOBTYPE);
     		if (jtKey!=null)
     		{
     			lines.add("# " + jtKey.getValueAsString());
@@ -466,8 +466,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     					+ "job contains N!=2 keywords. "
     					+ "Check your input!");
     		}
-    		Keyword kCharge = molDir.getKeyword(GaussianConstants.MSCHARGEKEY);
-	    	Keyword kSpinMult = molDir.getKeyword(GaussianConstants.MSSPINMLTKEY);
+    		Keyword kCharge = molDir.getFirstKeyword(GaussianConstants.MSCHARGEKEY);
+	    	Keyword kSpinMult = molDir.getFirstKeyword(GaussianConstants.MSSPINMLTKEY);
     		lines.add(kCharge.getValueAsString() + " " + kSpinMult.getValueAsString());
     		
     		if (molDir.getAllDirectiveDataBlocks().size()>0)
@@ -644,7 +644,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		List<String> sortedOptNames = sortOpts(optNames);
     		for (String ddName : sortedOptNames)
     		{
-    			DirectiveData dd = optDir.getDirectiveData(ddName);
+    			DirectiveData dd = optDir.getFirstDirectiveData(ddName);
     			// Some of the directivedata blocks need to be interpreted to
     			// convert the agnostic data into Gaussian slang
     			switch (ddName.toUpperCase())
@@ -718,7 +718,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	    		
 	    			default:
 	    			{
-	    				lines.addAll(optDir.getDirectiveData(ddName).getLines());
+	    				lines.addAll(optDir.getFirstDirectiveData(ddName).getLines());
 	        			lines.add(""); //empty line that terminates this part of option section
 	    			}
     			}

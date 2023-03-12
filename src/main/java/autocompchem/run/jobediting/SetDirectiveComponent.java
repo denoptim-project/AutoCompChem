@@ -31,7 +31,7 @@ import autocompchem.run.Job;
 public class SetDirectiveComponent implements IJobEditingTask
 {
 	/**
-	 * Defines which type of setting task this is. It also defined what is
+	 * Defines which type of setting task this is. It also defines what is
 	 * the type of content this task is setting.
 	 */
 	final TaskType task;
@@ -156,6 +156,8 @@ public class SetDirectiveComponent implements IJobEditingTask
 
 				//TODO-gg make optional by extending this class to have the
     			// APPEND_COMPONENT task
+
+    			//TODO-gg use addComponent!!!!
     		}
     	}
 	}

@@ -158,4 +158,48 @@ public class DirComponentAddressTest
     
 //------------------------------------------------------------------------------
 
+    @Test
+    public void testGetParent() throws Exception
+    {
+    	// Normal case
+    	DirComponentAddress address = getTestAddress();
+    	DirComponentAddress parent = address.getParent();
+    	assertEquals(address.size()-1, parent.size());
+    	for (int i=0; i<parent.size(); i++)
+    	{
+    		assertEquals(address.get(i), parent.get(i));
+    	}
+    	
+    	// Empty path
+    	address = new DirComponentAddress();
+    	parent = address.getParent();
+    	assertEquals(address.size(), parent.size());
+    	assertEquals(0, parent.size());
+    	
+    	// first level
+    	address = DirComponentAddress.fromString("Dir:First");
+    	parent = address.getParent();
+    	assertEquals(address.size()-1, parent.size());
+    	assertEquals(0, parent.size());
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetLast() throws Exception
+    {
+    	// Normal case
+    	DirComponentAddress address = getTestAddress();
+    	DirComponentTypeAndName last = address.getLast();
+    	int idx = -1;
+    	for (int i=0; i<address.size(); i++)
+    	{
+    		if (address.get(i).equals(last))
+    			idx = i;
+    	}
+    	assertEquals(address.size()-1, idx);
+    }
+    
+//------------------------------------------------------------------------------
+
 }

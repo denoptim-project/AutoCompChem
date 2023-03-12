@@ -200,7 +200,8 @@ public class CompChemJob extends Job implements Cloneable
     
     /**
      * Finds and return directive component that are found in a given location
-     * of the directive component's structure.
+     * of the directive component's structure. Such components can be the 
+     * outermost directives.
      * @param address the location of the components to fetch, starting with the
      * outermost directive and ending with the component to fetch.
      * @return the directive components that match the path. 
@@ -562,7 +563,7 @@ public class CompChemJob extends Job implements Cloneable
     		dir.addKeyword(new Keyword(keyName, isLoud, value));
 			setDirective(dir);
 		} else {
-			if (dir.getKeyword(keyName)==null)
+			if (dir.getFirstKeyword(keyName)==null)
 				dir.addKeyword(new Keyword(keyName, isLoud, value));
 		}
     }
@@ -587,7 +588,7 @@ public class CompChemJob extends Job implements Cloneable
     		dir.addDirectiveData(dd);
 			setDirective(dir);
 		} else {
-			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
+			DirectiveData oldDd = dir.getFirstDirectiveData(dirDataName);
 			if (oldDd==null)
 			{
         		dir.addDirectiveData(dd);

@@ -652,10 +652,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	private boolean isPhythonStep(CompChemJob ccjStep) 
 	{
 		return ccjStep.getDirective(NWChemConstants.TASKDIR)!=null &&
-				ccjStep.getDirective(NWChemConstants.TASKDIR).getKeyword(
+				ccjStep.getDirective(NWChemConstants.TASKDIR).getFirstKeyword(
 				NWChemConstants.THEORYKW)!=null &&
 						ccjStep.getDirective(NWChemConstants.TASKDIR)
-						.getKeyword(NWChemConstants.THEORYKW)
+						.getFirstKeyword(NWChemConstants.THEORYKW)
 						.getValueAsString().toUpperCase().equals("PYTHON");
 	}
 
@@ -708,7 +708,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					    + "Unable to guess where "
 						+ "to define spin multiplicity.");
 			}
-			Keyword theory =  task.getKeyword(NWChemConstants.THEORYKW);
+			Keyword theory =  task.getFirstKeyword(NWChemConstants.THEORYKW);
 			if (theory == null)
 			{
 				throw new IllegalArgumentException(NWChemConstants.TASKDIR
@@ -754,7 +754,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				Directive smDir = null;
 				for (String smStr : NWChemConstants.SCFSPINMULT)
 				{
-					smDir = dirSCF.getSubDirective(smStr);
+					smDir = dirSCF.getFirstDirective(smStr);
 					if (smDir!=null)
 					{
 						// We already have a spin multiplicity and this method
@@ -813,7 +813,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				}
 			}
 	
-			DirectiveData dd = geomDir.getDirectiveData(NWChemConstants.GEOMDIR);
+			DirectiveData dd = geomDir.getFirstDirectiveData(NWChemConstants.GEOMDIR);
 			if (dd==null)
 			{
 				dd = new DirectiveData(NWChemConstants.GEOMDIR);

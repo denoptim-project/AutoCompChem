@@ -23,12 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.lang.reflect.Type;
 
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -162,17 +159,6 @@ public class Directive implements IDirectiveComponent, Cloneable
     {
         return name;
     }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Sets the name of this directive.
-     * @param name the new name.
-     */
-	private void setName(String name) 
-	{
-		this.name = name;
-	}
  
 //-----------------------------------------------------------------------------
 
@@ -200,13 +186,15 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the first sub directive with the given name. 
+     * Returns the first sub {@link Directive} with the given name. 
+     * Use this method when you can assume there is only
+     * only one {@link DirectiveData} with the given name.
      * @param name the name of the sub directive to get (case-insensitive).
-     * @return the sub directive with the given name or null it it doesn't 
+     * @return the sub directive with the given name or null if it doesn't 
      * exist.
      */
 
-    public Directive getSubDirective(String name)
+    public Directive getFirstDirective(String name)
     {
         for (Directive subDir : subDirectives)
         {
@@ -216,6 +204,30 @@ public class Directive implements IDirectiveComponent, Cloneable
             }
         }
         return null;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns all {@link Directive}s with the given name. 
+     * Only sub-directives belonging to
+     * this directive can be returned. 
+     * {@link Directive}s of sub directives are ignored. 
+     * @param name the name of the directive to get (case-insensitive).
+     * @return the list of directives. Can be empty list.
+     */
+
+    public List<Directive> getDirectives(String name)
+    {
+    	List<Directive> matches = new ArrayList<Directive>();
+        for (Directive d : subDirectives)
+        {
+            if (d.getName().toUpperCase().equals(name.toUpperCase()))
+            {
+            	matches.add(d);
+            }
+        }
+        return matches;
     }
 
 //-----------------------------------------------------------------------------
@@ -261,14 +273,19 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the keyword with the given name. Only keyword belonging to
-     * this directive can be returned. Keywords of sub directives are ignored. 
+     * Returns the first {@link Keyword} with the given name. Ignores any other 
+     * {@link Keyword}  with this name.
+     * Only keyword belonging to
+     * this directive can be returned. 
+     * {@link Keyword}s of sub directives are ignored. 
+     * Use this method when you can assume there is only
+     * only one {@link DirectiveData} with the given name.
      * @param name the name of the keyword to get (case-insensitive).
      * @return the keyword with the given name or null if such keyword
      * does not exist.
      */
 
-    public Keyword getKeyword(String name)
+    public Keyword getFirstKeyword(String name)
     {
         for (Keyword kw : keywords)
         {
@@ -278,6 +295,30 @@ public class Directive implements IDirectiveComponent, Cloneable
             }
         }
         return null;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns all {@link Keyword}s with the given name. 
+     * Only keyword belonging to
+     * this directive can be returned. 
+     * {@link Keyword}s of sub directives are ignored. 
+     * @param name the name of the keyword to get (case-insensitive).
+     * @return the list of keywords. Can be empty list.
+     */
+
+    public List<Keyword> getKeywords(String name)
+    {
+    	List<Keyword> matches = new ArrayList<Keyword>();
+        for (Keyword kw : keywords)
+        {
+            if (kw.getName().toUpperCase().equals(name.toUpperCase()))
+            {
+            	matches.add(kw);
+            }
+        }
+        return matches;
     }
 
 //-----------------------------------------------------------------------------
@@ -295,14 +336,17 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the data block having the specified name. Data of subordinate
-     * directives are ignored.
+     * Returns the first {@link DirectiveData} having the specified name. 
+     * Data of sub
+     * directives are ignored. 
+     * Use this method when you can assume there is only
+     * only one {@link DirectiveData} with the given name.
      * @param name the name of the data block to get (case-insensitive).
      * @return the data blocks having the specified name or null if such data
      * block does not exist.
      */
 
-    public DirectiveData getDirectiveData(String name)
+    public DirectiveData getFirstDirectiveData(String name)
     {
         for (DirectiveData data : dirData)
         {
@@ -317,6 +361,30 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
+     * Returns all {@link DirectiveData}s with the given name. 
+     * Only data belonging to
+     * this directive can be returned. 
+     * {@link DirectiveData}s of sub directives are ignored. 
+     * @param name the name of the data to get (case-insensitive).
+     * @return the list of data. Can be empty list.
+     */
+
+    public List<DirectiveData> getDirectiveData(String name)
+    {
+    	List<DirectiveData> matches = new ArrayList<DirectiveData>();
+        for (DirectiveData dd : dirData)
+        {
+            if (dd.getName().toUpperCase().equals(name.toUpperCase()))
+            {
+            	matches.add(dd);
+            }
+        }
+        return matches;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
      * Searched for a component on the given name and type.
      * @param name the name to search for  (case-insensitive).
      * @param type the type to search for.
@@ -324,12 +392,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      */
     public boolean hasComponent(String name, DirectiveComponentType type)
     {
-    	IDirectiveComponent comp = getComponent(name, type);
-    	if (comp != null)
-    	{
-    		return true;
-    	}
-    	return false;
+    	return getComponent(name, type).size()>0;
     }
     
 //-----------------------------------------------------------------------------
@@ -361,44 +424,75 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    		subDirectives.remove(comp);
 	    		break;
 	    	}
+	    	
+	    	case ANY:
+	    	{
+	    		keywords.remove(comp);
+	    		dirData.remove(comp);
+	    		subDirectives.remove(comp);
+	    		break;
+	    	}
     	}
     }
     
 //-----------------------------------------------------------------------------
     
     /**
-     * Looks for the component with the given reference name and type.
-     * @param name the reference name of the component to find 
-     * (case-insensitive).
-     * @param type the type of component to find.
-     * @return the desired component.
+     * Deletes the component with the given reference name and type. Also all
+     * sub components of that component will be removed.
+     * @param typeAndName the component type and name to remove
      */
     
-    public IDirectiveComponent getComponent(String name, 
+    public void deleteComponent(DirComponentTypeAndName typeAndName)
+    {
+    	List<IDirectiveComponent> matches = getComponent(typeAndName.name, 
+    			typeAndName.type);
+    	for (IDirectiveComponent component : matches)
+    		deleteComponent(component);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Looks for the components with the given reference name and type.
+     * @param name the reference name of the components to find 
+     * (case-insensitive).
+     * @param type the type of components to find.
+     * @return the list of desired components.
+     */
+    
+    public List<IDirectiveComponent> getComponent(String name, 
     		DirectiveComponentType type)
     {
-    	IDirectiveComponent comp = null;
+    	List<IDirectiveComponent> list = new ArrayList<IDirectiveComponent>();
     	switch (type)
     	{
 	    	case KEYWORD:
 	    	{
-	    		comp = getKeyword(name);
+	    		list.addAll(getKeywords(name));
 	    		break;
 	    	}
 	    	
 	    	case DIRECTIVEDATA:
 	    	{
-	    		comp = getDirectiveData(name);
+	    		list.addAll(getDirectiveData(name));
 	    		break;
 	    	}
 	    	
 	    	case DIRECTIVE:
 	    	{
-	    		comp = getSubDirective(name);
+	    		list.addAll(getDirectives(name));
 	    		break;
 	    	}
+	    	
+	    	case ANY:
+	    	{
+	    		list.addAll(getKeywords(name));
+	    		list.addAll(getDirectiveData(name));
+	    		list.addAll(getDirectives(name));
+	    	}
     	}
-    	return comp;
+    	return list;
     }
     
 //-----------------------------------------------------------------------------
@@ -409,14 +503,16 @@ public class Directive implements IDirectiveComponent, Cloneable
      * <ul>
      * <li>for {@link Keyword} and {@link DirectiveData}, we set the value to 
      * that of the argument,</li>
-     * <li>for {@link Directive}s, we overwrite any of the components of the 
-     * existing {@link Directive} with those of the argument.</li>
+     * <li>for {@link Directive}s, we remove any of the components of the 
+     * existing {@link Directive} and replace them with with those of the 
+     * argument.</li>
      * </ul>
      * 
      * @param component
      */
     
-    public void setComponent(IDirectiveComponent component)
+    @SuppressWarnings("incomplete-switch")
+	public void setComponent(IDirectiveComponent component)
     {
     	switch (component.getComponentType())
     	{
@@ -430,19 +526,57 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    	case DIRECTIVEDATA:
 	    	{
 	    		DirectiveData dd = (DirectiveData) component;
-	    		setDataDirective(dd);
+	    		setDirectiveData(dd);
 	    		break;
 	    	}
 	    	
 	    	case DIRECTIVE:
 	    	{
 	    		Directive dir = (Directive) component;
-	    		setSubDirective(dir, true, true, true);
+	    		setSubDirective(dir);
 	    		break;
 	    	}
     	}
     }
-
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Add a component in this directive. The existence of a component with the
+     * same type and name already exists has no influence on the result: this
+     * method just adds new components without affecting existing components.
+     * 
+     * @param component
+     */
+    
+    @SuppressWarnings("incomplete-switch")
+	public void addComponent(IDirectiveComponent component)
+    {
+    	switch (component.getComponentType())
+    	{
+	    	case KEYWORD:
+	    	{
+	    		Keyword key = (Keyword) component;
+	    		addKeyword(key);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVEDATA:
+	    	{
+	    		DirectiveData dd = (DirectiveData) component;
+	    		addDirectiveData(dd);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVE:
+	    	{
+	    		Directive dir = (Directive) component;
+	    		addSubDirective(dir);
+	    		break;
+	    	}
+    	}
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -494,7 +628,9 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Set or overwrites a single sub directive of this directive. 
+     * Adds a single sub directive of this directive. If any sub directive
+     * with the given name already exists, then we overwrite its components
+     * 
      * This method makes sure the given directive is not a
      * parent directive of <code>this</code> or vice versa. This to prevent 
      * loop-like directive structures.
@@ -507,34 +643,24 @@ public class Directive implements IDirectiveComponent, Cloneable
      * data of the existing directive. 
      */
 
-    public void setSubDirective(Directive dir, boolean owKeys,
-    		boolean owSubDirs, boolean owData)
+    public void setSubDirective(Directive dir)
     {
     	if (dir.embeds(this) || this.embeds(dir))
 		{
 			throw new IllegalArgumentException("Attempt to create loop "
 					+ "in directives structure.");
 		}
-        Directive oldDir = getSubDirective(dir.getName());
-        if (oldDir == null)
+        List<Directive> oldDirs = getDirectives(dir.getName());
+        if (oldDirs.size()==0)
         {
             this.addSubDirective(dir);
-        }
-        else
-        {
-            if (owKeys)
-            {
-                oldDir.setAllKeywords(dir.getAllKeywords());
-            }
-            if (owSubDirs)
-            {
-                oldDir.setAllSubDirectives(dir.getAllSubDirectives());
-            }
-            if (owData)
-            {
-                oldDir.setAllDirectiveDataBlocks(
-                		dir.getAllDirectiveDataBlocks());
-            }
+        } else {
+        	for (Directive old : oldDirs)
+        	{
+            	old.setAllKeywords(dir.getAllKeywords());
+                old.setAllSubDirectives(dir.getAllSubDirectives());
+                old.setAllDirectiveDataBlocks(dir.getAllDirectiveDataBlocks());
+        	}
         }
     }
     
@@ -583,7 +709,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 
     public void setKeyword(Keyword kw)
     {
-        Keyword oldKw = getKeyword(kw.getName());
+        Keyword oldKw = getFirstKeyword(kw.getName());
         if (oldKw == null)
         {
              addKeyword(kw);
@@ -613,9 +739,9 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dd the new data block.
      */
 
-    public void setDataDirective(DirectiveData dd)
+    public void setDirectiveData(DirectiveData dd)
     {
-        DirectiveData oldDd = getDirectiveData(dd.getName());
+        DirectiveData oldDd = getFirstDirectiveData(dd.getName());
         if (oldDd == null)
         {
              addDirectiveData(dd);

@@ -376,7 +376,7 @@ public class NWChemJob
 							NWChemConstants.GEOMDIR);
 					if (geomDir==null)
 						geomDir = new Directive(NWChemConstants.GEOMDIR);
-					Directive zcoordDir = geomDir.getSubDirective(
+					Directive zcoordDir = geomDir.getFirstDirective(
 							NWChemConstants.ZCRDDIR);
 					if (zcoordDir==null)
 					{	

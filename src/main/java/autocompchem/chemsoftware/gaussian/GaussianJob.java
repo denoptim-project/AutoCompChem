@@ -360,7 +360,7 @@ public class GaussianJob
 						String subDirName = rKey.substring(3, rKey.indexOf("_$"));
 						String subkeyWLabel = rKey.substring(
 								rKey.indexOf("_$") + 1);
-	                    Directive outerDir = routeDir.getSubDirective(subDirName);
+	                    Directive outerDir = routeDir.getFirstDirective(subDirName);
 	                    boolean existed = true;
 	                    if (outerDir==null)
 	                    {

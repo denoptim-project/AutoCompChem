@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -216,7 +217,7 @@ public class DirectiveTest
     	
     	d.performACCTasks(null, j, null);
     	
-    	assertTrue(d.getDirectiveData("data").getValue().toString()
+    	assertTrue(d.getFirstDirectiveData("data").getValue().toString()
     			.contains(".sfx"),
     			"Task changing DirectiveData");
     	
@@ -231,7 +232,7 @@ public class DirectiveTest
 
     	d2.performACCTasks(null, j, null);
     	
-    	assertTrue(d2.getKeyword("key1").getValue().toString().contains(
+    	assertTrue(d2.getFirstKeyword("key1").getValue().toString().contains(
     			"filenameRoot_job2.xyz"),
     			"Task changing keyword");
     	
@@ -290,26 +291,36 @@ public class DirectiveTest
     	Directive d = new Directive("testDirective");
     	d.addKeyword(new Keyword("key1", true, 
     			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("x","y"))));
     	d.addKeyword(new Keyword("key2", true, 
     			new ArrayList<String>(Arrays.asList("c","d"))));
     	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
     			Arrays.asList("A","B","C"))));
-    	
-    	IDirectiveComponent c = d.getComponent("key2", 
-    			DirectiveComponentType.KEYWORD);
-    	assertEquals("c d",((Keyword) c).getValueAsString(),"Retrieve Keyword");
-    	
 
-    	IDirectiveComponent dd = d.getComponent("data", 
+    	List<IDirectiveComponent> cs = d.getComponent("key1", 
+    			DirectiveComponentType.KEYWORD);
+    	assertEquals(2, cs.size());
+    	assertEquals("a b",((Keyword) cs.get(0)).getValueAsString(), 
+    			"Retrieve Keyword");
+    	assertEquals("x y",((Keyword) cs.get(1)).getValueAsString(), 
+    			"Retrieve Keyword");
+    	
+    	cs = d.getComponent("key2", DirectiveComponentType.KEYWORD);
+    	assertEquals(1, cs.size());
+    	assertEquals("c d",((Keyword) cs.get(0)).getValueAsString(), 
+    			"Retrieve Keyword");
+    	
+    	List<IDirectiveComponent> dds = d.getComponent("data", 
     			DirectiveComponentType.DIRECTIVEDATA);
     	assertEquals("A",((TextBlock) 
-    			((DirectiveData) dd).getValue()).get(0),
+    			((DirectiveData) dds.get(0)).getValue()).get(0),
     			"Retrieve DirectiveData");
     	
-    	IDirectiveComponent x = d.getComponent("notThere", 
+    	List<IDirectiveComponent> xs = d.getComponent("notThere", 
     			DirectiveComponentType.DIRECTIVEDATA);
     	
-    	assertNull(x,"Retriving missing object");
+    	assertEquals(0, xs.size(), "Retriving missing object");
     }
     
 //------------------------------------------------------------------------------
@@ -330,7 +341,7 @@ public class DirectiveTest
     	assertEquals(2,d.getAllKeywords().size(),
     			"Number of Keywords (A)");
     	
-    	IDirectiveComponent comp = d.getKeyword("key2");
+    	IDirectiveComponent comp = d.getFirstKeyword("key2");
     	d.deleteComponent(comp);
     	
     	assertEquals(1,d.getAllDirectiveDataBlocks().size(),
@@ -338,7 +349,7 @@ public class DirectiveTest
     	assertEquals(1,d.getAllKeywords().size(),
     			"Number of Keywords (B)");
     	
-    	IDirectiveComponent comp2 = d.getDirectiveData("data");
+    	IDirectiveComponent comp2 = d.getFirstDirectiveData("data");
     	d.deleteComponent(comp2);
     	
     	assertEquals(0,d.getAllDirectiveDataBlocks().size(),

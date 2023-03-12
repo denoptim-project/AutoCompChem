@@ -239,9 +239,9 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		
     		StringBuilder sbKw = new StringBuilder();
     		//keywords must be in this order
-    		sbKw.append(csDir.getKeyword(
+    		sbKw.append(csDir.getFirstKeyword(
     				SpartanConstants.KWCHARGE).getValueAsString());
-    		sbKw.append(" ").append(csDir.getKeyword(
+    		sbKw.append(" ").append(csDir.getFirstKeyword(
     				SpartanConstants.KWSPIN).getValueAsString());
     		lines.add(sbKw.toString());
 

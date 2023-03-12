@@ -106,6 +106,39 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
 //------------------------------------------------------------------------------
 
 	/**
+	 * Get the last component in the path, i.e., the innermost component, i.e.,
+	 * the right-most component. If the address is empty, no parent exist, thus
+	 * this method returns <code>null</code>.
+	 * @return the last component or null
+	 */
+	public DirComponentTypeAndName getLast()
+	{
+		if (path.size()==0)
+			return null;
+		return path.get(path.size()-1);
+	}
+  
+//------------------------------------------------------------------------------
+
+	/**
+	 * Defines the address to the component that contains the last component in
+	 * this address.
+	 * @return the address to the parent component.
+	 */
+	public DirComponentAddress getParent() 
+	{
+		DirComponentAddress parentAddress = new DirComponentAddress();
+		if (path.size()>1)
+		{
+			path.subList(0, path.size()-1).stream()
+				.forEach(l -> parentAddress.addStep(l));
+		}
+		return parentAddress;
+	}
+  
+//------------------------------------------------------------------------------
+	
+	/**
 	 * Gets the iterator over locations which start from the outermost and ends
 	 * with the innermost.
 	 * @return the iterator over locations.

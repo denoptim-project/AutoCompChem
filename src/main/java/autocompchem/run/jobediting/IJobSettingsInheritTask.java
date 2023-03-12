@@ -60,14 +60,13 @@ public interface IJobSettingsInheritTask
 	        switch (type)
 	        {
 			case INHERIT_JOB_PARAMETER:
-				result = context.deserialize(json, SetJobParameter.class);
+				result = context.deserialize(json, InheritJobParameter.class);
 				break;
-				/*
-				 //TODO-gg
-			case SET_KEYWORD:
-				result = context.deserialize(json, SetKeyword.class);
+			case INHERIT_DIRECTIVE:
+			case INHERIT_DIRECTIVEDATA:
+			case INHERIT_KEYWORD:
+				result = context.deserialize(json, InheritDirectiveComponent.class);
 				break;
-				*/
 			default:
 				throw new IllegalArgumentException("Job settings inheriting "
 						+ "task '" + type + "' is not known. "
