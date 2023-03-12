@@ -74,6 +74,11 @@ public interface IJobEditingTask
 			case SET_DIRECTIVEDATA:
 				result = context.deserialize(json, SetDirectiveComponent.class);
 				break;
+			case REMOVE_KEYWORD:
+			case REMOVE_DIRECTIVE:
+			case REMOVE_DIRECTIVEDATA:
+				result = context.deserialize(json, DeleteDirectiveComponent.class);
+				break;
 			default:
 				throw new IllegalArgumentException("Job editing task '" 
         				+ type + "' is not known. Cannot deserialize JSON "

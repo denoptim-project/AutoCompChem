@@ -32,7 +32,7 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 
-public class IJobEditingTaskTest 
+public class IJobSettingInheritTaskTest 
 {
     
 //------------------------------------------------------------------------------
@@ -48,26 +48,16 @@ public class IJobEditingTaskTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	IJobEditingTask act = new SetDirectiveComponent("*:*|Dir:DirName", 
-    			new Keyword("KeyName", false, 1.234));
-    	String json = writer.toJson(act);
-    	IJobEditingTask fromJson = reader.fromJson(json, IJobEditingTask.class);
-    	assertEquals(act, fromJson);
-    	
-    	act = new SetJobParameter(new NamedData("ParamToSet", "valueOfParam"));
-    	json = writer.toJson(act);
-    	fromJson = reader.fromJson(json, IJobEditingTask.class);
-    	assertEquals(act, fromJson);
-    	
-    	act = new DeleteJobParameter("NameOfParamToRemove");
-    	json = writer.toJson(act);
-    	fromJson = reader.fromJson(json, IJobEditingTask.class);
-    	assertEquals(act, fromJson);
-    	
-    	act = new DeleteDirectiveComponent(
+    	IJobSettingsInheritTask act = new InheritDirectiveComponent(
     			DirComponentAddress.fromString("*:*|Dir:DirName"));
+    	String json = writer.toJson(act);
+    	IJobSettingsInheritTask fromJson = reader.fromJson(json, 
+    			IJobSettingsInheritTask.class);
+    	assertEquals(act, fromJson);
+    	
+    	act = new InheritJobParameter("paramToInherit");
     	json = writer.toJson(act);
-    	fromJson = reader.fromJson(json, IJobEditingTask.class);
+    	fromJson = reader.fromJson(json, IJobSettingsInheritTask.class);
     	assertEquals(act, fromJson);
     }
     

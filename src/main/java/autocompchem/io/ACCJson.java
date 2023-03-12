@@ -37,6 +37,9 @@ import autocompchem.run.ShellJob.ShellJobSerializer;
 import autocompchem.run.jobediting.IJobEditingTask;
 import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskDeserializer;
 import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskSerializer;
+import autocompchem.run.jobediting.IJobSettingsInheritTask;
+import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTaskDeserializer;
+import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTaskSerializer;
 import autocompchem.run.jobediting.SetDirectiveComponent;
 import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 
@@ -100,6 +103,8 @@ public class ACCJson
     	        		new DirComponentAddressSerializer())
     	        .registerTypeAdapter(IJobEditingTask.class, 
     	        		new IJobEditingTaskSerializer())
+    	        .registerTypeAdapter(IJobSettingsInheritTask.class, 
+    	        		new IJobSettingsInheritTaskSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
     			.create();
@@ -119,6 +124,8 @@ public class ACCJson
     	        		new ParameterStorageDeserializer())
     	        .registerTypeAdapter(IJobEditingTask.class, 
     	        		new IJobEditingTaskDeserializer())
+    	        .registerTypeAdapter(IJobSettingsInheritTask.class, 
+    	        		new IJobSettingsInheritTaskDeserializer())
     	        .registerTypeAdapter(SetDirectiveComponent.class, 
     	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
