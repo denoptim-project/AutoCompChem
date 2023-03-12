@@ -153,6 +153,36 @@ public class Circumstance implements ICircumstance
         sb.append("]");
         return sb.toString();
     }
+    
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        Circumstance other = (Circumstance) o;
+         
+        if (!this.ict.equals(other.ict))
+            return false;
+        
+        if (Math.abs(this.scoreThreshold-other.scoreThreshold)>0.0001)
+            return false;
+
+        if ((this.hasTxtQuery && !other.hasTxtQuery) 
+        		|| (!this.hasTxtQuery && other.hasTxtQuery))
+        	return false;
+        
+        return true;
+    }
 
 //------------------------------------------------------------------------------
 

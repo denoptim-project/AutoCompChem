@@ -77,27 +77,27 @@ public class Action implements Cloneable
      * Action types define the main feature of the action.
      */
     public enum ActionType {
-    	/**
-    	 * Requests to re-run the action's object. This may or may not require:
-    	 * <ul>
-    	 * <li>alteration of the action's object,</li>
-    	 * <li>addition of steps before the action's object,</li>
-    	 * <li>addition of steps after the action's object.</li>
-    	 * </ul>
-    	 */
-    	REDO, 
-    	
-    	/**
-    	 * Requests to skip the action's object and move to the next step, 
-    	 * if any.
-    	 */
-    	SKIP, 
-    	
-    	/**
-    	 * Requests to stop the action's object. This request is passed to a
-    	 * manager of the action's object, if any. 
-    	 */
-    	STOP
+        /**
+         * Requests to re-run the action's object. This may or may not require:
+         * <ul>
+         * <li>alteration of the action's object,</li>
+         * <li>addition of steps before the action's object,</li>
+         * <li>addition of steps after the action's object.</li>
+         * </ul>
+         */
+        REDO, 
+        
+        /**
+         * Requests to skip the action's object and move to the next step, 
+         * if any.
+         */
+        SKIP, 
+        
+        /**
+         * Requests to stop the action's object. This request is passed to a
+         * manager of the action's object, if any. 
+         */
+        STOP
     
     };
     
@@ -106,32 +106,32 @@ public class Action implements Cloneable
      * been evaluated.
      */
     public enum ActionObject {
-    	/**
-    	 * The job that has been evaluated.
-    	 */
-    	FOCUSJOB, 
-    	
-    	/**
-    	 * The parent of the job that has been evaluated.
-    	 */
-    	FOCUSJOBPARENT, 
-    	
-    	/**
-    	 * The job that is step <i>i-1</i> if the job that has been evaluated 
-    	 * is step <i>i</i> in a list of jobs.
-    	 */
-    	PREVIOUSJOB, 
-    	
-    	/**
-    	 * Any job that is parallel to the job that has been evaluated.
-    	 */
-    	PARALLELJOB, 
-    	
-    	/**
-    	 * The job that is step <i>i+1</i> if the job that has been evaluated 
-    	 * is step <i>i</i> in a list of jobs.
-    	 */
-    	SUBSEQUENTJOB
+        /**
+         * The job that has been evaluated.
+         */
+        FOCUSJOB, 
+        
+        /**
+         * The parent of the job that has been evaluated.
+         */
+        FOCUSJOBPARENT, 
+        
+        /**
+         * The job that is step <i>i-1</i> if the job that has been evaluated 
+         * is step <i>i</i> in a list of jobs.
+         */
+        PREVIOUSJOB, 
+        
+        /**
+         * Any job that is parallel to the job that has been evaluated.
+         */
+        PARALLELJOB, 
+        
+        /**
+         * The job that is step <i>i+1</i> if the job that has been evaluated 
+         * is step <i>i</i> in a list of jobs.
+         */
+        SUBSEQUENTJOB
     };
     
     /**
@@ -151,14 +151,14 @@ public class Action implements Cloneable
      * and possibly remove unneeded data.
      */
     List<DataArchivingRule> jobArchivingRules = 
-    		new ArrayList<DataArchivingRule>();
+            new ArrayList<DataArchivingRule>();
     
     /**
      * List of settings that prepended job steps should inherit from the 
      * action's object job.
      */
     List<IJobSettingsInheritTask> inheritedSettings = 
-    		new ArrayList<IJobSettingsInheritTask>();
+            new ArrayList<IJobSettingsInheritTask>();
     
     
 //------------------------------------------------------------------------------
@@ -181,8 +181,8 @@ public class Action implements Cloneable
     
     public Action(ActionType type, ActionObject object)
     {
-    	this.type = type;
-    	this.object = object;
+        this.type = type;
+        this.object = object;
     }
 
 //------------------------------------------------------------------------------
@@ -202,10 +202,10 @@ public class Action implements Cloneable
     @Deprecated
     public Action(String txt) throws Exception
     {
-    	List<String> lines = new ArrayList<String>();
-    	String[] parts = txt.split(System.getProperty("line.separator"));
-    	Collections.addAll(lines, parts);
-    	makeFromLines(lines);
+        List<String> lines = new ArrayList<String>();
+        String[] parts = txt.split(System.getProperty("line.separator"));
+        Collections.addAll(lines, parts);
+        makeFromLines(lines);
     }
     
 //------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ public class Action implements Cloneable
     @Deprecated
     public Action(List<String> lines) throws Exception
     {
-    	makeFromLines(lines);
+        makeFromLines(lines);
     }
     
 //------------------------------------------------------------------------------
@@ -239,32 +239,32 @@ public class Action implements Cloneable
     @Deprecated
     private void makeFromLines(List<String> lines) throws Exception 
     {
-    	//If needed to parse multiple instances of the same KEY, then use
+        //If needed to parse multiple instances of the same KEY, then use
         //List<List<String>> form = TextAnalyzer.readKeyValue(
-    	TreeMap<String,String> form = TextAnalyzer.readKeyValuePairs(
+        TreeMap<String,String> form = TextAnalyzer.readKeyValuePairs(
                 lines,
                 ActionConstants.SEPARATOR,
                 ActionConstants.COMMENTLINE,
                 ActionConstants.STARTMULTILINE,
                 ActionConstants.ENDMULTILINE);
-    	
-    	for (String key : form.keySet())
-    	{
-    		switch (key)
-    		{
-    		case (ActionConstants.TYPEKEY):
-    			type = ActionType.valueOf(form.get(key).toUpperCase());
-    			break;
-    			
-    		case (ActionConstants.OBJECTKEY):
-    			object = ActionObject.valueOf(form.get(key).toUpperCase());
-    			break;
-    			
-    		default:
-    			throw new Exception("Unable to understand keyword '" + key 
-    					+ "' while creation an Action.");
-    		}
-    	}
+        
+        for (String key : form.keySet())
+        {
+            switch (key)
+            {
+            case (ActionConstants.TYPEKEY):
+                type = ActionType.valueOf(form.get(key).toUpperCase());
+                break;
+                
+            case (ActionConstants.OBJECTKEY):
+                object = ActionObject.valueOf(form.get(key).toUpperCase());
+                break;
+                
+            default:
+                throw new Exception("Unable to understand keyword '" + key 
+                        + "' while creation an Action.");
+            }
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ public class Action implements Cloneable
      */
     public void addJobEditingTask(IJobEditingTask jet)
     {
-    	jobEditTasks.add(jet);
+        jobEditTasks.add(jet);
     }
     
 //------------------------------------------------------------------------------
@@ -292,7 +292,7 @@ public class Action implements Cloneable
      */
     public void addPrerefinementStep(Job prerefinementStep)
     {
-    	prerefinementSteps.add(prerefinementStep);
+        prerefinementSteps.add(prerefinementStep);
     }
     
 //------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ public class Action implements Cloneable
      */
     public void addJobArchivingDetails(DataArchivingRule jad)
     {
-    	jobArchivingRules.add(jad);
+        jobArchivingRules.add(jad);
     }
     
 //------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ public class Action implements Cloneable
      */
     public void addSettingsInheritedTask(IJobSettingsInheritTask sit)
     {
-    	inheritedSettings.add(sit);
+        inheritedSettings.add(sit);
     }
     
 //------------------------------------------------------------------------------
@@ -331,10 +331,10 @@ public class Action implements Cloneable
      */
     public Set<String> getFilenamePatterns(Type type)
     {
-    	return jobArchivingRules.stream()
-    		.filter(r -> r.getType().equals(type))
-    		.map(r -> r.getPattern())
-    		.collect(Collectors.toSet());
+        return jobArchivingRules.stream()
+            .filter(r -> r.getType().equals(type))
+            .map(r -> r.getPattern())
+            .collect(Collectors.toSet());
     }
     
 //------------------------------------------------------------------------------
@@ -390,38 +390,56 @@ public class Action implements Cloneable
     @Override
     public boolean equals(Object o)
     {
-    	if (o== null)
-    		return false;
     	
- 	    if (o == this)
- 		    return true;
- 	   
- 	    if (o.getClass() != getClass())
-     		return false;
- 	    
- 	   Action other = (Action) o;
- 	   
- 	    if (this.type!=other.type)
- 	    	return false;
- 	    
- 	   if (this.object!=other.object)
-	    	return false;
- 	   
- 	   if (this.jobEditTasks.size()!=other.jobEditTasks.size())
- 		   return false;
- 	   
- 	   for (int i=0; i<this.jobEditTasks.size(); i++)
- 		   if (!this.jobEditTasks.get(i).equals(other.jobEditTasks.get(i)))
- 			   return false;
- 	   
- 	   if (this.jobArchivingRules.size()!=other.jobArchivingRules.size())
- 		   return false;
- 	   
- 	   for (int i=0; i<this.jobArchivingRules.size(); i++)
- 		   if (!this.jobArchivingRules.get(i).equals(other.jobArchivingRules.get(i)))
- 			   return false;
- 	   
- 	   return true;
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        Action other = (Action) o;
+        
+        if (this.type!=other.type)
+            return false;
+         
+        if (this.object!=other.object)
+            return false;
+        
+        if (this.jobEditTasks.size()!=other.jobEditTasks.size())
+            return false;
+        
+        for (int i=0; i<this.jobEditTasks.size(); i++)
+            if (!this.jobEditTasks.get(i).equals(other.jobEditTasks.get(i)))
+                return false;
+        
+        if (this.jobArchivingRules.size()!=other.jobArchivingRules.size())
+            return false;
+        
+        for (int i=0; i<this.jobArchivingRules.size(); i++)
+            if (!this.jobArchivingRules.get(i).equals(
+                    other.jobArchivingRules.get(i)))
+                return false;
+        
+        if (this.inheritedSettings.size()!=other.inheritedSettings.size())
+            return false;
+        
+        for (int i=0; i<this.inheritedSettings.size(); i++)
+            if (!this.inheritedSettings.get(i).equals(
+                   other.inheritedSettings.get(i)))
+                return false;
+        
+        if (this.prerefinementSteps.size()!=other.prerefinementSteps.size())
+            return false;
+        
+        for (int i=0; i<this.prerefinementSteps.size(); i++)
+            if (!this.prerefinementSteps.get(i).equals(
+                    other.prerefinementSteps.get(i)))
+                return false;
+        
+        return true;
     }
     
 //------------------------------------------------------------------------------
@@ -433,7 +451,7 @@ public class Action implements Cloneable
     
     public Action clone()
     {
-    	return new Action(type, object);
+        return new Action(type, object);
     }
     
 //------------------------------------------------------------------------------

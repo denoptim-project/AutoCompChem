@@ -26,9 +26,15 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
+import autocompchem.run.Job;
+import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.JobFactory;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.Type;
@@ -48,16 +54,42 @@ public class ActionTest
     /**
      * Creates an action filled with content meant only for testing.
      */
-    public Action getTestAction()
+    public static Action getTestAction()
     {
     	Action act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
+    	
     	act.addJobEditingTask(new SetDirectiveComponent("*:*|Dir:DirName", 
     			new Keyword("KeyName", false, 1.234)));
     	act.addJobEditingTask(new DeleteJobParameter("NameOfParamToRemove"));
     	act.addJobEditingTask(new SetJobParameter(
     			new NamedData("ParamToSet", "valueOfParam")));
+    	
     	act.addJobArchivingDetails(new DataArchivingRule(Type.COPY, "toCp*"));
     	act.addJobArchivingDetails(new DataArchivingRule(Type.DELETE, "toDel*"));
+   	 
+	   	Job preferinementWorkflow = new Job();
+	   	CompChemJob ccj = new CompChemJob();
+	   	Directive d = new Directive("GEOM");
+	   	d.addKeyword(new Keyword("value", false, 0));
+	   	d.addKeyword(new Keyword("format", true, "xyz"));
+	   	ccj.addDirective(d);
+	   	Directive d2 = new Directive("Opt");
+	   	d2.addKeyword(new Keyword("MaxVal", true, 150));
+	   	ccj.addDirective(d2);
+	   	preferinementWorkflow.addStep(ccj);
+	   	CompChemJob ccj2 = new CompChemJob();
+	   	Directive d3 = new Directive("GEOM");
+	   	d3.addKeyword(new Keyword("value", false, 10));
+	   	ccj2.addDirective(d3);
+	   	Directive d4 = new Directive("Opt");
+	   	d4.addKeyword(new Keyword("MaxVal", true, 300));
+	   	ccj2.addDirective(d4);
+	   	preferinementWorkflow.addStep(ccj2);
+	   	act.addPrerefinementStep(preferinementWorkflow);
+	   	
+	   	act.addSettingsInheritedTask(new InheritDirectiveComponent(
+   			 DirComponentAddress.fromString("Dir:Inherited|Key:KKK")));
+    	
     	return act;
     }
  
@@ -98,7 +130,21 @@ public class ActionTest
     	a2.addJobArchivingDetails(new DataArchivingRule(Type.MOVE, "toCp*"));
     	assertFalse(a1.equals(a2));
     	
-    	//TODO-gg add clauses comparing other fields, is the any missing one?
+    	a2 = getTestAction();
+    	a2.inheritedSettings.set(0, new InheritJobParameter("paramName"));
+    	assertFalse(a1.equals(a2));
+    	
+    	a2 = getTestAction();
+    	a2.addSettingsInheritedTask(new InheritJobParameter("paramName"));
+    	assertFalse(a1.equals(a2));
+    	
+    	a2 = getTestAction();
+    	a2.prerefinementSteps.set(0, JobFactory.createJob(RunnableAppID.SHELL));
+    	assertFalse(a1.equals(a2));
+    	
+    	a2 = getTestAction();
+    	a2.prerefinementSteps.add(JobFactory.createJob(RunnableAppID.SHELL));
+    	assertFalse(a1.equals(a2));
     }
     
 //------------------------------------------------------------------------------
@@ -111,9 +157,6 @@ public class ActionTest
     	
     	Action act = getTestAction();
     	String json = writer.toJson(act);
-
-    	//TODO-gg del
-    	System.out.println(json);
     	
     	Action fromJson = reader.fromJson(json, Action.class);
     	assertEquals(act,fromJson);

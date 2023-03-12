@@ -173,6 +173,32 @@ public class MatchText extends Circumstance
         sb.append("]]");
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        MatchText other = (MatchText) o;
+         
+        if (!this.pattern.equals(other.pattern))
+            return false;
+
+        if ((this.negation && !other.negation) 
+        		|| (!this.negation && other.negation))
+        	return false;
+        
+        return super.equals(other);
+    }
 
 //------------------------------------------------------------------------------
 

@@ -141,6 +141,31 @@ public class LoopCounter extends MatchText
         sb.append("]]");
         return sb.toString();
     }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+        
+        LoopCounter other = (LoopCounter) o;
+        
+        if (this.minCounter != other.minCounter)
+            return false;
+        
+        if (this.maxCounter != other.maxCounter)
+           return false;
+        
+        return super.equals(other);
+    }
 
 //------------------------------------------------------------------------------
 

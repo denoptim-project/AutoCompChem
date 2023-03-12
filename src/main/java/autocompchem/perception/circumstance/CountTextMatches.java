@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.situation.Situation;
 
 
 /**
@@ -75,7 +76,7 @@ public class CountTextMatches extends MatchText
 
     public CountTextMatches(String pattern, int num, InfoChannelType ict)
     {
-    	this(pattern, num, ict, false);
+        this(pattern, num, ict, false);
     }
 
 //------------------------------------------------------------------------------
@@ -144,9 +145,9 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int min, int max,
-    		InfoChannelType ict)
+            InfoChannelType ict)
     {
-    	this(pattern, min, max, ict, false);
+        this(pattern, min, max, ict, false);
     }
     
 //------------------------------------------------------------------------------
@@ -165,13 +166,13 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int min, int max,
-    		InfoChannelType ict, boolean negation)
+            InfoChannelType ict, boolean negation)
     {
         super(pattern,ict);
-    	if (min!=-1)
-    		this.min = min;
-    	if (max!=-1)
-    		this.max = max;
+        if (min!=-1)
+            this.min = min;
+        if (max!=-1)
+            this.max = max;
         this.cnstrType = ConstrainType.RANGE;
         super.negation = negation;
     }
@@ -268,6 +269,37 @@ public class CountTextMatches extends MatchText
         sb.append("; negation:").append(super.negation);
         sb.append("]]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        CountTextMatches other = (CountTextMatches) o;
+         
+        if (this.min != other.min)
+            return false;
+        
+        if (this.max != other.max)
+           return false;
+       
+        if (this.num != other.num)
+           return false;
+        
+        if (!this.cnstrType.equals(other.cnstrType))
+        	return false;
+        
+        return super.equals(other);
     }
 
 //------------------------------------------------------------------------------
