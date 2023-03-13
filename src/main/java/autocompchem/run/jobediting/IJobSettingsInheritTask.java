@@ -40,8 +40,8 @@ public interface IJobSettingsInheritTask
 	    {
 	        JsonObject jsonObject = json.getAsJsonObject();
 
-	        TaskType type = context.deserialize(jsonObject.get("task"),
-	                TaskType.class);
+	        JobEditType type = context.deserialize(jsonObject.get("task"),
+	                JobEditType.class);
 	        
 	        IJobSettingsInheritTask result = null;
 	        switch (type)

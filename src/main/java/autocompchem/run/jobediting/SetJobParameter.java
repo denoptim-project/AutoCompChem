@@ -15,7 +15,7 @@ import autocompchem.run.Job;
 
 public class SetJobParameter implements IJobEditingTask
 {
-	final TaskType task = TaskType.SET_JOB_PARAMETER;
+	final JobEditType task = JobEditType.SET_JOB_PARAMETER;
 	
 	/**
 	 * The value to set for the parameter.

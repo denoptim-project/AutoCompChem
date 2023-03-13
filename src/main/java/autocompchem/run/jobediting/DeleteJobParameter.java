@@ -5,7 +5,7 @@ import autocompchem.run.Job;
 
 public class DeleteJobParameter implements IJobEditingTask
 {	
-	final TaskType task = TaskType.REMOVE_JOB_PARAMETER;
+	final JobEditType task = JobEditType.REMOVE_JOB_PARAMETER;
 	
 	/**
 	 * The name of the parameter to delete from the job. Case Insensitive!

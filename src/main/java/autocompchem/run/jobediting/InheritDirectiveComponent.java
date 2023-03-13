@@ -26,7 +26,7 @@ public class InheritDirectiveComponent implements IJobSettingsInheritTask
 	 * Defines which type of setting task this is. It also defines what is
 	 * the type of content this task is setting.
 	 */
-	final TaskType task;
+	final JobEditType task;
 	
 	/**
 	 * Address to component to inherit from the source job. This is also the 
@@ -42,13 +42,13 @@ public class InheritDirectiveComponent implements IJobSettingsInheritTask
 		switch (path.getLast().type)
 		{
 		case DIRECTIVE:
-			this.task = TaskType.INHERIT_DIRECTIVE;
+			this.task = JobEditType.INHERIT_DIRECTIVE;
 			break;
 		case DIRECTIVEDATA:
-			this.task = TaskType.INHERIT_DIRECTIVEDATA;
+			this.task = JobEditType.INHERIT_DIRECTIVEDATA;
 			break;
 		case KEYWORD:
-			this.task = TaskType.INHERIT_KEYWORD;
+			this.task = JobEditType.INHERIT_KEYWORD;
 			break;
 		default:
 			throw new Error("Unrecognized type of directive "

@@ -69,6 +69,13 @@ public class IJobEditingTaskTest
     	json = writer.toJson(act);
     	fromJson = reader.fromJson(json, IJobEditingTask.class);
     	assertEquals(act, fromJson);
+    	
+    	// Check case-insensitivity of enum strings
+    	json = json.replaceAll(JobEditType.REMOVE_DIRECTIVE.toString(),
+    			JobEditType.REMOVE_DIRECTIVE.toString().toLowerCase());
+    	
+    	fromJson = reader.fromJson(json, IJobEditingTask.class);
+    	assertEquals(act, fromJson);
     }
     
 //------------------------------------------------------------------------------

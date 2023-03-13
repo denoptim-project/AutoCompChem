@@ -28,7 +28,7 @@ import autocompchem.run.JobEvaluator;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.Terminator;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.utils.SetUtils;
 import autocompchem.utils.StringUtils;
 
@@ -131,9 +131,9 @@ public class ActionApplier
     	
     	// Create copy of previous data from jobs
     	archivePreviousResults(todoJobs, restartCounter, 
-    			action.getFilenamePatterns(Type.COPY), 
-    			action.getFilenamePatterns(Type.MOVE), 
-    			action.getFilenamePatterns(Type.DELETE));
+    			action.getFilenamePatterns(ArchivingTaskType.COPY), 
+    			action.getFilenamePatterns(ArchivingTaskType.MOVE), 
+    			action.getFilenamePatterns(ArchivingTaskType.DELETE));
     	
     	// Trim job steps to have as first step the failing step
     	if (aType==ActionType.REDO && focusJobStepId>0 

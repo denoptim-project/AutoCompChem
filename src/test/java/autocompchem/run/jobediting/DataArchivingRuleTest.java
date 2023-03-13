@@ -38,7 +38,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 public class DataArchivingRuleTest 
 {
@@ -48,18 +48,18 @@ public class DataArchivingRuleTest
     @Test
     public void testEquals() throws Exception
     {
-    	DataArchivingRule tA = new DataArchivingRule(Type.COPY,"*blabla*");
-    	DataArchivingRule tB = new DataArchivingRule(Type.COPY,"*blabla*");
+    	DataArchivingRule tA = new DataArchivingRule(ArchivingTaskType.COPY,"*blabla*");
+    	DataArchivingRule tB = new DataArchivingRule(ArchivingTaskType.COPY,"*blabla*");
 
     	assertTrue(tA.equals(tA));
     	assertTrue(tA.equals(tB));
     	assertTrue(tB.equals(tA));
     	assertFalse(tA.equals(null));
     	
-    	tB = new DataArchivingRule(Type.MOVE,"*blabla*");
+    	tB = new DataArchivingRule(ArchivingTaskType.MOVE,"*blabla*");
     	assertFalse(tA.equals(tB));
     	
-    	tB = new DataArchivingRule(Type.COPY,"*blablabla*");
+    	tB = new DataArchivingRule(ArchivingTaskType.COPY,"*blablabla*");
     	assertFalse(tA.equals(tB));
     }
     
@@ -71,11 +71,19 @@ public class DataArchivingRuleTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	DataArchivingRule original = new DataArchivingRule(Type.COPY,"*bla*");
+    	DataArchivingRule original = new DataArchivingRule(
+    			ArchivingTaskType.COPY,"*bla*");
     	String json = writer.toJson(original);
     	
     	DataArchivingRule fromJson = reader.fromJson(json, 
     			DataArchivingRule.class);
+    	assertEquals(original, fromJson);
+    	
+    	// Check case-insensitivity of enum strings
+    	json = json.replaceAll(ArchivingTaskType.COPY.toString(),
+    			ArchivingTaskType.COPY.toString().toLowerCase());
+    	
+    	fromJson = reader.fromJson(json, DataArchivingRule.class);
     	assertEquals(original, fromJson);
     }
     

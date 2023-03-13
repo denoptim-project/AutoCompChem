@@ -1,5 +1,14 @@
 package autocompchem.run.jobediting;
 
+import java.lang.reflect.Type;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
+import autocompchem.run.jobediting.Action.ActionObject;
+
 /**
  * A rule defining what to do with data saved on files. Typically, we
  * want to archive some data (i.e., keep a copy of the files just to avoid 
@@ -12,12 +21,31 @@ public class DataArchivingRule
 	 * Defines if a data archiving rule is meant for moving, copying or removing
 	 * data.
 	 */
-	public static enum Type {MOVE, COPY, DELETE};
-	
+	public static enum ArchivingTaskType {MOVE, COPY, DELETE};
+
+    //--------------------------------------------------------------------------
+  	
+  	public static class ArchivingTaskTypeDeserializer 
+  	implements JsonDeserializer<ArchivingTaskType>
+  	{
+		@Override
+		public ArchivingTaskType deserialize(JsonElement json, 
+				Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException 
+		{
+			// JSON is case sensitive, but we want to
+	    	// allow some flexibility on the case of the strings meant to represent
+	    	// enums, so we allow case-insensitive string-like enums.
+			return ArchivingTaskType.valueOf(json.getAsString().toUpperCase());
+		}
+  	}
+  	
+    //--------------------------------------------------------------------------
+  	
 	/**
-	 * The {@link Type} of this rule.
+	 * The {@link ArchivingTaskType} of this rule.
 	 */
-	private Type type;
+	private ArchivingTaskType type;
 	
 	/**
 	 * The pattern for identifying filenames (not pathnames!) that contain data
@@ -43,7 +71,7 @@ public class DataArchivingRule
 	 * at the end, the beginning, or in the middle of the the last component of 
 	 * the pathname.
 	 */
-	public DataArchivingRule(Type type, String pattern)
+	public DataArchivingRule(ArchivingTaskType type, String pattern)
 	{
 		this.type = type;
 		this.pattern = pattern;
@@ -63,7 +91,7 @@ public class DataArchivingRule
 	 */
 	public static DataArchivingRule makeMoveRule(String pattern)
 	{
-		return new DataArchivingRule(Type.MOVE, pattern);
+		return new DataArchivingRule(ArchivingTaskType.MOVE, pattern);
 	}
 	
 //------------------------------------------------------------------------------
@@ -81,7 +109,7 @@ public class DataArchivingRule
 	 */
 	public static DataArchivingRule makeCopyRule(String pattern)
 	{
-		return new DataArchivingRule(Type.COPY, pattern);
+		return new DataArchivingRule(ArchivingTaskType.COPY, pattern);
 	}
 	
 //------------------------------------------------------------------------------
@@ -98,7 +126,7 @@ public class DataArchivingRule
 	 */
 	public static DataArchivingRule makeDeleteRule(String pattern)
 	{
-		return new DataArchivingRule(Type.DELETE, pattern);
+		return new DataArchivingRule(ArchivingTaskType.DELETE, pattern);
 	}
 
 //------------------------------------------------------------------------------
@@ -106,7 +134,7 @@ public class DataArchivingRule
 	/**
 	 * @return the type of data archiving task.
 	 */
-	public Type getType() {
+	public ArchivingTaskType getType() {
 		return type;
 	}
 

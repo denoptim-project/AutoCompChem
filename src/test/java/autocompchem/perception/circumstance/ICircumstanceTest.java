@@ -60,6 +60,12 @@ public class ICircumstanceTest
     	json = writer.toJson(ic);
     	fromJson = reader.fromJson(json, ICircumstance.class);
     	assertEquals(ic, fromJson);
+    	
+    	// Check case-insensitivity of enum strings
+    	json = json.replaceAll(InfoChannelType.LOGFEED.toString(),
+    			InfoChannelType.LOGFEED.toString().toLowerCase());
+    	fromJson = reader.fromJson(json, ICircumstance.class);
+    	assertEquals(ic, fromJson);
     }
     
 //------------------------------------------------------------------------------

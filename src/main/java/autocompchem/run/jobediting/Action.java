@@ -18,19 +18,21 @@ package autocompchem.run.jobediting;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
 import autocompchem.run.ActionConstants;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.WorkerConstants;
 
@@ -98,9 +100,27 @@ public class Action implements Cloneable
          * manager of the action's object, if any. 
          */
         STOP
-    
     };
     
+    //--------------------------------------------------------------------------
+  	
+  	public static class ActionTypeDeserializer 
+  	implements JsonDeserializer<ActionType>
+  	{
+		@Override
+		public ActionType deserialize(JsonElement json, 
+				java.lang.reflect.Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException 
+		{
+			// JSON is case sensitive, but we want to
+	    	// allow some flexibility on the case of the strings meant to represent
+	    	// enums, so we allow case-insensitive string-like enums.
+			return ActionType.valueOf(json.getAsString().toUpperCase());
+		}
+  	}
+  	
+    //--------------------------------------------------------------------------
+  	
     /**
      * Possible target of the action defined with respect to the job that has 
      * been evaluated.
@@ -133,6 +153,26 @@ public class Action implements Cloneable
          */
         SUBSEQUENTJOB
     };
+    
+    //--------------------------------------------------------------------------
+  	
+  	public static class ActionObjectDeserializer 
+  	implements JsonDeserializer<ActionObject>
+  	{
+		@Override
+		public ActionObject deserialize(JsonElement json, 
+				java.lang.reflect.Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException 
+		{
+			// JSON is case sensitive, but we want to
+	    	// allow some flexibility on the case of the strings meant to represent
+	    	// enums, so we allow case-insensitive string-like enums.
+			return ActionObject.valueOf(json.getAsString().toUpperCase());
+		}
+  	}
+  	
+    //--------------------------------------------------------------------------
+  	
     
     /**
      * Tasks to perform on action's object jobs
@@ -329,7 +369,7 @@ public class Action implements Cloneable
      * archiving task.
      * @return the list of patterns.
      */
-    public Set<String> getFilenamePatterns(Type type)
+    public Set<String> getFilenamePatterns(ArchivingTaskType type)
     {
         return jobArchivingRules.stream()
             .filter(r -> r.getType().equals(type))

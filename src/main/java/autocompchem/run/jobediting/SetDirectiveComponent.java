@@ -31,7 +31,7 @@ public class SetDirectiveComponent implements IJobEditingTask
 	 * Defines which type of setting task this is. It also defines what is
 	 * the type of content this task is setting.
 	 */
-	final TaskType task;
+	final JobEditType task;
 	
 	/**
 	 * Address to parent directive where the component is to be set
@@ -68,14 +68,14 @@ public class SetDirectiveComponent implements IJobEditingTask
 	/**
 	 * Sets the task identifier according to the type of content given.
 	 */
-	private TaskType defineTask()
+	private JobEditType defineTask()
 	{
 		if (content instanceof Directive)
-			return TaskType.SET_DIRECTIVE;
+			return JobEditType.SET_DIRECTIVE;
 		else if (content instanceof Keyword)
-			return TaskType.SET_KEYWORD;
+			return JobEditType.SET_KEYWORD;
 		else if (content instanceof DirectiveData)
-			return TaskType.SET_DIRECTIVEDATA;
+			return JobEditType.SET_DIRECTIVEDATA;
 		else
 			throw new Error("Unrecognized type of directive "
 					+ "component to set. Please, contact the developers.");
@@ -170,8 +170,8 @@ public class SetDirectiveComponent implements IJobEditingTask
 	    {
 	        JsonObject jsonObject = json.getAsJsonObject();
 
-	        TaskType type = context.deserialize(jsonObject.get("task"),
-	                TaskType.class);
+	        JobEditType type = context.deserialize(jsonObject.get("task"),
+	                JobEditType.class);
 	        
 	        DirComponentAddress address = context.deserialize(
 	        		jsonObject.get("path"), 

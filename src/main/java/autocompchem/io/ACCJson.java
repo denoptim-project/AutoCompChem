@@ -34,6 +34,8 @@ import autocompchem.perception.circumstance.ICircumstance.ICircumstanceDeseriali
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.circumstance.MatchText.MatchTextDeserializer;
 import autocompchem.perception.circumstance.MatchText.MatchTextSerializer;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.InfoChannelType.InfoChannelTypeDeserializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -42,10 +44,18 @@ import autocompchem.run.Job.JobSerializer;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
 import autocompchem.run.ShellJob.ShellJobSerializer;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionObjectDeserializer;
+import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.jobediting.Action.ActionTypeDeserializer;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskTypeDeserializer;
 import autocompchem.run.jobediting.IJobEditingTask;
 import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskDeserializer;
 import autocompchem.run.jobediting.IJobSettingsInheritTask;
 import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTaskDeserializer;
+import autocompchem.run.jobediting.JobEditType;
+import autocompchem.run.jobediting.JobEditType.JobEditTypeDeserializer;
 import autocompchem.run.jobediting.SetDirectiveComponent;
 import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 
@@ -142,6 +152,19 @@ public class ACCJson
     	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerDeserializer())
+    	        // JSON is case-specific but we want to allow case-insentitivity
+    	        // for strings representing enums. These deseriualizers
+    	        // are for enums that we want to be case-insentitive.
+    	        .registerTypeHierarchyAdapter(ActionObject.class, 
+    	        		new ActionObjectDeserializer())
+    	        .registerTypeHierarchyAdapter(ActionType.class, 
+    	        		new ActionTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(JobEditType.class, 
+    	        		new JobEditTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(InfoChannelType.class, 
+    	        		new InfoChannelTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(ArchivingTaskType.class, 
+    	        		new ArchivingTaskTypeDeserializer())
     			.create();
     }
 

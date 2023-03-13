@@ -38,7 +38,7 @@ import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 
 public class CountTextMatchesTest 

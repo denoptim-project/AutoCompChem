@@ -205,7 +205,7 @@ public class JobEvaluator extends Worker
 					ParameterConstants.SITUATION).getValueAsString();
 			Situation situation = null;
 			try {
-				Situation.fromJSON(multilines);
+				situation = Situation.fromJSON(multilines);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! Unable to create Situation "

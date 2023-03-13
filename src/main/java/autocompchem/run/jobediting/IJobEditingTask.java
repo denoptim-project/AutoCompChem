@@ -36,8 +36,8 @@ public interface IJobEditingTask
 	    {
 	        JsonObject jsonObject = json.getAsJsonObject();
 
-	        TaskType type = context.deserialize(jsonObject.get("task"),
-	                TaskType.class);
+	        JobEditType type = context.deserialize(jsonObject.get("task"),
+	                JobEditType.class);
 	        
 	        IJobEditingTask result = null;
 	        switch (type)

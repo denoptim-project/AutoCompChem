@@ -37,7 +37,7 @@ import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 
 /**
@@ -64,8 +64,8 @@ public class ActionTest
     	act.addJobEditingTask(new SetJobParameter(
     			new NamedData("ParamToSet", "valueOfParam")));
     	
-    	act.addJobArchivingDetails(new DataArchivingRule(Type.COPY, "toCp*"));
-    	act.addJobArchivingDetails(new DataArchivingRule(Type.DELETE, "toDel*"));
+    	act.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.COPY, "toCp*"));
+    	act.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.DELETE, "toDel*"));
    	 
 	   	Job preferinementWorkflow = new Job();
 	   	CompChemJob ccj = new CompChemJob();
@@ -123,11 +123,11 @@ public class ActionTest
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
-    	a2.jobArchivingRules.set(0, new DataArchivingRule(Type.MOVE, "toCp*"));
+    	a2.jobArchivingRules.set(0, new DataArchivingRule(ArchivingTaskType.MOVE, "toCp*"));
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
-    	a2.addJobArchivingDetails(new DataArchivingRule(Type.MOVE, "toCp*"));
+    	a2.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.MOVE, "toCp*"));
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
@@ -159,6 +159,19 @@ public class ActionTest
     	String json = writer.toJson(act);
     	
     	Action fromJson = reader.fromJson(json, Action.class);
+    	assertEquals(act,fromJson);
+    	
+    	// Case sensitivity of fields. JSON is case sensitive, but we want to
+    	// allow some flexibility on the case of the strings meant to represent
+    	// enums, so we allow case-insensitive string-like enums.
+    	
+    	act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
+    	json = writer.toJson(act);
+    	json = json.replaceAll(ActionType.REDO.toString(), 
+    			ActionType.REDO.toString().toLowerCase());
+    	json = json.replaceAll(ActionObject.FOCUSJOB.toString(), 
+    			ActionObject.FOCUSJOB.toString().toLowerCase());
+    	fromJson = reader.fromJson(json, Action.class);
     	assertEquals(act,fromJson);
     }
     

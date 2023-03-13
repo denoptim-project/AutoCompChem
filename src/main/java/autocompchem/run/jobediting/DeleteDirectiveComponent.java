@@ -22,7 +22,7 @@ public class DeleteDirectiveComponent implements IJobEditingTask
 	 * Defines which type of setting task this is. It also defines what is
 	 * the type of content this task is setting.
 	 */
-	final TaskType task;
+	final JobEditType task;
 	
 	/**
 	 * Address to component to remove.
@@ -37,13 +37,13 @@ public class DeleteDirectiveComponent implements IJobEditingTask
 		switch (path.getLast().type)
 		{
 		case DIRECTIVE:
-			this.task = TaskType.REMOVE_DIRECTIVE;
+			this.task = JobEditType.REMOVE_DIRECTIVE;
 			break;
 		case DIRECTIVEDATA:
-			this.task = TaskType.REMOVE_DIRECTIVEDATA;
+			this.task = JobEditType.REMOVE_DIRECTIVEDATA;
 			break;
 		case KEYWORD:
-			this.task = TaskType.REMOVE_KEYWORD;
+			this.task = JobEditType.REMOVE_KEYWORD;
 			break;
 		default:
 			throw new Error("Unrecognized type of directive "

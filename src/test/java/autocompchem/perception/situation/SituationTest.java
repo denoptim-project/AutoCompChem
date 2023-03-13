@@ -54,7 +54,7 @@ import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.ActionTest;
 import autocompchem.run.jobediting.DataArchivingRule;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 /**
  * Unit Test for Situation class

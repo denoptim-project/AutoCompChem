@@ -15,7 +15,7 @@ import autocompchem.run.Job;
 
 public class InheritJobParameter implements IJobSettingsInheritTask
 {
-	final TaskType task = TaskType.INHERIT_JOB_PARAMETER;
+	final JobEditType task = JobEditType.INHERIT_JOB_PARAMETER;
 	
 	/**
 	 * The name of the parameter to inherit.

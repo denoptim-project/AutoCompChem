@@ -42,7 +42,7 @@ import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.DataArchivingRule.Type;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 
 /**
@@ -185,11 +185,11 @@ public class ActionApplierTest
     	// Define the action
     	Action action = new Action();
     	action.addJobArchivingDetails(
-    			new DataArchivingRule(Type.DELETE, "*"+labD+"*"));
+    			new DataArchivingRule(ArchivingTaskType.DELETE, "*"+labD+"*"));
     	action.addJobArchivingDetails(
-    			new DataArchivingRule(Type.MOVE, "*"+labM+"*"));
+    			new DataArchivingRule(ArchivingTaskType.MOVE, "*"+labM+"*"));
     	action.addJobArchivingDetails(
-    			new DataArchivingRule(Type.COPY, "*"+labC+"*"));
+    			new DataArchivingRule(ArchivingTaskType.COPY, "*"+labC+"*"));
     	
     	// Do the magic
     	ActionApplier.performAction(action, focusJob, 0, jobs, 1);
