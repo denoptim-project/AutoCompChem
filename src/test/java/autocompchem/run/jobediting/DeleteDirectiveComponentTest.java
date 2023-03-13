@@ -86,9 +86,6 @@ public class DeleteDirectiveComponentTest
 
     	IJobEditingTask fromJson2 = reader.fromJson(json, IJobEditingTask.class);
     	assertEquals(original, fromJson2);
-    	
-    	//TODO-gg del (kept because it could be useful to create functionality tests and document the syntax)
-    	System.out.println(original.getClass().getName()+": "+json);
     }
     
 //------------------------------------------------------------------------------
@@ -96,11 +93,11 @@ public class DeleteDirectiveComponentTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	CompChemJob srcJob = new CompChemJob();
+    	CompChemJob ccj = new CompChemJob();
     	Directive dA = new Directive("dA");
     	dA.addKeyword(new Keyword("KeyAA", false, 1.234));
     	dA.addKeyword(new Keyword("KeyAB", false, "value"));
-    	srcJob.addDirective(dA);
+    	ccj.addDirective(dA);
     	Directive dB = new Directive("dB");
     	dB.addKeyword(new Keyword("KeyBA", false, 4.56));
     	dB.addKeyword(new Keyword("KeyBB", false, "other"));
@@ -113,20 +110,19 @@ public class DeleteDirectiveComponentTest
     	dD.addKeyword(new Keyword("KeyD0", false, "D"));
     	dD.addKeyword(new Keyword("KeyD", false, "DDD"));
     	dB.addSubDirective(dD);
-    	srcJob.addDirective(dB);
+    	ccj.addDirective(dB);
 
     	Directive dE = new Directive("dE");
     	dE.addKeyword(new Keyword("KeyE1", false, "EE"));
-    	srcJob.addDirective(dE);
+    	ccj.addDirective(dE);
     	
     	Directive dE1 = new Directive("dE");
     	dE1.addKeyword(new Keyword("KeyE2", false, "EE"));
-    	srcJob.addDirective(dE1);
+    	ccj.addDirective(dE1);
     	
     	Directive dE2 = new Directive("dE");
     	dE2.addKeyword(new Keyword("KeyE3", false, "EE"));
-    	srcJob.addDirective(dE2);
-    	
+    	ccj.addDirective(dE2);
     	
     	/* This is the structure of the directives in the source job
     	 * 
@@ -144,136 +140,45 @@ public class DeleteDirectiveComponentTest
     	 *  
     	 */
     	
-    	/*
     	// Source does not have the component required
-    	DirComponentAddress adrs0 = DirComponentAddress.fromString(
+    	DirComponentAddress adrs = DirComponentAddress.fromString(
     			"Dir:dA|Dir:nonexisting");
-    	InheritDirectiveComponent task0 = new InheritDirectiveComponent(adrs0);
-    	task0.inheritSettings(srcJob, dstJob);
-    	assertEquals(0, srcJob.getDirectiveComponents(adrs0).size());
-    	assertEquals(0, dstJob.getDirectiveComponents(adrs0).size());
+    	DeleteDirectiveComponent task = new DeleteDirectiveComponent(adrs);
+    	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
+    	task.applyChange(ccj);
+    	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
     	
-    	// Inherit an new Keyword
-    	DirComponentAddress adrs1 = DirComponentAddress.fromString(
-    			"Dir:dB|Dir:dC|Key:KeyC");
-    	InheritDirectiveComponent task1 = new InheritDirectiveComponent(adrs1);
-    	task1.inheritSettings(srcJob, dstJob);
-    	List<IDirectiveComponent> found = srcJob.getDirectiveComponents(adrs1);
-    	assertEquals(1, found.size());
-    	assertEquals("further", ((Keyword) found.get(0)).getValueAsString());
-    	found = dstJob.getDirectiveComponents(adrs1);
-    	assertEquals(1, found.size());
-    	assertEquals("further", ((Keyword) found.get(0)).getValueAsString());
-    	
-    	// Inherit an new DirectiveData
-    	DirComponentAddress adrs2 = DirComponentAddress.fromString(
-    			"Dir:dB|Dat:DirDat");
-    	InheritDirectiveComponent task2 = new InheritDirectiveComponent(adrs2);
-    	task2.inheritSettings(srcJob, dstJob);
-    	found = srcJob.getDirectiveComponents(adrs2);
-    	assertEquals(1, found.size());
-    	assertTrue(found.get(0) instanceof DirectiveData);
-    	assertEquals("two", 
-    			((DirectiveData) found.get(0)).getValueAsLines().get(1));
-    	found = dstJob.getDirectiveComponents(adrs2);
-    	assertEquals(1, found.size());
-    	assertTrue(found.get(0) instanceof DirectiveData);
-    	assertEquals("two", 
-    			((DirectiveData) found.get(0)).getValueAsLines().get(1));
-    	
-    	// Inherit an new Directive
-    	DirComponentAddress adrs3 = DirComponentAddress.fromString(
-    			"Dir:dB|Dir:dD");
-    	InheritDirectiveComponent task3 = new InheritDirectiveComponent(adrs3);
-    	task3.inheritSettings(srcJob, dstJob);
-    	found = srcJob.getDirectiveComponents(adrs3);
-    	assertEquals(1, found.size());
-    	found = dstJob.getDirectiveComponents(adrs3);
-    	assertEquals(1, found.size());
-    	DirComponentAddress adrsOfKey = DirComponentAddress.fromString(
-    			"Dir:dB|Dir:dD|Key:KeyD");
-    	found = srcJob.getDirectiveComponents(adrsOfKey);
-    	assertEquals(1, found.size());
-    	assertEquals("DDD", ((Keyword) found.get(0)).getValueAsString());
-    	found = dstJob.getDirectiveComponents(adrsOfKey);
-    	assertEquals(1, found.size());
-    	assertEquals("DDD", ((Keyword) found.get(0)).getValueAsString());
-    	
-    	// Add beside existing one
-    	DirComponentAddress adrs4 = DirComponentAddress.fromString(
+    	// Delete a Keyword
+    	adrs = DirComponentAddress.fromString(
     			"Dir:dA|Key:KeyAB");
-    	InheritDirectiveComponent task4 = new InheritDirectiveComponent(adrs4);
-    	task4.inheritSettings(srcJob, dstJob);
-    	found = srcJob.getDirectiveComponents(adrs4);
-    	assertEquals(1, found.size());
-    	assertEquals("value", ((Keyword) found.get(0)).getValueAsString());
-    	found = dstJob.getDirectiveComponents(adrs4);
-    	assertEquals(2, found.size());
-    	assertEquals("different", ((Keyword) found.get(0)).getValueAsString());
-    	assertEquals("value", ((Keyword) found.get(1)).getValueAsString());
+    	task = new DeleteDirectiveComponent(adrs);
+    	assertEquals(1, ccj.getDirectiveComponents(adrs).size());
+    	task.applyChange(ccj);
+    	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
     	
-    	// Multiple components match query address
-    	DirComponentAddress adrs5 = DirComponentAddress.fromString(
+    	// Delete a DirectiveData
+    	adrs = DirComponentAddress.fromString(
+    			"Dir:dB|Dat:DirDat");
+    	task = new DeleteDirectiveComponent(adrs);
+    	assertEquals(1, ccj.getDirectiveComponents(adrs).size());
+    	task.applyChange(ccj);
+    	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
+    	
+    	// Delete a single Directive
+    	adrs = DirComponentAddress.fromString(
+    			"Dir:dB|Dir:dD");
+    	task = new DeleteDirectiveComponent(adrs);
+    	assertEquals(1, ccj.getDirectiveComponents(adrs).size());
+    	task.applyChange(ccj);
+    	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
+    	
+    	// Delete multiple components match query address
+    	adrs = DirComponentAddress.fromString(
     			"Dir:dE");
-    	InheritDirectiveComponent task5 = new InheritDirectiveComponent(adrs5);
-    	task5.inheritSettings(srcJob, dstJob);
-    	found = srcJob.getDirectiveComponents(adrs5);
-    	assertEquals(3, found.size());
-    	found = dstJob.getDirectiveComponents(adrs5);
-    	assertEquals(3, found.size());
-    	
-    	// Multiple components match query address and one in destination job
-    	DirComponentAddress adrs6 = DirComponentAddress.fromString(
-    			"Dir:dF");
-    	InheritDirectiveComponent task6 = new InheritDirectiveComponent(adrs6);
-    	task6.inheritSettings(srcJob, dstJob);
-    	found = srcJob.getDirectiveComponents(adrs6);
-    	assertEquals(3, found.size());
-    	found = dstJob.getDirectiveComponents(adrs6);
-    	// NB: we ADD three directives 'dF' and one is already there.
-    	assertEquals(4, found.size());
-    	
-    	// Multiple components with same name on both jobs
-    	CompChemJob srcJobB = new CompChemJob();
-    	Directive dAB = new Directive("dA");
-    	dAB.addKeyword(new Keyword("KeyA", false, 0));
-    	dAB.addKeyword(new Keyword("KeyA", false, 1));
-    	dAB.addKeyword(new Keyword("KeyA", false, 2));
-    	dAB.addKeyword(new Keyword("KeyA", false, 3));
-    	srcJobB.addDirective(dAB);
-    	
-    	CompChemJob dstJobB = new CompChemJob();
-    	Directive dA2B = new Directive("dA");
-    	dA2B.addKeyword(new Keyword("KeyA", false, -1));
-    	dstJobB.addDirective(dA2B);
-    	
-    	DirComponentAddress adrs7 = DirComponentAddress.fromString(
-    			"Dir:dA|Key:KeyA");
-    	InheritDirectiveComponent task7 = new InheritDirectiveComponent(adrs7);
-    	assertEquals(4, srcJobB.getDirectiveComponents(adrs7).size());
-    	assertEquals(1, dstJobB.getDirectiveComponents(adrs7).size());
-    	
-    	task7.inheritSettings(srcJobB, dstJobB);
-    	
-    	assertEquals(4, srcJobB.getDirectiveComponents(adrs7).size());
-    	Set<String> expectedSrcVals = new HashSet<>(Arrays.asList("0","1","2","3"));
-    	Set<String> actualSrcVals = srcJobB.getDirectiveComponents(adrs7).stream()
-    		.map(k -> ((Keyword)k).getValueAsString())
-    		.collect(Collectors.toSet());
-    	assertEquals(expectedSrcVals, actualSrcVals);
-
-    	assertEquals(5, dstJobB.getDirectiveComponents(adrs7).size());
-    	Set<String> expectedDstVals = new HashSet<>(expectedSrcVals);
-    	expectedDstVals.add("-1");
-    	Set<String> actualDstVals = dstJobB.getDirectiveComponents(adrs7).stream()
-    		.map(k -> ((Keyword)k).getValueAsString())
-    		.collect(Collectors.toSet());
-    	assertEquals(expectedDstVals, actualDstVals);
-    	*/
-    	
-    	//TODO-gg
-    	 
-    	//assertTrue(false);
+    	task = new DeleteDirectiveComponent(adrs);
+    	assertEquals(3, ccj.getDirectiveComponents(adrs).size());
+    	task.applyChange(ccj);
+    	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
     }
     
 //------------------------------------------------------------------------------
