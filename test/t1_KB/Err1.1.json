@@ -1,0 +1,17 @@
+{
+  "type": "ERROR",
+  "refName": "e0010-QCNoLowerPoint",
+  "description": "Gaussian's QC algorithm for SCF cannot proceed.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Search did not lower the energy significantly."
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "No lower point found -- run aborted."
+    }
+  ]
+}

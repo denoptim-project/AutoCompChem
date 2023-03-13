@@ -1,4 +1,0 @@
-#
-REFERENCENAME: error that does not match situation
-SITUATIONTYPE: error
-CIRCUMSTANCE: logfeed matches No lower point found blabla

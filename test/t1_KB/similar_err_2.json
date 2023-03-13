@@ -1,0 +1,12 @@
+{
+  "type": "ERROR",
+  "refName": "error that does not match situation",
+  "description": "Gaussian's QC algorithm for SCF cannot proceed.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "No lower point found blabla"
+    }
+  ]
+}
