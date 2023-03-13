@@ -99,8 +99,11 @@ public class CountTextMatchesTest
     			InfoChannelType.LOGFEED);
     	String json = writer.toJson(original);
     	
-    	CountTextMatches fromJson = reader.fromJson(json, CountTextMatches.class);
+    	ICircumstance fromJson = reader.fromJson(json, ICircumstance.class);
     	assertEquals(original, fromJson);
+    	
+    	CountTextMatches fromJson2 = reader.fromJson(json, CountTextMatches.class);
+    	assertEquals(original, fromJson2);
     }
     
 //------------------------------------------------------------------------------

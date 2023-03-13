@@ -18,17 +18,13 @@ package autocompchem.perception.situation;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
-import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.CircumstanceFactory;
+import autocompchem.io.ACCJson;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
@@ -145,153 +141,17 @@ public class Situation extends Concept
     }
     
 //------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new situation from a file. The file is expected to contain
-     * a definition of the Situation object we are constructing. 
-     * The format of the definition is detected on the fly by this constructor.
-     * @param file the file we read to make this object
-     * @throws exception if the file cannot be properly converted or read
-     */
-
-    public Situation(File file) throws Exception
-    {
-        super();
-        
-        String format = FileUtils.getFileExtension(file).toLowerCase();
-        
-        // TODO: detect format from file content
-        
-        switch (format)
-        {
-            case SituationConstants.SITUATIONTXTFILEEXT:
-                makeFromTxtFile(file);
-                break;
-                
-            default:
-                throw new Exception("Unknown format for file '" 
-                        + file.getAbsolutePath() + "', which was expected to "
-                        + "contain the definition of a known situation.");
-        }
-    }
-    
-//-----------------------------------------------------------------------------
     
     /**
-     * Creates a situation from a file
-     * @param pathname of file to read
-     * @return the object
-     * @throws exception if the file cannot be properly converted or read
+     * Converts a JSON string into a Situation.
+     * @param json the JSON string to deserialize.
+     * @return the Situation defined in the JSON string.
      */
-    @Deprecated
-    private void makeFromTxtFile(File f) throws Exception
+    public static Situation fromJSON(String json)
     {
-        //Read file
-        String fname = f.toString();
-        List<List<String>> form = IOtools.readFormattedText(
-                fname,
-                SituationConstants.SEPARATOR, //key-value separator
-                SituationConstants.COMMENTLINE,
-                SituationConstants.STARTMULTILINE,
-                SituationConstants.ENDMULTILINE);
-        
-        configure(form,"file "+fname);
+    	return ACCJson.getReader().fromJson(json, Situation.class);
     }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Import all configurations from formatted test
-     * @param form the formatted text
-     */
-    @Deprecated
-    public void configure(List<List<String>> form) throws Exception
-    {
-        configure(form,"given form");
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Import all configurations from formatted test
-     * @param form the formatted text
-     */
-    
-    @Deprecated
-    private void configure(List<List<String>> form, String source) 
-            throws Exception
-    {
-        boolean refNameFound = false;
-        boolean actionFound = false;
-        for (int i=0; i<form.size(); i++)
-        {
-            List<String> singleBlock = form.get(i);
-            String key = singleBlock.get(0);
-            String value = singleBlock.get(1);
-            value = value.trim();
-            switch (key.toUpperCase())
-            {
-                case SituationConstants.SITUATIONTYPE:
-                    this.setType(value);
-                    break;
-                    
-                case SituationConstants.REFERENCENAMELINE:
-                    if (!refNameFound)
-                    {
-                        refNameFound = true;
-                        this.setRefName(value);
-                        if (this.getRefName().equals(""))
-                        {
-                            throw new Exception("Empty '"
-                                    + SituationConstants.REFERENCENAMELINE
-                                    + "' while defining a Situation from text" 
-                                    + " file. Check " + source + ".");
-                        }
-                    } else {
-                        throw new Exception("Multiple '"
-                                    + SituationConstants.REFERENCENAMELINE 
-                                    + "' while defining a Situation from text"
-                                    + " file. Check " + source + ".");
-                    }
-                    break;
-                    
-                case SituationConstants.CIRCUMSTANCE:
-                    Circumstance circ = CircumstanceFactory.createFromString(
-                            value);
-                    this.addCircumstance(circ);
-                    break;
-                    
-                case SituationConstants.ACTION:
-                    if (!actionFound)
-                    {
-                        actionFound = true;
-                        reaction = new Action(value);
-                        
-                        if (reaction == null)
-                        {
-                            throw new Exception("Coul not read reaction "
-                                    + " while defining a Situation from text"
-                                    + " file. Check " + source + ".");
-                        }
-                    } else {
-                        throw new Exception("Multiple '"
-                                    + SituationConstants.ACTION 
-                                    + "' while defining a Situation from text"
-                                    + " file. Check " + source + ".");
-                    }
-                    break;
-            } //end of switch
-        } //end of loop on array of pairs key:value
-        
-        
-        //Checking requirements
-        if (!refNameFound)
-        {
-            throw new Exception("No reference name found for situation defined "
-                    + "in " + source);
-        }
-    }
-
+  
 //------------------------------------------------------------------------------
 
     /**
@@ -641,8 +501,13 @@ public class Situation extends Concept
         for (int i=0; i<this.context.size(); i++)
             if (!this.context.get(i).equals(other.context.get(i)))
                 return false;
+                
+        if ((this.reaction!=null && other.reaction==null) 
+        	|| (this.reaction!=null && other.reaction==null))
+        	return false;
         
-        if (!this.reaction.equals(other.reaction))
+        if (this.reaction!=null && other.reaction!=null
+        	&& !this.reaction.equals(other.reaction))
         	return false;
         
         return super.equals(other);

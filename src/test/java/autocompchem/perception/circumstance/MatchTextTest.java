@@ -79,8 +79,11 @@ public class MatchTextTest
     			InfoChannelType.LOGFEED);
     	String json = writer.toJson(original);
     	
-    	MatchText fromJson = reader.fromJson(json, MatchText.class);
+    	ICircumstance fromJson = reader.fromJson(json, ICircumstance.class);
     	assertEquals(original, fromJson);
+    	
+    	MatchText fromJson2 = reader.fromJson(json, MatchText.class);
+    	assertEquals(original, fromJson2);
     }
     
 //------------------------------------------------------------------------------

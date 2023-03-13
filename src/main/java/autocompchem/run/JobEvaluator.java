@@ -203,17 +203,9 @@ public class JobEvaluator extends Worker
 		{
 			String multilines = params.getParameter(
 					ParameterConstants.SITUATION).getValueAsString();
-			String[] parts = multilines.trim().split(
-					System.getProperty("line.separator"));
-			List<String> lines = Arrays.asList(parts);
-			List<List<String>> filledForm = TextAnalyzer.readKeyValue(lines,
-					SituationConstants.SEPARATOR,
-					SituationConstants.COMMENTLINE,
-					SituationConstants.STARTMULTILINE,
-					SituationConstants.ENDMULTILINE);
-			Situation situation = new Situation();
+			Situation situation = null;
 			try {
-				situation.configure(filledForm);
+				Situation.fromJSON(multilines);
 			} catch (Exception e) {
 				e.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! Unable to create Situation "

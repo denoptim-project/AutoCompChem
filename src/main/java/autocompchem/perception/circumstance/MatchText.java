@@ -25,8 +25,11 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -209,6 +212,32 @@ public class MatchText extends Circumstance
   	          JsonSerializationContext context)
   	    {
   	    	return ICircumstance.getJsonObject(src, context);
+  	    }
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	public static class MatchTextDeserializer 
+  	implements JsonDeserializer<MatchText>
+  	{
+  	    @Override
+  	    public MatchText deserialize(JsonElement json, 
+  	    		Type typeOfT, JsonDeserializationContext context) 
+  	    				throws JsonParseException
+  	    {
+  	        JsonObject jsonObject = json.getAsJsonObject();
+
+  	        InfoChannelType ict = context.deserialize(jsonObject.get("channel"),
+  	        		InfoChannelType.class);
+  	        
+			String pattern = jsonObject.get("pattern").getAsString();
+			boolean negation = false;
+			if (jsonObject.has("negation"))
+			{	
+				negation = context.deserialize(jsonObject.get("negation"),
+						Boolean.class);
+			}
+			return new MatchText(pattern, negation, ict);
   	    }
   	}
     

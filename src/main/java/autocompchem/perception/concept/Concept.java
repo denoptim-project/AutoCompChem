@@ -1,6 +1,5 @@
 package autocompchem.perception.concept;
 
-import autocompchem.perception.situation.Situation;
 
 /*
  *   Copyright (C) 2018  Marco Foscato
@@ -125,7 +124,6 @@ public class Concept implements Cloneable
      * Returns a human readable representation of this object
      * @return a string
      */
-
     public String toString()
     {
         String s = super.toString() + " " + type + " " + refName;

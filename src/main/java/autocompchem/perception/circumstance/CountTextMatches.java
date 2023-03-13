@@ -24,8 +24,11 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -97,7 +100,7 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int num, InfoChannelType ict,
-    		boolean negation)
+            boolean negation)
     {
         super(pattern, negation, ict);
         this.min = num;
@@ -119,7 +122,7 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int minOrMax, boolean pol, 
-    		InfoChannelType ict)
+            InfoChannelType ict)
     {
         super(pattern,ict);
         if (pol)
@@ -230,7 +233,7 @@ public class CountTextMatches extends MatchText
                 break;
 
             case EXACT:
-            	// NB: min and max are be the same at this point.
+                // NB: min and max are be the same at this point.
                 if (numMatches == min)
                 {
                     score = 1.0;
@@ -275,48 +278,103 @@ public class CountTextMatches extends MatchText
     
   //------------------------------------------------------------------------------
 
-  	@Override
-  	public TreeMap<String, JsonElement>  getJsonMembers(
-			JsonSerializationContext context) 
-	{
-		TreeMap<String, JsonElement> map = new TreeMap<String, JsonElement>();
-		map.putAll(super.getJsonMembers(context));
-  		switch (cnstrType) 
-  		{
-		case EXACT:
-			// NB: min==max
-			map.put("value", context.serialize(min));
-			break;
-			
-		case MAX:
-			map.put("max", context.serialize(min));
-			break;
-			
-		case MIN:
-			map.put("min", context.serialize(min));
-			break;
-			
-		case RANGE:
-			map.put("min", context.serialize(min));
-			map.put("max", context.serialize(max));
-			break;
-		}
-		return map;
-  	}
-  	
+      @Override
+      public TreeMap<String, JsonElement>  getJsonMembers(
+            JsonSerializationContext context) 
+    {
+        TreeMap<String, JsonElement> map = new TreeMap<String, JsonElement>();
+        map.putAll(super.getJsonMembers(context));
+          switch (cnstrType) 
+          {
+        case EXACT:
+            // NB: min==max
+            map.put("value", context.serialize(min));
+            break;
+            
+        case MAX:
+            map.put("max", context.serialize(min));
+            break;
+            
+        case MIN:
+            map.put("min", context.serialize(min));
+            break;
+            
+        case RANGE:
+            map.put("min", context.serialize(min));
+            map.put("max", context.serialize(max));
+            break;
+        }
+        return map;
+      }
+      
 //------------------------------------------------------------------------------
 
-  	public static class CountTextMatchesSerializer 
-  	implements JsonSerializer<CountTextMatches>
-  	{
-  	    @Override
-  	    public JsonElement serialize(CountTextMatches src, Type typeOfSrc,
-  	          JsonSerializationContext context)
-  	    {
-  	    	return ICircumstance.getJsonObject(src, context);
-  	    }
-  	}
-  	
+      public static class CountTextMatchesSerializer 
+      implements JsonSerializer<CountTextMatches>
+      {
+          @Override
+          public JsonElement serialize(CountTextMatches src, Type typeOfSrc,
+                JsonSerializationContext context)
+          {
+              return ICircumstance.getJsonObject(src, context);
+          }
+      }
+      
+//------------------------------------------------------------------------------
+      
+      public static class CountTextMatchesDeserializer 
+      implements JsonDeserializer<CountTextMatches>
+      {
+          @Override
+          public CountTextMatches deserialize(JsonElement json, 
+                  Type typeOfT, JsonDeserializationContext context) 
+                          throws JsonParseException
+          {
+              JsonObject jsonObject = json.getAsJsonObject();
+
+              InfoChannelType ict = context.deserialize(jsonObject.get("channel"),
+                      InfoChannelType.class);
+            
+              String pattern = jsonObject.get("pattern").getAsString();
+              boolean negation = false;
+              if (jsonObject.has("negation"))
+              {    
+                  negation = context.deserialize(jsonObject.get("negation"),
+                          Boolean.class);
+              }
+              if (jsonObject.has("value"))
+              {
+                  //EXACT
+                  return new CountTextMatches(pattern,
+                          jsonObject.get("value").getAsInt(),
+                          ict, negation);
+              } else {
+                  if (jsonObject.has("min") && jsonObject.has("max"))
+                  {
+                      // RANGE
+                      return new CountTextMatches(pattern,
+                              jsonObject.get("min").getAsInt(),
+                              jsonObject.get("max").getAsInt(),
+                              ict, negation);
+                  } else {
+                      if (jsonObject.has("min"))
+                      {
+                          return new CountTextMatches(pattern,
+                                  jsonObject.get("min").getAsInt(),
+                                  true,
+                                  ict);
+                      } else {
+                          //jsonObject.has("max") is true here
+                          return new CountTextMatches(pattern,
+                                  jsonObject.get("max").getAsInt(),
+                                  false,
+                                  ict);
+                      }
+                  }
+              }
+          }
+      }
+      
 //------------------------------------------------------------------------------
 
     @Override
@@ -340,7 +398,7 @@ public class CountTextMatches extends MatchText
            return false;
         
         if (!this.cnstrType.equals(other.cnstrType))
-        	return false;
+            return false;
         
         return super.equals(other);
     }

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
 import autocompchem.perception.SCPair;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
@@ -101,7 +102,8 @@ public class SituationBase
         for (File f : listFiles)
         {   
         	try {
-				Situation s = new Situation(f);
+				Situation s = (Situation) IOtools.readJsonFile(
+						f.getAbsolutePath(), Situation.class);
 				this.addSituation(s);
 			} catch (Exception e) {
 				e.printStackTrace();

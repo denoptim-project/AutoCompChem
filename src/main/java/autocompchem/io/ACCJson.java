@@ -27,10 +27,12 @@ import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
 import autocompchem.perception.circumstance.CountTextMatches;
+import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesDeserializer;
 import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesSerializer;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.ICircumstance.ICircumstanceDeserializer;
 import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.circumstance.MatchText.MatchTextDeserializer;
 import autocompchem.perception.circumstance.MatchText.MatchTextSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
@@ -138,6 +140,10 @@ public class ACCJson
     	        		new IJobSettingsInheritTaskDeserializer())
     	        .registerTypeAdapter(ICircumstance.class, 
     	        		new ICircumstanceDeserializer())
+    	        .registerTypeAdapter(MatchText.class, 
+    	        		new MatchTextDeserializer())
+    	        .registerTypeAdapter(CountTextMatches.class,
+    	        		new CountTextMatchesDeserializer())
     	        .registerTypeAdapter(SetDirectiveComponent.class, 
     	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 

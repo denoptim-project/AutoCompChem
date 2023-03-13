@@ -117,59 +117,12 @@ public interface ICircumstance
   	        switch (type)
   	        {
   			case "MatchText":
-	  			{
-	  				String pattern = jsonObject.get("pattern").getAsString();
-	  				boolean negation = false;
-	  				if (jsonObject.has("negation"))
-	  				{	
-	  					negation = context.deserialize(jsonObject.get("negation"),
-	  							Boolean.class);
-	  				}
-	  				result = new MatchText(pattern, negation, ict);
-	  				break;
-	  			}
+  				result = context.deserialize(jsonObject, MatchText.class);
+  				break;
   				
   			case "CountTextMatches":
-	  			{
-	  				String pattern = jsonObject.get("pattern").getAsString();
-	  				boolean negation = false;
-	  				if (jsonObject.has("negation"))
-	  				{	
-	  					negation = context.deserialize(jsonObject.get("negation"),
-	  							Boolean.class);
-	  				}
-	  				if (jsonObject.has("value"))
-	  				{
-	  					//EXACT
-		  				result = new CountTextMatches(pattern,
-		  						jsonObject.get("value").getAsInt(),
-		  						ict, negation);
-	  				} else {
-	  					if (jsonObject.has("min") && jsonObject.has("max"))
-	  					{
-	  						// RANGE
-	  						result = new CountTextMatches(pattern,
-	  								jsonObject.get("min").getAsInt(),
-	  								jsonObject.get("max").getAsInt(),
-			  						ict, negation);
-	  					} else {
-	  						if (jsonObject.has("min"))
-	  						{
-	  							result = new CountTextMatches(pattern,
-		  								jsonObject.get("min").getAsInt(),
-		  								true,
-				  						ict);
-	  						} else {
-	  							//jsonObject.has("max") is true here
-	  							result = new CountTextMatches(pattern,
-		  								jsonObject.get("max").getAsInt(),
-		  								false,
-				  						ict);
-	  						}
-	  					}
-	  				}
-	  				break;	
-	  			}
+  				result = context.deserialize(jsonObject, CountTextMatches.class);
+  				break;
   			
   			default:
   				throw new IllegalArgumentException("Job settings inheriting "

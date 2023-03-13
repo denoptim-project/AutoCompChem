@@ -151,67 +151,6 @@ public class SituationTest
          Situation fromJson = reader.fromJson(json, Situation.class);
          assertEquals(original, fromJson);
     }
-    
-//-----------------------------------------------------------------------------
-    
-    @Test
-    public void testMakeFromTxtFile() throws Exception
-    {
-        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-
-        //Define pathnames
-        String txtFile = tempDir.getAbsolutePath() + SEP + "situation.txt";
-        
-        try
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append(SituationConstants.REFERENCENAMELINE).append(S);
-            sb.append("Err-1.1").append(NL);
-            
-            sb.append(SituationConstants.SITUATIONTYPE).append(S);
-            sb.append("error").append(NL);
-            
-            sb.append(SituationConstants.CIRCUMSTANCE).append(S);
-            sb.append(InfoChannelType.LOGFEED+" ");
-            sb.append(CircumstanceConstants.MATCHES);
-            sb.append(" BLABLA").append(NL);
-            
-            sb.append(SituationConstants.CIRCUMSTANCE).append(S);
-            sb.append(InfoChannelType.OUTPUTFILE+" ");
-            sb.append(CircumstanceConstants.NOMATCH);
-            sb.append(" RIBLA").append(NL);
-            
-            sb.append(SituationConstants.STARTMULTILINE);
-            sb.append(SituationConstants.ACTION).append(S);
-            sb.append(ActionConstants.TYPEKEY+ActionConstants.SEPARATOR);
-            sb.append(ActionType.REDO).append(NL);
-            sb.append(ActionConstants.OBJECTKEY+ActionConstants.SEPARATOR);
-            sb.append(ActionObject.PREVIOUSJOB).append(NL);
-            sb.append(SituationConstants.ENDMULTILINE);
-            IOtools.writeTXTAppend(txtFile, sb.toString(), true);
-        } 
-        catch  (Throwable t) 
-        {
-            t.printStackTrace();
-            assertFalse(true, "Unable to work with tmp files.");
-        }
-        
-        Situation s = new Situation(new File (txtFile));
-
-        assertNotNull(s,"The new situation should be not null.");
-        assertEquals("error",s.getType(),"Type of situation.");
-        assertEquals(2,s.getCircumstances().size(),"Number of circumstances.");
-        ICircumstance c = s.getCircumstances().get(0);
-        assertEquals(InfoChannelType.LOGFEED,c.getChannelType(),"Channel type "
-                + "for 1st circumstance.");
-        assertTrue(c instanceof MatchText, 
-                "Kind of 1st corcumstance is MatchText");
-        MatchText mt = (MatchText) c;
-        assertEquals("BLABLA",mt.getPattern(),"Pattern of 1st circumstance");
-        
-        assertNotNull(s.getReaction(),"Action should be not null.");
-        assertEquals(ActionType.REDO,s.getReaction().getType(),"Action type.");
-    }
 
 //-----------------------------------------------------------------------------
     
