@@ -105,4 +105,12 @@ public class DeleteDirectiveComponent implements IJobEditingTask
 	
 //------------------------------------------------------------------------------
 
+	@Override
+	public String toString()
+	{
+		return task + " " + path;
+	}
+	
+//------------------------------------------------------------------------------
+
 }

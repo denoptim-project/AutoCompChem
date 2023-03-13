@@ -203,6 +203,14 @@ public class SetDirectiveComponent implements IJobEditingTask
         	return result;
 	    }
 	}
+	
+//------------------------------------------------------------------------------
+
+	@Override
+	public String toString()
+	{
+		return task + " " + path + " " + content;
+	}
    
 //------------------------------------------------------------------------------
 	

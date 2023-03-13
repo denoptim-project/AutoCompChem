@@ -28,12 +28,7 @@ public class SituationConstants
 	/**
 	 * File extension of text-based situation files
 	 */
-	public final static String SITUATIONTXTFILEEXT = ".txt";
-	
-	/**
-	 * File extension of XML situation files
-	 */
-	public final static String SITUATIONXMLFILEEXT = ".xml";
+	public final static String SITUATIONTXTFILEEXT = ".json";
 	
     /**
      * Label defining a commented-out line

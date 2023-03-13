@@ -126,6 +126,14 @@ public class InheritDirectiveComponent implements IJobSettingsInheritTask
 			}
 		}
 	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public String toString()
+	{
+		return task + " " + path;
+	}
 	
 //------------------------------------------------------------------------------
 

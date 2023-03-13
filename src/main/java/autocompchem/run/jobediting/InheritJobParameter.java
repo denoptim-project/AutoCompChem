@@ -62,4 +62,12 @@ public class InheritJobParameter implements IJobSettingsInheritTask
 	
 //------------------------------------------------------------------------------
 
+	@Override
+	public String toString()
+	{
+		return task + " " + paramName;
+	}
+	
+//------------------------------------------------------------------------------
+
 }

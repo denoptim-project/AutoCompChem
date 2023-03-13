@@ -497,7 +497,6 @@ public class JobEvaluator extends Worker
 					List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
 							s.getReaction(), myJob);
 					
-					
 					// Prepare generation of new input file
 					ParameterStorage makeInputPars = new ParameterStorage();
 					TaskID task = TaskID.UNSET;

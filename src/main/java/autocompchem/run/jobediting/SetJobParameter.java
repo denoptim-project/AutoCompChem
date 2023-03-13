@@ -59,4 +59,12 @@ public class SetJobParameter implements IJobEditingTask
 	
 //------------------------------------------------------------------------------
 
+	@Override
+	public String toString()
+	{
+		return task + " " + parameter;
+	}
+	
+//------------------------------------------------------------------------------
+
 }

@@ -94,12 +94,8 @@ public class SituationBase
     {
     	// WARNING: we only look for files with the expected formats
     	
-        List<File> listFiles = FileUtils.find(rootFolder,
-        		"*" + SituationConstants.SITUATIONTXTFILEEXT);
-        //listFiles.addAll(FilesManager.find(pathNameRoot,
-        //		SituationConstants.SITUATIONXMLFILEEXT));
-
-        for (File f : listFiles)
+        for (File f : FileUtils.find(rootFolder,"*" 
+        		+ SituationConstants.SITUATIONTXTFILEEXT))
         {   
         	try {
 				Situation s = (Situation) IOtools.readJsonFile(

@@ -10,7 +10,7 @@ public class DeleteJobParameter implements IJobEditingTask
 	/**
 	 * The name of the parameter to delete from the job. Case Insensitive!
 	 */
-	final String parameName;
+	final String paramName;
 
 	
 //------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ public class DeleteJobParameter implements IJobEditingTask
 	 */
 	public DeleteJobParameter(String paramReference) 
 	{
-		this.parameName = paramReference.toUpperCase();
+		this.paramName = paramReference.toUpperCase();
 	}
 	
 //------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ public class DeleteJobParameter implements IJobEditingTask
 	    
 	    DeleteJobParameter other = (DeleteJobParameter) o;
 	    
-	    return this.parameName.equals(other.parameName);
+	    return this.paramName.equals(other.paramName);
 	}
 	
 //------------------------------------------------------------------------------
@@ -50,10 +50,18 @@ public class DeleteJobParameter implements IJobEditingTask
 	@Override
 	public void applyChange(Job job) 
 	{
-		if (job.hasParameter(parameName))
+		if (job.hasParameter(paramName))
 		{
-			job.getParameters().removeData(parameName);
+			job.getParameters().removeData(paramName);
 		}
+	}
+	
+//------------------------------------------------------------------------------
+
+	@Override
+	public String toString()
+	{
+		return task + " " + paramName;
 	}
 	
 //------------------------------------------------------------------------------
