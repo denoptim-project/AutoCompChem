@@ -2,7 +2,6 @@ package autocompchem.run.jobediting;
 
 
 import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.Directive;
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
 

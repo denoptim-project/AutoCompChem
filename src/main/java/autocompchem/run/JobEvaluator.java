@@ -19,10 +19,8 @@ package autocompchem.run;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +28,6 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.chemsoftware.AnalysisTask;
-import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
@@ -51,9 +47,7 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.perception.situation.SituationConstants;
 import autocompchem.run.jobediting.ActionApplier;
-import autocompchem.text.TextAnalyzer;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;

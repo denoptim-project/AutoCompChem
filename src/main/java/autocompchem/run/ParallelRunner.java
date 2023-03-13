@@ -1,8 +1,5 @@
 package autocompchem.run;
 
-import java.io.File;
-import java.io.IOException;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -23,10 +20,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -36,14 +31,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.io.Files;
-
 import autocompchem.datacollections.NamedData;
-import autocompchem.files.FileUtils;
 import autocompchem.run.jobediting.Action;
-import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.jobediting.ActionApplier;
 
 
 /**

@@ -18,25 +18,12 @@ package autocompchem.run;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.FileAsSource;
@@ -44,9 +31,6 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Job.RunnableAppID;
-import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
 

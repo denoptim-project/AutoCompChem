@@ -57,7 +57,6 @@ import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
-import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 
 /**

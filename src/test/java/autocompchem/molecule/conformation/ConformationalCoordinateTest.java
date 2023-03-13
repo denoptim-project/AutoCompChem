@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
 
 public class ConformationalCoordinateTest 

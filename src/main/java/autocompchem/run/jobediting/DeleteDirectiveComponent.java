@@ -7,7 +7,6 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.DirComponentTypeAndName;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.run.Job;
 

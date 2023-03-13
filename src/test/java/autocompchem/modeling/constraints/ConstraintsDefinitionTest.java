@@ -5,13 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.smarts.SMARTS;
 
 public class ConstraintsDefinitionTest 

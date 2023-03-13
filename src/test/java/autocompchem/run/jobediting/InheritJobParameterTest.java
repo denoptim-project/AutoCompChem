@@ -2,7 +2,6 @@ package autocompchem.run.jobediting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -27,9 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
 

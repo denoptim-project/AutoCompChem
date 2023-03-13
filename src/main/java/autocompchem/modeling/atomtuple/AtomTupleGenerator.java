@@ -37,8 +37,6 @@ import org.openscience.cdk.interfaces.IBond;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
@@ -46,6 +44,7 @@ import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
+import autocompchem.worker.ConfigItem;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 

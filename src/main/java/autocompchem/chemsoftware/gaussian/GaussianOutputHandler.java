@@ -1,6 +1,6 @@
 package autocompchem.chemsoftware.gaussian;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;

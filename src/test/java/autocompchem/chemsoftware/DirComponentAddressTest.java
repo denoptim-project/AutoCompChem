@@ -22,19 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.run.jobediting.Action;
-import autocompchem.worker.TaskID;
 
 /**
  * Unit tests for directive component address

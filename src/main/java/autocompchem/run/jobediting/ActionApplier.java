@@ -14,15 +14,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.common.io.Files;
 
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.files.FileUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
+import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.MonitoringJob;

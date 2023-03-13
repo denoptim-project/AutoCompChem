@@ -32,17 +32,10 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.spartan.SpartanConstants;
-import autocompchem.constants.ACCConstants;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
-import autocompchem.modeling.basisset.BSMatchingRule;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;

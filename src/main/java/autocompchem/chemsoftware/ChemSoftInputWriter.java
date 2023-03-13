@@ -1,6 +1,5 @@
 package autocompchem.chemsoftware;
 
-import java.io.File;
 import java.io.IOException;
 
 /*
@@ -23,18 +22,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.Gson;
 
-import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.gaussian.GaussianConstants;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;

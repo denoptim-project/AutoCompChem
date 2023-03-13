@@ -1,13 +1,8 @@
 package autocompchem.perception.circumstance;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 
 /*

@@ -1,7 +1,5 @@
 package autocompchem.smarts;
 
-import autocompchem.chemsoftware.DirectiveData;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *

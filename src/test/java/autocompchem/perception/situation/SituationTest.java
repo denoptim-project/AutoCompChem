@@ -19,42 +19,23 @@ package autocompchem.perception.situation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
-import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.CircumstanceConstants;
 import autocompchem.perception.circumstance.CountTextMatches;
-import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.run.ActionConstants;
-import autocompchem.run.Job;
-import autocompchem.run.jobediting.DeleteJobParameter;
-import autocompchem.run.jobediting.InheritDirectiveComponent;
-import autocompchem.run.jobediting.SetDirectiveComponent;
-import autocompchem.run.jobediting.SetJobParameter;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.ActionTest;
-import autocompchem.run.jobediting.DataArchivingRule;
-import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 /**
  * Unit Test for Situation class
@@ -64,13 +45,6 @@ import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 public class SituationTest 
 {
-
-    private final String SEP = System.getProperty("file.separator");
-    private final String NL = System.getProperty("line.separator");
-    private final String S = SituationConstants.SEPARATOR;
-
-    @TempDir 
-    File tempDir;
     
 //------------------------------------------------------------------------------
     
@@ -144,9 +118,6 @@ public class SituationTest
          Gson reader = ACCJson.getReader();
           
          String json = writer.toJson(original);
-          
-         //TODO-gg del
-         System.out.println(original.getClass().getName()+": "+json);
           
          Situation fromJson = reader.fromJson(json, Situation.class);
          assertEquals(original, fromJson);

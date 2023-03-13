@@ -26,7 +26,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 
 /**

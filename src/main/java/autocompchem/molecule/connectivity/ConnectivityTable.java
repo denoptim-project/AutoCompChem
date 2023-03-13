@@ -1,5 +1,10 @@
 package autocompchem.molecule.connectivity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -18,10 +23,6 @@ package autocompchem.molecule.connectivity;
  */
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;

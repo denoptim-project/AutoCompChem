@@ -1,7 +1,6 @@
 package autocompchem.perception;
 
 import java.io.BufferedReader;
-import java.io.Reader;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -21,7 +20,6 @@ import java.io.Reader;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +32,6 @@ import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.infochannel.InfoChannelTypeComparator;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;

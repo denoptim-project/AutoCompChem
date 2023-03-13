@@ -1,13 +1,9 @@
 package autocompchem.molecule.conformation;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.ConstraintsSet;
 
 
 /**

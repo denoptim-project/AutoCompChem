@@ -1,6 +1,9 @@
 package autocompchem.perception.circumstance;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -19,26 +22,13 @@ package autocompchem.perception.circumstance;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
-import autocompchem.run.JobFactory;
-import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 
 
 public class CountTextMatchesTest 

@@ -7,8 +7,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import autocompchem.run.jobediting.Action.ActionType;
-
 /*
  *   Copyright (C) 2018  Marco Foscato
  *

@@ -1,6 +1,5 @@
 package autocompchem.run.jobediting;
 
-import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
 
 public class DeleteJobParameter implements IJobEditingTask

@@ -18,10 +18,8 @@ package autocompchem.run.jobediting;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonDeserializationContext;
@@ -29,12 +27,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import autocompchem.run.ActionConstants;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
-import autocompchem.text.TextAnalyzer;
-import autocompchem.worker.WorkerConstants;
 
 /**
  * This class defines actions altering a workflow, i.e., a
@@ -224,89 +219,7 @@ public class Action implements Cloneable
         this.type = type;
         this.object = object;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs an Action that is defined in a string of text. This method 
-     * converts a text-based definition of actions in an Action object. The text
-     * is expected to contain one or more lines (i.e., line separators), each
-     * with one of the settings defining the action,
-     * though multiple line blocks are also allowed, if properly identified by
-     * {@link WorkerConstants.STARTMULTILINE} and 
-     * {@link WorkerConstants.ENDMULTILINE} labels.
-     * @param txt the text to decode.
-     * @throws Exception if unable to interpret text.
-     */
-
-    @Deprecated
-    public Action(String txt) throws Exception
-    {
-        List<String> lines = new ArrayList<String>();
-        String[] parts = txt.split(System.getProperty("line.separator"));
-        Collections.addAll(lines, parts);
-        makeFromLines(lines);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs an Action that is defined in a set of lines. This method 
-     * converts a text-based definition of actions in an Action object. Each
-     * line is expected to contain one of the settings defining the action,
-     * though multiple line blocks are also allowed, if properly identified by
-     * {@link WorkerConstants.STARTMULTILINE} and 
-     * {@link WorkerConstants.ENDMULTILINE} labels.
-     * @param lines the text to decode.
-     * @throws Exception if unable to interpret text.
-     */
-
-    @Deprecated
-    public Action(List<String> lines) throws Exception
-    {
-        makeFromLines(lines);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Method that parses lines of text and sets this Action according to the
-     * information found in the lines of text.
-     * @param lines the lines of text.
-     * @throws Exception if unable to interpret text.
-     */
-    
-    @Deprecated
-    private void makeFromLines(List<String> lines) throws Exception 
-    {
-        //If needed to parse multiple instances of the same KEY, then use
-        //List<List<String>> form = TextAnalyzer.readKeyValue(
-        TreeMap<String,String> form = TextAnalyzer.readKeyValuePairs(
-                lines,
-                ActionConstants.SEPARATOR,
-                ActionConstants.COMMENTLINE,
-                ActionConstants.STARTMULTILINE,
-                ActionConstants.ENDMULTILINE);
-        
-        for (String key : form.keySet())
-        {
-            switch (key)
-            {
-            case (ActionConstants.TYPEKEY):
-                type = ActionType.valueOf(form.get(key).toUpperCase());
-                break;
-                
-            case (ActionConstants.OBJECTKEY):
-                object = ActionObject.valueOf(form.get(key).toUpperCase());
-                break;
-                
-            default:
-                throw new Exception("Unable to understand keyword '" + key 
-                        + "' while creation an Action.");
-            }
-        }
-    }
-
+  
 //------------------------------------------------------------------------------
 
     /**
@@ -416,7 +329,7 @@ public class Action implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Sets the object on whcih to perform this action in relation to the 
+     * Sets the object on which to perform this action in relation to the 
      * focus job, i.e., the job that triggered the action.
      */
 
@@ -430,8 +343,7 @@ public class Action implements Cloneable
     @Override
     public boolean equals(Object o)
     {
-    	
-        if (o== null)
+        if (o == null)
             return false;
         
         if (o == this)

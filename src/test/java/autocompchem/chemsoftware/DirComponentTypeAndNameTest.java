@@ -1,6 +1,5 @@
 package autocompchem.chemsoftware;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
@@ -22,18 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
-import com.google.gson.Gson;
-
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.worker.TaskID;
 
 
 public class DirComponentTypeAndNameTest 

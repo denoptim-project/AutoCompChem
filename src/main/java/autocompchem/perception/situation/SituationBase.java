@@ -29,7 +29,6 @@ import java.util.Set;
 
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.perception.SCPair;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;

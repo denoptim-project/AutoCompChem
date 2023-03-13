@@ -1,16 +1,13 @@
 package autocompchem.modeling.atomtuple;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.vecmath.Point3d;
 
@@ -21,8 +18,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
-import autocompchem.io.IOtools;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;

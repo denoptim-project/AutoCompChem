@@ -7,8 +7,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import autocompchem.run.jobediting.Action.ActionObject;
-
 /**
  * A rule defining what to do with data saved on files. Typically, we
  * want to archive some data (i.e., keep a copy of the files just to avoid 

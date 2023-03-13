@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,13 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.connectivity.ConnectivityTable;
 
 public class AnnotatedAtomTupleListTest 

@@ -8,12 +8,21 @@ VERBOSITY: 1
 INITIALDELAY: 1500
 INITIALDELAY-TIMEUNITS: MILLISECONDS
 PERIOD: 1
-SITUATION:$STARTREFERENCENAME: LimitReached
-SITUATIONTYPE: error
-CIRCUMSTANCE: logfeed matches BASH-A: 2
-ACTION: $STARTACTIONTYPE: stop
-ACTIONOBJ: paralleljob
-$END
+SITUATION:$START{
+  "type": "ERROR",
+  "refName": "LimitReached",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "BASH-A: 2"
+    }
+  ],
+  "reaction": {
+    "type": "STOP",
+    "object": "paralleljob"
+  }
+}
 $END
 IC-LOGS: t125a.log
 JOBEND

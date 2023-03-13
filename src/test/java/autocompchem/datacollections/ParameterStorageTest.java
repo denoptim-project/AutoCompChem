@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.ACCJson;
 

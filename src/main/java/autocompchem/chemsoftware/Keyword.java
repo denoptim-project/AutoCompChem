@@ -20,7 +20,6 @@ import java.lang.reflect.Type;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
@@ -30,14 +29,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
-import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
-import autocompchem.utils.StringUtils;
 
 /**
  * A keyword is a string with an associated value. Keywords, together with

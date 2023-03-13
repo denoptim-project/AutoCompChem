@@ -20,7 +20,6 @@ import java.util.ArrayList;
  */
 
 import java.util.List;
-import java.util.List;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;

@@ -1,7 +1,6 @@
 package autocompchem.chemsoftware;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.perception.TxtQuery;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 

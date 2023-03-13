@@ -1,6 +1,9 @@
 package autocompchem.run.jobediting;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -19,8 +22,6 @@ package autocompchem.run.jobediting;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 

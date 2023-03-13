@@ -1,7 +1,5 @@
 package autocompchem.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -34,7 +32,6 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.files.FileAnalyzer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;

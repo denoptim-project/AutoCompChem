@@ -3,6 +3,8 @@ package autocompchem.smarts;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openscience.cdk.isomorphism.Mappings;
+
 /**
  * Class for collecting 0-based indexes of atoms mapped by SMARTS-query searches.
  * This class is a simplified version of {@link Mappings}.

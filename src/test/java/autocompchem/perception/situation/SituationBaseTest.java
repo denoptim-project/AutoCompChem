@@ -19,11 +19,8 @@ package autocompchem.perception.situation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,22 +30,18 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 
-import autocompchem.io.IOtools;
 import autocompchem.perception.SCPair;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.FileAsSource;
-import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.run.ActionConstants;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;

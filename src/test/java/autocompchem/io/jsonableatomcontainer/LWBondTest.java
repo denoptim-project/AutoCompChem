@@ -1,19 +1,10 @@
 package autocompchem.io.jsonableatomcontainer;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-
-import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.interfaces.IBond;
-
-import com.google.gson.Gson;
-
-import autocompchem.io.ACCJson;
 
 
 public class LWBondTest 

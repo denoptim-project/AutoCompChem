@@ -24,7 +24,6 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.interfaces.IAtom;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.molecule.MolecularUtils;
 
 /**
  * Object representing a point-like ligand surrounding a central atom.

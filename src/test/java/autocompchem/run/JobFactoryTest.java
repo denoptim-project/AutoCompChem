@@ -29,14 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.perception.circumstance.CircumstanceConstants;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
-import autocompchem.perception.situation.SituationConstants;
-import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 

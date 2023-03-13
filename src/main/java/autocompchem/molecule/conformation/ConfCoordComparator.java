@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
-
-import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
-
 /**
  * Comparator that imposes that no pair of coordinates acts on the same 
  * bond torsion, prioritized atom flips, and bond torsion involving the lowest
