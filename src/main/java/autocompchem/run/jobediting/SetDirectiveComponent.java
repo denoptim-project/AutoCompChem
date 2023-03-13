@@ -8,13 +8,10 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
@@ -37,9 +34,9 @@ public class SetDirectiveComponent implements IJobEditingTask
 	final TaskType task;
 	
 	/**
-	 * Address to parent directive where the keyword is to be set
+	 * Address to parent directive where the component is to be set
 	 */
-	private final DirComponentAddress pathToDirective;
+	private final DirComponentAddress path;
 	
 	/**
 	 * The content to set for the directive component.
@@ -51,7 +48,7 @@ public class SetDirectiveComponent implements IJobEditingTask
 	public SetDirectiveComponent(DirComponentAddress parent, 
 			IDirectiveComponent content)
 	{
-		this.pathToDirective = parent;
+		this.path = parent;
 		this.content = content;
 		this.task = defineTask();
 	}
@@ -61,7 +58,7 @@ public class SetDirectiveComponent implements IJobEditingTask
 	public SetDirectiveComponent(String pathToParent, 
 			IDirectiveComponent content)
 	{
-		this.pathToDirective = DirComponentAddress.fromString(pathToParent);
+		this.path = DirComponentAddress.fromString(pathToParent);
 		this.content = content;
 		this.task = defineTask();
 	}
@@ -128,7 +125,7 @@ public class SetDirectiveComponent implements IJobEditingTask
  	    			+ "report this to the developers.");
  	    }
  	    
- 	    return this.pathToDirective.equals(other.pathToDirective);
+ 	    return this.path.equals(other.path);
     }
     
 //------------------------------------------------------------------------------
@@ -139,14 +136,14 @@ public class SetDirectiveComponent implements IJobEditingTask
 		if (!(job instanceof CompChemJob))
 			return;
 		CompChemJob ccj = (CompChemJob) job;
-		ccj.ensureDirectiveStructure(pathToDirective);
-		if (pathToDirective.size()==0)
+		ccj.ensureDirectiveStructure(path);
+		if (path.size()==0)
 		{
 			// We add a root directive: an outermost one.
 			ccj.addDirective((Directive) content);
 		}
 		List<IDirectiveComponent> parents = ccj.getDirectiveComponents(
-    			pathToDirective);
+    			path);
     	for (IDirectiveComponent parent : parents)
     	{
     		if (parent instanceof Directive)
@@ -177,7 +174,7 @@ public class SetDirectiveComponent implements IJobEditingTask
 	                TaskType.class);
 	        
 	        DirComponentAddress address = context.deserialize(
-	        		jsonObject.get("pathToDirective"), 
+	        		jsonObject.get("path"), 
 	        		DirComponentAddress.class);
 	        
 	        IDirectiveComponent content = null;

@@ -24,20 +24,6 @@ public interface IJobEditingTask
 	 * @param job the job to edit.
 	 */
 	public void applyChange(Job job);
-
-//------------------------------------------------------------------------------
-
-	//TODO-gg remove. this is not used! see also IInherit...
-	public static class IJobEditingTaskSerializer 
-	implements JsonSerializer<IJobEditingTask>
-	{
-	    @Override
-	    public JsonElement serialize(IJobEditingTask src, Type typeOfSrc,
-	          JsonSerializationContext context)
-	    {
-	    	return context.serialize(src, src.getClass());
-	    }
-	}
 	
 //------------------------------------------------------------------------------
 	
@@ -52,14 +38,6 @@ public interface IJobEditingTask
 
 	        TaskType type = context.deserialize(jsonObject.get("task"),
 	                TaskType.class);
-	        
-	        
-	        
-	        
-	        //TODO-gg add other types with their test and the rests
-	        
-	        
-	        
 	        
 	        IJobEditingTask result = null;
 	        switch (type)

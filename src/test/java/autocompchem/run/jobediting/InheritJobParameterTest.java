@@ -67,6 +67,10 @@ public class InheritJobParameterTest
     			InheritJobParameter.class);
     	assertEquals(original, fromJson);
     	
+    	IJobSettingsInheritTask fromJson2 = reader.fromJson(json, 
+    			IJobSettingsInheritTask.class);
+    	assertEquals(original, fromJson2);
+    	
     	//TODO-gg del (kept because it could be useful to create functionality tests and document the syntax)
     	System.out.println(original.getClass().getName()+": "+json);
     }

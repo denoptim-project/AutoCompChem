@@ -27,19 +27,6 @@ public interface IJobSettingsInheritTask
 	 */
 	public void inheritSettings(Job source, Job destination) 
 			throws CloneNotSupportedException;
-
-//------------------------------------------------------------------------------
-
-	public static class IJobSettingsInheritTaskSerializer 
-	implements JsonSerializer<IJobSettingsInheritTask>
-	{
-	    @Override
-	    public JsonElement serialize(IJobSettingsInheritTask src, Type typeOfSrc,
-	          JsonSerializationContext context)
-	    {
-	    	return context.serialize(src, src.getClass());
-	    }
-	}
 	
 //------------------------------------------------------------------------------
 	

@@ -44,10 +44,8 @@ import autocompchem.run.ShellJob;
 import autocompchem.run.ShellJob.ShellJobSerializer;
 import autocompchem.run.jobediting.IJobEditingTask;
 import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskDeserializer;
-import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskSerializer;
 import autocompchem.run.jobediting.IJobSettingsInheritTask;
 import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTaskDeserializer;
-import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTaskSerializer;
 import autocompchem.run.jobediting.SetDirectiveComponent;
 import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 
@@ -109,10 +107,6 @@ public class ACCJson
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
     	        .registerTypeAdapter(DirComponentAddress.class, 
     	        		new DirComponentAddressSerializer())
-    	        .registerTypeAdapter(IJobEditingTask.class, 
-    	        		new IJobEditingTaskSerializer())
-    	        .registerTypeAdapter(IJobSettingsInheritTask.class, 
-    	        		new IJobSettingsInheritTaskSerializer())
     	        .registerTypeAdapter(MatchText.class, 
     	        		new MatchTextSerializer())
     	        .registerTypeAdapter(CountTextMatches.class, 

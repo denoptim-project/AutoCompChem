@@ -70,6 +70,9 @@ public class SetJobParameterTest
     	SetJobParameter fromJson = reader.fromJson(json, SetJobParameter.class);
     	assertEquals(original, fromJson);
     	
+    	IJobEditingTask fromJson2 = reader.fromJson(json, IJobEditingTask.class);
+    	assertEquals(original, fromJson2);
+    	
     	//TODO-gg del (kept because it could be useful to create functionality tests and document the syntax)
     	System.out.println(original.getClass().getName()+": "+json);
     }

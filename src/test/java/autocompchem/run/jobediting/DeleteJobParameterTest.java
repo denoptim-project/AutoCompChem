@@ -67,6 +67,9 @@ public class DeleteJobParameterTest
     			DeleteJobParameter.class);
     	assertEquals(original, fromJson);
     	
+    	IJobEditingTask fromJson2 = reader.fromJson(json, IJobEditingTask.class);
+    	assertEquals(original, fromJson2);
+    	
     	//TODO-gg del
     	System.out.println(original.getClass().getName()+": "+json);
     }
