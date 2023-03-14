@@ -144,5 +144,11 @@ public class ParameterConstants
 	 * importing parameters from a file.
 	 */
 	public static final String STRINGFROMCLI = "STRINGFROMCLI";
+
+	/**
+	 * Keyword of parameter defining tolerance towards info channels that are
+	 * defined by not readable.
+	 */
+	public static final String TOLERATEMISSINGIC = "TOLERATEMISSINGIC";
 	
 }

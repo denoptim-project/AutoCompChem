@@ -75,13 +75,23 @@ public abstract class InfoChannel
 //------------------------------------------------------------------------------
 
     /**
+     * Checks if the info channel can be read. For example, if the channel is
+     * a reader on a file, this method checks if the file exists and is
+     * readable.
+     * @return <code>true</code> is the channel can deliver some content.
+     */
+    public abstract boolean canBeRead();
+
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the tool reading characters from the info stream source.
      * The Reader subclass instance is decided by the subclasses depending on the
-     * kind og source to be read.
+     * kind of source to be read.
      * The stream is typically closed outside of the information channel, by
      * whatever reads the Reader and defined that the Reader is no longer
      * needed.
-     * @return a readed for reading the character-info from the source
+     * @return a reader for reading the character-info from the source
      */
  
     public abstract Reader getSourceReader();

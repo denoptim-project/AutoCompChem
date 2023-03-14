@@ -22,6 +22,7 @@ import java.util.ArrayList;
  */
 
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -37,7 +38,7 @@ public class ShortTextAsSource extends InfoChannel
     /**
      * Text organized by lines
      */
-    private ArrayList<String> txt = new ArrayList<String>();
+    private List<String> txt = new ArrayList<String>();
 
 //------------------------------------------------------------------------------
 
@@ -69,7 +70,7 @@ public class ShortTextAsSource extends InfoChannel
      * Constructs a ShortTextAsSource and specify the text
      */
 
-    public ShortTextAsSource(ArrayList<String> txt)
+    public ShortTextAsSource(List<String> txt)
     {
         super();
         this.txt = txt;
@@ -113,6 +114,14 @@ public class ShortTextAsSource extends InfoChannel
         sb.append("]");
         return sb.toString();
     }
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public boolean canBeRead() 
+	{
+		return txt!=null;
+	}
 
 //------------------------------------------------------------------------------
 
