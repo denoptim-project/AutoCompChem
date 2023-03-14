@@ -19,6 +19,7 @@ package autocompchem.run;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -419,6 +420,32 @@ public class ParallelRunner
 //------------------------------------------------------------------------------
     
     /**
+     * 
+     * @param jobtoKill
+     */
+    private void cancellOneRunningThread(Job jobtoKill)
+    {
+    	//TODO: do the same on submittedMonitoringJobs
+    	
+    	//TODO-gg change submittedJobs to map so that we get rid of assumption on
+    	// consistent index between submitted and future lists.
+    	
+    	// must be there
+    	int idx = submittedJobs.indexOf(jobtoKill);
+    	
+    	Future<?> jobToKillFuture = futureJobs.get(idx);
+		if (!jobToKillFuture.isDone())
+		{
+			jobtoKill.setInterrupted(true);
+		}
+		jobToKillFuture.cancel(true);
+        jobtoKill.stopJob();
+        submittedJobs.remove(jobtoKill);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Check for exceptions in sub-jobs
      * @return <code>true</code> if any sub-job returned an exception
      */
@@ -490,9 +517,37 @@ public class ParallelRunner
     	{
     		mainIteration();
     		
+    		// This takes case of processing the reaction only in case of 
+    		// restart of the batch of parallel jobs.
     		if (reaction!=null)
     		{
-    			ActionApplier.performAction(reaction, trigger, todoJobs, 
+    			List<Job> reactionObjectJobs = new ArrayList<Job>();
+    			switch (reaction.getObject()) 
+    			{
+					case FOCUSJOB:
+					{
+						reactionObjectJobs.add(
+								(Job) trigger.exposedOutput.getNamedData(
+										JobEvaluator.EVALUATEDJOB).getValue());
+						break;
+					}
+					case PARALLELJOB:
+					{
+						reactionObjectJobs.addAll(todoJobs);
+						break;
+					}
+					//TODO-gg remove these objects
+					case FOCUSJOBPARENT:
+						break;
+					case PREVIOUSJOB:
+						break;
+					case SUBSEQUENTJOB:
+						break;
+					default:
+						break;
+				}
+    			
+    			ActionApplier.performAction(reaction, trigger, reactionObjectJobs, 
     					restartCounter.get());
     			reaction = null;
     			trigger = null;
@@ -666,6 +721,7 @@ public class ParallelRunner
 						break;
 						
 					case STOP:
+					case SKIP:
 						if (verbosity > 0)
 						{
 							System.out.println("KILLING ALL sub-jobs upon "
@@ -677,7 +733,52 @@ public class ParallelRunner
 		            		lock.notify();
 		            	}
 						break;
-    				}
+					}
+				} else if (action.getObject().equals(ActionObject.FOCUSJOB))
+				{
+					Job focusJob = (Job) trigger.exposedOutput
+							.getNamedData(JobEvaluator.EVALUATEDJOB)
+							.getValue();
+					switch (action.getType())
+    				{
+						case REDO:
+						{	
+							throw new IllegalArgumentException("ERROR! Case of "
+									+ action.getType() + " action on " 
+									+ action.getObject() + " not implemented "
+									+ "in " + this.getClass().getSimpleName()
+									+ ". Please, contact the developers.");
+						}
+						
+						case STOP:
+						case SKIP:
+							if (verbosity > 0)
+							{
+								System.out.println("KILLING job " 
+										+ focusJob.getId()
+										+ " upon request from " 
+										+ trigger.getId());
+							}
+							synchronized (lock)
+			            	{
+								cancellOneRunningThread(focusJob);
+
+				    			ActionApplier.performAction(reaction, trigger, 
+				    					Arrays.asList(focusJob), 
+				    					focusJob.getRestartCounter()
+				    						.getAndIncrement());
+				    			reaction = null;
+				    			trigger = null;
+			            		lock.notify();
+			            	}
+							break;
+						}
+				} else {
+					throw new IllegalArgumentException("ERROR! Case of "
+							+ action.getType() + " action on " 
+							+ action.getObject() + " not implemented "
+							+ "in " + this.getClass().getSimpleName()
+							+ ". Please, contact the developers.");
 				}
 			} else {
 				//Ignore late-coming notifications

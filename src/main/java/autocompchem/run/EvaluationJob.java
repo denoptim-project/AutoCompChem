@@ -64,7 +64,7 @@ public class EvaluationJob extends ACCJob
         params.setParameter(ParameterConstants.INFOCHANNELSDB, 
         		NamedDataType.INFOCHANNELBASE, icDB);
     }
-
+    
 //------------------------------------------------------------------------------
 
 }

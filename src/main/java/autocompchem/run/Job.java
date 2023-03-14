@@ -82,6 +82,11 @@ public class Job implements Runnable
 	private AtomicInteger idSubJob = new AtomicInteger(1);
 	
     /**
+     * Restart counter. counts how many times this job is restarted
+     */
+    private final AtomicInteger restartCounter = new AtomicInteger();
+	
+    /**
      * Container for parameters fed to this job. 
      * Typically contains initial settings, pathnames 
      * and configurations that are not default for a job.
@@ -624,6 +629,16 @@ public class Job implements Runnable
     public int getVerbosity()
     {
     	return verbosity;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the counter of restarts of this job.
+     */
+    public AtomicInteger getRestartCounter()
+    {
+    	return restartCounter;
     }
     
 //------------------------------------------------------------------------------

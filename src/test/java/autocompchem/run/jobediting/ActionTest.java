@@ -159,6 +159,9 @@ public class ActionTest
     	Action act = getTestAction();
     	String json = writer.toJson(act);
     	
+    	//TODO-gg del (This is here only to get a quick look at the JSON syntax
+    	//System.out.println(json);
+    	
     	Action fromJson = reader.fromJson(json, Action.class);
     	assertEquals(act,fromJson);
     	

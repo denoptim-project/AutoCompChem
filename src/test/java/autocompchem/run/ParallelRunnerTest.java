@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -74,11 +75,11 @@ public class ParallelRunnerTest
     		new ArrayList<ICircumstance>(Arrays.asList(c)),a);
     
     /**
-     * The name of the parameter determining the prefic in the test job logs.
+     * The name of the parameter determining the prefix in the test job logs.
      */
     private String PREFIX = "prefixForLogRecords";
     
-    private final boolean debug = false;
+    private final boolean debug = false; 
     
 
 //-----------------------------------------------------------------------------
@@ -136,7 +137,8 @@ public class ParallelRunnerTest
     		if (debug)
     		{
 	    		date = new Date();
-	    		System.out.println("RUNNING TestJobLog: "+df.format(date)+ " Pathname: "+stdout);
+	    		System.out.println("RUNNING TestJobLog: "+df.format(date)
+	    			+ " Pathname: "+stdout);
     		}
     		
     		// The dummy command will just ping every N-milliseconds
@@ -472,20 +474,101 @@ public class ParallelRunnerTest
          * Job_#0.6 is a sibling but does not run (not enough threads to start it)
          */
         
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.1*", true).size(), 
-        		"Number of folders for production job");
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.3*", true).size(), 
-        		"Number of folders for production job");
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.4*", true).size(), 
-        		"Number of folders for production job");
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.5*", true).size(), 
-        		"Number of folders for production job");
-        assertEquals(4, FileUtils.find(tempDir, "*_1", true).size(), 
-        		"Number of folders from first run");
-        assertEquals(4, FileUtils.find(tempDir, "*_2", true).size(), 
-        		"Number of folders from first run");
-        assertEquals(3, FileUtils.find(tempDir, "testjob.log_production").size(), 
-        		"Number of files for production job");
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.1*", true).size());
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.3*", true).size());
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.4*", true).size());
+        assertEquals(2, FileUtils.find(tempDir, "Job_#0.5*", true).size());
+        assertEquals(4, FileUtils.find(tempDir, "*_1", true).size());
+        assertEquals(4, FileUtils.find(tempDir, "*_2", true).size());
+        assertEquals(3, FileUtils.find(tempDir, "testjob.log_production").size());
+    }
+    
+  //-----------------------------------------------------------------------------
+
+    /*
+     * Here we test the request to stop and skip a job belonging to a batch of 
+     * parallel siblings.
+     */
+    @Test
+    public void testStopAndSkipUponNotification() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	String baseName ="testjob.log";
+        String roothName = tempDir.getAbsolutePath() + SEP + baseName;
+        
+        int walltimeChildJobs = 3;
+        int period = 75;
+        
+        // A job that will be evaluated
+        String logOnProductionJob = roothName+"_production";
+        TestJob productionJob = new TestJob(logOnProductionJob,
+        		walltimeChildJobs, 0, period); 
+        productionJob.setUserDir(tempDir);
+        
+        ICircumstance c = new MatchText("Iteration 10", 
+        		InfoChannelType.LOGFEED);
+        Action act = new Action(ActionType.SKIP, ActionObject.FOCUSJOB);
+        Situation sit1 = new Situation("SitTyp", "Sit-ONE", 
+        		new ArrayList<ICircumstance>(Arrays.asList(c)),act);
+        
+        SituationBase sitsDB = new SituationBase();
+        sitsDB.addSituation(sit1);
+        InfoChannelBase icDB = new InfoChannelBase();
+        icDB.addChannel(new FileAsSource(logOnProductionJob, 
+        		InfoChannelType.LOGFEED));
+        
+        // Make the job that will monitor the ongoing job and trigger an action
+        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
+        		0, period);
+        //monitoringJob.setParameter(ParameterConstants.VERBOSITY,"1");
+        monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC,"true");
+        
+        // The main job
+        Job main = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "10");
+        main.setVerbosity(0);
+        main.addStep(monitoringJob);
+        main.addStep(productionJob);
+        
+        // Sibling jobs that will NOT be stopped
+        for (int i=1; i<4; i++) 
+        {
+        	TestJob j = new TestJob(roothName+i, walltimeChildJobs, 0, period);
+        	j.setUserDir(tempDir);
+        	main.addStep(j);
+        }
+        
+        assertEquals(5, main.getNumberOfSteps(), "Number of parallel jobs");
+        
+        main.run();
+        
+        /* Job_#0.1 is the monitoring job
+         * Job_#0.2 is the production job (the one monitored)
+         * Job_#0.3 is a sibling writing on testjob.log1
+         * Job_#0.4 is a sibling writing on testjob.log2
+         * Job_#0.5 is a sibling writing on testjob.log3
+         * 
+         * Job_#0.2 writes the log that is monitored by Job_#0.1. Upon reaching
+         * a given number of iterations, the monitoring job triggers a reaction
+         * that stops Job_#0.2 and archives its results.
+         * Therefore, we expect to find the Job_#0.2_0 folder containing the log
+         * of Job_#0.2 which must be substantially shorted than the log of its 
+         * siblings Job_#0.3, Job_#0.4, and Job_#0.5. The latter, in fact, must
+         * not be stopped by the reaction.
+         * 
+         * Note that the monitoring job starts before the monitored job. Thus,
+         * in the first monitoring iteration, the info channel is not readable,
+         * hence the monitoring job has to be tolerant.
+         */
+        
+        assertEquals(1, FileUtils.find(tempDir, "Job_#0.2_0", true).size());
+        assertEquals(4, FileUtils.find(tempDir, "testjob.log*", true).size());
+        assertEquals(3, FileUtils.find(tempDir, "testjob.log*", 1, true).size());
+        assertTrue(16>FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
+        		+ "Job_#0.2_0" + SEP +  "testjob.log_production", "Iteration"));
+        assertTrue(30<FileAnalyzer.count(roothName+"1", "Iteration"));
+        assertTrue(30<FileAnalyzer.count(roothName+"2", "Iteration"));
+        assertTrue(30<FileAnalyzer.count(roothName+"3", "Iteration"));
     }
     
 //-----------------------------------------------------------------------------

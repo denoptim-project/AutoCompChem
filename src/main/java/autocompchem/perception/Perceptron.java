@@ -80,6 +80,11 @@ public class Perceptron
     private boolean iamaware = false;
 
     /**
+     * Flas enabling tolerance towards missing info channels
+     */
+    private boolean tolerateMissingIC = false;
+    
+    /**
      * Verbosity level
      */
     private int verbosity = 0;
@@ -252,36 +257,36 @@ public class Perceptron
         String init = "Perception result: ";
         switch (occurringSituations.size())
         {
-            case 0:
-                if (verbosity > 1)
-                {
-                    System.out.println(init + "No situation has been detected");
-                }
-                break;
-                
-            case 1:
-                iamaware = true;
-                if (verbosity > 0)
-                {
-                    System.out.println(init + "Known situation is " 
-                    		+ occurringSituations.get(0).getRefName());
-                }
-                break;
-                
-           default:
-                if (verbosity > 0)
-                {
-                	List<String> names = new ArrayList<String>();
-                	occurringSituations.stream().forEach(s -> names.add(
-                			s.getRefName()));
-                	String msg = init + "Confusion - The situation matches "
-                			+ "multiple known situation. You may have to make "
-                            + "the situations more specific as to "
-                            + "disctiminate between these: " 
-                            + StringUtils.mergeListToString(names, ", ", true);
-                    System.out.println(msg);
-                }
-                break;
+        case 0:
+            if (verbosity > 1)
+            {
+                System.out.println(init + "No situation has been detected");
+            }
+            break;
+            
+        case 1:
+            iamaware = true;
+            if (verbosity > 0)
+            {
+                System.out.println(init + "Known situation is " 
+                		+ occurringSituations.get(0).getRefName());
+            }
+            break;
+            
+       default:
+            if (verbosity > 0)
+            {
+            	List<String> names = new ArrayList<String>();
+            	occurringSituations.stream().forEach(s -> names.add(
+            			s.getRefName()));
+            	String msg = init + "Confusion - The situation matches "
+            			+ "multiple known situation. You may have to make "
+                        + "the situations more specific as to "
+                        + "disctiminate between these: " 
+                        + StringUtils.mergeListToString(names, ", ", true);
+                System.out.println(msg);
+            }
+            break;
         }
     }
 
@@ -320,7 +325,7 @@ public class Perceptron
             double score = 0.0;
 
             //TODO: write method
-//TODO del
+//TODO-gg del
 System.out.println("     Child ICircumstance: "+c);
 System.out.println("     Parent Situation: " + n);
 this.printScores();
@@ -404,7 +409,7 @@ this.printScores();
                 }
                 
                 Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(
-                		txtQueries, ic, 0);
+                		txtQueries, ic, tolerateMissingIC, 0);
                 for (TxtQuery tq : matches.keySet())
                 {
                     if (verbosity > 4)
@@ -470,14 +475,36 @@ this.printScores();
      * Reads a feed searching for lines matching the given list of queries.
      * @param txtQueries the queries defining what to search for in the text.
      * @param ic channel we are reading now (only for logging).
+     * @param tolerant use <code>true</code> to simply skip info channels that
+     * cannot be read. Use <code>false</code> to trigger error upon finding
+     * that an info channel cannot be read.
      * @param verbosity the level of verbosity (only for logging).
      * @return a mapping of what lines matches which query.
      */
     public static Map<TxtQuery,List<String>> getTxtMatchesFromICReader(
-    		List<TxtQuery> txtQueries, InfoChannel ic, int verbosity)
+    		List<TxtQuery> txtQueries, InfoChannel ic, boolean tolerant,
+    		int verbosity)
     {	
     	List<String> txtQueriesAsStr = new ArrayList<String>();
         txtQueries.stream().forEach(tq -> txtQueriesAsStr.add(tq.query));
+        
+        // Check readability
+        if (!ic.canBeRead())
+        {
+        	if (tolerant)
+        	{
+        		Map<TxtQuery,List<String>> emptyResult = 
+                		new HashMap<TxtQuery,List<String>>();
+                for (int qIdx = 0; qIdx < txtQueriesAsStr.size(); qIdx++)
+                {
+                    TxtQuery tq = txtQueries.get(qIdx);
+                    emptyResult.put(tq, new ArrayList<String>());
+                }
+                return emptyResult;
+        	} else {
+        		throw new IllegalStateException("Unreadable info channel "+ic);
+        	}
+        }
 
         // The keys are "a_b_c" where b is the index of the string query
         // in txtQueriesAsStr
@@ -578,6 +605,18 @@ this.printScores();
         }
     	return mapOfMatches;
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the possibility to tolerate the absence of some info channel.
+     * @param tolerateMissingIC use <code>true</code> to consider the absence
+     * of an info channel as lack of verification of a circumstance.
+     */
+	public void setTolerantMissingIC(boolean tolerateMissingIC) 
+	{
+		this.tolerateMissingIC = tolerateMissingIC;
+	}
 
 //------------------------------------------------------------------------------
  

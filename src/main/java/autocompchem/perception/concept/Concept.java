@@ -126,7 +126,7 @@ public class Concept implements Cloneable
      */
     public String toString()
     {
-        String s = super.toString() + " " + type + " " + refName;
+        String s = type + " " + refName;
         return s;
     }
     

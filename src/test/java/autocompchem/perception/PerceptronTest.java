@@ -19,6 +19,7 @@ package autocompchem.perception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class PerceptronTest
     @Test
     public void testGetTxtMatchesFromReader() throws Exception
     {
-    	ArrayList<String> a = new ArrayList<String>();
+    	List<String> a = new ArrayList<String>();
         a.add("line0: Text to analyze");
         a.add("line1: array contains QRY@1 and QRY@2...");
         a.add("line2: more lnes with QRY@1, but this time with QRY@3");
@@ -73,7 +74,7 @@ public class PerceptronTest
         		tq1, tq2, tq3, tq4, tq5));
         
     	Map<TxtQuery,List<String>> map = Perceptron.getTxtMatchesFromICReader(
-    			queries, ic, 0);
+    			queries, ic, false, 0);
     	
     	assertEquals(queries.size(), map.size());
     	assertEquals(2, map.get(tq1).size());
@@ -81,6 +82,21 @@ public class PerceptronTest
     	assertEquals(1, map.get(tq3).size());
     	assertEquals(1, map.get(tq4).size());
     	assertEquals(0, map.get(tq5).size());
+    	
+    	a = null;
+    	ic = new ShortTextAsSource(a);
+        ic.setType(InfoChannelType.OUTPUTFILE);
+    	map = Perceptron.getTxtMatchesFromICReader(
+    			queries, ic, true, 0);
+    	
+    	boolean intollerantTriggerException = false;
+    	try {
+    		map = Perceptron.getTxtMatchesFromICReader(
+    				queries, ic, false, 0);
+    	} catch (IllegalStateException e) {
+    		intollerantTriggerException = true;
+    	}
+    	assertTrue(intollerantTriggerException);
     }
     
 //------------------------------------------------------------------------------
@@ -158,6 +174,24 @@ public class PerceptronTest
         assertEquals(false,prc.isAware(),"Perception awareness (2)");
         assertEquals(2,prc.getOccurringSituations().size(),
                                           "Number of occurring situations (2)");
+        
+        
+        InfoChannel icToNonExistingFile = new FileAsSource("non_existing_path");
+        icToNonExistingFile.setType(InfoChannelType.OUTPUTFILE);
+        icb.addChannel(icToNonExistingFile);
+        
+        prc = new Perceptron(sitsBase1,icb);
+        prc.setTolerantMissingIC(true);
+        prc.perceive();
+        
+        prc.setTolerantMissingIC(false);
+        boolean intollerantTriggerException = false;
+    	try {
+    		prc.perceive();
+    	} catch (IllegalStateException e) {
+    		intollerantTriggerException = true;
+    	}
+    	assertTrue(intollerantTriggerException);
     }
 
 //------------------------------------------------------------------------------

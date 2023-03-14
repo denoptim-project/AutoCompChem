@@ -127,6 +127,11 @@ public class JobEvaluator extends Worker
 	 */
 	public static final String EVALUATEDJOB = "evaluatedJob";
 	
+	/**
+	 * The string used to identify the exception triggered by perception.
+	 */
+	public static final String EXCEPTION = "exception";
+	
     /**
      * Situation base: list of known situations/concepts
      */
@@ -147,6 +152,11 @@ public class JobEvaluator extends Worker
      * By default this value is 0.
      */
     private int lastJobStepId = 0;
+   
+    /**
+     * Flags indicating we tolerate missing information channels.
+     */
+    private boolean tolerateMissingIC = false;
 
     
 //-----------------------------------------------------------------------------
@@ -191,6 +201,12 @@ public class JobEvaluator extends Worker
 						+ ParameterConstants.VERBOSITY, -1);
 			}
 			verbosity = Integer.parseInt(vStr);
+		}
+		
+		if (hasParameter(ParameterConstants.TOLERATEMISSINGIC))
+		{
+			tolerateMissingIC = Boolean.valueOf(params.getParameter(
+					ParameterConstants.TOLERATEMISSINGIC).getValueAsString());
 		}
 		
 		if (hasParameter(ParameterConstants.SITUATION)) 
@@ -248,7 +264,8 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
-				FileUtils.foundAndPermissions(list[i], true, false, false);
+				if (!tolerateMissingIC)
+					FileUtils.foundAndPermissions(list[i], true, false, false);
 				InfoChannel ic = new FileAsSource(list[i]);
 				ic.setType(InfoChannelType.INPUTFILE);
 				icDB.addChannel(ic);
@@ -266,7 +283,8 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
-				FileUtils.foundAndPermissions(list[i], true, false, false);
+				if (!tolerateMissingIC)
+					FileUtils.foundAndPermissions(list[i], true, false, false);
 				InfoChannel ic = new FileAsSource(list[i]);
 				ic.setType(InfoChannelType.LOGFEED);
 				icDB.addChannel(ic);
@@ -284,7 +302,8 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
-				FileUtils.foundAndPermissions(list[i], true, false, false);
+				if (!tolerateMissingIC)
+					FileUtils.foundAndPermissions(list[i], true, false, false);
 				InfoChannel ic = new FileAsSource(list[i]);
 				ic.setType(InfoChannelType.OUTPUTFILE);
 				icDB.addChannel(ic);
@@ -302,7 +321,8 @@ public class JobEvaluator extends Worker
 			String[] list = pathNames.trim().split(File.pathSeparator);
 			for (int i=0; i<list.length; i++)
 			{
-				FileUtils.foundAndPermissions(list[i], true, false, false);
+				if (!tolerateMissingIC)
+					FileUtils.foundAndPermissions(list[i], true, false, false);
 				InfoChannel ic = new FileAsSource(list[i]);
 				ic.setType(InfoChannelType.JOBDETAILS);
 				icDB.addChannel(ic);
@@ -425,7 +445,8 @@ public class JobEvaluator extends Worker
 		
 		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
-		p.setVerbosity(verbosity-1);
+		p.setVerbosity(verbosity);
+		p.setTolerantMissingIC(tolerateMissingIC);
 		
 		if (EVALCOMPCHEMJOBTASKS.contains(task) 
 				|| CURECOMPCHEMJOBTASKS.contains(task)
@@ -440,7 +461,7 @@ public class JobEvaluator extends Worker
 		try {
 			p.perceive();
 			
-			if (verbosity == 1)
+			if (verbosity > 1)
 			{
 				// Minimal log that is done by Perceptron if the verbosity is higher
 				if (p.isAware())
@@ -455,8 +476,9 @@ public class JobEvaluator extends Worker
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO to log
+			//e.printStackTrace();
+			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}
 		
 		exposeOutputData(new NamedData(NUMSTEPSKEY,
@@ -592,9 +614,23 @@ public class JobEvaluator extends Worker
 						+ "Please, check your input.",-1);
 			}
 
-			analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
-					((FileAsSource)logChannels.get(0)).getPathName());
+			String pathname = ((FileAsSource)logChannels.get(0)).getPathName();
+			File fileToParse = new File(pathname);
+			if (fileToParse.exists())
+			{
+				analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
+						pathname);
+				
+			} else {
+				if (!tolerateMissingIC)
+				{
+					Terminator.withMsgAndStatus("ERROR: File '" + pathname 
+							+ "' is listed as " + InfoChannelType.LOGFEED
+							+ " but is not found.", -1);
+				}
+			}
 			p.setInfoChannelAsRead(logChannels.get(0));
+			
 			/*
 			List<AnalysisTask> tasks = new ArrayList<AnalysisTask>();
 			tasks.add(new AnalysisTask(AnalysisKind....));
