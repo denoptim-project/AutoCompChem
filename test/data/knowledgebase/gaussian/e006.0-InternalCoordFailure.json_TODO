@@ -1,0 +1,77 @@
+{
+  "type": "ERROR",
+  "refName": "e006.0-InternalCoordFailure",
+  "description": "Geometry optimization run in internal coordinates cannot proceed. We switch to Cartesian coordinate optimization.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Error in internal coordinate system."
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Error termination via Lnk1e in"
+    },
+    {
+#TODO-gg check dircomponent value/existence
+      "circumstance": has directive,
+      "channel": "JOBDETAILS",
+      "pattern": "Dir:Route|Dir:Opt"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "jobEditTasks": [
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route",
+        "content": {
+            "reference": "GEOM",
+            "value": "CHECK"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route",
+        "content": {
+            "reference": "GUESS",
+            "value": "READ"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route|Dir:Opt",
+        "content": {
+            "reference": "OptimizationVariables",
+            "isLoud": false,
+            "value": "Cartesian"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Title",
+        "content": {
+            "reference": "Title",
+            "value": "Fix error e006.0-InternalCoordFailure",
+            "isLoud": false
+        }
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "type": "ERROR",
+  "refName": "e007.0-MemoryAllocationFailure",
+  "description": "Geometry optimization run in internal coordinates cannot proceed. We switch to Cartesian coordinate optimization.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "galloc:  could not allocate memory"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "jobEditTasks": [
+      {
+#TODO-gg implement job editing task
+        "task": "CHANGE_KEYWORD_VALUE",
+        "path": "Dir:Link0|Key:mem",
+        "expression": "${val - 1GB}"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

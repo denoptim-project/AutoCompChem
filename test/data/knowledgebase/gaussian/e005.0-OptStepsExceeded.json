@@ -1,0 +1,76 @@
+{
+  "type": "ERROR",
+  "refName": "e005.0-OptStepsExceeded",
+  "description": "Geometry optimization run out of cycles. We restart after recalculating the force constants and requesting update of the forces every N steps. This situation is prevented to generate loops.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Optimization stopped."
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Number of steps exceeded"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "negation": true,
+      "pattern": "Fix error e005.0-OptStepsExceeded"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "jobEditTasks": [
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route",
+        "content": {
+            "reference": "GEOM",
+            "value": "CHECK"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route",
+        "content": {
+            "reference": "GUESS",
+            "value": "READ"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route|Dir:OPT",
+        "content": {
+            "reference": "RecalcFC",
+            "value": "25"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Title",
+        "content": {
+            "reference": "Title",
+            "value": "Fix error e005.0-OptStepsExceeded",
+            "isLoud": false
+        }
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

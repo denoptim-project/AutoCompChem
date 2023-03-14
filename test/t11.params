@@ -3,7 +3,7 @@
 #
 VERBOSITY: 2
 TASK: CureGaussianJob
-SITUATIONSDBROOT: ../t11_KB
+SITUATIONSDBROOT: ../data/knowledgebase/gaussian
 IC-LOGS: ../t11-mol.out
 #TODO-gg create test with system-specific job details file 
 JOBDEFINITION: ../t11-jobDetails.json
