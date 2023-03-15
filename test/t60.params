@@ -1,7 +1,0 @@
-#
-# Parameters for Automated Computational Chemistry
-#
-VERBOSITY: 3
-TASK: EvaluateGenericOutput
-INFILE: ../t60.generic_log
-GENERICERRORSROOT: ../data/errorsDefAndFix/generic
