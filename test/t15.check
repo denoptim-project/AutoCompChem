@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#TODO: upload corcumstance looking at the content of directive components
+# see data/knowledgebase/gaussian/e006.0-InternalCoordFailure.json_TODO
+echo "Skipped: to upgrade"
+exit 0
+
+grep -q "MATCH_ROUTEKEYWORD condition satisfied" t15.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q "Step 5 returned Error Message: e0050-InteralCoordFailure" t15.log
+if [ $? != 0 ] ; then
+echo NOT Passed
+exit -1
+fi
+
+grep -q 'Termination status: 0' t15.log
+if [ $? == 0 ] ; then 
+echo Passed
+exit 0
+else
+echo NOT Passed
+exit -1
+fi

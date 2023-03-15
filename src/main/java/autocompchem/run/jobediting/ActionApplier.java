@@ -364,17 +364,20 @@ public class ActionApplier
         	String str = "WARNING: folder '" + archiveFolder + "' exists. "
         			+ "Trying to use folder ";
         	
-        	archiveFolder = new File(path + File.separator 
-        			+ "Job_" + job.getHashCodeSnapshot() + "_" + restartCounter);
-        	
-        	//TODO-gg log
-        	System.out.println(str + archiveFolder + "'.");
-        			
-        	if (!archiveFolder.mkdirs())
-            {
-	            Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
-	            		+ archiveFolder+ "' for archiving partial results of "
-	            		+ "job.", -1);
+        	// WARNING: we search for a usable name, but we do not expect to
+        	// compete with other threads/instances doing the same.
+        	int idx = 0;
+        	while (true) 
+        	{
+        		archiveFolder = new File(path + File.separator + "Job_" 
+        			+ job.getHashCodeSnapshot() + idx + "_" + restartCounter);
+        		if (archiveFolder.mkdirs())
+	            {
+		        	//TODO-gg log
+		        	System.out.println(str + archiveFolder + "'.");
+		        	break;
+	            }
+        		idx++;
             }
         }
         String pathToArchive = archiveFolder.getAbsolutePath() 
