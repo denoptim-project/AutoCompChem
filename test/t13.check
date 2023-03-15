@@ -1,21 +1,12 @@
 #!/bin/bash
 
-
-#TODO-gg: upgrade
-echo "Skipped: to upgrade!"
-exit 0
-
-grep -q 'Gaussian Error NOT Recognized' t13.log
-if [ $? != 0 ] ; then
-echo NOT Passed
-exit -1
-fi
+if ! grep -q 'No known situation perceived' t13.log ; then echo NOT Passed - ERROR 1; exit -1 ; fi
 
 grep -q 'Termination status: -1' t13.log
 if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed - ERROR 99
+  exit -1
 fi

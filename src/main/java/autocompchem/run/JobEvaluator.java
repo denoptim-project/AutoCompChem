@@ -443,6 +443,10 @@ public class JobEvaluator extends Worker
 					+ "is empty! Information is needed to do perception.",-1);
 		}
 		
+		// Detect if this is a standalone cure job.
+		boolean standaloneCureJob = myJob.getObserver()==null 
+				&& CURECOMPCHEMJOBTASKS.contains(task);
+		
 		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setVerbosity(verbosity);
@@ -460,19 +464,29 @@ public class JobEvaluator extends Worker
 		
 		try {
 			p.perceive();
-			
-			if (verbosity > 1)
+			// Minimal log that is done by Perceptron if the verbosity is higher
+			if (p.isAware())
 			{
-				// Minimal log that is done by Perceptron if the verbosity is higher
-				if (p.isAware())
+				Situation sit = p.getOccurringSituations().get(0);
+
+				if (verbosity > 0)
 				{
-					Situation sit = p.getOccurringSituations().get(0);
+					// TODO log
 					System.out.println("JobEvaluator: Situation perceived = " 
 							+ sit.getRefName());
-					
-				} else {
+				}
+			} else {
+				if (verbosity > 0)
+				{
+					// TODO log
 					System.out.println("JobEvaluator: No known situation "
 							+ "perceived.");
+				}
+				if (standaloneCureJob)
+				{
+					Terminator.withMsgAndStatus("Standalone job evaluation is "
+							+ "expected to detect a known error/situation, but "
+							+ "none was percieved.", -1);
 				}
 			}
 		} catch (Exception e) {
@@ -503,8 +517,7 @@ public class JobEvaluator extends Worker
 				
 				// In case this is a stand-alone CURE-job we do the action here,
 				// but this is has limited capability: it cannot restart the job.
-				if (myJob.getObserver()==null 
-						&& CURECOMPCHEMJOBTASKS.contains(task))
+				if (standaloneCureJob)
 				{
 					ActionApplier.performAction(s.getReaction(), myJob, 
 							Arrays.asList(jobBeingEvaluated), 1);
