@@ -6,4 +6,4 @@ TASK: CureGaussianJob
 IC-LOGS: ../t13-fake.out
 JOBDEFINITION: ../t11-jobDetails.json
 SITUATIONSDBROOT: ../data/knowledgebase
-PATHNAMEOUTPUT: restart-t13.inp
+PATHNAMEOUTPUT: t14_restart.inp

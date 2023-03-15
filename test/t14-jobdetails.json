@@ -14,26 +14,12 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
         {
           "name": "Route",
           "keywords": [
-            {
-              "reference": "Free1",
-              "value": "WITH NOTHING",
-              "isLoud": false
-            },
-            {
-              "reference": "Free2",
-              "value": "WHIT FREE LABEL",
-              "isLoud": false
-            },
             {
               "reference": "MODEL_METHOD",
               "value": "HF",
@@ -86,7 +72,7 @@
           "keywords": [
             {
               "reference": "title",
-              "value": " Protocol - 22 Nov 2013",
+              "value": " STEP 1 Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
@@ -106,10 +92,6 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
@@ -176,28 +158,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 2 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "333",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "222",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -214,10 +178,6 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
@@ -259,7 +219,7 @@
               "keywords": [
                 {
                   "reference": "VSHIFT",
-                  "value": "600"
+                  "value": "200"
                 },
                 {
                   "reference": "SYMM",
@@ -280,121 +240,18 @@
                   "isLoud": false
                 }
               ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "No comment",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1111",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "Nprocshared",
-              "value": "8"
             },
             {
-              "reference": "mem",
-              "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2MB 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "STABLE",
+              "name": "stable",
               "keywords": [
                 {
                   "reference": "WFREOPT",
-                  "value": "OPT",
+                  "value": "opt",
                   "isLoud": false
                 },
                 {
                   "reference": "GENERAL",
-                  "value": "RRHF",
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "VSHIFT",
-                  "value": "200"
-                },
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "ALGORITHM",
-                  "value": "QC",
-                  "isLoud": false
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "280"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
+                  "value": "rrhf",
                   "isLoud": false
                 }
               ]
@@ -406,23 +263,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 3 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [ 
-            {
-              "reference": "CHARGE",
-              "value": "-5555",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -439,10 +283,6 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
@@ -470,129 +310,6 @@
             {
               "reference": "PRINT",
               "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "FREQ",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "VSHIFT",
-                  "value": "200"
-                },
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "ALGORITHM",
-                  "value": "QC",
-                  "isLoud": false
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "280"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "No comment",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "Nprocshared",
-              "value": "8"
-            },
-            {
-              "reference": "mem",
-              "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "INTEGRAL",
-              "value": "INT(GRID\u003dSG1)",
-              "isLoud": false
-            },
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "IOP",
-              "value": "IOP(1/19\u003d5)",
-              "isLoud": false
-            },
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2MB 5D 7F",
               "isLoud": false
             },
             {
@@ -602,6 +319,29 @@
             }
           ],
           "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "200"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "380"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            },
             {
               "name": "OPT",
               "keywords": [
@@ -622,30 +362,20 @@
               ]
             },
             {
-              "name": "SCF",
+              "name": "int",
               "keywords": [
                 {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
+                  "reference": "grid",
+                  "value": "sg1"
+                }
+              ]
+            },
+            {
+              "name": "iop",
+              "keywords": [
                 {
-                  "reference": "MAXCYCLE",
-                  "value": "380"
-                },
-                {
-                  "reference": "VSHIFT",
-                  "value": "200"
-                },
-                {
-                  "reference": "ALGORITHM",
-                  "value": "QC",
-                  "isLoud": false
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
+                  "reference": "1/19",
+                  "value": 5
                 }
               ]
             }
@@ -656,28 +386,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 4 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -694,20 +406,12 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
         {
           "name": "Route",
           "keywords": [
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
             {
               "reference": "MODEL_METHOD",
               "value": "OLYP",
@@ -718,13 +422,17 @@
               "value": "READ"
             },
             {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
+              "reference": "PRINT",
+              "value": "P",
               "isLoud": false
             },
             {
-              "reference": "PRINT",
-              "value": "P",
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2DZ 5D 7F",
               "isLoud": false
             },
             {
@@ -738,10 +446,6 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "reference": "VSHIFT",
-                  "value": "800"
-                },
-                {
                   "reference": "SYMM",
                   "value": "NOSYM",
                   "isLoud": false
@@ -749,6 +453,10 @@
                 {
                   "reference": "MAXCYCLE",
                   "value": "280"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "800"
                 },
                 {
                   "reference": "VARACC",
@@ -764,28 +472,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 5 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -802,10 +492,6 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
@@ -876,28 +562,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 6 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -914,10 +582,6 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
@@ -977,11 +641,6 @@
                   "isLoud": false
                 },
                 {
-                  "reference": "ALGORITHM",
-                  "value": "QC",
-                  "isLoud": false
-                },
-                {
                   "reference": "MAXCYCLE",
                   "value": "280"
                 },
@@ -999,28 +658,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 7 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -1037,133 +678,12 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
         {
           "name": "Route",
           "keywords": [
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "FREQ",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "VSHIFT",
-                  "value": "600"
-                },
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "CONVER",
-                  "value": "5"
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "980"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "No comment",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "Nprocshared",
-              "value": "8"
-            },
-            {
-              "reference": "mem",
-              "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "INTEGRAL",
-              "value": "INT(GRID\u003dSG1)",
-              "isLoud": false
-            },
             {
               "reference": "MODEL_METHOD",
               "value": "OLYP",
@@ -1176,11 +696,6 @@
             {
               "reference": "PRINT",
               "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "IOP",
-              "value": "IOP(1/19\u003d5)",
               "isLoud": false
             },
             {
@@ -1213,7 +728,7 @@
                 },
                 {
                   "reference": "FORCECONSTANTS",
-                  "value": "READFC",
+                  "value": "CalcFC",
                   "isLoud": false
                 }
               ]
@@ -1240,6 +755,24 @@
                   "isLoud": false
                 }
               ]
+            },
+            {
+              "name": "int",
+              "keywords": [
+                {
+                  "reference": "grid",
+                  "value": "sg1"
+                }
+              ]
+            },
+            {
+              "name": "iop",
+              "keywords": [
+                {
+                  "reference": "1/19",
+                  "value": 5
+                }
+              ]
             }
           ]
         },
@@ -1248,28 +781,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 8 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -1286,10 +801,6 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
@@ -1321,12 +832,7 @@
             },
             {
               "reference": "JOBTYPE",
-              "value": "FREQ",
-              "isLoud": false
-            },
-            {
-              "reference": "IOP",
-              "value": "IOP(1/19\u003d5)",
+              "value": "OPT",
               "isLoud": false
             }
           ],
@@ -1353,97 +859,7 @@
                   "isLoud": false
                 }
               ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "No comment",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
             },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "Nprocshared",
-              "value": "8"
-            },
-            {
-              "reference": "mem",
-              "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "IOP",
-              "value": "IOP(1/19\u003d11)",
-              "isLoud": false
-            },
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "OPT",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
             {
               "name": "OPT",
               "keywords": [
@@ -1453,31 +869,17 @@
                 },
                 {
                   "reference": "FORCECONSTANTS",
-                  "value": "READFC",
+                  "value": "CalcFC",
                   "isLoud": false
                 }
               ]
             },
             {
-              "name": "SCF",
+              "name": "iop",
               "keywords": [
                 {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "980"
-                },
-                {
-                  "reference": "VSHIFT",
-                  "value": "500"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
+                  "reference": "1/19",
+                  "value": 11
                 }
               ]
             }
@@ -1488,28 +890,10 @@
           "keywords": [
             {
               "reference": "title",
-              "value": " Close to the end...",
+              "value": " STEP 9 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
         }
       ]
     },
@@ -1526,24 +910,12 @@
             {
               "reference": "mem",
               "value": "28GB"
-            },
-            {
-              "reference": "chk",
-              "value": "RuAsH3"
             }
           ]
         },
         {
           "name": "Route",
           "keywords": [
-            {
-              "reference": "GEOM",
-              "value": "CHECK "
-            },
-            {
-              "reference": "PUNCH",
-              "value": "DERIVATIVES"
-            },
             {
               "reference": "MODEL_METHOD",
               "value": "OLYP",
@@ -1554,18 +926,26 @@
               "value": "READ"
             },
             {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
-              "isLoud": false
-            },
-            {
               "reference": "PRINT",
               "value": "P",
               "isLoud": false
             },
             {
+              "reference": "punch",
+              "value": "derivatived"
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "LANL2DZ 5D 7F",
+              "isLoud": false
+            },
+            {
               "reference": "JOBTYPE",
-              "value": "OPT",
+              "value": "Freq",
               "isLoud": false
             }
           ],
@@ -1574,10 +954,6 @@
               "name": "SCF",
               "keywords": [
                 {
-                  "reference": "VSHIFT",
-                  "value": "500"
-                },
-                {
                   "reference": "SYMM",
                   "value": "NOSYM",
                   "isLoud": false
@@ -1585,6 +961,10 @@
                 {
                   "reference": "MAXCYCLE",
                   "value": "980"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "500"
                 },
                 {
                   "reference": "VARACC",
@@ -1600,7 +980,7 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "No comment",
+              "value": " STEP 10 - Protocol 3d-Builder - 22 Dec 2013",
               "isLoud": false
             }
           ]

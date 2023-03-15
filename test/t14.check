@@ -1,21 +1,44 @@
 #!/bin/bash
 
-
-#TODO-gg: upgrade
-echo "Skipped: to upgrade!"
-exit 0
-
-grep -q 'Step 3 returned Error Message: e0022-DIISConvergenceFailure' t14.log
-if [ $? != 0 ] ; then 
-echo NOT Passed
-exit -1
+if [ ! -f  t14.log ]; then
+  echo NOT Passed ERROR 1
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t14.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if ! grep -q "overall run did NOT terminate normally!" t14.log ; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if ! grep -q "contains 3 steps." t14.log ; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if ! grep -q "Known situation is e003.0-DIISConvergenceFailure" t14.log ; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if [ ! -f  t14_restart.inp ]; then
+  echo NOT Passed ERROR 5
+  exit -1
+fi
+
+if ! grep -q "Fix error e003.0-DIISConvergenceFailure" t14_restart.inp ; then
+  echo NOT Passed ERROR 6
+  exit -1
+fi
+
+if ! grep -q -i "SCF=(.*QC.*)" t14_restart.inp ; then
+  echo NOT Passed ERROR 7
+  exit -1
+fi
+
+if grep -q 'Termination status: 0' t14.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed - ERROR 99
+  exit -1
 fi
