@@ -98,13 +98,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			// ONE single line.
 			for (Keyword k : d.getAllKeywords())
 			{
-				if (k.isLoud())
-				{
-					lines.add("#" + k.getName() + " " + k.getValueAsString());
-				} else
-				{
-					lines.add("#" + k.getValueAsString());	
-				}
+				lines.add("#"+k.toString(" "));
 			}
 			// Sub directives and DirectiveData are not suitable for Orca's
 			// "keyword line", so we do not expect them
@@ -146,14 +140,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				String line = "!";
 				for (Keyword k : d.getAllKeywords())
 				{
-					if (k.isLoud())
-					{
-						line = line + " " + k.getName() + " " 
-								+ k.getValueAsString();
-					} else
-					{
-						line = line + " " + k.getValueAsString();
-					}
+					line = line + " " + k.toString(" ");
 				}
 				// Sub directives and DirectiveData are not suitable for Orca's
 				// "keyword line", so we do not expect them
@@ -216,13 +203,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				
 				for (Keyword k : d.getAllKeywords())
 				{
-					if (k.isLoud())
-					{
-						line = line + " " + k.getName() + " "
-								+ k.getValueAsString();
-					} else {
-						line = line + " " + k.getValueAsString();
-					}
+					line = line + " " + k.toString(" ");
 				}
 				lines.add(line);
 				
@@ -443,13 +424,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		d.sortKeywordsBy(new CoordsKeywordsComparator());
 		for (Keyword k : d.getAllKeywords())
 		{
-			//TODO-gg this is what the toString() method of Keyword should do!
-			if (k.isLoud())
-			{
-				line = line + " " + k.getName() + " " + k.getValueAsString();
-			} else {
-				line = line + " " + k.getValueAsString();
-			}
+			line = line + " " + k.toString(" ");
 		}
 		lines.add(line);
 		

@@ -92,13 +92,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			// ONE single line.
 			for (Keyword k : d.getAllKeywords())
 			{
-				if (k.isLoud())
-				{
-					lines.add("#" + k.getName() + " " + k.getValueAsString());
-				} else
-				{
-					lines.add("#" + k.getValueAsString());
-				}
+				lines.add("#" + k.toString(" "));
 			}
 			// Sub directives and DirectiveData are not suitable for XTB's
 			// "keyword line", so we do not expect them

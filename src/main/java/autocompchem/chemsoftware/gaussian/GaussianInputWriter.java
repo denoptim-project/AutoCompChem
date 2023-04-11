@@ -276,10 +276,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		// We expect only keywords
     		for (Keyword k : lnkDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				lines.add("%" + k.getName() + "=" + k.getValueAsString());
-    			else
-        			lines.add("%" + k.getValueAsString());
+    			lines.add("%"+k.toString("="));
     		}
     		if (lnkDir.getAllDirectiveDataBlocks().size()>0)
     		{
@@ -348,12 +345,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		{
     			if (GaussianConstants.SPECIALKEYWORDS.contains(k.getName()))
     				continue;
-    			if (k.isLoud())
-    			{
-    				lines.add("# " + k.getName() + "=" + k.getValueAsString());
-    			} else {
-        			lines.add("# " + k.getValueAsString());
-    			}
+
+    			lines.add("# "+k.toString("="));
     		}
     		for (Directive subDir : rouDir.getAllSubDirectives())
     		{
@@ -379,13 +372,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     			boolean first = true;
     			for (Keyword k : subDir.getAllKeywords())
     			{
-    				String keyStr = "";
-    				if (k.isLoud())
-    				{
-    					keyStr = k.getName() + "=" + k.getValueAsString();
-    				} else {
-    					keyStr = k.getValueAsString();
-    				}
+    				String keyStr = k.toString("=");
     				if (first)
     				{
     					directiveLine = directiveLine + keyStr;
@@ -725,10 +712,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		//results
     		for (Keyword k : optDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				lines.add(k.getName() + "=" + k.getValueAsString());
-    			else
-        			lines.add(k.getValueAsString());
+    			lines.add(k.toString("="));
     			lines.add(""); //empty line that terminates this part of option section
     		}
     		
@@ -759,13 +743,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     			boolean first = true;
     			for (Keyword k : subDir.getAllKeywords())
     			{
-    				String keyStr = "";
-    				if (k.isLoud())
-    				{
-    					keyStr = k.getName() + "=" + k.getValueAsString();
-    				} else {
-    					keyStr = k.getValueAsString();
-    				}
+    				String keyStr = k.toString("=");
+    				lines.add("%"+k.toString("="));
     				if (first)
     				{
     					directiveLine = directiveLine + keyStr;

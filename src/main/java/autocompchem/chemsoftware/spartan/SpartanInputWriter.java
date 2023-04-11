@@ -174,11 +174,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		StringBuilder sbKw = new StringBuilder();
     		for (Keyword k : kwDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				sbKw.append(k.getName()).append("=").append(
-    						k.getValueAsString()).append(" ");
-    			else
-    				sbKw.append(k.getValueAsString()).append(" ");
+    			sbKw.append(k.toString("=")).append(" ");
     		}
     		lines.add(sbKw.toString());
 
@@ -193,11 +189,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		StringBuilder sbKw = new StringBuilder();
     		for (Keyword k : titDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				sbKw.append(k.getName()).append("=").append(
-    						k.getValueAsString()).append(" ");
-    			else
-    				sbKw.append(k.getValueAsString()).append(" ");
+    			sbKw.append(k.toString("=")).append(" ");
     		}
     		lines.add(sbKw.toString());
     		

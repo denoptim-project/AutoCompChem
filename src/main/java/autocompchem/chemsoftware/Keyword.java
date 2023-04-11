@@ -284,6 +284,22 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
     
 //-----------------------------------------------------------------------------
     
+    /**
+     * Produced a string formatted according to the loud/mute property
+     * and the given separator
+     */
+    public String toString(String separator)
+    {
+    	if (isLoud())
+		{
+			return getName() + separator + getValueAsString();
+		} else {
+			return getValueAsString();
+		}
+    }
+    
+//-----------------------------------------------------------------------------
+    
     @Override
     public boolean equals(Object o) 
     {
