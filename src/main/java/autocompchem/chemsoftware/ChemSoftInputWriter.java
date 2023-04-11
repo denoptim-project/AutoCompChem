@@ -680,7 +680,7 @@ public abstract class ChemSoftInputWriter extends Worker
     public static void setKeywordIfNotAlreadyThere(CompChemJob ccj, 
     		String dirName, String keyName, String value)
     {
-    	setKeywordIfNotAlreadyThere(ccj, dirName, keyName, false, value);
+    	addNewKeyword(ccj, dirName, keyName, false, value);
     }
     
 //------------------------------------------------------------------------------
@@ -688,11 +688,14 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Sets a keyword in a directive with the given name to any step where it is
      * not already defined. 
-     * This means that this method does not overwrite existing charge settings.
+     * This means that this method does not overwrite existing keywords.
      * This method can alter only the given job and its steps, but does not 
      * consider the possibility of having further levels of nested jobs.
+     * This method cannot add keywords that are more deeply embedded. Use 
+     * {@link #addNewValueContainer(CompChemJob, DirComponentAddress, IValueContainer}
+     * for that.
      * @param ccj the job to customize.
-     * @param dirName the name of the directive
+     * @param dirName the name of the directive that should hold the keyword.
      * @param keyName the name of the keywords
      * @param isLoud use <code>true</code> if the keyword should be set to be
      * a loud keyword, meaning that conversion to text used the syntax 
@@ -700,36 +703,60 @@ public abstract class ChemSoftInputWriter extends Worker
      * <code>value</code> (for non-loud, or silent keywords).
      * @param value the value of the keyword to specify.
      */
-    public static void setKeywordIfNotAlreadyThere(CompChemJob ccj, 
+    public static void addNewKeyword(CompChemJob ccj, 
     		String dirName, String keyName, boolean isLoud, String value)
     {
-    	if (ccj.getNumberOfSteps()>0)
-    	{
-    		for (Job stepJob : ccj.getSteps())
-    		{
-    			((CompChemJob)stepJob).setKeywordIfUnset(dirName, keyName, 
-    					isLoud, value);
-    		}
-    	} else {
-    		ccj.setKeywordIfUnset(dirName, keyName, isLoud, value);
-    	}
+    	Keyword key = new Keyword(keyName, isLoud, value);
+    	DirComponentAddress adrs = new DirComponentAddress();
+    	adrs.addStep(dirName, DirectiveComponentType.DIRECTIVE);
+    	addNewValueContainer(ccj, adrs, key);
     }
     
 //------------------------------------------------------------------------------
     
-    public static void setDirectiveDataIfNotAlreadyThere(CompChemJob ccj, 
-    		String dirName, String dirDataName, DirectiveData dd)
+    /**
+     * Sets data in a directive with the given name to any step where it is
+     * not already defined. 
+     * This means that this method does not overwrite existing data.
+     * This method can alter only the given job and its steps, but does not 
+     * consider the possibility of having further levels of nested jobs.
+     * This method cannot add data that are more deeply embedded. Use 
+     * {@link #addNewValueContainer(CompChemJob, DirComponentAddress, IValueContainer}
+     * for that.
+     * @param ccj the job to customize.
+     * @param dirName the directive that should hold the data to add.
+     * @param dd the data to add.
+     */
+    public static void addNewDirectiveData(CompChemJob ccj, 
+    		String dirName, DirectiveData dd)
     {
-    	//TODO-gg use directive component path
+    	DirComponentAddress adrs = new DirComponentAddress();
+    	adrs.addStep(dirName, DirectiveComponentType.DIRECTIVE);
+    	addNewValueContainer(ccj, adrs, dd);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Adds a value container at any lever of embedding in a job directive's 
+     * component structure, as long as no such 
+     * container is already present on the given address.
+     * @param ccj the job to customize.
+     * @param address the location where to place the value container in the
+     * directive's component structure. Any level of embedding is allowed.
+     * @param component the data container that is to be added.
+     */
+    public static void addNewValueContainer(CompChemJob ccj, 
+    		DirComponentAddress address, IValueContainer component)
+    {
     	if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())
     		{
-    			((CompChemJob)stepJob).setDirectiveDataIfUnset(dirName, 
-    					dirDataName, dd);
+    			((CompChemJob) stepJob).addNewValueContainer(address, component);
     		}
     	} else {
-    		ccj.setDirectiveDataIfUnset(dirName, dirDataName, dd);
+    		ccj.addNewValueContainer(address, component);
     	}
     }
     

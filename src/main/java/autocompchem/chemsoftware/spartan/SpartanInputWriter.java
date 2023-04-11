@@ -138,10 +138,9 @@ public class SpartanInputWriter extends ChemSoftInputWriter
 
     	DirectiveData dd = new DirectiveData("coordinates");
     	dd.setValue(iac);
-    	setDirectiveDataIfNotAlreadyThere(ccj, SpartanConstants.DIRCART, 
-    			dd.getName(), dd);
+    	addNewDirectiveData(ccj, SpartanConstants.DIRCART, dd);
     	
-    	setKeywordIfNotAlreadyThere(ccj, SpartanConstants.DIRTITLE, "title", 
+    	addNewKeyword(ccj, SpartanConstants.DIRTITLE, "title", 
     			false, MolecularUtils.getNameOrID(iac));
     }
     

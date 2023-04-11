@@ -574,8 +574,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 		if (omitIfPossible)
 			return;
 		
-		//TODO-gg use constant for directive name.
-		setKeywordIfNotAlreadyThere(ccj, "charge", "value", false, charge);
+		addNewKeyword(ccj, "charge", "value", false, charge);
 	}
 
 //-----------------------------------------------------------------------------
@@ -595,9 +594,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			return;
 		
 		int numUnpairedEls = Integer.parseInt(sm) - 1;
-		//TODO-gg use constant for directive name.
-		setKeywordIfNotAlreadyThere(ccj, "spin", "value", false, 
-				numUnpairedEls + "");
+		addNewKeyword(ccj, "spin", "value", false, numUnpairedEls + "");
 	}
 
 //-----------------------------------------------------------------------------

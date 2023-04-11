@@ -638,11 +638,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     			{
     				continue;
     			}
-    			ccjStep.setKeywordIfUnset(NWChemConstants.CHARGEDIR, 
+    			addNewKeyword(ccjStep, NWChemConstants.CHARGEDIR, 
     				"value", false, charge);
     		}
     	} else {
-    		ccj.setKeywordIfUnset(NWChemConstants.CHARGEDIR, 
+    		addNewKeyword(ccj, NWChemConstants.CHARGEDIR, 
     				"value", false, charge);
     	}
 	}
@@ -729,7 +729,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 		}
 		if (useDFT)
 		{
-			ccjStep.setKeywordIfUnset(NWChemConstants.DFTDIR, "mult", true, sm);	
+			addNewKeyword(ccjStep, NWChemConstants.DFTDIR, "mult", true, sm);	
 		} else if (useSCF) 
 		{
 			Directive dirSCF = ccjStep.getDirective(NWChemConstants.SCFDIR);

@@ -37,7 +37,93 @@ import org.junit.jupiter.api.Test;
 public class CompChemJobTest 
 {
 	private final String NL = System.getProperty("line.separator");
-	
+
+//------------------------------------------------------------------------------
+    
+	/**
+	 * Creates a dummy object that has both directives and steps.
+	 * @return and object good for testing, not necessarily meaningful in
+	 * actual usage.
+	 */
+    public CompChemJob getTextCompChemJob()
+    {
+    	CompChemJob ccj = new CompChemJob();
+    	
+    	Directive dA = new Directive("A");
+    	dA.addKeyword(new Keyword("kA1", false, "valueKA1"));
+    	dA.addKeyword(new Keyword("kA1", false, "valueKA1bis"));
+    	dA.addKeyword(new Keyword("kA2", false, "valueKA2"));
+    	Directive dAA = new Directive("AA");
+    	dAA.addKeyword(new Keyword("kAA1", false, "valueKAA1"));
+    	dA.addSubDirective(dAA);
+    	DirectiveData dd = new DirectiveData("dataA");
+    	dd.setValue("Value of directive data");
+    	dA.addDirectiveData(dd);
+    	
+    	ccj.addDirective(dA);
+    	
+    	for (int i=0; i<3; i++)
+    	{
+	    	CompChemJob stepI = new CompChemJob();
+	    	Directive dConstant = new Directive("A");
+	    	dConstant.addKeyword(new Keyword("kA1", false, "valueKA1"));
+	    	dConstant.addKeyword(new Keyword("kA1", false, "valueKA1bis"));
+	    	stepI.addDirective(dConstant);
+	    	Directive dI = new Directive("Dir"+i);
+	    	dI.addKeyword(new Keyword("k", false, i));
+	    	ccj.addStep(stepI);
+    	}
+    	
+    	return ccj;
+    }
+
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testClone() throws Exception
+    {
+    	CompChemJob a = getTextCompChemJob();
+    	CompChemJob clone = a.clone();
+    	
+    	assertTrue(a.equals(clone));
+    	assertTrue(clone.equals(a));
+    	assertTrue(clone.equals(clone));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testEquals() throws Exception
+    {
+    	CompChemJob a = getTextCompChemJob();
+    	CompChemJob b = getTextCompChemJob();
+    	
+    	assertTrue(a.equals(a));
+    	assertTrue(a.equals(b));
+    	assertTrue(b.equals(a));
+    	assertFalse(a.equals(null));
+    	
+    	b.getDirective(0).getAllKeywords().get(0).setValue("CHANGED");
+    	assertFalse(a.equals(b));
+    	
+    	b = getTextCompChemJob();
+    	b.getDirective(0).addKeyword(new Keyword("NEW", false, "CHANGED"));
+    	assertFalse(a.equals(b));
+
+    	b = getTextCompChemJob();
+    	b.addDirective(new Directive("NewD"));
+    	assertFalse(a.equals(b));
+    	
+    	b = getTextCompChemJob();
+    	b.addStep(new CompChemJob());
+    	assertFalse(a.equals(b));
+
+    	b = getTextCompChemJob();
+    	a.getDirective(0).addKeyword(new Keyword("NEW", false, "CHANGED"));
+    	b.getDirective(0).addKeyword(new Keyword("NEW", false, "CHANGED"));
+    	assertTrue(a.equals(b));
+    }
+    
 //------------------------------------------------------------------------------
 
     @Test
@@ -386,6 +472,212 @@ public class CompChemJobTest
     	expected.clear();
     	expected.add(ke3);
     	assertEquals(expected, matches);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testAddDirectiveComponent() throws Exception
+    {
+    	CompChemJob ccj = new CompChemJob();
+    	Directive dA = new Directive("A1");
+    	Keyword k1 = new Keyword("K2");
+    	Keyword k2 = new Keyword("K2");
+    	Keyword k3 = new Keyword("K2");
+    	dA.addKeyword(k1);
+    	dA.addKeyword(k2);
+    	dA.addKeyword(k3);
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addSubDirective(new Directive("subdir2"));
+    	dA.addDirectiveData(new DirectiveData("data2"));
+    	dA.addSubDirective(new Directive("subdir2"));
+    	Directive dA2 = new Directive("A2");
+    	Keyword k22 = new Keyword("K2");
+    	dA2.addKeyword(k22);
+    	DirectiveData dd2 = new DirectiveData("data2");
+    	dA2.addDirectiveData(dd2);
+    	dA.addSubDirective(dA2);
+    	ccj.addDirective(dA);
+    	
+    	Directive dC1 = new Directive("C");
+    	Directive dC2 = new Directive("C");
+    	Directive dC3 = new Directive("C");
+    	Directive dC12 = new Directive("C");
+    	Directive dC22 = new Directive("C");
+    	Directive dC32 = new Directive("C");
+    	Keyword k31 = new Keyword("K3", false, "val1");
+    	Keyword k32 = new Keyword("K3", true, "val2");
+    	Keyword k33 = new Keyword("K3", false, "val3");
+    	dC12.addKeyword(k31);
+    	dC22.addKeyword(k32);
+    	dC32.addKeyword(k33);
+    	dC1.addSubDirective(dC12);
+    	dC1.addSubDirective(dC22);
+    	dC1.addSubDirective(dC32);
+    	ccj.addDirective(dC1);
+    	ccj.addDirective(dC2);
+    	ccj.addDirective(dC3);
+     	
+     	// Testing that we can add a directive multiple times
+    	DirComponentAddress adrs = new DirComponentAddress();
+     	Directive dirAdded = new Directive("NEW-DIR");
+     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
+     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
+     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
+    	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
+    	List<IDirectiveComponent> expected = new ArrayList<IDirectiveComponent>();
+    	expected.add(dirAdded);
+    	expected.add(dirAdded);
+    	expected.add(dirAdded);
+    	DirComponentAddress adrsOfAdded = new DirComponentAddress();
+    	adrsOfAdded.addStep(dirAdded.getName(), DirectiveComponentType.DIRECTIVE);
+    	matches = ccj.getDirectiveComponents(adrsOfAdded);
+    	assertEquals(expected, matches);
+    	
+    	// Testing addition of directive in a yet non-existing location 
+     	Directive dirOnNewAdrs= new Directive("NEW-DIR-FAR");
+     	adrs = new DirComponentAddress();
+    	adrs.addStep("Z", DirectiveComponentType.DIRECTIVE);
+    	adrs.addStep("ZZ", DirectiveComponentType.DIRECTIVE);
+     	assertTrue(ccj.addDirectiveComponent(adrs, dirOnNewAdrs));
+    	matches = new ArrayList<IDirectiveComponent>();
+    	expected = new ArrayList<IDirectiveComponent>();
+    	expected.add(dirOnNewAdrs);
+    	adrsOfAdded = new DirComponentAddress();
+    	adrsOfAdded.addStep("Z", DirectiveComponentType.DIRECTIVE);
+    	assertEquals(1, ccj.getDirectiveComponents(adrsOfAdded).size());
+    	adrsOfAdded.addStep("ZZ", DirectiveComponentType.DIRECTIVE);
+    	assertEquals(1, ccj.getDirectiveComponents(adrsOfAdded).size());
+    	adrsOfAdded.addStep(dirOnNewAdrs.getName(), 
+    			DirectiveComponentType.DIRECTIVE);
+    	assertEquals(1, ccj.getDirectiveComponents(adrsOfAdded).size());
+     	
+    	// Testing addition of directive to existing location
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("A", DirectiveComponentType.DIRECTIVE);
+     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
+    	adrsOfAdded = new DirComponentAddress();
+    	adrsOfAdded.addStep("A", DirectiveComponentType.DIRECTIVE);
+    	adrsOfAdded.addStep(dirAdded.getName(), DirectiveComponentType.DIRECTIVE);
+    	expected = new ArrayList<IDirectiveComponent>();
+    	expected.add(dirAdded);
+    	matches = ccj.getDirectiveComponents(adrsOfAdded);
+    	assertEquals(expected, matches);
+   
+    	// Testing that we can only add a Directive as root component
+    	Keyword keyAdded = new Keyword("NEW-KEY", false, "added keyword value");
+    	adrs = new DirComponentAddress();
+    	boolean throwed = false;
+     	try {
+     		ccj.addDirectiveComponent(adrs, keyAdded);
+     	} catch (IllegalArgumentException e)
+     	{
+     		if (e.getMessage().contains("can be root"))
+     			throwed = true;
+     	}
+     	assertTrue(throwed);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testSetDirComponentValue() throws Exception
+    {
+    	CompChemJob originalCcj = getTextCompChemJob();
+    	CompChemJob modifiedCcj = getTextCompChemJob();
+    	assertTrue(modifiedCcj.equals(originalCcj));
+    	
+    	// No value can be set in root: only directives are in root
+    	DirComponentAddress adrs = new DirComponentAddress();
+    	modifiedCcj.setDirComponentValue(adrs, new Keyword("KEY", false, "Bah"));
+    	assertTrue(modifiedCcj.equals(originalCcj));
+    	
+    	// Setting of a Keyword that does not exist does nothing
+    	String expectedValue = "Bah";
+     	adrs = new DirComponentAddress();
+    	adrs.addStep("A", DirectiveComponentType.DIRECTIVE);
+    	modifiedCcj.setDirComponentValue(adrs, new Keyword("K2", false, 
+    			expectedValue));
+    	assertTrue(modifiedCcj.equals(originalCcj));
+
+    	// Setting of a keyword that does exist changes value of any keyword
+    	// that matches the address
+     	adrs = new DirComponentAddress();
+    	adrs.addStep("A", DirectiveComponentType.DIRECTIVE);
+    	modifiedCcj.setDirComponentValue(adrs, new Keyword("kA1", 
+    			false, expectedValue));
+    	assertFalse(modifiedCcj.equals(originalCcj));
+    	adrs.addStep("kA1", DirectiveComponentType.KEYWORD);
+    	List<IDirectiveComponent> comps = new ArrayList<IDirectiveComponent>();
+    	comps = modifiedCcj.getDirectiveComponents(adrs);
+    	assertEquals(2, comps.size());
+    	for (IDirectiveComponent k : comps)
+    	{
+    		assertEquals(expectedValue, 
+    				((IValueContainer)k).getValue().toString());
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testAddNewValueContainer() throws Exception
+    {
+    	CompChemJob originalCcj = getTextCompChemJob();
+    	CompChemJob modifiedCcj = getTextCompChemJob();
+    	assertTrue(modifiedCcj.equals(originalCcj));
+    	
+    	// No value can be set in root: only directives are in root
+    	DirComponentAddress adrs = new DirComponentAddress();
+    	modifiedCcj.addNewValueContainer(adrs, 
+    			new Keyword("KEY", false, "Bah"));
+    	assertTrue(modifiedCcj.equals(originalCcj));
+
+    	// Setting of a Keyword that does exist does not do anything
+    	String expectedValue = "changed_value";
+     	adrs = new DirComponentAddress();
+    	adrs.addStep("A", DirectiveComponentType.DIRECTIVE);
+    	modifiedCcj.addNewValueContainer(adrs, 
+    			new Keyword("kA2", false, expectedValue));
+    	assertTrue(modifiedCcj.equals(originalCcj));
+    	
+    	// Setting of a Keyword that does not exist adds that keyword
+     	adrs = new DirComponentAddress();
+    	adrs.addStep("A", DirectiveComponentType.DIRECTIVE);
+    	IValueContainer valueContainer = new Keyword("k2", false, expectedValue);
+    	modifiedCcj.addNewValueContainer(adrs, valueContainer);
+    	assertFalse(modifiedCcj.equals(originalCcj));
+    	adrs.addStep("k2", DirectiveComponentType.KEYWORD);
+    	List<IDirectiveComponent> comps = modifiedCcj.getDirectiveComponents(
+    			adrs);
+    	assertEquals(1, comps.size());
+    	assertTrue(valueContainer == comps.get(0));
+
+    	// Setting values to multiple paths matching the address
+    	modifiedCcj = getTextCompChemJob();
+    	Directive d = new Directive("D");
+    	d.addKeyword(new Keyword("dd", false, "ddValue"));
+    	modifiedCcj.addDirective(d);
+    	Directive d2 = new Directive("D");
+    	d2.addKeyword(new Keyword("dd", false, "ddValue"));
+    	modifiedCcj.addDirective(d2);
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("D", DirectiveComponentType.DIRECTIVE);
+    	valueContainer = new Keyword("KEY", false, expectedValue);
+    	modifiedCcj.addNewValueContainer(adrs, valueContainer);
+    	adrs.addStep("KEY", DirectiveComponentType.KEYWORD);
+    	comps = modifiedCcj.getDirectiveComponents(adrs);
+    	assertEquals(2, comps.size());
+    	
+    	adrs = new DirComponentAddress();
+    	adrs.addStep("*", DirectiveComponentType.DIRECTIVE);
+    	valueContainer = new Keyword("KEYB", false, expectedValue);
+    	modifiedCcj.addNewValueContainer(adrs, valueContainer);
+    	adrs.addStep("KEYB", DirectiveComponentType.KEYWORD);
+    	comps = modifiedCcj.getDirectiveComponents(adrs);
+    	assertEquals(3, comps.size());
     }
     
 //------------------------------------------------------------------------------

@@ -21,7 +21,8 @@ import com.google.gson.JsonSerializer;
  * which is reachable directly from the {@link CompChemJob#getDirective(String)}
  * method.
  */
-public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
+public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
+	Cloneable
 {
 	private List<DirComponentTypeAndName> path = 
 			new ArrayList<DirComponentTypeAndName> ();
@@ -191,6 +192,21 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>
         }
         return address;
 	}
+	
+//------------------------------------------------------------------------------
+
+    @Override	
+    public DirComponentAddress clone()
+    {
+    	DirComponentAddress clone = new DirComponentAddress();
+    	Iterator<DirComponentTypeAndName> iter = this.iterator();
+    	while (iter.hasNext())
+    	{
+    		DirComponentTypeAndName step = iter.next();
+    		clone.addStep(step.name, step.type);
+    	}
+    	return clone;
+    }
 	
 //------------------------------------------------------------------------------
 

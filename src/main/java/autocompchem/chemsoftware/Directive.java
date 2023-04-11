@@ -541,7 +541,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     
     /**
      * Add a component in this directive. The existence of a component with the
-     * same type and name already exists has no influence on the result: this
+     * same type and name has no influence on the result: this
      * method just adds new components without affecting existing components.
      * 
      * @param component

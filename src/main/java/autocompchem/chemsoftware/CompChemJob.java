@@ -301,6 +301,59 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
+     * Adds a directive component in a given location of the directive 
+     * component's structure.
+     * @param parent the address to the directive that should contain the
+     * the components to add, starting with the
+     * outermost directive and ending with the directive that should contain
+     * the component added here. If empty, we can only add a root 
+     * {@link Directive} if the incomingComponent is a {@link Directive}.
+     * @param incomingComponent the component being added.
+     * @return <code>true</code> is the component has been added to this job.
+     */
+    
+    public boolean addDirectiveComponent(DirComponentAddress parent,
+    		IDirectiveComponent incomingComponent)
+    {
+    	if (parent.size()<1)
+    	{
+    		if (incomingComponent.getComponentType()
+    				!=DirectiveComponentType.DIRECTIVE)
+    		{
+    			throw new IllegalArgumentException("Only "
+    					+ DirectiveComponentType.DIRECTIVE + " can be root in "
+    					+ "directive component's structure.");
+    		}
+    		this.addDirective((Directive) incomingComponent);
+    		return true;
+    	}
+    	
+    	List<IDirectiveComponent> parentDirectives = getDirectiveComponents(
+    			parent);
+    	
+    	if (parentDirectives.size()==0)
+    	{
+    		if (!ensureDirectiveStructure(parent))
+    			return false;
+        	parentDirectives = getDirectiveComponents(parent);
+    	}
+
+    	boolean componentHasBeenAdded = false;
+    	for (IDirectiveComponent p : parentDirectives)
+    	{
+    		if (p instanceof Directive)
+    		{
+    			((Directive) p).addComponent(incomingComponent);
+    			componentHasBeenAdded = true;
+    		}
+    	}
+    	
+    	return componentHasBeenAdded;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
      * Ensures the structure of directives contains the directives involved in
      * the given address. Ignores any directive components that is not a
      * {@link Directive}.
@@ -393,6 +446,63 @@ public class CompChemJob extends Job implements Cloneable
 			candDirectives.addAll(nextParDirs);
 		}
 		return result;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the value of any {@link IValueContainer} matching the given address. 
+     * @param parentAddress address of the parent holding the 
+     * {@link IValueContainer} to set.
+     * @param valueContainer a container for the value to set in any existing
+     * container found in the directive's structure. The name and type of this 
+     * container determine also the nature of the value container we are setting.
+     */
+    public void setDirComponentValue(DirComponentAddress parentAddress, 
+    		IValueContainer valueContainer)
+    {
+    	DirComponentAddress componentAddress = parentAddress.clone();
+    	componentAddress.addStep(valueContainer.getName(), 
+    			valueContainer.getComponentType());
+		List<IDirectiveComponent> existingComponents = 
+				getDirectiveComponents(componentAddress);
+		for (IDirectiveComponent comp : existingComponents)
+		{
+			if (comp instanceof IValueContainer)
+			{
+				((IValueContainer) comp).setValue(valueContainer.getValue());
+			}
+		}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds a {@link IValueContainer} if none exists matching the 
+     * given address. 
+     * @param parentAddress address of the container holding the 
+     * {@link IValueContainer} to set.
+     * @param valueContainer a container for the value to set in any existing
+     * container found in the directive's structure. The name and type of this 
+     * container determine also the nature of the value container we are setting.
+     */
+    public void addNewValueContainer(DirComponentAddress parentAddress, 
+    		IValueContainer valueContainer)
+    {
+    	// NB: IValueContainers have address length > 1. 
+    	// So one parent must exist
+    	if (parentAddress.size()<1)
+    		return;
+    	
+    	DirComponentAddress componentAddress = parentAddress.clone();
+    	componentAddress.addStep(valueContainer.getName(), 
+    			valueContainer.getComponentType());
+		List<IDirectiveComponent> existingComponents = 
+				getDirectiveComponents(componentAddress);
+		if (existingComponents.size()!=0)
+			return;
+		
+		addDirectiveComponent(parentAddress, valueContainer);
     }
     
 //-----------------------------------------------------------------------------
@@ -543,64 +653,6 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Sets a {@link Keyword} in a {@link Directive} with the given name
-     * if it is not already present. 
-     * @param dirName the name of the directive.
-     * @param keyName the name of the {@link Keyword}.
-     * @param isLoud use <code>true</code> if the keyword should be set to be
-     * a loud keyword, meaning that conversion to text used the syntax 
-     * <code>key|separator|value</code> (for loud keywords) instead of just
-     * <code>value</code> (for non-loud, or silent keywords).
-     * @param value the value of the keyword to specify.
-     */
-    public void setKeywordIfUnset(String dirName, String keyName, 
-    		boolean isLoud, String value)
-    {
-		Directive dir = getDirective(dirName);
-		if (dir==null)
-		{
-			dir = new Directive(dirName);
-    		dir.addKeyword(new Keyword(keyName, isLoud, value));
-			setDirective(dir);
-		} else {
-			if (dir.getFirstKeyword(keyName)==null)
-				dir.addKeyword(new Keyword(keyName, isLoud, value));
-		}
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Sets a {@link DirectiveData} in a {@link Directive} with the given name
-     * if it is not already present. 
-     * @param dirName the name of the directive.
-     * @param dirDataName the name of the {@link DirectiveData}.
-     * @param dd a source of data. We'll take the value from this instance to
-     * make a new {@link directiveData}.
-     */
-    public void setDirectiveDataIfUnset(String dirName, String dirDataName, 
-    		DirectiveData dd)
-    {
-    	Directive dir = getDirective(dirName);
-		if (dir==null)
-		{
-			dir = new Directive(dirName);
-    		dir.addDirectiveData(dd);
-			setDirective(dir);
-		} else {
-			DirectiveData oldDd = dir.getFirstDirectiveData(dirDataName);
-			if (oldDd==null)
-			{
-        		dir.addDirectiveData(dd);
-        	} else {
-        		oldDd.setValue(dd.getValue());
-        	}
-		}
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
      * Overwrites all directives of this job with the given ones.
      * @param directives the new directives
      */
@@ -649,6 +701,28 @@ public class CompChemJob extends Job implements Cloneable
     	CompChemJob clone = (CompChemJob) reader.fromJson(writer.toJson(this), 
     			Job.class);
     	return clone;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o)
+    {
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	    
+ 	   CompChemJob other = (CompChemJob) o;
+ 	   
+ 	   if (!this.directives.equals(other.directives))
+ 		   return false;
+ 	   
+ 	   return super.equals(other);
     }
 
 //------------------------------------------------------------------------------

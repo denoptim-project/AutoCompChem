@@ -137,15 +137,15 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     	//WARNING so far works with only one chemical system
     	IAtomContainer iac = iacs.get(0);
 
-    	DirectiveData dd = new DirectiveData("coordinates");
+    	DirectiveData dd = new DirectiveData(GaussianConstants.DIRECTIVEMOLSPEC);
     	dd.setValue(iac);
     	if (ccj.getNumberOfSteps()>0)
     	{
-        	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
-        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+        	addNewDirectiveData((CompChemJob) ccj.getStep(0), 
+        			GaussianConstants.DIRECTIVEMOLSPEC, dd);
     	} else {
-        	setDirectiveDataIfNotAlreadyThere(ccj, 
-        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    		addNewDirectiveData(ccj, 
+        			GaussianConstants.DIRECTIVEMOLSPEC, dd);
     	}
     }
     
@@ -221,7 +221,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     protected void setSystemSpecificNames(CompChemJob ccj)
     {
     	File pathnameRoot = new File(outFileNameRoot);
-    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVELINK0,
+    	addNewKeyword(ccj, GaussianConstants.DIRECTIVELINK0,
     			"chk", true, pathnameRoot.getName());
     }
     

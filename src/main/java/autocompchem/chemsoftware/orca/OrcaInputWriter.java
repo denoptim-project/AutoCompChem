@@ -569,16 +569,16 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
 		if (dCoords==null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARCHARGE, false, charge);
+			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
+					ChemSoftConstants.PARCHARGE, false, charge);
 		} else if (dCoords!=null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARCHARGE, false, charge);
+			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
+					ChemSoftConstants.PARCHARGE, false, charge);
 		} else if (dCoords==null && dStar!=null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-			ChemSoftConstants.PARCHARGE, false, charge);
+			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
+					ChemSoftConstants.PARCHARGE, false, charge);
 		}
 		//One or the other directive must be present!
 	}
@@ -618,16 +618,16 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
 		if (dCoords==null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARSPINMULT, false, sm);
+			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
+					ChemSoftConstants.PARSPINMULT, false, sm);
 		} else if (dCoords!=null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARSPINMULT, false, sm);
+			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
+					ChemSoftConstants.PARSPINMULT, false, sm);
 		} else if (dCoords==null && dStar!=null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-			ChemSoftConstants.PARSPINMULT, false, sm);
+			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
+					ChemSoftConstants.PARSPINMULT, false, sm);
 		}
 	}
 	
