@@ -15,7 +15,7 @@ import com.google.gson.JsonSerializer;
 import autocompchem.perception.infochannel.InfoChannelType;
 
 /**
- * Condition satisfied if a string is matched
+ * Condition satisfied if a string is matched.
  *
  * @author Marco Foscato
  */
@@ -35,31 +35,6 @@ public class MatchText extends Circumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Constructs an empty MatchText
-     */
-
-    //TODO-gg del
-    public MatchText()
-    {
-        this("", false, null);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a MatchText defining the pattern to match.
-     * @param pattern the pattern to be matches.
-     */
-
-  //TODO-gg del
-    public MatchText(String pattern)
-    {
-        this(pattern, false, null);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Constructs a MatchText defining the pattern to match and the information 
      * channel where to search for it.
      * @param pattern the pattern to be matches
@@ -70,21 +45,6 @@ public class MatchText extends Circumstance
     public MatchText(String pattern, InfoChannelType ict)
     {
         this(pattern, false, ict);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs a MatchText defining the pattern to match
-     * @param pattern the pattern to be matches
-     * @param negation if true the condition is satisfied if the pattern is 
-     * not matched.
-     */
-    
-  //TODO-gg del
-    public MatchText(String pattern, boolean negation)
-    {
-        this(pattern, negation, null);
     }
 
 //------------------------------------------------------------------------------
@@ -139,7 +99,7 @@ public class MatchText extends Circumstance
         }
         else
         {
-            //TODO: here we can make the score dependent on #matches 
+            //NB: here we can make the score dependent on #matches 
             if (matches.size() > 0)
             {
                 score = 1.0;
@@ -225,7 +185,7 @@ public class MatchText extends Circumstance
     @Override
     public boolean equals(Object o)
     {
-        if (o== null)
+        if (o == null)
             return false;
         
         if (o == this)

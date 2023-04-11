@@ -59,7 +59,8 @@ public class SituationBaseTest
 		SituationBase sb = new SituationBase();
 		sb.addSituation(new Situation("Sit", "A", 
 				new ArrayList<ICircumstance>(Arrays.asList(
-						new MatchText("txtQuery1"),
+						new MatchText("txtQuery1",
+								InfoChannelType.NOTDEFINED),
 						new MatchText("txtQuery2", 
 								InfoChannelType.INPUTFILE),
 						new MatchText("txtQuery2", 
@@ -74,7 +75,8 @@ public class SituationBaseTest
 
 		sb.addSituation(new Situation("Sit", "B", 
 				new ArrayList<ICircumstance>(Arrays.asList(
-						new MatchText("txtQuery1B"),
+						new MatchText("txtQuery1B",
+								InfoChannelType.NOTDEFINED),
 						new MatchText("txtQuery2", 
 								InfoChannelType.OUTPUTFILE),
 						new MatchText("txtQuery2", 
@@ -85,8 +87,10 @@ public class SituationBaseTest
 		
 		sb.addSituation(new Situation("Sit", "C", 
 				new ArrayList<ICircumstance>(Arrays.asList(
-						new MatchText("txtQuery1"),
-						new MatchText("txtQuery2"),
+						new MatchText("txtQuery1",
+								InfoChannelType.NOTDEFINED),
+						new MatchText("txtQuery2",
+								InfoChannelType.NOTDEFINED),
 						new MatchText("txtQuery2", 
 								InfoChannelType.ANY),
 						new MatchText("txtQuery3C", true, 
@@ -359,7 +363,8 @@ public class SituationBaseTest
 		SituationBase sb = new SituationBase();
 		Situation s1 = new Situation("Sit", "A", 
 				new ArrayList<ICircumstance>(Arrays.asList(
-						new MatchText("txtQuery1"),
+						new MatchText("txtQuery1",
+								InfoChannelType.NOTDEFINED),
 						new MatchText("txtQuery2", 
 								InfoChannelType.INPUTFILE),
 						new MatchText("txtQuery2", 
@@ -374,7 +379,8 @@ public class SituationBaseTest
 
 		Situation s2 = new Situation("Sit", "B", 
 				new ArrayList<ICircumstance>(Arrays.asList(
-						new MatchText("txtQuery1B"),
+						new MatchText("txtQuery1B",
+								InfoChannelType.NOTDEFINED),
 						new MatchText("txtQuery2", 
 								InfoChannelType.OUTPUTFILE),
 						new MatchText("txtQuery2", 

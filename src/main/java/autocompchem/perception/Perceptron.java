@@ -325,10 +325,6 @@ public class Perceptron
             double score = 0.0;
 
             //TODO: write method
-//TODO-gg del
-System.out.println("     Child ICircumstance: "+c);
-System.out.println("     Parent Situation: " + n);
-this.printScores();
             String msg = "ERROR! Evaluation of circumstances not based on text "
             		+ "is still to be implemented.";
             Terminator.withMsgAndStatus(msg,-1);
