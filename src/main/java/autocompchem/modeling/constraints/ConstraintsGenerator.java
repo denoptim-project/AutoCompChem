@@ -65,13 +65,13 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     public ConstraintsGenerator()
     {
     	super("inputdefinition/ConstraintsGenerator.json");
-    	ruleRoot = ConstrainDefinition.BASENAME;
+    	ruleRoot = ConstraintDefinition.BASENAME;
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Parses the formatted text defining {@link ConstrainDefinition} and adds
+     * Parses the formatted text defining {@link ConstraintDefinition} and adds
      * the resulting rules to this instance of atom tuple generator.
      * @param lines the lines of text to be parsed into 
      * {@link AtomTupleMatchingRule}s.
@@ -82,7 +82,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     {
         for (String line : lines)
         {
-        	rules.add(new ConstrainDefinition(line, ruleID.getAndIncrement()));
+        	rules.add(new ConstraintDefinition(line, ruleID.getAndIncrement()));
         }
     }
     

@@ -12,9 +12,7 @@ import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
  * {@link Constraint} from a given chemical structure.
  */
 
-//TODO-gg rename to ConstraintDefinition (NB: the "t"!!!!!)
-
-public class ConstrainDefinition extends AtomTupleMatchingRule
+public class ConstraintDefinition extends AtomTupleMatchingRule
 {
 	/**
 	 * Root of name used to identify any instance of this class.
@@ -71,8 +69,8 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
      * Constructor for a rule by parsing a formatted string of text. 
      * Default keywords that are interpreted to parse specific input
      * instructions are defined by
-     * {@link ConstrainDefinition#DEFAULTVALUEDKEYS} and 
-     * {@link ConstrainDefinition#DEFAULTVALUELESSKEYS}.
+     * {@link ConstraintDefinition#DEFAULTVALUEDKEYS} and 
+     * {@link ConstraintDefinition#DEFAULTVALUELESSKEYS}.
      * There defaults are added to the defaults of {@link AtomTupleMatchingRule}
      * namely,
      * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
@@ -82,7 +80,7 @@ public class ConstrainDefinition extends AtomTupleMatchingRule
      * the reference name of the generated rule.
      */
 
-    public ConstrainDefinition(String txt, int i)
+    public ConstraintDefinition(String txt, int i)
     {
     	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS);
     }

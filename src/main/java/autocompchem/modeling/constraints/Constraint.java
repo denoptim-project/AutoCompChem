@@ -82,7 +82,7 @@ public class Constraint extends AnnotatedAtomTuple
 		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
 				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
 				tuple.getNumAtoms());
-		if (!hasValuelessAttribute(ConstrainDefinition.KEYNOINTCOORD))
+		if (!hasValuelessAttribute(ConstraintDefinition.KEYNOINTCOORD))
 		{
 			defineType();
 		}
@@ -167,7 +167,7 @@ public class Constraint extends AnnotatedAtomTuple
     public double getValue()
     {
     	return hasValue() ? Double.parseDouble(getValueOfAttribute(
-    			ConstrainDefinition.KEYVALUES)) : null;
+    			ConstraintDefinition.KEYVALUES)) : null;
     }
     
 //------------------------------------------------------------------------------
@@ -194,7 +194,7 @@ public class Constraint extends AnnotatedAtomTuple
 
     public String getPrefix()
     {
-    	String value = getValueOfAttribute(ConstrainDefinition.KEYPREFIX);
+    	String value = getValueOfAttribute(ConstraintDefinition.KEYPREFIX);
     	if (value != null)
     		return value;
     	else
@@ -210,7 +210,7 @@ public class Constraint extends AnnotatedAtomTuple
 
     public String getSuffix()
     {
-    	String value = getValueOfAttribute(ConstrainDefinition.KEYSUFFIX);
+    	String value = getValueOfAttribute(ConstraintDefinition.KEYSUFFIX);
     	if (value != null)
     		return value;
     	else
@@ -225,7 +225,7 @@ public class Constraint extends AnnotatedAtomTuple
   	 */
   	public void setPrefix(String prefix) 
   	{
-  		setValueOfAttribute(ConstrainDefinition.KEYPREFIX, prefix);
+  		setValueOfAttribute(ConstraintDefinition.KEYPREFIX, prefix);
   	}
   	
 //------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ public class Constraint extends AnnotatedAtomTuple
   	 */
   	public void setSuffix(String suffix) 
   	{
-  		setValueOfAttribute(ConstrainDefinition.KEYSUFFIX, suffix);
+  		setValueOfAttribute(ConstraintDefinition.KEYSUFFIX, suffix);
   	}
 	
 //------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ public class Constraint extends AnnotatedAtomTuple
 	 */
 	public void setValue(double value) 
 	{
-		setValueOfAttribute(ConstrainDefinition.KEYVALUES, value+"");
+		setValueOfAttribute(ConstraintDefinition.KEYVALUES, value+"");
 	}
 		
 //------------------------------------------------------------------------------
@@ -260,7 +260,7 @@ public class Constraint extends AnnotatedAtomTuple
      */
   	public boolean hasValue()
   	{
-  		return getValueOfAttribute(ConstrainDefinition.KEYVALUES)!=null;
+  		return getValueOfAttribute(ConstraintDefinition.KEYVALUES)!=null;
   	}
   	
 //------------------------------------------------------------------------------
@@ -293,9 +293,9 @@ public class Constraint extends AnnotatedAtomTuple
 		}
 		sb.append("], value=").append(hasValue() ? getValue() : "null");
 		sb.append("], prefix=").append(
-				getValueOfAttribute(ConstrainDefinition.KEYPREFIX));
+				getValueOfAttribute(ConstraintDefinition.KEYPREFIX));
 		sb.append("], suffix=").append(
-				getValueOfAttribute(ConstrainDefinition.KEYSUFFIX));
+				getValueOfAttribute(ConstraintDefinition.KEYSUFFIX));
 		sb.append("] ");
 		return sb.toString();
 	}

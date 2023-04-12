@@ -185,7 +185,6 @@ public class ZMatrixHandler extends Worker
             System.out.println(" Adding parameters to ZMatrixHandler");
 
         //Get and check the input file (which has to be an SDF file)
-        //TODO-gg make it consistent to ChemSoftConstants
         if (params.contains("INFILE"))
         {
 	        this.inFile = new File(
