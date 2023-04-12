@@ -1,5 +1,6 @@
 package autocompchem.molecule.intcoords.zmatrix;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /*
@@ -78,17 +79,17 @@ public class ZMatrixHandler extends Worker
     /**
      * Name of the input file
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Name of the second input file
      */
-    private String inFile2;
+    private File inFile2;
 
     /**
      * Name of the output file
      */
-    private String outFile;
+    private File outFile;
 
     /**
      * Template ZMatrix
@@ -187,7 +188,8 @@ public class ZMatrixHandler extends Worker
         //TODO-gg make it consistent to ChemSoftConstants
         if (params.contains("INFILE"))
         {
-	        this.inFile = params.getParameter("INFILE").getValue().toString();
+	        this.inFile = new File(
+	        		params.getParameter("INFILE").getValue().toString());
 	        FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
@@ -201,7 +203,8 @@ public class ZMatrixHandler extends Worker
         //Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE2"))
         {
-            this.inFile2 = params.getParameter("INFILE2").getValue().toString();
+            this.inFile2 = new File(
+            		params.getParameter("INFILE2").getValue().toString());
             FileUtils.foundAndPermissions(this.inFile2,true,false,false);
         }
        
@@ -209,8 +212,8 @@ public class ZMatrixHandler extends Worker
         if (params.contains("TEMPLATEZMAT"))
         {
             this.useTmpl = true;
-            String tmplZMatFile = 
-                      params.getParameter("TEMPLATEZMAT").getValue().toString();
+            File tmplZMatFile = new File(
+                      params.getParameter("TEMPLATEZMAT").getValue().toString());
             this.tmplZMat = new ZMatrix(IOtools.readTXT(tmplZMatFile));
         }
 
@@ -228,7 +231,8 @@ public class ZMatrixHandler extends Worker
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+            		params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
         }
     }
@@ -285,7 +289,7 @@ public class ZMatrixHandler extends Worker
                 System.out.println("No 'OUTFILE' keyword, so using default "
                                                    + "filename 'output.zmat'.");
             }
-            outFile = "output.zmat";
+            outFile = new File("output.zmat");
         }
         if (iac.getAtomCount() == 0 && null != inFile)
         {
@@ -337,14 +341,14 @@ public class ZMatrixHandler extends Worker
                 System.out.println("No 'OUTFILE' keyword, so using default "
                                                    + "filename 'output.zmat'.");
             }
-            outFile = "output.zmat";
+            outFile = new File("output.zmat");
         }
 
         List<ZMatrix> firstZMats = new ArrayList<ZMatrix>();
         List<ZMatrix> secondZMats = new ArrayList<ZMatrix>();
         if (iac.getAtomCount() == 0 && null != inFile && null != inFile2)
         {
-            if (inFile.endsWith(".sdf"))
+            if (inFile.getName().endsWith(".sdf"))
             {
                 try
                 {
@@ -367,7 +371,7 @@ public class ZMatrixHandler extends Worker
                         + "SDFIterator while reading " + inFile, -1);
                 }
             }
-            else if (inFile.endsWith(".zmat"))
+            else if (inFile.getName().endsWith(".zmat"))
             {
                 firstZMats = IOtools.readZMatrixFile(inFile);
             }
@@ -378,7 +382,7 @@ public class ZMatrixHandler extends Worker
                                     + "Check file '" + inFile + "'.", -1);
             }
 
-            if (inFile2.endsWith(".sdf"))
+            if (inFile2.getName().endsWith(".sdf"))
             {
                 try
                 {
@@ -401,7 +405,7 @@ public class ZMatrixHandler extends Worker
                         + "SDFIterator while reading " + inFile, -1);
                 }
             }
-            else if (inFile2.endsWith(".zmat"))
+            else if (inFile2.getName().endsWith(".zmat"))
             {
                 secondZMats = IOtools.readZMatrixFile(inFile2);
             }
@@ -781,7 +785,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
                 System.out.println("No 'OUTFILE' keyword, so using default "
                                                     + "filename 'output.sdf'.");
             }
-            outFile = "output.sdf";
+            outFile = new File("output.sdf");
         }
         if (null != inFile)
         {

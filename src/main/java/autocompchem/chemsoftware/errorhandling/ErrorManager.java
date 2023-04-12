@@ -64,84 +64,12 @@ public class ErrorManager
         for (File f : listFiles)
         {
             //Read file
-            String fname = f.toString();
-            List<List<String>> form = IOtools.readFormattedText(
-                                                fname,
+            List<List<String>> form = IOtools.readFormattedText(f,
                                                 ":", //key-value separator
                                                 "#", //comment
                                                 "$START", //start multiline
                                                 "$END"); //end multiline
-
-/*
-            String refName = "";
-            String action = "";
-            List<String> errLines = new List<String>();
-            List<String> conditions = new List<String>();
-            Map<String,String> details = new HashMap<String,String>();
-            boolean refNameFound = false;
-            boolean actionFound = false;
-            for (int i=0; i<form.size(); i++)
-            {
-                List<String> signleBlock = form.get(i);
-                String key = signleBlock.get(0);
-                String value = signleBlock.get(1);
-
-                switch (key) 
-                {
-                    case "REFERENCENAME":
-                        //Reference name of the error
-                        if (!refNameFound)
-                        {
-                            refNameFound = true;
-                            refName = value;
-                            if (refName.equals(""))
-                            {
-                                Terminator.withMsgAndStatus("ERROR! Empty "   
-                                        + " 'REFERENCENAME' in " + fname, -1);
-                            }
-                        } else {
-                            Terminator.withMsgAndStatus("ERROR! Multiple "
-                                + "'REFERENCENAME' in " + fname, -1);
-                        }
-                        break;
-
-                    case "ERRORMESSAGE":
-                        //Lines of the error message
-                        value = value.trim();
-                        errLines.add(value);
-                        break;
-
-                    case "ACTION":
-                        //Action
-                        if (!actionFound)
-                        {
-                            actionFound = true;
-                            action = value;
-                            if (action.equals(""))
-                            {
-                                Terminator.withMsgAndStatus("ERROR! Empty "
-                                        + " 'ACTION' in " + fname, -1);
-                            }
-                        } else {
-                            Terminator.withMsgAndStatus("ERROR! Multiple "
-                                + "'ACTION' in " + fname, -1);
-                        }
-                        break;
-                        
-                    case "CONDITION":
-                        conditions.add(value);
-                        break;
-                    default:
-                        //Other details added as string with label
-                        details.put(key,value);
-                } //end of switch
-            } //end of loop on array of pairs key:value
             
-            //Create the object known error
-            ErrorMessage em = new ErrorMessage(refName,errLines,conditions,
-                                                                action,details);
-*/
-
             //Create the object known error
             ErrorMessage em = new ErrorMessage(form);
 

@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /*
@@ -101,7 +102,7 @@ public class NWChemJob
 
     public NWChemJob(String inFile)
     {
-        this(IOtools.readTXT(inFile));
+        this(IOtools.readTXT(new File(inFile)));
     }
 
 //------------------------------------------------------------------------------

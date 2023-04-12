@@ -1,5 +1,6 @@
 package autocompchem.molecule.dummyobjects;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,22 +70,22 @@ public class DummyObjectsHandler extends Worker
     /**
      * Pathname to file containing the input molecular systems
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Pathname to output file
      */
-    private String outFile;
+    private File outFile;
 
     /**
      * Pathname to file containing the template
      */
-    private String tmplFile;
+    private File tmplFile;
 
     /**
      * List of source atoms to dummy-related action
      */
-    private ArrayList<Integer> activeSrcAtmIds = new ArrayList<Integer>();
+    private List<Integer> activeSrcAtmIds = new ArrayList<Integer>();
 
     /**
      * Template system
@@ -147,7 +148,8 @@ public class DummyObjectsHandler extends Worker
 
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValueAsString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         // Get options
@@ -187,8 +189,8 @@ public class DummyObjectsHandler extends Worker
         //Get and check the input file (which has to be an SDF file)
         if (params.contains("TEMPLATE"))
         {
-            this.tmplFile = 
-                          params.getParameter("TEMPLATE").getValue().toString();
+            this.tmplFile = new File(
+            		params.getParameter("TEMPLATE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
             List<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);
             if (inTmpls.size() != 1)
@@ -201,7 +203,8 @@ public class DummyObjectsHandler extends Worker
         }
 
         //Get and check the output file name
-        this.outFile = params.getParameter("OUTFILE").getValue().toString();
+        this.outFile =  new File(
+        		params.getParameter("OUTFILE").getValueAsString());
         FileUtils.mustNotExist(this.outFile);
 
     }
@@ -286,7 +289,7 @@ public class DummyObjectsHandler extends Worker
 
                     if (0 < activeSrcAtmIds.size())
                     {
-                        addDummiedOnSources(mol,this.activeSrcAtmIds);
+                        addDummiedOnSources(mol, this.activeSrcAtmIds);
                         this.activeSrcAtmIds.clear();
                     }
                 }
@@ -540,7 +543,7 @@ public class DummyObjectsHandler extends Worker
      * @param srcs the list of atoms to which we want to add dummies
      */
 
-    public void addDummiedOnSources(IAtomContainer mol, ArrayList<Integer> srcs)
+    public void addDummiedOnSources(IAtomContainer mol, List<Integer> srcs)
     {
         for (int i=0; i< srcs.size(); i++)
         {
@@ -873,7 +876,7 @@ public class DummyObjectsHandler extends Worker
 	                                 + "Du: " + du
 	                                 + "Candidates: " + allCandidates
 	                                 + "See current molecule in 'error.sdf'";
-	                    IOtools.writeSDFAppend("error.sdf",mol,false);
+	                    IOtools.writeSDFAppend(new File("error.sdf"),mol,false);
 	                    Terminator.withMsgAndStatus(msg, -1);
 	                }
 	                

@@ -1,6 +1,8 @@
 package autocompchem.run;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.datacollections.NamedData.NamedDataType;
 
 
 /**
@@ -221,6 +224,35 @@ public class JobTest
             t.printStackTrace();
             assertFalse(true, "Unable to work with tmp files.");
         } 
+    }
+
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testSetParameter() 
+    {
+    	Job j1 = new Job();
+    	Job j1_1 = new Job();
+    	Job j1_2 = new Job();
+    	Job j1_3 = new Job();
+    	
+    	j1.addStep(j1_1);
+    	j1.addStep(j1_2);
+    	j1.addStep(j1_3);
+    	
+    	String parName1 = "PARNAME1";
+    	j1.setParameter(parName1, NamedDataType.INTEGER, 123, false);
+    	assertTrue(j1.hasParameter(parName1));
+    	assertFalse(j1_1.hasParameter(parName1));
+    	assertFalse(j1_2.hasParameter(parName1));
+    	assertFalse(j1_3.hasParameter(parName1));
+
+    	String parName2 = "PARNAME2";
+    	j1.setParameter(parName2, NamedDataType.INTEGER, 456, true);
+    	assertTrue(j1.hasParameter(parName2));
+    	assertTrue(j1_1.hasParameter(parName2));
+    	assertTrue(j1_2.hasParameter(parName2));
+    	assertTrue(j1_3.hasParameter(parName2));
     }
     
 //------------------------------------------------------------------------------

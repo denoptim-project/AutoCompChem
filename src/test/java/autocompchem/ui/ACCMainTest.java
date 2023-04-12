@@ -102,7 +102,7 @@ public class ACCMainTest
         sb.append("P2"
         		+ParameterConstants.SEPARATOR
         		+ParameterConstants.STRINGFROMCLI+EXT);
-        IOtools.writeTXTAppend(tmpPathName,sb.toString(),false);
+        IOtools.writeTXTAppend(new File(tmpPathName),sb.toString(),false);
         
         String[] args = {"-p3","\"param","from","command","line\"",
         		"-P1","value_from_CLI","-p", tmpPathName,

@@ -77,8 +77,21 @@ public class FileUtils
 
     public static String getRootOfFileName(String filename)
     {
-        File f = new File(filename);
-        String name = f.getName();
+        return getRootOfFileName(new File(filename));
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the root of the filename, which is the filename without path and 
+     * without extension
+     * @param file the file to analyze
+     * @return the root of the filename
+     */
+
+    public static String getRootOfFileName(File file)
+    {
+        String name = file.getName();
         String root = name;
         int lastId = name.lastIndexOf(".");
         if (lastId > -1)
@@ -273,25 +286,36 @@ public class FileUtils
     	return ext;
     }
 
+  //------------------------------------------------------------------------------
+
+    /**
+     * Terminates if file exists
+     * @param outFile path/name of the file that must not exist
+     */
+
+    public static void mustNotExist(String pathname)
+    {
+    	mustNotExist(new File(pathname));
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
      * Terminates if file exists
-     * @param filename path/name of the file that must not exist
+     * @param outFile the file that must not exist
      */
 
-    public static void mustNotExist(String filename)
+    public static void mustNotExist(File outFile)
     {
-        if (filename == null)
+        if (outFile == null)
         {
             Terminator.withMsgAndStatus("ERROR! Attempt to check for a "
                   + "file but 'null' is given as name",-1);
         }
 
-        File f = new File(filename);
-        if (f.exists())
+        if (outFile.exists())
         {
-            Terminator.withMsgAndStatus("ERROR! File " +  filename
+            Terminator.withMsgAndStatus("ERROR! File " +  outFile
                   + " exists and this software doesn't have rights "
                   + "to overwrite files.",-1);
         }
@@ -310,23 +334,38 @@ public class FileUtils
      */
 
     public static void foundAndPermissions(String path, 
-                                                boolean r, boolean w, boolean x)
+    		boolean r, boolean w, boolean x)
     {
+    	foundAndPermissions(new File(path), r, w, x);
+    }
+    
+//------------------------------------------------------------------------------
 
-        File root = new File(path);
+    /**
+     * Check existence and r/w/x permission of a file/folder. The execution
+     * will be stopped if the file does not exist or doesn't have the required
+     * permissions
+     * @param file the file/directory defined from relative or absolute path.
+     * @param r set to <code>true</code> to check for READ right
+     * @param w set to <code>true</code> to check for WRITE right
+     * @param x set to <code>true</code> to check for EXECUTE right
+     */
 
-        if (!root.exists())
+    public static void foundAndPermissions(File file,
+    		boolean r, boolean w, boolean x)
+    {
+        if (!file.exists())
         {
-            Terminator.withMsgAndStatus("ERROR! File or folder " + path
+            Terminator.withMsgAndStatus("ERROR! File or folder " + file
                                 + " does not exist!",-1);
         }
 
         //Check read is required
         if (r)
         {
-            if (!root.canRead())
+            if (!file.canRead())
             {
-                Terminator.withMsgAndStatus("ERROR! File or folder " + path
+                Terminator.withMsgAndStatus("ERROR! File or folder " + file
                                 + " exists but is not readable!",-1);
             }
         }
@@ -334,9 +373,9 @@ public class FileUtils
         //Check write if required
         if (w)
         {
-            if (!root.canWrite())
+            if (!file.canWrite())
             {
-                Terminator.withMsgAndStatus("ERROR! File or folder " + path
+                Terminator.withMsgAndStatus("ERROR! File or folder " + file
                                 + " exists but is not writable!",-1);
             }
         }
@@ -344,9 +383,9 @@ public class FileUtils
         //Check executable if required
         if (x)
         {
-            if (!root.canExecute())
+            if (!file.canExecute())
             {
-                Terminator.withMsgAndStatus("ERROR! File/folder " + path 
+                Terminator.withMsgAndStatus("ERROR! File/folder " + file 
                                 + " exists but is not executable!",-1);
             }
         }

@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.generic;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -249,7 +251,7 @@ public class GenericToolOutputHandler extends Worker
 
             //Get the last part of the .out file (to get a smaller array)
             int lastInit = lineNums.get(0).get(numSteps - 1 );
-            List<String> tail = IOtools.tailFrom(inFile,lastInit);
+            List<String> tail = IOtools.tailFrom(new File(inFile),lastInit);
 
             //Compare with known errors
             identifyErrorMessage(tail);

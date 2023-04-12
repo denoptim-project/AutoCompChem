@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -374,9 +375,10 @@ public class NWChemOutputHandler extends Worker
         if (params.contains("TEMPLATECONNECTIVITY"))
         {
             this.useTemplateConnectivity = true;
-            String fileWithTplt =
+            String pathname =
               params.getParameter("TEMPLATECONNECTIVITY").getValue().toString();
-            FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
+            File fileWithTplt = new File(pathname);
+            FileUtils.foundAndPermissions(pathname,true,false,false);
                 this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
         }
 
@@ -527,7 +529,7 @@ public class NWChemOutputHandler extends Worker
         {
             System.out.println(" Analyzing tail (start at line "+lastInit+")");
         }
-        List<String> tail = IOtools.tailFrom(inFile,lastInit);
+        List<String> tail = IOtools.tailFrom(new File(inFile),lastInit);
 
         //Error identififcation
         if (!normalTerminated && errorDef != null)
@@ -926,7 +928,7 @@ public class NWChemOutputHandler extends Worker
                 {
                     outFile = outFile + ".sdf";
                 }
-                IOtools.writeSDFAppendSet(outFile,mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile),mols,false);
                 break;
 
             case "XYZ":
@@ -934,12 +936,12 @@ public class NWChemOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppendSet(outFile,mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile),mols,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppendSet(outFile + ".xyz",mols,false);
-                IOtools.writeSDFAppendSet(outFile + ".sdf",mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile + ".xyz"),mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile + ".sdf"),mols,false);
                 break;
 
             default:
@@ -972,7 +974,7 @@ public class NWChemOutputHandler extends Worker
                     ConnectivityUtils.importConnectivityFromReference(
                                                 mol,connectivityTemplate);
                 }
-                IOtools.writeSDFAppend(outFile,mol,false);
+                IOtools.writeSDFAppend(new File(outFile),mol,false);
                 break;
 
             case "XYZ":
@@ -980,12 +982,12 @@ public class NWChemOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppend(outFile,mol,false);
+                IOtools.writeXYZAppend(new File(outFile),mol,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppend(outFile + ".xyz",mol,false);
-                IOtools.writeSDFAppend(outFile + ".sdf",mol,false);
+                IOtools.writeXYZAppend(new File(outFile + ".xyz"),mol,false);
+                IOtools.writeSDFAppend(new File(outFile + ".sdf"),mol,false);
                 break;
 
             default:
@@ -1023,7 +1025,7 @@ public class NWChemOutputHandler extends Worker
                 sb.append(System.getProperty("line.separator"));
             }
         }
-        IOtools.writeTXTAppend(outFileVibModes,sb.toString(),false);
+        IOtools.writeTXTAppend(new File(outFileVibModes),sb.toString(),false);
         if (verbosity > 1)
         {
             System.out.println(" Vibrational mode " + selectedVibModes 

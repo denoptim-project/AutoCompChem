@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.orca;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -665,10 +667,10 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	 * No special file structure required for Orca. This method does nothing.
 	 */
 	@Override
-	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
-  		return outputFileName;
+  		return output;
   	}
     
 //------------------------------------------------------------------------------

@@ -175,7 +175,7 @@ public class ParallelRunnerTest
 			public void run() 
 			{
 				i++;
-				IOtools.writeTXTAppend(stdout.getAbsolutePath(), 
+				IOtools.writeTXTAppend(stdout, 
 						prefix + "Iteration " + i, 
 						true);
 			}

@@ -676,18 +676,18 @@ public class SpartanInputWriter extends ChemSoftInputWriter
   	 *  first of the structures provided.
   	 */
   	@Override
-  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
   		IAtomContainer mol = mols.get(0);
   		
         String molName = MolecularUtils.getNameOrID(mol); 
         
-        String separator = File.separator;
+        String sep = File.separator;
         
         // Create folder tree
-        File jobFolder = new File(outputFileName);
-        File molSpecFolder = new File(jobFolder + separator + molName);
+        File jobFolder = output;
+        File molSpecFolder = new File(jobFolder + sep + molName);
         if (!molSpecFolder.mkdirs())
         {
             Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
@@ -695,19 +695,19 @@ public class SpartanInputWriter extends ChemSoftInputWriter
         }
         
         //Create Spartan's flag files
-        IOtools.writeTXTAppend(jobFolder + separator + 
-        		SpartanConstants.ROOTFLGFILENAME, 
+        IOtools.writeTXTAppend(new File(jobFolder + sep + 
+        		SpartanConstants.ROOTFLGFILENAME), 
         		SpartanConstants.ROOTFLGFILEHEAD, false);
-        IOtools. writeTXTAppend(molSpecFolder + separator +
-        		SpartanConstants.MOLFLGFILENAME,
+        IOtools. writeTXTAppend(new File(molSpecFolder + sep +
+        		SpartanConstants.MOLFLGFILENAME),
         		SpartanConstants.MOLFLGFILEHEAD, false);
         
         //Create cell file
-        IOtools.writeTXTAppend(molSpecFolder + separator +
-        		SpartanConstants.CELLFILENAME,
+        IOtools.writeTXTAppend(new File(molSpecFolder + sep +
+        		SpartanConstants.CELLFILENAME),
         		getCellDirective(mol), false);  		
         
-        return molSpecFolder + separator + SpartanConstants.INPUTFILENAME;
+        return new File(molSpecFolder + sep + SpartanConstants.INPUTFILENAME);
   	}
   	
 //------------------------------------------------------------------------------

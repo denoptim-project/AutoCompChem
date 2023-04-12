@@ -61,7 +61,7 @@ public class ACCJsonTest
     public void testHandlingOfJobs() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-        String jsonfile = tempDir.getAbsolutePath() + SEP + "file.json";
+        File jsonfile = new File(tempDir.getAbsolutePath() + SEP + "file.json");
     	Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
         job.setVerbosity(0);
         job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));

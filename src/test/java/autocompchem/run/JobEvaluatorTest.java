@@ -79,7 +79,8 @@ public class JobEvaluatorTest
     public void testTolerantJobEvaluator() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-        String existingFile = tempDir.getAbsolutePath() + SEP + "file.out";
+        File existingFile = new File(
+        		tempDir.getAbsolutePath() + SEP + "file.out");
         IOtools.writeTXTAppend(existingFile, "Text to match is XYZ", false);
 
 
@@ -89,7 +90,8 @@ public class JobEvaluatorTest
         				new MatchText(".*XYZ.*", InfoChannelType.OUTPUTFILE)))));
         
         InfoChannelBase icDB = new InfoChannelBase();
-        icDB.addChannel(new FileAsSource(existingFile, InfoChannelType.OUTPUTFILE));
+        icDB.addChannel(new FileAsSource(existingFile.getAbsolutePath(), 
+        		InfoChannelType.OUTPUTFILE));
         
     	Job jobToEvaluate = new Job();
     	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);

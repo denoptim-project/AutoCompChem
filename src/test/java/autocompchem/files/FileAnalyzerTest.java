@@ -53,12 +53,13 @@ public class FileAnalyzerTest
         
         String tmpPathName = tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "tmp.txt";
-        IOtools.writeTXTAppend(tmpPathName,"First line #",false);
-        IOtools.writeTXTAppend(tmpPathName,"Second line #",true);
-        IOtools.writeTXTAppend(tmpPathName,"Third line #",true);
-        IOtools.writeTXTAppend(tmpPathName,"last",true);
+        File tmpFile = new File(tmpPathName);
+        IOtools.writeTXTAppend(tmpFile,"First line #",false);
+        IOtools.writeTXTAppend(tmpFile,"Second line #",true);
+        IOtools.writeTXTAppend(tmpFile,"Third line #",true);
+        IOtools.writeTXTAppend(tmpFile,"last",true);
         
-        assertEquals(3,FileAnalyzer.count(tmpPathName,"line #"),
+        assertEquals(3,FileAnalyzer.count(tmpFile,"line #"),
         		"Total matches");
     }
     
@@ -71,12 +72,13 @@ public class FileAnalyzerTest
         String tmpPathName = tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "fiel.json";
         Gson writer = ACCJson.getWriter();
-        IOtools.writeTXTAppend(tmpPathName, writer.toJson(
+        File tmpFile = new File(tmpPathName);
+        IOtools.writeTXTAppend(tmpFile, writer.toJson(
         		new ArrayList<String>(Arrays.asList("A", "222", "t h i r d"))),
         		false);
     	
     	assertEquals(ACCFileType.JSON,
-    			FileAnalyzer.getFileTypeByProbeContentType(tmpPathName));
+    			FileAnalyzer.getFileTypeByProbeContentType(tmpFile));
     }
 
 //------------------------------------------------------------------------------

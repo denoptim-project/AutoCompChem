@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -74,8 +75,8 @@ public class BondReviser
 {
 
     //Filenames
-    private String inFile;
-    private String outFile;
+    private File inFile;
+    private File outFile;
 
     //List (with string identifier) of smarts
     private Map<String,String> smarts = new HashMap<String,String>();
@@ -147,11 +148,13 @@ public class BondReviser
 
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check output file
-        this.outFile = params.getParameter("OUTFILE").getValue().toString();
+        this.outFile = new File(
+        		params.getParameter("OUTFILE").getValue().toString());
         FileUtils.mustNotExist(this.outFile);
 
         //Get the list of SMARTS to be matched
@@ -182,14 +185,14 @@ public class BondReviser
     /**
      * Constructs a new BondReviser specifying the name 
      * (or path) of the input SDF file and the list of SMARTS to match
-     * @param filename path or name of the input (i.e. name.sdf)
+     * @param file the input (i.e. name.sdf)
      * @param smarts list of SMARTS as strings blank space separated
      * @param verbosity verbosity level
      */
 
-    public BondReviser(String filename, Map<String,String> smarts, int verbosity)
+    public BondReviser(File file, Map<String,String> smarts, int verbosity)
     {
-        this.inFile = filename;
+        this.inFile = file;
         this.smarts = smarts;
         this.verbosity = verbosity;
     }
@@ -199,16 +202,16 @@ public class BondReviser
     /**
      * Constructs a new BondReviser specifying the name 
      * (or path) of the input SDF file and the list of SMARTS to match
-     * @param filename path or name of the input (i.e. name.sdf)
+     * @param file the input (i.e. name.sdf)
      * @param smarts list of SMARTS as strings blank space separated
      * @param verbosity verbosity level
      * @param newBO new bond order for the target bonds
      */
 
-    public BondReviser(String filename, Map<String,String> smarts, 
+    public BondReviser(File file, Map<String,String> smarts, 
                                                 int verbosity, String newBO)
     {
-        this.inFile = filename;
+        this.inFile = file;
         this.smarts = smarts; 
         this.newBO = newBO;
         this.verbosity = verbosity;

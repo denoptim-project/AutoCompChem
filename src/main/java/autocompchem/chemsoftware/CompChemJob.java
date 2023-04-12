@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -86,7 +87,7 @@ public class CompChemJob extends Job implements Cloneable
      * @param inFile formatted job details file to be read.
      */
 
-    public CompChemJob(String inFile)
+    public CompChemJob(File inFile)
     {
         this(IOtools.readTXT(inFile));
     }
@@ -145,9 +146,9 @@ public class CompChemJob extends Job implements Cloneable
      * @throws IOException 
      */
 
-    public static CompChemJob fromJSONFile(String pathname) throws IOException
+    public static CompChemJob fromJSONFile(File jdFile) throws IOException
     {
-    	CompChemJob ccj = (CompChemJob) IOtools.readJsonFile(pathname, 
+    	CompChemJob ccj = (CompChemJob) IOtools.readJsonFile(jdFile, 
     			Job.class);
     	return ccj;
     }

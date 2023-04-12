@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,10 +63,10 @@ public class MolecularComparator extends Worker
                     		TaskID.COMPARETWOCONNECTIVITIES)));
     
     //Filenames
-    private String inFile;
-    private String refFile;
-    private String rotatedFile;
-    private String outFile;
+    private File inFile;
+    private File refFile;
+    private File rotatedFile;
+    private File outFile;
 
     //SMARTS query identifying target atoms
     private String targetAtoms;
@@ -100,25 +101,28 @@ public class MolecularComparator extends Worker
             System.out.println(" Adding parameters to MolecularComparator");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValueAsString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the reference file (which has to be an SDF file)
-        this.refFile = params.getParameter("REFERENCE").getValue().toString();
+        this.refFile = new File(
+        		params.getParameter("REFERENCE").getValueAsString());
         FileUtils.foundAndPermissions(this.refFile,true,false,false);
 
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile =  new File(
+            		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
 
         //Get and check optional file for rotated output
         if (params.contains("ROTATEDOUT")) 
         {
-            this.rotatedFile = 
-                        params.getParameter("ROTATEDOUT").getValue().toString();
+            this.rotatedFile = new File(
+                        params.getParameter("ROTATEDOUT").getValueAsString());
             FileUtils.mustNotExist(this.rotatedFile);
         }
 

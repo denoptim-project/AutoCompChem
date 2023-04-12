@@ -1,5 +1,6 @@
 package autocompchem.modeling.basisset;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,14 +62,14 @@ public class BasisSetGenerator extends Worker
                     Arrays.asList(TaskID.GENERATEBASISSET)));
     
     /**
-     * The name of the input file (molecular structure files)
+     * The input file (molecular structure files)
      */
-    private String inFile = "noInFile";
+    private File inFile;
 
     /**
-     * The name of the output file, if any
+     * The output file, if any
      */
-    private String outFile = "";
+    private File outFile;
 
     /**
      * Format for reporting basis set (Default: Gaussian)
@@ -134,7 +135,8 @@ public class BasisSetGenerator extends Worker
         // Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE"))
         {
-            this.inFile = params.getParameter("INFILE").getValue().toString();
+            this.inFile = new File(
+            		params.getParameter("INFILE").getValue().toString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
@@ -157,8 +159,8 @@ public class BasisSetGenerator extends Worker
         if (params.contains("OUTFILE"))
         {
             //Get and check output file
-            this.outFile = 
-                        params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+                        params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
         }
 
@@ -366,7 +368,8 @@ public class BasisSetGenerator extends Worker
             if (rules.get(rulRef).getSourceType().toUpperCase().equals(
                                                 BasisSetConstants.BSSOURCELINK))
             {
-                importBasisSetFromFile(rulRef,rules.get(rulRef).getSource());
+                importBasisSetFromFile(rulRef, new File(
+                		rules.get(rulRef).getSource()));
             }
 
             //TODO-gg use getMappingOfSMARTS
@@ -437,7 +440,7 @@ public class BasisSetGenerator extends Worker
                 case BasisSetConstants.BSSOURCELINK:
                     if (!importedBSs.keySet().contains(rulRef))
                     {
-                        importBasisSetFromFile(rulRef, rule.getSource());
+                        importBasisSetFromFile(rulRef, new File(rule.getSource()));
                     }
                     BasisSet impBS = importedBSs.get(rulRef);
     
@@ -594,7 +597,7 @@ public class BasisSetGenerator extends Worker
      * @param src the pathname of the file from which to import the basis set
      */
 
-    private void importBasisSetFromFile(String bsName, String src)
+    private void importBasisSetFromFile(String bsName, File src)
     {
         //TODO for now only GBS files can be imported
         BasisSet bs = BasisSetUtils.importBasisSetFromGBSFile(src, verbosity);

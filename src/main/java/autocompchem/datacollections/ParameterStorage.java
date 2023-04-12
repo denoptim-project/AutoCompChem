@@ -1,5 +1,6 @@
 package autocompchem.datacollections;
 
+import java.io.File;
 import java.lang.reflect.Type;
 
 /*
@@ -293,10 +294,10 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param paramFile name of the text file to read.
      */
 
-    public void importParameters(String paramFile) 
+    public void importParameters(File file) 
     {
         //Get filled form
-        List<List<String>> form = IOtools.readFormattedText(paramFile,
+        List<List<String>> form = IOtools.readFormattedText(file,
                                                    ParameterConstants.SEPARATOR,
                                                  ParameterConstants.COMMENTLINE,
                                               ParameterConstants.STARTMULTILINE,
@@ -327,16 +328,13 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 
     /**
      * Read a formatted text and import all parameters
-     * @param filename pseudo file name used only for reporting errors, does
-     * not need to be an existing file. Used only for logging errors.
      * @param lines the block of lines to read
      */
 
-    public void importParametersFromLines(String filename, List<String> lines)
+    public void importParametersFromLines(List<String> lines)
     {
         //Get filled form
-        List<List<String>> form = IOtools.readFormattedText(filename,
-                                                                          lines,
+        List<List<String>> form = IOtools.readFormattedText(lines,
                                                    ParameterConstants.SEPARATOR,
                                                  ParameterConstants.COMMENTLINE,
                                               ParameterConstants.STARTMULTILINE,

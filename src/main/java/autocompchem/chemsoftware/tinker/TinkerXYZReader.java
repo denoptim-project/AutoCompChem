@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.tinker;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -47,11 +49,11 @@ public class TinkerXYZReader
 
     /**
      * Read a Tinker XYZ file and produces an IAtomContainer
-     * @param filename the pathname of the file to read
+     * @param file the file to read
      * @return the CDK representation of the molecule in the input file
      */
 
-    public static IAtomContainer readTinkerXYZFIle(String filename)
+    public static IAtomContainer readTinkerXYZFIle(File file)
     {
         IAtomContainer iac = new AtomContainer();
         ConnectivityTable cTab = new ConnectivityTable();
@@ -59,7 +61,7 @@ public class TinkerXYZReader
         // Add title and atoms
         int natoms = 0;
         int i = 0;
-        for (String line : IOtools.readTXT(filename))
+        for (String line : IOtools.readTXT(file))
         {
             if (line.trim().equals(""))
             {
@@ -80,7 +82,7 @@ public class TinkerXYZReader
                 if (parts.length < 6)
                 {
                     Terminator.withMsgAndStatus("ERROR! Not enough fields in "
-                        + "file '" + filename + "'.",-1);
+                        + "file '" + file + "'.",-1);
                 }
                 int atmId = Integer.parseInt(parts[0]);
                 String elSym = parts[1];

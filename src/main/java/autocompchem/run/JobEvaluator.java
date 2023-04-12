@@ -340,11 +340,11 @@ public class JobEvaluator extends Worker
 		
 		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
-			String pathName = params.getParameter(
-					ParameterConstants.JOBDEF).getValueAsString();
-			FileUtils.foundAndPermissions(pathName, true, false, false);
+			File file = new File(params.getParameter(
+					ParameterConstants.JOBDEF).getValueAsString());
+			FileUtils.foundAndPermissions(file, true, false, false);
 			try {
-				jobBeingEvaluated = (Job) IOtools.readJsonFile(pathName, Job.class);
+				jobBeingEvaluated = (Job) IOtools.readJsonFile(file, Job.class);
 			} catch (IOException e) {
 				e.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! could not read JSON file "

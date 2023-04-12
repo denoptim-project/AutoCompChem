@@ -50,8 +50,10 @@ public class FileUtilsTest
 		String basePath = tempDir.getAbsolutePath() + fileSeparator ;
     	for (int i=0; i<3; i++)
     	{
-    		IOtools.writeTXTAppend(basePath + "ttt"+i+".log", "text", false);
-    		IOtools.writeTXTAppend(basePath + i, "text", false);
+    		IOtools.writeTXTAppend(
+    				new File(basePath + "ttt"+i+".log"), "text", false);
+    		IOtools.writeTXTAppend(
+    				new File(basePath + i), "text", false);
     	}
     	for (int i=0; i<3; i++)
     	{
@@ -64,8 +66,9 @@ public class FileUtilsTest
     	{
     		File folder = new File(basePath + "tt" + i);
     		folder.mkdir();
-    		IOtools.writeTXTAppend(folder.getAbsolutePath() + fileSeparator 
-    				+ "ttt"+i+".in", "text", false);
+    		IOtools.writeTXTAppend(new File(
+    				folder.getAbsolutePath() + fileSeparator + "ttt"+i+".in"), 
+    				"text", false);
     	}
     	assertEquals(9, FileUtils.find(tempDir, "tt*", true).size());
     	assertEquals(6, FileUtils.find(tempDir, "tt*", false).size());

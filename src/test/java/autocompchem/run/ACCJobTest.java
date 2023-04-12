@@ -63,7 +63,7 @@ public class ACCJobTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 
         //Define pathnames
-        String sdfFile = tempDir.getAbsolutePath() + SEP + "mol.sdf";
+        File sdfFile = new File(tempDir.getAbsolutePath() + SEP + "mol.sdf");
 
         try 
         {
@@ -75,7 +75,7 @@ public class ACCJobTest
         			Job.RunnableAppID.ACC.toString());
         	params.setParameter(WorkerConstants.PARTASK, 
         			"MeasureGeomDescriptors");
-        	params.setParameter("INFILE", sdfFile);
+        	params.setParameter("INFILE", sdfFile.getAbsolutePath());
         	params.setParameter("ATOMINDEXES", label + " 1 2");
         	
         	// Prepare structure

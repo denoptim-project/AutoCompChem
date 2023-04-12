@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.openscience.cdk.ChemFile;
@@ -73,13 +74,13 @@ public class IOtools
      * Reads TXT files (Suitable for small files - do NOT use this for huge
      * files!)
      *
-     * @param filename file to be read
+     * @param file to be read
      * @return all the lines as a list.
      */
 
-    public static List<String> readTXT(String filename)
+    public static List<String> readTXT(File file)
     {
-        return readTXT(filename, false);
+        return readTXT(file, false);
     }
 
 //------------------------------------------------------------------------------
@@ -87,17 +88,17 @@ public class IOtools
     /**
      * Reads TXT files (Suitable for small files - do NOT use this for huge 
      * files!)
-     * @param filename file to be read
+     * @param file file to be read
      * @param escape set tu <code>true</code> to escape special characters
      * @return all the lines as a list.
      */
 
-    public static List<String> readTXT(String filename, boolean escape)
+    public static List<String> readTXT(File file, boolean escape)
     {
         List<String> allLines = new ArrayList<String>();
         BufferedReader buffRead = null;
         try {
-            buffRead = new BufferedReader(new FileReader(filename));
+            buffRead = new BufferedReader(new FileReader(file));
             String line = null;
             while ((line = buffRead.readLine()) != null)
             {
@@ -111,7 +112,7 @@ public class IOtools
                 }
             }
         } catch (FileNotFoundException fnf) {
-            System.err.println("File Not Found: " + filename);
+            System.err.println("File Not Found: " + file);
             System.err.println(fnf.getMessage());
             System.exit(-1);
         } catch (IOException ioex) {
@@ -141,12 +142,12 @@ public class IOtools
      * list.
      */
 
-    public static List<String> readTXTKeyword(String filename, String keyword)
+    public static List<String> readTXTKeyword(File file, String keyword)
     {
         List<String> allLines = new ArrayList<String>();
         BufferedReader buffRead = null;
         try {
-            buffRead = new BufferedReader(new FileReader(filename));
+            buffRead = new BufferedReader(new FileReader(file));
             String line = null;
             while ((line = buffRead.readLine()) != null)
             {
@@ -158,18 +159,18 @@ public class IOtools
                     allLines.add(line);
             }
         } catch (FileNotFoundException fnf) {
-            Terminator.withMsgAndStatus("ERROR! File " + filename 
+            Terminator.withMsgAndStatus("ERROR! File " + file 
                                 + " not found!", -1);
         } catch (IOException ioex) {
             Terminator.withMsgAndStatus("ERROR! IOException while reading "
-                                + filename, -1);
+                                + file, -1);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
                 Terminator.withMsgAndStatus("ERROR! IOException while "
-                                + "reading " + filename, -1);
+                                + "reading " + file, -1);
             }
         }
         return allLines;
@@ -179,22 +180,22 @@ public class IOtools
     
     /**
      * Reads a JSON file
-     * @param fileName the pathname to the file to read
+     * @param jdFile the pathname to the file to read
      * @param type the expected type
      * @return
      * @throws IOException
      */
-    public static Object readJsonFile(String fileName, Type type) throws IOException
+    public static Object readJsonFile(File jdFile, Type type) throws IOException
     {
     	Object result = null;
     	Gson reader = ACCJson.getReader();
     	BufferedReader br = null;
         try
         {
-            br = new BufferedReader(new FileReader(fileName));
+            br = new BufferedReader(new FileReader(jdFile));
             result = reader.fromJson(br, type);
         } catch (JsonSyntaxException jse) {
-        	Terminator.withMsgAndStatus("ERROR! JSON file '" + fileName 
+        	Terminator.withMsgAndStatus("ERROR! JSON file '" + jdFile 
         			+ "' has illegal syntax: " + jse.getMessage(), -1);
         } finally 
         {
@@ -212,7 +213,7 @@ public class IOtools
      * Extract '<code>key|separator|value</code>' field in a properly formatted
      * text file.
      *
-     * @param filename file to be read
+     * @param file the file to be read
      * @param separator string splitting the <code>key</code> from the 
      * <code>value</code>
      * @param commentLab string excluding test from being read (commented out)
@@ -223,17 +224,15 @@ public class IOtools
      * labels.
      */
 
-    public static List<List<String>> readFormattedText(
-                        String filename,
+    public static List<List<String>> readFormattedText(File file,
                         String separator, String commentLab,
                         String start, String end)
     {
         //Read file line by line
-        List<String> lines = IOtools.readTXT(filename);
+        List<String> lines = IOtools.readTXT(file);
 
         //Start interpretation of the formatted text
         List<List<String>> filledForm = readFormattedText(
-                                                        filename,
                                                         lines, 
                                                         separator, 
                                                         commentLab, 
@@ -270,7 +269,6 @@ public class IOtools
      * All the labels must be in the very beginning of the line! 
      * This method cannot handle nested blocks.
      *
-     * @param filename name of the file to read (used only to report errors)
      * @param lines content of the file
      * @param separator string defining the separator in 
      * '<code>key|separator|value</code>'
@@ -281,8 +279,8 @@ public class IOtools
      * labels.
      */
 
+    //TOGO-gg move to textAnalyzer
     public static List<List<String>> readFormattedText(
-                        String filename,
                         List<String> lines, 
                         String separator, String commentLab, 
                         String start, String end)
@@ -300,25 +298,25 @@ public class IOtools
 
     /**
      * Copy only a portion of a text file into another text file.
-     * @param inFileName pathname of the file to be read
-     * @param outFileName pathname of the file to be written
+     * @param inFile the file to be read
+     * @param outFile the file to be written
      * @param start line number from which to extract lines. Note this
      * is zero-based indexing. 
      * @param stop line number at which to stop the extraction. Note this
      * is zero-based indexing. 
      */
 
-    public static void copyPortionOfTxtFile(String inFileName, 
-    		String outFileName, int start, int stop) throws Exception
+    public static void copyPortionOfTxtFile(File inFile, 
+    		File outFile, int start, int stop) throws Exception
     {
     	int bufferSize = 0;
     	int bufferMaxSize = 1000; //arbitrary :|
         int lineNum = -1;
         BufferedReader buffRead = new BufferedReader(
-        		new FileReader(inFileName));
+        		new FileReader(inFile));
         //NB here we do not append, but later we do
         BufferedWriter buffWriter = new BufferedWriter(
-        		new FileWriter(new File (outFileName)));
+        		new FileWriter(outFile));
         String line = null;
         StringBuilder sb = new StringBuilder();
         while ((line = buffRead.readLine()) != null)
@@ -335,7 +333,7 @@ public class IOtools
                     buffWriter.flush();
                     buffWriter.close();
                     buffWriter = new BufferedWriter(
-                    		new FileWriter(new File(outFileName),true));
+                    		new FileWriter(outFile,true));
                     bufferSize = 0;
                     sb = new StringBuilder();
                 }
@@ -359,13 +357,13 @@ public class IOtools
     /**
      * Extract text from a file starting from line <code>start</code> and till
      * line <code>stop</code>
-     * @param filename name of the file to be read
+     * @param vmFile name of the file to be read
      * @param start line number from which to extract lines
      * @param stop line number at which to stop the extraction
      * @return the array with the tail of the text file.
      */
 
-    public static List<String> extractFromTo(String filename, int start, 
+    public static List<String> extractFromTo(File vmFile, int start, 
     		int stop)
     {
         List<String> lines = new ArrayList<String>();
@@ -375,7 +373,7 @@ public class IOtools
         boolean badTermination = false;
         String msg = "";
         try {
-            buffRead = new BufferedReader(new FileReader(filename));
+            buffRead = new BufferedReader(new FileReader(vmFile));
             String line = null;
             while ((line = buffRead.readLine()) != null)
             {
@@ -414,12 +412,12 @@ public class IOtools
     /**
      * Extract the tail of a file staring from line <code>start</code> to the 
      * end of the file
-     * @param filename name of the file to be read
+     * @param file the file to be read
      * @param start line number from which to extract lines
      * @return the array with the tail of the text file.
      */
 
-    public static List<String> tailFrom(String filename, int start)
+    public static List<String> tailFrom(File file, int start)
     {
         List<String> lines = new ArrayList<String>();
 
@@ -428,7 +426,7 @@ public class IOtools
         boolean badTermination = false;
         String msg = "";
         try {
-            buffRead = new BufferedReader(new FileReader(filename));
+            buffRead = new BufferedReader(new FileReader(file));
             String line = null;
             while ((line = buffRead.readLine()) != null)
             {
@@ -454,24 +452,23 @@ public class IOtools
 
         return lines;
     }
-
-
+    
 //------------------------------------------------------------------------------
 
     /**
      * Reads SDF files (chemical format - see 
      * <a href="http://en.wikipedia.org/wiki/Chemical_table_file#SDF">MDL format</a>
      * ) and returns all the molecules as an array.
-     * @param filename SDF file to be read
-     * @return all the chemical objects into an <code>List</code>
+     * @param file the SDF file to be read
+     * @return all the chemical objects into an list.
      */
 
-    public static List<IAtomContainer> readSDF(String filename)
+    public static List<IAtomContainer> readSDF(File file)
     {
         MDLV2000Reader mdlreader = null;
         List<IAtomContainer> lstContainers = new ArrayList<IAtomContainer>();
         try {
-            mdlreader = new MDLV2000Reader(new FileReader(new File(filename)));
+            mdlreader = new MDLV2000Reader(new FileReader(file));
             ChemFile chemFile = (ChemFile) mdlreader.read((ChemObject) 
                                                                 new ChemFile());
             lstContainers.addAll(ChemFileManipulator.getAllAtomContainers(
@@ -489,17 +486,16 @@ public class IOtools
     /**
      * Write a ZMatrix to file with ACC's format
      * @param zmat the ZMatrix to write
-     * @param filename the pathname of the destination file
+     * @param file the destination file
      * @param append set to <code>true</code> to append rather than ovewrite
      */
 
-    public static void writeZMatAppend(String filename, ZMatrix zmat,
-                                                                 boolean append)
+    public static void writeZMatAppend(File file, ZMatrix zmat, boolean append)
     {
         List<String> txt = zmat.toLinesOfText(false,false);
         txt.add(0,"Molecule: " + zmat.getTitle());
         txt.add(ZMatrixConstants.ZMATMOLSEP); //separator
-        IOtools.writeTXTAppend(filename,txt,append);
+        IOtools.writeTXTAppend(file,txt,append);
     }
 
 //------------------------------------------------------------------------------
@@ -507,16 +503,16 @@ public class IOtools
     /**
      * Reads ZMatrix file (ACC format). 
      * Suitable for small files - do NOT use this for huge files.
-     * @param filename file to be read
+     * @param file file to be read
      * @return all the ZMatrixes
      */
 
-    public static List<ZMatrix> readZMatrixFile(String filename)
+    public static List<ZMatrix> readZMatrixFile(File file)
     {
         List<ZMatrix> allZMats = new ArrayList<ZMatrix>();
         BufferedReader buffRead = null;
         try {
-            buffRead = new BufferedReader(new FileReader(filename));
+            buffRead = new BufferedReader(new FileReader(file));
             String line = null;
             String title = "";
             List<String> oneBlock = new ArrayList<String>();
@@ -544,14 +540,14 @@ public class IOtools
             if (oneBlock.size() != 0)
             {
                 Terminator.withMsgAndStatus("ERROR! Unterminated ZMatrix block "
-                                            + "in file '" + filename + "'.",-1);
+                                            + "in file '" + file + "'.",-1);
             }
         } catch (FileNotFoundException fnf) {
-            Terminator.withMsgAndStatus("ERROR! File '" + filename 
-                                                           + "' not found.",-1);
+            Terminator.withMsgAndStatus("ERROR! File '" + file + "' not found.",
+            		-1);
         } catch (IOException ioex) {
             System.err.println(ioex.getMessage());
-            Terminator.withMsgAndStatus("ERROR! While reading '" + filename 
+            Terminator.withMsgAndStatus("ERROR! While reading '" + file 
                                       + "'. Message: " + ioex.getMessage(), -1);
         } finally {
             try {
@@ -559,13 +555,13 @@ public class IOtools
                     buffRead.close();
             } catch (IOException ioex2) {
                 System.err.println(ioex2.getMessage());
-                Terminator.withMsgAndStatus("ERROR! While reading '" + filename 
+                Terminator.withMsgAndStatus("ERROR! While reading '" + file 
                                       + "'. Message: " + ioex2.getMessage(),-1);
             }
         }
         return allZMats;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -576,12 +572,12 @@ public class IOtools
      * @return all the chemical objects into an <code>List</code>
      */
 
-    public static List<IAtomContainer> readXYZ(String filename)
+    public static List<IAtomContainer> readXYZ(File file)
     {
         XYZReader reader = null;
         List<IAtomContainer> lstContainers = new ArrayList<IAtomContainer>();
         try {
-            reader = new XYZReader(new FileReader(new File(filename)));
+            reader = new XYZReader(new FileReader(file));
             ChemFile chemFile = (ChemFile) reader.read((ChemObject) 
                                                                 new ChemFile());
             lstContainers.addAll(ChemFileManipulator.getAllAtomContainers(
@@ -592,31 +588,32 @@ public class IOtools
         }
 
         return lstContainers;
-    } 
-
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
      * Read a molecular structure file that might contain multiple structures.
      * Accepts SDF or XYZ files
-     * @param filename file to be read
+     * @param file file to be read
      * @return all the chemical objects into an <code>ArrayList</code>
      */
-    public static List<IAtomContainer> readMultiMolFiles(String filename)
+    public static List<IAtomContainer> readMultiMolFiles(File file)
     {
         List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
-        if (filename.endsWith(".sdf"))
+        if (file.getName().endsWith(".sdf"))
         {
-            mols = IOtools.readSDF(filename);
+            mols = IOtools.readSDF(file);
         }
-        else if (filename.endsWith(".xyz"))
+        else if (file.getName().endsWith(".xyz"))
         {
-            mols = IOtools.readXYZ(filename);
+            mols = IOtools.readXYZ(file);
         }
         else
         {
             Terminator.withMsgAndStatus("ERROR! Cannot understand format of '"
-                        + filename + "'. In this version, you can read multiple "
+                        + file.getName() + "'."
+                        + " In this version, you can read multiple "
                         + "chemical entities only from SDF or XYZ files.",-1);
         }
         return mols;
@@ -628,18 +625,16 @@ public class IOtools
      * Writes on a new  
      * <a href="http://en.wikipedia.org/wiki/Chemical_table_file#SDF">SDF</a>
      * file or appends to an existing one.
-     * @param filename target SDF file (new or existing)
+     * @param file target SDF file (new or existing)
      * @param mol atom container to be written on the SDF file
      * @param append <code>true</code> to append to existing file
      */
 
-    public static void writeSDFAppend(String filename, List<IAtomContainer> mols,
-                                                                 boolean append)
+    public static void writeSDFAppend(File file, List<IAtomContainer> mols,boolean append)
     {
         SDFWriter sdfWriter = null;
         try {
-            sdfWriter = new SDFWriter(new FileWriter(new File(filename), 
-                                                                       append));
+            sdfWriter = new SDFWriter(new FileWriter(file, append));
             for (IAtomContainer mol : mols)
             {
                 sdfWriter.write(mol);
@@ -649,7 +644,7 @@ public class IOtools
         {
             if (e.getMessage().contains("For input string: \"#\""))
             {
-                System.err.println("CDK unable to write MDL file " + filename);
+                System.err.println("CDK unable to write MDL file " + file);
             }
             
         } 
@@ -679,25 +674,24 @@ public class IOtools
      * Writes on a new  
      * <a href="http://en.wikipedia.org/wiki/Chemical_table_file#SDF">SDF</a>
      * file or appends to an existing one.
-     * @param filename target SDF file (new or existing)
+     * @param file target SDF file (new or existing)
      * @param mol atom container to be written on the SDF file
      * @param append <code>true</code> to append to existing file
      */
 
-    public static void writeSDFAppend(String filename, IAtomContainer mol,
-                                                                 boolean append)
+    public static void writeSDFAppend(File file, IAtomContainer mol,
+    		boolean append)
     {
         SDFWriter sdfWriter = null;
         try {
-            sdfWriter = new SDFWriter(new FileWriter(new File(filename), 
-                                                                       append));
+            sdfWriter = new SDFWriter(new FileWriter(file, append));
             sdfWriter.write(mol);
         } 
         catch (CDKException e) 
         {
             if (e.getMessage().contains("For input string: \"#\""))
             {
-                System.err.println("CDK unable to write MDL file " + filename);
+                System.err.println("CDK unable to write MDL file " + file);
             }
             
         } 
@@ -726,24 +720,23 @@ public class IOtools
     /**
      * Writes on a new XYZ 
      * file or appends to an existing one.
-     * @param filename target XYZ file (new or existing)
+     * @param file target XYZ file (new or existing)
      * @param iac atom container to be written on the XYZ file
      * @param append <code>true</code> to append to existing file
      */
 
-    public static void writeXYZAppend(String filename, IAtomContainer iac,
+    public static void writeXYZAppend(File file, IAtomContainer iac,
                                                                  boolean append)
     {
         XYZWriter xyzWriter = null;
         try {
-            xyzWriter = new XYZWriter(new FileWriter(new File(filename),
-                                                                       append));
+            xyzWriter = new XYZWriter(new FileWriter(file, append));
             xyzWriter.write(iac);
         }
         catch (CDKException e)
         {
             e.printStackTrace();
-            System.err.println("CDK unable to write XYZ file " + filename);
+            System.err.println("CDK unable to write XYZ file " + file);
         }
         catch (Throwable t2)
         {
@@ -770,7 +763,7 @@ public class IOtools
 	
 	/**
 	 * Writes atom containers to file or appends to an existing one.
-	 * @param filename file where we want to write (new or existing).
+	 * @param file file where we want to write (new or existing).
 	 * @param acs set of atom containers to be written on the file.
 	 * @param format the format for writing the atom containers. Acceptable
 	 * values are 'SDF' and 'XYZ' (case insensitive).
@@ -778,17 +771,17 @@ public class IOtools
 	 * we overwrite any existing content.
 	 */
 	
-	public static void writeAtomContainerToFile(String filename, 
+	public static void writeAtomContainerToFile(File file, 
 	  		IAtomContainer ac, String format, boolean append)
 	{
 	  	switch(format.toUpperCase())
 	  	{
 	  		case "XYZ":
-				writeXYZAppend(filename, ac, append);
+				writeXYZAppend(file, ac, append);
 				break;
 			
 			case "SDF":
-				writeSDFAppend(filename, ac, append);
+				writeSDFAppend(file, ac, append);
 				break;
 			
 			default:
@@ -810,21 +803,21 @@ public class IOtools
      * @param append <code>true</code> to append to existing file
      */
 
-    public static void writeAtomContainerSetToFile(String filename, 
+    public static void writeAtomContainerSetToFile(File file, 
     		IAtomContainerSet acs, String format, boolean append)
     {
     	switch(format.toUpperCase())
     	{
     		case "ORCATRAJECTORY":
-    			writeOrcaTrj(filename, acs, append);
+    			writeOrcaTrj(file, acs, append);
     			break;
     			
     		case "XYZ":
-    			writeXYZAppendSet(filename, acs, append);
+    			writeXYZAppendSet(file, acs, append);
     			break;
     			
     		case "SDF":
-    			writeSDFAppendSet(filename, acs, append);
+    			writeSDFAppendSet(file, acs, append);
     			break;
     		
     		default:
@@ -840,19 +833,17 @@ public class IOtools
      * Writes a list of molecules on a new 
      * <a href="http://en.wikipedia.org/wiki/Chemical_table_file#SDF">SDF</a>
      * file or appends to an existing file.
-     * @param filename target SDF file (new or existing)
+     * @param file target SDF file (new or existing)
      * @param mols set of atom containers to be written on the SDF file
      * @param append <code>true</code> to append to existing file
      */
 
-    public static void writeSDFAppendSet(String filename, 
-                                                         IAtomContainerSet mols,
+    public static void writeSDFAppendSet(File file, IAtomContainerSet mols,
                                                                  boolean append)
     {
         SDFWriter sdfWriter = null;
         try {
-            sdfWriter = new SDFWriter(new FileWriter(new File(filename), 
-                                                                       append));
+            sdfWriter = new SDFWriter(new FileWriter(file, append));
             sdfWriter.write(mols);
         } catch (Throwable t2) {
             System.err.println("Failure in writing SDF: " + t2);
@@ -874,12 +865,12 @@ public class IOtools
      * Writes on a new file with Orca's trajectory format (i.e., multi-molecule
      * XYZ file where each molecule is separated by the next one by a &gt; 
      * symbol.
-     * @param filename target XYZ file (new or existing)
+     * @param file target XYZ file (new or existing)
      * @param acs set of atom containers to be written on the XYZ file
      * @param append <code>true</code> to append to existing file,
      * otherwise we overwrite.
      */
-    public static void writeOrcaTrj(String filename, IAtomContainerSet acs,
+    public static void writeOrcaTrj(File file, IAtomContainerSet acs,
             boolean append)
     {
     	for (int i=0; i<acs.getAtomContainerCount(); i++)
@@ -895,7 +886,7 @@ public class IOtools
             			+a.getPoint3d().z);
             }
             tb.add(">");
-            writeTXTAppend(filename, tb, true);
+            writeTXTAppend(file, tb, true);
         }
     }
 
@@ -904,27 +895,26 @@ public class IOtools
     /**
      * Writes on a new XYZ
      * file or appends to an existing one.
-     * @param filename target XYZ file (new or existing)
+     * @param file target XYZ file (new or existing)
      * @param acs set of atom containers to be written on the XYZ file
      * @param append <code>true</code> to append to existing file,
      * otherwise we overwrite.
      */
 
-    public static void writeXYZAppendSet(String filename, IAtomContainerSet acs,
+    public static void writeXYZAppendSet(File file, IAtomContainerSet acs,
                                                                  boolean append)
     {
         //There is currently no way to write a set to XYZ files so we force it
     	//First, we write one molecule. Then we append the rest.
         XYZWriter xyzWriter = null;
         try {
-            xyzWriter = new XYZWriter(new FileWriter(new File(filename),
-                                                                       append));
+            xyzWriter = new XYZWriter(new FileWriter(file, append));
             xyzWriter.write(acs.getAtomContainer(0));
         }
         catch (CDKException e)
         {
             e.printStackTrace();
-            System.err.println("CDK unable to write XYZ file " + filename);
+            System.err.println("CDK unable to write XYZ file " + file);
         }
         catch (Throwable t2)
         {
@@ -947,8 +937,7 @@ public class IOtools
         }
         XYZWriter xyzWriterAppend = null;
         try {
-            xyzWriterAppend = new XYZWriter(new FileWriter(new File(filename),
-                                                                         true));
+            xyzWriterAppend = new XYZWriter(new FileWriter(file, true));
             for (int i=1; i<acs.getAtomContainerCount(); i++)
             {
                 xyzWriterAppend.write(acs.getAtomContainer(i));
@@ -957,7 +946,7 @@ public class IOtools
         catch (CDKException e)
         {
             e.printStackTrace();
-            System.err.println("CDK unable to append XYZ file " + filename);
+            System.err.println("CDK unable to append XYZ file " + file);
         }
         catch (Throwable t2)
         {
@@ -983,21 +972,37 @@ public class IOtools
 //------------------------------------------------------------------------------
 
     /**
-     * Writes a single line to the end of a TXT file
-     * @param filename name of the target file
-     * @param txt the line to be written
+     * Writes lines of text.
+     * @param file the file where we write.
+     * @param line the line to be written.
      * @param append set to <code>true</code> to append instead of overwrite the
      * target file
      */
 
-    public static void writeTXTAppend(String filename, String txt,
-                                      boolean append)
+    public static void writeTXTAppend(File file, String line,
+    		boolean append)
+    {
+    	writeTXTAppend(file, Arrays.asList(line), append);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Writes lines of text.
+     * @param outFile the file where we write.
+     * @param arrayList the line to be written.
+     * @param append set to <code>true</code> to append instead of overwrite the
+     * target file
+     */
+
+    public static void writeTXTAppend(File outFile, List<String> lines,
+    		boolean append)
     {
         FileWriter writer = null;
         try
         {
-            writer = new FileWriter(filename,append);
-            writer.write(txt + newline);
+            writer = new FileWriter(outFile, append);
+            writer.write(StringUtils.mergeListToString(lines, newline));
         } catch (Throwable t) {
             System.err.println("Failure in writing TXT: " + t);
             System.exit(-1);
@@ -1015,51 +1020,14 @@ public class IOtools
 //------------------------------------------------------------------------------
 
     /**
-     * Writes a list of lines on a TXT file
-     * @param filename name of the target file
-     * @param txt the list of lines to be written
-     * @param append set to <code>true</code> to append instead of overwrite 
-     * the target file
-     */
-
-    public static void writeTXTAppend(String filename, List<String> txt,
-                                                                 boolean append)
-    {
-        FileWriter writer = null;
-        try
-        {
-            writer = new FileWriter(filename,append);
-            for (int i=0; i<txt.size(); i++)
-            {
-                writer.write(txt.get(i) + newline);
-            }
-        } catch (Throwable t) {
-            System.err.println("Failure in writing List<String>: " + txt 
-                                                                           + t);
-            System.exit(-1);
-        } finally {
-             try {
-                 if(writer != null)
-                     writer.close();
-             } catch (IOException ioe) {
-                 System.err.println("Error in writing: " + ioe);
-                 System.exit(-1);
-             }
-        }
-    }
-
-
-//------------------------------------------------------------------------------
-
-    /**
      * Copy the content of text files into other files
-     * @param inFile path and name of the source file
-     * @param outFile path and name of the target file
+     * @param inFile the source file, i.e., where to copy from.
+     * @param outFile the target file, i.e., where to copo into.
      * @param append if <code>true</code> required to append the content of the
      * input file at the end of the output file
      */
 
-    public static void copyFile(String inFile, String outFile, boolean append)
+    public static void copyFile(File inFile, File outFile, boolean append)
     {
         try {
         InputStream inStr = new FileInputStream(inFile);
@@ -1085,12 +1053,11 @@ public class IOtools
      * @param fileName path and name of the file to remove
      */
 
-    public static void deleteFile(String fileName)
+    public static void deleteFile(File file)
     {
-        File f = new File(fileName);
-        if (f.exists())
-            if (f.canWrite())
-                f.delete();
+        if (file.exists())
+            if (file.canWrite())
+            	file.delete();
     }
 
 //------------------------------------------------------------------------------
@@ -1106,8 +1073,8 @@ public class IOtools
      * (<code>true</code> entry)
      */
 
-    public static void filterSDasTXT(String inFile, String outFile, 
-                                                           List<Boolean> filter)
+    public static void filterSDasTXT(File inFile, File outFile,
+    		List<Boolean> filter)
     {
         BufferedReader buffRead = null;
         try {

@@ -1,5 +1,7 @@
 package autocompchem.ui;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -92,7 +94,7 @@ public class ACCMain
         	}
         	
             try {
-            	job = JobFactory.buildFromFile(pathName);
+            	job = JobFactory.buildFromFile(new File(pathName));
             } catch (Throwable t) {
             	t.printStackTrace();
                 String msg = "ERROR! Exception returned while reading "
@@ -180,7 +182,7 @@ public class ACCMain
     	boolean foundTask = false;
     	String task = null;
     	boolean foundParams = false;
-    	String paramsFile = null;
+    	File paramsFile = null;
     	String cliString = "";
     	for (int iarg=0; iarg<args.length; iarg++)
     	{
@@ -207,7 +209,7 @@ public class ACCMain
     						+ "something like '-p <pathname>', but I see "
     						+ "only '" + arg + "'.",-1);
     			}
-    			paramsFile = args[iarg+1];
+    			paramsFile = new File(args[iarg+1]);
     			foundParams=true;
     		}
     		

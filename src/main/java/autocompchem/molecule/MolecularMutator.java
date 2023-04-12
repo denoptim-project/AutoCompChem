@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class MolecularMutator extends Worker
     /**
      * Name of the input file
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Flag indicating the output is to be written to file
@@ -79,7 +80,7 @@ public class MolecularMutator extends Worker
     /**
      * Name of the output file
      */
-    private String outFile;
+    private File outFile;
 
     /**
      * List (with string identifier) of smarts queries
@@ -132,7 +133,8 @@ public class MolecularMutator extends Worker
         if (params.contains("INFILE"))
         {
             inpFromFile = true;
-            this.inFile = params.getParameter("INFILE").getValue().toString();
+            this.inFile = new File(
+            		params.getParameter("INFILE").getValue().toString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
@@ -140,7 +142,8 @@ public class MolecularMutator extends Worker
         if (params.contains("OUTFILE"))
         {
             outToFile = true;
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+            		params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
         }
 

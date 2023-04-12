@@ -393,7 +393,7 @@ public class Job implements Runnable
     		boolean recursive)
     {
         NamedData param = new NamedData(ref.toUpperCase(), type, value);
-    	setParameter(param, false);
+    	setParameter(param, recursive);
     }
     
 //------------------------------------------------------------------------------

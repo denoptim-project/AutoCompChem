@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -102,7 +104,7 @@ public class GaussianJob
 
     public GaussianJob(String inFile)
     {
-        this(IOtools.readTXT(inFile,true));
+        this(IOtools.readTXT(new File(inFile),true));
     }
 
 //------------------------------------------------------------------------------

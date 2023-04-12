@@ -97,8 +97,8 @@ public class SituationBase
         		+ SituationConstants.SITUATIONTXTFILEEXT))
         {   
         	try {
-				Situation s = (Situation) IOtools.readJsonFile(
-						f.getAbsolutePath(), Situation.class);
+				Situation s = (Situation) IOtools.readJsonFile(f, 
+						Situation.class);
 				this.addSituation(s);
 			} catch (Exception e) {
 				e.printStackTrace();

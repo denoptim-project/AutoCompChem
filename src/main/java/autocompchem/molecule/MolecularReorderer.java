@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,12 +73,12 @@ public class MolecularReorderer extends Worker
     /**
      * Name of the input file
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Name of the reference file
      */
-    private String refFile;
+    private File refFile;
 
     /**
      * Flag indicating the output is to be written to file
@@ -87,7 +88,7 @@ public class MolecularReorderer extends Worker
     /**
      * Name of the output file
      */
-    private String outFile;
+    private File outFile;
 
     /**
      * Flag indicating SMARTS-controlled reorganisation (default: NO)
@@ -154,7 +155,8 @@ public class MolecularReorderer extends Worker
         if (params.contains("INFILE"))
         {
             inpFromFile = true;
-            this.inFile = params.getParameter("INFILE").getValue().toString();
+            this.inFile =  new File(
+            		params.getParameter("INFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
@@ -162,14 +164,16 @@ public class MolecularReorderer extends Worker
         if (params.contains("OUTFILE"))
         {
             outToFile = true;
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile =  new File(
+            		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
 
         //Get and check the reference file
         if (params.contains("REFFILE"))
         {
-            this.refFile = params.getParameter("REFFILE").getValue().toString();
+            this.refFile =  new File(
+            		params.getParameter("REFFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 

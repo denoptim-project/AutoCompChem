@@ -152,7 +152,6 @@ public class TextAnalyzerTest
         assertEquals(5,counts.get(1).size(),"Total matches of 'line'");
         assertEquals(4,counts.get(0).get(0),"Line number containing 'here'");
         assertEquals(5,counts.get(0).get(1),"Line number containing 'here'");
-
     }
 
 //------------------------------------------------------------------------------

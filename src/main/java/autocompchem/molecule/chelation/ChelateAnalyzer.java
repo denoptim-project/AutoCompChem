@@ -1,5 +1,6 @@
 package autocompchem.molecule.chelation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,12 +63,12 @@ public class ChelateAnalyzer extends Worker
     /**
      * Name of the input file
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Name of the output file
      */
-    private String outFile;
+    private File outFile;
 
     /**
      * Flag controlling the production of an output file
@@ -133,14 +134,16 @@ public class ChelateAnalyzer extends Worker
             System.out.println(" Adding parameters to ChelateAnalyzer");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValueAsString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get optional parameter
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+            		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
             this.makeout = true;
         }

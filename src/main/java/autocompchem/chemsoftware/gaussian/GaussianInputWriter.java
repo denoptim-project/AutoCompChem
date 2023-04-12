@@ -918,10 +918,10 @@ public class GaussianInputWriter extends ChemSoftInputWriter
   	 * No special file structure required for Gaussian. This method does nothing.
   	 */
   	@Override
-  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
-  		return outputFileName;
+  		return output;
   	}
     
 //------------------------------------------------------------------------------

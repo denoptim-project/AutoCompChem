@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -524,10 +526,10 @@ public class GaussianReStarter extends Worker
                 }
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(inpFile,newGJob.toLinesInp(),false);
+                IOtools.writeTXTAppend(new File(inpFile),newGJob.toLinesInp(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newGJob.toLinesJob(),false);
+                IOtools.writeTXTAppend(new File(newJDFile),newGJob.toLinesJob(),false);
 
                 break;
             }
@@ -600,10 +602,10 @@ public class GaussianReStarter extends Worker
                 newGJob.setAllSpinMultiplicity(spinMult);
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(inpFile,newGJob.toLinesInp(),false);
+                IOtools.writeTXTAppend(new File(inpFile),newGJob.toLinesInp(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newGJob.toLinesJob(),false);
+                IOtools.writeTXTAppend(new File(newJDFile),newGJob.toLinesJob(),false);
 
                 break;
             }
@@ -775,10 +777,10 @@ public class GaussianReStarter extends Worker
                 newGJob.setAllSpinMultiplicity(spinMult);
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(inpFile,newGJob.toLinesInp(),false);
+                IOtools.writeTXTAppend(new File(inpFile),newGJob.toLinesInp(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newGJob.toLinesJob(),false);
+                IOtools.writeTXTAppend(new File(newJDFile),newGJob.toLinesJob(),false);
                
                 break;
             }
@@ -806,10 +808,10 @@ public class GaussianReStarter extends Worker
                 newGJob.setAllSpinMultiplicity(spinMult);
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(inpFile,newGJob.toLinesInp(),false);
+                IOtools.writeTXTAppend(new File(inpFile),newGJob.toLinesInp(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newGJob.toLinesJob(),false);
+                IOtools.writeTXTAppend(new File(newJDFile),newGJob.toLinesJob(),false);
 
                 break;
             }

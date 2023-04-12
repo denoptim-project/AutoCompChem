@@ -297,7 +297,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
             		ChemSoftConstants.PARTEMPLATECONNECTIVITY)
             		.getValueAsString();
             String[] p = val.split("\\s+");
-            String fileWithTplt = p[0];
+            File fileWithTplt = new File(p[0]);
             FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
             //NB: assumption: only one atom container as template.
             this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
@@ -608,8 +608,9 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        					ChemSoftConstants.GENERALFORMAT,atParams);
 	        			String outFileName = outFileRootName+"_allGeoms."
 	        					+ format.toLowerCase();
-	        			outFileName= changeIfParameterIsFound(outFileName,
+	        			outFileName = changeIfParameterIsFound(outFileName,
 	        					ChemSoftConstants.GENERALFILENAME,atParams);
+	        			File outFile = new File(outFileName);
 	        			
 	        			AtomContainerSet acs = (AtomContainerSet) 
 	        					stepData.getNamedData(ChemSoftConstants
@@ -629,12 +630,12 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        			{
 	        				System.out.println("Writing all geometries of "
 	        						+ "step " + stepId + " to file '" 
-	        						+ outFileName+"'");
+	        						+ outFile+"'");
 	        			}
 	        			
 	        			geomsToExpose.add(acs);
 	        			
-	        			IOtools.writeAtomContainerSetToFile(outFileName, acs,
+	        			IOtools.writeAtomContainerSetToFile(outFile, acs,
 	        					format,true);
 	        			
 	        			resultsString.append("-> #geometries ").append(
@@ -662,6 +663,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        					+ format.toLowerCase();
 	        			outFileName= changeIfParameterIsFound(outFileName,
 	        					ChemSoftConstants.GENERALFILENAME,atParams);
+	        			File outFile = new File(outFileName);
 	        			
 	        			AtomContainerSet acs = (AtomContainerSet) 
 	        					stepData.getNamedData(ChemSoftConstants
@@ -689,7 +691,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        			
 	        			lastGeomToExpose = mol;
 	        			
-	        			IOtools.writeAtomContainerToFile(outFileName, mol,
+	        			IOtools.writeAtomContainerToFile(outFile, mol,
 	        					format, true);
 
                         resultsString.append("-> extracting last geometry out"
@@ -878,9 +880,11 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        			NormalModeSet nms = 
 	        					(NormalModeSet) stepData.getNamedData(
 	        					ChemSoftConstants.JOBDATAVIBMODES).getValue();
-	        			String outFile = outFileRootName + "_nm.xyz";
-	        			outFile = changeIfParameterIsFound(outFile, 
+	        			String outFileName = outFileRootName + "_nm.xyz";
+	        			outFileName = changeIfParameterIsFound(outFileName, 
 	        					ChemSoftConstants.GENERALFILENAME, atParams);
+	        			File outFile = new File (outFileName);
+	        			
 	        			String idxsStr = "";
 	        			idxsStr = changeIfParameterIsFound(idxsStr, 
 	        					ChemSoftConstants.GENERALINDEXES, atParams);
@@ -973,6 +977,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 							+ format.toLowerCase();
 					outFileName = changeIfParameterIsFound(outFileName,
 							ChemSoftConstants.GENERALFILENAME,atParams);
+					File outFile = new File(outFileName);
 					
 					IAtomContainer lastGeom = null;
 					for (int stepId=0; stepId<numSteps; stepId++)
@@ -1008,10 +1013,10 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 					if (verbosity > 1)
 					{
 						System.out.println("Writing overal last geometry to "
-								+ "file '" + outFileName+"'");
+								+ "file '" + outFile+"'");
 					}
-					IOtools.writeAtomContainerToFile(outFileName,lastGeom,
-        					format,true);
+					IOtools.writeAtomContainerToFile(outFile, lastGeom,
+        					format, true);
 					lastGeomToExpose = lastGeom;
 					break;
 				}

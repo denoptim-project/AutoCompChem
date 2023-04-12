@@ -99,7 +99,7 @@ public class JobFactoryTest
             		+ "value2a value2b" + NL);
             writer.close();
 
-            job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
+            job = JobFactory.buildFromFile(paramFile);
         }
         catch (Throwable t)
         {
@@ -141,7 +141,7 @@ public class JobFactoryTest
             		+ "MINUTES" + NL);
             writer.close();
 
-            job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
+            job = JobFactory.buildFromFile(paramFile);
         }
         catch (Throwable t)
         {
@@ -207,7 +207,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.ENDJOB + NL);
             writer.close();
 
-            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            Job job = JobFactory.buildFromFile(jdFile);
             
 //            System.out.println("JOB CREATED");        	
 //            System.out.println("#steps: "+job.getNumberOfSteps());
@@ -266,7 +266,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.ENDJOB + NL);
             writer.close();
 
-            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            Job job = JobFactory.buildFromFile(jdFile);
 
             assertEquals(3,job.getNumberOfSteps(),"Number of 1st level jobs");
             assertEquals("value2",
@@ -331,7 +331,7 @@ public class JobFactoryTest
             //  end of    NESTED Job1
             writer.close();
 
-            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            Job job = JobFactory.buildFromFile(jdFile);
 
             assertEquals("value1",
                         job.getParameter("key1").getValueAsString());
@@ -383,7 +383,7 @@ public class JobFactoryTest
 
             // Reset job
             job = new Job();
-            job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            job = JobFactory.buildFromFile(jdFile);
 
             // Total number of branches
             assertEquals(2,job.getNumberOfSteps(),"B-Num. of 0th level jobs");

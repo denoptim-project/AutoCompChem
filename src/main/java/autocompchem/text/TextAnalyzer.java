@@ -112,28 +112,13 @@ public class TextAnalyzer
      * any character. Use it only at the beginning (*blabla), at the end 
      * (blabla*), or in both places (*blabla*). If no '*' is given the third 
      * case is chosen by default: filename must contain the query string.
-     * @return the number of lines matching (1-n, does not work as .size()!)
+     * @return the number of matching lines.
      */
 
     public static int count(BufferedReader buffRead, String query)
     {
-        boolean[] startMidEnd = getMatchingMethod(query);
-
-        int num = 0;
-        try {
-            String line = null;
-            while ((line = buffRead.readLine()) != null)
-            {
-            	String pattern = preparePattern(query,startMidEnd);
-                if (match(line,pattern,startMidEnd))
-                {
-                    num++;
-                }
-            }
-        } catch (Throwable t) {
-        	//none
-        }
-        return num;
+        List<List<Integer>> counts = count(buffRead, Arrays.asList(query));
+        return counts.get(counts.size()-1).get(0);
     }
 
 //------------------------------------------------------------------------------

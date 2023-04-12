@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.vibmodule;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -67,19 +69,19 @@ public class VibModuleOutputHandler extends Worker
                     Arrays.asList(TaskID.EXTRACTVIBMODULEFORCECONSTANTS)));
 
     /**
-     * Name of the output file from VibModule: the input of this class
+     * The output file from VibModule: the input of this class
      */
-    private String vmFile;
+    private File vmFile;
 
     /**
-     * Name of the molecular representation file
+     * The molecular representation file
      */
-    private String molFile;
+    private File molFile;
 
     /**
-     * Name of the output file for tasks run by this worker
+     * The output file for tasks run by this worker
      */
-    private String outFile = "noOutput";
+    private File outFile;
 
     /**
      * Verbosity level
@@ -209,24 +211,25 @@ public class VibModuleOutputHandler extends Worker
             System.out.println(" Adding parameters to VibModuleOutputHandler");
 
         //Get and check the input file (which is an output from VibModule)
-        this.vmFile = params.getParameter("VMFILE").getValue().toString();
+        String path = params.getParameter("VMFILE").getValue().toString();
+        this.vmFile = new File(path);
         FileUtils.foundAndPermissions(this.vmFile,true,false,false);
 
         //Get and check the input SDF file (which is the chemical system)
-        this.molFile = params.getParameter("MOLFILE").getValue().toString();
+        String path2 = params.getParameter("MOLFILE").getValue().toString();
+        this.molFile = new File(path2);
         FileUtils.foundAndPermissions(this.molFile,true,false,false);
-        //this.molName = FilesManager.getRootOfFileName(this.molFile);
 
         //Get and check the output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = 
-                         params.getParameter("OUTFILE").getValue().toString();
+            String path3= params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(path3);
             FileUtils.mustNotExist(this.outFile);
         } 
         else
         {
-            this.outFile = FileUtils.getRootOfFileName(this.vmFile);
+            this.outFile = new File(FileUtils.getRootOfFileName(this.vmFile));
         }
 
         //Import smarts
@@ -452,8 +455,8 @@ public class VibModuleOutputHandler extends Worker
             }
 
             //Read selected lines
-            List<String> lines = IOtools.extractFromTo(vmFile,startLine,
-                                                                      stopLine);
+            List<String> lines = IOtools.extractFromTo(vmFile, startLine,
+            		stopLine);
 
             //Extract internal coordinated and force constants
             int nstr = 0;

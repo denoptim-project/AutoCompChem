@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+import java.io.File;
 import java.util.List;
 
 import autocompchem.datacollections.ParameterConstants;
@@ -29,14 +30,14 @@ public class JobFactory
      * <ul>
      * <li><i>jobDetails</i> format.</li>
      * </ul>
-     * @param pathName the pathname of the file
+     * @param file the file to read
      * @return the collection of parameters
      */
 
-    public static Job buildFromFile(String pathName)
+    public static Job buildFromFile(File file)
     {
         List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
-        		pathName,
+        		file,
                 ParameterConstants.STARTJOB, //delimiter
                 ParameterConstants.ENDJOB, //delimiter
                 false,  //don't take only first
@@ -46,7 +47,7 @@ public class JobFactory
         {
         	// Since there are no JOBSTART/JOBEND blocks we interpret the text
         	// as parameters for a single job
-        	List<String> lines = IOtools.readTXT(pathName);
+        	List<String> lines = IOtools.readTXT(file);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
         			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
@@ -66,14 +67,14 @@ public class JobFactory
      * <ul>
      * <li><i>jobDetails</i> format.</li>
      * </ul>
-     * @param pathName the pathname of the file
+     * @param file the file to read
      * @return the collection of parameters
      */
 
-    public static Job buildFromFile(String pathName, String cliString)
+    public static Job buildFromFile(File file, String cliString)
     {
         List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
-        		pathName,
+        		file,
                 ParameterConstants.STARTJOB, //delimiter
                 ParameterConstants.ENDJOB, //delimiter
                 false,  //don't take only first
@@ -88,7 +89,7 @@ public class JobFactory
         {
         	// Since there are no JOBSTART/JOBEND blocks we interpret the text
         	// as parameters for a single job
-        	List<String> lines = IOtools.readTXT(pathName);
+        	List<String> lines = IOtools.readTXT(file);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
         			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);

@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,9 +65,9 @@ public class MolecularMeter extends Worker
     private final AtomicInteger CRDID = new AtomicInteger(0);
 
     /**
-     * Pathname to the file containing the molecules to analyse
+     * The file containing the molecules to analyse
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Map of the SMARTS queries used to define the quantities to measure
@@ -139,8 +140,9 @@ public class MolecularMeter extends Worker
 
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        String pathname = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(pathname);
+        FileUtils.foundAndPermissions(pathname,true,false,false);
 
         //Get SMARTS based definition of quantities
         if (params.contains("SMARTS"))

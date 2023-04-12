@@ -369,8 +369,7 @@ public class OrcaOutputAnalyzer extends ChemSoftOutputAnalyzer
         		
         		if (xyzOpt.exists())
                 {
-        			List<IAtomContainer> mols = IOtools.readXYZ(
-        				xyzOpt.getAbsolutePath());
+        			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
         		
         			for (IAtomContainer mol : mols)
         			{

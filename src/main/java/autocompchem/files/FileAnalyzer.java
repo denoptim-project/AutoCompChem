@@ -33,7 +33,7 @@ import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
 /**
- * Tool for analysing txt files
+ * Tool for analysing txt files.
  * 
  * @author Marco Foscato
  */
@@ -57,7 +57,7 @@ public class FileAnalyzer
      * Count lines containing a patter. This method correspond to the Linux 
      * command grep -c "some pattern" filename.
      * @param filename name of the file to be analysed
-     * @param str patters string. '*' is used
+     * @param pattern string. '*' is used
      * as usual to specify the continuation of the string with any number of 
      * any character. Use it only at the beginning (*blabla), at the end 
      * (blabla*), or in both places (*blabla*). If no '*' is given the third 
@@ -65,34 +65,58 @@ public class FileAnalyzer
      * @return the number of lines matching (1-n, does not work as .size()!)
      */
 
-    public static int count(String filename, String str)
+    public static int count(String filename, String pattern)
     {
-        int num = 0;
-        BufferedReader buffRead = null;
-        boolean badTermination = false;
-        String msg = "";
-        try {
-            buffRead = new BufferedReader(new FileReader(filename));
-            num = TextAnalyzer.count(buffRead,str);
-        } catch (Throwable t) {
-            badTermination = true;
-            msg = t.getMessage();            
-        } finally {
-            try {
-                if (buffRead != null)
-                    buffRead.close();
-            } catch (Throwable t2) {
-                badTermination = true;
-                msg = t2.getMessage();                
-            }
-        }
+    	return count(new File(filename), pattern);
+    }
+    
+//------------------------------------------------------------------------------
 
-        if (badTermination)
-            Terminator.withMsgAndStatus("ERROR! " + msg, -1);
+    /**
+     * Count lines containing a patter. This method correspond to the Linux 
+     * command grep -c "some pattern" filename.
+     * @param file the file to be analysed.
+     * @param pattern patters string. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
+     * case is chosen by default: filename must contain the query string.
+     * @return the number of lines matching (1-n, does not work as .size()!)
+     */
 
-        return num;
+    public static int count(File file, String pattern)
+    {
+        List<List<Integer>> counts = count(file, Arrays.asList(pattern));
+        return counts.get(counts.size()-1).get(0);
     }
 
+  //------------------------------------------------------------------------------
+
+    /**
+     * Count lines containing patterns. This method correspond to run the Linux 
+     * command grep -c "some pattern" filename AND grep -n "some pattern" in 
+     * once. The returned array contains both the linenumber of the matches
+     * and the counts. The last ArrayList in the returned
+     * ArrayList of ArrayLists is the one that contains the counts, 
+     * while all the other
+     * ArrayLists contain the line numbers
+     * @param pathname of the file to be analysed
+     * @param patterns list of pattern strings. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the pattern
+     * will be searches in all the line (as for *blabla*).
+     * If a line matches more than one query it is counted more than one
+     * @return the counts per each pattern and the line numbers lists 
+     * (1-n, does not work as .size()!) 
+     */
+
+    public static List<List<Integer>> count(String pathname, 
+    		List<String> patterns)
+    {
+    	return count(new File(pathname), patterns);
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -103,8 +127,8 @@ public class FileAnalyzer
      * ArrayList of ArrayLists is the one that contains the counts, 
      * while all the other
      * ArrayLists contain the line numbers
-     * @param filename name of the file to be analysed
-     * @param lsStr list of pattern strings. '*' is used
+     * @param file the file to be analysed
+     * @param patterns list of pattern strings. '*' is used
      * as usual to specify the continuation of the string with any number of 
      * any character. Use it only at the beginning (*blabla), at the end 
      * (blabla*), or in both places (*blabla*). If no '*' is given the pattern
@@ -114,15 +138,15 @@ public class FileAnalyzer
      * (1-n, does not work as .size()!) 
      */
 
-    public static List<List<Integer>> count(String filename, List<String> lsStr)
+    public static List<List<Integer>> count(File file, List<String> patterns)
     {
         List<List<Integer>> counts = new ArrayList<List<Integer>>();
         BufferedReader buffRead = null;
         boolean badTermination = false;
         String msg = "";
         try {
-            buffRead = new BufferedReader(new FileReader(filename));
-            counts = TextAnalyzer.count(buffRead,lsStr);
+            buffRead = new BufferedReader(new FileReader(file));
+            counts = TextAnalyzer.count(buffRead, patterns);
         } catch (Throwable t) {
             badTermination = true;
             msg = t.getMessage();
@@ -268,7 +292,7 @@ public class FileAnalyzer
      * Nested blocks are dealt with, and the returned list includes only the
      * first, outermost level. Nested TextBlocks are embedded inside their
      * nesting TextBlocks.
-     * @param pathName the file to read
+     * @param file the file to read
      * @param startPattrn REGEXs that identify the beginning of a
      * target section.
      * @param endPattrn REGEXs that identify the end of a
@@ -280,7 +304,7 @@ public class FileAnalyzer
      * @return a list of matched text blocks that may include nested blocks.
      */
 
-    public static List<TextBlockIndexed> extractTextBlocks(String pathName,
+    public static List<TextBlockIndexed> extractTextBlocks(File file,
                                                             String startPattrn,
                                                               String endPattrn,
                                                              boolean onlyFirst,
@@ -291,12 +315,12 @@ public class FileAnalyzer
         startPattrns.add(startPattrn);
         endPattrns.add(endPattrn);
         
-        FileUtils.foundAndPermissions(pathName,true,false,false);
+        FileUtils.foundAndPermissions(file,true,false,false);
         BufferedReader br = null;
         List<TextBlockIndexed> blocks = null;
         try
         {
-            br = new BufferedReader(new FileReader(pathName));
+            br = new BufferedReader(new FileReader(file));
             blocks = TextAnalyzer.extractTextBlocks(br, new ArrayList<String>(),
             		startPattrns, 
             		endPattrns,
@@ -304,7 +328,7 @@ public class FileAnalyzer
             		inclPatts,
             		false);
         } catch (Exception e) {
-            Terminator.withMsgAndStatus("ERROR! Unable to read "+ pathName,-1);
+            Terminator.withMsgAndStatus("ERROR! Unable to read "+ file,-1);
         } finally {
 	        if (br!=null)
 	        {
@@ -614,7 +638,7 @@ public class FileAnalyzer
     
 //------------------------------------------------------------------------------
     
-    public static ACCFileType getFileTypeByProbeContentType(String fileName)
+    public static ACCFileType getFileTypeByProbeContentType(File jdFile)
     {
     	/*
 //TODO-gg use Tika
@@ -626,14 +650,13 @@ public class FileAnalyzer
 </dependency>
     	 */
     	ACCFileType type = ACCFileType.UNSPECIFIED;
-        final File file = new File(fileName);
         
         //TODO-gg remove this is hardcoded for now
     	String typ = "UNSPECIFIED";
-    	if (fileName.toUpperCase().endsWith(".JSON"))
+    	if (jdFile.getName().toUpperCase().endsWith(".JSON"))
     	{
     		typ = "JSON";
-    	} else if (fileName.toUpperCase().endsWith(".TXT"))
+    	} else if (jdFile.getName().toUpperCase().endsWith(".TXT"))
     	{
     		typ = "TXT";
     	/*
@@ -641,7 +664,7 @@ public class FileAnalyzer
     	{	
     		typ = "JSON";
     	*/
-    	} else if (fileName.toUpperCase().endsWith("SDF"))
+    	} else if (jdFile.getName().toUpperCase().endsWith("SDF"))
     	{	
     		typ = "SDF";
     	}

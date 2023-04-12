@@ -994,12 +994,9 @@ public class Directive implements IDirectiveComponent, Cloneable
 		ParameterStorage ps = new ParameterStorage();
 		if (dirComp!=null)
 		{
-			ps.importParametersFromLines("Directive " 
-	    			+ dirComp.getComponentType() + " " + dirComp.getName(),
-	    			taskSpecificLines);
+			ps.importParametersFromLines(taskSpecificLines);
 		} else {
-			ps.importParametersFromLines("noFile",
-	    			taskSpecificLines);
+			ps.importParametersFromLines(taskSpecificLines);
 		}
 		
 		//TODO: much of this will eventually be removed or moved to a dedicated 

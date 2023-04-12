@@ -1,5 +1,7 @@
 package autocompchem.modeling.basisset;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -46,7 +48,7 @@ public class BasisSetUtils
      * @return the basis set object
      */
 
-    public static BasisSet importBasisSetFromGBSFile(String inFile, 
+    public static BasisSet importBasisSetFromGBSFile(File inFile, 
     		int verbosity)
     {
         String msg = "";
@@ -406,10 +408,10 @@ public class BasisSetUtils
      * @param bs the basis set to be written
      * @param format the format of the basis set (i.e., the name of the software
      * package meant to read the basis set) 
-     * @param out the pathname of the output file
+     * @param file the pathname of the output file
      */
 
-    public static void writeFormattedBS(BasisSet bs, String format, String out)
+    public static void writeFormattedBS(BasisSet bs, String format, File file)
     {
     	List<String> lines = new ArrayList<String>();
     	switch (format.toUpperCase())
@@ -431,7 +433,7 @@ public class BasisSetUtils
     	default:
     		
     	}
-        IOtools.writeTXTAppend(out, StringUtils.mergeListToString(lines, 
+        IOtools.writeTXTAppend(file, StringUtils.mergeListToString(lines, 
         		System.getProperty("line.separator")), true);
     }
 

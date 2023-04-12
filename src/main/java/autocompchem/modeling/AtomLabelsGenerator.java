@@ -1,5 +1,6 @@
 package autocompchem.modeling;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,12 +61,12 @@ public class AtomLabelsGenerator extends Worker
     /**
      * The name of the input file (molecular structure files)
      */
-    private String inFile = "noInFile";
+    private File inFile;
 
     /**
      * The name of the output file, if any
      */
-    private String outFile = "";
+    private File outFile;
     
     /**
      * Specified which policy to use when generating atom labels.
@@ -124,7 +125,8 @@ public class AtomLabelsGenerator extends Worker
         // Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE"))
         {
-            this.inFile = params.getParameter("INFILE").getValueAsString();
+            this.inFile = new File(
+            		params.getParameter("INFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
@@ -132,8 +134,8 @@ public class AtomLabelsGenerator extends Worker
         if (params.contains("OUTFILE"))
         {
             //Get and check output file
-            this.outFile = 
-                        params.getParameter("OUTFILE").getValueAsString();
+            this.outFile = new File(
+                        params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
 

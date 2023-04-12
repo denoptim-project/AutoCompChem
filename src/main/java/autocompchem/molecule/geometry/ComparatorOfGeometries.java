@@ -1,5 +1,6 @@
 package autocompchem.molecule.geometry;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -130,8 +131,10 @@ public class ComparatorOfGeometries
         }
         catch (Throwable t)
         {
-            IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molA,false);
-            IOtools.writeSDFAppend("AutoCompChem-error_uncloneable.sdf",molB,true);
+            IOtools.writeSDFAppend(
+            		new File("AutoCompChem-error_uncloneable.sdf"),molA,false);
+            IOtools.writeSDFAppend(
+            		new File("AutoCompChem-error_uncloneable.sdf"),molB,true);
             Terminator.withMsgAndStatus("ERROR! Cannot clone mols to calculate "
                 + "best geometry-aware atom mapping.", -1);
         }

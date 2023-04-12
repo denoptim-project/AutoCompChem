@@ -78,11 +78,11 @@ public class GaussianInputWriterTest
     	mol.addAtom(new Atom("C", new Point3d(1.0,2.0,3.0)));
     	mol.addAtom(new Atom("O", new Point3d(2.5,2.0,3.0)));
     	mol.addBond(0, 1, IBond.Order.TRIPLE);
-    	IOtools.writeSDFAppend(molFile.getAbsolutePath(), mol, false);
+    	IOtools.writeSDFAppend(molFile, mol, false);
     	
     	CompChemJob ccj = createTestJob();
     	
-    	IOtools.writeTXTAppend(jdFile.getAbsolutePath(), 
+    	IOtools.writeTXTAppend(jdFile, 
     			ccj.toLinesJobDetails(), false);
     	
     	List<String> parLines = new ArrayList<String>();
@@ -95,13 +95,13 @@ public class GaussianInputWriterTest
     	parLines.add(ChemSoftConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
     	
-        IOtools.writeTXTAppend(parFile.getAbsolutePath(), parLines, false);
+        IOtools.writeTXTAppend(parFile, parLines, false);
 
         assertTrue(molFile.exists(),"Mol file exists");
         assertTrue(parFile.exists(),"Par file exists");
         assertTrue(jdFile.exists(),"JD file exists");
         
-        Job job = JobFactory.buildFromFile(parFile.getAbsolutePath());
+        Job job = JobFactory.buildFromFile(parFile);
         job.run();
         
         File inpFile = new File(inpRoot + GaussianConstants.GAUINPEXTENSION);
@@ -116,7 +116,7 @@ public class GaussianInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),
         		"elements: O,C,P"),"Keyword specific separator");
         
-        List<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp = IOtools.readTXT(inpFile);
  
         //TODO-gg this test is not finished: finish it!
     }

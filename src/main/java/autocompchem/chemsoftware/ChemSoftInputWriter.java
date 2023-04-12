@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware;
 
+import java.io.File;
 import java.io.IOException;
 
 /*
@@ -49,7 +50,7 @@ public abstract class ChemSoftInputWriter extends Worker
      * Molecular geometries input file. One or more geometries depending on the
      * kind of computational chemistry job. 
      */
-    private String inGeomFile;
+    private File inGeomFile;
     
     /**
      * List of molecular systems considered as input. This can either be
@@ -80,12 +81,6 @@ public abstract class ChemSoftInputWriter extends Worker
     		Arrays.asList("geometry"));
 
     /**
-     * Input format identifier.
-     */
-    private String inFileFormat = "nd";
-
-    //TODO-gg make these be File
-    /**
      * Pathname root for output files (input for comp.chem. software).
      */
     protected String outFileNameRoot;
@@ -93,17 +88,12 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Output name (input for comp.chem. software).
      */
-    protected String outFileName;
+    protected File outFile;
     
     /**
      * Flag deciding if we write the specific job-details file or not.
      */
     private boolean writeJobSpecificJDOutput = true;
-
-    /**
-     * Output job details name.
-     */
-    private String outJDFile;
 
     /**
      * Charge of the whole system.
@@ -145,6 +135,9 @@ public abstract class ChemSoftInputWriter extends Worker
      */
     protected String outExtension;
 
+    /**
+     *  New line character
+     */
     protected final String NL = System.getProperty("line.separator");
     
 
@@ -165,7 +158,8 @@ public abstract class ChemSoftInputWriter extends Worker
      * collection of input parameters.
      */
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void initialize()
     {
         if (params.contains(ChemSoftConstants.PARVERBOSITY))
@@ -181,62 +175,18 @@ public abstract class ChemSoftInputWriter extends Worker
 
         if (params.contains(ChemSoftConstants.PARGEOMFILE))
         {
-            this.inGeomFile = params.getParameter(
+            String pathname = params.getParameter(
                     ChemSoftConstants.PARGEOMFILE).getValueAsString();
-            
-            //TODO: use automated detection of file type
-            
-            if (inGeomFile.endsWith(".sdf"))
-            {
-                inFileFormat = "SDF";
-            }
-            else if (inGeomFile.endsWith(".xyz"))
-            {
-                inFileFormat = "XYZ";
-            }
-            else if (inGeomFile.endsWith(".out"))
-            {
-                //TODO: identify the kind of cc-software that produced that file
-                Terminator.withMsgAndStatus("ERROR! Format of file '"
-                        + inGeomFile + "' not recognized!",-1);
-            }
-            else
-            {
-                Terminator.withMsgAndStatus("ERROR! Format of file '" 
-                        + inGeomFile + "' not recognized!",-1);
-            }
-            FileUtils.foundAndPermissions(this.inGeomFile,true,false,false);
-            
-            //TODO: make and use a general molecular structure reader
-            switch (inFileFormat) 
-            {
-            case "SDF":
-                inpGeom = IOtools.readSDF(inGeomFile);
-                break;
-
-            case "XYZ":
-                inpGeom = IOtools.readXYZ(inGeomFile);
-                break;
-
-            default:
-                Terminator.withMsgAndStatus("ERROR! " 
-                    + this.getClass().getName()
-                    + " can read multi-geometry input files "
-                    + "only when starting from XYZ of SDF files. Make "
-                    + "sure file '" + inGeomFile + "' has proper "
-                    + "format and extension.", -1);
-            }
+            FileUtils.foundAndPermissions(pathname,true,false,false);
+            this.inGeomFile = new File(pathname);
+            this.inpGeom = IOtools.readMultiMolFiles(this.inGeomFile);
         } 
+        
         if (params.contains(ChemSoftConstants.PARGEOM))
         {
-            this.inpGeom = (List<IAtomContainer>) params.getParameter(
-                    ChemSoftConstants.PARGEOM).getValue();
-        }
-        //TODO: deal with stream-like input
-        if (inpGeom.size()==0)
-        {
-            Terminator.withMsgAndStatus("ERROR! No geometry provided. "
-            		+ "Nothing to do!",-1);
+        	Object value = params.getParameter(ChemSoftConstants.PARGEOM)
+        			.getValue();
+            this.inpGeom = (List<IAtomContainer>) value;
         }
 
         if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
@@ -251,7 +201,7 @@ public abstract class ChemSoftInputWriter extends Worker
             this.overwriteGeomNames = true;
             this.geomNames.clear();
             String line = params.getParameter(
-            		ChemSoftConstants.PARGEOMNAMES).getValue().toString();
+            		ChemSoftConstants.PARGEOMNAMES).getValueAsString();
             String[] parts = line.trim().split("\\s+");
             for (int i=0; i<parts.length; i++)
             {
@@ -273,8 +223,8 @@ public abstract class ChemSoftInputWriter extends Worker
 
         if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
         {
-            String jdFile = params.getParameter(
-                    ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString();
+            File jdFile = new File(params.getParameter(
+                    ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString());
             if (verbosity > 0)
             {
                 System.out.println(" Job details from JD file '" 
@@ -308,7 +258,7 @@ public abstract class ChemSoftInputWriter extends Worker
             {
                 System.out.println(" Job details from nested parameter block.");
             }
-            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            List<String> lines = new ArrayList<String>(Arrays.asList(
                     jdLines.split("\\r?\\n")));
             this.ccJob = new CompChemJob(lines);
         }
@@ -335,14 +285,12 @@ public abstract class ChemSoftInputWriter extends Worker
         {
             outFileNameRoot = params.getParameter(
                     ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
-            outFileName = outFileNameRoot + inpExtrension;
-            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
+            outFile = new File(outFileNameRoot + inpExtrension);
         } else if (params.contains(ChemSoftConstants.PAROUTFILE))
         {
-        	outFileName = params.getParameter(
-        			ChemSoftConstants.PAROUTFILE).getValueAsString();
-            outFileNameRoot = FileUtils.getRootOfFileName(outFileName);
-            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
+        	outFile = new File(params.getParameter(
+        			ChemSoftConstants.PAROUTFILE).getValueAsString());
+            outFileNameRoot = FileUtils.getRootOfFileName(outFile);
         } else {
         	if (inGeomFile==null)
         	{
@@ -357,7 +305,8 @@ public abstract class ChemSoftInputWriter extends Worker
 	                         + outFileNameRoot + "'.");
                 }
         	} else {
-        		outFileNameRoot = FileUtils.getRootOfFileName(inGeomFile);
+        		outFileNameRoot = FileUtils.getRootOfFileName(
+        				inGeomFile.getAbsolutePath());
                 if (verbosity > 0)
                 {
                     System.out.println(" Neither '" 
@@ -368,8 +317,7 @@ public abstract class ChemSoftInputWriter extends Worker
                             + outFileNameRoot + "'.");
                 }
         	}
-            outFileName = outFileNameRoot + inpExtrension;
-            outJDFile = outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION;
+            outFile = new File(outFileNameRoot + inpExtrension);
         }
         
         if (params.contains(ChemSoftConstants.PARNOJSONOUTPUT))
@@ -412,7 +360,7 @@ public abstract class ChemSoftInputWriter extends Worker
     {
     	if (inpGeom.size() == 1)
     	{
-    		produceSingleJobInputFiles(inpGeom, outFileName, outFileNameRoot);
+    		produceSingleJobInputFiles(inpGeom, outFile, outFileNameRoot);
     	} else {
     		
     		switch (multiGeomMode)
@@ -440,7 +388,8 @@ public abstract class ChemSoftInputWriter extends Worker
 		            
 		            List<IAtomContainer> set = new ArrayList<IAtomContainer>();
 		            set.add(mol);
-		            produceSingleJobInputFiles(set, fileRootName+inpExtrension,
+		            produceSingleJobInputFiles(set, 
+		            		new File(fileRootName+inpExtrension),
 		            		fileRootName);
 		        }
 				break;
@@ -462,8 +411,9 @@ public abstract class ChemSoftInputWriter extends Worker
 			        }
 	            }
 	            
-	            produceSingleJobInputFiles(inpGeom, outFileNameRoot 
-	            		+ inpExtrension, outFileNameRoot);
+	            produceSingleJobInputFiles(inpGeom, 
+	            		new File(outFileNameRoot + inpExtrension),
+	            		outFileNameRoot);
 				break;
 				
 			default:
@@ -501,14 +451,14 @@ public abstract class ChemSoftInputWriter extends Worker
      * <br>
      * <b>WARNING</b>: Changes in the number of electrons or in spin 
      * multiplicity among the geometries are not supported (yet).
-     * @param outFileName the pathname of the job's main input file.
+     * @param outFile the job's main input file.
      * @param outFileNameRoot the root of the 
      * pathname to any job input file that will be
      * produced. Extensions and suffixed are defined by software specific 
      * constants.
      */
     private void produceSingleJobInputFiles(List<IAtomContainer> mols, 
-    		String outFileName,	String outFileNameRoot)
+    		File outFile,	String outFileNameRoot)
     {
     	// We customize a copy of the master job
 		CompChemJob molSpecJob = ccJob.clone();
@@ -561,23 +511,22 @@ public abstract class ChemSoftInputWriter extends Worker
 		setSpinMultiplicityIfUnset(molSpecJob, spinMult+"", omitSpinMult);
 		
 		// Manage output consisting of multiple files and/or folder trees
-		outFileName = manageOutputFileStructure(mols, outFileName);
+		outFile = manageOutputFileStructure(mols, outFile);
 		
 		// Produce the actual main input file
-		FileUtils.mustNotExist(outFileName);
-		IOtools.writeTXTAppend(outFileName, getTextForInput(molSpecJob), false);
+		FileUtils.mustNotExist(outFile);
+		IOtools.writeTXTAppend(outFile, getTextForInput(molSpecJob), false);
 		
 		// Produce a specific job-details file
 		if (writeJobSpecificJDOutput)
 		{
 			CompChemJob cleanCCJ = molSpecJob.clone();
 			cleanCCJ.removeACCTasks();
-			FileUtils.mustNotExist(outFileNameRoot 
+			File jdFileOut = new File(outFileNameRoot 
 					+ ChemSoftConstants.JSONJDEXTENSION);
+			FileUtils.mustNotExist(jdFileOut);
 			Gson writer = ACCJson.getWriter();
-			IOtools.writeTXTAppend(outFileNameRoot 
-					+ ChemSoftConstants.JSONJDEXTENSION, 
-					writer.toJson(cleanCCJ), true);
+			IOtools.writeTXTAppend(jdFileOut, writer.toJson(cleanCCJ), true);
 		}
     }
 
@@ -593,8 +542,8 @@ public abstract class ChemSoftInputWriter extends Worker
      * folder tree.
      * @return the pathname of the main input file.
      */
-    protected abstract String manageOutputFileStructure(
-    		List<IAtomContainer> mols, String outputFileName);
+    protected abstract File manageOutputFileStructure(
+    		List<IAtomContainer> mols, File output);
 
 //------------------------------------------------------------------------------
       
@@ -664,7 +613,7 @@ public abstract class ChemSoftInputWriter extends Worker
      * be part of the main input file.
      */
     //TODO: make this work with a StringBuilder
-    protected abstract ArrayList<String> getTextForInput(CompChemJob job);
+    protected abstract List<String> getTextForInput(CompChemJob job);
     
 //------------------------------------------------------------------------------
     

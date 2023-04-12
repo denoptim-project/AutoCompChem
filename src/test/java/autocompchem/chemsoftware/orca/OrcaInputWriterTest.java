@@ -86,7 +86,7 @@ public class OrcaInputWriterTest
     	mol.addAtom(new Atom("C", new Point3d(1.0,2.0,3.0)));
     	mol.addAtom(new Atom("O", new Point3d(2.5,2.0,3.0)));
     	mol.addBond(0, 1, IBond.Order.TRIPLE);
-    	IOtools.writeSDFAppend(molFile.getAbsolutePath(), mol, false);
+    	IOtools.writeSDFAppend(molFile, mol, false);
     	
     	Directive d1 = new Directive("!");
     	d1.addKeyword(new Keyword("calculation", false, "NumFreq"));
@@ -111,7 +111,7 @@ public class OrcaInputWriterTest
     	ccj.setDirective(d2);
     	ccj.setDirective(d3);
     	
-    	IOtools.writeTXTAppend(jdFile.getAbsolutePath(), 
+    	IOtools.writeTXTAppend(jdFile, 
     			ccj.toLinesJobDetails(), false);
     	
     	ArrayList<String> parLines = new ArrayList<String>();
@@ -124,23 +124,23 @@ public class OrcaInputWriterTest
     	parLines.add(ChemSoftConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
 
-        IOtools.writeTXTAppend(parFile.getAbsolutePath(), parLines, false);
+        IOtools.writeTXTAppend(parFile, parLines, false);
 
         assertTrue(molFile.exists(),"Mol file exists");
         assertTrue(parFile.exists(),"Par file exists");
         assertTrue(jdFile.exists(),"JD file exists");
         
-        Job job = JobFactory.buildFromFile(parFile.getAbsolutePath());
+        Job job = JobFactory.buildFromFile(parFile);
         job.run();
         
         File inpFile = new File(inpRoot + ".inp");
         assertTrue(inpFile.exists(),"Inp file exists");
-        assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(), "XTB2"), 
+        assertTrue(1 == FileAnalyzer.count(inpFile, "XTB2"), 
         		"Generated input file contains XTB2");
-        assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(), COORDGEOM), 
+        assertTrue(1 == FileAnalyzer.count(inpFile, COORDGEOM), 
         		"Generated input file contains "+COORDGEOM);
         
-        List<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp = IOtools.readTXT(inpFile);
  
         // Now we do the almost the same, but we give the job details in a nested block
         // of text in side the job-defining parameters file (paramFile2)
@@ -161,9 +161,9 @@ public class OrcaInputWriterTest
     	parLines2.addAll(ccj.toLinesJobDetails());
     	parLines2.add(ParameterConstants.ENDMULTILINE);
 
-        IOtools.writeTXTAppend(parFile2.getAbsolutePath(), parLines2, false);
+        IOtools.writeTXTAppend(parFile2, parLines2, false);
         
-        Job job2 = JobFactory.buildFromFile(parFile2.getAbsolutePath());
+        Job job2 = JobFactory.buildFromFile(parFile2);
         job2.run();
         
         File inpFile2 = new File(inpRoot2 + ".inp");
@@ -173,7 +173,7 @@ public class OrcaInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile2.getAbsolutePath(), COORDGEOM),
         		"Generated input file 2 contains "+COORDGEOM);
         
-        List<String> linesInp2 = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp2 = IOtools.readTXT(inpFile);
         
         assertEquals(linesInp.size(),linesInp2.size(), 
         		"Number of lines in generated input file");

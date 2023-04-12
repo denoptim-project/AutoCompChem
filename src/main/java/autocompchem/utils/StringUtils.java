@@ -156,7 +156,7 @@ public class StringUtils
      * corresponding <code>toString()</code> method.
      * @param list the entries to append.
      * @param sep separator to use between entries.
-     * @return the string <code>e_1+sep+e_2+sep+...+e_N</code>.
+     * @return the string <code>e_1+sep+e_2+sep+...+e_N+sep</code>.
      */
     
     public static String mergeListToString(List<? extends Object> list, String sep)

@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware.spartan;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -312,8 +313,8 @@ public class SpartanOutputHandler extends Worker
         }
 
         //Error identififcation
-        String sprtOutputLog = inFile + slash + molName + slash + 
-                                                SpartanConstants.OUTPUTFILENAME;
+        File sprtOutputLog = new File(inFile + slash + molName + slash +
+        		SpartanConstants.OUTPUTFILENAME);
         if (!normalTermiated && errorDef != null)
         {
             if (verbosity > 0)
@@ -407,7 +408,7 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".sdf";
                 }
-                IOtools.writeSDFAppendSet(outFile,mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile),mols,false);
                 break;
 
             case "XYZ":
@@ -415,12 +416,12 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppendSet(outFile,mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile),mols,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppendSet(outFile + ".xyz",mols,false);
-                IOtools.writeSDFAppendSet(outFile + ".sdf",mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile + ".xyz"),mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile + ".sdf"),mols,false);
                 break;
 
             default:
@@ -448,7 +449,7 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".sdf";
                 }
-                IOtools.writeSDFAppend(outFile,mol,false);
+                IOtools.writeSDFAppend(new File(outFile),mol,false);
                 break;
 
             case "XYZ":
@@ -456,12 +457,12 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppend(outFile,mol,false);
+                IOtools.writeXYZAppend(new File(outFile),mol,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppend(outFile + ".xyz",mol,false);
-                IOtools.writeSDFAppend(outFile + ".sdf",mol,false);
+                IOtools.writeXYZAppend(new File(outFile + ".xyz"),mol,false);
+                IOtools.writeSDFAppend(new File(outFile + ".sdf"),mol,false);
                 break;
 
             default:

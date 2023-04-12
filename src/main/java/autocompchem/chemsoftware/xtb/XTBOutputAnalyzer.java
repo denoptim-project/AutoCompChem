@@ -88,8 +88,7 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
                 		File xyzOpt = new File(path + "xtbopt.log");
                 		if (xyzOpt.exists())
                 		{
-                			List<IAtomContainer> mols = IOtools.readXYZ(
-                				xyzOpt.getAbsolutePath());
+                			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
                 		
                 			for (IAtomContainer mol : mols)
                 			{
@@ -294,9 +293,7 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
             					+ "I cannot find geometries for step "
 						+  (stepId+1) + "!");
         		} else {
-        			List<IAtomContainer> mols = IOtools.readXYZ(
-        				xyzOpt.getAbsolutePath());
-        		
+        			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
         			for (IAtomContainer mol : mols)
         			{
         				stepGeoms.addAtomContainer(mol);
@@ -328,8 +325,7 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
     		File xyzOpt = new File(path + "xtbopt.log");
     		if (xyzOpt.exists())
     		{
-    			List<IAtomContainer> mols = IOtools.readXYZ(
-    				xyzOpt.getAbsolutePath());
+    			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
     		
     			for (IAtomContainer mol : mols)
     			{

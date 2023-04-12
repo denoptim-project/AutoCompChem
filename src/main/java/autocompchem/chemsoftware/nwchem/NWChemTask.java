@@ -232,8 +232,7 @@ public class NWChemTask
                         }
                         else if (lineUp.startsWith(NWChemConstants.LABPARAMS))
                         {
-                            params.importParametersFromLines(
-                                "with NWChemTask-specific params", paramsLines);
+                            params.importParametersFromLines(paramsLines);
                             paramsLines.clear();
                             paramsLines.add(line.substring(
                                            NWChemConstants.LABPARAMS.length()));
@@ -244,8 +243,7 @@ public class NWChemTask
                         }
                     }
                     //Add params
-                    params.importParametersFromLines(
-                                "with NWChemTask-specific params", paramsLines);
+                    params.importParametersFromLines(paramsLines);
 
                     //covers cases where params block terminates task block
                     if (!it.hasNext())

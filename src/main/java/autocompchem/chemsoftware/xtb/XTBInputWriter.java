@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.xtb;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2021  Marco Foscato
  *
@@ -643,10 +645,10 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	 * No special file structure required for XTB. This method does nothing.
 	 */
 	@Override
-	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
-  		return outputFileName;
+  		return output;
   	}
     
 //------------------------------------------------------------------------------

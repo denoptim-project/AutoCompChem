@@ -1,11 +1,6 @@
 package autocompchem.modeling.atomtuple;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+
 
 /*   
  *   Copyright (C) 2016  Marco Foscato 
@@ -27,8 +22,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.File;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -69,9 +71,9 @@ public class AtomTupleGenerator extends Worker
                     Arrays.asList(TaskID.GENERATEATOMTUPLES)));
     
     /**
-     * The name of the input file (molecular structure files)
+     * The input file (molecular structure files)
      */
-    protected String inFile = "noInFile";
+    protected File inFile;
 
     /**
      * List of atom-matching rules for definition of the tuples and of their 
@@ -153,7 +155,8 @@ public class AtomTupleGenerator extends Worker
         // Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE"))
         {
-            this.inFile = params.getParameter("INFILE").getValueAsString();
+            this.inFile = new File(
+            		params.getParameter("INFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
         
@@ -279,7 +282,7 @@ public class AtomTupleGenerator extends Worker
      */
     public void createTuples()
     {
-        if (inFile.equals("noInFile"))
+        if (inFile == null)
         {
             Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
                 + " Cannot generate constraints.",-1);

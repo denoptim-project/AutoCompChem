@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /*   
@@ -584,10 +585,10 @@ public class NWChemReStarter extends Worker
                 }
 
                 //Write the new input for NWChem
-                IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
+                IOtools.writeTXTAppend(new File(nwFile),newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
+                IOtools.writeTXTAppend(new File(newJDFile),newNwcJob.toLinesJobDetails(),
                                                                         false);
 
                 break;
@@ -724,10 +725,10 @@ for (String l : otkTsk.toLinesJobDetails())
                 }
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
+                IOtools.writeTXTAppend(new File(nwFile),newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
+                IOtools.writeTXTAppend(new File(newJDFile),newNwcJob.toLinesJobDetails(),
                                                                          false);
                 break;
             }
@@ -771,10 +772,10 @@ for (String l : otkTsk.toLinesJobDetails())
                 }
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
+                IOtools.writeTXTAppend(new File(nwFile),newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
+                IOtools.writeTXTAppend(new File(newJDFile),newNwcJob.toLinesJobDetails(),
                                                                         false);
                 break;
             }

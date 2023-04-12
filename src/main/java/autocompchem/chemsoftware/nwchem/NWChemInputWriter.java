@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -1099,11 +1101,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
   	 * No special file structure required for NWChem. This method does nothing.
   	 */
   	@Override
-  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-			String outputFileName) 
-	{
-		return outputFileName;
-	}
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
+  	{
+  		return output;
+  	}
   	
 //------------------------------------------------------------------------------
 

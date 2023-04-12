@@ -1,5 +1,6 @@
 package autocompchem.molecule.atomclashes;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,8 +69,8 @@ public class AtomClashAnalyzer extends Worker
                     Arrays.asList(TaskID.ANALYZEVDWCLASHES)));
     
     //Filenames
-    private String inFile;
-    private String outFile;
+    private File inFile;
+    private File outFile;
 
     //
     private boolean makeout = false;
@@ -131,14 +132,16 @@ public class AtomClashAnalyzer extends Worker
             System.out.println(" Adding parameters to AtomClashAnalyzer");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get optional parameter
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+            		params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
             this.makeout = true;
         }
@@ -558,11 +561,11 @@ public class AtomClashAnalyzer extends Worker
      * end.
      * @param mol the molecular system
      * @param i index of record in the results storage
-     * @param outFile name of output SDF file
+     * @param file the output SDF file
      */
 
     public void writeAtmClashToSDFFields(IAtomContainer mol, int i, 
-                                         String outFile)
+                                         File file)
     {
         ArrayList<AtomClash> acs = results.get(i);
         
@@ -584,7 +587,7 @@ public class AtomClashAnalyzer extends Worker
         mol.setProperty("AtomClashes",acs);
 
         //write
-        IOtools.writeSDFAppend(outFile,mol,true);
+        IOtools.writeSDFAppend(file,mol,true);
     }
 
 //-----------------------------------------------------------------------------
