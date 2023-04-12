@@ -122,8 +122,8 @@ public class ACCMain
 	        		Worker w = ((ACCJob) job).getUninitializedWorker();
 	        		System.out.println(w.getTaskSpecificHelp());
 	        	} else {
-	        		//TODO-gg what here?
-	        		System.out.println("Not implemented yet!!! ");
+	        		System.out.println("No help message available for " 
+	        				+ job.getClass().getName() + "jobs.");
 	        	}
 	        	Terminator.withMsgAndStatus("Exiting upon request to print "
 	        			+ "help message",0);

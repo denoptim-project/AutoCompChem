@@ -225,24 +225,6 @@ public class JobTest
     
 //------------------------------------------------------------------------------
     
-    //TODO-gg keep or trash?
-    public static Job createTestJob() 
-    {
-    	Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
-        job.setVerbosity(0);
-        job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));
-        job.addStep(new ACCJob());
-        job.addStep(new MonitoringJob());
-        job.addStep(new EvaluationJob());
-        job.addStep(new Job());
-        job.addStep(new CompChemJob());
-        
-        
-        return job;
-    }
-    
-//------------------------------------------------------------------------------
-    
     @Test
     public void testGetInnermostFirstStep() 
     {

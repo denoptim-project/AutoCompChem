@@ -37,6 +37,8 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
+import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextBlock;
 
 
@@ -211,7 +213,7 @@ public class DirectiveTest
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
     	
-    	Job j = new Job();
+    	Job j = JobFactory.createJob(RunnableAppID.ACC);
     	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
     	d.performACCTasks(null, j, null);

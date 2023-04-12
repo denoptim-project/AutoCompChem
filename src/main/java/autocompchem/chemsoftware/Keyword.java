@@ -164,7 +164,7 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
      * Returns the name (i.e., the actual keyword) of this keyword.
      * @return the name of this keyword.
      */
-//TODO-gg change to getReference
+
     public String getName()
     {
         return getReference();
@@ -175,7 +175,6 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
     /**
      * @return the kind of directive component this is.
      */
-    //TODO-gg needed?
 	public DirectiveComponentType getComponentType() 
 	{
 		return DirectiveComponentType.KEYWORD;

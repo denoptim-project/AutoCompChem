@@ -253,8 +253,7 @@ public class Job implements Runnable
     /**
      * Constructor for an undefined job
      */
-//TODO-gg make protected
-    public Job()
+    protected Job()
     {
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();

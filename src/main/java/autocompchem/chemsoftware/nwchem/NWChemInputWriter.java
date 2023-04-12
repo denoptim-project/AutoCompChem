@@ -117,10 +117,6 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             	kStr = k.getName() + " ";
             }
             
-            //TODO-gg del
-            //if (dirName.equals("SET") && k.getName().equals("geometry:actlist"))
-            //	System.out.println("");
-            
             switch (k.getType())
             {
             case STRING:
@@ -160,7 +156,6 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				break;
             }
            
-            // TODO-gg verify this
             // Deal with inconsistent syntax of SET and UNSET directives
             // Yes, for some reason these two directives are written differently.
             // YEt, we now can have multiple directives with the same name ,so 

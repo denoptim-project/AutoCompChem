@@ -29,6 +29,8 @@ import com.google.gson.Gson;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
+import autocompchem.run.Job.RunnableAppID;
 
 public class SetJobParameterTest 
 {
@@ -76,7 +78,7 @@ public class SetJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job job = new Job();
+    	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	job.setParameter("ParamA", "valueA");
     	job.setParameter("ParamB", "valueB");
     	

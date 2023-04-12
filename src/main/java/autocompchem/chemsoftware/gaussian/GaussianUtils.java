@@ -75,7 +75,6 @@ public class GaussianUtils
                 {
                 	double freq = Double.parseDouble(p[j]);
                 	modes.get(j-2).setFrequency(freq);
-                	//TODO-gg use threshold for identifications
                 	if (freq < 0)
                 		modes.get(j-2).setImaginary(true);
                 }

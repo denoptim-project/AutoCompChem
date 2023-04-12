@@ -35,6 +35,7 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
+import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
@@ -73,7 +74,7 @@ public class ACCJsonTest
         job.addStep(nest);
         job.addStep(new MonitoringJob());
         job.addStep(new EvaluationJob());
-        job.addStep(new Job());
+        job.addStep(JobFactory.createJob(RunnableAppID.ACC));
         CompChemJob ccj = new CompChemJob();
         ccj.setDirective(new Directive("DUMMY"));
         job.addStep(ccj);

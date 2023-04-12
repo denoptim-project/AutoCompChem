@@ -28,6 +28,8 @@ import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
+import autocompchem.run.Job.RunnableAppID;
 
 public class InheritJobParameterTest 
 {
@@ -73,11 +75,11 @@ public class InheritJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job sourceJob = new Job();
+    	Job sourceJob = JobFactory.createJob(RunnableAppID.ACC);
     	sourceJob.setParameter("ParamA", "valueA");
     	sourceJob.setParameter("ParamB", "valueB");
     	
-    	Job destinationJob = new Job();
+    	Job destinationJob = JobFactory.createJob(RunnableAppID.ACC);
     	destinationJob.setParameter("ParamC", "valueC");
     	destinationJob.setParameter("ParamB", "oldValueB");
     	

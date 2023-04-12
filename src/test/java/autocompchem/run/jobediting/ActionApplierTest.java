@@ -95,7 +95,7 @@ public class ActionApplierTest
     {
         assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
         
-    	Job job = new Job();
+    	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	job.setUserDirAndStdFiles(tempDir);
     	
     	String labM = "toMv";

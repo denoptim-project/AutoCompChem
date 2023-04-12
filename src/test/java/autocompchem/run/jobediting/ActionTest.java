@@ -68,7 +68,7 @@ public class ActionTest
     	act.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.COPY, "toCp*"));
     	act.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.DELETE, "toDel*"));
    	 
-	   	Job preferinementWorkflow = new Job();
+	   	Job prerefinementWorkflow = JobFactory.createJob(RunnableAppID.ACC);
 	   	CompChemJob ccj = new CompChemJob();
 	   	Directive d = new Directive("GEOM");
 	   	d.addKeyword(new Keyword("value", false, 0));
@@ -77,7 +77,7 @@ public class ActionTest
 	   	Directive d2 = new Directive("Opt");
 	   	d2.addKeyword(new Keyword("MaxVal", true, 150));
 	   	ccj.addDirective(d2);
-	   	preferinementWorkflow.addStep(ccj);
+	   	prerefinementWorkflow.addStep(ccj);
 	   	CompChemJob ccj2 = new CompChemJob();
 	   	Directive d3 = new Directive("GEOM");
 	   	d3.addKeyword(new Keyword("value", false, 10));
@@ -85,8 +85,8 @@ public class ActionTest
 	   	Directive d4 = new Directive("Opt");
 	   	d4.addKeyword(new Keyword("MaxVal", true, 300));
 	   	ccj2.addDirective(d4);
-	   	preferinementWorkflow.addStep(ccj2);
-	   	act.addPrerefinementStep(preferinementWorkflow);
+	   	prerefinementWorkflow.addStep(ccj2);
+	   	act.addPrerefinementStep(prerefinementWorkflow);
 	   	
 	   	act.addSettingsInheritedTask(new InheritDirectiveComponent(
    			 DirComponentAddress.fromString("Dir:Inherited|Key:KKK")));
@@ -158,9 +158,6 @@ public class ActionTest
     	
     	Action act = getTestAction();
     	String json = writer.toJson(act);
-    	
-    	//TODO-gg del (This is here only to get a quick look at the JSON syntax
-    	//System.out.println(json);
     	
     	Action fromJson = reader.fromJson(json, Action.class);
     	assertEquals(act,fromJson);

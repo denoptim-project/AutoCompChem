@@ -28,6 +28,8 @@ import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
+import autocompchem.run.Job.RunnableAppID;
 
 public class DeleteJobParameterTest 
 {
@@ -72,7 +74,7 @@ public class DeleteJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job job = new Job();
+    	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	job.setParameter("ParamA", "valueA");
     	job.setParameter("ParamB", "valueB");
     	
