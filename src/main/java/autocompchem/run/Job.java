@@ -21,6 +21,7 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -60,6 +61,14 @@ public class Job implements Runnable
 	 * Reference to the parent job. This is null for the outermost, master job.
 	 */
 	private Job parentJob = null;
+	
+	/**
+	 * Reference to any child job. Child jobs are NOT steps of this job, but are
+	 * jobs started by this job to perform specific tasks.
+	 * Reference to a child job is volatile: it is removes once the child job
+	 * is completed.
+	 */
+	private Set<Job> childJobs = new HashSet<Job>();
 	
 	/**
 	 * A job identifier meant to be unique only within sibling jobs, i.e., jobs
@@ -672,6 +681,30 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
+     * Sets the reference to a child job, which is a job that has been created
+     * by this one to perform a task. Child jobs are NOT steps in this job.
+     */
+    
+    public void addChild(Job childJob)
+    {
+    	this.childJobs.add(childJob);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Remove the reference to a child job, which is a job that has been created
+     * by this one to perform a task. Child jobs are NOT steps in this job.
+     */
+    
+    public void removeChild(Job childJob)
+    {
+    	this.childJobs.remove(childJob);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the reference to the parent job, which is the job that contains
      * this one.
      * @return the parent job.
@@ -1161,21 +1194,11 @@ public class Job implements Runnable
 	        	}
 	        }
     	}
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Produced a text representation of this job following the format of
-     * autocompchem's JobDetail text file, but collecting the text in
-     * a {@link TextBlockIndexed}
-     * @return the list of lines ready to print a jobDetails file.
-     */
-
-    @Deprecated
-    public TextBlockIndexed toTextBlockJobDetails()
-    {
-    	return new TextBlockIndexed(toLinesJobDetails(), 0, 0, 0);
+    	// We do this to liberate memory
+    	if (hasParent())
+    	{
+    		parentJob.removeChild(this);
+    	}
     }
 
 //------------------------------------------------------------------------------
