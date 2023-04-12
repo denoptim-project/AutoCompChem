@@ -257,24 +257,6 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Store a parameter with the given reference name and value, and the value
-     * is to be considered a string.
-     * If the parameter already
-     * exists, it will be overwritten.
-     * @param ref the reference name of the parameter.
-     * @param value the value of the parameter to be stored as a string.
-     */
-
-    //TODO-gg ***MUST** rename to reflect that this converts the Object to string!!!
-    public void setParameter(String ref, Object value)
-    {
-        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 
-        		value.toString())); 
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
      * Store a parameter with the given reference name, type, and value. 
      * If the parameter already
      * exists, it will be overwritten.

@@ -338,21 +338,6 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Sets a value-less parameters (i.e., a keyword)
-     * @param ref the reference name of the parameter to add/set.
-     * @param recursive use <code>true</code> to set the parameter in this job
-     * and in any of its steps (i.e., first layer or embedded jobs) or any
-     * further embedding level recursively.
-     */
-
-    public void setParameter(String ref, boolean recursive)
-    {
-        setParameter(ref, NamedDataType.UNDEFINED, null, recursive);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
      * Sets a parameters.
      * @param ref the reference name of the parameter to add/set.
      * @param value the value of the parameter.
@@ -407,15 +392,8 @@ public class Job implements Runnable
     public void setParameter(String ref, NamedDataType type, Object value, 
     		boolean recursive)
     {
-    	//TODO-gg replace with setParameter(NamedData param)
-        params.setParameter(ref, type, value);
-        if (recursive)
-        {
-	        for (Job step : steps)
-	        {
-	        	step.setParameter(ref, type, value, true);
-	        }
-        }
+        NamedData param = new NamedData(ref.toUpperCase(), type, value);
+    	setParameter(param, false);
     }
     
 //------------------------------------------------------------------------------
@@ -427,7 +405,29 @@ public class Job implements Runnable
      */
     public void setParameter(NamedData param)
     {
+    	setParameter(param, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameter. It a parameter with the same reference name already
+     * exists it will be overwritten.
+     * @param param the parameter to add or overwrite.
+     * @param recursive use <code>true</code> to set the parameter in this job
+     * and in any of its steps (i.e., first layer or embedded jobs) or any
+     * further embedding level recursively.
+     */
+    public void setParameter(NamedData param, boolean recursive)
+    {
     	params.setParameter(param);
+        if (recursive)
+        {
+	        for (Job step : steps)
+	        {
+	        	step.setParameter(param);
+	        }
+        }
     }
     
 //------------------------------------------------------------------------------

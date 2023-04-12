@@ -537,7 +537,8 @@ public class JobEvaluator extends Worker
 						break;
 					
 					}
-					makeInputPars.setParameter(WorkerConstants.PARTASK, task);
+					makeInputPars.setParameter(WorkerConstants.PARTASK, 
+							task.toString());
 					makeInputPars.setParameter(
 							ChemSoftConstants.PARJOBDETAILSOBJ, 
 							NamedDataType.JOB, jobBeingEvaluated);
@@ -607,7 +608,8 @@ public class JobEvaluator extends Worker
 			default:
 				break;
 			}
-			analysisParams.setParameter("TASK", analysisTask);
+			analysisParams.setParameter(WorkerConstants.PARTASK, 
+					analysisTask.toString());
 			List<InfoChannel> logChannels = icDB.getChannelsOfType(
 					InfoChannelType.LOGFEED);
 			String msg = "";

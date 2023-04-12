@@ -72,7 +72,7 @@ public class ACCJobTest
         	// Prepare the parameters for task
         	ParameterStorage params = new ParameterStorage();
         	params.setParameter(ParameterConstants.RUNNABLEAPPIDKEY,
-        			Job.RunnableAppID.ACC);
+        			Job.RunnableAppID.ACC.toString());
         	params.setParameter(WorkerConstants.PARTASK, 
         			"MeasureGeomDescriptors");
         	params.setParameter("INFILE", sdfFile);

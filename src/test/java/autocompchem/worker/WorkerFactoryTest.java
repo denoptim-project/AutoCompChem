@@ -58,7 +58,7 @@ public class WorkerFactoryTest
     {
     	Job job = JobFactory.createJob(RunnableAppID.ACC);
     	ParameterStorage params = new ParameterStorage();
-    	params.setParameter(WorkerConstants.PARTASK, TaskID.DUMMYTASK);
+    	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK.toString());
     	job.setParameters(params);
     	job.run();
     	NamedData output = job.getOutput(DummyWorker.DATAREF);

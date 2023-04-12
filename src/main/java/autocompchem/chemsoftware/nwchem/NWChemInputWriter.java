@@ -38,6 +38,7 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
@@ -826,7 +827,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
 						ChemSoftConstants.PARGEOMETRY);
 				taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
-				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, id);
+				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, 
+						NamedDataType.INTEGER, id);
 				dd.setTaskParams(taskParams);
 				
 				if (geomNames.size()==iacs.size())

@@ -34,6 +34,7 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
@@ -177,8 +178,8 @@ public class DirectiveTest
     	
     	ParameterStorage taskParams = new ParameterStorage();
     	taskParams.setParameter("TASK", "DummyTask");
-    	taskParams.setParameter("Value1", 1);
-    	taskParams.setParameter("Value2", 1.23);
+    	taskParams.setParameter("Value1", NamedDataType.INTEGER, 1);
+    	taskParams.setParameter("Value2", NamedDataType.DOUBLE, 1.23);
     	taskParams.setParameter("Value3", "abc");
     	d.setTaskParams(taskParams);
     	
