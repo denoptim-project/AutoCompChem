@@ -33,6 +33,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 
 /**
  * Tool for editing existing bonds in a molecular object. 
@@ -256,8 +257,7 @@ public class BondReviser
                         continue;
                     }
                     
-                    List<List<Integer>> allMatches = 
-                                                msq.getMatchesOfSMARTS(key);
+                    MatchingIdxs allMatches =  msq.getMatchingIdxsOfSMARTS(key);
                     for (List<Integer> innerList : allMatches)
                     {
                         if (innerList.size() != 2)

@@ -40,6 +40,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -324,7 +325,7 @@ public class MolecularMutator extends Worker
                 continue;
             }
 
-            List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(k);
+            MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(k);
             for (List<Integer> innerList : allMatches)
             {
                 for (Integer iAtm : innerList)

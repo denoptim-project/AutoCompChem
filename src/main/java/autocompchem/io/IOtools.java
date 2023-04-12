@@ -232,66 +232,14 @@ public class IOtools
         List<String> lines = IOtools.readTXT(file);
 
         //Start interpretation of the formatted text
-        List<List<String>> filledForm = readFormattedText(
-                                                        lines, 
-                                                        separator, 
-                                                        commentLab, 
-                                                        start, 
-                                                        end);
-        return filledForm;        
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Extract '<code>key|separator|value</code>' field in a properly formatted
-     * text. This method is capable of handling single- and multi-line 
-     * records. For multiline records, two special labels are use: 
-     * <code>start</code> to identify the beginning of a multiline record
-     * '<code>key|separator|value</code>', and <code>end</code> for the end.
-     * Text in between these two labels will be d as belonging to a 
-     * single '<code>key|separator|value</code>' where the 'key' must be 
-     * following <code>start</code> label in the same line.
-     * <br>
-     * For example, A single line '<code>key|separator|value</code>' is: 
-     * <\br><\br>
-     * <code>thisIsAKey: this is the value</code>
-     * <\br><\br>
-     * For example, a multiline '<code>key|separator|value</code>' is:
-     * (Using $START and $END as labels)
-     * <br><br>
-     * <code>$STARTthisIsAKey: this is part of the value<br>
-     * this is still part of the value<br>
-     * and also this<br>
-     * $END</code>
-     * <br><br>
-     * In addition, a label is defined for the commented out lines.
-     * All the labels must be in the very beginning of the line! 
-     * This method cannot handle nested blocks.
-     *
-     * @param lines content of the file
-     * @param separator string defining the separator in 
-     * '<code>key|separator|value</code>'
-     * @param commentLab string identifying the comments
-     * @param start string identifying the beginning of a multiline block
-     * @param end string identifying the end of a multiline block
-     * @return a table with all strings extracted according to the formatting
-     * labels.
-     */
-
-    //TOGO-gg move to textAnalyzer
-    public static List<List<String>> readFormattedText(
-                        List<String> lines, 
-                        String separator, String commentLab, 
-                        String start, String end)
-    {
         List<List<String>> filledForm = TextAnalyzer.readKeyValue(
-                                                        lines,
-                                                        separator,
-                                                        commentLab,
-                                                        start,
-                                                        end);
-        return filledForm;
+                lines,
+                separator,
+                commentLab,
+                start,
+                end);
+        
+        return filledForm;        
     }
     
 //------------------------------------------------------------------------------

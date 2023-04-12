@@ -48,6 +48,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.TaskID;
@@ -810,14 +811,14 @@ public class VibModuleOutputHandler extends Worker
         }
 
         // Reorganize lists to group single-atom smarts of the same IC
-        Map<String,ArrayList<ArrayList<Integer>>> allIcMatched =
-                            new HashMap<String,ArrayList<ArrayList<Integer>>>();
+        Map<String,List<List<Integer>>> allIcMatched =
+                            new HashMap<String,List<List<Integer>>>();
         for (String icRuleName : getSortedSMARTSRefNames(smarts))
         {
             boolean skipRule =false;
             String preStr = icRuleName + SUBRULELAB;
-            ArrayList<ArrayList<Integer>> componentsIcRule =
-                                           new ArrayList<ArrayList<Integer>>(4);
+            List<List<Integer>> componentsIcRule = 
+            		new ArrayList<List<Integer>>(4);
             for (int i=0; i<4; i++)
             {
                 componentsIcRule.add(null);
@@ -842,11 +843,14 @@ public class VibModuleOutputHandler extends Worker
                     break;
                 }
 
-                List<List<Integer>> matches = msq.getMatchesOfSMARTS(key);
-                ArrayList<Integer> allAtmsIds = new ArrayList<Integer>();
-                for (List<Integer> innerLst : matches)
+                //Get matches for this SMARTS query
+                MatchingIdxs matches =  msq.getMatchingIdxsOfSMARTS(key);
+                
+                // Collect all matches
+                List<Integer> allAtmsIds = new ArrayList<Integer>();
+                for (List<Integer> innerList : matches)
                 {
-                    allAtmsIds.addAll(innerLst);
+                	allAtmsIds.addAll(innerList);
                 }
                 componentsIcRule.set(pos,allAtmsIds);
             }
@@ -872,8 +876,7 @@ public class VibModuleOutputHandler extends Worker
             {
                 continue;
             }
-            ArrayList<ArrayList<Integer>> componentsIcRule =
-                                                      allIcMatched.get(rulKey);
+            List<List<Integer>> componentsIcRule = allIcMatched.get(rulKey);
             for (Integer idA : componentsIcRule.get(0))
             {
                 IAtom atmA = mol.getAtom(idA);
@@ -946,8 +949,7 @@ public class VibModuleOutputHandler extends Worker
             {
                 continue;
             }
-            ArrayList<ArrayList<Integer>> componentsIcRule =
-                                                      allIcMatched.get(rulKey);
+            List<List<Integer>> componentsIcRule = allIcMatched.get(rulKey);
             if (componentsIcRule.get(3) != null)
             {
                 for (Integer idA : componentsIcRule.get(0))

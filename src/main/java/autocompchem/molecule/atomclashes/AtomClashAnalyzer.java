@@ -38,6 +38,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -378,8 +379,8 @@ public class AtomClashAnalyzer extends Worker
                     {
                         continue;
                     }
-                    List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(key);
-                    for (List<Integer> innerList : allMatches)
+                    MatchingIdxs matches =  msq.getMatchingIdxsOfSMARTS(key);
+                    for (List<Integer> innerList : matches)
                     {
                         for (Integer iAtm : innerList)
                         {
@@ -438,8 +439,8 @@ public class AtomClashAnalyzer extends Worker
                 {
                     continue;
                 }
-                List<List<Integer>> allMatches1 = msq.getMatchesOfSMARTS(key1);
-                List<List<Integer>> allMatches2 = msq.getMatchesOfSMARTS(key2);
+                MatchingIdxs allMatches1 =  msq.getMatchingIdxsOfSMARTS(key1);
+                MatchingIdxs allMatches2 =  msq.getMatchingIdxsOfSMARTS(key2);
                 for (List<Integer> innerList1 : allMatches1)
                 {
                     for (Integer iAtm1 : innerList1)

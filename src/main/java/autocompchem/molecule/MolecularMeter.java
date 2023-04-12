@@ -38,6 +38,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -341,8 +342,7 @@ public class MolecularMeter extends Worker
                         {
                             skipMol = false;
                         }
-                        List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(
-                                                                           key);
+                        MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
                         for (List<Integer> innerList : allMatches)
                         {
                             for (Integer iAtm : innerList)

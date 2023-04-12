@@ -36,6 +36,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -199,7 +200,7 @@ public class MolecularPruner extends Worker
                         continue;
                     }
                     
-                    List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(key);
+                    MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
                     for (List<Integer> innerList : allMatches)
                     {
                         for (Integer iAtm : innerList)

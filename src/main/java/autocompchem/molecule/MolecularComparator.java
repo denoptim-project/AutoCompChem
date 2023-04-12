@@ -40,6 +40,7 @@ import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
 import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -296,7 +297,8 @@ public class MolecularComparator extends Worker
                 + "given query (" + targetAtoms + "). Unable to unambiguously "
                 + "identify the central atom to be analysed",-1);
         }
-        int centerID = msq.getMatchesOfSMARTS("center").get(0).get(0);
+
+        int centerID =  msq.getMatchingIdxsOfSMARTS("center").get(0).get(0);
         IAtom inAtm = inMol.getAtom(centerID);
 
         //For second molecule
@@ -331,12 +333,11 @@ public class MolecularComparator extends Worker
                 + "given query (" + targetAtoms + "). Unable to unambiguously "
                 + "identify the central atom to be analysed",-1);
         }
-        int centerIDR = msqR.getMatchesOfSMARTS("center").get(0).get(0);
+        int centerIDR = msqR.getMatchingIdxsOfSMARTS("center").get(0).get(0);
         IAtom refAtm = refMol.getAtom(centerIDR);
 
         //RunComparison
         compareTwoGeometries(inAtm, inMol, refAtm, refMol);
-
     }
 
 //------------------------------------------------------------------------------

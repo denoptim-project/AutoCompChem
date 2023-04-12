@@ -334,11 +334,12 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     public void importParametersFromLines(List<String> lines)
     {
         //Get filled form
-        List<List<String>> form = IOtools.readFormattedText(lines,
-                                                   ParameterConstants.SEPARATOR,
-                                                 ParameterConstants.COMMENTLINE,
-                                              ParameterConstants.STARTMULTILINE,
-                                               ParameterConstants.ENDMULTILINE);
+        List<List<String>> form = TextAnalyzer.readKeyValue(
+                lines,
+                ParameterConstants.SEPARATOR,
+                ParameterConstants.COMMENTLINE,
+                ParameterConstants.STARTMULTILINE,
+                ParameterConstants.ENDMULTILINE);
 
         //Make the ParameterStorage object
         importParameterBlocks(form);

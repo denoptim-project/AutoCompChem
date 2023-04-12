@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.isomorphism.Mappings;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
@@ -39,6 +40,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -371,12 +373,12 @@ public class BasisSetGenerator extends Worker
                 importBasisSetFromFile(rulRef, new File(
                 		rules.get(rulRef).getSource()));
             }
-
-            //TODO-gg use getMappingOfSMARTS
-            List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(rulRef);
-            for (List<Integer> innerList : allMatches)
+            
+            //Get matches for this SMARTS query
+            MatchingIdxs matches =  msq.getMatchingIdxsOfSMARTS(rulRef);
+            for (List<Integer> innerList : matches)
             {
-                for (Integer iAtm : innerList)
+            	for (Integer iAtm : innerList)
                 {
                     IAtom atm = mol.getAtom(iAtm);
                     addBSAssignationRuleReferenceToAtom(atm, rulRef, mol);

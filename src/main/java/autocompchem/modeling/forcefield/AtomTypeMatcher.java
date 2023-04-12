@@ -38,6 +38,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -237,16 +238,17 @@ public class AtomTypeMatcher extends Worker
         for (int i=0; i<mol.getAtomCount(); i++)
             done.add(false);
         
-        //Arrign atom types
+        //Assign atom types
         for (String at : smarts.keySet())
         {
             if (msq.getNumMatchesOfQuery(at) == 0)
             {
                 continue;
             }
-
-            List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(at);
-            for (List<Integer> innerList : allMatches)
+            
+            //Get matches for this SMARTS query
+            MatchingIdxs matches =  msq.getMatchingIdxsOfSMARTS(at);
+            for (List<Integer> innerList : matches)
             {
                 for (Integer iAtm : innerList)
                 {
