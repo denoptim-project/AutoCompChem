@@ -32,7 +32,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.io.IOtools;
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.run.Terminator;
 
 /**
@@ -56,7 +56,7 @@ public class TinkerXYZReader
     public static IAtomContainer readTinkerXYZFIle(File file)
     {
         IAtomContainer iac = new AtomContainer();
-        ConnectivityTable cTab = new ConnectivityTable();
+        NearestNeighborMap cTab = new NearestNeighborMap();
 
         // Add title and atoms
         int natoms = 0;

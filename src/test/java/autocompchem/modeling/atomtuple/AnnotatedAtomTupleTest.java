@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 
 public class AnnotatedAtomTupleTest 
 {
@@ -42,7 +42,7 @@ public class AnnotatedAtomTupleTest
     	valuedAttributes.put("AttC".toUpperCase(), "valueC valueCC");
     	valuedAttributes.put("AttD".toUpperCase(), "valueD");
     	valuedAttributes.put("AttE".toUpperCase(), "");
-    	ConnectivityTable ct = new ConnectivityTable();
+    	NearestNeighborMap ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new ArrayList<Integer>(
     			Arrays.asList(2)));
     	ct.addNeighborningRelation(2, new ArrayList<Integer>(

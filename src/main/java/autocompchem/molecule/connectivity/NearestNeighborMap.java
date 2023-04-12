@@ -37,19 +37,20 @@ import com.google.common.collect.Lists;
  */
 
 
-//TODO-gg rename neighboring map
-
-public class ConnectivityTable extends HashMap<Integer, List<Integer>>
+public class NearestNeighborMap extends HashMap<Integer, List<Integer>>
 	 implements Cloneable
 {
-
-//------------------------------------------------------------------------------
-
+	
     /**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Constructor for an empty table.
      */
 
-    public ConnectivityTable()
+    public NearestNeighborMap()
     {}
     
 //------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ public class ConnectivityTable extends HashMap<Integer, List<Integer>>
      * be generated.
      */
 
-    public ConnectivityTable(IAtomContainer mol)
+    public NearestNeighborMap(IAtomContainer mol)
     {
     	this(Lists.newArrayList(mol.atoms()), mol);
     }
@@ -76,7 +77,7 @@ public class ConnectivityTable extends HashMap<Integer, List<Integer>>
      * be generated.
      */
 
-    public ConnectivityTable(Collection<IAtom> subset, IAtomContainer mol)
+    public NearestNeighborMap(Collection<IAtom> subset, IAtomContainer mol)
     {
         for (IAtom atm : subset)
         {
@@ -231,9 +232,9 @@ public class ConnectivityTable extends HashMap<Integer, List<Integer>>
     
 //------------------------------------------------------------------------------
 
-  	public ConnectivityTable clone()
+  	public NearestNeighborMap clone()
   	{
-  		ConnectivityTable clone = new ConnectivityTable();
+  		NearestNeighborMap clone = new NearestNeighborMap();
   		for (Integer key : this.keySet())
   		{
   			List<Integer> nbrs = new ArrayList<Integer>();

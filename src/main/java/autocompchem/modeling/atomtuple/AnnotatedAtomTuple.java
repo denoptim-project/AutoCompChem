@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.utils.StringUtils;
 
 /**
@@ -61,7 +61,7 @@ public class AnnotatedAtomTuple implements Cloneable
      * reflect any changes occurring afterwards. It does not consider the kind
      * of connection between the atoms.
      */
-	private ConnectivityTable connectionTable;
+	private NearestNeighborMap connectionTable;
 
 	/**
 	 * Total number of atoms in the system. This is NOT the number of items in
@@ -101,7 +101,7 @@ public class AnnotatedAtomTuple implements Cloneable
   	public AnnotatedAtomTuple(int[] ids, 
   			Set<String> valuelessAttributes, 
   			Map<String, String> valuedAttributes,
-  			ConnectivityTable ct, int numAtoms)
+  			NearestNeighborMap ct, int numAtoms)
   	{
   		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
   				valuelessAttributes, valuedAttributes, ct, numAtoms);
@@ -121,7 +121,7 @@ public class AnnotatedAtomTuple implements Cloneable
 	public AnnotatedAtomTuple(List<Integer> ids, 
 			Set<String> valuelessAttributes, 
 			Map<String, String> valuedAttributes,
-			ConnectivityTable ct, int numAtoms)
+			NearestNeighborMap ct, int numAtoms)
 	{
 		this.atmIDs = ids;
 		this.valuelessAttributes = valuelessAttributes;
@@ -305,7 +305,7 @@ public class AnnotatedAtomTuple implements Cloneable
      * in terms of their atom indexes.
      */
 
-    public ConnectivityTable getNeighboringRelations()
+    public NearestNeighborMap getNeighboringRelations()
     {
     	return connectionTable;
     }
@@ -329,7 +329,7 @@ public class AnnotatedAtomTuple implements Cloneable
   		for (String key : valuedAttributes.keySet())
   			clonedValuedAtts.put(key, valuedAttributes.get(key));
   		
-  		ConnectivityTable ct = null;
+  		NearestNeighborMap ct = null;
   		if (connectionTable!=null)
   			ct = connectionTable.clone();
   		

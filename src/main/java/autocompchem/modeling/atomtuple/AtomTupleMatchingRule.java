@@ -29,7 +29,7 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
@@ -409,7 +409,7 @@ public class AtomTupleMatchingRule
 			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
 		
 		return new AnnotatedAtomTuple(ids, myValueless, myValued, 
-				new ConnectivityTable(atoms, mol), mol.getAtomCount());
+				new NearestNeighborMap(atoms, mol), mol.getAtomCount());
   	}
 
 //------------------------------------------------------------------------------	

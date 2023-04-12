@@ -4,7 +4,7 @@ import java.util.List;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.utils.NumberUtils;
 
 /**
@@ -106,7 +106,7 @@ public class Constraint extends AnnotatedAtomTuple
 	 * @return the type that can be assigned to the given input.
 	 */
 	public static ConstraintType getConstraintType(List<Integer> ids,
-			ConnectivityTable ct)
+			NearestNeighborMap ct)
 	{
 		ConstraintType type = ConstraintType.UNDEFINED;
 		if (ids.size()==1)

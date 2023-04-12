@@ -229,7 +229,6 @@ public class ConnectivityGenerator extends Worker
           IAtomContainer ref = refMols.get(0); 
           
           try {
-        	  //TODO-gg make it use File
               SDFIterator sdfItr = new SDFIterator(inFile);
               int i = 0;
               while (sdfItr.hasNext())
