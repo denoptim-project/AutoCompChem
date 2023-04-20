@@ -47,17 +47,6 @@ import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
  * @author Marco Foscato
  */
 
-
-//TODO-gg for the moment, action's objects can only operate in the workflow of the focus
-// job, not in that of the evaluating job.
-//TODO-gg Should we add the possibility to have the evaluating job (and job in
-// its workflow, i.e., +/-N in the evaluating job's workflow or the parent of 
-// the evaluating job) as action's object? 
-// This could allow to repeat (and modify) a sequence of jobs
-// by adding a nest of new steps while flagging the original 
-// "sequence of next steps"
-// as to-be-skipped.
-
 public class Action implements Cloneable
 {
     /**
