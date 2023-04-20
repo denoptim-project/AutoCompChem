@@ -100,7 +100,7 @@ public class JobTest
 */
 
             // Nest 4 shell jobs in an undefined job
-            Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+            Job job = JobFactory.createJob(AppID.ACC);
             job.setVerbosity(0);
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                     newFile+1));
@@ -145,13 +145,13 @@ public class JobTest
     @DisabledOnOs(WINDOWS)
     public void testParallelizableSubJobs() throws Exception
     {
-        Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
+        Job job = JobFactory.createJob(AppID.ACC);
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
         assertTrue(job.parallelizableSubJobs());
 
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,false));
+        job.addStep(JobFactory.createJob(AppID.ACC,false));
         assertFalse(job.parallelizableSubJobs());
     }
 
@@ -181,7 +181,7 @@ public class JobTest
             
             // Nest 4 shell jobs in an undefined job
             int nThreads = 2; //NB: do no change
-            Job job = JobFactory.createJob(Job.RunnableAppID.ACC,nThreads);
+            Job job = JobFactory.createJob(AppID.ACC,nThreads);
             job.setVerbosity(0);
             Job subJob1 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+1);

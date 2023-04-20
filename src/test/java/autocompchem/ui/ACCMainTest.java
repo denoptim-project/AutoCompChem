@@ -30,7 +30,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.AppID;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 
@@ -62,7 +62,7 @@ public class ACCMainTest
     	Job job = ACCMain.parseCLIArgs(args);
     	ParameterStorage params = job.getParameters();
     	
-    	assertEquals(RunnableAppID.ACC,job.getAppID(),"Job APP");
+    	assertEquals(AppID.ACC,job.getAppID(),"Job APP");
     	assertTrue(params.contains("long"),"Parsed long and quoted option.");
     	assertEquals(4,params.getParameter("long").getValue().toString()
     			.split("\\s+").length,"Length of long and quoted option.");
@@ -89,7 +89,7 @@ public class ACCMainTest
         StringBuilder sb = new StringBuilder();
         sb.append(ParameterConstants.RUNNABLEAPPIDKEY
         		+ParameterConstants.SEPARATOR
-        		+RunnableAppID.ACC+NL);
+        		+AppID.ACC+NL);
         sb.append(WorkerConstants.PARTASK
         		+ParameterConstants.SEPARATOR
         		+TaskID.DUMMYTASK+NL);
@@ -110,7 +110,7 @@ public class ACCMainTest
     	
     	Job job = ACCMain.parseCLIArgs(args);
     	
-    	assertEquals(RunnableAppID.ACC,job.getAppID(),"Job APP");
+    	assertEquals(AppID.ACC,job.getAppID(),"Job APP");
     	assertEquals(TaskID.DUMMYTASK.toString(),job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString(),
     			"Task ID");

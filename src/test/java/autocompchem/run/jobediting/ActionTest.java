@@ -34,8 +34,8 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
+import autocompchem.run.AppID;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
@@ -68,7 +68,7 @@ public class ActionTest
     	act.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.COPY, "toCp*"));
     	act.addJobArchivingDetails(new DataArchivingRule(ArchivingTaskType.DELETE, "toDel*"));
    	 
-	   	Job prerefinementWorkflow = JobFactory.createJob(RunnableAppID.ACC);
+	   	Job prerefinementWorkflow = JobFactory.createJob(AppID.ACC);
 	   	CompChemJob ccj = new CompChemJob();
 	   	Directive d = new Directive("GEOM");
 	   	d.addKeyword(new Keyword("value", false, 0));
@@ -140,11 +140,11 @@ public class ActionTest
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
-    	a2.prerefinementSteps.set(0, JobFactory.createJob(RunnableAppID.SHELL));
+    	a2.prerefinementSteps.set(0, JobFactory.createJob(AppID.SHELL));
     	assertFalse(a1.equals(a2));
     	
     	a2 = getTestAction();
-    	a2.prerefinementSteps.add(JobFactory.createJob(RunnableAppID.SHELL));
+    	a2.prerefinementSteps.add(JobFactory.createJob(AppID.SHELL));
     	assertFalse(a1.equals(a2));
     }
     

@@ -42,7 +42,7 @@ public class ACCJob extends Job
     public ACCJob()
     {
         super();
-        this.appID = RunnableAppID.ACC;
+        this.appID = AppID.ACC;
     }
     
 //------------------------------------------------------------------------------

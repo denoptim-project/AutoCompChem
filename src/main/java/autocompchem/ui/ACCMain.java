@@ -24,8 +24,8 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
+import autocompchem.run.AppID;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -333,7 +333,7 @@ public class ACCMain
     	if (foundTask && !foundParams)
     	{
 	    	// Finally, pack all into a job
-	    	job = JobFactory.createJob(RunnableAppID.ACC);
+	    	job = JobFactory.createJob(AppID.ACC);
 	    	job.setParameters(params);
     	}
     	

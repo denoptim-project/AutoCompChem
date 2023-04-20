@@ -47,7 +47,6 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
@@ -108,6 +107,7 @@ public class ParallelRunnerTest
     	public TestJob(String logPathName, int wallTime)
     	{
     		super();
+    		this.appID = AppID.ACC;
     		stdout = new File(logPathName);
     		this.wallTime = wallTime;
     		setParallelizable(true);
@@ -211,7 +211,7 @@ public class ParallelRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
         master.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
@@ -243,7 +243,7 @@ public class ParallelRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
         master.setParameter("WALLTIME", "3");
         for (int i=0; i<3; i++)
         {
@@ -278,7 +278,7 @@ public class ParallelRunnerTest
         //Job master = JobFactory.createJob(RunnableAppID.ACC);
         //master.addStep(new TestJob(roothName+"A"));
         
-        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
         master.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
         {
@@ -313,7 +313,7 @@ public class ParallelRunnerTest
         //Job master = JobFactory.createJob(RunnableAppID.ACC);
         //master.addStep(new TestJob(roothName+"A"));
         
-        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
         master.setParameter("WALLTIME", "5");
         for (int i=0; i<6; i++)
         {
@@ -355,7 +355,7 @@ public class ParallelRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
         master.setParameter("WALLTIME", "6");
         
         // A "long-lasting" job that will be evaluated
@@ -447,7 +447,7 @@ public class ParallelRunnerTest
         //monitoringJob.setParameter(ParameterConstants.VERBOSITY, "1");
         
         // The main job
-        Job main = JobFactory.createJob(RunnableAppID.ACC, 5, true);
+        Job main = JobFactory.createJob(AppID.ACC, 5, true);
         main.setParameter("WALLTIME", "10");
         //main.setParameter(ParameterConstants.VERBOSITY, "1");
         main.addStep(productionJob);
@@ -524,7 +524,7 @@ public class ParallelRunnerTest
         monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC,"true");
         
         // The main job
-        Job main = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
         main.setVerbosity(0);
         main.addStep(monitoringJob);
@@ -587,7 +587,7 @@ public class ParallelRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job master = JobFactory.createJob(RunnableAppID.ACC, 3, true);
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
         master.setParameter("WALLTIME", "6");
         master.setParameter("WAITSTEP", "7");
         // Basically the waiting step is much longer than the time it 
@@ -640,7 +640,7 @@ public class ParallelRunnerTest
             String shellFlvr = "/bin/sh";
 
             // Nest 4 shell jobs in an undefined job
-            Job job = JobFactory.createJob(Job.RunnableAppID.ACC,4);
+            Job job = JobFactory.createJob(AppID.ACC,4);
             for (int i=0; i<10; i++)
             {
                 ShellJob sj = new ShellJob(shellFlvr,script.getAbsolutePath(),

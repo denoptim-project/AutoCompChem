@@ -72,7 +72,7 @@ public class ACCJobTest
         	// Prepare the parameters for task
         	ParameterStorage params = new ParameterStorage();
         	params.setParameter(ParameterConstants.RUNNABLEAPPIDKEY,
-        			Job.RunnableAppID.ACC.toString());
+        			AppID.ACC.toString());
         	params.setParameter(WorkerConstants.PARTASK, 
         			"MeasureGeomDescriptors");
         	params.setParameter("INFILE", sdfFile.getAbsolutePath());
@@ -87,7 +87,7 @@ public class ACCJobTest
         	IOtools.writeSDFAppend(sdfFile, mol, false);
 
             // Create job
-            Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+            Job job = JobFactory.createJob(AppID.ACC);
             job.setParameters(params);
             
             // Run redirecting output to readable stream (only for the job)

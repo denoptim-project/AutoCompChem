@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
+import autocompchem.run.AppID;
 
 
 /**
@@ -56,7 +56,7 @@ public class WorkerFactoryTest
     @Test
     public void testCreateDummyWorkerFromJob() throws Exception
     {
-    	Job job = JobFactory.createJob(RunnableAppID.ACC);
+    	Job job = JobFactory.createJob(AppID.ACC);
     	ParameterStorage params = new ParameterStorage();
     	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK.toString());
     	job.setParameters(params);

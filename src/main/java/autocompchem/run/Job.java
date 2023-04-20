@@ -111,34 +111,7 @@ public class Job implements Runnable
     /**
      * Application meant to do the job
      */
-    protected RunnableAppID appID;
-
-    /**
-     * Known apps for performing jobs
-     */
-    public enum RunnableAppID {
-        UNDEFINED,
-        SHELL,
-        ACC;
-    
-    	public String toString() {
-    		switch (this) 
-    		{
-				case UNDEFINED: {
-					return "UNDEFINED";
-				}
-				case SHELL: {
-					return "SHELL";
-				}	
-				case ACC: {
-					return "ACC";
-				}
-				default: {
-					return "UNDEFINED";
-				}
-			}
-    	}
-    };
+    protected AppID appID;
 
     /**
      * Flag defining this job as a parallelizable job, i.e., independent from
@@ -266,7 +239,7 @@ public class Job implements Runnable
     {
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
-        this.appID = RunnableAppID.UNDEFINED;
+        this.appID = AppID.UNDEFINED;
         this.jobHashCode = hashCode();
     }
 
@@ -277,7 +250,7 @@ public class Job implements Runnable
      * @return the enum representing the application.
      */
 
-    public RunnableAppID getAppID()
+    public AppID getAppID()
     {
         return appID;
     }
@@ -860,18 +833,6 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Return the enum identifier of the application used to do this job.
-     * @return the enum identifier
-     */
-
-    public RunnableAppID getAppName()
-    {
-        return appID;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Method that runs this job and its sub-jobs. This is the only method
      * that can label this job as 'completed'.
      * Also, this method is only implemented in the super-class, and 
@@ -882,6 +843,12 @@ public class Job implements Runnable
     public final void run()
     {
     	started = true;
+    	if (!appID.isRunnableByACC())
+    	{
+    		throw new Error("Cannot run " + appID + " Job (" + getId() + ") "
+    				+ "from ACC. You must define a " + ShellJob.class.getName()
+    				+ " or extend " + Job.class.getName() + ".");
+    	}
     	
     	//TODO use logger
     	if (verbosity > 0)
@@ -921,7 +888,7 @@ public class Job implements Runnable
         // it is because we tried to run a job of an app for which there is
         // no implementation of app-specific Job yet.
         Terminator.withMsgAndStatus("ERROR! Cannot (yet) run Jobs for App '" 
-                    + this.appID + "'. No subclass implementation of method "
+                    + appID + "'. No subclass implementation of method "
                     + "running this job.", -1);
     }
 
@@ -940,7 +907,7 @@ public class Job implements Runnable
             
             if (j.requestsAction())
             {
-            	//TODO reactToEvent(j,act,i);
+            	//TODO-gg reactToEvent(j,act,i);
             }
         }
     }

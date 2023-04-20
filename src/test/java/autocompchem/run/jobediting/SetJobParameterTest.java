@@ -30,7 +30,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.AppID;
 
 public class SetJobParameterTest 
 {
@@ -78,7 +78,7 @@ public class SetJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job job = JobFactory.createJob(RunnableAppID.ACC);
+    	Job job = JobFactory.createJob(AppID.ACC);
     	job.setParameter("ParamA", "valueA");
     	job.setParameter("ParamB", "valueB");
     	

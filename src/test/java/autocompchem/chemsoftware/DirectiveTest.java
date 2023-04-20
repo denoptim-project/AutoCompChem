@@ -39,7 +39,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.Job.RunnableAppID;
+import autocompchem.run.AppID;
 import autocompchem.text.TextBlock;
 
 
@@ -214,7 +214,7 @@ public class DirectiveTest
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
     	
-    	Job j = JobFactory.createJob(RunnableAppID.ACC);
+    	Job j = JobFactory.createJob(AppID.ACC);
     	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
     	d.performACCTasks(null, j, null);

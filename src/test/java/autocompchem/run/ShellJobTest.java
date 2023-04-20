@@ -113,13 +113,13 @@ See {@Link JobTest} for a possible solution.
     //@DisabledOnOs(WINDOWS)
     public void testParallelizableSubJobs() throws Exception
     {
-        Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
+        Job job = JobFactory.createJob(AppID.ACC);
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
         assertTrue(job.parallelizableSubJobs());
 
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,false));
+        job.addStep(JobFactory.createJob(AppID.ACC,false));
         assertFalse(job.parallelizableSubJobs());
     }
 

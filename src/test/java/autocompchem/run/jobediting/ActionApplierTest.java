@@ -38,8 +38,8 @@ import org.junit.jupiter.api.io.TempDir;
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
+import autocompchem.run.AppID;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
@@ -95,7 +95,7 @@ public class ActionApplierTest
     {
         assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
         
-    	Job job = JobFactory.createJob(RunnableAppID.ACC);
+    	Job job = JobFactory.createJob(AppID.ACC);
     	job.setUserDirAndStdFiles(tempDir);
     	
     	String labM = "toMv";
@@ -146,11 +146,11 @@ public class ActionApplierTest
         assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
         
         // Make a dummy collection of jobs
-    	Job siblingJobA = JobFactory.createJob(RunnableAppID.ACC);
+    	Job siblingJobA = JobFactory.createJob(AppID.ACC);
     	siblingJobA.setUserDirAndStdFiles(tempDir);
-    	Job siblingJobB = JobFactory.createJob(RunnableAppID.ACC);
+    	Job siblingJobB = JobFactory.createJob(AppID.ACC);
     	siblingJobB.setUserDirAndStdFiles(tempDir);
-    	Job focusJob = JobFactory.createJob(RunnableAppID.ACC);
+    	Job focusJob = JobFactory.createJob(AppID.ACC);
     	focusJob.setUserDirAndStdFiles(tempDir);
     	//NB: making the jobs be the steps of a parent job would make their IDs
     	// be unique. Here, we want to test also the capability do deal with 
@@ -212,29 +212,29 @@ public class ActionApplierTest
     public void testPerformAction_InheritJobParameters()  throws Exception
     {
     	// Define the dummy job workflow we'll be editing
-      	Job step1 = JobFactory.createJob(RunnableAppID.ACC);
+      	Job step1 = JobFactory.createJob(AppID.ACC);
       	step1.setParameter("Provenance", "OriginalWorkFlow_1");
       	step1.setParameter(new NamedData("ParamA", 1.2));
       	step1.setParameter(new NamedData("ParamB", "AB"));
-      	Job step2 = JobFactory.createJob(RunnableAppID.ACC);
+      	Job step2 = JobFactory.createJob(AppID.ACC);
       	step2.setParameter("Provenance", "OriginalWorkFlow_2");
       	step2.setParameter(new NamedData("ParamA", 3.4));
       	step2.setParameter(new NamedData("ParamB", "CORRECT"));
-      	Job step3 = JobFactory.createJob(RunnableAppID.ACC);
+      	Job step3 = JobFactory.createJob(AppID.ACC);
       	step3.setParameter("Provenance", "OriginalWorkFlow_3");
       	step3.setParameter(new NamedData("ParamA", 5.6));
       	step3.setParameter(new NamedData("ParamC", "WRONG"));
-      	Job parentJob = JobFactory.createJob(RunnableAppID.ACC);
+      	Job parentJob = JobFactory.createJob(AppID.ACC);
       	parentJob.addStep(step1);
       	parentJob.addStep(step2);
       	parentJob.addStep(step3);
       	List<Job> jobs = new ArrayList<>(Arrays.asList(parentJob));
       	
       	// Define the action that adds a pre-refinement workflow
-      	Job pre1 = JobFactory.createJob(RunnableAppID.ACC);
+      	Job pre1 = JobFactory.createJob(AppID.ACC);
       	pre1.setParameter("Provenance", "Healer_1");
       	pre1.setParameter(new NamedData("ParamC", 0.12));
-      	Job pre2 = JobFactory.createJob(RunnableAppID.ACC);
+      	Job pre2 = JobFactory.createJob(AppID.ACC);
       	pre2.setParameter("Provenance", "Healer_2");
       	pre1.setParameter("ParamB", "YY");
     	Action action = new Action(ActionType.REDO, ActionObject.FOCUSJOB);

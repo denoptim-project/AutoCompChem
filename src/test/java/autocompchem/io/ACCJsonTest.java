@@ -35,9 +35,9 @@ import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
 import autocompchem.run.MonitoringJob;
+import autocompchem.run.AppID;
 import autocompchem.run.ShellJob;
 
 
@@ -62,7 +62,7 @@ public class ACCJsonTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         File jsonfile = new File(tempDir.getAbsolutePath() + SEP + "file.json");
-    	Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+    	Job job = JobFactory.createJob(AppID.ACC);
         job.setVerbosity(0);
         job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));
         Job nest = new ACCJob();
@@ -74,7 +74,7 @@ public class ACCJsonTest
         job.addStep(nest);
         job.addStep(new MonitoringJob());
         job.addStep(new EvaluationJob());
-        job.addStep(JobFactory.createJob(RunnableAppID.ACC));
+        job.addStep(JobFactory.createJob(AppID.ACC));
         CompChemJob ccj = new CompChemJob();
         ccj.setDirective(new Directive("DUMMY"));
         job.addStep(ccj);

@@ -52,20 +52,20 @@ public class JobFactoryTest
     //@Test
     public void testCreateJob() throws Exception
     {
-    	Job job = JobFactory.createJob(Job.RunnableAppID.UNDEFINED);
-    	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
+    	Job job = JobFactory.createJob(AppID.UNDEFINED);
+    	assertTrue(job.getAppID() == AppID.UNDEFINED, 
     			"Creation of Undefined job");
     	
-    	job = JobFactory.createJob(Job.RunnableAppID.SHELL);
-    	assertTrue(job.getAppID() == Job.RunnableAppID.SHELL, 
+    	job = JobFactory.createJob(AppID.SHELL);
+    	assertTrue(job.getAppID() == AppID.SHELL, 
     			"Creation of SHELL job");
 
-    	job = JobFactory.createJob(Job.RunnableAppID.ACC);
-    	assertTrue(job.getAppID() == Job.RunnableAppID.ACC, 
+    	job = JobFactory.createJob(AppID.ACC);
+    	assertTrue(job.getAppID() == AppID.ACC, 
     			"Creation of ACC job");
     	
     	job = new Job();
-    	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
+    	assertTrue(job.getAppID() == AppID.UNDEFINED, 
     			"Creation of Undefined job");
     	
     }
@@ -109,7 +109,7 @@ public class JobFactoryTest
 
         assertNotNull(job,"Job is null");
         assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(Job.RunnableAppID.ACC, job.getAppID(),
+        assertEquals(AppID.ACC, job.getAppID(),
         		"App for master job");
     }
     
@@ -153,7 +153,7 @@ public class JobFactoryTest
         assertEquals(MonitoringJob.class, job.getClass(), 
         		"Type of job object");
         assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(Job.RunnableAppID.ACC, job.getAppID(), "App for job");
+        assertEquals(AppID.ACC, job.getAppID(), "App for job");
         assertEquals(3000, ((MonitoringJob) job).getDelay(),
         		"Value of delay in milliseconds");
         assertEquals(60000, ((MonitoringJob) job).getPeriod(),
@@ -181,7 +181,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ Job.RunnableAppID.ACC + NL);
+            		+ AppID.ACC + NL);
             writer.write("keyOne" + ParameterConstants.SEPARATOR 
             		+ "valueOne" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -189,7 +189,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ Job.RunnableAppID.SHELL + NL);
+            		+ AppID.SHELL + NL);
             writer.write("keyTwo" + ParameterConstants.SEPARATOR 
             		+ "valueTwo" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -201,7 +201,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ Job.RunnableAppID.UNDEFINED + NL);
+            		+ AppID.UNDEFINED + NL);
             writer.write("keyThree" + ParameterConstants.SEPARATOR 
             		+ "valueThree" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -219,11 +219,11 @@ public class JobFactoryTest
 //            }
             
             assertEquals(3, job.getNumberOfSteps(), "Number of steps");
-            assertEquals(job.getStep(0).getAppID(), Job.RunnableAppID.ACC,
+            assertEquals(job.getStep(0).getAppID(), AppID.ACC,
             		"App for first step");
-            assertEquals(job.getStep(1).getAppID(), Job.RunnableAppID.SHELL,
+            assertEquals(job.getStep(1).getAppID(), AppID.SHELL,
             		"App for second step");
-            assertEquals(job.getStep(2).getAppID(), Job.RunnableAppID.UNDEFINED,
+            assertEquals(job.getStep(2).getAppID(), AppID.UNDEFINED,
             		"App for third step");
         }
         catch (Throwable t)
