@@ -348,8 +348,27 @@ public class AnnotatedAtomTuple implements Cloneable
     {
     	return connectionTable;
     }
+    
+//------------------------------------------------------------------------------
 	
-//-----------------------------------------------------------------------------
+    /**
+     * Checks if the atoms represented by the index in the given indexes are
+     * neighbors, i.e., were connected to each other when this tuple was 
+     * generated.
+     * @param idxA index of one of the atom indexes. NB: this is not 
+     * the atom index itself, but is its index in the list of indexes.
+     * @param idxB index of one of the atom indexes. NB: this is not 
+     * the atom index itself, but is its index in the list of indexes.
+     * @return <code>true</code> if the to atoms were connected to each other
+     * when this tuple was generated.
+     */
+    public boolean areNeighbors(int idxA, int idxB)
+    {
+    	return connectionTable.areNeighbors(getAtomIDs().get(idxA), 
+    			getAtomIDs().get(idxB));
+    }
+    
+//------------------------------------------------------------------------------
 	
   	@Override
   	public AnnotatedAtomTuple clone()

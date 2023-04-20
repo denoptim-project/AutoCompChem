@@ -1,6 +1,5 @@
 package autocompchem.molecule.conformation;
 
-import java.util.List;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 
@@ -14,7 +13,20 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
  * torsion of a bond defined an exploration of three cases where the bond is
  * twisted by 0, 120, and 240 DEG.
  * We assume that {@link ConformationalCoordinate} can be defined only 
- * by 1, 2, or 4 atoms.
+ * by 1, 2, or 4 atoms and, is neighboring relations are defined, we assign
+ * the {@link ConformationalCoordType} accordingly to these rules: <ul>
+ * <li>if the tuple contains only 1 atom, then we get 
+ * {@value ConformationalCoordType#FLIP} </li>
+ * <li>with 2 atoms that are neighbors, we have a 
+ * {@value ConformationalCoordType#TORSION}</li>
+ * <li>with 4 atoms that are consequently connected, we have a 
+ * {@value ConformationalCoordType#TORSION}</li>
+ * <li>with 4 atoms that are NOT consequently connected, we have a 
+ * {@value ConformationalCoordType#IMPROPERTORSION}</li>
+ * <li>Any other case with 2 or 4 atoms results in 
+ * {@value ConformationalCoordType#UNDEFINED} type.</li>
+ * <li></li>
+ * </ul>
  *
  * @author Marco Foscato 
  */
@@ -22,13 +34,6 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 public class ConformationalCoordinate extends AnnotatedAtomTuple 
 	implements Cloneable
 {
-
-    /**
-     * The ordered list of defining atoms.
-     */
-    //TODO: keep or trash (left over from refactoring)
-	//private ArrayList<IAtom> atomDef = new ArrayList<IAtom>();
-
     /**
      * The number that specifies how extensively the coordinate is explored. 
 	 * To illustrate, fold=3 for a conformational coordinate corresponding to the
@@ -43,7 +48,8 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 	 * Classes of the constraints according to the corresponding internal 
 	 * coordinate possibly represented.
 	 */
-	public enum ConformationalCoordType {TORSION, FLIP, UNDEFINED}
+	public enum ConformationalCoordType {TORSION, FLIP, IMPROPERTORSION,
+		UNDEFINED}
 	
 	/**
 	 * The type of this constraint
@@ -85,7 +91,43 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   	
   	private void defineType()
   	{
-  		this.type = getType(getAtomIDs());
+  		type = ConformationalCoordType.UNDEFINED;
+  		switch (getAtomIDs().size())
+		{
+			case 1:
+			{
+				type = ConformationalCoordType.FLIP;
+				break;
+			}
+			
+			case 2:
+			{
+				if (getNeighboringRelations()!=null && areNeighbors(0, 1))
+					type = ConformationalCoordType.TORSION;
+				break;
+			}	
+			
+			case 4:
+			{
+				if (getNeighboringRelations()!=null)
+				{
+					if (areNeighbors(0, 1) && areNeighbors(1, 2) 
+							&& areNeighbors(2, 3))
+					{
+						type = ConformationalCoordType.TORSION;
+					} else {
+						type = ConformationalCoordType.IMPROPERTORSION;
+					}
+				}
+				break;
+			}
+			
+			default:
+				throw new IllegalArgumentException("Unexpected number of "
+						+ "atom IDs (" + getAtomIDs().size() + "). "
+						+ "Cannot define the type of this conformational "
+						+ "coordinate.");
+		}
   	}
   	
 //------------------------------------------------------------------------------
@@ -94,46 +136,10 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   	{
   		if (!hasValueledAttribute(ConformationalCoordDefinition.KEYFOLD))
   		{
-  			setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD,"1");
+  			setValueOfAttribute(ConformationalCoordDefinition.KEYFOLD, "1");
   		}
   		fold = Integer.parseInt(getValueOfAttribute(
   				ConformationalCoordDefinition.KEYFOLD));
-  	}
-  	
-//------------------------------------------------------------------------------
-  	
-  	/**
-  	 * Define the type that would a conformational coordinate get when defined
-  	 * by the given list of atom indexes.
-  	 * @param ids the list of center indexes defining the conformational
-  	 *  coordinate.
-  	 * @return the type of conformational coordinate.
-  	 */
-  	public static ConformationalCoordType getType(List<Integer> ids)
-  	{
-  		ConformationalCoordType type = ConformationalCoordType.UNDEFINED;
-  		switch (ids.size())
-		{
-			case 1:
-				type = ConformationalCoordType.FLIP;
-				break;
-				
-			case 2:
-				type = ConformationalCoordType.TORSION;
-				break;
-				
-			case 4:
-				type = ConformationalCoordType.TORSION;
-				//TODO-gg use neighboring relations to define type
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Unexpected number of "
-						+ "atom IDs (" + ids.size() + "). "
-						+ "Cannot define the type of this conformational "
-						+ "coordinate.");
-		}
-  		return type;
   	}
 
 //------------------------------------------------------------------------------
