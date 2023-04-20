@@ -44,6 +44,11 @@ public interface IJobEditingTask
 			case SET_JOB_PARAMETER:
 				result = context.deserialize(json, SetJobParameter.class);
 				break;
+			case ADD_KEYWORD:
+			case ADD_DIRECTIVE:
+			case ADD_DIRECTIVEDATA:
+				result = context.deserialize(json, AddDirectiveComponent.class);
+				break;
 			case SET_KEYWORD:
 			case SET_DIRECTIVE:
 			case SET_DIRECTIVEDATA:

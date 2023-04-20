@@ -57,6 +57,8 @@ import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTa
 import autocompchem.run.jobediting.JobEditType;
 import autocompchem.run.jobediting.JobEditType.JobEditTypeDeserializer;
 import autocompchem.run.jobediting.SetDirectiveComponent;
+import autocompchem.run.jobediting.AddDirectiveComponent;
+import autocompchem.run.jobediting.AddDirectiveComponent.AddDirectiveComponentDeserializer;
 import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 
 /*
@@ -148,6 +150,8 @@ public class ACCJson
     	        		new MatchTextDeserializer())
     	        .registerTypeAdapter(CountTextMatches.class,
     	        		new CountTextMatchesDeserializer())
+    	        .registerTypeAdapter(AddDirectiveComponent.class, 
+    	        		new AddDirectiveComponentDeserializer())
     	        .registerTypeAdapter(SetDirectiveComponent.class, 
     	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 

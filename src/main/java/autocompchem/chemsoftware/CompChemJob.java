@@ -355,6 +355,43 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
+     * Removes any component matching the given address.
+     * @param address the address defining the component/s to be removed.
+     * @return <code>true</code> if any component has been removed.
+     */
+    public boolean removeDirectiveComponent(DirComponentAddress address)
+    {
+    	boolean componentsHaveBeenRemoved = false;
+		List<IDirectiveComponent> toDel = getDirectiveComponents(address);
+		if (address.size()==1)
+		{
+			// We are removing outermost directives: no other component can
+			// have a path of length 1.
+			for (IDirectiveComponent component : toDel)
+			{
+				removeDirective((Directive) component);
+				componentsHaveBeenRemoved = true;
+			}
+		} else {
+			// We are removing embedded components.
+			DirComponentAddress pathToParents = address.getParent();
+			DirComponentTypeAndName compToDel = address.getLast();
+			List<IDirectiveComponent> parentDirs = getDirectiveComponents(
+					pathToParents);
+			for (IDirectiveComponent parentDirComp : parentDirs)
+			{
+				// These can only be Directives
+				Directive parentDir = (Directive) parentDirComp;
+				parentDir.deleteComponent(compToDel);
+				componentsHaveBeenRemoved = true;
+			}
+		}
+    	return componentsHaveBeenRemoved;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
      * Ensures the structure of directives contains the directives involved in
      * the given address. Ignores any directive components that is not a
      * {@link Directive}.

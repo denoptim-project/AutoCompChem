@@ -25,24 +25,49 @@ import autocompchem.run.Job;
  * their components.
  */
 
-public class SetDirectiveComponent extends AddDirectiveComponent
+public class AddDirectiveComponent implements IJobEditingTask
 {
+	/**
+	 * Defines which type of setting task this is. It also defines what is
+	 * the type of content this task is setting.
+	 */
+	protected final JobEditType task;
+	
+	/**
+	 * Address to parent directive where the component is to be set
+	 */
+	protected final DirComponentAddress path;
+	
+	/**
+	 * The content to set for the directive component.
+	 */
+	protected final IDirectiveComponent content;
 	
 //------------------------------------------------------------------------------
 
-	public SetDirectiveComponent(DirComponentAddress parent, 
+	public AddDirectiveComponent(DirComponentAddress parent, 
 			IDirectiveComponent content)
 	{
-		super(parent, content, defineTask(content));
+		this(parent, content, defineTask(content));
 	}
 	
 //------------------------------------------------------------------------------
 
-	public SetDirectiveComponent(String pathToParent, 
+	public AddDirectiveComponent(String pathToParent, 
 			IDirectiveComponent content)
 	{
-		super(DirComponentAddress.fromString(pathToParent), content, 
+		this(DirComponentAddress.fromString(pathToParent), content, 
 				defineTask(content));
+	}
+	
+//------------------------------------------------------------------------------
+
+	public AddDirectiveComponent(DirComponentAddress addressToParent, 
+			IDirectiveComponent content, JobEditType type)
+	{
+		this.path = addressToParent;
+		this.content = content;
+		this.task = type;
 	}
 	
 //------------------------------------------------------------------------------
@@ -53,11 +78,11 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 	private static JobEditType defineTask(IDirectiveComponent content)
 	{
 		if (content instanceof Directive)
-			return JobEditType.SET_DIRECTIVE;
+			return JobEditType.ADD_DIRECTIVE;
 		else if (content instanceof Keyword)
-			return JobEditType.SET_KEYWORD;
+			return JobEditType.ADD_KEYWORD;
 		else if (content instanceof DirectiveData)
-			return JobEditType.SET_DIRECTIVEDATA;
+			return JobEditType.ADD_DIRECTIVEDATA;
 		else
 			throw new Error("Unrecognized type of directive "
 					+ "component to set. Please, contact the developers.");
@@ -77,7 +102,37 @@ public class SetDirectiveComponent extends AddDirectiveComponent
  	    if (o.getClass() != getClass())
      		return false;
  	    
- 	    return super.equals(o);
+ 	    AddDirectiveComponent other = (AddDirectiveComponent) o;
+ 	    
+ 	    if (this.content.getClass() != other.content.getClass())
+    		return false;
+ 	    
+ 	    if (this.content instanceof Directive)
+ 	    {
+ 	    	Directive thisContent = (Directive) this.content;
+ 	    	Directive otherContent = (Directive) other.content;
+ 	    	if (!thisContent.equals(otherContent))
+ 	    		return false;
+ 	    } else if (this.content instanceof Keyword)
+ 	    {
+ 	    	Keyword thisContent = (Keyword) this.content;
+ 	    	Keyword otherContent = (Keyword) other.content;
+ 	    	if (!thisContent.equals(otherContent))
+ 	    		return false;
+ 	    } else if (this.content instanceof DirectiveData)
+ 	    {
+ 	    	DirectiveData thisContent = (DirectiveData) this.content;
+ 	    	DirectiveData otherContent = (DirectiveData) other.content;
+ 	    	if (!thisContent.equals(otherContent))
+ 	    		return false;
+ 	    } else {
+ 	    	throw new Error("Missing implementation for content of type "
+ 	    			+ this.content.getClass().getName() + " in " 
+ 	    			+ this.getClass().getName() + ".equals(). Please, "
+ 	    			+ "report this to the developers.");
+ 	    }
+ 	    
+ 	    return this.path.equals(other.path);
     }
     
 //------------------------------------------------------------------------------
@@ -88,37 +143,16 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 		if (!(job instanceof CompChemJob))
 			return;
 		CompChemJob ccj = (CompChemJob) job;
-		
-		// Remove any previous component
-		DirComponentAddress pathToComponent = path.clone();
-		pathToComponent.addStep(content.getName(), content.getComponentType());
-		ccj.removeDirectiveComponent(pathToComponent);
-		
-		ccj.ensureDirectiveStructure(path);
-		if (path.size()==0)
-		{
-			// We add a root directive: an outermost one.
-			ccj.addDirective((Directive) content);
-		}
-		List<IDirectiveComponent> parents = ccj.getDirectiveComponents(
-    			path);
-    	for (IDirectiveComponent parent : parents)
-    	{
-    		if (parent instanceof Directive)
-    		{
-    			Directive dir = (Directive) parent;
-    			dir.addComponent(content);
-    		}
-    	}
+		ccj.addDirectiveComponent(path, content);
 	}
 	
 //------------------------------------------------------------------------------
 	
-	public static class SetDirectiveComponentDeserializer 
-	implements JsonDeserializer<SetDirectiveComponent>
+	public static class AddDirectiveComponentDeserializer 
+	implements JsonDeserializer<AddDirectiveComponent>
 	{
 	    @Override
-	    public SetDirectiveComponent deserialize(JsonElement json, Type typeOfT,
+	    public AddDirectiveComponent deserialize(JsonElement json, Type typeOfT,
 	            JsonDeserializationContext context) throws JsonParseException
 	    {
 	        JsonObject jsonObject = json.getAsJsonObject();
@@ -133,15 +167,15 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 	        IDirectiveComponent content = null;
 	        switch (type)
 	        {
-			case SET_DIRECTIVE:
+			case ADD_DIRECTIVE:
 				content = context.deserialize(jsonObject.get("content"), 
 						Directive.class);
 				break;
-			case SET_DIRECTIVEDATA:
+			case ADD_DIRECTIVEDATA:
 				content = context.deserialize(jsonObject.get("content"), 
 						DirectiveData.class);
 				break;
-			case SET_KEYWORD:
+			case ADD_KEYWORD:
 				content = context.deserialize(jsonObject.get("content"), 
 						Keyword.class);
 				break;
@@ -151,7 +185,7 @@ public class SetDirectiveComponent extends AddDirectiveComponent
         				+ "element: " + json);
 	        }
 	        
-	        SetDirectiveComponent result = new SetDirectiveComponent(
+	        AddDirectiveComponent result = new AddDirectiveComponent(
 	        		address, content);
         	return result;
 	    }

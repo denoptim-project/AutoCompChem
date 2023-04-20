@@ -77,29 +77,7 @@ public class DeleteDirectiveComponent implements IJobEditingTask
 		if (!(job instanceof CompChemJob))
 			return;
 		CompChemJob ccj = (CompChemJob) job;
-		
-		List<IDirectiveComponent> toDel = ccj.getDirectiveComponents(path);
-		if (path.size()==1)
-		{
-			// We are removing outermost directives: no other component can
-			// have a path of length 1.
-			for (IDirectiveComponent component : toDel)
-			{
-				ccj.removeDirective((Directive) component);
-			}
-		} else {
-			// We are removing embedded components.
-			DirComponentAddress pathToParents = path.getParent();
-			DirComponentTypeAndName compToDel = path.getLast();
-			List<IDirectiveComponent> parentDirs = ccj.getDirectiveComponents(
-					pathToParents);
-			for (IDirectiveComponent parentDirComp : parentDirs)
-			{
-				// These can only be Directives
-				Directive parentDir = (Directive) parentDirComp;
-				parentDir.deleteComponent(compToDel);
-			}
-		}
+		ccj.removeDirectiveComponent(path);
 	}
 	
 //------------------------------------------------------------------------------

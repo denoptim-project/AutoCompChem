@@ -27,7 +27,7 @@ public class IJobEditingTaskTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	IJobEditingTask act = new SetDirectiveComponent("*:*|Dir:DirName", 
+    	IJobEditingTask act = new AddDirectiveComponent("*:*|Dir:DirName", 
     			new Keyword("KeyName", false, 1.234));
     	String json = writer.toJson(act);
     	IJobEditingTask fromJson = reader.fromJson(json, IJobEditingTask.class);

@@ -39,7 +39,7 @@ import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.ACCJson;
 
-public class SetDirectiveComponentTest 
+public class AddDirectiveComponentTest 
 {
 	
 //------------------------------------------------------------------------------
@@ -47,10 +47,10 @@ public class SetDirectiveComponentTest
     @Test
     public void testEquals() throws Exception
     {
-    	SetDirectiveComponent tA = new SetDirectiveComponent(
+    	AddDirectiveComponent tA = new AddDirectiveComponent(
     			"Dir:First|Dir:Second", 
     			new Keyword("KeyName", true, "KeyValue"));
-    	SetDirectiveComponent tB = new SetDirectiveComponent(
+    	AddDirectiveComponent tB = new AddDirectiveComponent(
     			"Dir:First|Dir:Second", 
     			new Keyword("KeyName", true, "KeyValue"));
 
@@ -59,11 +59,11 @@ public class SetDirectiveComponentTest
     	assertTrue(tB.equals(tA));
     	assertFalse(tA.equals(null));
     	
-    	tB = new SetDirectiveComponent("Dir:First|Dir:Third", 
+    	tB = new AddDirectiveComponent("Dir:First|Dir:Third", 
     			new Keyword("KeyName", true, "KeyValue"));
     	assertFalse(tA.equals(tB));
     	
-    	tB = new SetDirectiveComponent("Dir:First|Dir:Second", 
+    	tB = new AddDirectiveComponent("Dir:First|Dir:Second", 
     			new Keyword("different", true, "KeyValue"));
     	assertFalse(tA.equals(tB));
     }
@@ -76,12 +76,12 @@ public class SetDirectiveComponentTest
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
     	
-    	SetDirectiveComponent original = new SetDirectiveComponent(
+    	AddDirectiveComponent original = new AddDirectiveComponent(
     			"Dir:First|Dir:Second", 
     			new Keyword("KeyName", true, "KeyValue"));
     	String json = writer.toJson(original);
-    	SetDirectiveComponent fromJson = reader.fromJson(json, 
-    			SetDirectiveComponent.class);
+    	AddDirectiveComponent fromJson = reader.fromJson(json, 
+    			AddDirectiveComponent.class);
     	assertEquals(original, fromJson);
 
     	IJobEditingTask fromJson2 = reader.fromJson(json, IJobEditingTask.class);
@@ -98,7 +98,6 @@ public class SetDirectiveComponentTest
     	job.setParameter("ParamB", "valueB");
     	Directive dA = new Directive("dA");
     	dA.addKeyword(new Keyword("KeyAA", false, 1.234));
-    	dA.addKeyword(new Keyword("KeyAA", false, "asd"));
     	dA.addKeyword(new Keyword("KeyAB", false, "value"));
     	job.addDirective(dA);
     	Directive dB = new Directive("dB");
@@ -116,15 +115,70 @@ public class SetDirectiveComponentTest
     	 *  dB -- dC
     	 *  
     	 */
-    	// Replace existing keyword
-    	Keyword key3 = new Keyword("KeyAA", true, "NewValue");
-    	SetDirectiveComponent task3 = new SetDirectiveComponent("Dir:dA", key3);
-    	task3.applyChange(job);
+    	
+    	// Add new keyword in existing directive
+    	Keyword key = new Keyword("NewKey", true, "KeyValue");
+    	AddDirectiveComponent task = new AddDirectiveComponent("Dir:dA", key);
+    	task.applyChange(job);
     	List<IDirectiveComponent> found = job.getDirectiveComponents(
-    			DirComponentAddress.fromString("Dir:dA|Key:KeyAA"));
+    			DirComponentAddress.fromString("Dir:dA|Key:NewKey"));
+    	assertEquals(1,found.size());
+    	assertEquals(key,found.get(0));
+    	
+    	// Add new keyword under non-existing directive structure
+    	Keyword key2 = new Keyword("NewKey2", true, "KeyValue2");
+    	AddDirectiveComponent task2 = new AddDirectiveComponent("Dir:Z|Dir:ZZ", 
+    			key2);
+    	task2.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:Z|Dir:ZZ|Key:NewKey2"));
     	assertEquals(1, found.size());
-    	assertTrue(key3==found.get(0));
-    	assertEquals(key3.getValue(), ((Keyword)found.get(0)).getValue());
+    	assertEquals(key2, found.get(0));
+    	
+    	// Add beside existing keyword
+    	Keyword key3 = new Keyword("KeyAA", true, "NewValue");
+    	AddDirectiveComponent task3 = new AddDirectiveComponent("Dir:dA", key3);
+    	task3.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:dA|Key:KeyAA"));
+    	assertEquals(2,found.size());
+    	assertTrue(key3==found.get(1));
+    	assertFalse(key3==found.get(0));
+    	assertEquals(key3.getValue(), ((Keyword)found.get(1)).getValue());
+    	
+    	// Add new DirectiveData in existing directive
+    	DirectiveData dd = new DirectiveData("AddedDD", new ArrayList<String>(
+    			Arrays.asList("line One", "line two", "line three")));
+    	AddDirectiveComponent task4 = new AddDirectiveComponent("Dir:dA", dd);
+    	task4.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:dA|"
+    					+ DirectiveComponentType.DIRECTIVEDATA.shortString 
+    					+ ":AddedDD"));
+    	assertEquals(1,found.size());
+    	assertEquals(dd, found.get(0));
+    	
+    	// Add new Directive in existing directive
+    	Directive dir = new Directive("AddedDir");
+    	dir.addKeyword(new Keyword("123Key", true, 456));
+    	dir.addKeyword(new Keyword("Other", false, "bla"));
+    	AddDirectiveComponent task5 = new AddDirectiveComponent("Dir:dA", dir);
+    	task5.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:dA|Dir:AddedDir"));
+    	assertEquals(1,found.size());
+    	assertEquals(dir, found.get(0));
+    	
+    	// Add new Directive in existing directive
+    	Directive dirRoot = new Directive("NewBaseDir");
+    	dirRoot.addKeyword(new Keyword("Somthing", true, 1.23));
+    	dirRoot.addKeyword(new Keyword("Else", false, "ribla"));
+    	AddDirectiveComponent task6 = new AddDirectiveComponent(".", dirRoot);
+    	task6.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:NewBaseDir"));
+    	assertEquals(1,found.size());
+    	assertEquals(dirRoot, found.get(0));
     }
     
 //------------------------------------------------------------------------------
