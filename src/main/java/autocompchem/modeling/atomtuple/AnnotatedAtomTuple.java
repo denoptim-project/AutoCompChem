@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.utils.StringUtils;
 
@@ -78,13 +81,9 @@ public class AnnotatedAtomTuple implements Cloneable
   	 */
   	public AnnotatedAtomTuple(int[] ids)
   	{
-  		this.atmIDs = new ArrayList<Integer>();
-  		for (int i=0; i<ids.length; i++)
-  		{
-  			this.atmIDs.add(ids[i]);
-  		}
-  		this.valuelessAttributes = new HashSet<String>();
-  		this.valuedAttributes = new HashMap<String, String>();
+  		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
+  				new HashSet<String>(), new HashMap<String, String>(), 
+  				null, 0);
   	}
   	
 //------------------------------------------------------------------------------
@@ -128,6 +127,46 @@ public class AnnotatedAtomTuple implements Cloneable
 		this.valuedAttributes = valuedAttributes;
 		this.connectionTable = ct;
 		this.numAtoms = numAtoms;
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructs a tuple of atoms without decorating attributes, but does
+	 * infer the {@link NearestNeighborMap} information.
+	 * @param atoms ordered list of atoms from which to build the tuple.
+	 * @param mol the container collecting the atoms.
+	 */
+	public AnnotatedAtomTuple(List<IAtom> atoms, IAtomContainer mol)
+	{
+  		this(atoms.stream()
+  					.map(a -> mol.indexOf(a))
+  					.collect(Collectors.toList()), 
+  				new HashSet<String>(), new HashMap<String, String>(),
+  				new NearestNeighborMap(atoms, mol),
+  				mol.getAtomCount());
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Constructs a tuple of atoms with decorating attributes.
+	 * @param atoms ordered list of atoms from which to build the tuple.
+	 * @param mol the container collecting the atoms.
+	 * @param valuelessAttributes value-less attributes.
+	 * @param valuedAttributes map of attributes with their (String) value.
+  	 * @param ct defines the neighboring relation between atoms in the tuple.
+	 */
+	public AnnotatedAtomTuple(List<IAtom> atoms, IAtomContainer mol, 
+			Set<String> valuelessAttributes, 
+			Map<String, String> valuedAttributes)
+	{
+  		this(atoms.stream()
+  					.map(a -> mol.indexOf(a))
+  					.collect(Collectors.toList()), 
+  				valuelessAttributes, valuedAttributes,
+  				new NearestNeighborMap(atoms, mol),
+  				mol.getAtomCount());
 	}
 
 //------------------------------------------------------------------------------
