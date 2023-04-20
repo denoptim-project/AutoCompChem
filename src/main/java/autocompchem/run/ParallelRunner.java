@@ -21,8 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -51,32 +53,22 @@ public class ParallelRunner
 	 */
 	private final Job master;
 	
-	//TODO check permissions on these fields
-	
     /**
      * List of jobs to run
      */
     private List<Job> todoJobs;
-
-    /**
-     * List of references to the submitted subtasks.
-     */
-    private List<Future<?>> futureJobs;
     
     /**
-     * List of references to the submitted subjobs.
+     * Storage of references to the submitted jobs with their future returned
+     * value.
      */
-    private List<Job> submittedJobs;
+    private Map<Job,Future<Object>> submittedJobs;
     
     /**
-     * List of references to the submitted monitoting subtasks
+     * Storage of references to the submitted {@link MonitoringJob} with their 
+     * future returned value.
      */
-    private List<Future<?>> futureMonitoringJobs;
-    
-    /**
-     * List of references to the submitted monitoting subjobs.
-     */
-    private List<Job> submittedMonitoringJobs;
+    private Map<MonitoringJob,Future<Object>> submittedMonitorJobs;
     
     /**
      * Index of notifications. Used to avoid concurrent notifications by
@@ -211,10 +203,8 @@ public class ParallelRunner
     private void initializeExecutor(boolean reserveThreadsForMonitors)
     {
     	notificationId.set(0);
-        futureJobs = new ArrayList<>();
-        submittedJobs = new ArrayList<Job>();
-        futureMonitoringJobs = new ArrayList<>();
-        submittedMonitoringJobs = new ArrayList<Job>();
+    	submittedJobs = new HashMap<Job,Future<Object>>();
+    	submittedMonitorJobs = new HashMap<MonitoringJob,Future<Object>>();
 
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
         
@@ -387,33 +377,29 @@ public class ParallelRunner
 
     private void cancellAllRunningThreadsAndShutDown()
     {
-    	// NB: assumption futureJobs.size() == submittedJobs.size()
-    	
-    	for (int i=0; i< submittedJobs.size(); i++)
+    	for (Job submittedJob : submittedJobs.keySet())
     	{
-    		Future<?> f  = futureJobs.get(i);
-    		Job j = submittedJobs.get(i);
-    		if (!f.isDone())
+    		Future<?> future = submittedJobs.get(submittedJob);
+    		if (!future.isDone())
     		{
-    			j.setInterrupted(true);
+    			submittedJob.setInterrupted(true);
     		}
-    		f.cancel(true);
-            j.stopJob();
-        }
+    		future.cancel(true);
+    		submittedJob.stopJob();
+    	}
     	
-    	for (int i=0; i< submittedMonitoringJobs.size(); i++)
+    	for (Job submittedJob : submittedMonitorJobs.keySet())
     	{
-    		Future<?> f  = futureMonitoringJobs.get(i);
-    		Job j = submittedMonitoringJobs.get(i);
-    		if (!f.isDone())
+    		Future<?> future = submittedMonitorJobs.get(submittedJob);
+    		if (!future.isDone())
     		{
-    			j.setInterrupted(true);
+    			submittedJob.setInterrupted(true);
     		}
-    		f.cancel(true);
-            j.stopJob();
-        }
-        submittedJobs.clear();
-        submittedMonitoringJobs.clear();
+    		future.cancel(true);
+    		submittedJob.stopJob();
+    	}
+    	submittedJobs.clear();
+    	submittedMonitorJobs.clear();
     	shutDownExecutionService();
     }
     
@@ -425,22 +411,30 @@ public class ParallelRunner
      */
     private void cancellOneRunningThread(Job jobtoKill)
     {
-    	//TODO: do the same on submittedMonitoringJobs
+    	if (!(submittedJobs.keySet().contains(jobtoKill) || 
+    			submittedMonitorJobs.keySet().contains(jobtoKill)))
+    		return;
     	
-    	//TODO-gg change submittedJobs to map so that we get rid of assumption on
-    	// consistent index between submitted and future lists.
-    	
-    	// must be there
-    	int idx = submittedJobs.indexOf(jobtoKill);
-    	
-    	Future<?> jobToKillFuture = futureJobs.get(idx);
-		if (!jobToKillFuture.isDone())
-		{
-			jobtoKill.setInterrupted(true);
-		}
-		jobToKillFuture.cancel(true);
-        jobtoKill.stopJob();
-        submittedJobs.remove(jobtoKill);
+    	if (jobtoKill instanceof MonitoringJob)
+    	{
+        	Future<?> monJobToKillFuture = submittedMonitorJobs.get(jobtoKill);
+    		if (!monJobToKillFuture.isDone())
+    		{
+    			jobtoKill.setInterrupted(true);
+    		}
+    		monJobToKillFuture.cancel(true);
+            jobtoKill.stopJob();
+            submittedMonitorJobs.remove(jobtoKill);
+    	} else {
+	    	Future<?> jobToKillFuture = submittedJobs.get(jobtoKill);
+			if (!jobToKillFuture.isDone())
+			{
+				jobtoKill.setInterrupted(true);
+			}
+			jobToKillFuture.cancel(true);
+	        jobtoKill.stopJob();
+	        submittedJobs.remove(jobtoKill);
+    	}
     }
     
 //------------------------------------------------------------------------------
@@ -453,18 +447,18 @@ public class ParallelRunner
     private boolean exceptionInSubJobs()
     {
         boolean found = false;
-        for (Job j : submittedJobs)
+        for (Job submittedJob : submittedJobs.keySet())
         {
-            if (j.foundException())
+            if (submittedJob.foundException())
             {
             	found = false;
                 break;
             }
         }
         
-        for (Job j : submittedMonitoringJobs)
+        for (Job submittedJob : submittedMonitorJobs.keySet())
         {
-            if (j.foundException())
+            if (submittedJob.foundException())
             {
             	found = false;
                 break;
@@ -484,17 +478,17 @@ public class ParallelRunner
     private boolean allSubJobsCompleted()
     {
         boolean allDone = true;
-        for (Job j : submittedJobs)
+        for (Job submittedJob : submittedJobs.keySet())
         {
-            if (!j.isCompleted())
+            if (!submittedJob.isCompleted())
             {
                 allDone = false;
                 break;
             }
         }
-        for (Job j : submittedMonitoringJobs)
+        for (Job submittedJob : submittedMonitorJobs.keySet())
         {
-            if (!j.isCompleted())
+            if (!submittedJob.isCompleted())
             {
                 allDone = false;
                 break;
@@ -590,14 +584,11 @@ public class ParallelRunner
 			
 			// Monitoring jobs are run on their own resources
 			if (job instanceof MonitoringJob)
-			{
-	            submittedMonitoringJobs.add(job);
-	            Future<?> fut = job.submitThread(stpeMonitoring);
-	            futureMonitoringJobs.add(fut);
+			{   
+	            submittedMonitorJobs.put((MonitoringJob) job, 
+	            		job.submitThread(stpeMonitoring));
 			} else {
-	            submittedJobs.add(job);
-	            Future<?> fut = job.submitThread(tpExecutor);
-	            futureJobs.add(fut);
+				submittedJobs.put(job, job.submitThread(tpExecutor));
 			}
         }
         
@@ -629,7 +620,7 @@ public class ParallelRunner
 	            {
 	            	if (verbosity > 0)
 	                {
-	                    System.out.println("All "+submittedJobs.size()
+	                    System.out.println("All " + submittedJobs.size()
 	                    		+ " sub-jobs are completed. Parallelized "
 	                    		+ "jobs done.");
 	                }
@@ -641,9 +632,9 @@ public class ParallelRunner
 	            	{
 	            		System.out.println("Checking completion of parallel "
 	            				+ "jobs:");
-		            	for (Job j : submittedJobs)
+		            	for (Job j : submittedJobs.keySet())
 		            		System.out.println(j + " " +j.isCompleted());
-		            	for (Job j : submittedMonitoringJobs)
+		            	for (Job j : submittedMonitorJobs.keySet())
 		            		System.out.println(j + " " +j.isCompleted());
 	            	}
 	            }

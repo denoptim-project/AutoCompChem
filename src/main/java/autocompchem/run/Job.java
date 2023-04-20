@@ -980,8 +980,9 @@ public class Job implements Runnable
      * @return a Future representing pending completion of the task.
      */
     
-  	protected Future<?> submitThread(ScheduledThreadPoolExecutor tpExecutor) {
-  		return tpExecutor.submit(this);
+  	@SuppressWarnings("unchecked")
+	protected Future<Object> submitThread(ScheduledThreadPoolExecutor tpExecutor) {
+  		return (Future<Object>) tpExecutor.submit(this);
   	}
     
 //------------------------------------------------------------------------------

@@ -199,11 +199,12 @@ public class MonitoringJob extends EvaluationJob
      * @return a Future representing pending completion of the task.
      */
     
-    @Override
-  	protected Future<?> submitThread(ScheduledThreadPoolExecutor tpExecutor) 
+    @SuppressWarnings("unchecked")
+	@Override
+  	protected Future<Object> submitThread(ScheduledThreadPoolExecutor tpExecutor) 
   	{
-  		return tpExecutor.scheduleAtFixedRate(this, delay, period, 
-  				TimeUnit.MILLISECONDS);
+  		return (Future<Object>) tpExecutor.scheduleAtFixedRate(this, delay, 
+  				period, TimeUnit.MILLISECONDS);
   	}
 
 //------------------------------------------------------------------------------
