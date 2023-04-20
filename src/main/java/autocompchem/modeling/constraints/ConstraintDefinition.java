@@ -24,8 +24,6 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
      */
     public static final String KEYVALUES = "VALUE";
     
-    //TODO.gg is notAnIC needed? So far it avoid assigning the type to 
-    // any among distance/angle/dihedral/inproperdihedral
     /**
      * Keyword used to flag the request to decouple the list of center 
      * identifiers
