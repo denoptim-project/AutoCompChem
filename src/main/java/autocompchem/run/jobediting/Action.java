@@ -127,26 +127,9 @@ public class Action implements Cloneable
         FOCUSJOB, 
         
         /**
-         * The parent of the job that has been evaluated.
-         */
-        FOCUSJOBPARENT, 
-        
-        /**
-         * The job that is step <i>i-1</i> if the job that has been evaluated 
-         * is step <i>i</i> in a list of jobs.
-         */
-        PREVIOUSJOB, 
-        
-        /**
          * Any job that is parallel to the job that has been evaluated.
          */
         PARALLELJOB, 
-        
-        /**
-         * The job that is step <i>i+1</i> if the job that has been evaluated 
-         * is step <i>i</i> in a list of jobs.
-         */
-        SUBSEQUENTJOB
     };
     
     //--------------------------------------------------------------------------

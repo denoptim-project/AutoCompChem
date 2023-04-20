@@ -525,20 +525,12 @@ public class ParallelRunner
 										JobEvaluator.EVALUATEDJOB).getValue());
 						break;
 					}
+					
 					case PARALLELJOB:
 					{
 						reactionObjectJobs.addAll(todoJobs);
 						break;
 					}
-					//TODO-gg remove these objects
-					case FOCUSJOBPARENT:
-						break;
-					case PREVIOUSJOB:
-						break;
-					case SUBSEQUENTJOB:
-						break;
-					default:
-						break;
 				}
     			
     			ActionApplier.performAction(reaction, trigger, reactionObjectJobs, 

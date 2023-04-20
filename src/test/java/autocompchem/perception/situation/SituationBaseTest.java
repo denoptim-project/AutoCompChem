@@ -83,7 +83,7 @@ public class SituationBaseTest
 								InfoChannelType.LOGFEED),
 						new MatchText("txtQuery3", true, 
 								InfoChannelType.ANY))), 
-				new Action(ActionType.STOP, ActionObject.FOCUSJOBPARENT)));
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB)));
 		
 		sb.addSituation(new Situation("Sit", "C", 
 				new ArrayList<ICircumstance>(Arrays.asList(
@@ -95,7 +95,7 @@ public class SituationBaseTest
 								InfoChannelType.ANY),
 						new MatchText("txtQuery3C", true, 
 								InfoChannelType.ANY))), 
-				new Action(ActionType.STOP, ActionObject.PREVIOUSJOB)));
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB)));
 		
 		return sb;
 	}
@@ -387,7 +387,7 @@ public class SituationBaseTest
 								InfoChannelType.LOGFEED),
 						new MatchText("txtQuery3", true, 
 								InfoChannelType.LOGFEED))), 
-				new Action(ActionType.STOP, ActionObject.PREVIOUSJOB));
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB));
 		
 		Situation s3 = new Situation("Sit", "C", 
 				new ArrayList<ICircumstance>(Arrays.asList(
@@ -396,7 +396,7 @@ public class SituationBaseTest
 								InfoChannelType.INPUTFILE),
 						new MatchText("txtQuery3C", true, 
 								InfoChannelType.INPUTFILE))), 
-				new Action(ActionType.STOP, ActionObject.PREVIOUSJOB));
+				new Action(ActionType.STOP, ActionObject.PARALLELJOB));
 
 		sb.addSituation(s1);
 		sb.addSituation(s2);
