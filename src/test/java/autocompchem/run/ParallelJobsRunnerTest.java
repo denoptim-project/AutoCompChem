@@ -59,7 +59,7 @@ import autocompchem.run.jobediting.SetJobParameter;
  * @author Marco Foscato
  */
 
-public class ParallelRunnerTest 
+public class ParallelJobsRunnerTest 
 {
     private final String SEP = System.getProperty("file.separator");
     

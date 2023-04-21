@@ -20,6 +20,7 @@ package autocompchem.run;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.text.TextBlockIndexed;
 
 
@@ -864,7 +866,7 @@ public class Job implements Runnable
         if (nThreads > 1 && parallelizableSubJobs())
         {
             //Parallel execution of sub-jobs
-            runSubJobsPararelly();
+            runSubJobsParallely();
         }
         else
         {
@@ -900,14 +902,27 @@ public class Job implements Runnable
 
     private void runSubJobsSequentially()
     {
+    	int stepRestarts = 0;
         for (int iJob=0; iJob<steps.size(); iJob++)
         {
-        	Job j = steps.get(iJob);
-            j.run();
+        	Job step = steps.get(iJob);
+        	step.run();
             
-            if (j.requestsAction())
+            if (step.requestsAction())
             {
-            	//TODO-gg reactToEvent(j,act,i);
+            	//TODO-gg type of reaction: restart? stop? what else?
+            	
+            	stepRestarts++;
+            	ActionApplier.performAction(step.getRequestedAction(), 
+            			step, 
+						Arrays.asList((Job) step.exposedOutput.getNamedData(
+			    				JobEvaluator.EVALUATEDJOB).getValue()), 
+						stepRestarts); 
+            	
+            	//TODO-gg rerun step (if action impliesrestarting!):
+            	/*
+            	 * add to list of steps for job to rerun and the evaluation step
+            	 */
             }
         }
     }
@@ -918,19 +933,19 @@ public class Job implements Runnable
      * Runs all the sub-jobs in an embarrassingly parallel fashion.
      */
 
-    private void runSubJobsPararelly()
+    private void runSubJobsParallely()
     {
-        ParallelRunner parallRun = 
-        		new ParallelRunner(steps, nThreads, nThreads, this);
-        if (hasParameter(ParallelRunner.WALLTIMEPARAM))
+        ParallelJobsRunner parallRun = 
+        		new ParallelJobsRunner(steps, nThreads, nThreads, this);
+        if (hasParameter(JobsRunner.WALLTIMEPARAM))
         {
         	parallRun.setWallTime(Long.parseLong(
-        			params.getParameterValue(ParallelRunner.WALLTIMEPARAM)));
+        			params.getParameterValue(JobsRunner.WALLTIMEPARAM)));
         }
-        if (hasParameter(ParallelRunner.WAITTIMEPARAM))
+        if (hasParameter(JobsRunner.WAITTIMEPARAM))
         {
         	parallRun.setWaitingStep(Long.parseLong(
-        			params.getParameterValue(ParallelRunner.WAITTIMEPARAM)));
+        			params.getParameterValue(JobsRunner.WAITTIMEPARAM)));
         }
         parallRun.setVerbosity(verbosity);
         parallRun.start();

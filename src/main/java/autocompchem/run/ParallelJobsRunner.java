@@ -46,18 +46,8 @@ import autocompchem.run.jobediting.ActionApplier;
  * @author Marco Foscato
  */
 
-public class ParallelRunner
+public class ParallelJobsRunner extends JobsRunner
 {
-	/**
-	 * The job that required the services of this class.
-	 */
-	private final Job master;
-	
-    /**
-     * List of jobs to run
-     */
-    private List<Job> todoJobs;
-    
     /**
      * Storage of references to the submitted jobs with their future returned
      * value.
@@ -90,75 +80,6 @@ public class ParallelRunner
      * Number of threads
      */
     private int nThreads;
-
-    /**
-     * Walltime for waiting for completion (milliseconds)
-     */
-    private long walltimeMillis = 600000L; //Default 10 min
-    
-    /**
-     * Time step for waiting for completion (milliseconds)
-     */
-    private long waitingStep = 1000L; //Default 1 sec
-    
-    /**
-     * Placeholder for exception throws by a sub job
-     */
-    @SuppressWarnings("unused")
-	private Throwable thrownBySubJob;
-    
-    /**
-     * Verbosity level: amount of logging from this jobs
-     */
-    private int verbosity = 0;
-
-	/**
-	 * The time when we started running
-	 */
-	private long startTime;
-	
-	/**
-	 * Flag reporting the presence of any non-handled request to run the
-	 * parallel batch.
-	 */
-	private boolean requestedToStart = true;
-	
-    /**
-     * Restart counter. counts how many times the parallel batch was restarted.
-     */
-    private final AtomicInteger restartCounter = new AtomicInteger();
-	
-	/**
-	 * The action requested by any of the jobs we are asked to run.
-	 */
-	private Action reaction;
-	
-	/**
-	 * The job that triggered the request for action
-	 */
-	private Job trigger;
-	
-	/**
-	 * Lock for synchronisation of main thread with notifications from jobs
-	 */
-	private Object lock = new Object();
-	
-	/**
-	 * The reference name of a Job parameter that can be used to control the
-	 * walltime. Value in seconds.
-	 */
-	public static final String WALLTIMEPARAM = "WALLTIME";
-	
-	/**
-	 * The reference name of a Job parameter that can be used to control the
-	 * time step between each check for completion. Value in seconds.
-	 */
-	public static final String WAITTIMEPARAM = "WAITSTEP";
-	
-	//TODO: delete?
-	protected Date date = new Date();
-	protected SimpleDateFormat formatter = 
-			new SimpleDateFormat("HH:mm:ss.SSS ");
 	
 //------------------------------------------------------------------------------
 
@@ -176,30 +97,31 @@ public class ParallelRunner
      * @param queueSize the size of the queue. When the queue is full, the 
      * executor gets blocked until any thread becomes available and take is a 
      * job from the queue.
-     * @param master the job that creates this {@link ParallelRunner}.
+     * @param master the job that creates this {@link ParallelJobsRunner}.
      */
 
-    public ParallelRunner(List<Job> todoJobs, int poolSize, int queueSize, 
+    public ParallelJobsRunner(List<Job> todoJobs, int poolSize, int queueSize, 
     		Job master)
     {
-    	this.master = master;
-        this.todoJobs = todoJobs;
+    	super(todoJobs, master);
         this.nThreads = Math.min(poolSize, todoJobs.size());
         
         initializeExecutor(true);
+    }
+    
+//------------------------------------------------------------------------------
 
-        // Add a shutdown mechanism to kill the master thread and its subjobs
-        // including planned ones.
+    /**
+     * Add a shutdown mechanism to kill the master thread and its sub jobs
+     * including planned ones.
+     */
+    protected void addShutDownHook()
+    {
         Runtime.getRuntime().addShutdownHook(new ShutDownHook());
     }
     
 //------------------------------------------------------------------------------
-    
-    /**
-     * WARNING!
-     * This initialization has to be done after defining the list of jobs to do,
-     * i.e., after assigning a value to <code>todoJobs</code>.
-     */
+
     private void initializeExecutor(boolean reserveThreadsForMonitors)
     {
     	notificationId.set(0);
@@ -315,41 +237,6 @@ public class ParallelRunner
             }
         }
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the maximum time we'll wait for completion of subjobs
-     * @param walltime the walltime in seconds
-     */
-
-    public void setWallTime(long walltime)
-    {
-        this.walltimeMillis = walltime*1000;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the idle time between evaluations of sub-jobs completion status.
-     * @param waitingStep the step in seconds
-     */
-
-    public void setWaitingStep(long waitingStep)
-    {
-        this.waitingStep = 1000*waitingStep;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Set the level of detail for logging
-     */
-    
-    public void setVerbosity(int level)
-    {
-    	this.verbosity = level;
-    }
     
 //------------------------------------------------------------------------------
     
@@ -444,7 +331,9 @@ public class ParallelRunner
      * @return <code>true</code> if any sub-job returned an exception
      */
 
-    private boolean exceptionInSubJobs()
+    // TODO: perhaps one day we'll read to exceptions
+    @SuppressWarnings("unused")
+	private boolean exceptionInSubJobs()
     {
         boolean found = false;
         for (Job submittedJob : submittedJobs.keySet())
@@ -511,17 +400,17 @@ public class ParallelRunner
     	{
     		mainIteration();
     		
-    		// This takes case of processing the reaction only in case of 
+    		// This takes care of processing the reaction only in case of 
     		// restart of the batch of parallel jobs.
-    		if (reaction!=null)
+    		if (requestedAction!=null)
     		{
     			List<Job> reactionObjectJobs = new ArrayList<Job>();
-    			switch (reaction.getObject()) 
+    			switch (requestedAction.getObject()) 
     			{
 					case FOCUSJOB:
 					{
-						reactionObjectJobs.add(
-								(Job) trigger.exposedOutput.getNamedData(
+						reactionObjectJobs.add((Job) jobRequestingAction
+								.exposedOutput.getNamedData(
 										JobEvaluator.EVALUATEDJOB).getValue());
 						break;
 					}
@@ -533,10 +422,12 @@ public class ParallelRunner
 					}
 				}
     			
-    			ActionApplier.performAction(reaction, trigger, reactionObjectJobs, 
+    			ActionApplier.performAction(requestedAction, 
+    					jobRequestingAction, 
+    					reactionObjectJobs, 
     					restartCounter.get());
-    			reaction = null;
-    			trigger = null;
+    			requestedAction = null;
+    			jobRequestingAction = null;
     		}
     	}
     }
@@ -676,8 +567,8 @@ public class ParallelRunner
 			{
 				//This is the very first notification: we take it into account
 				
-				reaction = action;
-				trigger = sender;
+				requestedAction = action;
+				jobRequestingAction = sender;
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.ACTIONREQUESTBYSUBJOB, action));
 				master.exposedOutput.putNamedData(new NamedData(
@@ -719,7 +610,7 @@ public class ParallelRunner
 					}
 				} else if (action.getObject().equals(ActionObject.FOCUSJOB))
 				{
-					Job focusJob = (Job) trigger.exposedOutput
+					Job focusJob = (Job) jobRequestingAction.exposedOutput
 							.getNamedData(JobEvaluator.EVALUATEDJOB)
 							.getValue();
 					switch (action.getType())
@@ -740,18 +631,19 @@ public class ParallelRunner
 								System.out.println("KILLING job " 
 										+ focusJob.getId()
 										+ " upon request from " 
-										+ trigger.getId());
+										+ jobRequestingAction.getId());
 							}
 							synchronized (lock)
 			            	{
 								cancellOneRunningThread(focusJob);
 
-				    			ActionApplier.performAction(reaction, trigger, 
+				    			ActionApplier.performAction(requestedAction, 
+				    					jobRequestingAction, 
 				    					Arrays.asList(focusJob), 
 				    					focusJob.getRestartCounter()
 				    						.getAndIncrement());
-				    			reaction = null;
-				    			trigger = null;
+				    			requestedAction = null;
+				    			jobRequestingAction = null;
 			            		lock.notify();
 			            	}
 							break;
@@ -776,32 +668,6 @@ public class ParallelRunner
         		lock.notify();
         	}
 		}
-    }
-
-//------------------------------------------------------------------------------
-
-   /**
-    * Stop all if the maximum run time has been reached.
-    * @return <code>true</code> if the wall time has been reached and we are 
-    * killing sub-jobs.
-    */
-
-    private boolean weRunOutOfTime()
-    {
-        boolean res = false;
-        long endTime = System.currentTimeMillis();
-        long millis = (endTime - startTime);
-
-        if (millis > walltimeMillis)
-        {
-        	if (verbosity > 0)
-            {
-	            System.out.println("Walltime reached for parallel job execution.");
-	            System.out.println("Killing remaining sub-jobs.");
-            }
-            res = true;
-        }
-        return res;
     }
     
 //------------------------------------------------------------------------------
