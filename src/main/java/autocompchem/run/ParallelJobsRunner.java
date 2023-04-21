@@ -41,7 +41,7 @@ import autocompchem.run.jobediting.ActionApplier;
 
 
 /**
- * Class for running a list of independent jobs in parallel.
+ * Class for running a list of jobs in parallel.
  *
  * @author Marco Foscato
  */
@@ -565,7 +565,9 @@ public class ParallelJobsRunner extends JobsRunner
 		{
 			if (notificationId.getAndIncrement() == 0)
 			{
-				//This is the very first notification: we take it into account
+				// This is the very first notification: we take it into account
+				// Note that notificationId is re-initialized to 0 every time
+				// we re-initialize the execution service.
 				
 				requestedAction = action;
 				jobRequestingAction = sender;

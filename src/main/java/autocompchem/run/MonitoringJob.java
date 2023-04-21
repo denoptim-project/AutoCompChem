@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -193,16 +194,23 @@ public class MonitoringJob extends EvaluationJob
 
 	/**
      * Sends this job to an executing thread managed by an existing, and
-     * pre-started thread manager. The job will be re-scheduled according to the
-     * period defined upon construction of this job.
-     * @param tpExecutor the manager of the job executing threads.
+     * pre-started execution service. The job will be re-scheduled according to 
+     * the period defined upon construction of this job.
+     * @param executor the executing service.
      * @return a Future representing pending completion of the task.
      */
     
     @SuppressWarnings("unchecked")
 	@Override
-  	protected Future<Object> submitThread(ScheduledThreadPoolExecutor tpExecutor) 
+  	protected Future<Object> submitThread(ExecutorService executor) 
   	{
+    	if (!(executor instanceof ScheduledThreadPoolExecutor))
+    	{
+    		throw new IllegalArgumentException("The execution service of a "
+    				+ this.getClass().getName() + " must be ");
+    	}
+    	ScheduledThreadPoolExecutor tpExecutor = 
+    			(ScheduledThreadPoolExecutor) executor;
   		return (Future<Object>) tpExecutor.scheduleAtFixedRate(this, delay, 
   				period, TimeUnit.MILLISECONDS);
   	}

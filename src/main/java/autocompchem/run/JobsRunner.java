@@ -219,7 +219,7 @@ public abstract class JobsRunner
         	if (verbosity > 0)
             {
 	            System.out.println("Walltime reached for " 
-	            		+ this.getClass().getName() + ".");
+	            		+ this.getClass().getSimpleName() + ".");
 	            System.out.println("Killing remaining workflow.");
             }
             res = true;

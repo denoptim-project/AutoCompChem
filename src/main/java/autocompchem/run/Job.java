@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -902,29 +903,19 @@ public class Job implements Runnable
 
     private void runSubJobsSequentially()
     {
-    	int stepRestarts = 0;
-        for (int iJob=0; iJob<steps.size(); iJob++)
+        SerialJobsRunner serialRun = new SerialJobsRunner(steps, this);
+        if (hasParameter(JobsRunner.WALLTIMEPARAM))
         {
-        	Job step = steps.get(iJob);
-        	step.run();
-            
-            if (step.requestsAction())
-            {
-            	//TODO-gg type of reaction: restart? stop? what else?
-            	
-            	stepRestarts++;
-            	ActionApplier.performAction(step.getRequestedAction(), 
-            			step, 
-						Arrays.asList((Job) step.exposedOutput.getNamedData(
-			    				JobEvaluator.EVALUATEDJOB).getValue()), 
-						stepRestarts); 
-            	
-            	//TODO-gg rerun step (if action impliesrestarting!):
-            	/*
-            	 * add to list of steps for job to rerun and the evaluation step
-            	 */
-            }
+        	serialRun.setWallTime(Long.parseLong(
+        			params.getParameterValue(JobsRunner.WALLTIMEPARAM)));
         }
+        if (hasParameter(JobsRunner.WAITTIMEPARAM))
+        {
+        	serialRun.setWaitingStep(Long.parseLong(
+        			params.getParameterValue(JobsRunner.WAITTIMEPARAM)));
+        }
+        serialRun.setVerbosity(verbosity);
+        serialRun.start();
     }
 
 //------------------------------------------------------------------------------
@@ -955,16 +946,16 @@ public class Job implements Runnable
 
     /**
      * Sends this job to an executing thread managed by an existing, and
-     * pre-started thread manager. This method is overwritten by subclasses 
+     * pre-started execution service. This method is overwritten by subclasses 
      * that need special kinds of execution. For example, see 
      * {@link MonitoringJob}.
-     * @param tpExecutor the manager of the job executing threads.
+     * @param executor the execution service.
      * @return a Future representing pending completion of the task.
      */
     
   	@SuppressWarnings("unchecked")
-	protected Future<Object> submitThread(ScheduledThreadPoolExecutor tpExecutor) {
-  		return (Future<Object>) tpExecutor.submit(this);
+	protected Future<Object> submitThread(ExecutorService executor) {
+  		return (Future<Object>) executor.submit(this);
   	}
     
 //------------------------------------------------------------------------------

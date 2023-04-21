@@ -1,7 +1,5 @@
 package autocompchem.run;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -20,17 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -39,7 +34,6 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.FileAsSource;
@@ -73,115 +67,6 @@ public class ParallelJobsRunnerTest
     private Situation s = new Situation("SituationType","TestSituation", 
     		new ArrayList<ICircumstance>(Arrays.asList(c)),a);
     
-    /**
-     * The name of the parameter determining the prefix in the test job logs.
-     */
-    private String PREFIX = "prefixForLogRecords";
-    
-    private final boolean debug = false; 
-    
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * A dummy test job that is parallelizable and simply logs into a file
-     * every ca. half second, by default, but timings can be set. 
-     * The job lasts a time defined in the constructor.
-     */
-    
-    private class TestJob extends Job
-    {    	
-    	protected int i = 0;
-    	protected int wallTime = 0;
-    	protected int delay = 500;
-    	protected int period = 490;
-    	protected Date date = new Date();
-    	protected SimpleDateFormat df = 
-    			new SimpleDateFormat(" HH:mm:ss.SSS ");
-    	
-    	/**
-    	 * 
-    	 * @param logPathName
-    	 * @param wallTime
-    	 */
-    	public TestJob(String logPathName, int wallTime)
-    	{
-    		super();
-    		this.appID = AppID.ACC;
-    		stdout = new File(logPathName);
-    		this.wallTime = wallTime;
-    		setParallelizable(true);
-    		setNumberOfThreads(1);
-    		setParameter(PREFIX, "");
-    	}
-    	
-    	/**
-    	 * 
-    	 * @param logPathName
-    	 * @param wallTime
-    	 * @param delay
-    	 * @param period
-    	 */
-    	public TestJob(String logPathName, int wallTime, int delay, int period)
-    	{
-    		this(logPathName, wallTime);
-    		this.delay = delay;
-    		this.period = period;
-    		setParallelizable(true);
-    		setNumberOfThreads(1);
-    	}
-    	
-    	@Override
-    	public void runThisJobSubClassSpecific()
-    	{	
-    		if (debug)
-    		{
-	    		date = new Date();
-	    		System.out.println("RUNNING TestJobLog: "+df.format(date)
-	    			+ " Pathname: "+stdout);
-    		}
-    		
-    		// The dummy command will just ping every N-milliseconds
-    		ScheduledThreadPoolExecutor stpe = 
-    				new ScheduledThreadPoolExecutor(1);
-    		stpe.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
-    		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-    		Task tsk = new Task();
-    		tsk.prefix = getParameter(PREFIX).getValueAsString();
-    		
-    		stpe.scheduleAtFixedRate(tsk, delay, period,
-    				TimeUnit.MILLISECONDS);
-    		
-    		CountDownLatch cdl = new CountDownLatch(1);
-            try {
-				while (!cdl.await(wallTime, TimeUnit.SECONDS)) 
-				{
-					stpe.shutdownNow();
-					break;
-				}
-			} catch (InterruptedException e) {
-				//Ignoring exception: interruption is signalled by Job
-				//e.printStackTrace();
-			} finally {
-				stpe.shutdownNow();
-			}
-    	}
-    	
-    	private class Task implements Runnable
-    	{
-    		public String prefix = "";
-    		
-			@Override
-			public void run() 
-			{
-				i++;
-				IOtools.writeTXTAppend(stdout, 
-						prefix + "Iteration " + i, 
-						true);
-			}
-    	}
-    }
-    
 //-----------------------------------------------------------------------------
 
     /*
@@ -193,7 +78,7 @@ public class ParallelJobsRunnerTest
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
     	System.out.println("STARTING TestJob");
-    	Job job = new TestJob(roothName,6,3000,500);
+    	Job job = new TestJob(roothName,6,3000,500,true);
     	job.run();
     	System.out.println(" END of TestJob");
     }
@@ -215,7 +100,7 @@ public class ParallelJobsRunnerTest
         master.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
-        	master.addStep(new TestJob(roothName+i,3));
+        	master.addStep(new TestJob(roothName+i,3,true));
         }
         
         master.run();
@@ -247,7 +132,7 @@ public class ParallelJobsRunnerTest
         master.setParameter("WALLTIME", "3");
         for (int i=0; i<3; i++)
         {
-        	master.addStep(new TestJob(roothName+i,5));
+        	master.addStep(new TestJob(roothName+i,5,true));
         }
         
         master.run();
@@ -282,7 +167,7 @@ public class ParallelJobsRunnerTest
         master.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
         {
-        	master.addStep(new TestJob(roothName+i,3));
+        	master.addStep(new TestJob(roothName+i,3,true));
         }
         
         master.run();
@@ -317,7 +202,7 @@ public class ParallelJobsRunnerTest
         master.setParameter("WALLTIME", "5");
         for (int i=0; i<6; i++)
         {
-        	master.addStep(new TestJob(roothName+i,3));
+        	master.addStep(new TestJob(roothName+i,3,true));
         }
         
         master.run();
@@ -359,7 +244,7 @@ public class ParallelJobsRunnerTest
         master.setParameter("WALLTIME", "6");
         
         // A "long-lasting" job that will be evaluated
-        Job jobToEvaluate = new TestJob(roothName+0,3,0,490);
+        Job jobToEvaluate = new TestJob(roothName+0,3,0,490,true);
         master.addStep(jobToEvaluate);
         
         // Prepare ingredients to do perception
@@ -376,7 +261,7 @@ public class ParallelJobsRunnerTest
         // Other 'whatever' jobs (i.e., the siblings) that will be killed too
         for (int i=1; i<6; i++) 
         {
-        	master.addStep(new TestJob(roothName+i,3,0,200));
+        	master.addStep(new TestJob(roothName+i,3,0,200,true));
         }
         
         assertEquals(7,master.getNumberOfSteps(),"Number of parallel jobs");
@@ -403,7 +288,7 @@ public class ParallelJobsRunnerTest
         
         // A "long-lasting" job that will be evaluated
         String logOnProductionJob = roothName+"_production";
-        TestJob productionJob = new TestJob(logOnProductionJob,5,0,100);
+        TestJob productionJob = new TestJob(logOnProductionJob,5,0,100,true);
         productionJob.setUserDir(tempDir);
         
         // Conditional rerun 1
@@ -412,7 +297,7 @@ public class ParallelJobsRunnerTest
         Action act = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
         String newPrefix = "RESTART-";
         act.addJobEditingTask(new SetJobParameter(
-        		new NamedData(PREFIX, newPrefix)));
+        		new NamedData(TestJob.PREFIX, newPrefix)));
         Situation sit1 = new Situation("SitTyp", "Sit-ONE", 
         		new ArrayList<ICircumstance>(Arrays.asList(c)),act);
         
@@ -422,7 +307,7 @@ public class ParallelJobsRunnerTest
         Action act2 = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
         newPrefix = "LAST-";
         act2.addJobEditingTask(new SetJobParameter(
-        		new NamedData(PREFIX, newPrefix)));
+        		new NamedData(TestJob.PREFIX, newPrefix)));
         Situation sit2 = new Situation("SitTyp", "Sit-TWO", 
         		new ArrayList<ICircumstance>(Arrays.asList(c2)),act2);
         
@@ -457,7 +342,7 @@ public class ParallelJobsRunnerTest
         // and restarted too
         for (int i=1; i<5; i++) 
         {
-        	TestJob j = new TestJob(roothName+i,3,0,100);
+        	TestJob j = new TestJob(roothName+i,3,0,100,true);
         	j.setUserDir(tempDir);
         	main.addStep(j);
         }
@@ -502,7 +387,7 @@ public class ParallelJobsRunnerTest
         // A job that will be evaluated
         String logOnProductionJob = roothName+"_production";
         TestJob productionJob = new TestJob(logOnProductionJob,
-        		walltimeChildJobs, 0, period); 
+        		walltimeChildJobs, 0, period, true); 
         productionJob.setUserDir(tempDir);
         
         ICircumstance c = new MatchText("Iteration 10", 
@@ -533,7 +418,8 @@ public class ParallelJobsRunnerTest
         // Sibling jobs that will NOT be stopped
         for (int i=1; i<4; i++) 
         {
-        	TestJob j = new TestJob(roothName+i, walltimeChildJobs, 0, period);
+        	TestJob j = new TestJob(roothName+i, walltimeChildJobs, 0, period, 
+        			true);
         	j.setUserDir(tempDir);
         	main.addStep(j);
         }
@@ -595,9 +481,9 @@ public class ParallelJobsRunnerTest
         // ParallelRunner as a wall time. So, check for completion
         // should be triggered by the actual completion of any job.
        
-        master.addStep(new TestJob(roothName+"_A",1,0,200));
-        master.addStep(new TestJob(roothName+"_B",2,0,200));
-        master.addStep(new TestJob(roothName+"_C",2,0,200));
+        master.addStep(new TestJob(roothName+"_A",1,0,200,true));
+        master.addStep(new TestJob(roothName+"_B",2,0,200,true));
+        master.addStep(new TestJob(roothName+"_C",2,0,200,true));
         
         master.run();
 
