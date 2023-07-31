@@ -24,6 +24,7 @@ import java.util.Set;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
+import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
@@ -177,7 +178,9 @@ public class WorkerFactory
     	else if (suitableWorkerIDs.size() == 0)
     	{
     		 Terminator.withMsgAndStatus("ERROR! Unable to find a worker "
-    		 		+ "capable of task '" + task + "'.", -1);
+    		 		+ "capable of task '" + task + "'. A worker may exist but "
+    		 		+ "has not been registered into " 
+    		 		+ WorkerID.class.getName(), -1);
     	}
     	
     	// Now we make the actual worker
@@ -258,6 +261,8 @@ public class WorkerFactory
         	return ConstraintsGenerator.capabilities;
         case ConformationalSpaceGenerator:
         	return ConformationalSpaceGenerator.capabilities;
+        case GaussianJobDetailsConverter:
+        	return GaussianJobDetailsConverter.capabilities;
         case DummyObjectsHandler:
             return DummyObjectsHandler.capabilities;
         case ForceFieldEditor:
@@ -347,6 +352,8 @@ public class WorkerFactory
         	return new ConformationalSpaceGenerator();
         case ConnectivityGenerator:
             return new ConnectivityGenerator();
+        case GaussianJobDetailsConverter:
+        	return new GaussianJobDetailsConverter();
         case ConstraintsGenerator:
         	return new ConstraintsGenerator();
         case DummyObjectsHandler:

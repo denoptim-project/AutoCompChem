@@ -35,6 +35,7 @@ public enum WorkerID
     ConformationalSpaceGenerator,
     ConnectivityGenerator,
     ConstraintsGenerator,
+    GaussianJobDetailsConverter,
     DummyObjectsHandler,
     ForceFieldEditor,
 	GaussianInputWriter,

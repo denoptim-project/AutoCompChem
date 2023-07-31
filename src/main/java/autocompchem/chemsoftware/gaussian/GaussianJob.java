@@ -29,6 +29,7 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 
@@ -430,12 +431,23 @@ public class GaussianJob
 			for (String key : optSec.getRefNames())
 			{
 				String ddName = key.substring(3);
+				DirectiveData dd = null;
 				if (ddName.toUpperCase().equals("BASIS"))
+				{
 					ddName = "BASISSET";
-				DirectiveData dd = new DirectiveData(ddName,
+					dd = new DirectiveData(ddName,
+							new ArrayList<String>(Arrays.asList(
+											optSec.getValue(key).split(
+													System.getProperty(
+															"line.separator")))));
+				} else {
+					dd = new DirectiveData(ddName,
 						new ArrayList<String>(Arrays.asList(
-								optSec.getValue(key).split(
-										System.getProperty("line.separator")))));
+								ParameterUtils.removeMultilineLabels(
+										optSec.getValue(key)).split(
+												System.getProperty(
+														"line.separator")))));
+				}
 				if (dd.hasACCTask())
 					dd.removeValue();
 				optDir.addDirectiveData(dd);
