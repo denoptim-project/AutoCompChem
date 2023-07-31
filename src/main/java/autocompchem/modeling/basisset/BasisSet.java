@@ -204,6 +204,31 @@ public class BasisSet
         return res;
     }
     
+
+//------------------------------------------------------------------------------
+
+    /** 
+     * Checks whether there is any center that is defined as an index (i.e.,
+     * atom index in the list of atoms).
+     * @return <code>true</code> if any of the centers is identified by atom 
+     * index. Returned <code>false</code> if al centers are defined by elemental
+     * symbol.
+     */
+
+    public boolean hasIndexSpecificComponents()
+    {
+        boolean res = false;
+        for (CenterBasisSet cbs : centerBSs)
+        {
+            if (cbs.getCenterIndex() != null)
+            {
+                res = true;
+                break;
+            }
+        }
+        return res;
+    }
+      
 //------------------------------------------------------------------------------
     
     @Override

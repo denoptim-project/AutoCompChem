@@ -1,0 +1,65 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "!",
+      "keywords": [
+        {
+          "reference": "functional",
+          "value": "PBE",
+          "isLoud": false
+        },
+        {
+          "reference": "PRINT",
+          "value": "printbasis",
+          "isLoud": false
+        }
+      ]
+    },
+    {
+      "name": "#",
+      "keywords": [
+        {
+          "reference": "title",
+          "value": "A dummy input file",
+          "isLoud": false
+        }
+      ]
+    },
+    {
+      "name": "coords",
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "ADD_GEOMETRY"
+            }
+          ],
+          "reference": "DirDataGeometry",
+          "type": "UNDEFINED"
+        }
+      ]
+    },
+    {
+      "name": "basis",
+      "dirData": [
+        {
+          "reference": "BASIS",
+          "type": "UNDEFINED",
+          "value": "Type is not JSON-able",
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "Element H Link /tmp/acc_test/basisset/custom_bs.gbs\nElement C Link /tmp/acc_test/basisset/custom_bs.gbs\nElement N Link /tmp/acc_test/basisset/custom_bs.gbs\nElement Cl Link /tmp/acc_test/basisset/custom_bs.gbs\nElement Ru Link /tmp/acc_test/basisset/custom_bs.gbs\nElement O Link /tmp/acc_test/basisset/custom_bs_Oxygen.gbs"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

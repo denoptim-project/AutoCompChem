@@ -159,12 +159,15 @@ public class OrcaConstants
 	/**
 	 * Name of the 'coords' {@link Directive} defining the chemical system.
 	 */
-	public static final String COORDSDIRNAME = "coords";
-	
+	public static final String COORDSDIRNAME = "coords";	
 
 	/**
 	 * Name of the '*' {@link Directive} defining the chemical system.
 	 */
 	public static final String STARDIRNAME = "*";
-	
+
+	/**
+	 * Name of the {@link Directive} defining the basis set.
+	 */
+	public static final String BASISSETDIRNAME = "basis";	
 }
