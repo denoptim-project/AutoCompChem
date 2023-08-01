@@ -13,7 +13,7 @@ fi
 n=0;n=$(grep -c "^ *C " t138-mol.inp)
 if [ $n -ne 31 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c "! PBE printbasis"  t138-mol.inp)
+n=0;n=$(grep -c "! PBE D3BJ printbasis"  t138-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
 n=0;n=$(grep -c "NewGTO" t138-mol.inp)
