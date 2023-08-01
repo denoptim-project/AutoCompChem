@@ -633,12 +633,6 @@ public class Directive implements IDirectiveComponent, Cloneable
      * parent directive of <code>this</code> or vice versa. This to prevent 
      * loop-like directive structures.
      * @param dir the new directive.
-     * @param owKeys if <code>true</code> makes this method overwrite all the
-     * keywords of the existing directive. 
-     * @param owSubDirs if <code>true</code> makes this method overwrite all the
-     * sub-directives of the existing directive.
-     * @param owData if <code>true</code> makes this method overwrite all the
-     * data of the existing directive. 
      */
 
     public void setSubDirective(Directive dir)

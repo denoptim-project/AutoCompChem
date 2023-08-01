@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,7 @@ import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
@@ -179,7 +181,14 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			
 			case ("COORDS"): // OrcaConstants.COORDSDIRNAME
 			{
-				lines.addAll(getTextForCoordsBlock(d,false));
+				String pre = "";
+				if (outmost)
+				{
+					pre = "%";
+				}
+				List<String> dirLines = getTextForCoordsBlock(d,false);
+				dirLines.set(0, pre+dirLines.get(0));
+				lines.addAll(dirLines);
 				break;
 			}
 			
@@ -404,32 +413,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		{
 			line = "*";
 		} else {
-			line = "%coords";
-		}
-		
-		// Ensure we have the right keyword 
-		if (d.hasComponent(ChemSoftConstants.DIRDATAGEOMETRY, 
-				DirectiveComponentType.DIRECTIVEDATA))
-		{
-			DirectiveData dd = d.getFirstDirectiveData(
-					ChemSoftConstants.DIRDATAGEOMETRY);
-			switch (dd.getType())
-			{
-				//TODO:
-				/*
-				case ZMATRIX:
-				{
-					break;
-				}
-				*/
-				case IATOMCONTAINER:
-				default:
-				{
-					d.setKeyword(new Keyword(ChemSoftConstants.PARCOORDTYPE,
-			        		false, CoordsType.XYZ.toString()));
-					break;
-				}
-			}
+			line = "coords";
 		}
 		
 		d.sortKeywordsBy(new CoordsKeywordsComparator());
@@ -512,21 +496,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		}
     	return lines;
     }
-    
-//------------------------------------------------------------------------------
-    
-    private List<String> getTextForBasisSetDirective(Directive d)
-    {
-    	List<String> lines = new ArrayList<String>();
-    	lines.add(d.getName());
-    	
-    	// TODO-gg REMOVE?!
-    	
-    	// There can be many things in 
-    	
-        lines.add("end");
-    	return lines;
-    }
 
 //------------------------------------------------------------------------------
 
@@ -575,18 +544,33 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
 		if (dCoords==null && dStar==null)
 		{
-			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
-					ChemSoftConstants.PARCHARGE, false, charge);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSCHARGEDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARCHARGE, false, charge));
 		} else if (dCoords!=null && dStar==null)
 		{
-			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
-					ChemSoftConstants.PARCHARGE, false, charge);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSCHARGEDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARCHARGE, false, charge));
 		} else if (dCoords==null && dStar!=null)
 		{
 			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
 					ChemSoftConstants.PARCHARGE, false, charge);
+		} else {
+			Terminator.withMsgAndStatus("ERROR! Neither '"
+				+ OrcaConstants.COORDSDIRNAME + "' nor '"
+				+ OrcaConstants.STARDIRNAME + "' directive found. "
+				+ "Cannot place charge info onto the"
+				+ "definition of the system.", -1);
 		}
-		//One or the other directive must be present!
 	}
 
 //------------------------------------------------------------------------------
@@ -624,17 +608,33 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
 		if (dCoords==null && dStar==null)
 		{
-			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
-					ChemSoftConstants.PARSPINMULT, false, sm);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSMULTDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARSPINMULT, false, sm));
 		} else if (dCoords!=null && dStar==null)
 		{
-			addNewKeyword(ccj, OrcaConstants.COORDSDIRNAME, 
-					ChemSoftConstants.PARSPINMULT, false, sm);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSMULTDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARSPINMULT, false, sm));
 		} else if (dCoords==null && dStar!=null)
 		{
 			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
 					ChemSoftConstants.PARSPINMULT, false, sm);
-		}
+		} else {
+			Terminator.withMsgAndStatus("ERROR! Neither '"
+					+ OrcaConstants.COORDSDIRNAME + "' nor '"
+					+ OrcaConstants.STARDIRNAME + "' directive found. "
+					+ "Cannot place multiplicity info onto the"
+					+ "definition of the system.", -1);
+			}
 	}
 	
 //------------------------------------------------------------------------------
@@ -723,6 +723,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		}
 		// NB: sysDefDir may still be null! Later we do check for null.
 		
+		// mode info on basis set, if needed
 		Directive basisSetDir = step.getDirective(OrcaConstants.BASISSETDIRNAME);
 		if (basisSetDir != null) 
 		{
@@ -821,8 +822,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		
     	lines.add("N_core " + String.format(Locale.ENGLISH, "%2d", 
     			cbs.getElectronsInECP()));
-        lines.add("lmax " + String.format(Locale.ENGLISH, "%2d", 
-        		cbs.getECPMaxAngMom()));
+        lines.add("lmax " + convertAngMomentumToLetter(cbs.getECPMaxAngMom()));
         
         for (ECPShell s : cbs.getECPShells())
         {
@@ -859,5 +859,69 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	}
     
 //------------------------------------------------------------------------------
-
+	
+	/**
+	 * Maps angular momentum identifiers. Note that Orca (contrary to 
+	 * convention) includes the "j" letter. Empirical tests also show that 
+	 * the lmax in the ECP definition does not go above k, even though the 
+	 * Orca manusl (5.0.4) does mention "l" (angular momentum 9) in section 
+	 * 9.5.3.
+	 * Therefore, we use this Orca-specific
+	 * mapping of Azimuthal numbers to historical letters.
+	 */
+    
+	private String convertAngMomentumToLetter(int azimuthalNumber)
+	{
+		String l = null;
+		if (azimuthalNumber>6)
+		{
+			System.out.println(NL + NL +
+					"WARNING! since Orca (5.0.4) uses letter 'j' "
+					+ "as identifier for angular momentum with azimuthal "
+					+ "number 7, and this is contrary to the convention of "
+					+ "omitting letter 'j', you may be using the wrong angular "
+					+ "momentum! Make sure this is indeed what you want to do."
+					+ NL + NL);
+		}
+		switch (azimuthalNumber)
+		{
+		case 0:
+			l = "s";
+			break;
+		case 1:
+			l = "p";
+			break;
+		case 2:
+			l = "d";
+			break;
+		case 3:
+			l = "f";
+			break;
+		case 4:
+			l = "g";
+			break;
+		case 5:
+			l = "h";
+			break;
+		case 6:
+			l = "i";
+			break;
+		case 7:
+			l = "j";
+			break;
+		case 8:
+			l = "k";
+			break;
+		default:
+			Terminator.withMsgAndStatus("ERROR! You requied to convert "
+    				+ "angular momentom " + azimuthalNumber
+    				+ " into historical letter, but Orca 5.0.4 declares "
+    				+ "up to 'k' as maximum angular momentum. If this "
+    				+ "convention has changed, please inform the authors of "
+    				+ "AutoCompChem for an upgrade", -1);
+		}
+		return l;
+	}
+	
+//------------------------------------------------------------------------------
 }

@@ -38,7 +38,7 @@
           "name": "CTyp",
           "keywords": [
             {
-              "reference": "type",
+              "reference": "coordtype",
               "value": "xyz",
               "isLoud": false
             }

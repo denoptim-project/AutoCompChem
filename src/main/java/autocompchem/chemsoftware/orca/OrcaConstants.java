@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.orca;
 
+import java.util.HashMap;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -159,7 +161,27 @@ public class OrcaConstants
 	/**
 	 * Name of the 'coords' {@link Directive} defining the chemical system.
 	 */
-	public static final String COORDSDIRNAME = "coords";	
+	public static final String COORDSDIRNAME = "coords";
+	
+	/**
+	 * Name of the sub{@link Directive} of 'coords' defining the type of 
+	 * coordinates defining the chemical system.
+	 */
+	public static final String COORDSCTYPDIRNAME = "CTyp";
+	
+	/**
+	 * Name of the sub{@link Directive} of 'coords' defining the charge of
+	 * the chemical system.
+	 */
+	public static final String COORDSCHARGEDIRNAME = "Charge";
+	
+	/**
+	 * Name of the sub{@link Directive} of 'coords' defining the spin
+	 * multiplicity of
+	 * the chemical system.
+	 */
+	public static final String COORDSMULTDIRNAME = "Mult";
+	
 
 	/**
 	 * Name of the '*' {@link Directive} defining the chemical system.
@@ -170,4 +192,5 @@ public class OrcaConstants
 	 * Name of the {@link Directive} defining the basis set.
 	 */
 	public static final String BASISSETDIRNAME = "basis";	
+
 }

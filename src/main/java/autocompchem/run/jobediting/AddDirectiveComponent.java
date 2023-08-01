@@ -143,7 +143,7 @@ public class AddDirectiveComponent implements IJobEditingTask
 		if (!(job instanceof CompChemJob))
 			return;
 		CompChemJob ccj = (CompChemJob) job;
-		ccj.addDirectiveComponent(path, content);
+		ccj.addDirectiveComponent(path, content, false, true);
 	}
 	
 //------------------------------------------------------------------------------

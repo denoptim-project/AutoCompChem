@@ -302,6 +302,30 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
+     * Adds a directive component in a given and existing location of the 
+     * directive 
+     * component's structure (does not create missing locations), 
+     * or, if such component already exists, removes
+     * any component matching address, type, and name and places the incoming
+     * components instead. 
+     * @param parent the address to the directive that should contain the
+     * the components to add, starting with the
+     * outermost directive and ending with the directive that should contain
+     * the component added here. If empty, we can only add a root 
+     * {@link Directive} if the incomingComponent is a {@link Directive}.
+     * @param incomingComponent the component being added.
+     * @return <code>true</code> if the component has been added to this job.
+     */
+    
+    public boolean setDirectiveComponent(DirComponentAddress parent,
+    		IDirectiveComponent incomingComponent)
+    {
+    	return addDirectiveComponent(parent, incomingComponent, true, false);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
      * Adds a directive component in a given location of the directive 
      * component's structure.
      * @param parent the address to the directive that should contain the
@@ -310,12 +334,29 @@ public class CompChemJob extends Job implements Cloneable
      * the component added here. If empty, we can only add a root 
      * {@link Directive} if the incomingComponent is a {@link Directive}.
      * @param incomingComponent the component being added.
-     * @return <code>true</code> is the component has been added to this job.
+     * @param overwrite if <code>true</code> replaces any pre-existing component
+     * of the same type, name, and address of the incoming component.
+     * @param createPath if <code>true</code> creates the address if it does not 
+     * exist.
+     * @return <code>true</code> if the component has been added to this job.
      */
     
     public boolean addDirectiveComponent(DirComponentAddress parent,
-    		IDirectiveComponent incomingComponent)
+    		IDirectiveComponent incomingComponent, boolean overwrite, 
+    		boolean createPath)
     {
+    	DirComponentAddress newCompAddress = parent.clone();
+    	newCompAddress.addStep(incomingComponent.getName(), 
+    			incomingComponent.getComponentType());
+		if (overwrite)
+		{
+			this.removeDirectiveComponent(newCompAddress);
+		} 
+		if (createPath)
+		{
+			ensureDirectiveStructure(parent);
+		}
+		
     	if (parent.size()<1)
     	{
     		if (incomingComponent.getComponentType()
@@ -326,21 +367,13 @@ public class CompChemJob extends Job implements Cloneable
     					+ "directive component's structure.");
     		}
     		this.addDirective((Directive) incomingComponent);
-    		return true;
+        	return true;
     	}
     	
-    	List<IDirectiveComponent> parentDirectives = getDirectiveComponents(
-    			parent);
-    	
-    	if (parentDirectives.size()==0)
-    	{
-    		if (!ensureDirectiveStructure(parent))
-    			return false;
-        	parentDirectives = getDirectiveComponents(parent);
-    	}
+    	List<IDirectiveComponent> parents = getDirectiveComponents(parent);
 
     	boolean componentHasBeenAdded = false;
-    	for (IDirectiveComponent p : parentDirectives)
+    	for (IDirectiveComponent p : parents)
     	{
     		if (p instanceof Directive)
     		{
@@ -396,20 +429,48 @@ public class CompChemJob extends Job implements Cloneable
      * the given address. Ignores any directive components that is not a
      * {@link Directive}.
      * @param address the address to create if not found already.
-     * @return <code>true</code> if any directive had to be created.
      */
-    public boolean ensureDirectiveStructure(DirComponentAddress address)
+    public void ensureDirectiveStructure(DirComponentAddress address)
 	{
-    	boolean result = false;
+        hasDirectiveStructure(address, true);
+	}
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks whether the directives involved in
+     * the given address exist. Ignores any components that is not a
+     * {@link Directive}.
+     * @param address the address to check.
+     * @return <code>true</code> if any directive has to be created.
+     */
+    public boolean hasDirectiveStructure(DirComponentAddress address)
+	{
+    	return hasDirectiveStructure(address, false);
+	}
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks whether the directives involved in
+     * the given address exist. Ignores any components that is not a
+     * {@link Directive}.
+     * @param address the address to check.
+     * @param makeIfMissing if <code>true</code> makes any missing component.
+     * @return <code>true</code> if the directive structure exists.
+     */
+    public boolean hasDirectiveStructure(DirComponentAddress address,
+    		boolean makeIfMissing)
+	{
     	if (address.size()==0)
 		{
-			return result;
+			return false;
 		} 
 		if (address.size()==1 &&
 				!(address.get(0).type.equals(DirectiveComponentType.DIRECTIVE)
 					|| address.get(0).type.equals(DirectiveComponentType.ANY)))
 		{
-			return result;
+			return false;
 		}
 		
 		List<Directive> candDirectives = new ArrayList<Directive>();
@@ -427,12 +488,18 @@ public class CompChemJob extends Job implements Cloneable
 				}
 			}
 		}
-		if (candDirectives.size()==0 && !wantedDirName.equals("*"))
+		
+		if (candDirectives.size()==0 && !wantedDirName.equals("*")
+				&& makeIfMissing)
 		{
 			Directive wantedDir = new Directive(wantedDirName);
 			addDirective(wantedDir);
 			candDirectives.add(wantedDir);
-			result = true;
+		}
+		
+		if (address.size()==1 && candDirectives.size()>0)
+		{
+			return true;
 		}
 		
 		for (int iLevel=1; iLevel<address.size(); iLevel++)
@@ -467,10 +534,12 @@ public class CompChemJob extends Job implements Cloneable
 			{
 				if (candDirectives.size()==1)
 				{
-					Directive wantedDir = new Directive(wantedDirName);
-					candDirectives.get(0).addSubDirective(wantedDir);
-					nextParDirs.add(wantedDir);
-					result = true;
+					if (makeIfMissing)
+					{
+						Directive wantedDir = new Directive(wantedDirName);
+						candDirectives.get(0).addSubDirective(wantedDir);
+						nextParDirs.add(wantedDir);
+					}
 				} else if (candDirectives.size()>1) {
 					throw new IllegalArgumentException("Found multiple parent "
 							+ "directives at level " + (iLevel-1) 
@@ -483,7 +552,7 @@ public class CompChemJob extends Job implements Cloneable
 			candDirectives.clear();
 			candDirectives.addAll(nextParDirs);
 		}
-		return result;
+		return candDirectives.size()>0;
     }
     
 //------------------------------------------------------------------------------
@@ -516,10 +585,10 @@ public class CompChemJob extends Job implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
-     * Adds a {@link IValueContainer} if none exists matching the 
-     * given address. 
+     * Adds a {@link IValueContainer} if none already exists matching the 
+     * given address, name, and type.
      * @param parentAddress address of the container holding the 
-     * {@link IValueContainer} to set.
+     * {@link IValueContainer} to add.
      * @param valueContainer a container for the value to set in any existing
      * container found in the directive's structure. The name and type of this 
      * container determine also the nature of the value container we are setting.
@@ -531,16 +600,17 @@ public class CompChemJob extends Job implements Cloneable
     	// So one parent must exist
     	if (parentAddress.size()<1)
     		return;
-    	
+
+    	// Any existing and matching component makes this method do nothing 
     	DirComponentAddress componentAddress = parentAddress.clone();
     	componentAddress.addStep(valueContainer.getName(), 
     			valueContainer.getComponentType());
 		List<IDirectiveComponent> existingComponents = 
 				getDirectiveComponents(componentAddress);
-		if (existingComponents.size()!=0)
+		if (existingComponents.size()>0)
 			return;
 		
-		addDirectiveComponent(parentAddress, valueContainer);
+		addDirectiveComponent(parentAddress, valueContainer, false, true);
     }
     
 //-----------------------------------------------------------------------------

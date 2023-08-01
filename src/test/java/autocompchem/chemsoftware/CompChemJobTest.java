@@ -477,112 +477,6 @@ public class CompChemJobTest
 //------------------------------------------------------------------------------
     
     @Test
-    public void testAddDirectiveComponent() throws Exception
-    {
-    	CompChemJob ccj = new CompChemJob();
-    	Directive dA = new Directive("A1");
-    	Keyword k1 = new Keyword("K2");
-    	Keyword k2 = new Keyword("K2");
-    	Keyword k3 = new Keyword("K2");
-    	dA.addKeyword(k1);
-    	dA.addKeyword(k2);
-    	dA.addKeyword(k3);
-    	dA.addDirectiveData(new DirectiveData("data2"));
-    	dA.addDirectiveData(new DirectiveData("data2"));
-    	dA.addDirectiveData(new DirectiveData("data2"));
-    	dA.addSubDirective(new Directive("subdir2"));
-    	dA.addDirectiveData(new DirectiveData("data2"));
-    	dA.addSubDirective(new Directive("subdir2"));
-    	Directive dA2 = new Directive("A2");
-    	Keyword k22 = new Keyword("K2");
-    	dA2.addKeyword(k22);
-    	DirectiveData dd2 = new DirectiveData("data2");
-    	dA2.addDirectiveData(dd2);
-    	dA.addSubDirective(dA2);
-    	ccj.addDirective(dA);
-    	
-    	Directive dC1 = new Directive("C");
-    	Directive dC2 = new Directive("C");
-    	Directive dC3 = new Directive("C");
-    	Directive dC12 = new Directive("C");
-    	Directive dC22 = new Directive("C");
-    	Directive dC32 = new Directive("C");
-    	Keyword k31 = new Keyword("K3", false, "val1");
-    	Keyword k32 = new Keyword("K3", true, "val2");
-    	Keyword k33 = new Keyword("K3", false, "val3");
-    	dC12.addKeyword(k31);
-    	dC22.addKeyword(k32);
-    	dC32.addKeyword(k33);
-    	dC1.addSubDirective(dC12);
-    	dC1.addSubDirective(dC22);
-    	dC1.addSubDirective(dC32);
-    	ccj.addDirective(dC1);
-    	ccj.addDirective(dC2);
-    	ccj.addDirective(dC3);
-     	
-     	// Testing that we can add a directive multiple times
-    	DirComponentAddress adrs = new DirComponentAddress();
-     	Directive dirAdded = new Directive("NEW-DIR");
-     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
-     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
-     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
-    	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
-    	List<IDirectiveComponent> expected = new ArrayList<IDirectiveComponent>();
-    	expected.add(dirAdded);
-    	expected.add(dirAdded);
-    	expected.add(dirAdded);
-    	DirComponentAddress adrsOfAdded = new DirComponentAddress();
-    	adrsOfAdded.addStep(dirAdded.getName(), DirectiveComponentType.DIRECTIVE);
-    	matches = ccj.getDirectiveComponents(adrsOfAdded);
-    	assertEquals(expected, matches);
-    	
-    	// Testing addition of directive in a yet non-existing location 
-     	Directive dirOnNewAdrs= new Directive("NEW-DIR-FAR");
-     	adrs = new DirComponentAddress();
-    	adrs.addStep("Z", DirectiveComponentType.DIRECTIVE);
-    	adrs.addStep("ZZ", DirectiveComponentType.DIRECTIVE);
-     	assertTrue(ccj.addDirectiveComponent(adrs, dirOnNewAdrs));
-    	matches = new ArrayList<IDirectiveComponent>();
-    	expected = new ArrayList<IDirectiveComponent>();
-    	expected.add(dirOnNewAdrs);
-    	adrsOfAdded = new DirComponentAddress();
-    	adrsOfAdded.addStep("Z", DirectiveComponentType.DIRECTIVE);
-    	assertEquals(1, ccj.getDirectiveComponents(adrsOfAdded).size());
-    	adrsOfAdded.addStep("ZZ", DirectiveComponentType.DIRECTIVE);
-    	assertEquals(1, ccj.getDirectiveComponents(adrsOfAdded).size());
-    	adrsOfAdded.addStep(dirOnNewAdrs.getName(), 
-    			DirectiveComponentType.DIRECTIVE);
-    	assertEquals(1, ccj.getDirectiveComponents(adrsOfAdded).size());
-     	
-    	// Testing addition of directive to existing location
-    	adrs = new DirComponentAddress();
-    	adrs.addStep("A", DirectiveComponentType.DIRECTIVE);
-     	assertTrue(ccj.addDirectiveComponent(adrs, dirAdded));
-    	adrsOfAdded = new DirComponentAddress();
-    	adrsOfAdded.addStep("A", DirectiveComponentType.DIRECTIVE);
-    	adrsOfAdded.addStep(dirAdded.getName(), DirectiveComponentType.DIRECTIVE);
-    	expected = new ArrayList<IDirectiveComponent>();
-    	expected.add(dirAdded);
-    	matches = ccj.getDirectiveComponents(adrsOfAdded);
-    	assertEquals(expected, matches);
-   
-    	// Testing that we can only add a Directive as root component
-    	Keyword keyAdded = new Keyword("NEW-KEY", false, "added keyword value");
-    	adrs = new DirComponentAddress();
-    	boolean throwed = false;
-     	try {
-     		ccj.addDirectiveComponent(adrs, keyAdded);
-     	} catch (IllegalArgumentException e)
-     	{
-     		if (e.getMessage().contains("can be root"))
-     			throwed = true;
-     	}
-     	assertTrue(throwed);
-    }
-    
-//------------------------------------------------------------------------------
-    
-    @Test
     public void testSetDirComponentValue() throws Exception
     {
     	CompChemJob originalCcj = getTextCompChemJob();
@@ -731,7 +625,7 @@ public class CompChemJobTest
     			"Dir:D");
     	List<IDirectiveComponent> before = ccj.getDirectiveComponents(adrs);
     	assertEquals(0, before.size());
-    	assertTrue(ccj.ensureDirectiveStructure(adrs));
+    	ccj.ensureDirectiveStructure(adrs);
     	List<IDirectiveComponent> after = ccj.getDirectiveComponents(adrs);
     	assertEquals(1, after.size());
     	assertEquals("D", after.get(0).getName());
@@ -739,7 +633,7 @@ public class CompChemJobTest
     	adrs = DirComponentAddress.fromString("Dir:A1|Dir:A2");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(1, before.size());
-     	assertFalse(ccj.ensureDirectiveStructure(adrs));
+     	ccj.ensureDirectiveStructure(adrs);
      	after = ccj.getDirectiveComponents(adrs);
      	assertEquals(1, after.size());
      	assertEquals("A2", after.get(0).getName());
@@ -750,7 +644,7 @@ public class CompChemJobTest
      	assertEquals(1, dA2.getAllKeywords().size());
      	assertEquals(0, dA2.getAllSubDirectives().size());
      	assertEquals(0, dA2.getAllDirectiveDataBlocks().size());
-     	assertFalse(ccj.ensureDirectiveStructure(adrs));
+     	ccj.ensureDirectiveStructure(adrs);
      	assertEquals(1, dA2.getAllKeywords().size());
      	assertEquals(0, dA2.getAllSubDirectives().size());
      	assertEquals(0, dA2.getAllDirectiveDataBlocks().size());
@@ -760,7 +654,7 @@ public class CompChemJobTest
      	adrs = DirComponentAddress.fromString("Dir:A1|Dir:A2|Dir:A3|Dir:A4");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, before.size());
-     	assertTrue(ccj.ensureDirectiveStructure(adrs));
+     	ccj.ensureDirectiveStructure(adrs);
      	after = ccj.getDirectiveComponents(adrs);
      	assertEquals(1, after.size());
      	assertEquals("A4", after.get(0).getName());
@@ -781,7 +675,7 @@ public class CompChemJobTest
      	adrs = DirComponentAddress.fromString("*:*|*:*|*:B3|Dir:B4b");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, before.size());
-     	assertTrue(ccj.ensureDirectiveStructure(adrs));
+     	ccj.ensureDirectiveStructure(adrs);
      	after = ccj.getDirectiveComponents(adrs);
      	assertEquals(1, after.size());
      	assertEquals("B4b", after.get(0).getName());
@@ -791,13 +685,259 @@ public class CompChemJobTest
      	adrs = DirComponentAddress.fromString("*:Z|*:*|Dir:ZZ");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, before.size());
-     	assertTrue(ccj.ensureDirectiveStructure(adrs)); // because it adds "Z"
+     	ccj.ensureDirectiveStructure(adrs);
      	after = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, after.size());
      	after = ccj.getDirectiveComponents(
      			DirComponentAddress.fromString("*:Z|*:*"));
      	assertEquals(0, after.size());
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testAddDirectiveComponent() throws Exception
+    {
+    	CompChemJob ccj = new CompChemJob();
     	
+    	Directive dC1 = new Directive("C");
+    	Directive dC2 = new Directive("C");
+    	Directive dC3 = new Directive("C");
+    	Directive dO = new Directive("O");
+    	dC1.addSubDirective(dC2);
+    	dC1.addSubDirective(dC3);
+    	dC1.addSubDirective(dO);
+    	ccj.addDirective(dC1);
+    	
+    	/* The structure of directives is this one:
+    	 *  
+    	 *  C -- C
+    	 *  | \
+    	 *  |  -- C
+    	 *   \
+    	 *    ---O 
+    	 *  
+    	 */
+    	
+    	// Test adding new component
+    	// On existing parent
+    	Directive newDir = new Directive("N1");
+    	DirComponentAddress parentAdrs = DirComponentAddress.fromString(
+    			"Dir:C");
+    	DirComponentAddress adrs = DirComponentAddress.fromString(
+    			"Dir:C|Dir:N1");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir, true, true));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	List<IDirectiveComponent> after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDir);
+
+    	newDir = new Directive("N2");
+    	parentAdrs = DirComponentAddress.fromString("Dir:C");
+    	adrs = DirComponentAddress.fromString("Dir:C|Dir:N2");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir, true, false));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDir);
+
+    	newDir = new Directive("N3");
+    	parentAdrs = DirComponentAddress.fromString("Dir:C");
+    	adrs = DirComponentAddress.fromString("Dir:C|Dir:N3");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir, false, true));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDir);
+
+    	newDir = new Directive("N4");
+    	parentAdrs = DirComponentAddress.fromString("Dir:C");
+    	adrs = DirComponentAddress.fromString("Dir:C|Dir:N4");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir, false, false));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDir);
+    	
+    	// Test overwriting existing component or appending besides
+    	// On existing parent
+    	Directive newDir0 = new Directive("O");
+    	parentAdrs = DirComponentAddress.fromString("Dir:C");
+    	adrs = DirComponentAddress.fromString("Dir:C|Dir:O");
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	List<IDirectiveComponent> before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, before.size());
+    	assertTrue(before.get(0)==dO);
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir0, true, true));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)!=before.get(0));
+    	assertTrue(after.get(0)==newDir0);
+
+    	Directive newDir1 = new Directive("O");
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, before.size());
+    	assertTrue(before.get(0)==newDir0);
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir1, true, false));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDir1);
+
+    	Directive newDir2 = new Directive("O");
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, before.size());
+    	assertTrue(before.get(0)==newDir1);
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir2, false, true));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(2, after.size());
+    	assertTrue(after.get(0)==newDir1); //OK, did not overwrite original
+    	assertTrue(after.get(1)==newDir2); //OK, appended new
+
+    	Directive newDir3 = new Directive("O");
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(2, before.size());
+    	assertTrue(before.get(0)==newDir1);
+    	assertTrue(before.get(1)==newDir2);
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDir3, false, false));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(3, after.size());
+    	assertTrue(after.get(0)==newDir1); //OK, did not overwrite original
+    	assertTrue(after.get(1)==newDir2); //OK, did not overwrite original
+    	assertTrue(after.get(2)==newDir3); //OK, appended new
+    	
+       	// Test adding new component
+    	// On un-existing parent
+    	Directive newDirR1 = new Directive("R1");
+    	parentAdrs = DirComponentAddress.fromString("Dir:Z1");
+    	adrs = DirComponentAddress.fromString("Dir:Z1|Dir:R1");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDirR1, true, true));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDirR1);
+
+    	Directive newDirR2 = new Directive("R2");
+    	parentAdrs = DirComponentAddress.fromString("Dir:Z2");
+    	adrs = DirComponentAddress.fromString("Dir:Z2|Dir:R2");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	assertFalse(ccj.addDirectiveComponent(parentAdrs, newDirR2, true, false));
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(0, after.size());
+
+    	Directive newDirR3 = new Directive("R3");
+    	parentAdrs = DirComponentAddress.fromString("Dir:Z3");
+    	adrs = DirComponentAddress.fromString("Dir:Z3|Dir:R3");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	assertTrue(ccj.addDirectiveComponent(parentAdrs, newDirR3, false, true));
+    	assertTrue(ccj.hasDirectiveStructure(adrs));
+    	assertTrue(ccj.hasDirectiveStructure(parentAdrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDirR3);
+
+    	Directive newDirR4 = new Directive("R4");
+    	parentAdrs = DirComponentAddress.fromString("Dir:Z4");
+    	adrs = DirComponentAddress.fromString("Dir:Z4|Dir:R4");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	assertFalse(ccj.addDirectiveComponent(parentAdrs, newDirR4, false, false));
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(0, after.size());
+    	
+    	// Testing that we can only add a Directive as root component
+    	Keyword keyAdded = new Keyword("NEW-KEY", false, "added keyword value");
+    	adrs = new DirComponentAddress();
+    	boolean throwed = false;
+     	try {
+     		ccj.addDirectiveComponent(adrs, keyAdded, true, true);
+     	} catch (IllegalArgumentException e)
+     	{
+     		if (e.getMessage().contains("can be root"))
+     			throwed = true;
+     	}
+     	assertTrue(throwed);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testSetDirectiveComponent() throws Exception
+    {
+    	CompChemJob ccj = new CompChemJob();
+    	
+    	Directive dC1 = new Directive("C");
+    	Directive dC2 = new Directive("C");
+    	Directive dC3 = new Directive("C");
+    	dC1.addSubDirective(dC2);
+    	dC1.addSubDirective(dC3);
+    	ccj.addDirective(dC1);
+    	
+    	/* The structure of directives is this one:
+    	 *  
+    	 *  C -- C
+    	 *   \
+    	 *    -- C
+    	 *  
+    	 */
+    	
+    	// Test adding on existing location
+    	Directive newDir = new Directive("NewDir");
+    	DirComponentAddress parentAdrs = DirComponentAddress.fromString(
+    			"Dir:C");
+    	DirComponentAddress adrs = DirComponentAddress.fromString(
+    			"Dir:C|Dir:NewDir");
+    	List<IDirectiveComponent> before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(0, before.size());
+    	assertTrue(ccj.setDirectiveComponent(parentAdrs, newDir));
+    	List<IDirectiveComponent> after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)==newDir);
+    	
+    	// Test overwriting existing component
+    	newDir = new Directive("C");
+    	parentAdrs = DirComponentAddress.fromString("Dir:C");
+    	adrs = DirComponentAddress.fromString("Dir:C|Dir:C");
+    	before = ccj.getDirectiveComponents(adrs);
+    	assertEquals(2, before.size());
+    	assertTrue(ccj.setDirectiveComponent(parentAdrs, newDir));
+    	after = ccj.getDirectiveComponents(adrs);
+    	assertEquals(1, after.size());
+    	assertTrue(after.get(0)!=before.get(0));
+    	
+    	// Test ignore unexisting location
+    	newDir = new Directive("ZZ");
+    	parentAdrs = DirComponentAddress.fromString("Dir:C|Dir:Z");
+    	adrs = DirComponentAddress.fromString("Dir:C|Dir:Z|Dir:ZZ");
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
+    	assertFalse(ccj.setDirectiveComponent(parentAdrs, newDir));
+    	assertFalse(ccj.hasDirectiveStructure(adrs));
+    	assertFalse(ccj.hasDirectiveStructure(parentAdrs));
     }
     
 //------------------------------------------------------------------------------

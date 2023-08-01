@@ -635,7 +635,7 @@ public abstract class ChemSoftInputWriter extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * Sets a keyword in a directive with the given name to any step where it is
+     * Adds a keyword in a directive with the given name to any step where it is
      * not already defined. 
      * This means that this method does not overwrite existing keywords.
      * This method can alter only the given job and its steps, but does not 
@@ -664,7 +664,7 @@ public abstract class ChemSoftInputWriter extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * Sets data in a directive with the given name to any step where it is
+     * Adds data in a directive with the given name to any step where it is
      * not already defined. 
      * This means that this method does not overwrite existing data.
      * This method can alter only the given job and its steps, but does not 
@@ -687,25 +687,25 @@ public abstract class ChemSoftInputWriter extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Adds a value container at any lever of embedding in a job directive's 
+     * Adds a value container at any level of embedding in a job directive's 
      * component structure, as long as no such 
      * container is already present on the given address.
      * @param ccj the job to customize.
      * @param address the location where to place the value container in the
      * directive's component structure. Any level of embedding is allowed.
-     * @param component the data container that is to be added.
+     * @param container the data container that is to be added.
      */
     public static void addNewValueContainer(CompChemJob ccj, 
-    		DirComponentAddress address, IValueContainer component)
+    		DirComponentAddress address, IValueContainer container)
     {
     	if (ccj.getNumberOfSteps()>0)
     	{
     		for (Job stepJob : ccj.getSteps())
     		{
-    			((CompChemJob) stepJob).addNewValueContainer(address, component);
+    			((CompChemJob) stepJob).addNewValueContainer(address, container);
     		}
     	} else {
-    		ccj.addNewValueContainer(address, component);
+    		ccj.addNewValueContainer(address, container);
     	}
     }
     
