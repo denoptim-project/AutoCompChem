@@ -26,7 +26,8 @@ public class IJobSettingInheritTaskTest
     	Gson reader = ACCJson.getReader();
     	
     	IJobSettingsInheritTask act = new InheritDirectiveComponent(
-    			DirComponentAddress.fromString("*:*|Dir:DirName"));
+    			DirComponentAddress.fromString("*:" + 
+    					DirComponentAddress.ANYNAME + "|Dir:DirName"));
     	String json = writer.toJson(act);
     	IJobSettingsInheritTask fromJson = reader.fromJson(json, 
     			IJobSettingsInheritTask.class);

@@ -50,7 +50,7 @@ public class DirComponentTypeAndNameTest
     			DirectiveComponentType.KEYWORD);
     	assertFalse(d1.equals(d2));
 
-    	d2 = new DirComponentTypeAndName("*",
+    	d2 = new DirComponentTypeAndName(DirComponentAddress.ANYNAME,
     			DirectiveComponentType.ANY);
     	assertFalse(d1.equals(d2));
     }

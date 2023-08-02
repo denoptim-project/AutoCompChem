@@ -20,6 +20,12 @@ import com.google.gson.JsonSerializer;
  * An empty list means "." or "here" and it reflect the outermost directive, 
  * which is reachable directly from the {@link CompChemJob#getDirective(String)}
  * method.
+ * 
+ * A wild-card string for component names exists and is in field 
+ * {@link #ANYNAME} (value {@value #ANYNAME}). 
+ * 
+ * A wild-card string for component type exists and is 
+ * {@link DirectiveComponentType#ANY}.
  */
 public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
 	Cloneable
@@ -30,6 +36,11 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
 	private static final String JSONFIELD = "Path";
 	private static final String TYPENAMESEPARATOR = ":";
 	private static final String PLACESEPARATOR = "|";
+	
+	/**
+	 * The wild-card for component name.
+	 */
+	public static final String ANYNAME = "<*acc_anyname*>";
 	
 //------------------------------------------------------------------------------
 
@@ -187,8 +198,14 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
         for (int i=0; i<places.length; i++)
         {
         	String[] parts = places[i].trim().split("\\"+TYPENAMESEPARATOR);
-        	address.addStep(new DirComponentTypeAndName(parts[1], 
-        			DirectiveComponentType.getEnum(parts[0])));
+        	if (ANYNAME.equals(parts[1]))
+        	{
+            	address.addStep(new DirComponentTypeAndName(ANYNAME, 
+            			DirectiveComponentType.getEnum(parts[0])));
+        	} else {
+	        	address.addStep(new DirComponentTypeAndName(parts[1], 
+	        			DirectiveComponentType.getEnum(parts[0])));
+        	}
         }
         return address;
 	}

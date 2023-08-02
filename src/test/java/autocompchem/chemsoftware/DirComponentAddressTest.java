@@ -130,6 +130,12 @@ public class DirComponentAddressTest
     	
     	d2 = new DirComponentAddress();
     	d2.addStep("Lev0Dir", "Dir");
+    	assertTrue(d1.equals(d2));    	
+
+    	d1 = new DirComponentAddress();
+    	d1.addStep(DirComponentAddress.ANYNAME,DirectiveComponentType.ANY);
+    	d2 = new DirComponentAddress();
+    	d2.addStep(DirComponentAddress.ANYNAME,DirectiveComponentType.ANY);
     	assertTrue(d1.equals(d2));
     }
     
@@ -146,6 +152,13 @@ public class DirComponentAddressTest
     	DirComponentAddress fromJson = reader.fromJson(json, 
     			DirComponentAddress.class);
     	assertEquals(act,fromJson);
+    	
+    	DirComponentAddress address = new DirComponentAddress();
+    	address.addStep(DirComponentAddress.ANYNAME,DirectiveComponentType.ANY);
+    	address.addStep(DirComponentAddress.ANYNAME,DirectiveComponentType.ANY);
+    	json = writer.toJson(address);
+    	fromJson = reader.fromJson(json, DirComponentAddress.class);
+    	assertEquals(address,fromJson);
     }
     
 //------------------------------------------------------------------------------

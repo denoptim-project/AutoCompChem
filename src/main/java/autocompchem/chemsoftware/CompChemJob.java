@@ -228,8 +228,9 @@ public class CompChemJob extends Job implements Cloneable
     	List<Directive> candDirectives = new ArrayList<Directive>();
 		for (Directive d : directives)
 		{
-			if (address.get(0).name.equals("*") || d.getName().toUpperCase().equals(
-					address.get(0).name.toUpperCase()))
+			if (address.get(0).name.equals(DirComponentAddress.ANYNAME) 
+					|| d.getName().toUpperCase().equals(
+							address.get(0).name.toUpperCase()))
 			{
 				candDirectives.add(d);
 			}
@@ -273,8 +274,10 @@ public class CompChemJob extends Job implements Cloneable
 				}
     			for (IDirectiveComponent candComp : candidateComponents)
     			{
-    				if (address.get(iLevel).name.equals("*") || candComp.getName()
-    						.toUpperCase().equals(name.toUpperCase()))
+    				if (address.get(iLevel).name.equals(
+    						DirComponentAddress.ANYNAME) 
+    						|| candComp.getName().toUpperCase().equals(
+    								name.toUpperCase()))
     				{
     					matchingComponents.add(candComp);
     				}
@@ -475,7 +478,7 @@ public class CompChemJob extends Job implements Cloneable
 		
 		List<Directive> candDirectives = new ArrayList<Directive>();
 		String wantedDirName = address.get(0).name;
-		if (wantedDirName.equals("*"))
+		if (wantedDirName.equals(DirComponentAddress.ANYNAME))
 		{
 			candDirectives.addAll(directives);
 		} else {
@@ -489,7 +492,8 @@ public class CompChemJob extends Job implements Cloneable
 			}
 		}
 		
-		if (candDirectives.size()==0 && !wantedDirName.equals("*")
+		if (candDirectives.size()==0 
+				&& !wantedDirName.equals(DirComponentAddress.ANYNAME)
 				&& makeIfMissing)
 		{
 			Directive wantedDir = new Directive(wantedDirName);
@@ -515,7 +519,7 @@ public class CompChemJob extends Job implements Cloneable
 			List<Directive> nextParDirs = new ArrayList<Directive>();
 			for (Directive parentDir : candDirectives)
 			{
-				if (wantedDirName.equals("*"))
+				if (wantedDirName.equals(DirComponentAddress.ANYNAME))
 				{
 					nextParDirs.addAll(parentDir.getAllSubDirectives());
 				} else {
@@ -530,7 +534,8 @@ public class CompChemJob extends Job implements Cloneable
 				}
 			}
 			
-			if (nextParDirs.size()==0 && !wantedDirName.equals("*"))
+			if (nextParDirs.size()==0 
+					&& !wantedDirName.equals(DirComponentAddress.ANYNAME))
 			{
 				if (candDirectives.size()==1)
 				{

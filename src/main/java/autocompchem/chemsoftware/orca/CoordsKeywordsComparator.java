@@ -45,6 +45,17 @@ class CoordsKeywordsComparator implements Comparator<Keyword>
         	intB = -3;
         }
         
+        if (aName.toUpperCase().equals(
+        		OrcaConstants.COORDSCTYPDIRNAME.toUpperCase()))
+        {
+        	intA = -3;
+        }
+        if (bName.toUpperCase().equals(
+        		OrcaConstants.COORDSCTYPDIRNAME.toUpperCase()))
+        {
+        	intB = -3;
+        }
+        
         if (aName.toUpperCase().equals(ChemSoftConstants.PARCHARGE))
         {
         	intA = -2;

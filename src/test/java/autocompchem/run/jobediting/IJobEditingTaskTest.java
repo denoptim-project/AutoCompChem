@@ -44,7 +44,9 @@ public class IJobEditingTaskTest
     	assertEquals(act, fromJson);
     	
     	act = new DeleteDirectiveComponent(
-    			DirComponentAddress.fromString("*:*|Dir:DirName"));
+    			DirComponentAddress.fromString(
+    					"*:" + DirComponentAddress.ANYNAME 
+    					+ "|Dir:DirName"));
     	json = writer.toJson(act);
     	fromJson = reader.fromJson(json, IJobEditingTask.class);
     	assertEquals(act, fromJson);

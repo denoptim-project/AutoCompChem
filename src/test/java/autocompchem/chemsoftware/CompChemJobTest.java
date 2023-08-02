@@ -44,6 +44,14 @@ public class CompChemJobTest
 	 * Creates a dummy object that has both directives and steps.
 	 * @return and object good for testing, not necessarily meaningful in
 	 * actual usage.
+	 * 
+	 * MainJob:
+	 * A_kA1,kA1,kA2_dataA
+	 *  \
+	 *   \-AA_kAA1
+	 * Steps:
+	 *   Step 1:
+	 *   A_kA1,kA1
 	 */
     public CompChemJob getTextCompChemJob()
     {
@@ -69,8 +77,10 @@ public class CompChemJobTest
 	    	dConstant.addKeyword(new Keyword("kA1", false, "valueKA1"));
 	    	dConstant.addKeyword(new Keyword("kA1", false, "valueKA1bis"));
 	    	stepI.addDirective(dConstant);
+	    	/*
 	    	Directive dI = new Directive("Dir"+i);
 	    	dI.addKeyword(new Keyword("k", false, i));
+	    	*/
 	    	ccj.addStep(stepI);
     	}
     	
@@ -317,6 +327,47 @@ public class CompChemJobTest
     	dE1.addSubDirective(dE2);
     	ccj.addDirective(dE1);
     	
+    	
+    	/* This is the structure of components:
+    	 * 
+    	 * A1_K2,K2,K2__data2_data2_data2_data2
+    	 *  \
+    	 *   \--subdir2
+    	 *    \
+    	 *     \--subdir2
+    	 *      \
+    	 *       \--A2_K2__data2
+    	 *  
+    	 * B1
+    	 *   \
+    	 *    \--B2_K3_K3
+    	 *        \
+    	 *         \-B3
+    	 *            \
+    	 *             \-B4
+    	 *                \
+    	 *                 \-B5_K6_data6
+    	 * 
+    	 * C
+    	 *  \-C_K3
+    	 * 
+    	 * C
+    	 *  \-C_K3
+    	 * 
+    	 * C
+    	 *  \-C_K3
+    	 *  
+    	 * E
+    	 *  \
+    	 *   \-E
+    	 *      \
+    	 *       \-E_KE(key)__KE(dirData)
+    	 *          \
+    	 *           \-KE(directive)
+    	 * 
+    	 */
+    	
+    	
     	DirComponentAddress adrs = new DirComponentAddress();
     	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
     	List<IDirectiveComponent> expected = new ArrayList<IDirectiveComponent>();
@@ -392,7 +443,7 @@ public class CompChemJobTest
     	// From here with wildcard
 
     	adrs = new DirComponentAddress();
-    	adrs.addStep("*","*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
     	expected.add(dA);
@@ -404,8 +455,8 @@ public class CompChemJobTest
     	assertEquals(expected, matches);
     	
     	adrs = new DirComponentAddress();
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
     	adrs.addStep("K3","key");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
@@ -418,12 +469,12 @@ public class CompChemJobTest
     	assertEquals(expected, matches);
 
     	adrs = new DirComponentAddress();
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
     	expected.add(k6);
@@ -431,30 +482,34 @@ public class CompChemJobTest
     	assertEquals(expected, matches);
 
     	adrs = new DirComponentAddress();
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
     	assertEquals(expected, matches);
     	
     	adrs = new DirComponentAddress();
-    	adrs.addStep("none","*");
-    	adrs.addStep("none","*");
-    	adrs.addStep("none","*");
-    	adrs.addStep("none","*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
+    	expected.add(dB4);
+    	expected.add(ke3);
+    	expected.add(dde3);
+    	expected.add(dKE3);
     	assertEquals(expected, matches);
     	
     	adrs = new DirComponentAddress();
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
     	adrs.addStep("KE","*");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
@@ -465,9 +520,9 @@ public class CompChemJobTest
     	
     	adrs = new DirComponentAddress();
     	adrs.addStep("E","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","*");
-    	adrs.addStep("*","key");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"*");
+    	adrs.addStep(DirComponentAddress.ANYNAME,"key");
     	matches = ccj.getDirectiveComponents(adrs);
     	expected.clear();
     	expected.add(ke3);
@@ -566,7 +621,7 @@ public class CompChemJobTest
     	assertEquals(2, comps.size());
     	
     	adrs = new DirComponentAddress();
-    	adrs.addStep("*", DirectiveComponentType.DIRECTIVE);
+    	adrs.addStep(DirComponentAddress.ANYNAME, DirectiveComponentType.DIRECTIVE);
     	valueContainer = new Keyword("KEYB", false, expectedValue);
     	modifiedCcj.addNewValueContainer(adrs, valueContainer);
     	adrs.addStep("KEYB", DirectiveComponentType.KEYWORD);
@@ -659,7 +714,10 @@ public class CompChemJobTest
      	assertEquals(1, after.size());
      	assertEquals("A4", after.get(0).getName());
      	
-     	adrs = DirComponentAddress.fromString("*:*|*:*|*:*|Dir:B4b");
+     	adrs = DirComponentAddress.fromString(
+     			"*:" + DirComponentAddress.ANYNAME + "|" 
+     			+ "*:" + DirComponentAddress.ANYNAME + "|" 
+     			+ "*:" + DirComponentAddress.ANYNAME + "|Dir:B4b");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, before.size());
      	boolean found = false;
@@ -672,7 +730,10 @@ public class CompChemJobTest
      	}
      	assertTrue(found);
      	
-     	adrs = DirComponentAddress.fromString("*:*|*:*|*:B3|Dir:B4b");
+     	adrs = DirComponentAddress.fromString(
+     			"*:" + DirComponentAddress.ANYNAME + "|" 
+     			+ "*:" + DirComponentAddress.ANYNAME + "|" 
+     			+ "*:B3|Dir:B4b");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, before.size());
      	ccj.ensureDirectiveStructure(adrs);
@@ -682,14 +743,16 @@ public class CompChemJobTest
      	
     	// Make sure we do not create a structure if the names required are "*"
     	// This DOES add directive "Z" but not its sub directive.
-     	adrs = DirComponentAddress.fromString("*:Z|*:*|Dir:ZZ");
+     	adrs = DirComponentAddress.fromString("*:Z|"
+     			+ "*:" + DirComponentAddress.ANYNAME + "|Dir:ZZ");
      	before = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, before.size());
      	ccj.ensureDirectiveStructure(adrs);
      	after = ccj.getDirectiveComponents(adrs);
      	assertEquals(0, after.size());
      	after = ccj.getDirectiveComponents(
-     			DirComponentAddress.fromString("*:Z|*:*"));
+     			DirComponentAddress.fromString("*:Z|"
+     					+ "*:" + DirComponentAddress.ANYNAME));
      	assertEquals(0, after.size());
     }
     
