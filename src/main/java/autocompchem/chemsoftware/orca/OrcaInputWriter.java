@@ -680,6 +680,18 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					lines.add(OrcaConstants.JOBSEPARATOR);
 				}
 			}
+    	} else if (job.getNumberOfSteps()==1) {
+    		System.out.println(NL + "WARNING! Found a multistep job with only "
+    				+ "one step. I assume you menat to prepare the input for"
+    				+ "a single step job." + NL);
+    		CompChemJob step = (CompChemJob) job.getStep(0);
+    		preProcessingJob(step);
+    		Iterator<Directive> it = step.directiveIterator();
+			while (it.hasNext())
+			{
+				Directive d = it.next();
+				lines.addAll(getTextForInput(d, true));
+			}
     	} else {
     		preProcessingJob(job);
     		Iterator<Directive> it = job.directiveIterator();
