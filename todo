@@ -56,3 +56,5 @@
 - t63 reading from previous job's output
 - subDirectives to directives
 
+- edit bond (change order or type, remove bond)
+- Mane circumstance use a user-provided python script to analyse any data resulting form analysis of job steps.
