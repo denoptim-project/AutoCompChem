@@ -95,7 +95,7 @@
     "inheritedSettings": [
       {
         "task": "INHERIT_KEYWORD",
-        "path": "Dir:Link0|Key:*"
+        "path": "Dir:Link0|Key:<*acc_anyname*>"
       },
       {
         "task": "INHERIT_KEYWORD",

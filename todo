@@ -61,4 +61,4 @@
 
 - fix "all 0 steps are completed" from t9
 
-- document assumption that a job is assumed to be the only job in a working directory. So, when job isarchived, we take any *.inp, *.log, etc.
+- document assumption that a job is assumed to be the only job in a working directory. So, when job isarchived, we take any *.inp, *.log, etc. This also means that we cannot run test in parallel in the same work directory.

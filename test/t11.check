@@ -13,6 +13,9 @@ if ! grep -q -i "MaxConventionalCycles=1" 11restarted.inp ; then echo NOT Passed
 n=$(grep -c -i "\-\-link1\-\-" 11restarted.inp)
 if [ 8 -ne "$n" ] ; then echo NOT Passed - Error 6 ; exit -1 ; fi
 
+n=$(grep -c -i '%chk=molecule_for_tests' 11restarted.inp)
+if [ 9 -ne "$n" ] ; then echo NOT Passed - Error 7 ; exit -1 ; fi
+
 if grep -q 'Termination status: 0' t11.log ; then
   echo Passed
   exit 0
