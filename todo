@@ -58,3 +58,7 @@
 
 - edit bond (change order or type, remove bond)
 - Mane circumstance use a user-provided python script to analyse any data resulting form analysis of job steps.
+
+- fix "all 0 steps are completed" from t9
+
+- document assumption that a job is assumed to be the only job in a working directory. So, when job isarchived, we take any *.inp, *.log, etc.

@@ -123,6 +123,9 @@ public class ActionApplier
     	if (aType==ActionType.STOP)
     		return;
     	
+    	// NB: here we assume that a job is the only job running in the work 
+    	// directory. So we archive any file matching the patterns.
+    	
     	// Create copy of previous data from jobs
     	archivePreviousResults(todoJobs, restartCounter, 
     			action.getFilenamePatterns(ArchivingTaskType.COPY), 
