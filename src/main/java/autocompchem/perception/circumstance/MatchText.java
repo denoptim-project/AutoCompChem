@@ -37,7 +37,7 @@ public class MatchText extends Circumstance
     /**
      * Constructs a MatchText defining the pattern to match and the information 
      * channel where to search for it.
-     * @param pattern the pattern to be matches
+     * @param pattern the pattern to be matched.
      * @param ict the type of information channel where to search for this loop
      * counter.
      */
@@ -82,9 +82,8 @@ public class MatchText extends Circumstance
      * Calculate the satisfaction score. A real value between 0.0 and 1.0
      * where 0.0 means "conditions not satisfied" and 1.0 means
      * "condition fully satisfied".
-     * @param input an object that contains all information
-     * needed to calculate the satisfaction score. Can be null if not needed.
-     * @return numerical score
+     * @param matches the list of matches in the info channel.
+     * @return numerical score.
      */
 
     public double calculateScore(List<String> matches)

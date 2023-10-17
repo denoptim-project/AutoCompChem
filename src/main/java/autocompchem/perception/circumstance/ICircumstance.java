@@ -110,8 +110,6 @@ public interface ICircumstance
 
   	        String type = context.deserialize(jsonObject.get("circumstance"),
   	                String.class);
-  	        InfoChannelType ict = context.deserialize(jsonObject.get("channel"),
-  	        		InfoChannelType.class);
   	        
   	        ICircumstance result = null;
   	        switch (type)
@@ -123,6 +121,13 @@ public interface ICircumstance
   			case "CountTextMatches":
   				result = context.deserialize(jsonObject, CountTextMatches.class);
   				break;
+  				
+  			case "MatchDirComponent":
+  				result = context.deserialize(jsonObject, MatchDirComponent.class);
+  				break;
+  				
+  			//TODO: this needs to include all the classes implementing this interface
+  			// or search for class in classpath.
   			
   			default:
   				throw new IllegalArgumentException("Job settings inheriting "

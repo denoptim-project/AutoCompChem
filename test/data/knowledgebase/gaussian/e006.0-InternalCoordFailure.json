@@ -14,10 +14,9 @@
       "pattern": "Error termination via Lnk1e in"
     },
     {
-#TODO-gg check dircomponent value/existence
-      "circumstance": has directive,
+      "circumstance": "MatchDirComponent",
       "channel": "JOBDETAILS",
-      "pattern": "Dir:Route|Dir:Opt"
+      "address": "Dir:Route|Dir:Opt"
     }
   ],
   "reaction": {

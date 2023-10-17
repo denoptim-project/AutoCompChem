@@ -79,17 +79,19 @@ public class Situation extends Concept
     {
         super();
     }
-    
+
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a Situation with given type
-     * @param conceptType the type of Situation
+     * Constructor for a Situation with given type and context.
+     * @param conceptType the type of situation (i.e., error, warning,...).
+     * @param refName the name of the situation (i.e., Error-1.3C).
+     * @param context the context as a list of circumstances.
      */
 
-    public Situation(String conceptType)
+    public Situation(String conceptType, String refName)
     {
-        this(conceptType, "noRefName", null, null);
+        this(conceptType, refName, null, null);
     }
 
 //------------------------------------------------------------------------------

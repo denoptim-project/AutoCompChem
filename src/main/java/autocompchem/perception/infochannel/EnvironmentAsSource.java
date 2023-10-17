@@ -30,7 +30,7 @@ import java.util.Map;
  * @author Marco Foscato
  */
 
-public class EnvironmentAsSource extends InfoChannel
+public class EnvironmentAsSource extends ReadableIC
 {
     /**
      * Environment
@@ -90,7 +90,7 @@ public class EnvironmentAsSource extends InfoChannel
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("EnvironmentAsSource [type:").append(super.getType());
+        sb.append("EnvironmentAsSource [ICType:").append(super.getType());
         sb.append("; text:").append(env);
         sb.append("]");
         return sb.toString();

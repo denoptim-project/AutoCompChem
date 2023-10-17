@@ -18,8 +18,10 @@ package autocompchem.perception;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -163,11 +165,11 @@ public class ScoreCollector
     
     /**
      * Utility for printing the scores table
-     * @return a multiline string tat can be printed on stout
+     * @return a multiline string that can be printed on stout
      */
 
     public String printToString()
-    {
+    {	
         String newline = System.getProperty("line.separator");
         StringBuilder sb = new StringBuilder();
         sb.append("====================");
@@ -179,11 +181,18 @@ public class ScoreCollector
         {
             sKeys.add(scp.getSituation());
         }
+        List<String> sortedSituations = new ArrayList<String>();
         for (Situation s : sKeys)
         {
-            sb.append(" -s-> ").append(Integer.toHexString(s.hashCode()));
-            sb.append(newline).append(s).append(newline);
+        	sortedSituations.add(" -s-> " + Integer.toHexString(s.hashCode()) +
+        			": " + s + newline);
         }
+        Collections.sort(sortedSituations);
+        for (String str : sortedSituations)
+        {
+            sb.append(str);
+        }
+        
         sb.append(newline);
         sb.append("Circumstance IDs and details:").append(newline);
         Set<ICircumstance> cKeys = new HashSet<ICircumstance>();
@@ -191,21 +200,32 @@ public class ScoreCollector
         {
             cKeys.add(scp.getCircumstance());
         }
+        List<String> sortedCircs = new ArrayList<String>();
         for (ICircumstance c : cKeys)
         {
-            sb.append(" -c-> ").append(Integer.toHexString(c.hashCode()));
-            sb.append(" = ").append(c).append(newline);
+        	sortedCircs.add(" -c-> " + Integer.toHexString(c.hashCode()) + 
+        			" = " + c + newline);
         }
-
+        Collections.sort(sortedCircs);
+        for (String str : sortedCircs)
+        {
+            sb.append(str);
+        }
 
 
         sb.append("==========================");
         sb.append(" Scores =========================");
         sb.append(newline);
+        List<String> sortedScores = new ArrayList<String>();
         for (SCPair scp : scores.keySet())
         { 
-            sb.append(scp.toIDString());
-            sb.append(" -> ").append(scores.get(scp)).append(newline);
+        	sortedScores.add(scp.toIDString() + " -> " + scores.get(scp) + 
+        			newline);
+        }
+        Collections.sort(sortedScores);
+        for (String str : sortedScores)
+        {
+            sb.append(str);
         }
         sb.append("=================");
         sb.append(" End of Score Collection =================");

@@ -1,5 +1,6 @@
 package autocompchem.perception.infochannel;
 
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -18,53 +19,33 @@ package autocompchem.perception.infochannel;
  */
 
 
+import autocompchem.chemsoftware.CompChemJob;
+
+
 /**
- * Abstract class representing any kind of information source.
+ * Class projecting the details of a {@link CompChemJob} into an information
+ * channel.
  *
  * @author Marco Foscato
  */
 
-public abstract class InfoChannel
+public class JobDetailsAsSource extends InfoChannel
 {
-
     /**
-     * The type of information channel
+     * Text organized by lines
      */
-     private InfoChannelType type;
+    public final CompChemJob job;
 
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor
+     * Constructs an empty ShortTextAsSource
      */
 
-    public InfoChannel()
+    public JobDetailsAsSource(CompChemJob job)
     {
-        type = InfoChannelType.NONE;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return the type of information channel
-     * @return the type of channel
-     */
-
-    public InfoChannelType getType()
-    {
-        return type;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the type of this information channel
-     * @param ict the type of this information channel
-     */
-
-    public void setType(InfoChannelType ict)
-    {
-        type = ict;
+        super();
+        this.job = job;
     }
 
 //------------------------------------------------------------------------------
@@ -74,14 +55,16 @@ public abstract class InfoChannel
      * @return a string
      */
 
+    @Override
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("InfoChannel [type:").append(type);
+        sb.append("JobDetailsAsSource [ICType:").append(super.getType());
+        sb.append(", job:").append(job.getId());
         sb.append("]");
         return sb.toString();
     }
-
+    
 //------------------------------------------------------------------------------
 
 }

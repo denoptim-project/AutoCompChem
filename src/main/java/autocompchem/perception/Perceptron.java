@@ -28,10 +28,12 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.IScoring;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.ReadableIC;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;
@@ -296,8 +298,8 @@ public class Perceptron
      * Evaluates if a circumstance is satisfied. This recalls previous 
      * evaluations, or runs the evaluation if the result is not already
      * available.
-     * @param n the Situation owning the ICircumstance this evaluation
-     * @param c the actual ICircumstance to be evaluated 
+     * @param n the situation in which the circumstance is evaluated.
+     * @param c the actual circumstance to be evaluated.
      */
 
     private void evaluateOneCircumstance(Situation n, ICircumstance c)
@@ -306,28 +308,28 @@ public class Perceptron
 
         if (oldKey != null)
         {
-            //Previous evaluation exists in the scores collector. Nothing to do.
+            // Previous evaluation exists in the scores collector. Nothing to do.
         } else {
             SCPair scp = new SCPair(n,c);
-
-            if (verbosity > 3)
-            {
-                System.out.println("-?-> Evaluating SCPair: " 
-                                                            + scp.toIDString());
-                if (verbosity > 4)
+            
+            if (!(c instanceof IScoring))
+            	return;
+            
+            IScoring sc = (IScoring) c;
+            
+            // evaluate circumstance now
+            double score = 1.0;
+            
+            // Scan all the input channels of relevant type
+            for (InfoChannel ic : icb.getChannelsOfType(c.getChannelType()))
+            {	
+                if (verbosity > 2)
                 {
-                    System.out.println("     Child ICircumstance: "+c);
-                    System.out.println("     Parent Situation: " + n);
+                    System.out.println(newline +"Scanning InfoChannel: "+ic);
                 }
+                
+                score = score * sc.calculateScore(ic);
             }
-
-            //evaluate circumstance now
-            double score = 0.0;
-
-            //TODO: write method
-            String msg = "ERROR! Evaluation of circumstances not based on text "
-            		+ "is still to be implemented.";
-            Terminator.withMsgAndStatus(msg,-1);
 
             scoreCollector.addScore(scp, score);
         }
@@ -397,6 +399,9 @@ public class Perceptron
             for (InfoChannel ic : icb.getChannelsOfType(ict))
             {
             	if (previouslyReadInfoChannels.contains(ic))
+            		continue;
+            	
+            	if (!(ic instanceof ReadableIC))
             		continue;
             	
                 if (verbosity > 2)
@@ -485,7 +490,11 @@ public class Perceptron
         txtQueries.stream().forEach(tq -> txtQueriesAsStr.add(tq.query));
         
         // Check readability
-        if (!ic.canBeRead())
+        ReadableIC ric = null;
+        if (ic instanceof ReadableIC)
+        	ric = (ReadableIC) ic;
+        
+        if (ric==null || !ric.canBeRead())
         {
         	if (tolerant)
         	{
@@ -505,7 +514,7 @@ public class Perceptron
         // The keys are "a_b_c" where b is the index of the string query
         // in txtQueriesAsStr
         TreeMap<String,List<String>> allMatches = null;
-        BufferedReader br = new BufferedReader(ic.getSourceReader());
+        BufferedReader br = new BufferedReader(ric.getSourceReader());
         try 
         {   // Extract potentially useful information from text
             // WARNING!!! No attempt to match multi-line blocks here!

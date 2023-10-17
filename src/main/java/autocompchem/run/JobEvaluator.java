@@ -468,13 +468,8 @@ public class JobEvaluator extends Worker
 			if (p.isAware())
 			{
 				Situation sit = p.getOccurringSituations().get(0);
-
-				if (verbosity > 0)
-				{
-					// TODO log
-					System.out.println("JobEvaluator: Situation perceived = " 
-							+ sit.getRefName());
-				}
+				System.out.println("JobEvaluator: Situation perceived = " 
+						+ sit.getRefName());
 			} else {
 				if (verbosity > 0)
 				{
@@ -491,7 +486,7 @@ public class JobEvaluator extends Worker
 			}
 		} catch (Exception e) {
 			// TODO to log
-			//e.printStackTrace();
+			e.printStackTrace();
 			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}
 		

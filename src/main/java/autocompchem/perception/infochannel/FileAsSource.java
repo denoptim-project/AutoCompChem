@@ -31,7 +31,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class FileAsSource extends InfoChannel
+public class FileAsSource extends ReadableIC
 {
     /**
      * Pathname
@@ -132,7 +132,7 @@ public class FileAsSource extends InfoChannel
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("FileAsSource [type:").append(super.getType());
+        sb.append("FileAsSource [ICType:").append(super.getType());
         sb.append("; pathName:").append(pathName);
         sb.append("]");
         return sb.toString();

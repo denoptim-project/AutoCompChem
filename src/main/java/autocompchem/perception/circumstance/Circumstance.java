@@ -53,22 +53,6 @@ public class Circumstance implements ICircumstance
 //------------------------------------------------------------------------------
 
     /**
-     * Calculate the satisfaction score. A real value between 0.0 and 1.0
-     * where 0.0 means "conditions not satisfied" and 1.0 means
-     * "condition fully satisfied".
-     * @param input an object that contains all information
-     * needed to calculate the satisfaction score. Can be null if not needed.
-     * @return numerical score 
-     */
-
-    public double calculateScore(Object input)
-    {
-        return 0.0;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Return the type of information channel where this circumstance manifests
      * itself
      * @return the channel type

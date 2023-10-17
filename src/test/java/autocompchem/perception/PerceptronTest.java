@@ -29,13 +29,19 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.Keyword;
 import autocompchem.perception.circumstance.CountTextMatches;
+import autocompchem.perception.circumstance.MatchDirComponent;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.EnvironmentAsSource;
 import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.JobDetailsAsSource;
 import autocompchem.perception.infochannel.ShortTextAsSource;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
@@ -138,7 +144,7 @@ public class PerceptronTest
                         + "for testing perception. I'll avoid tmp files." + NL);
         }
 
-        Situation sit1 = new Situation("");
+        Situation sit1 = new Situation("case", "");
         sit1.addCircumstance(new MatchText(".*blabla.*",
                                        InfoChannelType.OUTPUTFILE));
         sit1.addCircumstance(new MatchText(".*PATH.*bin.*",
@@ -158,7 +164,7 @@ public class PerceptronTest
         assertEquals(sit1,prc.getOccurringSituations().get(0),
                                                          "Occurring situation");
 
-        Situation sit2 = new Situation("");
+        Situation sit2 = new Situation("case", "");
         sit2.addCircumstance(new MatchText(".*not-in-out.*",true,
                                        InfoChannelType.OUTPUTFILE));
         sit2.addCircumstance(new MatchText(".*not-in-env.*",true,
@@ -205,7 +211,7 @@ public class PerceptronTest
         InfoChannelBase icb = new InfoChannelBase();
         icb.addChannel(st);
 
-        Situation sit1 = new Situation("Source exists and contains text");
+        Situation sit1 = new Situation("case", "Source exists and contains text");
         sit1.addCircumstance(new MatchText("I'm aware!",
                                        InfoChannelType.OUTPUTFILE));
 
@@ -233,11 +239,11 @@ public class PerceptronTest
         InfoChannelBase icb = new InfoChannelBase();
         icb.addChannel(st);
 
-        Situation sit1 = new Situation("Source exists and text !matched");
+        Situation sit1 = new Situation("case", "Source exists and text !matched");
         sit1.addCircumstance(new MatchText("text in source",true,
                                        InfoChannelType.OUTPUTFILE));
 
-        Situation sit2 = new Situation("Source exist and text matched");
+        Situation sit2 = new Situation("case", "Source exist and text matched");
         sit2.addCircumstance(new MatchText("text in source",false,
                                        InfoChannelType.OUTPUTFILE));
 
@@ -255,7 +261,7 @@ public class PerceptronTest
                                                          "Occurring situation");
 
         // Negation must not be matched by missing source
-        Situation sit3 = new Situation("Source !exist");
+        Situation sit3 = new Situation("case", "Source !exist");
         sit3.addCircumstance(new MatchText("text in source",true,
                                        InfoChannelType.LOGFEED));
 
@@ -288,7 +294,7 @@ public class PerceptronTest
         InfoChannelBase icb = new InfoChannelBase();
         icb.addChannel(st);
    
-        Situation sit1 = new Situation("Multiple circumstances, same source");
+        Situation sit1 = new Situation("case", "Multiple circumstances, same source");
         sit1.addCircumstance(new MatchText("text in source",
                                        InfoChannelType.OUTPUTFILE));
         sit1.addCircumstance(new MatchText("more.*",
@@ -337,7 +343,7 @@ public class PerceptronTest
         icb.addChannel(st3);
         icb.addChannel(st4);
 
-        Situation sit1 = new Situation("Multiple circumstances and sourcs");
+        Situation sit1 = new Situation("case", "Multiple circumstances and sourcs");
         sit1.addCircumstance(new MatchText("text in source",
                                        InfoChannelType.INPUTFILE));
         sit1.addCircumstance(new MatchText("more.*",
@@ -379,13 +385,13 @@ public class PerceptronTest
         InfoChannelBase icb = new InfoChannelBase();
         icb.addChannel(st1);
 
-        Situation sit1 = new Situation("S1");
+        Situation sit1 = new Situation("case", "S1");
         sit1.addCircumstance(new MatchText("text in source",
                                        InfoChannelType.OUTPUTFILE));
-        Situation sit2 = new Situation("S2");
+        Situation sit2 = new Situation("case", "S2");
         sit2.addCircumstance(new MatchText("text in source",
                                        InfoChannelType.OUTPUTFILE));
-        Situation sit3 = new Situation("S3");
+        Situation sit3 = new Situation("case", "S3");
         sit3.addCircumstance(new MatchText("text in source",
                                        InfoChannelType.OUTPUTFILE));
 
@@ -459,7 +465,7 @@ public class PerceptronTest
         icb.addChannel(st3);
         icb.addChannel(st4);
 
-        Situation sit1 = new Situation("Count matches");
+        Situation sit1 = new Situation("case", "Count matches");
         sit1.addCircumstance(new CountTextMatches(".*here.*", 2,
                                        InfoChannelType.OUTPUTFILE));
         sit1.addCircumstance(new CountTextMatches(".*here.*", 5, true, //MIN
@@ -482,7 +488,7 @@ public class PerceptronTest
         assertEquals(sit1,prc.getOccurringSituations().get(0),
                                                      "Occurring situation (1)");
 
-        sit1 = new Situation("Count matches");
+        sit1 = new Situation("case", "Count matches");
         sit1.addCircumstance(new CountTextMatches(".*here.*", 3,
                                        InfoChannelType.OUTPUTFILE));
         sit1.addCircumstance(new CountTextMatches(".*here.*", 6, true, //MIN
@@ -505,7 +511,7 @@ public class PerceptronTest
                                           "Number of occurring situations (2)");
 
         // Test with negation in exact match an range
-        sit1 = new Situation("Count matches");
+        sit1 = new Situation("case", "Count matches");
         sit1.addCircumstance(new CountTextMatches(".*here.*", 3,
                                               InfoChannelType.OUTPUTFILE,true));
         sit1.addCircumstance(new CountTextMatches(".*here.*", 5, true, //MIN
@@ -528,6 +534,48 @@ public class PerceptronTest
                                           "Number of occurring situations (3)");
     }
 
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testPerceptionFromJobDetails() throws Exception
+    {
+    	Directive dA = new Directive("A");
+    	Directive dAA = new Directive("AA");
+    	Keyword kA = new Keyword("kA", false, "My value");
+    	dAA.addKeyword(kA);
+    	dA.addSubDirective(dAA);
+
+    	String valueOfKeyB = "value_of_B";
+    	Directive dB = new Directive("B");
+    	Keyword kB = new Keyword("kB", true, valueOfKeyB);
+    	dB.addKeyword(kB);
+    	
+    	CompChemJob job = new CompChemJob();
+    	job.addDirective(dA);
+    	job.addDirective(dB);
+    	
+        JobDetailsAsSource jd = new JobDetailsAsSource(job);
+        jd.setType(InfoChannelType.JOBDETAILS);
+
+        InfoChannelBase icb = new InfoChannelBase();
+        icb.addChannel(jd);
+
+        String refName = "Keyword with known value";
+        Situation sit1 = new Situation("case", refName);
+        sit1.addCircumstance(new MatchDirComponent(
+        		DirComponentAddress.fromString("Dir:B|Key:kB"), valueOfKeyB));
+
+        SituationBase sb = new SituationBase();
+        sb.addSituation(sit1);
+
+        Perceptron prc = new Perceptron(sb, icb);
+        prc.perceive();
+
+        assertEquals(true, prc.isAware());
+        assertEquals(1, prc.getOccurringSituations().size());
+        assertEquals(refName, prc.getOccurringSituations().get(0).getRefName());
+    }
+    
 //------------------------------------------------------------------------------
 
 }

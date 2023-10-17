@@ -22,8 +22,8 @@ import autocompchem.perception.situation.Situation;
 
 
 /**
- * A pair of references that includes the Situation and a specific
- * ICircumstance from its context.
+ * A pair of references that includes the {@link Situation} and a specific
+ * {@link ICircumstance} from its context.
  */
 
 public class SCPair implements Comparable<SCPair>
