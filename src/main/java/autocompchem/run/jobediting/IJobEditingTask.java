@@ -15,6 +15,7 @@ import autocompchem.run.Job;
  */
 public interface IJobEditingTask 
 {	
+	
 	/**
 	 * Applies this editing task to the given job.
 	 * @param job the job to edit.

@@ -38,6 +38,7 @@ import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.ACCJson;
+import autocompchem.utils.NumberUtils;
 
 public class SetDirectiveComponentTest 
 {
@@ -125,6 +126,79 @@ public class SetDirectiveComponentTest
     	assertEquals(1, found.size());
     	assertTrue(key3==found.get(0));
     	assertEquals(key3.getValue(), ((Keyword)found.get(0)).getValue());
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testApplyChanges_editExisting() throws Exception
+    {
+    	CompChemJob job = new CompChemJob();
+    	job.setParameter("ParamA", "valueA");
+    	job.setParameter("ParamB", "valueB");
+    	Directive dA = new Directive("dA");
+    	dA.addKeyword(new Keyword("KeyAA", false, 1.234));
+    	job.addDirective(dA);
+    	Directive dB = new Directive("dB");
+    	dB.addKeyword(new Keyword("KeyBA", false, 4.56));
+    	dB.addKeyword(new Keyword("KeyBA", false, 8.56));
+    	dB.addKeyword(new Keyword("KeyBA", false, 12.56));
+    	Directive dC = new Directive("dC");
+    	dC.addKeyword(new Keyword("KeyC", false, "further"));
+    	dC.addKeyword(new Keyword("KeyCB", false, "2.86MB%"));
+    	dC.addKeyword(new Keyword("KeyCB", false, "$$2.86"));
+    	dB.addSubDirective(dC);
+    	job.addDirective(dB);
+    	
+    	/* This is the structure of the directives
+    	 * 
+    	 *  dA
+    	 *  
+    	 *  dB -- dC
+    	 *  
+    	 */
+    	
+    	Keyword keyA = new Keyword("KeyAA", true, "${2*x + 10}");
+    	SetDirectiveComponent taskA = new SetDirectiveComponent("Dir:dA", keyA);
+    	taskA.applyChange(job);
+    	List<IDirectiveComponent> found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:dA|Key:KeyAA"));
+    	assertEquals(1, found.size());
+    	assertTrue(NumberUtils.closeEnough(12.468, Double.parseDouble(
+    			((Keyword)found.get(0)).getValueAsString())));
+    	
+    	Keyword keyB = new Keyword("KeyBA", true, "${x - 4.56}");
+    	SetDirectiveComponent taskB = new SetDirectiveComponent("Dir:dB", keyB);
+    	taskB.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:dB|Key:KeyBA"));
+    	assertEquals(3, found.size());
+    	assertTrue(NumberUtils.closeEnough(0.0, Double.parseDouble(
+    			((Keyword)found.get(0)).getValueAsString())));
+    	assertTrue(NumberUtils.closeEnough(4.0, Double.parseDouble(
+    			((Keyword)found.get(1)).getValueAsString())));
+    	assertTrue(NumberUtils.closeEnough(8.0, Double.parseDouble(
+    			((Keyword)found.get(2)).getValueAsString())));
+    	
+    	Keyword keyC = new Keyword("KeyCB", true, "${x + 1.14}");
+    	SetDirectiveComponent taskC = new SetDirectiveComponent("Dir:dB|Dir:dC",
+    			keyC);
+    	taskC.applyChange(job);
+    	found = job.getDirectiveComponents(
+    			DirComponentAddress.fromString("Dir:dB|Dir:dC|Key:KeyCB"));
+    	assertEquals(2, found.size());
+    	boolean foundA = false;
+    	boolean foundB = false;
+    	for (IDirectiveComponent dc : found)
+    	{
+    		String str = ((Keyword) dc).getValueAsString();
+    		if (str.equals("4.00MB%"))
+    			foundA = true;
+    		if (str.equals("$$4.00"))
+    			foundB = true;
+    	}
+    	assertTrue(foundA);
+    	assertTrue(foundB);
     }
     
 //------------------------------------------------------------------------------

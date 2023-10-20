@@ -1,6 +1,7 @@
 package autocompchem.run.jobediting;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
@@ -14,8 +15,17 @@ import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.IDirectiveComponent;
+import autocompchem.chemsoftware.IValueContainer;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Job;
+import autocompchem.utils.NumberUtils;
+import jakarta.el.ELContext;
+import jakarta.el.ELException;
+import jakarta.el.ELResolver;
+import jakarta.el.ExpressionFactory;
+import jakarta.el.FunctionMapper;
+import jakarta.el.ValueExpression;
+import jakarta.el.VariableMapper;
 
 /**
  * Task setting a {@link IDirectiveComponent} somewhere in the 
@@ -26,7 +36,7 @@ import autocompchem.run.Job;
  */
 
 public class SetDirectiveComponent extends AddDirectiveComponent
-{
+{	
 	
 //------------------------------------------------------------------------------
 
@@ -89,27 +99,61 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 			return;
 		CompChemJob ccj = (CompChemJob) job;
 		
-		// Remove any previous component
+		// Deal with any previous component at the given address
 		DirComponentAddress pathToComponent = path.clone();
 		pathToComponent.addStep(content.getName(), content.getComponentType());
-		ccj.removeDirectiveComponent(pathToComponent);
 		
-		ccj.ensureDirectiveStructure(path);
-		if (path.size()==0)
+		// Define a function to alter existing values
+		boolean alterExisting = false;
+		String expr = "";
+		if (content instanceof IValueContainer)
 		{
-			// We add a root directive: an outermost one.
-			ccj.addDirective((Directive) content);
+			expr = ((IValueContainer) content).getValue().toString();
+			if (expr.startsWith("${") && expr.endsWith("}"))
+			{
+				alterExisting = true;
+			}
 		}
-		List<IDirectiveComponent> parents = ccj.getDirectiveComponents(
-    			path);
-    	for (IDirectiveComponent parent : parents)
-    	{
-    		if (parent instanceof Directive)
-    		{
-    			Directive dir = (Directive) parent;
-    			dir.addComponent(content);
-    		}
-    	}
+		
+		if (alterExisting)
+		{
+			ExpressionFactory expFact = ExpressionFactory.newInstance();
+			for (IDirectiveComponent comp : ccj.getDirectiveComponents(
+					pathToComponent))
+			{
+				// Get previous value 
+				//WARNING: we assume it is parseable to a double
+				if (!(comp instanceof IValueContainer))
+					continue;
+				IValueContainer compWithVal = (IValueContainer) comp;
+				String oldStr = compWithVal.getValue().toString();
+				String newVal = NumberUtils.calculateNewValueWithUnits(expr, 
+						expFact, oldStr);
+				
+				// reassign to dir component
+				compWithVal.setValue(newVal);
+			}
+		} else {
+			// Remove previous
+			ccj.removeDirectiveComponent(pathToComponent);
+			ccj.ensureDirectiveStructure(path);
+
+			if (path.size()==0)
+			{
+				// We add a root directive: an outermost one.
+				ccj.addDirective((Directive) content);
+			}
+			List<IDirectiveComponent> parents = ccj.getDirectiveComponents(
+	    			path);
+	    	for (IDirectiveComponent parent : parents)
+	    	{
+	    		if (parent instanceof Directive)
+	    		{
+	    			Directive dir = (Directive) parent;
+	    			dir.addComponent(content);
+	    		}
+	    	}
+		}
 	}
 	
 //------------------------------------------------------------------------------
@@ -164,7 +208,7 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 	{
 		return task + " " + path + " " + content;
 	}
-   
+	
 //------------------------------------------------------------------------------
 	
 }
