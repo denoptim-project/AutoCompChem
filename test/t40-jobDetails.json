@@ -5,7 +5,13 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "mem",
+              "value": "28000MB"
+            }
+          ]
         },
         {
           "name": "Route",
@@ -100,7 +106,13 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "mem",
+              "value": "28000MB"
+            }
+          ]
         },
         {
           "name": "Route",
@@ -203,7 +215,13 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "mem",
+              "value": "28000MB"
+            }
+          ]
         },
         {
           "name": "Route",
@@ -306,7 +324,13 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "mem",
+              "value": "28000MB"
+            }
+          ]
         },
         {
           "name": "Route",
@@ -424,7 +448,13 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0"
+          "name": "Link0",
+          "keywords": [
+            {
+              "reference": "mem",
+              "value": "28000MB"
+            }
+          ]
         },
         {
           "name": "Route",

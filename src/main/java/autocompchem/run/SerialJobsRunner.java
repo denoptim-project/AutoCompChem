@@ -386,7 +386,9 @@ public class SerialJobsRunner extends JobsRunner
 							+ jobRequestingAction.getId() + " while "
 							+ "evaluating job " + focusJob.getId() 
 							+ " and both belong to a sequential workflow.");
-				} else if (action.getObject().equals(ActionObject.FOCUSJOB))
+				} else if (action.getObject().equals(ActionObject.FOCUSJOB)
+						|| action.getObject().equals(
+								ActionObject.FOCUSANDFOLLOWINGJOBS))
 				{
 					switch (action.getType())
     				{

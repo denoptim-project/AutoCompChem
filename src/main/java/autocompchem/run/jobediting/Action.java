@@ -116,6 +116,11 @@ public class Action implements Cloneable
         FOCUSJOB, 
         
         /**
+         * The job that has been evaluated and any one that follows it
+         */
+        FOCUSANDFOLLOWINGJOBS, 
+        
+        /**
          * Any job that is parallel to the job that has been evaluated.
          */
         PARALLELJOB, 

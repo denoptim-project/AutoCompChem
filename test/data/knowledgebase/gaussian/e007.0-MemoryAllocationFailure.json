@@ -10,8 +10,8 @@
     }
   ],
   "reaction": {
-    "type": "REDO",
-    "object": "FOCUSJOB",
+    "type": "Redo",
+    "object": "FocusAndFollowingJobs",
     "jobEditTasks": [
       {
         "task": "set_keyword",

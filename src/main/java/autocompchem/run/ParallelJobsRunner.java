@@ -296,7 +296,7 @@ public class ParallelJobsRunner extends JobsRunner
      * 
      * @param jobtoKill
      */
-    private void cancellOneRunningThread(Job jobtoKill)
+    private void cancelOneRunningThread(Job jobtoKill)
     {
     	if (!(submittedJobs.keySet().contains(jobtoKill) || 
     			submittedMonitorJobs.keySet().contains(jobtoKill)))
@@ -637,7 +637,7 @@ public class ParallelJobsRunner extends JobsRunner
 							}
 							synchronized (lock)
 			            	{
-								cancellOneRunningThread(focusJob);
+								cancelOneRunningThread(focusJob);
 
 				    			ActionApplier.performAction(requestedAction, 
 				    					jobRequestingAction, 

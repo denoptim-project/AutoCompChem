@@ -15,12 +15,14 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import com.google.common.io.Files;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.Terminator;
+import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.utils.SetUtils;
@@ -177,9 +179,18 @@ public class ActionApplier
     	// Modify job settings
     	for (IJobEditingTask jet : action.jobEditTasks)
     	{
-    		jet.applyChange(orinallyFailingStep);
+    		// Checks if the action applies to the downstream workflow
+    		if (action.getObject().equals(ActionObject.FOCUSANDFOLLOWINGJOBS)
+    				&& workflow.getNumberOfSteps()>0)
+    		{
+    			for (Job step : workflow.getSteps())
+    			{
+    				jet.applyChange(step);
+    			}
+    		} else {
+    			jet.applyChange(orinallyFailingStep);
+    		}
     	}
-    	// TODO: add possibility to modify all steps in workflow
     	
     	// NB: any data that may be needed to restart of fix things should be 
     	// taken and used before resetting the jobs.
