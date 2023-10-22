@@ -62,7 +62,6 @@ public class GaussianJobDetailsConverter extends Worker
      */
     public GaussianJobDetailsConverter()
     {
-    	//TODO-gg: create file
         super("inputdefinition/GaussianJobDetailsConverter.json");
     }
 
