@@ -1,0 +1,40 @@
+{
+  "type": "ERROR",
+  "refName": "e002.0-ConvergenceFailure",
+  "description": "Situation occurring when fixing error e001.0-QCNoLowerPoint. The pre-refinement step added by e001.0-QCNoLowerPoint is meant to terminate without converging and this is the situation in which we are now. Skipping the focus job will bring the workflow back to its original QC-driven optimization.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Convergence criterion not met."
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Convergence failure"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Fix error e001.0-QCNoLowerPoint"
+    }
+  ],
+  "reaction": {
+    "type": "SKIP",
+    "object": "FOCUSJOB",
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

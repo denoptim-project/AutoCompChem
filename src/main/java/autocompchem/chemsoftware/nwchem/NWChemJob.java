@@ -1,5 +1,8 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -17,7 +20,6 @@ package autocompchem.chemsoftware.nwchem;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
 import java.util.List;
 
 import autocompchem.chemsoftware.CompChemJob;
@@ -66,7 +68,7 @@ public class NWChemJob
     /**
      * List of tasks
      */
-    private ArrayList<NWChemTask> steps = new ArrayList<NWChemTask>();
+    private List<NWChemTask> steps = new ArrayList<NWChemTask>();
 
     /** 
      * Flag cotrolling use of tags for every atom
@@ -100,7 +102,7 @@ public class NWChemJob
 
     public NWChemJob(String inFile)
     {
-        this(IOtools.readTXT(inFile));
+        this(IOtools.readTXT(new File(inFile)));
     }
 
 //------------------------------------------------------------------------------
@@ -115,9 +117,9 @@ public class NWChemJob
      * @param lines array of lines to be read
      */
 
-    public NWChemJob(ArrayList<String> lines)
+    public NWChemJob(List<String> lines)
     {
-        ArrayList<String> linesOfAStep = new ArrayList<String>();
+        List<String> linesOfAStep = new ArrayList<String>();
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i).trim();
@@ -283,9 +285,9 @@ public class NWChemJob
      * @return the list of lines ready to print an NWChem input file
      */
 
-    public ArrayList<String> toLinesInput()
+    public List<String> toLinesInput()
     {
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<String>();
 
         for (int step = 0; step<steps.size(); step++)
         {
@@ -309,9 +311,9 @@ public class NWChemJob
      * @return the list of lines ready to print a jobDetails file
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
-        ArrayList<String> lines= new ArrayList<String>();
+        List<String> lines= new ArrayList<String>();
         for (int step = 0; step<steps.size(); step++)
         {
             //Write job-separator
@@ -374,7 +376,7 @@ public class NWChemJob
 							NWChemConstants.GEOMDIR);
 					if (geomDir==null)
 						geomDir = new Directive(NWChemConstants.GEOMDIR);
-					Directive zcoordDir = geomDir.getSubDirective(
+					Directive zcoordDir = geomDir.getFirstDirective(
 							NWChemConstants.ZCRDDIR);
 					if (zcoordDir==null)
 					{	

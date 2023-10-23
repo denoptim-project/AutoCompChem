@@ -18,21 +18,23 @@ package autocompchem.worker;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
-import autocompchem.chemsoftware.gaussian.GaussianOutputHandler;
+import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
+import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
-import autocompchem.chemsoftware.orca.OrcaOutputHandler;
+import autocompchem.chemsoftware.orca.OrcaOutputAnalyzer;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
-import autocompchem.chemsoftware.xtb.XTBOutputHandler;
+import autocompchem.chemsoftware.xtb.XTBOutputAnalyzer;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
@@ -53,12 +55,13 @@ import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
+import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.Terminator;
 
 /**
- * Factory building AutoCompChem workers. In this factory we chose the worker
+ * Factory building workers. In this factory we chose the worker
  * type based on the tasks that each worker type declares in its implementation.
  * As such declaration of suitable tasks is meant to live only in one place
  * (i.e., in the subclass implementing that capability), and we want to have no
@@ -77,113 +80,73 @@ import autocompchem.run.Terminator;
 
 public class WorkerFactory
 {
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the given task.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(TaskID taskID)
-    {
-    	return createWorker(taskID, null);
-    }
 
 //-----------------------------------------------------------------------------
 
     /**
-     * Create a new worker capable of performing the given task.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(String task)
-    {
-    	// Convert string-based task into enum
-    	TaskID taskID = TaskID.getFromString(task);
-    	
-    	return createWorker(taskID);
-    }
-	
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the given task for a master 
-     * job.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @param masterJob the job that is creating a worker to perform a task.
-     * @return a suitable worker for the task.
-     */ 
-
-    public static Worker createWorker(String task, Job masterJob)
-    {
-    	// Convert string-based task in to enum
-    	TaskID taskID = TaskID.getFromString(task);
-    	
-    	return createWorker(taskID, masterJob);
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Create a new worker capable of performing the task given in the 
-     * parameters storage unit. This method initialised the worker, i.e., 
+     * Create a new worker that is meant to do the task in the given job. 
+     * This method initializes the worker, i.e., 
      * it make the worker read the parameters and load the corresponding input
      * and configurations.
-     * @param params the parameters that define the task and all related 
-     * settings and input data.
+     * @param job the job to be done by the worker. We assume the parameters of 
+     * this job include the {@link WorkerConstants#PARTASK}.
      * @return a suitable worker for the task.
      */ 
 
-    public static Worker createWorker(ParameterStorage params)
-    {    	
-    	return createWorker(params,null);
+    public static Worker createWorker(Job job)
+    {
+    	return createWorker(job, true);
     }
     
 //-----------------------------------------------------------------------------
 
     /**
      * Create a new worker capable of performing the task given in the 
-     * parameters storage unit. This method initialised the worker, i.e., 
+     * parameters storage unit, which is expected to define an {@link ACCJob} 
+     * to be embedded in the given main job. Effectively, we use the given
+     * parameters to create a child job 
+     * and we return a worker that can perform the task defined in the child 
+     * job. Note that child jobs are not steps of the main job.
+     * This method initializes the worker, i.e., 
      * it make the worker read the parameters and load the corresponding input
      * and configurations.
      * @param params the parameters that define the task and all related 
-     * settings and input data.
-     * @param masterJob the job that is creating a worker to perform a task.
+     * settings and input data of the child job.
+     * @param mainJob the job that needs a task to be performed by a child job.
      * @return a suitable worker for the task.
      */ 
 
-    public static Worker createWorker(ParameterStorage params, Job masterJob)
+    public static Worker createWorker(ParameterStorage params, Job mainJob)
     {
-    	return createWorker(params, masterJob, true);
+    	Job subjob = new ACCJob(params);
+    	if (mainJob!=null)
+    	{
+    		mainJob.addChild(subjob);
+    		subjob.setParent(mainJob);
+    	}
+    	return createWorker(subjob, true);
     }
 
 //-----------------------------------------------------------------------------
 
     /**
-     * Create a new worker capable of performing the task given in the 
-     * parameters storage unit. This method initialised the worker, i.e., 
-     * it make the worker read the parameters and load the corresponding input
-     * and configurations.
-     * @param params the parameters that define the task and all related 
-     * settings and input data.
-     * @param masterJob the job that is creating a worker to perform a task.
+     * Create a new worker capable of performing the task defined by the given 
+     * job.
+     * @param job the job that defines the task to be done by the worker.
      * @param initializeIt if <code>true</code> the worker is also initialized.
      * This requires that the parameters are consistent with the requirements
      * of the worker.
-     * @return a suitable worker for the task.
+     * @return a suitable worker for the task defined by the job.
      */ 
 
-    public static Worker createWorker(ParameterStorage params, Job masterJob, 
-    		boolean initializeIt)
+    public static Worker createWorker(Job job, boolean initializeIt)
     {
-    	String taskStr = params.getParameter(
+    	String taskStr = job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString();
     	TaskID taskID = TaskID.getFromString(taskStr);
     	
-    	Worker worker = createWorker(taskID, masterJob);
-    	worker.setParameters(params);
+    	Worker worker = createWorker(taskID, job);
+    	worker.setParameters(job.getParameters());
     	if (initializeIt)
     	{
     		worker.initialize();
@@ -195,36 +158,38 @@ public class WorkerFactory
 //-----------------------------------------------------------------------------
 
     /**
-     * Create a new worker capable of performing the given task for a master 
-     * job.
-     * @param task the AutoCompChem task to be performed by the worker.
-     * @param masterJob the job that is creating a worker to perform a task.
+     * Create a new worker capable of performing the given task, which is 
+     * defined by by the given job. 
+     * @param task the task to be performed by the worker.
+     * @param job the job that is creating a worker to perform a task.
      * @return a suitable worker for the task or null.
      */ 
 
-    public static Worker createWorker(TaskID task, Job masterJob)
+    private static Worker createWorker(TaskID task, Job job)
     {
-    	// We first find out which worker is meant to take care of the given 
-    	// task
-    	ArrayList<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
+    	// We first find out which kind of worker is meant to do the task.
+    	List<WorkerID> suitableWorkerIDs = getWorkersCapableOfTask(task);
     	if (suitableWorkerIDs.size() > 1)
     	{
     		Terminator.withMsgAndStatus("ERROR! Multiple workers are "
     		 		+ "capable of task '"+task+"'. Unable to choose a "
-    		 		+ "worker.",-1);
+    		 		+ "worker.", -1);
     	}
     	else if (suitableWorkerIDs.size() == 0)
     	{
     		 Terminator.withMsgAndStatus("ERROR! Unable to find a worker "
-    		 		+ "capable of task '"+task+"'.",-1);
+    		 		+ "capable of task '" + task + "'. A worker may exist but "
+    		 		+ "has not been registered into " 
+    		 		+ WorkerID.class.getName(), -1);
     	}
     	
     	// Now we make the actual worker
     	Worker worker = getNewWorkerInstance(suitableWorkerIDs.get(0));
+    	worker.myJob = job;
     	
-    	if (masterJob != null)
+    	if (job != null)
     	{
-    	    worker.setDataCollector(masterJob.getOutputCollector());
+    	    worker.setDataCollector(job.getOutputCollector());
     	}
     	
     	return worker;
@@ -273,6 +238,7 @@ public class WorkerFactory
     
     public static Set<TaskID> getWorkerCapabilities(WorkerID wid)
 	{
+    	//TODO: evaluate registering the workers in other ways
 		switch (wid)
 		{
 		case DummyWorker:
@@ -295,14 +261,16 @@ public class WorkerFactory
         	return ConstraintsGenerator.capabilities;
         case ConformationalSpaceGenerator:
         	return ConformationalSpaceGenerator.capabilities;
+        case GaussianJobDetailsConverter:
+        	return GaussianJobDetailsConverter.capabilities;
         case DummyObjectsHandler:
             return DummyObjectsHandler.capabilities;
         case ForceFieldEditor:
             return ForceFieldEditor.capabilities;
 		case GaussianInputWriter:
 			return GaussianInputWriter.capabilities;
-        case GaussianOutputHandler:
-            return GaussianOutputHandler.capabilities;
+        case GaussianOutputAnalyzer:
+            return GaussianOutputAnalyzer.capabilities;
         case GaussianReStarter:
             return GaussianReStarter.capabilities; 
         /*
@@ -335,10 +303,10 @@ public class WorkerFactory
         	return OrcaInputWriter.capabilities;
         case XTBInputWriter:
         	return XTBInputWriter.capabilities;
-        case XTBOutputHandler:
-        	return XTBOutputHandler.capabilities;
-        case OrcaOutputHandler:
-        	return OrcaOutputHandler.capabilities;
+        case XTBOutputAnalyzer:
+        	return XTBOutputAnalyzer.capabilities;
+        case OrcaOutputAnalyzer:
+        	return OrcaOutputAnalyzer.capabilities;
         case SpartanInputWriter:
             return SpartanInputWriter.capabilities;
         case SpartanOutputHandler:
@@ -384,6 +352,8 @@ public class WorkerFactory
         	return new ConformationalSpaceGenerator();
         case ConnectivityGenerator:
             return new ConnectivityGenerator();
+        case GaussianJobDetailsConverter:
+        	return new GaussianJobDetailsConverter();
         case ConstraintsGenerator:
         	return new ConstraintsGenerator();
         case DummyObjectsHandler:
@@ -392,8 +362,8 @@ public class WorkerFactory
             return new ForceFieldEditor();
 		case GaussianInputWriter:
 			return new GaussianInputWriter();
-        case GaussianOutputHandler:
-            return new GaussianOutputHandler();
+        case GaussianOutputAnalyzer:
+            return new GaussianOutputAnalyzer();
         case GaussianReStarter:
             return new GaussianReStarter();
         /*
@@ -424,12 +394,12 @@ public class WorkerFactory
             return new NWChemReStarter();
         case OrcaInputWriter:
         	return new OrcaInputWriter();
-        case OrcaOutputHandler:
-        	return new OrcaOutputHandler();
+        case OrcaOutputAnalyzer:
+        	return new OrcaOutputAnalyzer();
         case XTBInputWriter:
         	return new XTBInputWriter();
-        case XTBOutputHandler:
-        	return new XTBOutputHandler();
+        case XTBOutputAnalyzer:
+        	return new XTBOutputAnalyzer();
         case SpartanInputWriter:
             return new SpartanInputWriter();
         case SpartanOutputHandler:

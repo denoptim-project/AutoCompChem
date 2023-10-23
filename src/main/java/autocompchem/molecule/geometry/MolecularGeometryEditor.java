@@ -1,5 +1,7 @@
 package autocompchem.molecule.geometry;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -71,9 +74,9 @@ public class MolecularGeometryEditor extends Worker
     private boolean inpFromFile = false;
 
     /**
-     * Name of the molecular structure input file
+     * The molecular structure input file
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * Molecular representation of the initial system
@@ -86,9 +89,9 @@ public class MolecularGeometryEditor extends Worker
     private boolean outToFile = false;
 
     /**
-     * Name of the output file
+     * The output file
      */
-    private String outFile;
+    private File outFile;
     
     /**
      * Format of the output file
@@ -98,12 +101,12 @@ public class MolecularGeometryEditor extends Worker
     /**
      * Molecular representation of the final systems
      */
-    private ArrayList<IAtomContainer> outMols = new ArrayList<IAtomContainer>();
+    private List<IAtomContainer> outMols = new ArrayList<IAtomContainer>();
 
     /**
-     * Pathname to SDF file with reference substructure
+     * The SDF file with reference substructure
      */
-    private String refFile;
+    private File refFile;
 
     /**
      * Molecular representation of the reference substructure
@@ -113,7 +116,7 @@ public class MolecularGeometryEditor extends Worker
     /**
      * Cartesian Move
      */
-    private ArrayList<Point3d> crtMove = new ArrayList<Point3d>();
+    private List<Point3d> crtMove = new ArrayList<Point3d>();
 
     /**
      * ZMatrix Move
@@ -123,7 +126,7 @@ public class MolecularGeometryEditor extends Worker
     /**
      * Scale factor for Move
      */
-    private ArrayList<Double> scaleFactors = new ArrayList<Double>(
+    private List<Double> scaleFactors = new ArrayList<Double>(
                                                             Arrays.asList(1.0));
     
     /**
@@ -232,9 +235,10 @@ public class MolecularGeometryEditor extends Worker
         if (params.contains("INFILE"))
         {
             inpFromFile = true;
-            this.inFile = params.getParameter("INFILE").getValue().toString();
+            this.inFile = new File(
+            		params.getParameter("INFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
-            ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+            List<IAtomContainer> inMols = IOtools.readSDF(inFile);
             if (inMols.size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "
@@ -248,7 +252,8 @@ public class MolecularGeometryEditor extends Worker
         if (params.contains("OUTFILE"))
         {
             outToFile = true;
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+            		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
         
@@ -260,10 +265,10 @@ public class MolecularGeometryEditor extends Worker
         // Get the Cartesian move
         if (params.contains("CARTESIANMOVE"))
         {
-            String crtFile = 
-                     params.getParameter("CARTESIANMOVE").getValue().toString();
+            File crtFile = new File(
+                     params.getParameter("CARTESIANMOVE").getValueAsString());
             FileUtils.foundAndPermissions(crtFile,true,false,false);
-            ArrayList<String> all = IOtools.readTXT(crtFile);
+            List<String> all = IOtools.readTXT(crtFile);
             for (String line : all)
             {
                 if (line.trim().length() == 0)
@@ -374,8 +379,8 @@ public class MolecularGeometryEditor extends Worker
         // Get the Cartesian move
         if (params.contains("ZMATRIXMOVE"))
         {
-            String zmtFile =
-                       params.getParameter("ZMATRIXMOVE").getValue().toString();
+            File zmtFile = new File(
+                       params.getParameter("ZMATRIXMOVE").getValueAsString());
             FileUtils.foundAndPermissions(zmtFile,true,false,false);
             if (IOtools.readZMatrixFile(zmtFile).size() != 1)
             {
@@ -388,10 +393,11 @@ public class MolecularGeometryEditor extends Worker
         // Get the reference substructure
         if (params.contains("REFERENCESUBSTRUCTUREFILE"))
         {
-            this.refFile = params.getParameter("REFERENCESUBSTRUCTUREFILE")
-                                                         .getValue().toString();
+            this.refFile =  new File(
+            		params.getParameter("REFERENCESUBSTRUCTUREFILE")
+            		.getValueAsString());
             FileUtils.foundAndPermissions(this.refFile,true,false,false);
-            ArrayList<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
+            List<IAtomContainer> refMols = IOtools.readSDF(this.refFile);
             if (refMols.size() != 1)
             {
                 Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "
@@ -1104,7 +1110,7 @@ public class MolecularGeometryEditor extends Worker
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
         locPar.setParameter(WorkerConstants.PARTASK, "PRINTZMATRIX");
-        Worker w = WorkerFactory.createWorker(locPar);
+        Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix();
         if (verbosity > 1)

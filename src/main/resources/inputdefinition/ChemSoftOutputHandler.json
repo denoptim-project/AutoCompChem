@@ -12,22 +12,22 @@
   {
     "key": "PRINTLASTGEOMETRY",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction of the last geometry found in the output to analyze and specifies the format and (optionally) pathname of the file where to save such geometry."
+    "doc": "Requires extraction of the last geometry found in the output to analyze and specifies the format and (optionally) pathname of the file where to save such geometry. Format can be XYZ (default) or SDF. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "PRINTLASTGEOMETRYOFEACHSTEP",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction of the last geometry of each step found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved."
+    "doc": "Requires extraction of the last geometry of each step found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default) or SDF. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "PRINTALLGEOMETRIES",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction ofall geometries found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved."
+    "doc": "Requires extraction ofall geometries found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default) or SDF. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "TEMPLATECONNECTIVITY",
     "type": "<String> [TOLERANCE=<float>]",
-    "doc": "Requires assignation to the geometry found in the output to analyze of the connectivity table found in the pathname given as value (must be an SDF file). Optionally, a tolerance (in Å) can be given to trigger the comparison of the interatomic distances between the geometries in the output to analyze and in the template connectivity file. The distances considered are those that correspond to bonds in the connectivity table. The tolerance value (t) defined the amount of acceptable distance change relative to the distance (refDist) in the template connectivity file (i.e., maxAllowedDeviation = |refDist * t|)."
+    "doc": "Requires assignation to the geometry found in the output to analyze of the connectivity table found in the pathname given as value (must be an SDF file). Optionally, a tolerance (in Å, default = 0.05) can be given to trigger the comparison of the interatomic distances between the geometries in the output to analyze and in the template connectivity file. The distances considered are those that correspond to bonds in the connectivity table. The tolerance value (t) defined the amount of acceptable distance change relative to the distance (refDist) in the template connectivity file (i.e., maxAllowedDeviation = |refDist * t|)."
   },
   {
     "key": "PRINTVIBMODES",
@@ -36,7 +36,7 @@
   },
   {
     "key": "CALCULATEENERGY",
-    "type": "[QHTHRESHOLD <int>]",
+    "type": "[QHTHRESHOLD <float>]",
     "doc": "Requires extraction of the energy values. Optionally, the presence of QHTHRESHOLD option triggers the calculation of free energy with the quasi-harmonic approximation where all frequencies below a given threshold (the integer value, in 1/cm) are considered for the calculation of the vibrational entropy as if their frequency was the value of the threshold."
   },
   {

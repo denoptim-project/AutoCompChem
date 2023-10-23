@@ -22,26 +22,26 @@ import autocompchem.perception.situation.Situation;
 
 
 /**
- * A pair of references that includes the Situation and a specific
- * ICircumstance from its context.
+ * A pair of references that includes the {@link Situation} and a specific
+ * {@link ICircumstance} from its context.
  */
 
 public class SCPair implements Comparable<SCPair>
 {
-    public Situation n = null;
+    public Situation s = null;
     public ICircumstance c = null;
 
 //-----------------------------------------------------------------------------
 
     /**
-     * Contructor
+     * Constructor
      * @param s the parent situation in the pair
-     * @param c the child circumtance in the pair
+     * @param c the child circumstance in the pair
      */
 
-    public SCPair(Situation n, ICircumstance c)
+    public SCPair(Situation s, ICircumstance c)
     {
-        this.n = n;
+        this.s = s;
         this.c = c;
     }
 
@@ -54,7 +54,7 @@ public class SCPair implements Comparable<SCPair>
 
     public Situation getSituation()
     {
-        return n;
+        return s;
     }
 
 //-----------------------------------------------------------------------------
@@ -72,18 +72,14 @@ public class SCPair implements Comparable<SCPair>
 //-----------------------------------------------------------------------------
 
     /**
-     * Methoc for Comparator interface
+     * Method for Comparator interface
      * @param other the object to be compared with this object
      */
 
     @Override
     public int compareTo(SCPair other)
     {
-        final int FIRST = 1;
-        final int EQUAL = 0;
-        final int LAST = -1;
-
-        int res = EQUAL;
+        int res = 0;
         if (this.getSituation() != other.getSituation())
         {
             res = this.toString().compareTo(other.toString());
@@ -111,7 +107,7 @@ public class SCPair implements Comparable<SCPair>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("[SituationID ");
-        sb.append(Integer.toHexString(n.hashCode()));
+        sb.append(Integer.toHexString(s.hashCode()));
         sb.append("]:[CircumstanceID ");
         sb.append(Integer.toHexString(c.hashCode())).append("]]");
         return sb.toString();
@@ -128,7 +124,7 @@ public class SCPair implements Comparable<SCPair>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("[").append(super.toString());
-        sb.append(" [Situation: ").append(n.toString());
+        sb.append(" [Situation: ").append(s.toString());
         sb.append("]-[ICircumstance: ").append(c.toString()).append("]]");
         return sb.toString();
     }

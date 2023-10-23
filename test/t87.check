@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#TODO-gg: upgrade
+#TODO-gg: upgrade: reading input from app log/output file
 echo "Skipped: to upgrade!"
 exit 0
 

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if ! grep -q 'The overall run did NOT terminate normally' t9.log ; then echo NOT Passed - Error 1 ; exit -1 ; fi
+
+if ! grep -q 'Perception result: Known situation is e001.0-QCNoLowerPoint' t9.log ; then echo NOT Passed - Error 2 ; exit -1 ; fi
+
+if [ ! -f accOutput.inp ] ; then echo NOT Passed - Error 3 ; exit -1 ; fi
+
+if [ ! -f accOutput.jd.json ] ; then echo NOT Passed - Error 4 ; exit -1 ; fi
+
+if ! grep -q -i "MaxConventionalCycles=1" accOutput.inp ; then echo NOT Passed - Error 5 ; exit -1 ; fi
+
+n=$(grep -c -i "\-\-link1\-\-" accOutput.inp)
+if [ 8 -ne "$n" ] ; then echo NOT Passed - Error 6 ; exit -1 ; fi
+
+n=$(grep -c -i '%chk=molecule_for_tests' accOutput.inp)
+if [ 9 -ne "$n" ] ; then echo NOT Passed - Error 7 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t9.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed. ERROR 99
+  exit -1
+fi
+

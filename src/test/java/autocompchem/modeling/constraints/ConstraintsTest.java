@@ -13,9 +13,8 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 
 public class ConstraintsTest 
 {
@@ -154,7 +153,7 @@ public class ConstraintsTest
     public void testGetConstraintType() throws Exception
     {
     	List<Integer> ids = new ArrayList<>(Arrays.asList(1));
-    	ConnectivityTable ct = new ConnectivityTable();
+    	NearestNeighborMap ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {});
     	assertEquals(ConstraintType.FROZENATM, 
     			Constraint.getConstraintType(ids, ct));
@@ -169,12 +168,12 @@ public class ConstraintsTest
     			Constraint.getConstraintType(ids, null));
     	
     	ids = new ArrayList<>(Arrays.asList(1, 2));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	assertEquals(ConstraintType.DISTANCE, 
     			Constraint.getConstraintType(ids, ct));
     	
     	ids = new ArrayList<>(Arrays.asList(1, 2));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {2});
     	assertEquals(ConstraintType.DISTANCE, 
     			Constraint.getConstraintType(ids, ct));
@@ -184,25 +183,25 @@ public class ConstraintsTest
     			Constraint.getConstraintType(ids, null));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	assertEquals(ConstraintType.ANGLE, 
     			Constraint.getConstraintType(ids, ct));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {2});
     	assertEquals(ConstraintType.ANGLE, 
     			Constraint.getConstraintType(ids, ct));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {2});
     	ct.addNeighborningRelation(2, new int[] {3});
     	assertEquals(ConstraintType.ANGLE, 
     			Constraint.getConstraintType(ids, ct));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {2});
     	ct.addNeighborningRelation(1, new int[] {3});
     	assertEquals(ConstraintType.ANGLE, 
@@ -213,12 +212,12 @@ public class ConstraintsTest
     			Constraint.getConstraintType(ids, null));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	assertEquals(ConstraintType.UNDEFINED, 
     			Constraint.getConstraintType(ids, ct));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {2});
     	ct.addNeighborningRelation(2, new int[] {3});
     	ct.addNeighborningRelation(3, new int[] {4});
@@ -226,7 +225,7 @@ public class ConstraintsTest
     			Constraint.getConstraintType(ids, ct));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {2});
     	ct.addNeighborningRelation(2, new int[] {3});
     	ct.addNeighborningRelation(2, new int[] {4});
@@ -234,7 +233,7 @@ public class ConstraintsTest
     			Constraint.getConstraintType(ids, ct));
 
     	ids = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
-    	ct = new ConnectivityTable();
+    	ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new int[] {3});
     	ct.addNeighborningRelation(2, new int[] {3});
     	ct.addNeighborningRelation(3, new int[] {4});

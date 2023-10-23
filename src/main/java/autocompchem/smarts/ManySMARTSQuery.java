@@ -238,28 +238,4 @@ public class ManySMARTSQuery
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Return all the matches for the specified SMARTS query.
-     * @param ref the reference name of the SMARTS query.
-     * @return the list of matches for the specified query.
-     * @deprecated use {@link getMappingOfSMARTS}
-     */
-
-    @Deprecated
-    public List<List<Integer>> getMatchesOfSMARTS(String ref)
-    {
-    	List<List<Integer>> idsAsNestedList = new ArrayList<List<Integer>>();
-    	Iterator<int[]> iter = allMatches.get(ref).iterator();
-    	while (iter.hasNext()) {
-    		int[] m = iter.next();
-    		List<Integer> l = new ArrayList<Integer>();
-    		for (int i=0; i<m.length; i++)
-    			l.add(m[i]);
-    		idsAsNestedList.add(l);
-    	}
-        return idsAsNestedList;
-    }
-
-//------------------------------------------------------------------------------
-
 }

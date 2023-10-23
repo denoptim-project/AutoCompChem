@@ -20,7 +20,6 @@ import java.lang.reflect.Type;
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
@@ -30,14 +29,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
-import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
-import autocompchem.utils.StringUtils;
 
 /**
  * A keyword is a string with an associated value. Keywords, together with
@@ -169,7 +164,7 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
      * Returns the name (i.e., the actual keyword) of this keyword.
      * @return the name of this keyword.
      */
-//TODO-gg change to getReference
+
     public String getName()
     {
         return getReference();
@@ -180,7 +175,6 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
     /**
      * @return the kind of directive component this is.
      */
-    //TODO-gg needed?
 	public DirectiveComponentType getComponentType() 
 	{
 		return DirectiveComponentType.KEYWORD;
@@ -285,6 +279,22 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
     {
     	return "[Keyword: '" + getReference() + "', " + isLoud + ", '" 
     			 + getValueAsString() + "']";
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Produced a string formatted according to the loud/mute property
+     * and the given separator
+     */
+    public String toString(String separator)
+    {
+    	if (isLoud())
+		{
+			return getName() + separator + getValueAsString();
+		} else {
+			return getValueAsString();
+		}
     }
     
 //-----------------------------------------------------------------------------

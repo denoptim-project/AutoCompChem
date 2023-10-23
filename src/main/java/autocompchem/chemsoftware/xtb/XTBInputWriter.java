@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.xtb;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2021  Marco Foscato
  *
@@ -27,14 +29,12 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.io.IOtools;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
@@ -94,13 +94,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			// ONE single line.
 			for (Keyword k : d.getAllKeywords())
 			{
-				if (k.isLoud())
-				{
-					lines.add("#" + k.getName() + " " + k.getValueAsString());
-				} else
-				{
-					lines.add("#" + k.getValueAsString());
-				}
+				lines.add("#" + k.toString(" "));
 			}
 			// Sub directives and DirectiveData are not suitable for XTB's
 			// "keyword line", so we do not expect them
@@ -576,8 +570,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 		if (omitIfPossible)
 			return;
 		
-		//TODO-gg use constant for directive name.
-		setKeywordIfNotAlreadyThere(ccj, "charge", "value", false, charge);
+		addNewKeyword(ccj, "charge", "value", false, charge);
 	}
 
 //-----------------------------------------------------------------------------
@@ -597,9 +590,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 			return;
 		
 		int numUnpairedEls = Integer.parseInt(sm) - 1;
-		//TODO-gg use constant for directive name.
-		setKeywordIfNotAlreadyThere(ccj, "spin", "value", false, 
-				numUnpairedEls + "");
+		addNewKeyword(ccj, "spin", "value", false, numUnpairedEls + "");
 	}
 
 //-----------------------------------------------------------------------------
@@ -654,10 +645,10 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	 * No special file structure required for XTB. This method does nothing.
 	 */
 	@Override
-	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
-  		return outputFileName;
+  		return output;
   	}
     
 //------------------------------------------------------------------------------

@@ -1,36 +1,19 @@
 package autocompchem.run;
 
-/*
- *   Copyright (C) 2014  Marco Foscato
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.ArrayList;
+import java.io.File;
+import java.util.List;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 
 
 /**
- * Factory building jobs
+ * Factory building jobs.
  * 
  * @author Marco Foscato
  */
@@ -46,14 +29,14 @@ public class JobFactory
      * <ul>
      * <li><i>jobDetails</i> format.</li>
      * </ul>
-     * @param pathName the pathname of the file
+     * @param file the file to read
      * @return the collection of parameters
      */
 
-    public static Job buildFromFile(String pathName)
+    public static Job buildFromFile(File file)
     {
-        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
-        		pathName,
+        List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        		file,
                 ParameterConstants.STARTJOB, //delimiter
                 ParameterConstants.ENDJOB, //delimiter
                 false,  //don't take only first
@@ -63,9 +46,9 @@ public class JobFactory
         {
         	// Since there are no JOBSTART/JOBEND blocks we interpret the text
         	// as parameters for a single job
-        	ArrayList<String> lines = IOtools.readTXT(pathName);
+        	List<String> lines = IOtools.readTXT(file);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
-        			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
+        			+ ParameterConstants.SEPARATOR + AppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
         	blocks.add(tb);
         }
@@ -83,14 +66,14 @@ public class JobFactory
      * <ul>
      * <li><i>jobDetails</i> format.</li>
      * </ul>
-     * @param pathName the pathname of the file
+     * @param file the file to read
      * @return the collection of parameters
      */
 
-    public static Job buildFromFile(String pathName, String cliString)
+    public static Job buildFromFile(File file, String cliString)
     {
-        ArrayList<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
-        		pathName,
+        List<TextBlockIndexed> blocks = FileAnalyzer.extractTextBlocks(
+        		file,
                 ParameterConstants.STARTJOB, //delimiter
                 ParameterConstants.ENDJOB, //delimiter
                 false,  //don't take only first
@@ -105,9 +88,9 @@ public class JobFactory
         {
         	// Since there are no JOBSTART/JOBEND blocks we interpret the text
         	// as parameters for a single job
-        	ArrayList<String> lines = IOtools.readTXT(pathName);
+        	List<String> lines = IOtools.readTXT(file);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
-        			+ ParameterConstants.SEPARATOR + RunnableAppID.ACC);
+        			+ ParameterConstants.SEPARATOR + AppID.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
         	tb.replaceAll(ParameterConstants.STRINGFROMCLI,cliString);
         	blocks.add(tb);
@@ -126,7 +109,7 @@ public class JobFactory
      * @return the outermost job, with any nested job within it.
      */
     
-    public static Job createJob(ArrayList<TextBlockIndexed> blocks)
+    public static Job createJob(List<TextBlockIndexed> blocks)
     {
     	// Unless there is only one set of parameters the outermost job serves
         // as a container of a possibly nested structure of sub-jobs.
@@ -137,10 +120,9 @@ public class JobFactory
         }
         else
         {
-        	job = createJob(RunnableAppID.ACC);
+        	job = createJob(AppID.ACC);
             for (TextBlockIndexed tb : blocks)
             {
-                
                 Job subJob = createJob(tb);
                 job.addStep(subJob);
             }
@@ -156,7 +138,7 @@ public class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(RunnableAppID appID)
+    public static Job createJob(AppID appID)
     {
     	return createJob(appID, 1, false);
     }
@@ -170,7 +152,7 @@ public class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(RunnableAppID appID, int nThreads)
+    public static Job createJob(AppID appID, int nThreads)
     {
     	return createJob(appID, nThreads, false);
     }
@@ -185,7 +167,7 @@ public class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(RunnableAppID appID, boolean parallelizable)
+    public static Job createJob(AppID appID, boolean parallelizable)
     {
     	return createJob(appID, 1, parallelizable);
     }
@@ -201,7 +183,7 @@ public class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(RunnableAppID appID, int nThreads, 
+    public static Job createJob(AppID appID, int nThreads, 
     		boolean parallelizable)
     {
     	Job job;
@@ -241,26 +223,29 @@ public class JobFactory
         
         Job job = new Job();
         
-        RunnableAppID appId = RunnableAppID.ACC;
+        AppID appId = AppID.ACC;
         if (locPar.contains(ParameterConstants.RUNNABLEAPPIDKEY))
         {
         	String app = locPar.getParameter(
         			ParameterConstants.RUNNABLEAPPIDKEY).getValueAsString();
-        	appId = RunnableAppID.valueOf(app.trim().toUpperCase());
+        	appId = AppID.valueOf(app.trim().toUpperCase());
         }
         job = createJob(appId);
 
-        if (locPar.contains(WorkerConstants.PARTASK) 
-        		&& locPar.getParameterValue(WorkerConstants.PARTASK)
-        		.toUpperCase().equals(TaskID.EVALUATEJOB.toString()))
+        if (locPar.contains(WorkerConstants.PARTASK))
         {
-        	if (locPar.contains(MonitoringJob.PERIODPAR) 
-        			|| locPar.contains(MonitoringJob.DELAYPAR))
-        	{
-        		job = new MonitoringJob();
-        	} else {
-        		job = new EvaluationJob();
-        	}
+        	TaskID task = TaskID.valueOf(locPar.getParameterValue(
+        			WorkerConstants.PARTASK).toUpperCase());
+        	if (JobEvaluator.capabilities.contains(task))
+	        {
+	        	if (locPar.contains(MonitoringJob.PERIODPAR) 
+	        			|| locPar.contains(MonitoringJob.DELAYPAR))
+	        	{
+	        		job = new MonitoringJob();
+	        	} else {
+	        		job = new EvaluationJob();
+	        	}
+	        }
         }
         
         if (locPar.contains(ParameterConstants.VERBOSITY))

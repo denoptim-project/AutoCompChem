@@ -1,6 +1,8 @@
 package autocompchem.run;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.datacollections.NamedData.NamedDataType;
 
 
 /**
@@ -97,7 +100,7 @@ public class JobTest
 */
 
             // Nest 4 shell jobs in an undefined job
-            Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+            Job job = JobFactory.createJob(AppID.ACC);
             job.setVerbosity(0);
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                     newFile+1));
@@ -142,13 +145,13 @@ public class JobTest
     @DisabledOnOs(WINDOWS)
     public void testParallelizableSubJobs() throws Exception
     {
-        Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,true));
+        Job job = JobFactory.createJob(AppID.ACC);
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
+        job.addStep(JobFactory.createJob(AppID.ACC,true));
         assertTrue(job.parallelizableSubJobs());
 
-        job.addStep(JobFactory.createJob(Job.RunnableAppID.ACC,false));
+        job.addStep(JobFactory.createJob(AppID.ACC,false));
         assertFalse(job.parallelizableSubJobs());
     }
 
@@ -178,7 +181,7 @@ public class JobTest
             
             // Nest 4 shell jobs in an undefined job
             int nThreads = 2; //NB: do no change
-            Job job = JobFactory.createJob(Job.RunnableAppID.ACC,nThreads);
+            Job job = JobFactory.createJob(AppID.ACC,nThreads);
             job.setVerbosity(0);
             Job subJob1 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+1);
@@ -222,23 +225,34 @@ public class JobTest
             assertFalse(true, "Unable to work with tmp files.");
         } 
     }
-    
+
 //------------------------------------------------------------------------------
     
-    //TODO-gg keep or trash?
-    public static Job createTestJob() 
+    @Test
+    public void testSetParameter() 
     {
-    	Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
-        job.setVerbosity(0);
-        job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));
-        job.addStep(new ACCJob());
-        job.addStep(new MonitoringJob());
-        job.addStep(new EvaluationJob());
-        job.addStep(new Job());
-        job.addStep(new CompChemJob());
-        
-        
-        return job;
+    	Job j1 = new Job();
+    	Job j1_1 = new Job();
+    	Job j1_2 = new Job();
+    	Job j1_3 = new Job();
+    	
+    	j1.addStep(j1_1);
+    	j1.addStep(j1_2);
+    	j1.addStep(j1_3);
+    	
+    	String parName1 = "PARNAME1";
+    	j1.setParameter(parName1, NamedDataType.INTEGER, 123, false);
+    	assertTrue(j1.hasParameter(parName1));
+    	assertFalse(j1_1.hasParameter(parName1));
+    	assertFalse(j1_2.hasParameter(parName1));
+    	assertFalse(j1_3.hasParameter(parName1));
+
+    	String parName2 = "PARNAME2";
+    	j1.setParameter(parName2, NamedDataType.INTEGER, 456, true);
+    	assertTrue(j1.hasParameter(parName2));
+    	assertTrue(j1_1.hasParameter(parName2));
+    	assertTrue(j1_2.hasParameter(parName2));
+    	assertTrue(j1_3.hasParameter(parName2));
     }
     
 //------------------------------------------------------------------------------

@@ -27,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.vecmath.Point3d;
-
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtom;
@@ -63,7 +61,7 @@ public class ConnectivityTableTest
          * Empty
          */
         IAtomContainer iac = chemBuilder.newAtomContainer();
-        assertTrue(compareWithIAC(new ConnectivityTable(iac), iac));
+        assertTrue(compareWithIAC(new NearestNeighborMap(iac), iac));
         
         /*
          * With only atoms
@@ -75,7 +73,7 @@ public class ConnectivityTableTest
             iac.addAtom(atom);
         }
         assertEquals(0, iac.getBondCount());
-        assertTrue(compareWithIAC(new ConnectivityTable(iac), iac));
+        assertTrue(compareWithIAC(new NearestNeighborMap(iac), iac));
         
         /*
          *  O#C-Mo-P-C=N
@@ -99,7 +97,7 @@ public class ConnectivityTableTest
             }
         }
         assertEquals(5, iac.getBondCount());
-        assertTrue(compareWithIAC(new ConnectivityTable(iac), iac));
+        assertTrue(compareWithIAC(new NearestNeighborMap(iac), iac));
         
         /*        ____
          *       /    \
@@ -107,7 +105,7 @@ public class ConnectivityTableTest
          */
         iac.addBond(2, 5, IBond.Order.SINGLE);
         assertEquals(6, iac.getBondCount());
-        assertTrue(compareWithIAC(new ConnectivityTable(iac), iac));
+        assertTrue(compareWithIAC(new NearestNeighborMap(iac), iac));
         
 
         /*        ____
@@ -116,7 +114,7 @@ public class ConnectivityTableTest
          */
         iac.removeBond(iac.getAtom(3), iac.getAtom(4));
         assertEquals(5, iac.getBondCount());
-        assertTrue(compareWithIAC(new ConnectivityTable(iac), iac));
+        assertTrue(compareWithIAC(new NearestNeighborMap(iac), iac));
         
 
         /*         ____
@@ -125,7 +123,7 @@ public class ConnectivityTableTest
          */
         iac.removeBond(iac.getAtom(1), iac.getAtom(2));
         assertEquals(4, iac.getBondCount());
-        assertTrue(compareWithIAC(new ConnectivityTable(iac), iac));
+        assertTrue(compareWithIAC(new NearestNeighborMap(iac), iac));
     }
 
 //------------------------------------------------------------------------------
@@ -172,7 +170,7 @@ public class ConnectivityTableTest
         subset.add(iac.getAtom(4));
         subset.add(iac.getAtom(5));
         
-        assertTrue(connectionsInCtExistInIAC(new ConnectivityTable(subset, iac),
+        assertTrue(connectionsInCtExistInIAC(new NearestNeighborMap(subset, iac),
         		iac));
         
         /*        ____
@@ -181,7 +179,7 @@ public class ConnectivityTableTest
          */
         iac.removeBond(iac.getAtom(3), iac.getAtom(4));
         assertEquals(5, iac.getBondCount());
-        assertTrue(connectionsInCtExistInIAC(new ConnectivityTable(iac), iac));
+        assertTrue(connectionsInCtExistInIAC(new NearestNeighborMap(iac), iac));
         
 
         /*         ____
@@ -190,12 +188,12 @@ public class ConnectivityTableTest
          */
         iac.removeBond(iac.getAtom(1), iac.getAtom(2));
         assertEquals(4, iac.getBondCount());
-        assertTrue(connectionsInCtExistInIAC(new ConnectivityTable(iac), iac));
+        assertTrue(connectionsInCtExistInIAC(new NearestNeighborMap(iac), iac));
     }
     
 //------------------------------------------------------------------------------
 
-    private boolean compareWithIAC(ConnectivityTable ct, IAtomContainer iac)
+    private boolean compareWithIAC(NearestNeighborMap ct, IAtomContainer iac)
     {
     	for (IBond bnd : iac.bonds())
     	{
@@ -220,7 +218,7 @@ public class ConnectivityTableTest
     
 //------------------------------------------------------------------------------
 
-    private boolean connectionsInCtExistInIAC(ConnectivityTable ct, 
+    private boolean connectionsInCtExistInIAC(NearestNeighborMap ct, 
     		IAtomContainer iac)
     {
     	for (Integer srcId : ct.keySet())
@@ -235,9 +233,9 @@ public class ConnectivityTableTest
     
 //------------------------------------------------------------------------------
 
-    public static ConnectivityTable getTestTable()
+    public static NearestNeighborMap getTestTable()
     {
-    	ConnectivityTable ct = new ConnectivityTable();
+    	NearestNeighborMap ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(3, Arrays.asList(1,5,7,4));
     	ct.addNeighborningRelation(2, Arrays.asList(1,7));
     	return ct;
@@ -248,8 +246,8 @@ public class ConnectivityTableTest
     @Test
     public void testEquals() throws Exception
     {
-    	ConnectivityTable c1 = getTestTable();
-    	ConnectivityTable c2 = getTestTable();
+    	NearestNeighborMap c1 = getTestTable();
+    	NearestNeighborMap c2 = getTestTable();
     	
     	assertTrue(c1.equals(c2));
     	assertTrue(c2.equals(c1));
@@ -272,10 +270,10 @@ public class ConnectivityTableTest
     	Gson reader = ACCJson.getReader();
     	Gson writer = ACCJson.getWriter();
     	
-    	ConnectivityTable c1 = getTestTable();
+    	NearestNeighborMap c1 = getTestTable();
     	
     	String json = writer.toJson(c1);
-    	ConnectivityTable c2 = reader.fromJson(json, ConnectivityTable.class);
+    	NearestNeighborMap c2 = reader.fromJson(json, NearestNeighborMap.class);
     	
     	assertEquals(c1, c2);
     }
@@ -285,8 +283,8 @@ public class ConnectivityTableTest
     @Test
     public void testClone() throws Exception
     {
-    	ConnectivityTable c1 = getTestTable();
-    	ConnectivityTable clone = c1.clone();
+    	NearestNeighborMap c1 = getTestTable();
+    	NearestNeighborMap clone = c1.clone();
     	assertEquals(c1, clone);
     	assertFalse(c1==clone);
     }
@@ -296,7 +294,7 @@ public class ConnectivityTableTest
     @Test
     public void testAddNeighborningRelation() throws Exception
     {
-    	ConnectivityTable ct = new ConnectivityTable();
+    	NearestNeighborMap ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(3, Arrays.asList(1,5,0,-4));
     	
     	assertTrue(ct.getNbrsId(3).contains(1));

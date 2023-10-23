@@ -5,30 +5,19 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "MEM",
-              "value": "30000MB"
-            }
-          ]
+          "name": "Link0"
         },
         {
           "name": "Route",
           "keywords": [
             {
               "reference": "MODEL_METHOD",
-              "value": "HF",
+              "value": "WB97XD",
               "isLoud": false
             },
             {
               "reference": "SYMMETRY",
-              "value": "NOSYM",
-              "isLoud": false
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2MB 5D 7F",
+              "value": "NOSYMM",
               "isLoud": false
             },
             {
@@ -37,368 +26,22 @@
               "isLoud": false
             },
             {
-              "reference": "JOBTYPE",
-              "value": "SP",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "VSHIFT",
-                  "value": "1000"
-                },
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "CONVER",
-                  "value": "5"
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "180"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": " Step 1 - Protocol Denoptim_1.0, 6 Nov 2014",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "MEM",
-              "value": "30000MB"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "SYMMETRY",
-              "value": "NOSYM",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
+              "reference": "INT",
+              "value": "SUPERFINE"
             },
             {
               "reference": "MODEL_BASISSET",
-              "value": "LANL2MB 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "SP",
+              "value": "GENECP 5D 7F",
               "isLoud": false
             }
           ],
           "subDirectives": [
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "VSHIFT",
-                  "value": "1000"
-                },
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "CONVER",
-                  "value": "5"
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "280"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": " Step 2 - Protocol Denoptim_1.0, 6 Nov 2014",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "MEM",
-              "value": "30000MB"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "SYMMETRY",
-              "value": "NOSYM",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "SP",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "VSHIFT",
-                  "value": "600"
-                },
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "CONVER",
-                  "value": "5"
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "280"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": " Step 3 - Protocol Denoptim_1.0, 6 Nov 2014",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
-            },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "MEM",
-              "value": "30000MB"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "SYMMETRY",
-              "value": "NOSYM",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "OPT",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "SCF",
-              "keywords": [
-                {
-                  "reference": "SYMM",
-                  "value": "NOSYM",
-                  "isLoud": false
-                },
-                {
-                  "reference": "MAXCYCLE",
-                  "value": "980"
-                },
-                {
-                  "reference": "VSHIFT",
-                  "value": "200"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            },
             {
               "name": "OPT",
               "keywords": [
                 {
-                  "reference": "CONVERGENCE",
-                  "value": "LOOSE",
+                  "reference": "CRITICALPOINT",
+                  "value": "QST3",
                   "isLoud": false
                 },
                 {
@@ -407,93 +50,16 @@
                   "isLoud": false
                 },
                 {
+                  "reference": "MODREDUNDANT",
+                  "value": "MODREDUNDANT",
+                  "isLoud": false
+                },
+                {
                   "reference": "MAXCYCLES",
-                  "value": "320"
+                  "value": "150"
                 }
               ]
-            }
-          ]
-        },
-        {
-          "name": "Title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": " Step 4 (first opt: DZ-LOOSE) - Protocol Denoptim_1.0, 6 Nov 2014",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "MolSpec",
-          "keywords": [
-            {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
-              "isLoud": false
             },
-            {
-              "reference": "CHARGE",
-              "value": "0",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "Options"
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "Link0",
-          "keywords": [
-            {
-              "reference": "MEM",
-              "value": "30000MB"
-            }
-          ]
-        },
-        {
-          "name": "Route",
-          "keywords": [
-            {
-              "reference": "MODEL_METHOD",
-              "value": "OLYP",
-              "isLoud": false
-            },
-            {
-              "reference": "SYMMETRY",
-              "value": "NOSYM",
-              "isLoud": false
-            },
-            {
-              "reference": "GUESS",
-              "value": "READ"
-            },
-            {
-              "reference": "PRINT",
-              "value": "P",
-              "isLoud": false
-            },
-            {
-              "reference": "GEOM",
-              "value": "CHECK"
-            },
-            {
-              "reference": "MODEL_BASISSET",
-              "value": "LANL2DZ 5D 7F",
-              "isLoud": false
-            },
-            {
-              "reference": "JOBTYPE",
-              "value": "OPT",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
             {
               "name": "SCF",
               "keywords": [
@@ -503,31 +69,16 @@
                   "isLoud": false
                 },
                 {
+                  "reference": "CONVER",
+                  "value": "10"
+                },
+                {
                   "reference": "MAXCYCLE",
-                  "value": "980"
+                  "value": "250"
                 },
                 {
                   "reference": "VSHIFT",
-                  "value": "200"
-                },
-                {
-                  "reference": "VARACC",
-                  "value": "NOVARACC",
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "OPT",
-              "keywords": [
-                {
-                  "reference": "FORCECONSTANTS",
-                  "value": "CALCFC",
-                  "isLoud": false
-                },
-                {
-                  "reference": "MAXCYCLES",
-                  "value": "320"
+                  "value": "300"
                 }
               ]
             }
@@ -538,28 +89,156 @@
           "keywords": [
             {
               "reference": "title",
-              "value": " Step 5 (second opt: DZ) - Protocol Denoptim_1.0, 6 Nov 2014",
+              "value": " Transition State optimization",
               "isLoud": false
             }
           ]
         },
         {
-          "name": "MolSpec",
+          "name": "Options",
+          "dirData": [
+            {
+              "reference": "BASISSET",
+              "type": "UNDEFINED",
+              "value": "Type is not JSON-able",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "SMARTS [#1] Link ../data/basisset/gaussian/aug-cc-PVDdZ_C_H_F_Cl.gbs\nSMARTS [#6] Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [#9] Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [#17] Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            },
+            {
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [#6] [#1] suffix:F"
+                }
+              ]
+            },
+            {
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [#6] [#1] suffix:F"
+                }
+              ]
+            },
+            {
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [#6] [#1] suffix:F"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
           "keywords": [
             {
-              "reference": "SPIN_MULTIPLICITY",
-              "value": "1",
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "WB97XD",
               "isLoud": false
             },
             {
-              "reference": "CHARGE",
-              "value": "0",
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
               "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "INT",
+              "value": "SUPERFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "FREQ",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "300"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "10"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "250"
+                }
+              ]
             }
           ]
         },
         {
-          "name": "Options"
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Stationary point characterization",
+              "isLoud": false
+            }
+          ]
         }
       ]
     }

@@ -1,5 +1,6 @@
 package autocompchem.perception.infochannel;
 
+import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -29,7 +30,7 @@ import java.util.Map;
  * @author Marco Foscato
  */
 
-public class EnvironmentAsSource extends InfoChannel
+public class EnvironmentAsSource extends ReadableIC
 {
     /**
      * Environment
@@ -47,6 +48,14 @@ public class EnvironmentAsSource extends InfoChannel
         super();
         env = System.getenv();
     }
+    
+//------------------------------------------------------------------------------
+
+  	@Override
+  	public boolean canBeRead() 
+  	{
+  		return env!=null && !env.isEmpty();
+  	}
 
 //------------------------------------------------------------------------------
 
@@ -55,7 +64,7 @@ public class EnvironmentAsSource extends InfoChannel
      * The stream is typically closed outside of the information channel, by
      * whatever reads the Reader and defined that the Reader is no longer 
      * needed.
-     * @return a readed for reading the character-info from the source
+     * @return a reader for reading the character-info from the source
      */
 
     public Reader getSourceReader()
@@ -81,7 +90,7 @@ public class EnvironmentAsSource extends InfoChannel
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("EnvironmentAsSource [type:").append(super.getType());
+        sb.append("EnvironmentAsSource [ICType:").append(super.getType());
         sb.append("; text:").append(env);
         sb.append("]");
         return sb.toString();

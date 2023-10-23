@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /*   
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -134,7 +136,7 @@ public class NWChemReStarter extends Worker
      * Name of the errors definition tree
      */
     @SuppressWarnings("unused")
-        private ArrayList<ErrorMessage> errorDef;
+        private List<ErrorMessage> errorDef;
 
     /**
      * Flag requiring to restart last task
@@ -216,7 +218,7 @@ public class NWChemReStarter extends Worker
             {
                 System.out.println(" Job details from nested parameter block.");
             }
-            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            List<String> lines = new ArrayList<String>(Arrays.asList(
             		jdLines.split("\\r?\\n")));
             this.nwcJob = new NWChemJob(lines);
         }
@@ -382,7 +384,8 @@ public class NWChemReStarter extends Worker
     			"EVALUATENWCHEMOUTPUT");
     	
         //Gather information on the error job
-    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler);
+    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler, 
+    			this.getMyJob());
     	NWChemOutputHandler oEval = (NWChemOutputHandler) w;
     	
                                                   
@@ -486,7 +489,7 @@ public class NWChemReStarter extends Worker
                     {
                         //Get directives to impose
                         String dirsOneStr = efaDetails.get("IMPOSE_DIRECTIVES");
-                        ArrayList<String> dirsAsLines = new ArrayList<String>(
+                        List<String> dirsAsLines = new ArrayList<String>(
                                          Arrays.asList(dirsOneStr.split("\n")));
 
                         NWChemTask dirsToAdd = new NWChemTask(dirsAsLines);
@@ -523,7 +526,7 @@ public class NWChemReStarter extends Worker
                     {
                         //Get directives to delete
                         String dirsOneStr = efaDetails.get("REMOVE_DIRECTIVES");
-                        ArrayList<String> dirsAsLines = new ArrayList<String>(
+                        List<String> dirsAsLines = new ArrayList<String>(
                                          Arrays.asList(dirsOneStr.split("\n")));
                         NWChemTask dirsToRemove = new NWChemTask(dirsAsLines);
                         if (dirsToRemove.hasDirective(new ArrayList<String>(),
@@ -582,10 +585,10 @@ public class NWChemReStarter extends Worker
                 }
 
                 //Write the new input for NWChem
-                IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
+                IOtools.writeTXTAppend(new File(nwFile),newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
+                IOtools.writeTXTAppend(new File(newJDFile),newNwcJob.toLinesJobDetails(),
                                                                         false);
 
                 break;
@@ -608,7 +611,7 @@ public class NWChemReStarter extends Worker
                 }
 
                 String extraNJobAsString = efaDetails.get("EXTRA_STEP");
-                ArrayList<String> extraNJobAsLines = new ArrayList<String>(
+                List<String> extraNJobAsLines = new ArrayList<String>(
                                   Arrays.asList(extraNJobAsString.split("\n")));
                 NWChemJob extraNJob = new NWChemJob(extraNJobAsLines);
 
@@ -631,7 +634,7 @@ public class NWChemReStarter extends Worker
                 }
 
                 String otkAsString = efaDetails.get("KEEP_OPTIONS");
-                ArrayList<String> otkAsLines = new ArrayList<String>(
+                List<String> otkAsLines = new ArrayList<String>(
                                         Arrays.asList(otkAsString.split("\n")));
                 NWChemTask otkMask = new NWChemTask(otkAsLines);
 
@@ -722,10 +725,10 @@ for (String l : otkTsk.toLinesJobDetails())
                 }
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
+                IOtools.writeTXTAppend(new File(nwFile),newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
+                IOtools.writeTXTAppend(new File(newJDFile),newNwcJob.toLinesJobDetails(),
                                                                          false);
                 break;
             }
@@ -769,10 +772,10 @@ for (String l : otkTsk.toLinesJobDetails())
                 }
 
                 //Write the new INP file
-                IOtools.writeTXTAppend(nwFile,newNwcJob.toLinesInput(),false);
+                IOtools.writeTXTAppend(new File(nwFile),newNwcJob.toLinesInput(),false);
 
                 //Write the new jobDetails file
-                IOtools.writeTXTAppend(newJDFile,newNwcJob.toLinesJobDetails(),
+                IOtools.writeTXTAppend(new File(newJDFile),newNwcJob.toLinesJobDetails(),
                                                                         false);
                 break;
             }

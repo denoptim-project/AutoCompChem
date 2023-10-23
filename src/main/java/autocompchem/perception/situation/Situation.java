@@ -18,20 +18,17 @@ package autocompchem.perception.situation;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
-import autocompchem.perception.circumstance.Circumstance;
-import autocompchem.perception.circumstance.CircumstanceFactory;
+import autocompchem.io.ACCJson;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.run.Action;
+import autocompchem.run.jobediting.Action;
 import jakarta.el.ELContext;
 import jakarta.el.ELException;
 import jakarta.el.ELResolver;
@@ -44,36 +41,31 @@ import jakarta.el.VariableMapper;
 /**
  * A situation is a concept in a context. 
  * The context is defined by a satisfied set of circumstances. 
- * A situation, once verified, can trigger a response/impulse.
+ * A situation, once verified, can trigger a response or reaction.
  *
  * @author Marco Foscato
  */
 
 public class Situation extends Concept
 {   
-	/**
+    /**
      * Details describing this situation
      */
     private String description = "no detail";
 
     /**
-     * The context that characterise this situation is defined by a set 
+     * The context that characterize this situation is defined by a set 
      * of circumstances
      */
-     private ArrayList<ICircumstance> context = new ArrayList<ICircumstance>();
-
-    /**
-     * Default logical expression for evaluating overall context
-     */
-    private final String DEFLOGICAL = "none";
+     private List<ICircumstance> context = new ArrayList<ICircumstance>();
 
     /**
      * Logical expression for evaluating overall context
      */
-    private String logicalExpression = DEFLOGICAL;
+    private String logicalExpression;
 
     /**
-     * The impulse or reaction triggered by this situation.
+     * The reaction triggered by this situation.
      */
     private Action reaction;
 
@@ -87,17 +79,19 @@ public class Situation extends Concept
     {
         super();
     }
-    
+
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a Situation with given type
-     * @param conceptType the type of Situation
+     * Constructor for a Situation with given type and context.
+     * @param conceptType the type of situation (i.e., error, warning,...).
+     * @param refName the name of the situation (i.e., Error-1.3C).
+     * @param context the context as a list of circumstances.
      */
 
-    public Situation(String conceptType)
+    public Situation(String conceptType, String refName)
     {
-        super(conceptType,"noRefName");
+        this(conceptType, refName, null, null);
     }
 
 //------------------------------------------------------------------------------
@@ -108,10 +102,9 @@ public class Situation extends Concept
      * @param context the context as a list of circumstances
      */
 
-    public Situation(String conceptType, ArrayList<ICircumstance> context)
+    public Situation(String conceptType, List<ICircumstance> context)
     {
-        super(conceptType,"noRefName");
-        this.context = context;
+        this(conceptType, "noRefName", context, null);
     }
 
 //------------------------------------------------------------------------------
@@ -124,10 +117,9 @@ public class Situation extends Concept
      */
 
     public Situation(String conceptType, String refName,
-    		ArrayList<ICircumstance> context)
+            List<ICircumstance> context)
     {
-        super(conceptType,refName);
-        this.context = context;
+        this(conceptType, refName, context, null);
     }
     
 //------------------------------------------------------------------------------
@@ -142,161 +134,26 @@ public class Situation extends Concept
      */
 
     public Situation(String conceptType, String refName,
-    		ArrayList<ICircumstance> context, Action reaction)
+            List<ICircumstance> context, Action reaction)
     {
         super(conceptType,refName);
-        this.context = context;
+        if (context!=null)
+            this.context = context;
         this.reaction = reaction;
     }
     
 //------------------------------------------------------------------------------
-
-    /**
-     * Constructs a new situation from a file. The file is expected to contain
-     * a definition of the Situation object we are constructing. 
-     * The format of the definition is detected on the fly by this constructor.
-     * @param file the file we read to make this object
-     * @throws exception if the file cannot be properly converted or read
-     */
-
-    public Situation(File file) throws Exception
-    {
-        super();
-        
-    	String format = FileUtils.getFileExtension(file).toLowerCase();
-    	
-    	// TODO: detect format from file content
-    	
-		switch (format)
-		{
-			case SituationConstants.SITUATIONTXTFILEEXT:
-				makeFromTxtFile(file);
-				break;
-				
-			default:
-				throw new Exception("Unknown format for file '" 
-						+ file.getAbsolutePath() + "', which was expected to "
-						+ "contain the definition of a known situation.");
-		}
-	}
-    
-//-----------------------------------------------------------------------------
     
     /**
-     * Creates a situation from a file
-     * @param pathname of file to read
-     * @return the object
-     * @throws exception if the file cannot be properly converted or read
+     * Converts a JSON string into a Situation.
+     * @param json the JSON string to deserialize.
+     * @return the Situation defined in the JSON string.
      */
-    
-    private void makeFromTxtFile(File f) throws Exception
+    public static Situation fromJSON(String json)
     {
-    	    
-	    //Read file
-	    String fname = f.toString();
-	    ArrayList<ArrayList<String>> form = IOtools.readFormattedText(
-	    		fname,
-	    		SituationConstants.SEPARATOR, //key-value separator
-	    		SituationConstants.COMMENTLINE,
-	    		SituationConstants.STARTMULTILINE,
-	    		SituationConstants.ENDMULTILINE);
-	    
-	    configure(form,"file "+fname);
+    	return ACCJson.getReader().fromJson(json, Situation.class);
     }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Import all configurations from formatted test
-     * @param form the formatted text
-     */
-    
-    public void configure(ArrayList<ArrayList<String>> form) throws Exception
-    {
-    	configure(form,"given form");
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Import all configurations from formatted test
-     * @param form the formatted text
-     */
-    
-    private void configure(ArrayList<ArrayList<String>> form, String source) 
-    		throws Exception
-    {
-        boolean refNameFound = false;
-        boolean actionFound = false;
-        for (int i=0; i<form.size(); i++)
-        {
-            ArrayList<String> singleBlock = form.get(i);
-            String key = singleBlock.get(0);
-            String value = singleBlock.get(1);
-            value = value.trim();
-            switch (key.toUpperCase())
-            {
-            	case SituationConstants.SITUATIONTYPE:
-            		this.setType(value);
-            		break;
-            		
-                case SituationConstants.REFERENCENAMELINE:
-                    if (!refNameFound)
-                    {
-                        refNameFound = true;
-                        this.setRefName(value);
-                        if (this.getRefName().equals(""))
-                        {
-                            throw new Exception("Empty '"
-                                    + SituationConstants.REFERENCENAMELINE
-                                    + "' while defining a Situation from text" 
-                                    + " file. Check " + source + ".");
-                        }
-                    } else {
-                        throw new Exception("Multiple '"
-                                    + SituationConstants.REFERENCENAMELINE 
-                                    + "' while defining a Situation from text"
-                                    + " file. Check " + source + ".");
-                    }
-                    break;
-                    
-                case SituationConstants.CIRCUMSTANCE:
-                	Circumstance circ = CircumstanceFactory.createFromString(
-                			value);
-                	this.addCircumstance(circ);
-                	break;
-                	
-                case SituationConstants.ACTION:
-                    if (!actionFound)
-                    {
-                        actionFound = true;
-                        reaction = new Action(value);
-                        
-                        if (reaction == null)
-                        {
-                        	throw new Exception("Coul not read impulse "
-                                    + " while defining a Situation from text"
-                                    + " file. Check " + source + ".");
-                        }
-                    } else {
-                        throw new Exception("Multiple '"
-                                    + SituationConstants.ACTION 
-                                    + "' while defining a Situation from text"
-                                    + " file. Check " + source + ".");
-                    }
-                	break;
-            } //end of switch
-        } //end of loop on array of pairs key:value
-        
-        
-        //Checking requirements
-        if (!refNameFound)
-        {
-        	throw new Exception("No reference name found for situation defined "
-        			+ "in " + source);
-        }
-    }
-
+  
 //------------------------------------------------------------------------------
 
     /**
@@ -328,7 +185,7 @@ public class Situation extends Concept
      * @return the circumstances
      */
 
-    public ArrayList<ICircumstance> getCircumstances()
+    public List<ICircumstance> getCircumstances()
     {
         return context;
     }
@@ -346,6 +203,18 @@ public class Situation extends Concept
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Sets the reaction triggered by the manifesting of this situation.
+     * @param reaction the reaction to this situation.
+     */
+
+    public void setReaction(Action reaction)
+    {
+        this.reaction = reaction;
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * Checks if this known situation can trigger a reaction.
@@ -353,7 +222,7 @@ public class Situation extends Concept
      */
     public boolean hasReaction()
     {
-    	return reaction != null;
+        return reaction != null;
     }
     
 //------------------------------------------------------------------------------
@@ -361,12 +230,12 @@ public class Situation extends Concept
     /**
      * Returns the expected reaction to this situation, or null if no reaction
      * is known.
-     * @return the behaviour in response of the occurrence of this situation
+     * @return the behavior in response of the occurrence of this situation
      */
     
     public Action getReaction()
     {
-    	return reaction;
+        return reaction;
     }
 
 //------------------------------------------------------------------------------
@@ -418,104 +287,104 @@ public class Situation extends Concept
         
         ExpressionFactory expFactory = ExpressionFactory.newInstance();
         ELContext ncc = new ELContext() {
-        	VariableMapper vm = new VariableMapper() {
-        		@Override
-        		public ValueExpression resolveVariable(String varName) 
-        		{
-        			ValueExpression ve = new ValueExpression() 
-        			{
-        				Object value;
-        				
-						/**
-						 * Version ID
-						 */
-						private static final long serialVersionUID = 1L;
+            VariableMapper vm = new VariableMapper() {
+                @Override
+                public ValueExpression resolveVariable(String varName) 
+                {
+                    ValueExpression ve = new ValueExpression() 
+                    {
+                        Object value;
+                        
+                        /**
+                         * Version ID
+                         */
+                        private static final long serialVersionUID = 1L;
 
-						@Override
-						public Object getValue(ELContext context) {
-							if (vars.containsKey(varName))
-							{
-								value = vars.get(varName);
-							} else {
-								throw new ELException("Variable '" + varName
-										+ "' cannot be resolved.");
-							}
-							return value;
-						}
+                        @Override
+                        public Object getValue(ELContext context) {
+                            if (vars.containsKey(varName))
+                            {
+                                value = vars.get(varName);
+                            } else {
+                                throw new ELException("Variable '" + varName
+                                        + "' cannot be resolved.");
+                            }
+                            return value;
+                        }
 
-						// This should not make sense since this is read-only
-						@Override
-						public void setValue(ELContext context, Object value) {
-							this.value = value;
-						}
+                        // This should not make sense since this is read-only
+                        @Override
+                        public void setValue(ELContext context, Object value) {
+                            this.value = value;
+                        }
 
-						@Override
-						public boolean isReadOnly(ELContext context) {
-							return true;
-						}
+                        @Override
+                        public boolean isReadOnly(ELContext context) {
+                            return true;
+                        }
 
-						@Override
-						public Class<?> getType(ELContext context) {
-							return value.getClass();
-						}
+                        @Override
+                        public Class<?> getType(ELContext context) {
+                            return value.getClass();
+                        }
 
-						@Override
-						public Class<?> getExpectedType() {
-							return Boolean.class;
-						}
+                        @Override
+                        public Class<?> getExpectedType() {
+                            return Boolean.class;
+                        }
 
-						@Override
-						public String getExpressionString() {
-							return null;
-						}
+                        @Override
+                        public String getExpressionString() {
+                            return null;
+                        }
 
-						@Override
-						public boolean equals(Object obj) {
-							return false;
-						}
+                        @Override
+                        public boolean equals(Object obj) {
+                            return false;
+                        }
 
-						@Override
-						public int hashCode() {
-							//Dummy hashcode
-							return 0;
-						}
+                        @Override
+                        public int hashCode() {
+                            //Dummy hashcode
+                            return 0;
+                        }
 
-						@Override
-						public boolean isLiteralText() {
-							return false;
-						}
-        			};
-        			return ve;
-        		}
+                        @Override
+                        public boolean isLiteralText() {
+                            return false;
+                        }
+                    };
+                    return ve;
+                }
 
-        		// Read-only
-				@Override
-				public ValueExpression setVariable(String variable, 
-						ValueExpression expression) 
-				{
-					return null;
-				}
-        	};
+                // Read-only
+                @Override
+                public ValueExpression setVariable(String variable, 
+                        ValueExpression expression) 
+                {
+                    return null;
+                }
+            };
        
-			@Override
-			public ELResolver getELResolver() {
-				//None
-				return null;
-			}
+            @Override
+            public ELResolver getELResolver() {
+                //None
+                return null;
+            }
 
-			@Override
-			public FunctionMapper getFunctionMapper() {
-				// None
-				return null;
-			}
+            @Override
+            public FunctionMapper getFunctionMapper() {
+                // None
+                return null;
+            }
 
-			@Override
-			public VariableMapper getVariableMapper() {
-				return vm;
-			}
-		};
-		
-		if (logicalExpression.equals(DEFLOGICAL))
+            @Override
+            public VariableMapper getVariableMapper() {
+                return vm;
+            }
+        };
+        
+        if (logicalExpression==null)
         {
             StringBuilder sb = new StringBuilder();
             sb.append("${");
@@ -530,31 +399,31 @@ public class Situation extends Concept
             sb.append("}");
             logicalExpression = sb.toString();
         }
-		
-		try
-		{
-			ValueExpression ve = expFactory.createValueExpression(ncc, 
-					logicalExpression, Boolean.class);
-			Object value = ve.getValue(ncc);
+        
+        try
+        {
+            ValueExpression ve = expFactory.createValueExpression(ncc, 
+                    logicalExpression, Boolean.class);
+            Object value = ve.getValue(ncc);
 
             if (value != null) 
             {
-            	if (value instanceof Boolean)
-            	{
-            		res = ((Boolean) value).booleanValue();
-            	} else {
+                if (value instanceof Boolean)
+                {
+                    res = ((Boolean) value).booleanValue();
+                } else {
                     throw new Exception("Evaluation of Expression "
                             + "'" + logicalExpression + "' "
                             + "returned '" + value.getClass() + "'). "
-                            		+ "Check expression.");
+                                    + "Check expression.");
                 }
             }
             else
             {
-            	//TODO error?
+                //TODO error?
                 throw new Exception("Evaluation of Expression Language "
-                		+ "returned null instead of Boolean. "
-                		+ "Check expression.");
+                        + "returned null instead of Boolean. "
+                        + "Check expression.");
             }
         }
         catch (Throwable t)
@@ -593,18 +462,59 @@ public class Situation extends Concept
                 sb.append("; ").append(c.toString());
             }
         }
-        sb.append("]; Impusle [");
+        sb.append("]; Impulse [");
         if (reaction != null)
         {
-        	sb.append(reaction.toString());
+            sb.append(reaction.toString());
         } else
         {
-        	sb.append("none");
+            sb.append("none");
         }
         sb.append("]]");
         return sb.toString();
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+        	return false;
+         
+        Situation other = (Situation) o;
+         
+        if (!this.description.equals(other.description))
+            return false;
+
+        if (this.logicalExpression!=null 
+        		&& !this.logicalExpression.equals(other.logicalExpression))
+            return false;
+       
+        if (this.context.size()!=other.context.size())
+            return false;
+       
+        for (int i=0; i<this.context.size(); i++)
+            if (!this.context.get(i).equals(other.context.get(i)))
+                return false;
+                
+        if ((this.reaction!=null && other.reaction==null) 
+        	|| (this.reaction!=null && other.reaction==null))
+        	return false;
+        
+        if (this.reaction!=null && other.reaction!=null
+        	&& !this.reaction.equals(other.reaction))
+        	return false;
+        
+        return super.equals(other);
+    }
+    
 //------------------------------------------------------------------------------
 
 }

@@ -1,23 +1,39 @@
 #!/bin/bash
 
-if [ ! -f "t113.log" ]; then echo NOT Passed ERROR 1; exit -1 ; fi
-if [ ! -f "t113_final.sdf" ]; then echo NOT Passed ERROR 2; exit -1 ; fi
+if [ ! -f t113.log ]; then echo NOT Passed ERROR 1; exit -1 ; fi
+
+if [ ! -f t113_final.sdf ]; then echo NOT Passed ERROR 2; exit -1 ; fi
+if ! grep -q " CDK " t113_final.sdf; then echo NOT Passed ERROR 2a; exit 1 ; fi
+
+if [ ! -f t113_trj.xyz ]; then echo NOT Passed ERROR 2b; exit -1 ; fi
+
+n=0;n=$(grep -c "^Ru" t113_trj.xyz)
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 2c ; exit -1 ; fi
 
 n=0;n=$(grep -c "^VibS: scaling frequency" t113.log)
 if [ $n -ne 11 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c " TRANSITION STATE" t113.log)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+if ! grep -q " TRANSITION STATE \[i256\.3" t113.log ; then 
+  echo NOT Passes ERROR 4 
+  exit -1 
+fi
 
-n=0;n=$(grep -c "226.174 208" t113.log)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+if ! grep -q "Quasi-harmonic approx changes vibrational entropy from 2\.308.*E-4 (a.u.) to 2\.025.*E-4 (a.u.)." t113.log ; then
+  echo NOT Passes ERROR 5 
+  exit -1 
+fi
+
+if ! grep -q "Bond lengths vs. connectivity: compatible" t113.log ; then 
+  echo NOT Passed ERROR 6
+  exit 1 
+fi
 
 grep -q 'Termination status: 0' "t113.log"
 if [ "$?" == 0 ] ; then
-echo Passed
-exit 0
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 6
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi
 

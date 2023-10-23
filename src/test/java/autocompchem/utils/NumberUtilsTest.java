@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
+import jakarta.el.ExpressionFactory;
 
 
 /**
@@ -98,6 +101,187 @@ public class NumberUtilsTest
     	expected.add(8);
     	
     	assertEquals(expected,NumberUtils.getComplementaryIndexes(ids, 9));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testStringUnits() throws Exception
+    {
+    	assertEquals("12", NumberUtils.stripUnits(" 12"));
+    	assertEquals("12", NumberUtils.stripUnits(" 12 "));
+    	assertEquals("-12", NumberUtils.stripUnits("-12"));
+    	assertEquals("-12", NumberUtils.stripUnits(" -12"));
+    	assertEquals("0.123", NumberUtils.stripUnits("0.123"));
+    	assertEquals("-0.123", NumberUtils.stripUnits("-0.123"));
+    	assertEquals("0.123", NumberUtils.stripUnits("$0.123"));
+    	assertEquals("0.123", NumberUtils.stripUnits("0.123$"));
+    	assertEquals("0.123", NumberUtils.stripUnits("USD 0.123"));
+    	assertEquals("0.123", NumberUtils.stripUnits("0.123 USD"));
+
+    	assertEquals("0. 1 2 3", NumberUtils.stripUnits(" 0. 1 2 3 "));
+    	assertEquals("0. 1 2 3", NumberUtils.stripUnits("eur0. 1 2 3 "));
+    	assertEquals("0. 1 2 3", NumberUtils.stripUnits(" 0. 1 2 3eur"));
+
+    	assertEquals("0.12E-12", NumberUtils.stripUnits("0.12E-12"));
+    	assertEquals("0.12E-12", NumberUtils.stripUnits("as d gf g0.12E-12"));
+    	assertEquals("0.12E-12", NumberUtils.stripUnits("0.12E-12 asd r t%&"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testCalculateNewValueWithUnits() throws Exception
+    {
+    	String exp = "${x + 2}";
+    	ExpressionFactory ef = ExpressionFactory.newInstance();
+    	
+    	String result = NumberUtils.calculateNewValueWithUnits(exp, ef, "1");
+    	String[] splitBuNonDigits = result.trim().split("[a-z,A-Z]");
+    	assertEquals(1, splitBuNonDigits.length);
+    	
+    	result = NumberUtils.calculateNewValueWithUnits(exp, ef, "1Å");
+    	assertEquals(result.length()-1,result.indexOf("Å"));
+    	assertEquals(0,result.indexOf("3"));
+    	
+    	result = NumberUtils.calculateNewValueWithUnits(exp, ef, "1 Å");
+    	assertEquals(result.length()-1,result.indexOf("Å"));
+    	assertEquals(0,result.indexOf("3"));
+    	
+    	result = NumberUtils.calculateNewValueWithUnits(exp, ef, "Å1");
+    	assertEquals(0,result.indexOf("Å"));
+    	assertEquals(1,result.indexOf("3"));
+    	
+    	result = NumberUtils.calculateNewValueWithUnits(exp, ef, "Å 1");
+    	assertEquals(0,result.indexOf("Å"));
+    	assertEquals(2,result.indexOf("3"));
+    	
+    	assertEquals("Å 3.12", NumberUtils.calculateNewValueWithUnits(exp, ef, 
+    			"Å 1.12"));
+    	assertEquals("3GB", NumberUtils.calculateNewValueWithUnits(exp, ef, 
+    			"1GB"));
+    	assertEquals("1002 MB", NumberUtils.calculateNewValueWithUnits(exp, ef, 
+    			"1000 MB"));
+    	assertEquals("1002.4m", 
+    			NumberUtils.calculateNewValueWithUnits("${x + 2.2}", ef, 
+    			"1000.2m"));
+    	assertEquals("0.00097 kcal/mol", 
+    			NumberUtils.calculateNewValueWithUnits("${x + 0.0022}", ef, 
+    			"-0.00123 kcal/mol"));
+    	assertEquals("9.70E-6 kcal/mol", 
+    			NumberUtils.calculateNewValueWithUnits("${x + 2.2E-5}", ef, 
+    			"-1.23E-5 kcal/mol"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+	@Test
+    public void testDetectDecimalFormat() throws Exception
+    {
+    	assertEquals("1", NumberUtils.detectDecimalFormat("1").format(1.000));
+    	assertEquals("1", NumberUtils.detectDecimalFormat(" 1").format(1.000));
+    	assertEquals("1", NumberUtils.detectDecimalFormat("1 ").format(1.000));    	
+
+    	// NB: rounding!
+    	assertEquals("1235", NumberUtils.detectDecimalFormat("1")
+    			.format(1234.56));
+    	assertEquals("12,345,678.90", NumberUtils.detectDecimalFormat(
+    			"10,000,000.00").format(12345678.90));
+    	
+    	// Integer positions should be optional
+    	assertEquals("1", NumberUtils.detectDecimalFormat("10000000")
+    			.format(0.9));
+    	assertEquals("1", NumberUtils.detectDecimalFormat("10,000,000")
+    			.format(0.9));
+    	
+    	// Integer positions should be extensible
+    	assertEquals("123456", NumberUtils.detectDecimalFormat("10")
+    			.format(123456));
+    	assertEquals("1235", NumberUtils.detectDecimalFormat("10")
+    			.format(1234.56)); // NB: rounding
+    	
+    	assertEquals("1.1", NumberUtils.detectDecimalFormat("1.1")
+    			.format(1.123));
+    	assertEquals("1.1", NumberUtils.detectDecimalFormat(" 1.1")
+    			.format(1.123));
+    	assertEquals("1.1", NumberUtils.detectDecimalFormat("1.1 ")
+    			.format(1.123));
+    	
+    	assertEquals("1.120", NumberUtils.detectDecimalFormat("0.123")
+    			.format(1.12));
+    	assertEquals("1.000", NumberUtils.detectDecimalFormat("0.123")
+    			.format(1));
+    	assertEquals("1.000", NumberUtils.detectDecimalFormat("-0.123")
+    			.format(1));
+    	assertEquals("-1.100", NumberUtils.detectDecimalFormat("-0.123")
+    			.format(-1.1));
+    	assertEquals("12,345.67", NumberUtils.detectDecimalFormat("1,234.56")
+    			.format(12345.67));
+
+    	assertEquals("-1.23E3", NumberUtils.detectDecimalFormat("-1.23E3")
+    			.format(-1234.56));
+    	assertEquals("-1.23E-3", NumberUtils.detectDecimalFormat("-1.23E-3")
+    			.format(-0.00123456));
+    	
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testSpaceBetweenValueAndUnits() throws Exception
+    {
+    	assertTrue(NumberUtils.spaceBetweenValueAndUnits("2 m", "m"));
+    	assertTrue(NumberUtils.spaceBetweenValueAndUnits("m 2", "m"));
+    	assertFalse(NumberUtils.spaceBetweenValueAndUnits("m2", "m"));
+    	assertFalse(NumberUtils.spaceBetweenValueAndUnits("2m", "m"));
+    	assertFalse(NumberUtils.spaceBetweenValueAndUnits("2", "m"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testUnitsAreInFront() throws Exception
+    {
+    	assertTrue(NumberUtils.unitsAreInFront("$1232.0", "$"));
+    	assertTrue(NumberUtils.unitsAreInFront(" $1232.0", "$"));
+    	assertTrue(NumberUtils.unitsAreInFront("$ 1232.0", "$"));
+    	assertTrue(NumberUtils.unitsAreInFront("$ 1232.0$", "$"));
+    	assertTrue(NumberUtils.unitsAreInFront("Å 1", "Å"));
+    	assertFalse(NumberUtils.unitsAreInFront("Å 1", "$"));
+    	assertFalse(NumberUtils.unitsAreInFront("1", "$"));
+    	assertTrue(NumberUtils.unitsAreInFront("$ 0 $ 2 $", "$"));    	
+
+    	assertFalse(NumberUtils.unitsAreInFront("2.0$", "$"));
+    	assertFalse(NumberUtils.unitsAreInFront("2.0 $", "$"));
+    	assertFalse(NumberUtils.unitsAreInFront("2.4$ $2", "$"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testCalculateNewValue() throws Exception
+    {
+    	double oldVal = 10.0;
+    	String expression = "${x}";
+    	ExpressionFactory expFact = ExpressionFactory.newInstance();
+    	
+    	assertTrue(NumberUtils.closeEnough(oldVal, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+
+    	oldVal = 10.0;
+    	expression = "${x*x}";
+    	assertTrue(NumberUtils.closeEnough(100.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+
+    	oldVal = 10.2;
+    	expression = "${x/2 - 5}";
+    	assertTrue(NumberUtils.closeEnough(0.1, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
+
+    	oldVal = 2.0;
+    	expression = "${a*2 + b*2}"; //NB: both a and b are mapped to same value
+    	assertTrue(NumberUtils.closeEnough(8.0, 
+    			NumberUtils.calculateNewValue(expression, expFact, oldVal)));
     }
     
 //------------------------------------------------------------------------------

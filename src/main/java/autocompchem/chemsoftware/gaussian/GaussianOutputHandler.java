@@ -23,10 +23,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.io.File;
 
 import javax.vecmath.Point3d;
 
@@ -41,6 +43,7 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.errorhandling.ErrorManager;
 import autocompchem.chemsoftware.errorhandling.ErrorMessage;
+import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileAnalyzer;
@@ -65,7 +68,8 @@ public class GaussianOutputHandler extends Worker
      */
     public static final Set<TaskID> capabilities =
                     Collections.unmodifiableSet(new HashSet<TaskID>(
-                                    Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT)));
+                                 //   Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT)));
+                            Arrays.asList()));
     
     /**
      * Name of the .out file from Gaussian (the input of this class)
@@ -100,7 +104,7 @@ public class GaussianOutputHandler extends Worker
     /**
      * List of known error messages
      */
-    private ArrayList<ErrorMessage> errorDef;
+    private List<ErrorMessage> errorDef;
 
     /**
      * Verbosity level
@@ -155,7 +159,7 @@ public class GaussianOutputHandler extends Worker
     /**
      * Array of vibrational modes read from Gaussian output
      */
-    private ArrayList<Double> projFrequencies = new ArrayList<Double>();
+    private List<Double> projFrequencies = new ArrayList<Double>();
 
     /**
      * Lowest value for non-zero frequencies
@@ -298,7 +302,7 @@ public class GaussianOutputHandler extends Worker
             {
                 System.out.println(" Job details from nested parameter block.");
             }
-            ArrayList<String> lines = new ArrayList<String>(Arrays.asList(
+            List<String> lines = new ArrayList<String>(Arrays.asList(
             		jdLines.split("\\r?\\n")));
             this.gaussJob = new GaussianJob(lines);
         }
@@ -362,9 +366,10 @@ public class GaussianOutputHandler extends Worker
         if (params.contains("TEMPLATECONNECTIVITY"))
         {
             this.useTemplateConnectivity = true;
-            String fileWithTplt =
+            String pathname =
               params.getParameter("TEMPLATECONNECTIVITY").getValue().toString();
-            FileUtils.foundAndPermissions(fileWithTplt,true,false,false);
+            File fileWithTplt = new File(pathname);
+            FileUtils.foundAndPermissions(pathname,true,false,false);
             this.connectivityTemplate = IOtools.readSDF(fileWithTplt).get(0);
         }
 
@@ -421,7 +426,8 @@ public class GaussianOutputHandler extends Worker
     {
         switch (task)
         {
-        case EVALUATEGAUSSIANOUTPUT:
+        //case EVALUATEGAUSSIANOUTPUT:
+        	default:
         	evaluateGaussianOutput();
                 break;
         }
@@ -445,15 +451,14 @@ public class GaussianOutputHandler extends Worker
     public void evaluateGaussianOutput()
     {
         //Read the outfile and collect counts and line numbers
-        ArrayList<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<String>();
         patterns.add("Initial command:");
         patterns.add("Normal termination");
-        ArrayList<ArrayList<Integer>> countsAndLineNum = 
+        List<List<Integer>> countsAndLineNum = 
                                            FileAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
-        ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
-        ArrayList<ArrayList<Integer>> lineNums = 
-                                            new ArrayList<ArrayList<Integer>>();
+        List<Integer> counts = countsAndLineNum.get(indexOfCounts);
+        List<List<Integer>> lineNums = new ArrayList<List<Integer>>();
         //Keep all but the last array (which is count)
         for (int i=0; i<(countsAndLineNum.size() - 1); i++)
             lineNums.add(countsAndLineNum.get(i));
@@ -484,7 +489,7 @@ public class GaussianOutputHandler extends Worker
         {
             System.out.println(" Analyzing tail (start at line "+lastInit+")");
         }
-        ArrayList<String> tail = IOtools.tailFrom(inFile,lastInit);
+        List<String> tail = IOtools.tailFrom(new File(inFile),lastInit);
 
         //Error identififcation
         if (numSteps != numNormTerm)
@@ -523,7 +528,7 @@ public class GaussianOutputHandler extends Worker
             patterns = new ArrayList<String>();
             if (analyseEnergy)
             {
-                patterns.add(GaussianConstants.OUTTOTDFTENERGY);
+                patterns.add(GaussianConstants.OUTSCFENERGY);
                 patterns.add(GaussianConstants.OUTCORRH);
                 patterns.add(GaussianConstants.OUTTOTS);
                 patterns.add(GaussianConstants.OUTTEMP);
@@ -548,8 +553,8 @@ public class GaussianOutputHandler extends Worker
             {
 
     //TODO use method in IOtools
-                Map<String,ArrayList<Integer>> matchesMap =
-                                       new HashMap<String,ArrayList<Integer>>();
+                Map<String,List<Integer>> matchesMap =
+                                       new HashMap<String,List<Integer>>();
                 for (int i=0; i<tail.size(); i++)
                 {
                     String line = tail.get(i);
@@ -573,8 +578,7 @@ public class GaussianOutputHandler extends Worker
                             }
                             else
                             {
-                                ArrayList<Integer> lst = 
-                                                       new ArrayList<Integer>();
+                                List<Integer> lst =  new ArrayList<Integer>();
                                 lst.add(i);
                                 matchesMap.put(pattern,lst);
                             }
@@ -589,7 +593,7 @@ public class GaussianOutputHandler extends Worker
                 }
                 String res = "Analysis: ";
 
-                ArrayList<Double> imgFreqs = new ArrayList<Double>();
+                List<Double> imgFreqs = new ArrayList<Double>();
                 if (readFrequencies)
                 {
                     String key = GaussianConstants.OUTPROJFREQ;
@@ -625,7 +629,7 @@ public class GaussianOutputHandler extends Worker
 
                 if (analyseEnergy)
                 {
-                    if (matchesMap.containsKey(GaussianConstants.OUTTOTDFTENERGY))
+                    if (matchesMap.containsKey(GaussianConstants.OUTSCFENERGY))
                     {
                         double temp = 0.0d;
                         double e = 0.0d;
@@ -638,9 +642,9 @@ public class GaussianOutputHandler extends Worker
                         double vibSGau = 0.0d;
                         String line = tail.get(
                                  matchesMap.get(
-                                  GaussianConstants.OUTTOTDFTENERGY).get(
+                                  GaussianConstants.OUTSCFENERGY).get(
                                       matchesMap.get(
-                                    GaussianConstants.OUTTOTDFTENERGY).size()-1));
+                                    GaussianConstants.OUTSCFENERGY).size()-1));
                         String[] p = line.trim().split("\\s+");
                         e = Double.parseDouble(p[4]);
                         res = "DFT Energy: " + e + " ";
@@ -714,7 +718,9 @@ public class GaussianOutputHandler extends Worker
                                                             qhThrsh,
                                                             imThrsh,
                                                             0.01,
-                                                            verbosity);
+                                                            verbosity) 
+                                		/ ACCConstants.JOULEPERMOLETOCALPERMOL;
+                                
                                 corrS = traS + rotS + vibS;
 
                                 if (verbosity > 2)
@@ -776,7 +782,7 @@ public class GaussianOutputHandler extends Worker
 
     public IAtomContainer extractLastOutputGeometry()
     {
-        ArrayList<IAtomContainer> allGeoms = getAllGeometries();
+        List<IAtomContainer> allGeoms = getAllGeometries();
         if (allGeoms.size() == 0)
         {
             Terminator.withMsgAndStatus("ERROR! No geometry found in '" 
@@ -838,7 +844,7 @@ public class GaussianOutputHandler extends Worker
 
     public void printTrajectory(boolean onlyOpt)
     {
-        ArrayList<IAtomContainer> allGeoms;
+        List<IAtomContainer> allGeoms;
         if (onlyOpt)
         {
             allGeoms = getAllOptGeometries();
@@ -859,7 +865,7 @@ public class GaussianOutputHandler extends Worker
                 {
                     outFile = outFile + ".sdf";
                 }
-                IOtools.writeSDFAppendSet(outFile,mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile),mols,false);
                 break;
 
             case "XYZ":
@@ -867,12 +873,12 @@ public class GaussianOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppendSet(outFile,mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile),mols,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppendSet(outFile + ".xyz",mols,false);
-                IOtools.writeSDFAppendSet(outFile + ".sdf",mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile + ".xyz"),mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile + ".sdf"),mols,false);
                 break;
 
             default:
@@ -905,7 +911,7 @@ public class GaussianOutputHandler extends Worker
             ConnectivityUtils.importConnectivityFromReference(
                         mol,connectivityTemplate);
         }
-                IOtools.writeSDFAppend(outFile,mol,false);
+                IOtools.writeSDFAppend(new File(outFile),mol,false);
                 break;
 
             case "XYZ":
@@ -913,12 +919,12 @@ public class GaussianOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppend(outFile,mol,false);
+                IOtools.writeXYZAppend(new File(outFile),mol,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppend(outFile + ".xyz",mol,false);
-                IOtools.writeSDFAppend(outFile + ".sdf",mol,false);
+                IOtools.writeXYZAppend(new File(outFile + ".xyz"),mol,false);
+                IOtools.writeSDFAppend(new File(outFile + ".sdf"),mol,false);
                 break;
 
             default:
@@ -936,13 +942,13 @@ public class GaussianOutputHandler extends Worker
      * step
      */
 
-    private void identifyErrorMessage(ArrayList<String> tail)
+    private void identifyErrorMessage(List<String> tail)
     {
         errorIsDecoded = false;
         for (ErrorMessage em : errorDef)
         {
             //Get the error message of this error
-            ArrayList<String> emLines = em.getErrorMessage();
+            List<String> emLines = em.getErrorMessage();
             int numParts = emLines.size();
 
             if (verbosity > 1)
@@ -986,7 +992,7 @@ public class GaussianOutputHandler extends Worker
             if (errorIsDecoded)
             {
                 //Are there other conditions this .out has to fulfill?
-                ArrayList<String> conditions = em.getConditions();
+                List<String> conditions = em.getConditions();
                 int numberOfConditions = conditions.size();
                 if (numberOfConditions != 0)
                 {
@@ -1332,7 +1338,7 @@ TODO add other tasks here
     {
         IAtomContainer mol = new AtomContainer();
 
-        ArrayList<String> lines = FileAnalyzer.extractTxtWithDelimiters(
+        List<String> lines = FileAnalyzer.extractTxtWithDelimiters(
                                                         inFile,
                                                         "^ Symbolic Z-matrix:",
                                                         "^\\s*$",
@@ -1361,9 +1367,9 @@ TODO add other tasks here
      * (no connectivity)
      */
 
-    public ArrayList<IAtomContainer> getAllOptGeometries()
+    public List<IAtomContainer> getAllOptGeometries()
     {
-        TreeMap<String,ArrayList<String>> mapBlocks =
+        TreeMap<String,List<String>> mapBlocks =
                       FileAnalyzer.extractMapOfTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                    GaussianConstants.OUTSTARTXYZ,
@@ -1374,8 +1380,8 @@ TODO add other tasks here
                                                                           false,
                                                                           true);
 
-        ArrayList<IAtomContainer> molList = new ArrayList<IAtomContainer>();
-        for (Map.Entry<String,ArrayList<String>> entry : mapBlocks.entrySet())
+        List<IAtomContainer> molList = new ArrayList<IAtomContainer>();
+        for (Map.Entry<String,List<String>> entry : mapBlocks.entrySet())
         {
             // We look only for keys identifying a converged geometry
             String key = entry.getKey();
@@ -1387,7 +1393,7 @@ TODO add other tasks here
 
             // WARNING! Assuming that the block before the current one is 
             // a block of Cartesian coordinates
-            ArrayList<String> xyzBlock = mapBlocks.lowerEntry(key).getValue();
+            List<String> xyzBlock = mapBlocks.lowerEntry(key).getValue();
             molList.add(getIAtomContainerFromXYZblock(xyzBlock));
         }
 
@@ -1404,9 +1410,9 @@ TODO add other tasks here
      * (no connectivity)
      */
 
-    public ArrayList<IAtomContainer> getAllGeometries()
+    public List<IAtomContainer> getAllGeometries()
     {
-        ArrayList<ArrayList<String>> blocks = 
+        List<List<String>> blocks = 
                        FileAnalyzer.extractMultiTxtBlocksWithDelimiters(inFile,
                                           new ArrayList<String>(Arrays.asList(
                GaussianConstants.OUTSTARTXYZ)),
@@ -1415,8 +1421,8 @@ TODO add other tasks here
                                                                           false,
                                                                           true);
 
-        ArrayList<IAtomContainer> molList = new ArrayList<IAtomContainer>();
-        for (ArrayList<String> singleBlock : blocks)
+        List<IAtomContainer> molList = new ArrayList<IAtomContainer>();
+        for (List<String> singleBlock : blocks)
         {
             molList.add(getIAtomContainerFromXYZblock(singleBlock));
         }
@@ -1434,7 +1440,7 @@ TODO add other tasks here
      * @return the molecule obtained
      */
 
-    public IAtomContainer getIAtomContainerFromXYZblock(ArrayList<String> lines)
+    public IAtomContainer getIAtomContainerFromXYZblock(List<String> lines)
     {
         IAtomContainer mol = new AtomContainer();
         if (lines.size() < 3)

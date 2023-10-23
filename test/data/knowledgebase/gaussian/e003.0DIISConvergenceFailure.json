@@ -1,0 +1,90 @@
+{
+  "type": "ERROR",
+  "refName": "e003.0-DIISConvergenceFailure",
+  "description": "Gaussian's DIIS algorithm for finding SCF cannot proceed. We try with QC algorithm.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Convergence criterion not met"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Convergence failure -- run terminated"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "negation": true,
+      "pattern": "Fix error e001.0-QCNoLowerPoint"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Using DIIS extrapolation"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "jobEditTasks": [
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route",
+        "content": {
+            "reference": "GEOM",
+            "value": "CHECK"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route",
+        "content": {
+            "reference": "GUESS",
+            "value": "READ"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route|Dir:SCF",
+        "content": {
+            "reference": "MaxCycle",
+            "value": "300"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Route|Dir:SCF",
+        "content": {
+            "reference": "algorithm",
+            "isLoud": false,
+            "value": "QC"
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:Title",
+        "content": {
+            "reference": "Title",
+            "value": "Fix error e003.0-DIISConvergenceFailure",
+            "isLoud": false
+        }
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

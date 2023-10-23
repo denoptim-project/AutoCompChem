@@ -1,0 +1,132 @@
+{
+  "type": "ERROR",
+  "refName": "e001.0-QCNoLowerPoint",
+  "description": "Gaussian's QC algorithm for finding SCF cannot proceed. We trigger a single steo with DIIS and then try again with QC. Reaction to this situation adds a step that is meant to terminate with an error that matches situation e002.0.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Search did not lower the energy significantly."
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "No lower point found -- run aborted."
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "prerefinementSteps": [
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "Route",
+            "keywords": [
+              {
+                "reference": "PRINT",
+                "value": "P",
+                "isLoud": false
+              },
+              {
+                "reference": "GEOM",
+                "value": "CHECK"
+              },
+              {
+                "reference": "JOBTYPE",
+                "value": "SP",
+                "isLoud": false
+              }
+            ],
+            "subDirectives": [
+              {
+                "name": "SCF",
+                "keywords": [
+                  {
+                    "reference": "VSHIFT",
+                    "value": "1000"
+                  },
+                  {
+                    "reference": "SYMM",
+                    "value": "NOSYM",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "restart",
+                    "value": "restart",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "algorithm",
+                    "value": "XQC",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "VarAcc",
+                    "value": "novaracc",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "MaxConventionalCycles",
+                    "value": 1
+                  },
+                  {
+                    "reference": "MaxCycle",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Title",
+            "keywords": [
+              {
+                "reference": "title",
+                "value": "Fix error e001.0-QCNoLowerPoint (NB: do not change the title)",
+                "isLoud": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "inheritedSettings": [
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:Link0|Key:<*acc_anyname*>"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:Route|Key:model_Method"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:Route|Key:model_basisset"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:MolSpec|Key:charge"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:MolSpec|Key:spin"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

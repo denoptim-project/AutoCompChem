@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.tinker;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -60,11 +62,11 @@ public class TinkerForceFieldHandler
 
     /**
      * Read a Tinker ForceField file and produces the force field object.
-     * @param filename the pathname of the file to read
+     * @param file the file to read
      * @return the force field
      */
 
-    public static ForceFieldParamsSet readFromFile(String filename)
+    public static ForceFieldParamsSet readFromFile(File file)
     {
         ForceFieldParamsSet ff = new ForceFieldParamsSet();
 
@@ -76,7 +78,7 @@ public class TinkerForceFieldHandler
         anyAT.setProperty(ForceFieldConstants.ATMTYPSTR,"ANY");
         anyAT.setProperty(ForceFieldConstants.ATMTYPTXT,"ANY ATOM TYPE");
         ff.addAtomType(anyAT);
-        for (String line : IOtools.readTXT(filename))
+        for (String line : IOtools.readTXT(file))
         {
             String l = line.trim();
             if (l.equals("") || l.startsWith(TinkerConstants.FFKEYIGNORE))
@@ -392,19 +394,18 @@ public class TinkerForceFieldHandler
 
     /**
      * Writes a Tinker force field file. The file must not exist.
-     * @param ff the forece field parameters set to be converted to a 
+     * @param ff the force field parameters set to be converted to a 
      * Tinker force field file
-     * @param filename the pathname of the file to be written
+     * @param file the file to be written
      */
 
-    public static void writeForceFieldFile(ForceFieldParamsSet ff, 
-                                                                String filename)
+    public static void writeForceFieldFile(ForceFieldParamsSet ff, File file)
     {
         // WARNING! to reduce the memory requirement the text to write is
         // divided into blocks, each one is created, writted to file and cleared
         // Search for the IOtools.write... statements
         
-        FileUtils.mustNotExist(filename);
+        FileUtils.mustNotExist(file);
 
         // get utilities used below
         ArrayList<String> lines = new ArrayList<String>();
@@ -579,7 +580,7 @@ public class TinkerForceFieldHandler
         }
 
         // Write this block into the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),false);
+        IOtools.writeTXTAppend(file,sb.toString(),false);
         sb = new StringBuilder();
 
         //Van der Vaals
@@ -644,7 +645,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
 
         // Bond stretching and related parameters
@@ -734,7 +735,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
 
         // Angle bending and related parameters
@@ -771,7 +772,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
 
         // Stretch-bend and related parameters
@@ -837,7 +838,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
 
         // Out-of-plane bending and related parameters
@@ -872,7 +873,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
 
         // Bond torsion and related parameters
@@ -921,7 +922,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
 
         // Charge-related parameters
@@ -979,7 +980,7 @@ public class TinkerForceFieldHandler
         }
 
         // Append this block to the file and clear tmp
-        IOtools.writeTXTAppend(filename,sb.toString(),true);
+        IOtools.writeTXTAppend(file,sb.toString(),true);
         sb = new StringBuilder();
     }
 

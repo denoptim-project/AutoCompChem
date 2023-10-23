@@ -105,6 +105,18 @@ public class ParameterConstants
 	public static final String INFOSRCJOBDETAILS = "IC-JOBDETAILS";
 	
 	/**
+	 * Keyword defining the parameter containing the database of information
+	 * channels.
+	 */
+	public static final String INFOCHANNELSDB = "INFOCHANNELSDB";
+
+	/**
+	 * Keyword defining the parameter containing the database of known 
+	 * situations.
+	 */
+	public static final String SITUATIONSDB = "SITUATIONSDB";
+	
+	/**
 	 * Keyword defining the pathname to the root folder that collects all known
 	 * situations, i.e., the database of known situations.
 	 */
@@ -117,6 +129,11 @@ public class ParameterConstants
 	public static final String JOBDEF = "JOBDEFINITION";
 
 	/**
+	 * Keyword defining the parameter containing the job to evaluate.
+	 */
+	public static final String JOBTOEVALUATE = "JOBTOEVALUATE";
+	
+	/**
 	 * Keyword of parameter defining a situation
 	 */
 	public static final String SITUATION = "SITUATION";
@@ -127,5 +144,11 @@ public class ParameterConstants
 	 * importing parameters from a file.
 	 */
 	public static final String STRINGFROMCLI = "STRINGFROMCLI";
+
+	/**
+	 * Keyword of parameter defining tolerance towards info channels that are
+	 * defined by not readable.
+	 */
+	public static final String TOLERATEMISSINGIC = "TOLERATEMISSINGIC";
 	
 }

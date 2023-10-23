@@ -1,5 +1,6 @@
 package autocompchem.modeling;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,17 +33,10 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.spartan.SpartanConstants;
-import autocompchem.constants.ACCConstants;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
-import autocompchem.modeling.basisset.BSMatchingRule;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -67,12 +61,12 @@ public class AtomLabelsGenerator extends Worker
     /**
      * The name of the input file (molecular structure files)
      */
-    private String inFile = "noInFile";
+    private File inFile;
 
     /**
      * The name of the output file, if any
      */
-    private String outFile = "";
+    private File outFile;
     
     /**
      * Specified which policy to use when generating atom labels.
@@ -131,7 +125,8 @@ public class AtomLabelsGenerator extends Worker
         // Get and check the input file (which has to be an SDF file)
         if (params.contains("INFILE"))
         {
-            this.inFile = params.getParameter("INFILE").getValueAsString();
+            this.inFile = new File(
+            		params.getParameter("INFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
@@ -139,8 +134,8 @@ public class AtomLabelsGenerator extends Worker
         if (params.contains("OUTFILE"))
         {
             //Get and check output file
-            this.outFile = 
-                        params.getParameter("OUTFILE").getValueAsString();
+            this.outFile = new File(
+                        params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
 

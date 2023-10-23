@@ -32,8 +32,6 @@ import com.google.gson.Gson;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.worker.TaskID;
 
 
 /**

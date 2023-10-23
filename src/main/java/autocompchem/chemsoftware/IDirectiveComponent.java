@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware;
 
+import java.security.Key;
+
 /*
  *   Copyright (C) 2020  Marco Foscato
  *
@@ -48,7 +50,7 @@ public interface IDirectiveComponent {
      */
     
     public boolean hasACCTask();
-
+    
 //-----------------------------------------------------------------------------
     
 }

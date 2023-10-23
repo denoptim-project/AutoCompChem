@@ -1,5 +1,6 @@
 package autocompchem.perception.infochannel;
 
+import java.io.File;
 import java.io.FileReader;
 
 /*
@@ -30,7 +31,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
-public class FileAsSource extends InfoChannel
+public class FileAsSource extends ReadableIC
 {
     /**
      * Pathname
@@ -86,6 +87,15 @@ public class FileAsSource extends InfoChannel
     {
         return pathName;
     }
+    
+//------------------------------------------------------------------------------
+
+  	@Override
+  	public boolean canBeRead() 
+  	{
+  		File f = new File(pathName);
+  		return f.exists() && f.canRead();
+  	}
 
 //------------------------------------------------------------------------------
 
@@ -99,15 +109,14 @@ public class FileAsSource extends InfoChannel
 
     public Reader getSourceReader()
     {
-        FileUtils.foundAndPermissions(pathName,true,false,false);
         try
         {
             super.reader = new FileReader(pathName);
         }
         catch (Exception e)
         {
-            Terminator.withMsgAndStatus("ERROR! File "+ pathName 
-                                                          + " not found!.",-1);
+            Terminator.withMsgAndStatus("ERROR! File "+ pathName
+            		+ " not found!.",-1);
         }
         return super.reader;
     }
@@ -123,7 +132,7 @@ public class FileAsSource extends InfoChannel
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("FileAsSource [type:").append(super.getType());
+        sb.append("FileAsSource [ICType:").append(super.getType());
         sb.append("; pathName:").append(pathName);
         sb.append("]");
         return sb.toString();

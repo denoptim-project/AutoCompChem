@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -15,9 +16,6 @@ import autocompchem.perception.situation.SituationBase;
  *
  * @author Marco Foscato
  */
-
-
-//TODO: implement choice of this class in JobFactory
 
 
 public class MonitoringJob extends EvaluationJob
@@ -73,7 +71,7 @@ public class MonitoringJob extends EvaluationJob
     public MonitoringJob(Job jobToEvaluate, SituationBase sitsDB,
     		InfoChannelBase icDB, long delay, long period)
     {
-        super(jobToEvaluate,sitsDB,icDB);
+        super(jobToEvaluate, sitsDB, icDB);
         this.delay = delay;
         this.period = period;
     }
@@ -196,17 +194,25 @@ public class MonitoringJob extends EvaluationJob
 
 	/**
      * Sends this job to an executing thread managed by an existing, and
-     * pre-started thread manager. The job will be re-scheduled according to the
-     * period defined upon construction of this job.
-     * @param tpExecutor the manager of the job executing threads.
+     * pre-started execution service. The job will be re-scheduled according to 
+     * the period defined upon construction of this job.
+     * @param executor the executing service.
      * @return a Future representing pending completion of the task.
      */
     
-    @Override
-  	protected Future<?> submitThread(ScheduledThreadPoolExecutor tpExecutor) 
+    @SuppressWarnings("unchecked")
+	@Override
+  	protected Future<Object> submitThread(ExecutorService executor) 
   	{
-  		return tpExecutor.scheduleAtFixedRate(this, delay, period, 
-  				TimeUnit.MILLISECONDS);
+    	if (!(executor instanceof ScheduledThreadPoolExecutor))
+    	{
+    		throw new IllegalArgumentException("The execution service of a "
+    				+ this.getClass().getName() + " must be ");
+    	}
+    	ScheduledThreadPoolExecutor tpExecutor = 
+    			(ScheduledThreadPoolExecutor) executor;
+  		return (Future<Object>) tpExecutor.scheduleAtFixedRate(this, delay, 
+  				period, TimeUnit.MILLISECONDS);
   	}
 
 //------------------------------------------------------------------------------

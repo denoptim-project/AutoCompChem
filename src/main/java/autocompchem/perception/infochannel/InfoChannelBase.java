@@ -3,6 +3,7 @@ package autocompchem.perception.infochannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*   
@@ -108,11 +109,15 @@ public class InfoChannelBase
     /**
      * Get all channels of a specific type
      * @param itc the specific info channel type
+     * @return the list of matching channels or an empty list.
      */
 
-    public ArrayList<InfoChannel> getChannelsOfType(InfoChannelType ict)
+    public List<InfoChannel> getChannelsOfType(InfoChannelType ict)
     {
-        return mapByICType.get(ict);
+    	List<InfoChannel> matches = mapByICType.get(ict);
+    	if (matches!=null)
+    		return matches;
+        return new ArrayList<InfoChannel>();
     }
 
 //------------------------------------------------------------------------------

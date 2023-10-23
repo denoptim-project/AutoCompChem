@@ -1,5 +1,6 @@
 package autocompchem.modeling.forcefield;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -60,17 +62,17 @@ public class AtomTypeMatcher extends Worker
     /**
      * The name of the input file
      */
-    private String inFile;
+    private File inFile;
 
     /**
      * The name of the atom type map
      */
-    private String atMapFile;
+    private File atMapFile;
 
     /**
      * The name of the output file
      */
-    private String outFile;
+    private File outFile;
 
     /**
      * List of atom type-matching smarts with string identifiers
@@ -119,20 +121,21 @@ public class AtomTypeMatcher extends Worker
             System.out.println(" Adding parameters to AtomTypeMatcher");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //File with atom types map
-        this.atMapFile = params.getParameter(
-                                          "ATOMTYPESMAP").getValue().toString();
+        this.atMapFile = new File(
+        		params.getParameter( "ATOMTYPESMAP").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Optional parameters
         if (params.contains("OUTFILE"))
         {
             //Get and check output file
-            this.outFile = 
-                        params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(
+                        params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
         } else {
             noOutput=true;
@@ -235,16 +238,17 @@ public class AtomTypeMatcher extends Worker
         for (int i=0; i<mol.getAtomCount(); i++)
             done.add(false);
         
-        //Arrign atom types
+        //Assign atom types
         for (String at : smarts.keySet())
         {
             if (msq.getNumMatchesOfQuery(at) == 0)
             {
                 continue;
             }
-
-            List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(at);
-            for (List<Integer> innerList : allMatches)
+            
+            //Get matches for this SMARTS query
+            MatchingIdxs matches =  msq.getMatchingIdxsOfSMARTS(at);
+            for (List<Integer> innerList : matches)
             {
                 for (Integer iAtm : innerList)
                 {
@@ -297,7 +301,7 @@ public class AtomTypeMatcher extends Worker
 
     private void importAtomTypeMap()
     {
-        ArrayList<String> lines = IOtools.readTXT(atMapFile);
+        List<String> lines = IOtools.readTXT(atMapFile);
         for (int i=0; i<lines.size(); i++)
         {
             String line = lines.get(i);

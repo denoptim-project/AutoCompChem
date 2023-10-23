@@ -2,7 +2,6 @@ package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -25,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -34,9 +34,12 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
+import autocompchem.run.AppID;
 import autocompchem.text.TextBlock;
 
 
@@ -175,8 +178,8 @@ public class DirectiveTest
     	
     	ParameterStorage taskParams = new ParameterStorage();
     	taskParams.setParameter("TASK", "DummyTask");
-    	taskParams.setParameter("Value1", 1);
-    	taskParams.setParameter("Value2", 1.23);
+    	taskParams.setParameter("Value1", NamedDataType.INTEGER, 1);
+    	taskParams.setParameter("Value2", NamedDataType.DOUBLE, 1.23);
     	taskParams.setParameter("Value3", "abc");
     	d.setTaskParams(taskParams);
     	
@@ -211,12 +214,12 @@ public class DirectiveTest
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
     	
-    	Job j = new Job();
+    	Job j = JobFactory.createJob(AppID.ACC);
     	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
-    	d.performACCTasks(null, j);
+    	d.performACCTasks(null, j, null);
     	
-    	assertTrue(d.getDirectiveData("data").getValue().toString()
+    	assertTrue(d.getFirstDirectiveData("data").getValue().toString()
     			.contains(".sfx"),
     			"Task changing DirectiveData");
     	
@@ -229,9 +232,9 @@ public class DirectiveTest
     					ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
     					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
 
-    	d2.performACCTasks(null, j);
+    	d2.performACCTasks(null, j, null);
     	
-    	assertTrue(d2.getKeyword("key1").getValue().toString().contains(
+    	assertTrue(d2.getFirstKeyword("key1").getValue().toString().contains(
     			"filenameRoot_job2.xyz"),
     			"Task changing keyword");
     	
@@ -256,7 +259,8 @@ public class DirectiveTest
     	mol.addAtom(new Atom("N",new Point3d(10.0,10,0)));
     	mol.addAtom(new Atom("C",new Point3d(12.0,10,0.0)));
     	
-    	d3.performACCTasks(new ArrayList<IAtomContainer>(Arrays.asList(mol)), j);
+    	d3.performACCTasks(new ArrayList<IAtomContainer>(Arrays.asList(mol)), j,
+    			null);
     	
     	assertEquals(6, d3.getAllKeywords().size());
     	int newKeys = 0;
@@ -289,26 +293,36 @@ public class DirectiveTest
     	Directive d = new Directive("testDirective");
     	d.addKeyword(new Keyword("key1", true, 
     			new ArrayList<String>(Arrays.asList("a","b"))));
+    	d.addKeyword(new Keyword("key1", true, 
+    			new ArrayList<String>(Arrays.asList("x","y"))));
     	d.addKeyword(new Keyword("key2", true, 
     			new ArrayList<String>(Arrays.asList("c","d"))));
     	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
     			Arrays.asList("A","B","C"))));
-    	
-    	IDirectiveComponent c = d.getComponent("key2", 
-    			DirectiveComponentType.KEYWORD);
-    	assertEquals("c d",((Keyword) c).getValueAsString(),"Retrieve Keyword");
-    	
 
-    	IDirectiveComponent dd = d.getComponent("data", 
+    	List<IDirectiveComponent> cs = d.getComponent("key1", 
+    			DirectiveComponentType.KEYWORD);
+    	assertEquals(2, cs.size());
+    	assertEquals("a b",((Keyword) cs.get(0)).getValueAsString(), 
+    			"Retrieve Keyword");
+    	assertEquals("x y",((Keyword) cs.get(1)).getValueAsString(), 
+    			"Retrieve Keyword");
+    	
+    	cs = d.getComponent("key2", DirectiveComponentType.KEYWORD);
+    	assertEquals(1, cs.size());
+    	assertEquals("c d",((Keyword) cs.get(0)).getValueAsString(), 
+    			"Retrieve Keyword");
+    	
+    	List<IDirectiveComponent> dds = d.getComponent("data", 
     			DirectiveComponentType.DIRECTIVEDATA);
     	assertEquals("A",((TextBlock) 
-    			((DirectiveData) dd).getValue()).get(0),
+    			((DirectiveData) dds.get(0)).getValue()).get(0),
     			"Retrieve DirectiveData");
     	
-    	IDirectiveComponent x = d.getComponent("notThere", 
+    	List<IDirectiveComponent> xs = d.getComponent("notThere", 
     			DirectiveComponentType.DIRECTIVEDATA);
     	
-    	assertNull(x,"Retriving missing object");
+    	assertEquals(0, xs.size(), "Retriving missing object");
     }
     
 //------------------------------------------------------------------------------
@@ -329,7 +343,7 @@ public class DirectiveTest
     	assertEquals(2,d.getAllKeywords().size(),
     			"Number of Keywords (A)");
     	
-    	IDirectiveComponent comp = d.getKeyword("key2");
+    	IDirectiveComponent comp = d.getFirstKeyword("key2");
     	d.deleteComponent(comp);
     	
     	assertEquals(1,d.getAllDirectiveDataBlocks().size(),
@@ -337,7 +351,7 @@ public class DirectiveTest
     	assertEquals(1,d.getAllKeywords().size(),
     			"Number of Keywords (B)");
     	
-    	IDirectiveComponent comp2 = d.getDirectiveData("data");
+    	IDirectiveComponent comp2 = d.getFirstDirectiveData("data");
     	d.deleteComponent(comp2);
     	
     	assertEquals(0,d.getAllDirectiveDataBlocks().size(),

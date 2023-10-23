@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep -q -i "DFT Energy: -117.767629696489 0.084848 298.15 63.564 74.85  TRANSITION STATE" t111.log
+grep -q -i "DFT Energy: -117.767629696489 0.084848 298.15 63.564 124.76  TRANSITION STATE" t111.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 1
 exit -1
@@ -12,7 +12,7 @@ echo NOT Passed ERROR 2
 exit -1
 fi
 
-grep -q -i "changing sing to imaginary mode -12.74" t111.log
+grep -q -i "changing sign to imaginary mode -12.74" t111.log
 if [ $? != 0 ] ; then
 echo NOT Passed ERROR 3
 exit -1

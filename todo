@@ -24,26 +24,13 @@
 -- Cartesian forcs constants
 -- charges
    
--deal with ACCparams in gaussian step
--convert ACCparams in key:value in jobdetails (needed to restart or create new jobdetails from failed calculations)
-
--make the <software>OutputHandler, <software>ReStarter, and <software>InputWriter be superclass of a generic class 
-
 -remove zmatrix from generation of ZCOORD block in NWChem input generator
 
 -make ManySMARTSQuery capable of detecting equal SMARTS with different refName
 
--all-upper-case for constants in GaussianConstants
-
 -mode redundant methods for reading and storing SMARTS-based rules defining options related to internal coordinates (see VibModuleOutputHandler and NWChemInputWriter).
 
--can use commons-cli-1.4.jar to deal with the command line arguments
-
 - thing like ZMatrixHandler and BasisSetGenerator and MolecularMeter should be constructable without WorkerFacory
-
-- use shell job to start ezternal software (e.g. Gaussian)
-
-- make master job able to react to the perception of an error and the inpulse to perform an error fixing action
 
 - remove OS dependency from t123
 
@@ -54,4 +41,9 @@
 - t116 QMMM
 - t53 QMMM
 - t63 reading from previous job's output
+- subDirectives to directives
 
+- edit bond (change order or type, remove bond)
+- Mane circumstance use a user-provided python script to analyse any data resulting form analysis of job steps.
+
+- document assumption that a job is assumed to be the only job in a working directory. So, when job isarchived, we take any *.inp, *.log, etc. This also means that we cannot run test in parallel in the same work directory.

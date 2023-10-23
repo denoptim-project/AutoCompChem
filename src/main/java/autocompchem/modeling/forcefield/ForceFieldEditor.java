@@ -1,5 +1,7 @@
 package autocompchem.modeling.forcefield;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,22 +60,22 @@ public class ForceFieldEditor extends Worker
     /**
      * The pathname of the input force field file
      */
-    private String iFFFile = "noInpFF";
+    private File iFFFile;
 
     /**
      * The pathname of the output force field file
      */
-    private String oFFFile = "noOutFF";
+    private File oFFFile;
 
     /**
      * The pathname/s of the molecular structure files
      */
-    private ArrayList<String> molFiles = new ArrayList<String>();
+    private List<String> molFiles = new ArrayList<String>();
 
     /**
      * The pathname/s of the vibrational analysis files
      */
-    private ArrayList<String> vaFiles = new ArrayList<String>();
+    private List<String> vaFiles = new ArrayList<String>();
 
     /**
      * The format of vibrational analysis file
@@ -170,7 +173,8 @@ public class ForceFieldEditor extends Worker
         }
 
         //Get and check initial force field file
-        this.iFFFile = params.getParameter("INPFFFILE").getValue().toString();
+        this.iFFFile = new File(
+        		params.getParameter("INPFFFILE").getValue().toString());
         FileUtils.foundAndPermissions(this.iFFFile,true,false,false);
 
         //Get force field format
@@ -221,8 +225,8 @@ public class ForceFieldEditor extends Worker
         if (params.contains("OUTFFFILE"))
         {
             //Get and check output file
-            this.oFFFile = 
-                         params.getParameter("OUTFFFILE").getValue().toString();
+            this.oFFFile = new File(
+            		params.getParameter("OUTFFFILE").getValue().toString());
             FileUtils.mustNotExist(this.oFFFile);
         } else {
             noOutput=true;
@@ -322,15 +326,15 @@ public class ForceFieldEditor extends Worker
 
     /**
      * Imports a force field parameter set from file.
-     * @param filename the pathname to the force field file
+     * @param file the force field file
      * @param format the format of the force field file
      */
-    private void importForceField(String filename, String format)
+    private void importForceField(File file, String format)
     {
         switch (format)
         {
             case ForceFieldConstants.FFFILETNKFORMAT:
-                ff = TinkerForceFieldHandler.readFromFile(filename);
+                ff = TinkerForceFieldHandler.readFromFile(file);
                 break;
 
             default:
@@ -344,15 +348,15 @@ public class ForceFieldEditor extends Worker
 
     /**
      * Export the currently loaded force field parameter set into file.
-     * @param filename the pathname to the force field file
+     * @param file the force field file
      * @param format the format of the force field file
      */
-    private void exportForceField(String filename, String format)
+    private void exportForceField(File file, String format)
     {
         switch (format)
         {
             case ForceFieldConstants.FFFILETNKFORMAT:
-                TinkerForceFieldHandler.writeForceFieldFile(ff,filename);
+                TinkerForceFieldHandler.writeForceFieldFile(ff,file);
                 break;
 
             default:
@@ -406,7 +410,7 @@ public class ForceFieldEditor extends Worker
                 	ps.setParameter( 
                 			params.getParameter("VERBOSITY"));
                 	
-                	Worker w = WorkerFactory.createWorker(ps);
+                	Worker w = WorkerFactory.createWorker(ps, this.getMyJob());
                 	VibModuleOutputHandler vmoh = (VibModuleOutputHandler) w;
                 	
                 	/*

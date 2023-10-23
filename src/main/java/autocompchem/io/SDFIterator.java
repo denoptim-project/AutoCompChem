@@ -1,5 +1,7 @@
 package autocompchem.io;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -52,7 +54,7 @@ public class SDFIterator extends IteratingSDFReader
      * @throws Throwable in case of exceptions
      */
 
-    public SDFIterator(String inFile) throws Throwable
+    public SDFIterator(File inFile) throws Throwable
     {
         super(new FileInputStream(inFile), 
                                         DefaultChemObjectBuilder.getInstance());
@@ -65,15 +67,14 @@ public class SDFIterator extends IteratingSDFReader
     /**
      * Constructs a new SDFIterator specifying the file to read and the
      * separator to be used to extract the first portion of molecule's name
-     * @param inFile name of input file
+     * @param inFile the file to read
      * @param separator string used as separator
      * @throws Throwable in case of exceptions
      */
 
-    public SDFIterator(String inFile, String separator) throws Throwable
+    public SDFIterator(File inFile, String separator) throws Throwable
     {
-        super(new FileInputStream(inFile), 
-                                        DefaultChemObjectBuilder.getInstance());
+        super(new FileInputStream(inFile), DefaultChemObjectBuilder.getInstance());
         this.nnn = 0;
         this.separator = separator;
     }

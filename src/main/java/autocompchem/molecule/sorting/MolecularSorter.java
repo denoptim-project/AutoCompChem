@@ -1,5 +1,7 @@
 package autocompchem.molecule.sorting;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -49,8 +52,8 @@ public class MolecularSorter extends Worker
                     Arrays.asList(TaskID.SORTSDFMOLECULES)));
     
     //Filenames
-    private String inFile;
-    private String outFile;
+    private File inFile;
+    private File outFile;
 
     //Property
     private String prop;
@@ -86,11 +89,11 @@ public class MolecularSorter extends Worker
 
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(params.getParameter("INFILE").getValueAsString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the output file name 
-        this.outFile = params.getParameter("OUTFILE").getValue().toString();
+        this.outFile = new File(params.getParameter("OUTFILE").getValueAsString());
         FileUtils.mustNotExist(this.outFile);
 
         //Get SDF Property
@@ -137,8 +140,8 @@ public class MolecularSorter extends Worker
     public void writeSortedSDF()
     {
         //Get input
-        ArrayList<IAtomContainer> mols = IOtools.readSDF(inFile);
-        ArrayList<SortableMolecule> smols = new ArrayList<SortableMolecule>();
+        List<IAtomContainer> mols = IOtools.readSDF(inFile);
+        List<SortableMolecule> smols = new ArrayList<SortableMolecule>();
         for (IAtomContainer mol : mols)
         {
             if (!MolecularUtils.hasProperty(mol,prop))
@@ -160,8 +163,7 @@ public class MolecularSorter extends Worker
         //write output
         for (int i=0; i<smols.size(); i++)
         {
-            IOtools.writeSDFAppend(outFile,smols.get(i).getIAtomContainer(),
-                                                                          true);
+            IOtools.writeSDFAppend(outFile,smols.get(i).getIAtomContainer(), true);
         }
     }
 

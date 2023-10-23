@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.generic;
 
+import java.io.File;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +75,7 @@ public class GenericToolOutputHandler extends Worker
     /**
      * List of known error messages
      */
-    private ArrayList<ErrorMessage> errorDef;
+    private List<ErrorMessage> errorDef;
 
     /**
      * Verbosity level
@@ -200,15 +203,14 @@ public class GenericToolOutputHandler extends Worker
     public void evaluateGenericOutput()
     {
         //Read the outfile and collect counts and line numbers
-        ArrayList<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<String>();
         patterns.add(gtParams.getOutputInitialMsg());
         patterns.add(gtParams.getOutputNormalEndMsg());
-        ArrayList<ArrayList<Integer>> countsAndLineNum = 
+        List<List<Integer>> countsAndLineNum = 
                                            FileAnalyzer.count(inFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
-        ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
-        ArrayList<ArrayList<Integer>> lineNums = 
-                                            new ArrayList<ArrayList<Integer>>();
+        List<Integer> counts = countsAndLineNum.get(indexOfCounts);
+        List<List<Integer>> lineNums = new ArrayList<List<Integer>>();
         //Keep all but the last array
         for (int i=0; i<(countsAndLineNum.size() - 1); i++)
         {
@@ -249,7 +251,7 @@ public class GenericToolOutputHandler extends Worker
 
             //Get the last part of the .out file (to get a smaller array)
             int lastInit = lineNums.get(0).get(numSteps - 1 );
-            ArrayList<String> tail = IOtools.tailFrom(inFile,lastInit);
+            List<String> tail = IOtools.tailFrom(new File(inFile),lastInit);
 
             //Compare with known errors
             identifyErrorMessage(tail);
@@ -284,13 +286,13 @@ public class GenericToolOutputHandler extends Worker
      * last step
      */
 
-    private void identifyErrorMessage(ArrayList<String> tail)
+    private void identifyErrorMessage(List<String> tail)
     {
         errorIsDecoded = false;
         for (ErrorMessage em : errorDef)
         {
             //Get the error message of this candidate error
-            ArrayList<String> emLines = em.getErrorMessage();
+            List<String> emLines = em.getErrorMessage();
             int numParts = emLines.size();
 
             if (verbosity > 1)
@@ -334,7 +336,7 @@ public class GenericToolOutputHandler extends Worker
             if (errorIsDecoded)
             {
                 //Are there other conditions this .out has to fulfill?
-                ArrayList<String> conditions = em.getConditions();
+                List<String> conditions = em.getConditions();
                 int numberOfConditions = conditions.size();
                 if (numberOfConditions != 0)
                 {

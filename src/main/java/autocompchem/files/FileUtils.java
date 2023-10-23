@@ -18,8 +18,11 @@ package autocompchem.files;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import autocompchem.run.Terminator;
 
@@ -74,8 +77,21 @@ public class FileUtils
 
     public static String getRootOfFileName(String filename)
     {
-        File f = new File(filename);
-        String name = f.getName();
+        return getRootOfFileName(new File(filename));
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Return the root of the filename, which is the filename without path and 
+     * without extension
+     * @param file the file to analyze
+     * @return the root of the filename
+     */
+
+    public static String getRootOfFileName(File file)
+    {
+        String name = file.getName();
         String root = name;
         int lastId = name.lastIndexOf(".");
         if (lastId > -1)
@@ -88,9 +104,11 @@ public class FileUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Find all files in a folder tree and keep only those with a filename 
+     * Find all files in a folder tree and keep only those with a 
+     * filename 
      * containing the given string. It assumes an existing folder if given
-     * as argument.
+     * as argument. This method does not lists folders. 
+     * See {@link #find(File, String, boolean)} to include also folders.
      * @param path root folder from where the search should start
      * @param str string to be contained in the target file's name. '*' is used
      * as usual to specify the continuation of the string with any number of 
@@ -100,17 +118,19 @@ public class FileUtils
      * @return the list of files
      */
 
-    public static ArrayList<File> find(String path, String str)
+    public static List<File> find(String path, String str)
     {
-    	return find(new File(path),str);
+    	return find(new File(path), str, false);
     }
-    
-//------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------
 
     /**
-     * Find all files in a folder tree and keep only those with a filename 
+     * Find all files in a folder tree and keep only those with a 
+     * filename 
      * containing the given string. It assumes an existing folder if given
-     * as argument.
+     * as argument. This method does not list folders. 
+     * See {@link #find(File, String, boolean)} to include also folders.
      * @param root folder from where the search should start
      * @param str string to be contained in the target file's name. '*' is used
      * as usual to specify the continuation of the string with any number of 
@@ -120,65 +140,130 @@ public class FileUtils
      * @return the list of files
      */
 
-    public static ArrayList<File> find(File root, String str)
+    public static List<File> find(File root, String str)
     {
-        String originalStr = str;
-        boolean starts = false;
+    	return find(root, str, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Find all files/folders in a folder tree and keep only those with a 
+     * filename 
+     * containing the given string. It assumes an existing folder is given
+     * as argument.
+     * @param root folder from where the search should start
+     * @param str string to be contained in the target file's name. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
+     * case is chosen by default: filename must contain the query string.
+     * @param collectFolders <code>true</code> to collect also folders.
+     * @return the list of files
+     */
+
+    public static List<File> find(File root, String str, boolean collectFolders)
+    {
+    	return find(root, str, Integer.MAX_VALUE, collectFolders);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Find all files/folders in a folder tree and keep only those with a 
+     * filename 
+     * containing the given string. It assumes an existing folder is given
+     * as argument.
+     * @param root folder from where the search should start
+     * @param pattern string to be contained in the target file's name. '*' is used
+     * as usual to specify the continuation of the string with any number of 
+     * any character. Use it only at the beginning (*blabla), at the end 
+     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
+     * case is chosen by default: filename must contain the query string.
+     * @param collectFolders <code>true</code> to collect also folders.
+     * @return the list of files
+     */
+
+    public static List<File> find(File root, String pattern, Integer maxdepth, 
+    		boolean collectFolders)
+    {
+    	boolean starts = false;
         boolean ends = false;
         boolean mid = true;
-        if (str.startsWith("*") && (!str.endsWith("*")))
+        if (pattern.startsWith("*") && (!pattern.endsWith("*")))
         {
             ends = true;
             mid = false;
-            str = str.substring(1);        
-        } else if (str.endsWith("*") && (!str.startsWith("*")))
+            pattern = pattern.substring(1);        
+        } else if (pattern.endsWith("*") && (!pattern.startsWith("*")))
         {
             starts = true;
             mid = false;
-            str = str.substring(0,str.length() - 1);
-        } else if (str.startsWith("*") && str.endsWith("*"))
+            pattern = pattern.substring(0,pattern.length() - 1);
+        } else if (pattern.startsWith("*") && pattern.endsWith("*"))
         {
             starts = false;
             ends = false;
             mid = true;
-            str = str.substring(1,str.length() - 1);
-        } else if ((!str.startsWith("*")) && (!str.endsWith("*")))
+            pattern = pattern.substring(1,pattern.length() - 1);
+        } else if ((!pattern.startsWith("*")) && (!pattern.endsWith("*")))
         {
             starts = false;
             ends = false;
             mid = true;
         }
 
-        //Get the list of files in it
-        ArrayList<File> ls = new ArrayList<File>(Arrays.asList(
-                                                             root.listFiles()));
-
-        //Loop on files in root and collect targets
-        ArrayList<File> targets = new ArrayList<File>();
-        for (File f : ls)
+        String finalPattern = pattern;
+        boolean finalStart = starts;
+        boolean finalMid = mid;
+        boolean finalEnds = ends;
+        List<File> result = new ArrayList<File>();
+        try {
+			Files.walk(root.toPath(), maxdepth)
+				.filter(p -> !p.equals(root.toPath()))
+				.filter(p -> matchesPattern(p,
+						finalPattern, finalStart, finalMid, finalEnds, 
+						collectFolders))
+				.forEach(p -> result.add(p.toFile()));
+		} catch (IOException e) {
+			return result;
+		}
+        
+        return result;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks is a path matches the criteria for collecting it.
+     * @param path the candidate path
+     * @param pattern the pattern to match (without wild card)
+     * @param starts if the pattern should be at the beginning of the file name.
+     * @param contains if the pattern should be in the mids of the file name.
+     * @param ends if the pattern should be at the end of the file name.
+     * @param collectFolders if folders should be collected as well.
+     * @return <code>true</code> if the path matches the criteria.
+     */
+    private static boolean matchesPattern(Path path,
+    		String pattern, boolean starts, boolean contains, boolean ends,
+    		boolean collectFolders)
+    {
+    	File file = path.toFile();
+    	if (file.isDirectory() && !collectFolders)
         {
-            if (f.isDirectory())
-            {
-                //recursion for folders
-                ArrayList<File> fromInnerLevel = find(f,originalStr);
-                targets.addAll(fromInnerLevel);
-            } else {
-                if (starts)
-                {
-                    if (f.getName().startsWith(str))
-                        targets.add(f);
-                } else if (ends) 
-                {
-                    if (f.getName().endsWith(str))
-                        targets.add(f);
-                } else if (mid)
-                {
-                    if (f.getName().contains(str))
-                        targets.add(f);
-                }
-            }
+    		return false;
         }
-        return targets;
+        if (starts)
+        {
+            return file.getName().startsWith(pattern);
+        } else if (ends) 
+        {
+            return file.getName().endsWith(pattern);
+        } else if (contains)
+        {
+            return file.getName().contains(pattern);
+        }
+        return false;
     }
     
 //------------------------------------------------------------------------------
@@ -201,25 +286,36 @@ public class FileUtils
     	return ext;
     }
 
+  //------------------------------------------------------------------------------
+
+    /**
+     * Terminates if file exists
+     * @param outFile path/name of the file that must not exist
+     */
+
+    public static void mustNotExist(String pathname)
+    {
+    	mustNotExist(new File(pathname));
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
      * Terminates if file exists
-     * @param filename path/name of the file that must not exist
+     * @param outFile the file that must not exist
      */
 
-    public static void mustNotExist(String filename)
+    public static void mustNotExist(File outFile)
     {
-        if (filename == null)
+        if (outFile == null)
         {
             Terminator.withMsgAndStatus("ERROR! Attempt to check for a "
                   + "file but 'null' is given as name",-1);
         }
 
-        File f = new File(filename);
-        if (f.exists())
+        if (outFile.exists())
         {
-            Terminator.withMsgAndStatus("ERROR! File " +  filename
+            Terminator.withMsgAndStatus("ERROR! File " +  outFile
                   + " exists and this software doesn't have rights "
                   + "to overwrite files.",-1);
         }
@@ -238,23 +334,38 @@ public class FileUtils
      */
 
     public static void foundAndPermissions(String path, 
-                                                boolean r, boolean w, boolean x)
+    		boolean r, boolean w, boolean x)
     {
+    	foundAndPermissions(new File(path), r, w, x);
+    }
+    
+//------------------------------------------------------------------------------
 
-        File root = new File(path);
+    /**
+     * Check existence and r/w/x permission of a file/folder. The execution
+     * will be stopped if the file does not exist or doesn't have the required
+     * permissions
+     * @param file the file/directory defined from relative or absolute path.
+     * @param r set to <code>true</code> to check for READ right
+     * @param w set to <code>true</code> to check for WRITE right
+     * @param x set to <code>true</code> to check for EXECUTE right
+     */
 
-        if (!root.exists())
+    public static void foundAndPermissions(File file,
+    		boolean r, boolean w, boolean x)
+    {
+        if (!file.exists())
         {
-            Terminator.withMsgAndStatus("ERROR! File or folder " + path
+            Terminator.withMsgAndStatus("ERROR! File or folder " + file
                                 + " does not exist!",-1);
         }
 
         //Check read is required
         if (r)
         {
-            if (!root.canRead())
+            if (!file.canRead())
             {
-                Terminator.withMsgAndStatus("ERROR! File or folder " + path
+                Terminator.withMsgAndStatus("ERROR! File or folder " + file
                                 + " exists but is not readable!",-1);
             }
         }
@@ -262,9 +373,9 @@ public class FileUtils
         //Check write if required
         if (w)
         {
-            if (!root.canWrite())
+            if (!file.canWrite())
             {
-                Terminator.withMsgAndStatus("ERROR! File or folder " + path
+                Terminator.withMsgAndStatus("ERROR! File or folder " + file
                                 + " exists but is not writable!",-1);
             }
         }
@@ -272,9 +383,9 @@ public class FileUtils
         //Check executable if required
         if (x)
         {
-            if (!root.canExecute())
+            if (!file.canExecute())
             {
-                Terminator.withMsgAndStatus("ERROR! File/folder " + path 
+                Terminator.withMsgAndStatus("ERROR! File/folder " + file 
                                 + " exists but is not executable!",-1);
             }
         }

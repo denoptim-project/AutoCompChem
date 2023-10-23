@@ -17,20 +17,15 @@ package autocompchem.perception.infochannel;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Reader;
 
 /**
- * Abstract class representing any kind of information source that can be read.
+ * Abstract class representing any kind of information source.
  *
  * @author Marco Foscato
  */
 
 public abstract class InfoChannel
 {
-    /**
-     * Character stream source
-     */
-    protected Reader reader;
 
     /**
      * The type of information channel
@@ -75,20 +70,6 @@ public abstract class InfoChannel
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the tool reading characters from the info stream source.
-     * The Reader subclass instance is decided by the subclasses depending on the
-     * kind og source to be read.
-     * The stream is typically closed outside of the information channel, by
-     * whatever reads the Reader and defined that the Reader is no longer
-     * needed.
-     * @return a readed for reading the character-info from the source
-     */
- 
-    public abstract Reader getSourceReader();
-
-//------------------------------------------------------------------------------
-
-    /**
      * Return a human readable description
      * @return a string
      */
@@ -96,7 +77,7 @@ public abstract class InfoChannel
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString()).append(" [type:").append(type);
+        sb.append("InfoChannel [type:").append(type);
         sb.append("]");
         return sb.toString();
     }

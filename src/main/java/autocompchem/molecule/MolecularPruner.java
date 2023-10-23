@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -74,8 +76,8 @@ public class MolecularPruner extends Worker
                     Arrays.asList(TaskID.PRUNEMOLECULES)));
     
     //Filenames
-    private String inFile;
-    private String outFile;
+    private File inFile;
+    private File outFile;
 
     //List (with string identifier) of smarts
     private Map<String,String> smarts = new HashMap<String,String>();
@@ -111,11 +113,13 @@ public class MolecularPruner extends Worker
 
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check output file
-        this.outFile = params.getParameter("OUTFILE").getValue().toString();
+        this.outFile = new File(
+        		params.getParameter("OUTFILE").getValue().toString());
         FileUtils.mustNotExist(this.outFile);
 
         //Get the list of SMARTS to be matched
@@ -196,7 +200,7 @@ public class MolecularPruner extends Worker
                         continue;
                     }
                     
-                    List<List<Integer>> allMatches = msq.getMatchesOfSMARTS(key);
+                    MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
                     for (List<Integer> innerList : allMatches)
                     {
                         for (Integer iAtm : innerList)

@@ -1,38 +1,78 @@
 #!/bin/bash
 
-#TODO-gg: upgrade
-echo "Skipped: to upgrade!"
-exit 0
-
-
-if [ ! -f t41.inp ]
-then
-echo NOT Passed 1
-exit -1
+if [ ! -f t41_qst3.inp ] ; then
+  echo NOT Passed - ERROR 1
+  exit -1
 fi
 
-grep -q 'Step 1 returned Error Message: e0060-MemoryAllocationFailure' t41.log
-if [ $? != 0 ] ; then  
-echo NOT Passed 2
-exit -1
-fi
-
-n=$(grep -c -i '%MEM=29000MB' t41.inp)
-if [[ $n != 5 ]] ; then
-echo NOT Passed 3
-exit -1
-fi
-
-n=$(grep -c '0 1' t41.inp)
-if [[ $n != 5  ]] ; then
-echo NOT Passed 4
-exit -1
-fi
-
-n=$(grep -c 'Ru   -0.0257   -0.0018   0.0046' t41.inp)
+n=$(grep -c 'rrr' t41_qst3.inp)
 if [[ $n != 1 ]] ; then
-echo NOT Passed 5
-exit -1
+  echo NOT Passed - ERROR 2
+  exit -1
+fi
+
+n=$(grep -c 'ppp' t41_qst3.inp)
+if [[ $n != 1 ]] ; then
+  echo NOT Passed - ERROR 3
+  exit -1
+fi
+
+n=$(grep -c 'TSguess' t41_qst3.inp)
+if [[ $n != 1 ]] ; then
+  echo NOT Passed - ERROR 4
+  exit -1
+fi
+
+lr=$(grep -n 'rrr' t41_qst3.inp | awk -F':' '{print $1}')
+lp=$(grep -n 'ppp' t41_qst3.inp | awk -F':' '{print $1}')
+lg=$(grep -n 'TSguess' t41_qst3.inp | awk -F':' '{print $1}')
+if [ "$lr" -gt "$lp" ] || [ "$lp" -gt "$lg" ]; then
+  echo NOT Passed ERROR 5 "$lr > $lp or $lp > $lg" 
+  exit -1
+fi
+
+n=$(grep -c '^Cl' t41_qst3.inp)
+if [[ $n != 6 ]] ; then
+  echo NOT Passed - ERROR 6
+  exit -1
+fi
+
+n=$(grep -c '^A .* F$' t41_qst3.inp)
+if [[ $n != 9 ]] ; then
+  echo NOT Passed - ERROR 9
+  exit -1
+fi
+
+laf=($(grep -n '^A .* F$' t41_qst3.inp | awk -F':' '{print $1}'))
+if [ "${laf[0]}" -lt "$lr" ] ; then echo NOT Passed - ERROR 10a ; exit -1  ; fi
+if [ "${laf[1]}" -lt "$lr" ] ; then echo NOT Passed - ERROR 10b ; exit -1  ; fi
+if [ "${laf[2]}" -lt "$lr" ] ; then echo NOT Passed - ERROR 10c ; exit -1  ; fi
+if [ "${laf[3]}" -lt "$lp" ] ; then echo NOT Passed - ERROR 10d ; exit -1  ; fi
+if [ "${laf[4]}" -lt "$lp" ] ; then echo NOT Passed - ERROR 10e ; exit -1  ; fi
+if [ "${laf[5]}" -lt "$lp" ] ; then echo NOT Passed - ERROR 10f ; exit -1  ; fi
+if [ "${laf[6]}" -lt "$lg" ] ; then echo NOT Passed - ERROR 10g ; exit -1  ; fi
+if [ "${laf[7]}" -lt "$lg" ] ; then echo NOT Passed - ERROR 10h ; exit -1  ; fi
+if [ "${laf[8]}" -lt "$lg" ] ; then echo NOT Passed - ERROR 10i ; exit -1  ; fi
+
+lbs=$(grep -n '^S .* 7 .* 1.00' t41_qst3.inp | awk -F':' '{print $1}')
+if [ "${laf[8]}" -gt "$lbs" ] ; then echo NOT Passed - ERROR 11 ; exit -1  ; fi
+
+n=$(grep -c '^CL-ECP' t41_qst3.inp)
+if [[ $n != 2 ]] ; then
+  echo NOT Passed - ERROR 12
+  exit -1
+fi
+
+n=$(grep -c '^--Link1--$' t41_qst3.inp)
+if [[ $n != 1 ]] ; then
+  echo NOT Passed - ERROR 13
+  exit -1
+fi
+
+n=$(grep -c '^-1 1$' t41_qst3.inp)
+if [[ $n != 4 ]] ; then
+  echo NOT Passed - ERROR 14
+  exit -1
 fi
 
 grep -q 'Termination status: 0' t41.log
@@ -40,6 +80,6 @@ if [ $? == 0 ] ; then
   echo Passed
   exit 0
 else
-  echo NOT Passed 6
+  echo NOT Passed 99
   exit -1
 fi

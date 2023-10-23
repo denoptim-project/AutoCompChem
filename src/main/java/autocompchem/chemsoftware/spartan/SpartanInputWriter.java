@@ -21,7 +21,6 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,37 +36,24 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
-import autocompchem.modeling.basisset.BasisSet;
-import autocompchem.modeling.basisset.BasisSetConstants;
-import autocompchem.modeling.basisset.CenterBasisSet;
-import autocompchem.modeling.basisset.ECPShell;
-import autocompchem.modeling.basisset.Primitive;
-import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.molecule.conformation.ConformationalSpace;
-import autocompchem.molecule.intcoords.InternalCoord;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
-import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
-import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -152,10 +138,9 @@ public class SpartanInputWriter extends ChemSoftInputWriter
 
     	DirectiveData dd = new DirectiveData("coordinates");
     	dd.setValue(iac);
-    	setDirectiveDataIfNotAlreadyThere(ccj, SpartanConstants.DIRCART, 
-    			dd.getName(), dd);
+    	addNewDirectiveData(ccj, SpartanConstants.DIRCART, dd);
     	
-    	setKeywordIfNotAlreadyThere(ccj, SpartanConstants.DIRTITLE, "title", 
+    	addNewKeyword(ccj, SpartanConstants.DIRTITLE, "title", 
     			false, MolecularUtils.getNameOrID(iac));
     }
     
@@ -189,11 +174,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		StringBuilder sbKw = new StringBuilder();
     		for (Keyword k : kwDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				sbKw.append(k.getName()).append("=").append(
-    						k.getValueAsString()).append(" ");
-    			else
-    				sbKw.append(k.getValueAsString()).append(" ");
+    			sbKw.append(k.toString("=")).append(" ");
     		}
     		lines.add(sbKw.toString());
 
@@ -208,11 +189,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		StringBuilder sbKw = new StringBuilder();
     		for (Keyword k : titDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				sbKw.append(k.getName()).append("=").append(
-    						k.getValueAsString()).append(" ");
-    			else
-    				sbKw.append(k.getValueAsString()).append(" ");
+    			sbKw.append(k.toString("=")).append(" ");
     		}
     		lines.add(sbKw.toString());
     		
@@ -239,9 +216,9 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     		
     		StringBuilder sbKw = new StringBuilder();
     		//keywords must be in this order
-    		sbKw.append(csDir.getKeyword(
+    		sbKw.append(csDir.getFirstKeyword(
     				SpartanConstants.KWCHARGE).getValueAsString());
-    		sbKw.append(" ").append(csDir.getKeyword(
+    		sbKw.append(" ").append(csDir.getFirstKeyword(
     				SpartanConstants.KWSPIN).getValueAsString());
     		lines.add(sbKw.toString());
 
@@ -699,18 +676,18 @@ public class SpartanInputWriter extends ChemSoftInputWriter
   	 *  first of the structures provided.
   	 */
   	@Override
-  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
   		IAtomContainer mol = mols.get(0);
   		
         String molName = MolecularUtils.getNameOrID(mol); 
         
-        String separator = File.separator;
+        String sep = File.separator;
         
         // Create folder tree
-        File jobFolder = new File(outputFileName);
-        File molSpecFolder = new File(jobFolder + separator + molName);
+        File jobFolder = output;
+        File molSpecFolder = new File(jobFolder + sep + molName);
         if (!molSpecFolder.mkdirs())
         {
             Terminator.withMsgAndStatus("ERROR! Unable to create folder '"
@@ -718,19 +695,19 @@ public class SpartanInputWriter extends ChemSoftInputWriter
         }
         
         //Create Spartan's flag files
-        IOtools.writeTXTAppend(jobFolder + separator + 
-        		SpartanConstants.ROOTFLGFILENAME, 
+        IOtools.writeTXTAppend(new File(jobFolder + sep + 
+        		SpartanConstants.ROOTFLGFILENAME), 
         		SpartanConstants.ROOTFLGFILEHEAD, false);
-        IOtools. writeTXTAppend(molSpecFolder + separator +
-        		SpartanConstants.MOLFLGFILENAME,
+        IOtools. writeTXTAppend(new File(molSpecFolder + sep +
+        		SpartanConstants.MOLFLGFILENAME),
         		SpartanConstants.MOLFLGFILEHEAD, false);
         
         //Create cell file
-        IOtools.writeTXTAppend(molSpecFolder + separator +
-        		SpartanConstants.CELLFILENAME,
+        IOtools.writeTXTAppend(new File(molSpecFolder + sep +
+        		SpartanConstants.CELLFILENAME),
         		getCellDirective(mol), false);  		
         
-        return molSpecFolder + separator + SpartanConstants.INPUTFILENAME;
+        return new File(molSpecFolder + sep + SpartanConstants.INPUTFILENAME);
   	}
   	
 //------------------------------------------------------------------------------

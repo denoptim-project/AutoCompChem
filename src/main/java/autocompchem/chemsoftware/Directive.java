@@ -2,6 +2,8 @@ package autocompchem.chemsoftware;
 
 
 
+import java.lang.reflect.Type;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -23,12 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.lang.reflect.Type;
 
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -38,8 +36,8 @@ import com.google.gson.JsonSerializer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
@@ -49,9 +47,6 @@ import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
@@ -86,17 +81,17 @@ public class Directive implements IDirectiveComponent, Cloneable
     /**
      * List of keywords.
      */
-    private ArrayList<Keyword> keywords;
+    private List<Keyword> keywords;
 
     /**
      * List of subordinate directives.
      */
-    private ArrayList<Directive> subDirectives;
+    private List<Directive> subDirectives;
 
     /**
      * Data attached directly to this directive.
      */
-    private ArrayList<DirectiveData> dirData;
+    private List<DirectiveData> dirData;
     
     /**
      * Parameters defining task embedded in this directive.
@@ -162,17 +157,6 @@ public class Directive implements IDirectiveComponent, Cloneable
     {
         return name;
     }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Sets the name of this directive.
-     * @param name the new name.
-     */
-	private void setName(String name) 
-	{
-		this.name = name;
-	}
  
 //-----------------------------------------------------------------------------
 
@@ -192,7 +176,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of sub directives.
      */
 
-    public ArrayList<Directive> getAllSubDirectives()
+    public List<Directive> getAllSubDirectives()
     {
         return subDirectives;
     }
@@ -200,13 +184,15 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the first sub directive with the given name. 
+     * Returns the first sub {@link Directive} with the given name. 
+     * Use this method when you can assume there is only
+     * only one {@link DirectiveData} with the given name.
      * @param name the name of the sub directive to get (case-insensitive).
-     * @return the sub directive with the given name or null it it doesn't 
+     * @return the sub directive with the given name or null if it doesn't 
      * exist.
      */
 
-    public Directive getSubDirective(String name)
+    public Directive getFirstDirective(String name)
     {
         for (Directive subDir : subDirectives)
         {
@@ -216,6 +202,30 @@ public class Directive implements IDirectiveComponent, Cloneable
             }
         }
         return null;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns all {@link Directive}s with the given name. 
+     * Only sub-directives belonging to
+     * this directive can be returned. 
+     * {@link Directive}s of sub directives are ignored. 
+     * @param name the name of the directive to get (case-insensitive).
+     * @return the list of directives. Can be empty list.
+     */
+
+    public List<Directive> getDirectives(String name)
+    {
+    	List<Directive> matches = new ArrayList<Directive>();
+        for (Directive d : subDirectives)
+        {
+            if (d.getName().toUpperCase().equals(name.toUpperCase()))
+            {
+            	matches.add(d);
+            }
+        }
+        return matches;
     }
 
 //-----------------------------------------------------------------------------
@@ -237,7 +247,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of keywords.
      */
 
-    public ArrayList<Keyword> getAllKeywords()
+    public List<Keyword> getAllKeywords()
     {
         return keywords;
     }
@@ -261,14 +271,19 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the keyword with the given name. Only keyword belonging to
-     * this directive can be returned. Keywords of sub directives are ignored. 
+     * Returns the first {@link Keyword} with the given name. Ignores any other 
+     * {@link Keyword}  with this name.
+     * Only keyword belonging to
+     * this directive can be returned. 
+     * {@link Keyword}s of sub directives are ignored. 
+     * Use this method when you can assume there is only
+     * only one {@link DirectiveData} with the given name.
      * @param name the name of the keyword to get (case-insensitive).
      * @return the keyword with the given name or null if such keyword
      * does not exist.
      */
 
-    public Keyword getKeyword(String name)
+    public Keyword getFirstKeyword(String name)
     {
         for (Keyword kw : keywords)
         {
@@ -279,6 +294,30 @@ public class Directive implements IDirectiveComponent, Cloneable
         }
         return null;
     }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Returns all {@link Keyword}s with the given name. 
+     * Only keyword belonging to
+     * this directive can be returned. 
+     * {@link Keyword}s of sub directives are ignored. 
+     * @param name the name of the keyword to get (case-insensitive).
+     * @return the list of keywords. Can be empty list.
+     */
+
+    public List<Keyword> getKeywords(String name)
+    {
+    	List<Keyword> matches = new ArrayList<Keyword>();
+        for (Keyword kw : keywords)
+        {
+            if (kw.getName().toUpperCase().equals(name.toUpperCase()))
+            {
+            	matches.add(kw);
+            }
+        }
+        return matches;
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -287,7 +326,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of data blocks.
      */
 
-    public ArrayList<DirectiveData> getAllDirectiveDataBlocks()
+    public List<DirectiveData> getAllDirectiveDataBlocks()
     {
         return dirData;
     }
@@ -295,14 +334,17 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Returns the data block having the specified name. Data of subordinate
-     * directives are ignored.
+     * Returns the first {@link DirectiveData} having the specified name. 
+     * Data of sub
+     * directives are ignored. 
+     * Use this method when you can assume there is only
+     * only one {@link DirectiveData} with the given name.
      * @param name the name of the data block to get (case-insensitive).
      * @return the data blocks having the specified name or null if such data
      * block does not exist.
      */
 
-    public DirectiveData getDirectiveData(String name)
+    public DirectiveData getFirstDirectiveData(String name)
     {
         for (DirectiveData data : dirData)
         {
@@ -317,6 +359,30 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
+     * Returns all {@link DirectiveData}s with the given name. 
+     * Only data belonging to
+     * this directive can be returned. 
+     * {@link DirectiveData}s of sub directives are ignored. 
+     * @param name the name of the data to get (case-insensitive).
+     * @return the list of data. Can be empty list.
+     */
+
+    public List<DirectiveData> getDirectiveData(String name)
+    {
+    	List<DirectiveData> matches = new ArrayList<DirectiveData>();
+        for (DirectiveData dd : dirData)
+        {
+            if (dd.getName().toUpperCase().equals(name.toUpperCase()))
+            {
+            	matches.add(dd);
+            }
+        }
+        return matches;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
      * Searched for a component on the given name and type.
      * @param name the name to search for  (case-insensitive).
      * @param type the type to search for.
@@ -324,12 +390,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      */
     public boolean hasComponent(String name, DirectiveComponentType type)
     {
-    	IDirectiveComponent comp = getComponent(name, type);
-    	if (comp != null)
-    	{
-    		return true;
-    	}
-    	return false;
+    	return getComponent(name, type).size()>0;
     }
     
 //-----------------------------------------------------------------------------
@@ -361,46 +422,159 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    		subDirectives.remove(comp);
 	    		break;
 	    	}
+	    	
+	    	case ANY:
+	    	{
+	    		keywords.remove(comp);
+	    		dirData.remove(comp);
+	    		subDirectives.remove(comp);
+	    		break;
+	    	}
     	}
     }
     
 //-----------------------------------------------------------------------------
     
     /**
-     * Looks for the component with the given reference name and type.
-     * @param name the reference name of the component to find 
-     * (case-insensitive).
-     * @param type the type of component to find.
-     * @return the desired component.
+     * Deletes the component with the given reference name and type. Also all
+     * sub components of that component will be removed.
+     * @param typeAndName the component type and name to remove
      */
     
-    public IDirectiveComponent getComponent(String name, 
+    public void deleteComponent(DirComponentTypeAndName typeAndName)
+    {
+    	List<IDirectiveComponent> matches = getComponent(typeAndName.name, 
+    			typeAndName.type);
+    	for (IDirectiveComponent component : matches)
+    		deleteComponent(component);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Looks for the components with the given reference name and type.
+     * @param name the reference name of the components to find 
+     * (case-insensitive).
+     * @param type the type of components to find.
+     * @return the list of desired components.
+     */
+    
+    public List<IDirectiveComponent> getComponent(String name, 
     		DirectiveComponentType type)
     {
-    	IDirectiveComponent comp = null;
+    	List<IDirectiveComponent> list = new ArrayList<IDirectiveComponent>();
     	switch (type)
     	{
 	    	case KEYWORD:
 	    	{
-	    		comp = getKeyword(name);
+	    		list.addAll(getKeywords(name));
 	    		break;
 	    	}
 	    	
 	    	case DIRECTIVEDATA:
 	    	{
-	    		comp = getDirectiveData(name);
+	    		list.addAll(getDirectiveData(name));
 	    		break;
 	    	}
 	    	
 	    	case DIRECTIVE:
 	    	{
-	    		comp = getSubDirective(name);
+	    		list.addAll(getDirectives(name));
+	    		break;
+	    	}
+	    	
+	    	case ANY:
+	    	{
+	    		list.addAll(getKeywords(name));
+	    		list.addAll(getDirectiveData(name));
+	    		list.addAll(getDirectives(name));
+	    	}
+    	}
+    	return list;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Sets a component in this directive. If a component with the
+     * same name already exists the behavior is this:
+     * <ul>
+     * <li>for {@link Keyword} and {@link DirectiveData}, we set the value to 
+     * that of the argument,</li>
+     * <li>for {@link Directive}s, we remove any of the components of the 
+     * existing {@link Directive} and replace them with with those of the 
+     * argument.</li>
+     * </ul>
+     * 
+     * @param component
+     */
+    
+    @SuppressWarnings("incomplete-switch")
+	public void setComponent(IDirectiveComponent component)
+    {
+    	switch (component.getComponentType())
+    	{
+	    	case KEYWORD:
+	    	{
+	    		Keyword key = (Keyword) component;
+	    		setKeyword(key);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVEDATA:
+	    	{
+	    		DirectiveData dd = (DirectiveData) component;
+	    		setDirectiveData(dd);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVE:
+	    	{
+	    		Directive dir = (Directive) component;
+	    		setSubDirective(dir);
 	    		break;
 	    	}
     	}
-    	return comp;
     }
-
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Add a component in this directive. The existence of a component with the
+     * same type and name has no influence on the result: this
+     * method just adds new components without affecting existing components.
+     * 
+     * @param component
+     */
+    
+    @SuppressWarnings("incomplete-switch")
+	public void addComponent(IDirectiveComponent component)
+    {
+    	switch (component.getComponentType())
+    	{
+	    	case KEYWORD:
+	    	{
+	    		Keyword key = (Keyword) component;
+	    		addKeyword(key);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVEDATA:
+	    	{
+	    		DirectiveData dd = (DirectiveData) component;
+	    		addDirectiveData(dd);
+	    		break;
+	    	}
+	    	
+	    	case DIRECTIVE:
+	    	{
+	    		Directive dir = (Directive) component;
+	    		addSubDirective(dir);
+	    		break;
+	    	}
+    	}
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -444,7 +618,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param subDirectives the new list of subordinate directives .
      */
 
-    public void setAllSubDirectives(ArrayList<Directive> subDirectives)
+    public void setAllSubDirectives(List<Directive> subDirectives)
     {
         this.subDirectives = subDirectives;
     }
@@ -452,42 +626,58 @@ public class Directive implements IDirectiveComponent, Cloneable
 //-----------------------------------------------------------------------------
 
     /**
-     * Set or overwrites a single sub directive of this directive. Methods
-     * calling this method must make sure the new sub directive is not a
-     * parent directive of <code>this</code>, otherwise a loop is created.
+     * Adds a single sub directive of this directive. If any sub directive
+     * with the given name already exists, then we overwrite its components
+     * 
+     * This method makes sure the given directive is not a
+     * parent directive of <code>this</code> or vice versa. This to prevent 
+     * loop-like directive structures.
      * @param dir the new directive.
-     * @param owKeys if <code>true</code> makes this method overwrite the
-     * keywords of the existing directive. 
-     * @param owSubDirs if <code>true</code> makes this method overwrite the
-     * sub-directives of the existing directive.
-     * @param owData if <code>true</code> makes this method overwrite the
-     * data of the existing directive. 
      */
 
-    public void setSubDirective(Directive dir, boolean owKeys,
-    		boolean owSubDirs, boolean owData)
+    public void setSubDirective(Directive dir)
     {
-        Directive oldDir = getSubDirective(dir.getName());
-        if (oldDir == null)
+    	if (dir.embeds(this) || this.embeds(dir))
+		{
+			throw new IllegalArgumentException("Attempt to create loop "
+					+ "in directives structure.");
+		}
+        List<Directive> oldDirs = getDirectives(dir.getName());
+        if (oldDirs.size()==0)
         {
             this.addSubDirective(dir);
+        } else {
+        	for (Directive old : oldDirs)
+        	{
+            	old.setAllKeywords(dir.getAllKeywords());
+                old.setAllSubDirectives(dir.getAllSubDirectives());
+                old.setAllDirectiveDataBlocks(dir.getAllDirectiveDataBlocks());
+        	}
         }
-        else
-        {
-            if (owKeys)
-            {
-                oldDir.setAllKeywords(dir.getAllKeywords());
-            }
-            if (owSubDirs)
-            {
-                oldDir.setAllSubDirectives(dir.getAllSubDirectives());
-            }
-            if (owData)
-            {
-                oldDir.setAllDirectiveDataBlocks(
-                                               dir.getAllDirectiveDataBlocks());
-            }
-        }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks if another directive is anywhere embedded in the directives 
+     * structure embedded in this directive.
+     * @param other
+     * @return <code>true</code> if the other directive is either a 
+     * sub-directive of this directive, or is further embedded at any level
+     * in the directives structure.
+     */
+    public boolean embeds(Directive other)
+    {
+    	if (subDirectives.contains(other))
+    	{
+    		return true;
+    	}
+    	for (Directive subDir : subDirectives)
+    	{
+    		if (subDir.embeds(other))
+    			return true;
+    	}
+    	return false;
     }
 
 //-----------------------------------------------------------------------------
@@ -497,7 +687,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param keywords the new list of keywords.
      */
 
-    public void setAllKeywords(ArrayList<Keyword> keywords)
+    public void setAllKeywords(List<Keyword> keywords)
     {
         this.keywords = keywords;
     }
@@ -511,7 +701,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 
     public void setKeyword(Keyword kw)
     {
-        Keyword oldKw = getKeyword(kw.getName());
+        Keyword oldKw = getFirstKeyword(kw.getName());
         if (oldKw == null)
         {
              addKeyword(kw);
@@ -529,7 +719,7 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dirData the new list of data.
      */
 
-    public void setAllDirectiveDataBlocks(ArrayList<DirectiveData> dirData)
+    public void setAllDirectiveDataBlocks(List<DirectiveData> dirData)
     {
         this.dirData = dirData;
     }
@@ -541,9 +731,9 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dd the new data block.
      */
 
-    public void setDataDirective(DirectiveData dd)
+    public void setDirectiveData(DirectiveData dd)
     {
-        DirectiveData oldDd = getDirectiveData(dd.getName());
+        DirectiveData oldDd = getFirstDirectiveData(dd.getName());
         if (oldDd == null)
         {
              addDirectiveData(dd);
@@ -657,14 +847,17 @@ public class Directive implements IDirectiveComponent, Cloneable
      * In each case, when multiple components are present, the ordering of 
      * components is respected when searching and performing tasks.
      * @param mols the chemical system/s given to any system-dependent tasks.
-     * @param job the job that called this method.
+     * @param job the job containing this directive and that required to perform
+     * the task.
+     * @param masterJob the job that requests the update of the job containing 
+     * this directive.
      */
     
-    public void performACCTasks(List<IAtomContainer> mols, Job job)
+    public void performACCTasks(List<IAtomContainer> mols, Job job, Job masterJob)
     {
     	if (accTaskParams!=null)
     	{
-    		performACCTask(mols, accTaskParams, this, job);
+    		performACCTask(mols, accTaskParams, this, job, masterJob);
     	}
     	
     	for (Keyword k : keywords)
@@ -678,7 +871,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     			} else {
     				ps = parseACCTaskParams(k.getValueAsLines(), k);
     			}
-	    		performACCTask(mols, ps, k, job);
+	    		performACCTask(mols, ps, k, job, masterJob);
     		}
     	}
     	for (DirectiveData dd : dirData)
@@ -706,13 +899,13 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    			}
 	    			ps = parseACCTaskParams(lines, dd);
     			}
-				performACCTask(mols, ps, dd, job);
+				performACCTask(mols, ps, dd, job, masterJob);
     		}	
     	}
     	for (Directive d : subDirectives)
     	{
-    		// This is effectively a recursion into nested directives
-    		d.performACCTasks(mols, job);
+    		//Recursion into nested directives
+    		d.performACCTasks(mols, job, masterJob);
     	}
     }
     
@@ -744,7 +937,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	// This takes care of any $START/$END label needed to make all JD lines
     	// fit into a single line for the purpose of making the 
     	// directive component line.
-    	ArrayList<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
+    	List<String> linesPack = TextAnalyzer.readTextWithMultilineBlocks(
     			new ArrayList<String>(lines), ChemSoftConstants.JDCOMMENT, 
     			ChemSoftConstants.JDOPENBLOCK, ChemSoftConstants.JDCLOSEBLOCK);
     	
@@ -795,12 +988,9 @@ public class Directive implements IDirectiveComponent, Cloneable
 		ParameterStorage ps = new ParameterStorage();
 		if (dirComp!=null)
 		{
-			ps.importParametersFromLines("Directive " 
-	    			+ dirComp.getComponentType() + " " + dirComp.getName(),
-	    			taskSpecificLines);
+			ps.importParametersFromLines(taskSpecificLines);
 		} else {
-			ps.importParametersFromLines("noFile",
-	    			taskSpecificLines);
+			ps.importParametersFromLines(taskSpecificLines);
 		}
 		
 		//TODO: much of this will eventually be removed or moved to a dedicated 
@@ -880,10 +1070,12 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dirComp the directive component that required performing the task.
      * @param job the job containing the directive component that required 
      * performing the task.
+     * @param masterJob the job that requests the update of the job containing 
+     * this directive.
      */
     
     private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
-    		IDirectiveComponent dirComp, Job job)
+    		IDirectiveComponent dirComp, Job job, Job masterJob)
     {	
     	String task = "none";
     	if (params.contains(ChemSoftConstants.JDLABACCTASK))
@@ -925,7 +1117,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		labMakerParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
             	AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
-            			WorkerFactory.createWorker(labMakerParams);
+            			WorkerFactory.createWorker(labMakerParams, masterJob);
         		List<String> pointers = labGenerator.generateAtomLabels(mol);
         		
 	        	// Identify specific atoms to work with
@@ -938,7 +1130,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 cnstrParams.setParameter("VALUEDKEYWORDS", 
                 		"options prefix suffix");
                 
-            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	AtomTupleGenerator cnstrg = (AtomTupleGenerator) w;
             	
             	for (AnnotatedAtomTuple tuple : cnstrg.createTuples(mol))
@@ -1034,7 +1226,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 		zmatMakerTask.setParameter("MOL", 
                 				NamedDataType.IATOMCONTAINER, 
                 				mols.get(geometryId));
-                        Worker w = WorkerFactory.createWorker(zmatMakerTask);
+                        Worker w = WorkerFactory.createWorker(zmatMakerTask,
+                        		masterJob);
                         ZMatrixHandler zmh = (ZMatrixHandler) w;
                         ZMatrix zmat = zmh.makeZMatrix();
                         if (params.contains(ZMatrixConstants.SELECTORMODE))
@@ -1047,7 +1240,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                         			TaskID.GENERATECONSTRAINTS.toString());
                         	
                             ConstraintsGenerator cnstrg = (ConstraintsGenerator)
-                            		WorkerFactory.createWorker(cnstMakerTask);
+                            		WorkerFactory.createWorker(cnstMakerTask,
+                            				masterJob);
                         	ConstraintsSet cs = new ConstraintsSet();
                         	try {
             					cs = cnstrg.createConstraints(mols.get(
@@ -1114,7 +1308,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO-gg this simplifies if we use TaskID as it should 
                 bsGenParams.setParameter("TASK", "GENERATEBASISSET");
-            	Worker w = WorkerFactory.createWorker(bsGenParams);
+            	Worker w = WorkerFactory.createWorker(bsGenParams, masterJob);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
                 bsg.setAtmIdxAsId(true);
@@ -1144,7 +1338,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 cnstrParams.setParameter("TASK", 
                 		TaskID.GENERATECONSTRAINTS.toString());
                 
-            	Worker w = WorkerFactory.createWorker(cnstrParams);
+            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
             	
             	ConstraintsSet cs = new ConstraintsSet();
@@ -1178,7 +1372,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 csGenParams.setParameter("TASK", 
                 		TaskID.GENERATECONFORMATIONALSPACE.toString());
                 
-            	Worker w = WorkerFactory.createWorker(csGenParams);
+            	Worker w = WorkerFactory.createWorker(csGenParams, masterJob);
             	ConformationalSpaceGenerator csGen = 
             			(ConformationalSpaceGenerator) w;
             	
@@ -1220,7 +1414,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 atmLabelsParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
                 
-            	Worker w = WorkerFactory.createWorker(atmLabelsParams);
+            	Worker w = WorkerFactory.createWorker(atmLabelsParams, 
+            			masterJob);
             	AtomLabelsGenerator labelsGenerator = (AtomLabelsGenerator) w;
             	
             	TextBlock labels = new TextBlock(
@@ -1245,7 +1440,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 atmTuplesParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMTUPLES.toString());
                 
-            	Worker w = WorkerFactory.createWorker(atmTuplesParams);
+            	Worker w = WorkerFactory.createWorker(atmTuplesParams, 
+            			masterJob);
             	AtomTupleGenerator labelsGenerator = (AtomTupleGenerator) w;
             	
             	AnnotatedAtomTupleList tuples = new AnnotatedAtomTupleList(
@@ -1298,7 +1494,7 @@ public class Directive implements IDirectiveComponent, Cloneable
  	    if (o.getClass() != getClass())
      		return false;
  	   
- 	   Directive other = (Directive) o;
+ 	    Directive other = (Directive) o;
  	   
         if (!this.getName().equals(other.getName()))
         	return false;
@@ -1357,9 +1553,9 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @return the list of lines for a job details file
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<String>();
         String root = ChemSoftConstants.JDLABDIRECTIVE + name + " ";
         
         // Keywords are appended in the same line as the directive's name

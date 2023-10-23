@@ -1,23 +1,16 @@
 package autocompchem.perception.circumstance;
 
-/*
- *   Copyright (C) 2018  Marco Foscato
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.TreeMap;
 
-import java.util.ArrayList;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import autocompchem.perception.infochannel.InfoChannelType;
 
@@ -44,14 +37,9 @@ public class CountTextMatches extends MatchText
     private int max;
 
     /**
-     * Required number of matches
-     */
-    private int num;
-
-    /**
      * The chosen type of constraints to calculate the score
      */
-    private  ConstrainType cnstrType = ConstrainType.EXACT;
+    private ConstrainType cnstrType = ConstrainType.EXACT;
 
     /**
      * All the known types of constraints
@@ -74,9 +62,7 @@ public class CountTextMatches extends MatchText
 
     public CountTextMatches(String pattern, int num, InfoChannelType ict)
     {
-        super(pattern,ict);
-        this.num = num;
-        this.cnstrType = ConstrainType.EXACT; //not needed, but doesn't hurt
+        this(pattern, num, ict, false);
     }
 
 //------------------------------------------------------------------------------
@@ -92,13 +78,12 @@ public class CountTextMatches extends MatchText
      * equal to the given number.
      */
 
-    public CountTextMatches(String pattern, int num, InfoChannelType ict, 
-                                                              boolean negation)
+    public CountTextMatches(String pattern, int num, InfoChannelType ict,
+            boolean negation)
     {
-        super(pattern,ict);
-        this.num = num;
-        this.cnstrType = ConstrainType.EXACT; //not needed, but doesn't hurt
-        super.negation = negation;
+        super(pattern, negation, ict);
+        this.min = num;
+        this.max = num;
     }
 
 //------------------------------------------------------------------------------
@@ -116,7 +101,7 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int minOrMax, boolean pol, 
-                                                            InfoChannelType ict)
+            InfoChannelType ict)
     {
         super(pattern,ict);
         if (pol)
@@ -130,27 +115,26 @@ public class CountTextMatches extends MatchText
             this.cnstrType = ConstrainType.MAX;
         }
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
      * Constructs a CountTextMatches defining the pattern to match and
-     * the range (min and max, included) within which number of matches 
+     * the range (min and max, included) within which number of matches
      * required to satisfy this circumstance.
      * @param pattern the pattern to be matches
      * @param min the minimum number of matches (acceptable range is &ge; this)
      * @param max the maximum number of matches (acceptable range is &le; this)
+     * @param channel the information channel where to search for this loop
+     * counter.
      */
 
-    public CountTextMatches(String pattern, int min, int max, 
-                                                            InfoChannelType ict)
+    public CountTextMatches(String pattern, int min, int max,
+            InfoChannelType ict)
     {
-        super(pattern,ict);
-        this.min = min;
-        this.max = max;
-        this.cnstrType = ConstrainType.RANGE;
+        this(pattern, min, max, ict, false);
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -167,13 +151,14 @@ public class CountTextMatches extends MatchText
      */
 
     public CountTextMatches(String pattern, int min, int max,
-                                          InfoChannelType ict, boolean negation)
+            InfoChannelType ict, boolean negation)
     {
-        super(pattern,ict);
-        this.min = min;
-        this.max = max;
+        super(pattern, negation, ict);
+        if (min!=-1)
+            this.min = min;
+        if (max!=-1)
+            this.max = max;
         this.cnstrType = ConstrainType.RANGE;
-        super.negation = negation;
     }
 
 //------------------------------------------------------------------------------
@@ -187,7 +172,7 @@ public class CountTextMatches extends MatchText
      */
 
     @Override
-    public double calculateScore(ArrayList<String> matches)
+    public double calculateScore(List<String> matches)
     {
         double score = 0.0;
         int numMatches = matches.size();
@@ -227,7 +212,8 @@ public class CountTextMatches extends MatchText
                 break;
 
             case EXACT:
-                if (numMatches == num)
+                // NB: min and max are be the same at this point.
+                if (numMatches == min)
                 {
                     score = 1.0;
                     if (negation)
@@ -262,12 +248,138 @@ public class CountTextMatches extends MatchText
         sb.append("CountTextMatches [pattern:").append(super.getPattern());
         sb.append("; min: ").append(min);
         sb.append("; max: ").append(max);
-        sb.append("; num: ").append(num);
         sb.append("; cnstrType: ").append(cnstrType);
         sb.append("; channel:").append(super.getChannelType());
         sb.append("; negation:").append(super.negation);
         sb.append("]]");
         return sb.toString();
+    }
+    
+  //------------------------------------------------------------------------------
+
+      @Override
+      public TreeMap<String, JsonElement>  getJsonMembers(
+            JsonSerializationContext context) 
+    {
+        TreeMap<String, JsonElement> map = new TreeMap<String, JsonElement>();
+        map.putAll(super.getJsonMembers(context));
+          switch (cnstrType) 
+          {
+        case EXACT:
+            // NB: min==max
+            map.put("value", context.serialize(min));
+            break;
+            
+        case MAX:
+            map.put("max", context.serialize(min));
+            break;
+            
+        case MIN:
+            map.put("min", context.serialize(min));
+            break;
+            
+        case RANGE:
+            map.put("min", context.serialize(min));
+            map.put("max", context.serialize(max));
+            break;
+        }
+        return map;
+      }
+      
+//------------------------------------------------------------------------------
+
+      public static class CountTextMatchesSerializer 
+      implements JsonSerializer<CountTextMatches>
+      {
+          @Override
+          public JsonElement serialize(CountTextMatches src, Type typeOfSrc,
+                JsonSerializationContext context)
+          {
+              return ICircumstance.getJsonObject(src, context);
+          }
+      }
+      
+//------------------------------------------------------------------------------
+      
+      public static class CountTextMatchesDeserializer 
+      implements JsonDeserializer<CountTextMatches>
+      {
+          @Override
+          public CountTextMatches deserialize(JsonElement json, 
+                  Type typeOfT, JsonDeserializationContext context) 
+                          throws JsonParseException
+          {
+              JsonObject jsonObject = json.getAsJsonObject();
+
+              InfoChannelType ict = context.deserialize(jsonObject.get("channel"),
+                      InfoChannelType.class);
+            
+              String pattern = jsonObject.get("pattern").getAsString();
+              boolean negation = false;
+              if (jsonObject.has("negation"))
+              {    
+                  negation = context.deserialize(jsonObject.get("negation"),
+                          Boolean.class);
+              }
+              if (jsonObject.has("value"))
+              {
+                  //EXACT
+                  return new CountTextMatches(pattern,
+                          jsonObject.get("value").getAsInt(),
+                          ict, negation);
+              } else {
+                  if (jsonObject.has("min") && jsonObject.has("max"))
+                  {
+                      // RANGE
+                      return new CountTextMatches(pattern,
+                              jsonObject.get("min").getAsInt(),
+                              jsonObject.get("max").getAsInt(),
+                              ict, negation);
+                  } else {
+                      if (jsonObject.has("min"))
+                      {
+                          return new CountTextMatches(pattern,
+                                  jsonObject.get("min").getAsInt(),
+                                  true,
+                                  ict);
+                      } else {
+                          //jsonObject.has("max") is true here
+                          return new CountTextMatches(pattern,
+                                  jsonObject.get("max").getAsInt(),
+                                  false,
+                                  ict);
+                      }
+                  }
+              }
+          }
+      }
+      
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        CountTextMatches other = (CountTextMatches) o;
+         
+        if (this.min != other.min)
+            return false;
+        
+        if (this.max != other.max)
+           return false;
+        
+        if (!this.cnstrType.equals(other.cnstrType))
+            return false;
+        
+        return super.equals(other);
     }
 
 //------------------------------------------------------------------------------

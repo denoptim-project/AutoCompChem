@@ -30,12 +30,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 

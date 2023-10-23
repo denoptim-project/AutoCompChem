@@ -7,6 +7,9 @@ import com.google.gson.GsonBuilder;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.CompChemJob.CompChemJobSerializer;
+import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.chemsoftware.DirComponentAddress.DirComponentAddressDeserializer;
+import autocompchem.chemsoftware.DirComponentAddress.DirComponentAddressSerializer;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.Directive.DirectiveSerializer;
 import autocompchem.chemsoftware.DirectiveData;
@@ -23,6 +26,19 @@ import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserialize
 import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
+import autocompchem.perception.circumstance.CountTextMatches;
+import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesDeserializer;
+import autocompchem.perception.circumstance.CountTextMatches.CountTextMatchesSerializer;
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.ICircumstance.ICircumstanceDeserializer;
+import autocompchem.perception.circumstance.MatchDirComponent;
+import autocompchem.perception.circumstance.MatchDirComponent.MatchDirComponentDeserializer;
+import autocompchem.perception.circumstance.MatchDirComponent.MatchDirComponentSerializer;
+import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.circumstance.MatchText.MatchTextDeserializer;
+import autocompchem.perception.circumstance.MatchText.MatchTextSerializer;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.infochannel.InfoChannelType.InfoChannelTypeDeserializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -31,6 +47,22 @@ import autocompchem.run.Job.JobSerializer;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
 import autocompchem.run.ShellJob.ShellJobSerializer;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionObjectDeserializer;
+import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.jobediting.Action.ActionTypeDeserializer;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
+import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskTypeDeserializer;
+import autocompchem.run.jobediting.IJobEditingTask;
+import autocompchem.run.jobediting.IJobEditingTask.IJobEditingTaskDeserializer;
+import autocompchem.run.jobediting.IJobSettingsInheritTask;
+import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTaskDeserializer;
+import autocompchem.run.jobediting.JobEditType;
+import autocompchem.run.jobediting.JobEditType.JobEditTypeDeserializer;
+import autocompchem.run.jobediting.SetDirectiveComponent;
+import autocompchem.run.jobediting.AddDirectiveComponent;
+import autocompchem.run.jobediting.AddDirectiveComponent.AddDirectiveComponentDeserializer;
+import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -88,6 +120,14 @@ public class ACCJson
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageSerializer())
     	        .registerTypeAdapter(Directive.class, new DirectiveSerializer())
+    	        .registerTypeAdapter(DirComponentAddress.class, 
+    	        		new DirComponentAddressSerializer())
+    	        .registerTypeAdapter(MatchText.class, 
+    	        		new MatchTextSerializer())
+    	        .registerTypeAdapter(MatchDirComponent.class, 
+    	        		new MatchDirComponentSerializer())
+    	        .registerTypeAdapter(CountTextMatches.class, 
+    	        		new CountTextMatchesSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
     			.create();
@@ -101,10 +141,41 @@ public class ACCJson
     	        		new NamedDataDeserializer())
     	        .registerTypeAdapter(Keyword.class, 
     	        		new KeywordDeserializer())
+    	        .registerTypeAdapter(DirComponentAddress.class, 
+    	        		new DirComponentAddressDeserializer())
     	        .registerTypeAdapter(ParameterStorage.class, 
     	        		new ParameterStorageDeserializer())
+    	        .registerTypeAdapter(IJobEditingTask.class, 
+    	        		new IJobEditingTaskDeserializer())
+    	        .registerTypeAdapter(IJobSettingsInheritTask.class, 
+    	        		new IJobSettingsInheritTaskDeserializer())
+    	        .registerTypeAdapter(ICircumstance.class, 
+    	        		new ICircumstanceDeserializer())
+    	        .registerTypeAdapter(MatchText.class, 
+    	        		new MatchTextDeserializer())
+    	        .registerTypeAdapter(CountTextMatches.class,
+    	        		new CountTextMatchesDeserializer())
+    	        .registerTypeAdapter(MatchDirComponent.class, 
+    	        		new MatchDirComponentDeserializer())
+    	        .registerTypeAdapter(AddDirectiveComponent.class, 
+    	        		new AddDirectiveComponentDeserializer())
+    	        .registerTypeAdapter(SetDirectiveComponent.class, 
+    	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerDeserializer())
+    	        // JSON is case-specific but we want to allow case-insentitivity
+    	        // for strings representing enums. These deseriualizers
+    	        // are for enums that we want to be case-insentitive.
+    	        .registerTypeHierarchyAdapter(ActionObject.class, 
+    	        		new ActionObjectDeserializer())
+    	        .registerTypeHierarchyAdapter(ActionType.class, 
+    	        		new ActionTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(JobEditType.class, 
+    	        		new JobEditTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(InfoChannelType.class, 
+    	        		new InfoChannelTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(ArchivingTaskType.class, 
+    	        		new ArchivingTaskTypeDeserializer())
     			.create();
     }
 

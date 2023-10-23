@@ -1,5 +1,6 @@
 package autocompchem.perception.concept;
 
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -44,7 +45,8 @@ public class Concept implements Cloneable
      */
     public Concept()
     {
-        type = "none";
+        this.type = "none";
+        this.refName = "none";
     }
 
 //------------------------------------------------------------------------------
@@ -122,11 +124,32 @@ public class Concept implements Cloneable
      * Returns a human readable representation of this object
      * @return a string
      */
-
     public String toString()
     {
-        String s = super.toString() + " " + type + " " + refName;
+        String s = type + " " + refName;
         return s;
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+        	return false;
+         
+        Concept other = (Concept) o;
+         
+        if (!this.type.equals(other.type))
+            return false;
+
+        return this.refName.equals(other.refName);
     }
 
 //------------------------------------------------------------------------------

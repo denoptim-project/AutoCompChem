@@ -1,5 +1,7 @@
 package autocompchem.ui;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -22,8 +24,8 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
-import autocompchem.run.Job.RunnableAppID;
 import autocompchem.run.JobFactory;
+import autocompchem.run.AppID;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -92,7 +94,7 @@ public class ACCMain
         	}
         	
             try {
-            	job = JobFactory.buildFromFile(pathName);
+            	job = JobFactory.buildFromFile(new File(pathName));
             } catch (Throwable t) {
             	t.printStackTrace();
                 String msg = "ERROR! Exception returned while reading "
@@ -119,11 +121,11 @@ public class ACCMain
         	{
 	        	if (job instanceof ACCJob)
 	        	{
-	        		Worker w = ((ACCJob) job).getWorker();
+	        		Worker w = ((ACCJob) job).getUninitializedWorker();
 	        		System.out.println(w.getTaskSpecificHelp());
 	        	} else {
-	        		//TODO-gg what here?
-	        		System.out.println("Not implemented yet!!! ");
+	        		System.out.println("No help message available for " 
+	        				+ job.getClass().getName() + "jobs.");
 	        	}
 	        	Terminator.withMsgAndStatus("Exiting upon request to print "
 	        			+ "help message",0);
@@ -180,7 +182,7 @@ public class ACCMain
     	boolean foundTask = false;
     	String task = null;
     	boolean foundParams = false;
-    	String paramsFile = null;
+    	File paramsFile = null;
     	String cliString = "";
     	for (int iarg=0; iarg<args.length; iarg++)
     	{
@@ -207,7 +209,7 @@ public class ACCMain
     						+ "something like '-p <pathname>', but I see "
     						+ "only '" + arg + "'.",-1);
     			}
-    			paramsFile = args[iarg+1];
+    			paramsFile = new File(args[iarg+1]);
     			foundParams=true;
     		}
     		
@@ -331,7 +333,7 @@ public class ACCMain
     	if (foundTask && !foundParams)
     	{
 	    	// Finally, pack all into a job
-	    	job = JobFactory.createJob(RunnableAppID.ACC);
+	    	job = JobFactory.createJob(AppID.ACC);
 	    	job.setParameters(params);
     	}
     	
@@ -391,7 +393,7 @@ public class ACCMain
     		switch (t) 
     		{
 				case UNSET:
-				case DummyTask: 
+				case DUMMYTASK: 
 					break;
 				default:
 					s = s + NL + indent + t;

@@ -29,14 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.perception.circumstance.CircumstanceConstants;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
-import autocompchem.perception.situation.SituationConstants;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 
@@ -60,20 +52,20 @@ public class JobFactoryTest
     //@Test
     public void testCreateJob() throws Exception
     {
-    	Job job = JobFactory.createJob(Job.RunnableAppID.UNDEFINED);
-    	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
+    	Job job = JobFactory.createJob(AppID.UNDEFINED);
+    	assertTrue(job.getAppID() == AppID.UNDEFINED, 
     			"Creation of Undefined job");
     	
-    	job = JobFactory.createJob(Job.RunnableAppID.SHELL);
-    	assertTrue(job.getAppID() == Job.RunnableAppID.SHELL, 
+    	job = JobFactory.createJob(AppID.SHELL);
+    	assertTrue(job.getAppID() == AppID.SHELL, 
     			"Creation of SHELL job");
 
-    	job = JobFactory.createJob(Job.RunnableAppID.ACC);
-    	assertTrue(job.getAppID() == Job.RunnableAppID.ACC, 
+    	job = JobFactory.createJob(AppID.ACC);
+    	assertTrue(job.getAppID() == AppID.ACC, 
     			"Creation of ACC job");
     	
     	job = new Job();
-    	assertTrue(job.getAppID() == Job.RunnableAppID.UNDEFINED, 
+    	assertTrue(job.getAppID() == AppID.UNDEFINED, 
     			"Creation of Undefined job");
     	
     }
@@ -100,14 +92,14 @@ public class JobFactoryTest
             FileWriter writer = new FileWriter(paramFile);
 
             writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-            		+ TaskID.DummyTask + NL);
+            		+ TaskID.DUMMYTASK + NL);
             writer.write("key1" + ParameterConstants.SEPARATOR 
             		+ "value1" + NL);
             writer.write("key2" + ParameterConstants.SEPARATOR 
             		+ "value2a value2b" + NL);
             writer.close();
 
-            job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
+            job = JobFactory.buildFromFile(paramFile);
         }
         catch (Throwable t)
         {
@@ -117,7 +109,7 @@ public class JobFactoryTest
 
         assertNotNull(job,"Job is null");
         assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(Job.RunnableAppID.ACC, job.getAppID(),
+        assertEquals(AppID.ACC, job.getAppID(),
         		"App for master job");
     }
     
@@ -147,31 +139,9 @@ public class JobFactoryTest
             writer.write(MonitoringJob.PERIODUNITS 
             		+ ParameterConstants.SEPARATOR
             		+ "MINUTES" + NL);
-            writer.write(ParameterConstants.SITUATION 
-            		+ ParameterConstants.SEPARATOR 
-            		+ ParameterConstants.STARTMULTILINE  
-            		+ SituationConstants.REFERENCENAMELINE 
-            		+ SituationConstants.SEPARATOR + "LimitReached"+NL);
-            writer.write(SituationConstants.SITUATIONTYPE 
-            		+ SituationConstants.SEPARATOR + "error" + NL);
-            writer.write(SituationConstants.CIRCUMSTANCE
-            		+ SituationConstants.SEPARATOR 
-            		+ InfoChannelType.LOGFEED + " "
-            		+ CircumstanceConstants.MATCHES + " BASH-A: 3" + NL);
-            writer.write(SituationConstants.ACTION 
-            		+ SituationConstants.SEPARATOR 
-            		+ SituationConstants.STARTMULTILINE
-            		+ ActionConstants.TYPEKEY + ActionConstants.SEPARATOR
-            		+ ActionType.STOP.toString() + NL);
-            writer.write(ActionConstants.OBJECTKEY
-            		+ ActionConstants.SEPARATOR + ActionObject.PARALLELJOB+NL);
-            writer.write(SituationConstants.ENDMULTILINE + NL);
-            writer.write(ParameterConstants.ENDMULTILINE + NL);
-            writer.write(ParameterConstants.INFOSRCLOGFILES
-            		+ ParameterConstants.SEPARATOR + " pathName" +NL);
             writer.close();
 
-            job = JobFactory.buildFromFile(paramFile.getAbsolutePath());
+            job = JobFactory.buildFromFile(paramFile);
         }
         catch (Throwable t)
         {
@@ -183,20 +153,11 @@ public class JobFactoryTest
         assertEquals(MonitoringJob.class, job.getClass(), 
         		"Type of job object");
         assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(Job.RunnableAppID.ACC, job.getAppID(), "App for job");
+        assertEquals(AppID.ACC, job.getAppID(), "App for job");
         assertEquals(3000, ((MonitoringJob) job).getDelay(),
         		"Value of delay in milliseconds");
         assertEquals(60000, ((MonitoringJob) job).getPeriod(),
         		"Value of period in milliseconds");
-        SituationBase sb = ((EvaluationJob)job).getDBSituations();
-        assertEquals(1, sb.getSituationCount(), "Number of known situations");
-        Situation s = sb.getRelevantSituations(InfoChannelType.LOGFEED).get(0);
-        assertEquals(1,s.getCircumstances().size(),"Number of circumstances");
-        assertTrue(s.getCircumstances().get(0) instanceof MatchText,
-        		"Type of circumstance");
-        Action a = s.getReaction();
-        assertNotNull(a,"Reaction should not be null");
-        assertEquals(a.getType(),ActionType.STOP,"Action type is STOP");
     }
     
 //-----------------------------------------------------------------------------
@@ -220,7 +181,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ Job.RunnableAppID.ACC + NL);
+            		+ AppID.ACC + NL);
             writer.write("keyOne" + ParameterConstants.SEPARATOR 
             		+ "valueOne" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -228,7 +189,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ Job.RunnableAppID.SHELL + NL);
+            		+ AppID.SHELL + NL);
             writer.write("keyTwo" + ParameterConstants.SEPARATOR 
             		+ "valueTwo" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -240,13 +201,13 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ Job.RunnableAppID.UNDEFINED + NL);
+            		+ AppID.UNDEFINED + NL);
             writer.write("keyThree" + ParameterConstants.SEPARATOR 
             		+ "valueThree" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
             writer.close();
 
-            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            Job job = JobFactory.buildFromFile(jdFile);
             
 //            System.out.println("JOB CREATED");        	
 //            System.out.println("#steps: "+job.getNumberOfSteps());
@@ -258,11 +219,11 @@ public class JobFactoryTest
 //            }
             
             assertEquals(3, job.getNumberOfSteps(), "Number of steps");
-            assertEquals(job.getStep(0).getAppID(), Job.RunnableAppID.ACC,
+            assertEquals(job.getStep(0).getAppID(), AppID.ACC,
             		"App for first step");
-            assertEquals(job.getStep(1).getAppID(), Job.RunnableAppID.SHELL,
+            assertEquals(job.getStep(1).getAppID(), AppID.SHELL,
             		"App for second step");
-            assertEquals(job.getStep(2).getAppID(), Job.RunnableAppID.UNDEFINED,
+            assertEquals(job.getStep(2).getAppID(), AppID.UNDEFINED,
             		"App for third step");
         }
         catch (Throwable t)
@@ -305,7 +266,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.ENDJOB + NL);
             writer.close();
 
-            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            Job job = JobFactory.buildFromFile(jdFile);
 
             assertEquals(3,job.getNumberOfSteps(),"Number of 1st level jobs");
             assertEquals("value2",
@@ -370,7 +331,7 @@ public class JobFactoryTest
             //  end of    NESTED Job1
             writer.close();
 
-            Job job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            Job job = JobFactory.buildFromFile(jdFile);
 
             assertEquals("value1",
                         job.getParameter("key1").getValueAsString());
@@ -422,7 +383,7 @@ public class JobFactoryTest
 
             // Reset job
             job = new Job();
-            job = JobFactory.buildFromFile(jdFile.getAbsolutePath());
+            job = JobFactory.buildFromFile(jdFile);
 
             // Total number of branches
             assertEquals(2,job.getNumberOfSteps(),"B-Num. of 0th level jobs");

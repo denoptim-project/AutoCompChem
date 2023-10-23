@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.io.File;
 
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
@@ -58,10 +59,10 @@ public class ConnectivityGenerator extends Worker
                     		TaskID.IMPOSECONNECTIONTABLE,
                     		TaskID.CHECKBONDLENGTHS)));
 	
-    //Filenames
-    private String inFile;
-    private String outFile;
-    private String refFile;
+    //Files we work with
+    private File inFile;
+    private File outFile;
+    private File refFile;
 
     //Reporting flag
     private int verbosity = 0;
@@ -79,7 +80,7 @@ public class ConnectivityGenerator extends Worker
     //Target elements on which bonds are to be added
     private String targetEl = "";
     
-    private String templatePathName = "";
+    private File templatePathName;
 
 //------------------------------------------------------------------------------
     
@@ -109,13 +110,14 @@ public class ConnectivityGenerator extends Worker
             System.out.println(" Adding parameters to ConnectivityGenerator");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        String pathname = params.getParameter("INFILE").getValueAsString();
+        this.inFile = new File(pathname);
+        FileUtils.foundAndPermissions(pathname,true,false,false);
 
         //Define tolerance
         if (params.contains("TOLERANCE"))
         {
-            String ts = params.getParameter("TOLERANCE").getValue().toString();
+            String ts = params.getParameter("TOLERANCE").getValueAsString();
             this.tolerance = Double.parseDouble(ts);
         }
 
@@ -123,7 +125,7 @@ public class ConnectivityGenerator extends Worker
         if (params.contains("TOLERANCE2NDSHELL"))
         {
             String ts = 
-                params.getParameter("TOLERANCE2NDSHELL").getValue().toString();
+                params.getParameter("TOLERANCE2NDSHELL").getValueAsString();
             this.tolerance2ndShell = Double.parseDouble(ts);
         }
 
@@ -131,26 +133,27 @@ public class ConnectivityGenerator extends Worker
         if (params.contains("TARGETELEMENT"))
         {
             String ts = 
-                    params.getParameter("TARGETELEMENT").getValue().toString();
+                    params.getParameter("TARGETELEMENT").getValueAsString();
             this.targetEl = ts;
         }
         
         if (params.contains("TEMPLATE"))
         {
-            String templatePathName =
-                    params.getParameter("TEMPLATE").getValue().toString();
-            this.templatePathName = templatePathName;
+        	this.templatePathName = new File(
+        			params.getParameter("TEMPLATE").getValueAsString());
         }
         
         if (params.contains("REFERENCE"))
         {
-	        this.refFile = params.getParameter("REFERENCE").getValue().toString();
-	        FileUtils.foundAndPermissions(this.refFile,true,false,false);
+	        String str = params.getParameter("REFERENCE").getValueAsString();
+	        this.refFile = new File(str);
+	        FileUtils.foundAndPermissions(str,true,false,false);
         }
 
         if (params.contains("OUTFILE"))
         {
-	        this.outFile = params.getParameter("OUTFILE").getValue().toString();
+        	 String str = params.getParameter("OUTFILE").getValueAsString();
+	        this.outFile = new File(str);
 	        FileUtils.mustNotExist(this.outFile);
         }
     }
@@ -207,7 +210,7 @@ public class ConnectivityGenerator extends Worker
 
       public void checkBondLengthsAgainstConnectivity()
       {
-          ArrayList<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
+          List<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
           try 
           { 
         	  refMols = IOtools.readMultiMolFiles(refFile);
@@ -380,7 +383,7 @@ public class ConnectivityGenerator extends Worker
         if (verbosity > 1)
             System.out.println(" Imposing connectivity on file " + inFile);
 
-        ArrayList<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
+        List<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
         
         //TODO: what to do when there is more than one template?
         

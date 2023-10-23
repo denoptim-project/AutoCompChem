@@ -29,7 +29,7 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
@@ -390,26 +390,17 @@ public class AtomTupleMatchingRule
   	 * @param mol the container of the atoms in the tuple.
   	 * @return the atom tuple decorated by the attributes defined in this rule.
   	 */
+    
   	public AnnotatedAtomTuple makeAtomTupleFromIDs(List<IAtom> atoms,
   			IAtomContainer mol) 
-  	{
-		List<Integer> atmIds = new ArrayList<Integer>();
-		for (IAtom atm : atoms)
-		{
-			atmIds.add(mol.indexOf(atm));
-		}
-  		int[] ids = new int[atoms.size()];
-  		for (int i=0; i<atoms.size(); i++)
-  			ids[i] = mol.indexOf(atoms.get(i));
-  		
+  	{	
   		Set<String> myValueless = new HashSet<String>(valuelessAttributes);
 		
   		Map<String, String> myValued = new HashMap<String, String>();
 		for (String key : valuedAttributes.keySet())
 			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
 		
-		return new AnnotatedAtomTuple(ids, myValueless, myValued, 
-				new ConnectivityTable(atoms, mol), mol.getAtomCount());
+		return new AnnotatedAtomTuple(atoms, mol, myValueless, myValued);
   	}
 
 //------------------------------------------------------------------------------	

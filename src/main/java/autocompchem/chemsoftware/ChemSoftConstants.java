@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware;
 
+import autocompchem.datacollections.ParameterStorage;
+
 /*   
  *   Copyright (C) 2014  Marco Foscato 
  *
@@ -140,6 +142,11 @@ public class ChemSoftConstants
 	 * Key for parameter defining the pathname to molecular geometries
 	 */
 	public static final String PARGEOMFILE = "INPUTGEOMETRIESFILE";
+	
+	/**
+	 * Key for parameter defining the molecular geometries
+	 */
+	public static final String PARGEOM = "INPUTGEOMETRIES";
 
 	/**
 	 * Key for parameter defining how to handle multiple geometries
@@ -158,10 +165,16 @@ public class ChemSoftConstants
 	public static final String PARJOBDETAILSFILE = "JOBDETAILSFILE";
 	
 	/**
-	 * Key for parameter defining the pathname to the file defining the details
-	 * of the computational chemistry job.
+	 * Key for parameter defining the details
+	 * of the computational chemistry job in terms of {@link ParameterStorage}.
 	 */
 	public static final String PARJOBDETAILS = "JOBDETAILS";
+	
+	/**
+	 * Key for parameter defining the details
+	 * of the computational chemistry job and a {@link CompChemJob} instance.
+	 */
+	public static final String PARJOBDETAILSOBJ = "PARJOBDETAILSOBJ";
 	
 	/**
 	 * Key for parameter providing the entire header of the job. A header is
@@ -310,6 +323,11 @@ public class ChemSoftConstants
 	 * chem. job.
 	 */
 	public static final String PARJOBOUTPUTFILE = "JOBOUTPUTFILE";
+	
+	/**
+	 * Key for parameter collecting analysis tasks for comp.chem. output files.
+	 */
+	public static final String PARANALYSISTASKS = "ANALYSISTASKS";
 
 	/**
 	 * Key for parameter requesting to print the last geometry from a
@@ -376,6 +394,12 @@ public class ChemSoftConstants
 	public static final String PARADDINTCOORDS = "ADDINTCOORDS";
 	
 	/**
+	 * Name of data storing any data from a job. This is the entire
+	 * data structure produced upon analyzing a job output.
+	 */
+	public static final String JOBOUTPUTDATA = "JOBOUTPUTDATA";
+	
+	/**
 	 * Name for data storing the line number where a job begins.
 	 */
 	public static final String JOBDATAINITLINE = "INITLINE";
@@ -422,9 +446,19 @@ public class ChemSoftConstants
 
 	/**
 	 * Name of data containing Gibbs free energy already containing all
-	 * the thermochemical corrections.
+	 * the thermochemical corrections (a.u.).
 	 */
 	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
+	
+	/**
+	 * Name of data containing the temperature for thermochemical corrections.
+	 */
+	public static final String JOBDATTHERMOCHEM_TEMP = "THERMOCHEM_TEMP";
+
+	/**
+	 * Name of data containing the total entropy
+	 */
+	public static final String JOBDATTHERMOCHEM_S_TOT = "ENTROPY_TOT";
 	
 	/**
 	 * Name of data containing the electronic entropy
@@ -452,6 +486,11 @@ public class ChemSoftConstants
 	 * Name of data containing the total enthalpy
 	 */
 	public static final String JOBDATTHERMOCHEM_H = "ENTHALPY";
+
+	/**
+	 * Name of data containing the thermal correction to the enthalpy
+	 */
+	public static final String JOBDATTHERMOCHEM_H_CORR = "ENTHALPY_CORR";
 
 	/**
 	 * Name of data containing the zero point energy
@@ -529,5 +568,6 @@ public class ChemSoftConstants
 	 * the geometries.
 	 */
 	public static final String EXTERNALFILEGEOMETRIES = "EXTERNALGEOMSFILE";
+	
 
 }

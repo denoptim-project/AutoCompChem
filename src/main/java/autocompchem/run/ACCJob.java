@@ -19,6 +19,7 @@ package autocompchem.run;
 
 import java.util.Date;
 
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
@@ -41,7 +42,20 @@ public class ACCJob extends Job
     public ACCJob()
     {
         super();
-        this.appID = RunnableAppID.ACC;
+        this.appID = AppID.ACC;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a job given its parameters.
+     * @param params the parameters to append to this job.
+     */
+
+    public ACCJob(ParameterStorage params)
+    {
+        this();
+        setParameters(params);
     }
 
 //------------------------------------------------------------------------------
@@ -52,7 +66,7 @@ public class ACCJob extends Job
 
     @Override
     public void runThisJobSubClassSpecific()
-    {   
+    {
     	// Check for any ACC task...
     	if (!hasParameter(WorkerConstants.PARTASK))
     	{
@@ -72,36 +86,34 @@ public class ACCJob extends Job
         if (getVerbosity() > 0)
         {
             System.out.println(" AutoCompChem is initiating the ACC task '" 
-                            + task + "' - "+date.toString());
+                            + task + "' - " + date.toString());
         }
-        
-        Worker worker = getWorker();
-        worker.initialize();
+
+        Worker worker = WorkerFactory.createWorker(this);
         worker.performTask();
-       
 
         date = new Date();
         if (getVerbosity() > 0)
         {
-            System.out.println("Done with ACC job (" + task	+ ") - "+date.toString());
+            System.out.println("Done with ACC job (" + task	+ ") - " 
+            		+ date.toString());
         }
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * 
      * @return the {@link Worker} that can perform the task required in this job
      * or null.
      */
-    public Worker getWorker()
+    public Worker getUninitializedWorker()
     {
     	// Check for any ACC task...
     	if (!hasParameter(WorkerConstants.PARTASK))
     	{
     		return null;
     	}
-       return WorkerFactory.createWorker(params,this,false);
+       return WorkerFactory.createWorker(this, false);
     }
     
 //------------------------------------------------------------------------------

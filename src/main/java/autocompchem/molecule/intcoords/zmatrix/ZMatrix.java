@@ -18,6 +18,7 @@ package autocompchem.molecule.intcoords.zmatrix;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,17 +42,17 @@ public class ZMatrix implements Cloneable
     /**
      * List of centers defined by internal coordinates.
      */
-    private ArrayList<ZMatrixAtom> zatoms;
+    private List<ZMatrixAtom> zatoms;
 
     /**
      * List of 1-2 relations not corresponding to formal bonds.
      */
-    private ArrayList<int[]> delBondPointers;
+    private List<int[]> delBondPointers;
 
     /**
      * List of bonded atoms not defined by 1-2 relations.
      */
-    private ArrayList<int[]> addBondPointers; 
+    private List<int[]> addBondPointers; 
 
     /**
      * Flag recording enumeration formalism: <code>true</code> for 0-based.
@@ -95,7 +96,7 @@ public class ZMatrix implements Cloneable
      * {@link ZMatrixAtom}.
      */
 
-    public ZMatrix(ArrayList<String> lines)
+    public ZMatrix(List<String> lines)
     {
         // First need to decide whether the input used 0- or 1-based atom IDs
         boolean zeroBasedIDs = false;
@@ -199,7 +200,7 @@ public class ZMatrix implements Cloneable
      * @return the list of pointers to pairs of atoms
      */
  
-    public ArrayList<int[]> getPointersToNonBonded()
+    public List<int[]> getPointersToNonBonded()
     {
         return delBondPointers;
     }
@@ -226,7 +227,7 @@ public class ZMatrix implements Cloneable
      * @return the list of pointers to bonded pairs of atoms.
      */
 
-    public ArrayList<int[]> getPointersToBonded()
+    public List<int[]> getPointersToBonded()
     {
         return addBondPointers;
     }

@@ -1,5 +1,6 @@
 package autocompchem.chemsoftware;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -65,7 +66,7 @@ public class CompChemJob extends Job implements Cloneable
 	/**
 	 * List of settings, data, and keywords for the comp.chem. tool
 	 */
-	private ArrayList<Directive> directives = new ArrayList<Directive>();
+	private List<Directive> directives = new ArrayList<Directive>();
 
 //------------------------------------------------------------------------------
 
@@ -86,7 +87,7 @@ public class CompChemJob extends Job implements Cloneable
      * @param inFile formatted job details file to be read.
      */
 
-    public CompChemJob(String inFile)
+    public CompChemJob(File inFile)
     {
         this(IOtools.readTXT(inFile));
     }
@@ -100,7 +101,7 @@ public class CompChemJob extends Job implements Cloneable
      * @param lines array of lines to be read.
      */
 
-    public CompChemJob(ArrayList<String> lines)
+    public CompChemJob(List<String> lines)
     {
     	super();
 
@@ -109,7 +110,7 @@ public class CompChemJob extends Job implements Cloneable
     	
     	if (lines.toString().contains(ChemSoftConstants.JDLABSTEPSEPARATOR))
     	{
-	    	ArrayList<String> newLines = 
+	    	List<String> newLines = 
 	    			TextAnalyzer.readTextWithMultilineBlocks(lines, 
 	    			ChemSoftConstants.JDCOMMENT, 
 	    			ChemSoftConstants.JDOPENBLOCK, 
@@ -145,9 +146,9 @@ public class CompChemJob extends Job implements Cloneable
      * @throws IOException 
      */
 
-    public static CompChemJob fromJSONFile(String pathname) throws IOException
+    public static CompChemJob fromJSONFile(File jdFile) throws IOException
     {
-    	CompChemJob ccj = (CompChemJob) IOtools.readJsonFile(pathname, 
+    	CompChemJob ccj = (CompChemJob) IOtools.readJsonFile(jdFile, 
     			Job.class);
     	return ccj;
     }
@@ -159,11 +160,12 @@ public class CompChemJob extends Job implements Cloneable
      * Depending on the task, some directives may be changed as a result of the
      * ACC tasks. 
      * @param mols the molecular representation given to mol-dependent tasks.
+     * @param masterJob the job that requires to process directives of this job.
      */
     
     //TODO rename so that it is clear that this makes the job mol-dependent
     
-    public void processDirectives(List<IAtomContainer> mols)
+    public void processDirectives(List<IAtomContainer> mols, Job masterJob)
     {
     	for (Directive d : directives)
     	{
@@ -171,11 +173,11 @@ public class CompChemJob extends Job implements Cloneable
     		{
     			continue;
     		}
-    		d.performACCTasks(mols, this);
+    		d.performACCTasks(mols, this, masterJob);
     	}
     	for (Job step : steps)
     	{
-    		((CompChemJob) step).processDirectives(mols);
+    		((CompChemJob) step).processDirectives(mols, masterJob);
     	}
     }
 
@@ -194,11 +196,458 @@ public class CompChemJob extends Job implements Cloneable
     		((CompChemJob) step).sortDirectivesBy(c);
     	}
     }
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return directive component that are found in a given location
+     * of the directive component's structure. Such components can be the 
+     * outermost directives.
+     * @param address the location of the components to fetch, starting with the
+     * outermost directive and ending with the component to fetch.
+     * @return the directive components that match the path. 
+     * The result can be an empty list.
+     */
+    
+    public List<IDirectiveComponent> getDirectiveComponents(
+    		DirComponentAddress address)
+    {
+    	List<IDirectiveComponent> matches = new ArrayList<IDirectiveComponent>();
+    	if (address.size()==0)
+    	{
+    		return matches;
+    	} 
+    	if (address.size()==1 &&
+    			!(address.get(0).type.equals(DirectiveComponentType.DIRECTIVE)
+    				|| address.get(0).type.equals(DirectiveComponentType.ANY)))
+    	{
+    		//No keyword of directiveData can be found at level 0
+			return matches;
+    	}
+
+    	List<Directive> candDirectives = new ArrayList<Directive>();
+		for (Directive d : directives)
+		{
+			if (address.get(0).name.equals(DirComponentAddress.ANYNAME) 
+					|| d.getName().toUpperCase().equals(
+							address.get(0).name.toUpperCase()))
+			{
+				candDirectives.add(d);
+			}
+		}
+		if (address.size()==1)
+		{
+			matches.addAll(candDirectives);
+			return matches;
+		}
+    	
+    	for (int iLevel=1; iLevel<address.size(); iLevel++)
+    	{
+    		DirectiveComponentType levType = address.get(iLevel).type;
+    		String name = address.get(iLevel).name;
+    		List<IDirectiveComponent> matchingComponents = 
+					new ArrayList<IDirectiveComponent>();
+			for (Directive parentDir : candDirectives)
+			{
+				List<IDirectiveComponent> candidateComponents = 
+						new ArrayList<IDirectiveComponent>();
+				switch (levType) 
+				{
+				case KEYWORD:
+					candidateComponents.addAll(parentDir.getAllKeywords());
+					break;
+				case DIRECTIVEDATA:
+					candidateComponents.addAll(
+    						parentDir.getAllDirectiveDataBlocks());
+					break;
+				case DIRECTIVE:
+    				candidateComponents.addAll(
+    						parentDir.getAllSubDirectives());
+    				break;
+				case ANY:
+					candidateComponents.addAll(parentDir.getAllKeywords());
+					candidateComponents.addAll(
+    						parentDir.getAllDirectiveDataBlocks());
+    				candidateComponents.addAll(
+    						parentDir.getAllSubDirectives());
+    				break;
+				}
+    			for (IDirectiveComponent candComp : candidateComponents)
+    			{
+    				if (address.get(iLevel).name.equals(
+    						DirComponentAddress.ANYNAME) 
+    						|| candComp.getName().toUpperCase().equals(
+    								name.toUpperCase()))
+    				{
+    					matchingComponents.add(candComp);
+    				}
+    			}
+			}
+			candDirectives.clear();
+			if (levType==DirectiveComponentType.DIRECTIVE
+					|| levType==DirectiveComponentType.ANY)
+			{
+				for (IDirectiveComponent c : matchingComponents)
+				{
+					if (c instanceof Directive)
+						candDirectives.add((Directive) c);
+				}
+			}
+			
+			if (iLevel==(address.size()-1))
+			{
+				matches.addAll(matchingComponents);
+			}
+    	}
+    	return matches;
+    }
     
 //-----------------------------------------------------------------------------
     
     /**
-     * Finds and return a specified directive. This method looks only at the 
+     * Adds a directive component in a given and existing location of the 
+     * directive 
+     * component's structure (does not create missing locations), 
+     * or, if such component already exists, removes
+     * any component matching address, type, and name and places the incoming
+     * components instead. 
+     * @param parent the address to the directive that should contain the
+     * the components to add, starting with the
+     * outermost directive and ending with the directive that should contain
+     * the component added here. If empty, we can only add a root 
+     * {@link Directive} if the incomingComponent is a {@link Directive}.
+     * @param incomingComponent the component being added.
+     * @return <code>true</code> if the component has been added to this job.
+     */
+    
+    public boolean setDirectiveComponent(DirComponentAddress parent,
+    		IDirectiveComponent incomingComponent)
+    {
+    	return addDirectiveComponent(parent, incomingComponent, true, false);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Adds a directive component in a given location of the directive 
+     * component's structure.
+     * @param parent the address to the directive that should contain the
+     * the components to add, starting with the
+     * outermost directive and ending with the directive that should contain
+     * the component added here. If empty, we can only add a root 
+     * {@link Directive} if the incomingComponent is a {@link Directive}.
+     * @param incomingComponent the component being added.
+     * @param overwrite if <code>true</code> replaces any pre-existing component
+     * of the same type, name, and address of the incoming component.
+     * @param createPath if <code>true</code> creates the address if it does not 
+     * exist.
+     * @return <code>true</code> if the component has been added to this job.
+     */
+    
+    public boolean addDirectiveComponent(DirComponentAddress parent,
+    		IDirectiveComponent incomingComponent, boolean overwrite, 
+    		boolean createPath)
+    {
+    	DirComponentAddress newCompAddress = parent.clone();
+    	newCompAddress.addStep(incomingComponent.getName(), 
+    			incomingComponent.getComponentType());
+		if (overwrite)
+		{
+			this.removeDirectiveComponent(newCompAddress);
+		} 
+		if (createPath)
+		{
+			ensureDirectiveStructure(parent);
+		}
+		
+    	if (parent.size()<1)
+    	{
+    		if (incomingComponent.getComponentType()
+    				!=DirectiveComponentType.DIRECTIVE)
+    		{
+    			throw new IllegalArgumentException("Only "
+    					+ DirectiveComponentType.DIRECTIVE + " can be root in "
+    					+ "directive component's structure.");
+    		}
+    		this.addDirective((Directive) incomingComponent);
+        	return true;
+    	}
+    	
+    	List<IDirectiveComponent> parents = getDirectiveComponents(parent);
+
+    	boolean componentHasBeenAdded = false;
+    	for (IDirectiveComponent p : parents)
+    	{
+    		if (p instanceof Directive)
+    		{
+    			((Directive) p).addComponent(incomingComponent);
+    			componentHasBeenAdded = true;
+    		}
+    	}
+    	
+    	return componentHasBeenAdded;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Removes any component matching the given address.
+     * @param address the address defining the component/s to be removed.
+     * @return <code>true</code> if any component has been removed.
+     */
+    public boolean removeDirectiveComponent(DirComponentAddress address)
+    {
+    	boolean componentsHaveBeenRemoved = false;
+		List<IDirectiveComponent> toDel = getDirectiveComponents(address);
+		if (address.size()==1)
+		{
+			// We are removing outermost directives: no other component can
+			// have a path of length 1.
+			for (IDirectiveComponent component : toDel)
+			{
+				removeDirective((Directive) component);
+				componentsHaveBeenRemoved = true;
+			}
+		} else {
+			// We are removing embedded components.
+			DirComponentAddress pathToParents = address.getParent();
+			DirComponentTypeAndName compToDel = address.getLast();
+			List<IDirectiveComponent> parentDirs = getDirectiveComponents(
+					pathToParents);
+			for (IDirectiveComponent parentDirComp : parentDirs)
+			{
+				// These can only be Directives
+				Directive parentDir = (Directive) parentDirComp;
+				parentDir.deleteComponent(compToDel);
+				componentsHaveBeenRemoved = true;
+			}
+		}
+    	return componentsHaveBeenRemoved;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Ensures the structure of directives contains the directives involved in
+     * the given address. Ignores any directive components that is not a
+     * {@link Directive}.
+     * @param address the address to create if not found already.
+     */
+    public void ensureDirectiveStructure(DirComponentAddress address)
+	{
+        hasDirectiveStructure(address, true);
+	}
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks whether the directives involved in
+     * the given address exist. Ignores any components that is not a
+     * {@link Directive}.
+     * @param address the address to check.
+     * @return <code>true</code> if any directive has to be created.
+     */
+    public boolean hasDirectiveStructure(DirComponentAddress address)
+	{
+    	return hasDirectiveStructure(address, false);
+	}
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Checks whether the directives involved in
+     * the given address exist. Ignores any components that is not a
+     * {@link Directive}.
+     * @param address the address to check.
+     * @param makeIfMissing if <code>true</code> makes any missing component.
+     * @return <code>true</code> if the directive structure exists.
+     */
+    public boolean hasDirectiveStructure(DirComponentAddress address,
+    		boolean makeIfMissing)
+	{
+    	if (address.size()==0)
+		{
+			return false;
+		} 
+		if (address.size()==1 &&
+				!(address.get(0).type.equals(DirectiveComponentType.DIRECTIVE)
+					|| address.get(0).type.equals(DirectiveComponentType.ANY)))
+		{
+			return false;
+		}
+		
+		List<Directive> candDirectives = new ArrayList<Directive>();
+		String wantedDirName = address.get(0).name;
+		if (wantedDirName.equals(DirComponentAddress.ANYNAME))
+		{
+			candDirectives.addAll(directives);
+		} else {
+			for (Directive d : directives)
+			{
+				if (d.getName().toUpperCase().equals(
+						wantedDirName.toUpperCase()))
+				{
+					candDirectives.add(d);
+				}
+			}
+		}
+		
+		if (candDirectives.size()==0 
+				&& !wantedDirName.equals(DirComponentAddress.ANYNAME)
+				&& makeIfMissing)
+		{
+			Directive wantedDir = new Directive(wantedDirName);
+			addDirective(wantedDir);
+			candDirectives.add(wantedDir);
+		}
+		
+		if (address.size()==1 && candDirectives.size()>0)
+		{
+			return true;
+		}
+		
+		for (int iLevel=1; iLevel<address.size(); iLevel++)
+		{
+			DirectiveComponentType levType = address.get(iLevel).type;
+			if (!(levType==DirectiveComponentType.DIRECTIVE
+					|| levType==DirectiveComponentType.ANY))
+			{
+				break;
+			}
+			wantedDirName = address.get(iLevel).name;
+
+			List<Directive> nextParDirs = new ArrayList<Directive>();
+			for (Directive parentDir : candDirectives)
+			{
+				if (wantedDirName.equals(DirComponentAddress.ANYNAME))
+				{
+					nextParDirs.addAll(parentDir.getAllSubDirectives());
+				} else {
+					for (Directive d : parentDir.getAllSubDirectives())
+					{
+						if (d.getName().toUpperCase().equals(
+								wantedDirName.toUpperCase()))
+						{
+							nextParDirs.add(d);
+						}
+					}
+				}
+			}
+			
+			if (nextParDirs.size()==0 
+					&& !wantedDirName.equals(DirComponentAddress.ANYNAME))
+			{
+				if (candDirectives.size()==1)
+				{
+					if (makeIfMissing)
+					{
+						Directive wantedDir = new Directive(wantedDirName);
+						candDirectives.get(0).addSubDirective(wantedDir);
+						nextParDirs.add(wantedDir);
+					}
+				} else if (candDirectives.size()>1) {
+					throw new IllegalArgumentException("Found multiple parent "
+							+ "directives at level " + (iLevel-1) 
+							+ " of address '" + address + "'. "
+							+ "Directive '" + wantedDirName + "' "
+							+ "will not be created under more than one parent.");
+				}
+			}
+
+			candDirectives.clear();
+			candDirectives.addAll(nextParDirs);
+		}
+		return candDirectives.size()>0;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the value of any {@link IValueContainer} matching the given address. 
+     * @param parentAddress address of the parent holding the 
+     * {@link IValueContainer} to set.
+     * @param valueContainer a container for the value to set in any existing
+     * container found in the directive's structure. The name and type of this 
+     * container determine also the nature of the value container we are setting.
+     */
+    public void setDirComponentValue(DirComponentAddress parentAddress, 
+    		IValueContainer valueContainer)
+    {
+    	DirComponentAddress componentAddress = parentAddress.clone();
+    	componentAddress.addStep(valueContainer.getName(), 
+    			valueContainer.getComponentType());
+		List<IDirectiveComponent> existingComponents = 
+				getDirectiveComponents(componentAddress);
+		for (IDirectiveComponent comp : existingComponents)
+		{
+			if (comp instanceof IValueContainer)
+			{
+				((IValueContainer) comp).setValue(valueContainer.getValue());
+			}
+		}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds a {@link IValueContainer} if none already exists matching the 
+     * given address, name, and type.
+     * @param parentAddress address of the container holding the 
+     * {@link IValueContainer} to add.
+     * @param valueContainer a container for the value to set in any existing
+     * container found in the directive's structure. The name and type of this 
+     * container determine also the nature of the value container we are setting.
+     */
+    public void addNewValueContainer(DirComponentAddress parentAddress, 
+    		IValueContainer valueContainer)
+    {
+    	// NB: IValueContainers have address length > 1. 
+    	// So one parent must exist
+    	if (parentAddress.size()<1)
+    		return;
+
+    	// Any existing and matching component makes this method do nothing 
+    	DirComponentAddress componentAddress = parentAddress.clone();
+    	componentAddress.addStep(valueContainer.getName(), 
+    			valueContainer.getComponentType());
+		List<IDirectiveComponent> existingComponents = 
+				getDirectiveComponents(componentAddress);
+		if (existingComponents.size()>0)
+			return;
+		
+		addDirectiveComponent(parentAddress, valueContainer, false, true);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds a {@link IValueContainer} at the 
+     * given address, name, and type. Ignores the potential existence of other
+     * value containers at the same location, i.e., it appends the new 
+     * container.
+     * @param parentAddress address of the container holding the 
+     * {@link IValueContainer} to add. If no parent container exists, nothing
+     * happens.
+     * @param valueContainer a container for the value to set in any existing
+     * container found in the directive's structure. The name and type of this 
+     * container determine also the nature of the value container we are setting.
+     */
+    public void appendValueContainer(DirComponentAddress parentAddress, 
+    		IValueContainer valueContainer)
+    {
+    	// NB: IValueContainers have address length > 1. 
+    	// So one parent must exist
+    	if (parentAddress.size()<1)
+    		return;
+		
+		addDirectiveComponent(parentAddress, valueContainer, false, true);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return the first directive that matches the given name. 
+     * This method looks only at the 
      * directives of this very job, not at the content of any embedded job.
      * @param name of the directive to return (case insensitive).
      * @return the directive or null if none is found with that name.
@@ -212,7 +661,8 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Finds and return a specified directive. This method looks also at the 
+     * Finds and return the first directive that matches the given name. 
+     * This method looks also at the 
      * content of any embedded job, if recursion is required. Note that we 
      * return the first-encountered directive with the given name.
      * @param name of the directive to return (case insensitive).
@@ -343,64 +793,6 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Sets a {@link Keyword} in a {@link Directive} with the given name
-     * if it is not already present. 
-     * @param dirName the name of the directive.
-     * @param keyName the name of the {@link Keyword}.
-     * @param isLoud use <code>true</code> if the keyword should be set to be
-     * a loud keyword, meaning that conversion to text used the syntax 
-     * <code>key|separator|value</code> (for loud keywords) instead of just
-     * <code>value</code> (for non-loud, or silent keywords).
-     * @param value the value of the keyword to specify.
-     */
-    public void setKeywordIfUnset(String dirName, String keyName, 
-    		boolean isLoud, String value)
-    {
-		Directive dir = getDirective(dirName);
-		if (dir==null)
-		{
-			dir = new Directive(dirName);
-    		dir.addKeyword(new Keyword(keyName, isLoud, value));
-			setDirective(dir);
-		} else {
-			if (dir.getKeyword(keyName)==null)
-				dir.addKeyword(new Keyword(keyName, isLoud, value));
-		}
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Sets a {@link DirectiveData} in a {@link Directive} with the given name
-     * if it is not already present. 
-     * @param dirName the name of the directive.
-     * @param dirDataName the name of the {@link DirectiveData}.
-     * @param dd a source of data. We'll take the value from this instance to
-     * make a new {@link directiveData}.
-     */
-    public void setDirectiveDataIfUnset(String dirName, String dirDataName, 
-    		DirectiveData dd)
-    {
-    	Directive dir = getDirective(dirName);
-		if (dir==null)
-		{
-			dir = new Directive(dirName);
-    		dir.addDirectiveData(dd);
-			setDirective(dir);
-		} else {
-			DirectiveData oldDd = dir.getDirectiveData(dirDataName);
-			if (oldDd==null)
-			{
-        		dir.addDirectiveData(dd);
-        	} else {
-        		oldDd.setValue(dd.getValue());
-        	}
-		}
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    /**
      * Overwrites all directives of this job with the given ones.
      * @param directives the new directives
      */
@@ -449,6 +841,28 @@ public class CompChemJob extends Job implements Cloneable
     	CompChemJob clone = (CompChemJob) reader.fromJson(writer.toJson(this), 
     			Job.class);
     	return clone;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o)
+    {
+    	if ( o== null)
+    		return false;
+    	
+ 	    if (o == this)
+ 		    return true;
+ 	   
+ 	    if (o.getClass() != getClass())
+     		return false;
+ 	    
+ 	   CompChemJob other = (CompChemJob) o;
+ 	   
+ 	   if (!this.directives.equals(other.directives))
+ 		   return false;
+ 	   
+ 	   return super.equals(other);
     }
 
 //------------------------------------------------------------------------------

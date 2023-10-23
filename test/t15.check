@@ -1,29 +1,21 @@
 #!/bin/bash
 
-
-#TODO-gg: upgrade
-echo "Skipped: to upgrade!"
-exit 0
-
-grep -q 'counter IDXE0041 not found' t15.log
-if [ $? != 0 ] ; then 
-echo NOT Passed
-exit -1
+if [ ! -f t15.log ]; then
+  echo NOT Passed, ERROR 1
+  exit -1
 fi
 
-
-grep -q 'Gaussian Error NOT Recognized' t15.log
-if [ $? != 0 ] ; then 
-echo NOT Passed
-exit -1
+grep -q "Situation perceived = e006.0-InternalCoordFailure" t15.log
+if [ $? != 0 ]; then
+  echo NOT Passed, ERROR 2
+  exit -1
 fi
 
-
-grep -q 'Termination status: -1' t15.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+grep -q 'Termination status: 0' t15.log
+if [ $? == 0 ]; then 
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed
+  exit -1
 fi

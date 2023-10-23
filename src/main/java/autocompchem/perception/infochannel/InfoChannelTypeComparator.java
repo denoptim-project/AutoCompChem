@@ -29,7 +29,7 @@ import java.util.Comparator;
 
 public class InfoChannelTypeComparator implements Comparator<InfoChannelType>
 {
-    public boolean checkCompatibility(InfoChannelType a, InfoChannelType b)
+    public static boolean checkCompatibility(InfoChannelType a, InfoChannelType b)
     {
         boolean res = a.equals(b);
         if (a.equals(InfoChannelType.ANY) ||

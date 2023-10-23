@@ -1,0 +1,40 @@
+{
+  "type": "ERROR",
+  "refName": "e007.0-MemoryAllocationFailure",
+  "description": "Could not allocate memory, so try to reduce memory demands.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "galloc:  could not allocate memory"
+    }
+  ],
+  "reaction": {
+    "type": "Redo",
+    "object": "FocusAndFollowingJobs",
+    "jobEditTasks": [
+      {
+        "task": "set_keyword",
+        "path": "Dir:Link0",
+        "content": {
+            "reference": "mem",
+            "value": "${x - 1000}"
+        }
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

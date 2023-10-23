@@ -1,6 +1,6 @@
 package autocompchem.molecule;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +40,7 @@ import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
 import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -63,10 +64,10 @@ public class MolecularComparator extends Worker
                     		TaskID.COMPARETWOCONNECTIVITIES)));
     
     //Filenames
-    private String inFile;
-    private String refFile;
-    private String rotatedFile;
-    private String outFile;
+    private File inFile;
+    private File refFile;
+    private File rotatedFile;
+    private File outFile;
 
     //SMARTS query identifying target atoms
     private String targetAtoms;
@@ -101,25 +102,28 @@ public class MolecularComparator extends Worker
             System.out.println(" Adding parameters to MolecularComparator");
 
         //Get and check the input file (which has to be an SDF file)
-        this.inFile = params.getParameter("INFILE").getValue().toString();
+        this.inFile = new File(
+        		params.getParameter("INFILE").getValueAsString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
         //Get and check the reference file (which has to be an SDF file)
-        this.refFile = params.getParameter("REFERENCE").getValue().toString();
+        this.refFile = new File(
+        		params.getParameter("REFERENCE").getValueAsString());
         FileUtils.foundAndPermissions(this.refFile,true,false,false);
 
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = params.getParameter("OUTFILE").getValue().toString();
+            this.outFile =  new File(
+            		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
 
         //Get and check optional file for rotated output
         if (params.contains("ROTATEDOUT")) 
         {
-            this.rotatedFile = 
-                        params.getParameter("ROTATEDOUT").getValue().toString();
+            this.rotatedFile = new File(
+                        params.getParameter("ROTATEDOUT").getValueAsString());
             FileUtils.mustNotExist(this.rotatedFile);
         }
 
@@ -177,7 +181,7 @@ public class MolecularComparator extends Worker
     public void compareTwoConnectivities()
     {
         //Get the molecules
-        ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
         if (inMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -186,7 +190,7 @@ public class MolecularComparator extends Worker
         }
         IAtomContainer inMol = inMols.get(0);
 
-        ArrayList<IAtomContainer> refMols = IOtools.readSDF(refFile);
+        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
         if (refMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -228,7 +232,7 @@ public class MolecularComparator extends Worker
     public void compareTwoGeometries()
     {
         //Get the molecules
-        ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
         if (inMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -237,7 +241,7 @@ public class MolecularComparator extends Worker
         }
         IAtomContainer inMol = inMols.get(0);
 
-        ArrayList<IAtomContainer> refMols = IOtools.readSDF(refFile);
+        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
         if (refMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -293,7 +297,8 @@ public class MolecularComparator extends Worker
                 + "given query (" + targetAtoms + "). Unable to unambiguously "
                 + "identify the central atom to be analysed",-1);
         }
-        int centerID = msq.getMatchesOfSMARTS("center").get(0).get(0);
+
+        int centerID =  msq.getMatchingIdxsOfSMARTS("center").get(0).get(0);
         IAtom inAtm = inMol.getAtom(centerID);
 
         //For second molecule
@@ -328,12 +333,11 @@ public class MolecularComparator extends Worker
                 + "given query (" + targetAtoms + "). Unable to unambiguously "
                 + "identify the central atom to be analysed",-1);
         }
-        int centerIDR = msqR.getMatchesOfSMARTS("center").get(0).get(0);
+        int centerIDR = msqR.getMatchingIdxsOfSMARTS("center").get(0).get(0);
         IAtom refAtm = refMol.getAtom(centerIDR);
 
         //RunComparison
         compareTwoGeometries(inAtm, inMol, refAtm, refMol);
-
     }
 
 //------------------------------------------------------------------------------
@@ -465,7 +469,7 @@ public class MolecularComparator extends Worker
 
     public void runComparisonOfMoleculesBySuperposition()
     {
-        ArrayList<IAtomContainer> inMols = IOtools.readSDF(inFile);
+        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
         if (inMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
@@ -474,7 +478,7 @@ public class MolecularComparator extends Worker
         }
         IAtomContainer inMol = inMols.get(0);
 
-        ArrayList<IAtomContainer> refMols = IOtools.readSDF(refFile);
+        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
         if (refMols.size() != 1)
         {
             Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "

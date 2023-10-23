@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
@@ -38,7 +38,6 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
@@ -79,14 +78,14 @@ public class GaussianInputWriterTest
     	mol.addAtom(new Atom("C", new Point3d(1.0,2.0,3.0)));
     	mol.addAtom(new Atom("O", new Point3d(2.5,2.0,3.0)));
     	mol.addBond(0, 1, IBond.Order.TRIPLE);
-    	IOtools.writeSDFAppend(molFile.getAbsolutePath(), mol, false);
+    	IOtools.writeSDFAppend(molFile, mol, false);
     	
     	CompChemJob ccj = createTestJob();
     	
-    	IOtools.writeTXTAppend(jdFile.getAbsolutePath(), 
+    	IOtools.writeTXTAppend(jdFile, 
     			ccj.toLinesJobDetails(), false);
     	
-    	ArrayList<String> parLines = new ArrayList<String>();
+    	List<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
         		+ TaskID.PREPAREINPUTGAUSSIAN);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
@@ -96,13 +95,13 @@ public class GaussianInputWriterTest
     	parLines.add(ChemSoftConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
     	
-        IOtools.writeTXTAppend(parFile.getAbsolutePath(), parLines, false);
+        IOtools.writeTXTAppend(parFile, parLines, false);
 
         assertTrue(molFile.exists(),"Mol file exists");
         assertTrue(parFile.exists(),"Par file exists");
         assertTrue(jdFile.exists(),"JD file exists");
         
-        Job job = JobFactory.buildFromFile(parFile.getAbsolutePath());
+        Job job = JobFactory.buildFromFile(parFile);
         job.run();
         
         File inpFile = new File(inpRoot + GaussianConstants.GAUINPEXTENSION);
@@ -117,7 +116,7 @@ public class GaussianInputWriterTest
         assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),
         		"elements: O,C,P"),"Keyword specific separator");
         
-        ArrayList<String> linesInp = IOtools.readTXT(inpFile.getAbsolutePath());
+        List<String> linesInp = IOtools.readTXT(inpFile);
  
         //TODO-gg this test is not finished: finish it!
     }
@@ -154,7 +153,7 @@ public class GaussianInputWriterTest
     	dSCF.addKeyword(new Keyword("VShift", true, "1000"));
     	dSCF.addKeyword(new Keyword("Symm", false, "nosym"));
     	dSCF.addKeyword(new Keyword("MaxCycle", true, "180"));
-    	dRoute.setSubDirective(dSCF, false, false, false);
+    	dRoute.addSubDirective(dSCF);
 
     	dTitle.setKeyword(new Keyword("Title", false, "First step"));
     	
@@ -188,7 +187,7 @@ public class GaussianInputWriterTest
     	dSCF2.addKeyword(new Keyword("Symm", false, "nosym"));
     	dSCF2.addKeyword(new Keyword("varacc", false, "novaracc"));
     	dSCF2.addKeyword(new Keyword("MaxCycle", true, "180"));
-    	dRoute2.setSubDirective(dSCF2, false, false, false);
+    	dRoute2.addSubDirective(dSCF2);
 
     	dTitle2.setKeyword(new Keyword("Title", false, "Second step"));
     	
@@ -253,7 +252,7 @@ public class GaussianInputWriterTest
     	dOpt3.addKeyword(new Keyword("convergence", false, "loose"));
     	dOpt3.addKeyword(new Keyword("MaxCycles", true, "320"));
     	dOpt3.addKeyword(new Keyword("ModRedundant", false, "ModRedundant"));
-    	dRoute3.setSubDirective(dOpt3, false, false, false);
+    	dRoute3.addSubDirective(dOpt3);
     	
     	dTitle3.setKeyword(new Keyword("Title", false, "Third step"));
     	

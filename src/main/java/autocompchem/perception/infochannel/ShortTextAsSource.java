@@ -22,22 +22,23 @@ import java.util.ArrayList;
  */
 
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
  * Class representing a few lines of text to be used as information source. 
- * Tthe text is meant to be small enough that it is convenient
+ * The text is meant to be small enough that it is convenient
  * or useful to keep it in an ArrayList.
  *
  * @author Marco Foscato
  */
 
-public class ShortTextAsSource extends InfoChannel
+public class ShortTextAsSource extends ReadableIC
 {
     /**
      * Text organized by lines
      */
-    private ArrayList<String> txt = new ArrayList<String>();
+    private List<String> txt = new ArrayList<String>();
 
 //------------------------------------------------------------------------------
 
@@ -69,7 +70,7 @@ public class ShortTextAsSource extends InfoChannel
      * Constructs a ShortTextAsSource and specify the text
      */
 
-    public ShortTextAsSource(ArrayList<String> txt)
+    public ShortTextAsSource(List<String> txt)
     {
         super();
         this.txt = txt;
@@ -80,7 +81,7 @@ public class ShortTextAsSource extends InfoChannel
     /**
      * Returns the Reader of the string source.
      * The stream is typically closed outside of the information channel, by
-     * whatever reads the Reader and defined that the Reader is no longer 
+     * whatever reads the Reader and defines that the Reader is no longer 
      * needed.
      * @return a readed for reading the character-info from the source
      */
@@ -108,11 +109,19 @@ public class ShortTextAsSource extends InfoChannel
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("ShortTextAsSource [type:").append(super.getType());
+        sb.append("ShortTextAsSource [ICType:").append(super.getType());
         sb.append("; text:").append(txt);
         sb.append("]");
         return sb.toString();
     }
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public boolean canBeRead() 
+	{
+		return txt!=null;
+	}
 
 //------------------------------------------------------------------------------
 

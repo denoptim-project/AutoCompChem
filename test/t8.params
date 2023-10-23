@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: CureGaussianJob
+IC-LOGS: ../t8-gaussian.out
+JOBDEFINITION: ../t8-jobDetails.json
+SITUATIONSDBROOT: ../data/knowledgebase
+PATHNAMEOUTPUT: t8_restart.inp

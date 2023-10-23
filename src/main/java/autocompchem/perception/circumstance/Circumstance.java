@@ -1,5 +1,10 @@
 package autocompchem.perception.circumstance;
 
+import java.util.TreeMap;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -27,31 +32,11 @@ import autocompchem.perception.infochannel.InfoChannelType;
  */
 
 public class Circumstance implements ICircumstance
-{
+{	
     /**
      * Information channel where this circumstance occurs
      */
     private InfoChannelType ict = InfoChannelType.NOTDEFINED;
-
-    /**
-     * Threshold of the score allowing to consider this circumstance as
-     * manifested.
-     */
-    private double scoreThreshold = 1.0;
-
-    /**
-     * Flag identifying the circumstance as one that attempts to match text
-     */
-    protected boolean hasTxtQuery = false;
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructs an empty Circumstance
-     */
-
-    public Circumstance()
-    {}
 
 //------------------------------------------------------------------------------
 
@@ -61,23 +46,8 @@ public class Circumstance implements ICircumstance
 
     public Circumstance(InfoChannelType ict)
     {
-        this.ict = ict;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Calculate the satisfaction score. A real value between 0.0 and 1.0
-     * where 0.0 means "conditions not satisfied" and 1.0 means
-     * "condition fully satisfied".
-     * @param input an object that contains all information
-     * needed to calculate the satisfaction score. Can be null if not needed.
-     * @return numerical score 
-     */
-
-    public double calculateScore(Object input)
-    {
-        return 0.0;
+    	if (ict!=null)
+    		this.ict = ict;
     }
 
 //------------------------------------------------------------------------------
@@ -108,18 +78,6 @@ public class Circumstance implements ICircumstance
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Identifies the circumstance as one that requires to match strings
-     * @return <code>true</code> if there is a string query to be matched
-     */
-
-    public boolean requiresTXTMatch()
-    {
-        return hasTxtQuery;
-    }
-
-//------------------------------------------------------------------------------
-
     //TODO
     /**
      * Convert a score from numeric to boolean. Uses a threshold that can be set
@@ -131,7 +89,7 @@ public class Circumstance implements ICircumstance
     public boolean scoreToDecision(double dScore)
     {
         Boolean res = false;
-        if (dScore >= scoreThreshold)
+        if (dScore >= 1.0)
         {
             res = true;
         }
@@ -151,6 +109,39 @@ public class Circumstance implements ICircumstance
         sb.append(super.toString()).append(" [channelType:").append(ict);
         sb.append("]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public TreeMap<String, JsonElement>  getJsonMembers(
+			JsonSerializationContext context) 
+	{
+		TreeMap<String, JsonElement> map = new TreeMap<String, JsonElement>();
+		map.put("channel", context.serialize(ict));
+		return map;
+	}
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o== null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        Circumstance other = (Circumstance) o;
+        
+        if (!this.ict.equals(other.ict))
+            return false;
+        
+        return true;
     }
 
 //------------------------------------------------------------------------------

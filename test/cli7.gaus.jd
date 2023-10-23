@@ -1,0 +1,123 @@
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=HF
+rutSection# $MTmodel_BasisSet=GenECP 5d 7f
+rutSection# $MTjobType=SP
+rutSection# $MTsymmetry=NoSymm
+rutSection# $KVscf_$KVVShift=1000
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=180
+rutSection# $KVscf_$KVConver=4
+titSection# Step 1 - PBEPBE-GD3MBJ-PCM(water) modDZ
+optSection# $MTbasis=$ACCPAR_$STARTAtomSpecificBasisSet:
+SMARTS [#1] Link pathcustom_bs.gbs
+SMARTS [#6] Link pathcustom_bs.gbs
+SMARTS [#7] Link pathcustom_bs.gbs
+SMARTS [#17] Link pathcustom_bs.gbs
+SMARTS [Ru] Link pathcustom_bs.gbs
+SMARTS [#8] Link pathcustom_bs_Oxygen.gbs
+$END
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=ChkBasis
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTjobType=SP
+rutSection# $MTsymmetry=NoSymm
+rutSection# $KVscf_$KVVShift=500
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=200
+rutSection# $KVint=ultrafine
+rutSection# $KVEmpiricalDispersion=GD3BJ
+RUTSECTION# $FR0=IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)
+rutSection# $KVSCRF_$MTmodel=pcm
+rutSection# $KVSCRF_$KVsolvent=water
+rutSection# $KVSCRF_$MTopts=read
+optSection# $MTpcm=$STARTradii=UAHF
+pcmdoc
+Dis
+Rep
+Cav
+$END
+titSection# Step 2 - PBEPBE-GD3MBJ-PCM(water) modDZ
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=ChkBasis
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTsymmetry=NoSymm
+rutSection# $KVscf_$KVVShift=300
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$MTVarAcc=novaracc
+rutSection# $KVscf_$KVMaxCycle=250
+rutSection# $KVstable_$MTwfreopt=opt
+rutSection# $KVstable_$MTgeneral=rrhf
+rutSection# $KVint=ultrafine
+rutSection# $KVEmpiricalDispersion=GD3BJ
+RUTSECTION# $FR0=IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)
+rutSection# $KVSCRF_$MTmodel=pcm
+rutSection# $KVSCRF_$KVsolvent=water
+rutSection# $KVSCRF_$MTopts=read
+optSection# $MTpcm=$STARTradii=UAHF
+pcmdoc
+Dis
+Rep
+Cav
+$END
+titSection# Step 3 - PBEPBE-GD3MBJ-PCM(water) modDZ
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=ChkBasis
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTsymmetry=NoSymm
+rutSection# $KVscf_$KVVShift=300
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$KVMaxCycle=250
+rutSection# $KVscf_$KVConver=9
+rutSection# $KVint=ultrafine
+rutSection# $MTjobType=opt
+rutSection# $KVopt_$MTforceConstants=CalcFC
+rutSection# $KVopt_$KVMaxCycles=150
+rutSection# $KVopt_$MTconvergence=tight
+rutSection# $KVEmpiricalDispersion=GD3BJ
+RUTSECTION# $FR0=IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)
+rutSection# $KVSCRF_$MTmodel=pcm
+rutSection# $KVSCRF_$KVsolvent=water
+rutSection# $KVSCRF_$MTopts=read
+optSection# $MTpcm=$STARTradii=UAHF
+pcmdoc
+Dis
+Rep
+Cav
+$END
+titSection# Step 4 - PBEPBE-GD3MBJ-PCM(water) modDZ
+--Link1--
+rutSection# $MTprint=P
+rutSection# $MTmodel_Method=PBEPBE
+rutSection# $MTmodel_BasisSet=ChkBasis
+rutSection# $KVgeom=check
+rutSection# $KVguess=read
+rutSection# $MTsymmetry=NoSymm
+rutSection# $KVcphf_$KVgrid=FineGrid
+rutSection# $KVscf_$KVVShift=300
+rutSection# $KVscf_$MTSymm=nosym
+rutSection# $KVscf_$KVMaxCycle=250
+rutSection# $KVint=ultrafine
+rutSection# $MTjobType=freq
+rutSection# $KVEmpiricalDispersion=GD3BJ
+RUTSECTION# $FR0=IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)
+rutSection# $KVSCRF_$MTmodel=pcm
+rutSection# $KVSCRF_$KVsolvent=water
+rutSection# $KVSCRF_$MTopts=read
+optSection# $MTpcm=$STARTradii=UAHF
+pcmdoc
+Dis
+Rep
+Cav
+$END
+titSection# Step 5 - PBEPBE-GD3MBJ-PCM(water) modDZ

@@ -22,10 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
 
 
 /**
@@ -48,8 +52,8 @@ public class IOtoolsTest
     public void testConstructorFromString() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-        String inFile = tempDir.getAbsolutePath() + SEP + "in.txt";
-        String outFile = tempDir.getAbsolutePath() + SEP + "out.txt";
+        File inFile = new File(tempDir.getAbsolutePath() + SEP + "in.txt");
+        File outFile = new File(tempDir.getAbsolutePath() + SEP + "out.txt");
         StringBuilder sb = new StringBuilder();
         for (int i=0; i<30; i++) 
         {
@@ -59,13 +63,34 @@ public class IOtoolsTest
         
         IOtools.copyPortionOfTxtFile(inFile, outFile, 6, 26);
         
-        assertTrue((new File(outFile)).exists(),"Out file created.");
-        assertEquals(1,FileAnalyzer.count(outFile, "Line 6"),"Found start.");
-        assertEquals(1,FileAnalyzer.count(outFile, "Line 26"),"Found end.");
-        assertEquals(0,FileAnalyzer.count(outFile, "Line 5"),
+        assertTrue(outFile.exists(),"Out file created.");
+        assertEquals(1, FileAnalyzer.count(outFile, "Line 6"),"Found start.");
+        assertEquals(1, FileAnalyzer.count(outFile, "Line 26"),"Found end.");
+        assertEquals(0, FileAnalyzer.count(outFile, "Line 5"),
         		"Text before start is not included.");
-        assertEquals(0,FileAnalyzer.count(outFile, "Line 27"),
+        assertEquals(0, FileAnalyzer.count(outFile, "Line 27"),
         		"Text after end is not included.");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testWriteTXTAppend() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String pathnameRoot = tempDir.getAbsolutePath() + SEP + "file";
+        
+        String line = "this is one line";
+        
+        List<String> lines = Arrays.asList("these","are","many","lines");
+        
+        File f1 = new File(pathnameRoot+1);
+        IOtools.writeTXTAppend(f1, line, false);
+        assertEquals(1, FileAnalyzer.count(f1, "**"));
+
+        File f2 = new File(pathnameRoot+2);
+        IOtools.writeTXTAppend(f2, lines, false);
+        assertEquals(4, FileAnalyzer.count(f2, "**"));
     }
     
 //------------------------------------------------------------------------------

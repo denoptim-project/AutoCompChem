@@ -20,10 +20,13 @@ package autocompchem.run;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,6 +47,8 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.text.TextBlockIndexed;
 
 
@@ -56,9 +61,17 @@ import autocompchem.text.TextBlockIndexed;
 public class Job implements Runnable
 {
 	/**
-	 * Reference to the parent job. This is null for the outermost, master job
+	 * Reference to the parent job. This is null for the outermost, master job.
 	 */
 	private Job parentJob = null;
+	
+	/**
+	 * Reference to any child job. Child jobs are NOT steps of this job, but are
+	 * jobs started by this job to perform specific tasks.
+	 * Reference to a child job is volatile: it is removed once the child job
+	 * is completed.
+	 */
+	private Set<Job> childJobs = new HashSet<Job>();
 	
 	/**
 	 * A job identifier meant to be unique only within sibling jobs, i.e., jobs
@@ -67,9 +80,23 @@ public class Job implements Runnable
 	protected int jobId = 0;
 	
 	/**
+	 * An integer derived from the hashcode of this instance, but that is only a
+	 * snapshot of the hashcode at construction time. This is used to 
+	 * distinguish jobs that are nor related, i.e., are not siblings nor 
+	 * do they belong to the same family tree (connected by parent-child 
+	 * relations).
+	 */
+	private int jobHashCode;
+	
+	/**
 	 * Counter for subjobs
 	 */
 	private AtomicInteger idSubJob = new AtomicInteger(1);
+	
+    /**
+     * Restart counter. counts how many times this job is restarted
+     */
+    private final AtomicInteger restartCounter = new AtomicInteger();
 	
     /**
      * Container for parameters fed to this job. 
@@ -82,39 +109,12 @@ public class Job implements Runnable
      * List of steps. Steps are jobs nested in this very job. Each step can,
      * therefore, have further nesting levels.
      */
-    protected ArrayList<Job> steps;
+    protected List<Job> steps;
 
     /**
      * Application meant to do the job
      */
-    protected RunnableAppID appID;
-
-    /**
-     * Known apps for performing jobs
-     */
-    public enum RunnableAppID {
-        UNDEFINED,
-        SHELL,
-        ACC;
-    
-    	public String toString() {
-    		switch (this) 
-    		{
-				case UNDEFINED: {
-					return "UNDEFINED";
-				}
-				case SHELL: {
-					return "SHELL";
-				}	
-				case ACC: {
-					return "ACC";
-				}
-				default: {
-					return "UNDEFINED";
-				}
-			}
-    	}
-    };
+    protected AppID appID;
 
     /**
      * Flag defining this job as a parallelizable job, i.e., independent from
@@ -136,12 +136,12 @@ public class Job implements Runnable
     private JobNotificationListener observer;
 
     /**
-     * Flag signalling that this job has been interrupted
+     * Flag signaling that this job has been interrupted
      */
     protected boolean isInterrupted = false;
     
     /**
-     * Flag signalling that this job has thrown an exception
+     * Flag signaling that this job has thrown an exception
      */
     protected boolean hasException = false;
 
@@ -149,14 +149,19 @@ public class Job implements Runnable
      * Exception thrown by this job.
      */
     protected Throwable thrownExc;
+    
+    /**
+     * Flag signaling that this job had been started.
+     */
+    private boolean started = false;
 
     /**
-     * Flag signalling the completion of this job
+     * Flag signaling the completion of this job
      */
     private boolean completed = false;
 
     /**
-     * Flag signalling an action intended to kill this job
+     * Flag signaling an action intended to kill this job
      */
     protected boolean jobIsBeingKilled = false;
     
@@ -190,7 +195,7 @@ public class Job implements Runnable
      * world /w.r.t. this job) via the {@link #getOutput} method. 
      * We say these data is "exposed".
      */
-    protected NamedDataCollector exposedOutput = new NamedDataCollector();
+    public NamedDataCollector exposedOutput = new NamedDataCollector();
     
     /**
      * Verbosity level: amount of logging from this jobs
@@ -233,12 +238,12 @@ public class Job implements Runnable
     /**
      * Constructor for an undefined job
      */
-
-    public Job()
+    protected Job()
     {
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
-        this.appID = RunnableAppID.UNDEFINED;
+        this.appID = AppID.UNDEFINED;
+        this.jobHashCode = hashCode();
     }
 
 //------------------------------------------------------------------------------
@@ -248,7 +253,7 @@ public class Job implements Runnable
      * @return the enum representing the application.
      */
 
-    public RunnableAppID getAppID()
+    public AppID getAppID()
     {
         return appID;
     }
@@ -318,21 +323,6 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Sets a value-less parameters (i.e., a keyword)
-     * @param ref the reference name of the parameter to add/set.
-     * @param recursive use <code>true</code> to set the parameter in this job
-     * and in any of its steps (i.e., first layer or embedded jobs) or any
-     * further embedding level recursively.
-     */
-
-    public void setParameter(String ref, boolean recursive)
-    {
-        setParameter(ref, NamedDataType.UNDEFINED, null, recursive);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
      * Sets a parameters.
      * @param ref the reference name of the parameter to add/set.
      * @param value the value of the parameter.
@@ -367,7 +357,6 @@ public class Job implements Runnable
      * @param type the type of the parameter
      * @param value the value of the parameter.
      */
-
     public void setParameter(String ref, NamedDataType type, Object value)
     {
         setParameter(ref, type, value, false);
@@ -376,7 +365,7 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Sets a parameters.
+     * Sets a parameter.
      * @param ref the reference name of the parameter to add/set.
      * @param type the type of the parameter
      * @param value the value of the parameter.
@@ -388,12 +377,40 @@ public class Job implements Runnable
     public void setParameter(String ref, NamedDataType type, Object value, 
     		boolean recursive)
     {
-        params.setParameter(ref, type, value);
+        NamedData param = new NamedData(ref.toUpperCase(), type, value);
+    	setParameter(param, recursive);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameter. It a parameter with the same reference name already
+     * exists it will be overwritten.
+     * @param param the parameter to add or overwrite
+     */
+    public void setParameter(NamedData param)
+    {
+    	setParameter(param, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets a parameter. It a parameter with the same reference name already
+     * exists it will be overwritten.
+     * @param param the parameter to add or overwrite.
+     * @param recursive use <code>true</code> to set the parameter in this job
+     * and in any of its steps (i.e., first layer or embedded jobs) or any
+     * further embedding level recursively.
+     */
+    public void setParameter(NamedData param, boolean recursive)
+    {
+    	params.setParameter(param);
         if (recursive)
         {
 	        for (Job step : steps)
 	        {
-	        	step.setParameter(ref, type, value, true);
+	        	step.setParameter(param);
 	        }
         }
     }
@@ -456,12 +473,68 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
+     * Gets the observer that watches for notifications from this job.
+     * @return the listener to notifications from this job.
+     */
+    public JobNotificationListener getObserver() 
+    {
+		return observer;
+	}
+
+//------------------------------------------------------------------------------
+    
+	/**
+	 * @return the STDOUT of this job
+     */
+    public File getStdOut()
+    {
+    	return stdout;
+    }
+    
+//------------------------------------------------------------------------------
+      
+  	/**
+  	 * @return the STDERR of this job
+     */
+    public File getStdErr()
+    {
+      	return stderr;
+    }
+    
+//------------------------------------------------------------------------------
+    
+  	/**
+  	 * Gets the main folder (user dir) of this job.
+  	 * This is not guaranteed to be the same as the UserDir for the JAVA virtual 
+  	 * machine. Instead, it is a path that may have been set for this job.
+  	 * @return the the pathname to the main folder (user dir) of this job.
+     */
+    public File getUserDir()
+    {
+      	return customUserDir;
+    }
+      
+//------------------------------------------------------------------------------
+    
+	/**
      * Sets the directory from which the job should be executed.
      * @param customUserDir the new directory
      */
     public void setUserDir(File customUserDir)
     {
     	this.customUserDir = customUserDir;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the directory from which the job should be executed and assigns
+     * values to STDERR and STDOUT accordingly.
+     * @param customUserDir the new directory
+     */
+    public void setUserDirAndStdFiles(File customUserDir)
+    {
+    	setUserDir(customUserDir);
     	updateStdoutStdErr();
     }
     
@@ -491,11 +564,7 @@ public class Job implements Runnable
      */
     
     private void updateStdoutStdErr()
-    {
-        //TODO: replace with unique ID: atomInteger for all jobs
-        
-        int hc = this.hashCode();
-        
+    {   
         String dir;
         if (customUserDir != null)
         {
@@ -506,12 +575,22 @@ public class Job implements Runnable
         	dir = System.getProperty("user.dir");
         }
         
-        stdout = new File(dir + SEP + "Job" +hc+".log");
-        stderr = new File(dir + SEP + "Job" +hc+".err");
-        exposedOutput.putNamedData( 
-        		new NamedData("LOG", NamedDataType.FILE,stdout));
-        exposedOutput.putNamedData( 
-        		new NamedData("ERR", NamedDataType.FILE,stderr));
+        if (parentJob!=null)
+        {
+        	if (stdout==null)
+        		stdout = new File(dir + SEP + "Job" + getId() +".log");
+	        if (stderr==null)
+	        	stderr = new File(dir + SEP + "Job" + getId() +".err");
+        } else {
+        	if (stdout==null)
+        		stdout = new File(dir + SEP + "Job" + jobHashCode +".log");
+        	if (stderr==null)
+        		stderr = new File(dir + SEP + "Job" + jobHashCode +".err");
+        }
+        exposedOutput.putNamedData(
+        		new NamedData("LOG", NamedDataType.FILE, stdout));
+        exposedOutput.putNamedData(
+        		new NamedData("ERR", NamedDataType.FILE, stderr));
     }
 
 //------------------------------------------------------------------------------   
@@ -534,6 +613,16 @@ public class Job implements Runnable
     public int getVerbosity()
     {
     	return verbosity;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * @return the counter of restarts of this job.
+     */
+    public AtomicInteger getRestartCounter()
+    {
+    	return restartCounter;
     }
     
 //------------------------------------------------------------------------------
@@ -562,6 +651,31 @@ public class Job implements Runnable
     public void setParent(Job parentJob)
     {
     	this.parentJob = parentJob;
+    	updateStdoutStdErr();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the reference to a child job, which is a job that has been created
+     * by this one to perform a task. Child jobs are NOT steps in this job.
+     */
+    
+    public void addChild(Job childJob)
+    {
+    	this.childJobs.add(childJob);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Remove the reference to a child job, which is a job that has been created
+     * by this one to perform a task. Child jobs are NOT steps in this job.
+     */
+    
+    public void removeChild(Job childJob)
+    {
+    	this.childJobs.remove(childJob);
     }
     
 //------------------------------------------------------------------------------
@@ -575,6 +689,17 @@ public class Job implements Runnable
     public Job getParent()
     {
     	return parentJob;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if there is a parent job. 
+     * @return <code>true</code> if this job has a parent.
+     */
+    public boolean hasParent()
+    {
+    	return parentJob!=null;
     }
     
 //------------------------------------------------------------------------------
@@ -610,6 +735,20 @@ public class Job implements Runnable
   			return steps.get(0).getInnermostFirstStep();
   		return this;
   	}
+   
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the hash code of this job. This is a sort of identifier but it is 
+     * not guaranteed to be unique. It most often is, but there is no guarantee.
+     * See {@link Object#hashCode()}.
+     * @return the hash code at construction time.
+     */
+    
+    public int getHashCodeSnapshot()
+    {
+    	return jobHashCode;
+    }
     
 //------------------------------------------------------------------------------
     
@@ -661,7 +800,7 @@ public class Job implements Runnable
      * @return the steps
      */
 
-    public ArrayList<Job> getSteps()
+    public List<Job> getSteps()
     {
         return steps;
     }
@@ -697,18 +836,6 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Return the enum identifier of the application used to do this job.
-     * @return the enum identifier
-     */
-
-    public RunnableAppID getAppName()
-    {
-        return appID;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Method that runs this job and its sub-jobs. This is the only method
      * that can label this job as 'completed'.
      * Also, this method is only implemented in the super-class, and 
@@ -718,6 +845,14 @@ public class Job implements Runnable
 
     public final void run()
     {
+    	started = true;
+    	if (!appID.isRunnableByACC())
+    	{
+    		throw new Error("Cannot run " + appID + " Job (" + getId() + ") "
+    				+ "from ACC. You must define a " + ShellJob.class.getName()
+    				+ " or extend " + Job.class.getName() + ".");
+    	}
+    	
     	//TODO use logger
     	if (verbosity > 0)
     	{
@@ -728,16 +863,19 @@ public class Job implements Runnable
         // First do the work of this very Job
         runThisJobSubClassSpecific();
         
-        // Then, run the sub-jobs
-        if (nThreads > 1 && parallelizableSubJobs())
+        // Then, run the sub-jobs (steps)
+        if (steps.size()>0)
         {
-            //Parallel execution of sub-jobs
-            runSubJobsPararelly();
-        }
-        else
-        {
-            //Serial execution
-            runSubJobsSequentially();
+	        if (nThreads > 1 && parallelizableSubJobs())
+	        {
+	            //Parallel execution of sub-jobs
+	            runSubJobsParallely();
+	        }
+	        else
+	        {
+	            //Serial execution
+	            runSubJobsSequentially();
+	        }
         }
         
         finalizeStatusAndNotifications(!jobIsBeingKilled);
@@ -750,13 +888,13 @@ public class Job implements Runnable
      * This method is overwritten by subclasses.
      */
 
-    public void runThisJobSubClassSpecific()
+    protected void runThisJobSubClassSpecific()
     {
         // Subclasses overwrites this method, so if we are here
         // it is because we tried to run a job of an app for which there is
         // no implementation of app-specific Job yet.
         Terminator.withMsgAndStatus("ERROR! Cannot (yet) run Jobs for App '" 
-                    + this.appID + "'. No subclass implementation of method "
+                    + appID + "'. No subclass implementation of method "
                     + "running this job.", -1);
     }
 
@@ -768,16 +906,19 @@ public class Job implements Runnable
 
     private void runSubJobsSequentially()
     {
-        for (int iJob=0; iJob<steps.size(); iJob++)
+        SerialJobsRunner serialRun = new SerialJobsRunner(steps, this);
+        if (hasParameter(JobsRunner.WALLTIMEPARAM))
         {
-        	Job j = steps.get(iJob);
-            j.run();
-            
-            if (j.requestsAction())
-            {
-            	//TODO reactToEvent(j,act,i);
-            }
+        	serialRun.setWallTime(Long.parseLong(
+        			params.getParameterValue(JobsRunner.WALLTIMEPARAM)));
         }
+        if (hasParameter(JobsRunner.WAITTIMEPARAM))
+        {
+        	serialRun.setWaitingStep(Long.parseLong(
+        			params.getParameterValue(JobsRunner.WAITTIMEPARAM)));
+        }
+        serialRun.setVerbosity(verbosity);
+        serialRun.start();
     }
 
 //------------------------------------------------------------------------------
@@ -786,19 +927,19 @@ public class Job implements Runnable
      * Runs all the sub-jobs in an embarrassingly parallel fashion.
      */
 
-    private void runSubJobsPararelly()
+    private void runSubJobsParallely()
     {
-        ParallelRunner parallRun = 
-        		new ParallelRunner(steps,nThreads,nThreads,this);
-        if (hasParameter(ParallelRunner.WALLTIMEPARAM))
+        ParallelJobsRunner parallRun = 
+        		new ParallelJobsRunner(steps, nThreads, nThreads, this);
+        if (hasParameter(JobsRunner.WALLTIMEPARAM))
         {
         	parallRun.setWallTime(Long.parseLong(
-        			params.getParameterValue(ParallelRunner.WALLTIMEPARAM)));
+        			params.getParameterValue(JobsRunner.WALLTIMEPARAM)));
         }
-        if (hasParameter(ParallelRunner.WAITTIMEPARAM))
+        if (hasParameter(JobsRunner.WAITTIMEPARAM))
         {
         	parallRun.setWaitingStep(Long.parseLong(
-        			params.getParameterValue(ParallelRunner.WAITTIMEPARAM)));
+        			params.getParameterValue(JobsRunner.WAITTIMEPARAM)));
         }
         parallRun.setVerbosity(verbosity);
         parallRun.start();
@@ -808,15 +949,16 @@ public class Job implements Runnable
 
     /**
      * Sends this job to an executing thread managed by an existing, and
-     * pre-started thread manager. This method is overwritten by subclasses 
+     * pre-started execution service. This method is overwritten by subclasses 
      * that need special kinds of execution. For example, see 
      * {@link MonitoringJob}.
-     * @param tpExecutor the manager of the job executing threads.
+     * @param executor the execution service.
      * @return a Future representing pending completion of the task.
      */
     
-  	protected Future<?> submitThread(ScheduledThreadPoolExecutor tpExecutor) {
-  		return tpExecutor.submit(this);
+  	@SuppressWarnings("unchecked")
+	protected Future<Object> submitThread(ExecutorService executor) {
+  		return (Future<Object>) executor.submit(this);
   	}
     
 //------------------------------------------------------------------------------
@@ -953,12 +1095,40 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * @return <code>true</code> if the job has been completed
+     * @return <code>true</code> if the job has been completed.
      */
 
     public boolean isCompleted()
     {
         return completed;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return <code>true</code> if the job has been started.
+     */
+
+    public boolean isStarted()
+    {
+        return started;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * This method resets any information about the running of this job so that
+     * it looks as if it had never run.
+     */
+    public void resetRunStatus()
+    {
+    	started = false;
+    	completed = false;
+    	jobIsBeingKilled = false;
+    	isInterrupted = false;
+    	hasException = false;
+    	thrownExc = null;
+    	exposedOutput.clear();
     }
 
 //------------------------------------------------------------------------------
@@ -984,7 +1154,7 @@ public class Job implements Runnable
 
     /**
      * Sets the status to 'complete' and notifies any listener that might be 
-     * listening to this job
+     * listening to this job.
      */
     private void finalizeStatusAndNotifications(boolean notify) 
     {
@@ -1001,20 +1171,11 @@ public class Job implements Runnable
 	        	}
 	        }
     	}
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Produced a text representation of this job following the format of
-     * autocompchem's JobDetail text file, but collecting the text in
-     * a {@link TextBlockIndexed}
-     * @return the list of lines ready to print a jobDetails file.
-     */
-
-    public TextBlockIndexed toTextBlockJobDetails()
-    {
-    	return new TextBlockIndexed(toLinesJobDetails(), 0, 0, 0);
+    	// We do this to liberate memory
+    	if (hasParent())
+    	{
+    		parentJob.removeChild(this);
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -1025,9 +1186,9 @@ public class Job implements Runnable
      * @return the list of lines ready to print a jobDetails file.
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
-        ArrayList<String> lines= new ArrayList<String>();
+        List<String> lines= new ArrayList<String>();
         lines.add(ParameterConstants.STARTJOB);
         lines.addAll(params.toLinesJobDetails());
         for (int step = 0; step<steps.size(); step++)
@@ -1045,9 +1206,9 @@ public class Job implements Runnable
    {
 	   if (o == this)
 		   return true;
-	   
-	   if (!(o instanceof Job))
-    		return false;
+       
+       if (o.getClass() != getClass())
+           return false;
 	   
 	   Job other = (Job) o;
 	   

@@ -38,13 +38,13 @@ public class ScoreCollectorTest
     public void testGettingKeyWithSameSCValues() throws Exception
     {
         ScoreCollector tsc = new ScoreCollector();
-        Situation n1 = new Situation("N1");
+        Situation n1 = new Situation("case", "N1");
         MatchText mcA = new MatchText("AA",InfoChannelType.LOGFEED);
         n1.addCircumstance(mcA);
         MatchText mcB = new MatchText("BB",InfoChannelType.LOGFEED);
         n1.addCircumstance(mcB);
 
-        Situation n2 = new Situation("N2");
+        Situation n2 = new Situation("case", "N2");
         n2.addCircumstance(mcA);
 
         SCPair scp1 = new SCPair(n1,mcA);

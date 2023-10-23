@@ -1,5 +1,6 @@
 package autocompchem.datacollections;
 
+import java.io.File;
 import java.lang.reflect.Type;
 
 /*
@@ -28,17 +29,14 @@ import java.util.Set;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
-import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
-import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
@@ -260,23 +258,6 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Store a parameter with the given reference name and value, and the value
-     * is to be considered a string.
-     * If the parameter already
-     * exists, it will be overwritten.
-     * @param ref the reference name of the parameter.
-     * @param value the value of the parameter to be stored as a string.
-     */
-
-    public void setParameter(String ref, Object value)
-    {
-        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 
-        		value.toString())); 
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
      * Store a parameter with the given reference name, type, and value. 
      * If the parameter already
      * exists, it will be overwritten.
@@ -313,10 +294,10 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param paramFile name of the text file to read.
      */
 
-    public void importParameters(String paramFile) 
+    public void importParameters(File file) 
     {
         //Get filled form
-        ArrayList<ArrayList<String>> form = IOtools.readFormattedText(paramFile,
+        List<List<String>> form = IOtools.readFormattedText(file,
                                                    ParameterConstants.SEPARATOR,
                                                  ParameterConstants.COMMENTLINE,
                                               ParameterConstants.STARTMULTILINE,
@@ -347,21 +328,18 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 
     /**
      * Read a formatted text and import all parameters
-     * @param filename pseudo file name used only for reporting errors, does
-     * not need to be an existing file. Used only for logging errors.
      * @param lines the block of lines to read
      */
 
-    public void importParametersFromLines(String filename, 
-                                                        ArrayList<String> lines)
+    public void importParametersFromLines(List<String> lines)
     {
         //Get filled form
-        ArrayList<ArrayList<String>> form = IOtools.readFormattedText(filename,
-                                                                          lines,
-                                                   ParameterConstants.SEPARATOR,
-                                                 ParameterConstants.COMMENTLINE,
-                                              ParameterConstants.STARTMULTILINE,
-                                               ParameterConstants.ENDMULTILINE);
+        List<List<String>> form = TextAnalyzer.readKeyValue(
+                lines,
+                ParameterConstants.SEPARATOR,
+                ParameterConstants.COMMENTLINE,
+                ParameterConstants.STARTMULTILINE,
+                ParameterConstants.ENDMULTILINE);
 
         //Make the ParameterStorage object
         importParameterBlocks(form);
@@ -374,11 +352,11 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @param blocks the block of text to read
      */
 
-    public void importParameterBlocks(ArrayList<ArrayList<String>> blocks)
+    public void importParameterBlocks(List<List<String>> blocks)
     {
         for (int i=0; i<blocks.size(); i++)
         {
-            ArrayList<String> signleBlock = blocks.get(i);
+            List<String> signleBlock = blocks.get(i);
             String key = signleBlock.get(0).toUpperCase();
             String value = signleBlock.get(1);
 

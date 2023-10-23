@@ -1,9 +1,9 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
-TASK: FixAndRestartGaussian 
-INFILE: ../t40.out
-NEWINPFILE: t41.inp
+TASK: PrepareInputGaussian
+INPUTGEOMETRIESFILE: ../t41-mols.sdf
 JOBDETAILSFILE: ../t41-jobDetails.json
-GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian09/
+MULTIGEOMNAMES: rrr ppp TSguess
+MULTIGEOMMODE: allInOneJob
+PATHNAMEOUTPUT: t41_qst3.inp

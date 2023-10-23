@@ -1,7 +1,5 @@
 package autocompchem.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -34,12 +32,12 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.files.FileAnalyzer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.MonitoringJob;
+import autocompchem.run.AppID;
 import autocompchem.run.ShellJob;
 
 
@@ -63,8 +61,8 @@ public class ACCJsonTest
     public void testHandlingOfJobs() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-        String jsonfile = tempDir.getAbsolutePath() + SEP + "file.json";
-    	Job job = JobFactory.createJob(Job.RunnableAppID.ACC);
+        File jsonfile = new File(tempDir.getAbsolutePath() + SEP + "file.json");
+    	Job job = JobFactory.createJob(AppID.ACC);
         job.setVerbosity(0);
         job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));
         Job nest = new ACCJob();
@@ -76,7 +74,7 @@ public class ACCJsonTest
         job.addStep(nest);
         job.addStep(new MonitoringJob());
         job.addStep(new EvaluationJob());
-        job.addStep(new Job());
+        job.addStep(JobFactory.createJob(AppID.ACC));
         CompChemJob ccj = new CompChemJob();
         ccj.setDirective(new Directive("DUMMY"));
         job.addStep(ccj);

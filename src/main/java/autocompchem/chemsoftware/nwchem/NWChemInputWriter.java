@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.nwchem;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -38,6 +40,7 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
@@ -117,10 +120,6 @@ public class NWChemInputWriter extends ChemSoftInputWriter
             	kStr = k.getName() + " ";
             }
             
-            //TODO-gg del
-            //if (dirName.equals("SET") && k.getName().equals("geometry:actlist"))
-            //	System.out.println("");
-            
             switch (k.getType())
             {
             case STRING:
@@ -160,7 +159,6 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				break;
             }
            
-            // TODO-gg verify this
             // Deal with inconsistent syntax of SET and UNSET directives
             // Yes, for some reason these two directives are written differently.
             // YEt, we now can have multiple directives with the same name ,so 
@@ -638,11 +636,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     			{
     				continue;
     			}
-    			ccjStep.setKeywordIfUnset(NWChemConstants.CHARGEDIR, 
+    			addNewKeyword(ccjStep, NWChemConstants.CHARGEDIR, 
     				"value", false, charge);
     		}
     	} else {
-    		ccj.setKeywordIfUnset(NWChemConstants.CHARGEDIR, 
+    		addNewKeyword(ccj, NWChemConstants.CHARGEDIR, 
     				"value", false, charge);
     	}
 	}
@@ -652,10 +650,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	private boolean isPhythonStep(CompChemJob ccjStep) 
 	{
 		return ccjStep.getDirective(NWChemConstants.TASKDIR)!=null &&
-				ccjStep.getDirective(NWChemConstants.TASKDIR).getKeyword(
+				ccjStep.getDirective(NWChemConstants.TASKDIR).getFirstKeyword(
 				NWChemConstants.THEORYKW)!=null &&
 						ccjStep.getDirective(NWChemConstants.TASKDIR)
-						.getKeyword(NWChemConstants.THEORYKW)
+						.getFirstKeyword(NWChemConstants.THEORYKW)
 						.getValueAsString().toUpperCase().equals("PYTHON");
 	}
 
@@ -708,7 +706,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					    + "Unable to guess where "
 						+ "to define spin multiplicity.");
 			}
-			Keyword theory =  task.getKeyword(NWChemConstants.THEORYKW);
+			Keyword theory =  task.getFirstKeyword(NWChemConstants.THEORYKW);
 			if (theory == null)
 			{
 				throw new IllegalArgumentException(NWChemConstants.TASKDIR
@@ -729,7 +727,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 		}
 		if (useDFT)
 		{
-			ccjStep.setKeywordIfUnset(NWChemConstants.DFTDIR, "mult", true, sm);	
+			addNewKeyword(ccjStep, NWChemConstants.DFTDIR, "mult", true, sm);	
 		} else if (useSCF) 
 		{
 			Directive dirSCF = ccjStep.getDirective(NWChemConstants.SCFDIR);
@@ -754,7 +752,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				Directive smDir = null;
 				for (String smStr : NWChemConstants.SCFSPINMULT)
 				{
-					smDir = dirSCF.getSubDirective(smStr);
+					smDir = dirSCF.getFirstDirective(smStr);
 					if (smDir!=null)
 					{
 						// We already have a spin multiplicity and this method
@@ -813,7 +811,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				}
 			}
 	
-			DirectiveData dd = geomDir.getDirectiveData(NWChemConstants.GEOMDIR);
+			DirectiveData dd = geomDir.getFirstDirectiveData(NWChemConstants.GEOMDIR);
 			if (dd==null)
 			{
 				dd = new DirectiveData(NWChemConstants.GEOMDIR);
@@ -831,7 +829,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
 						ChemSoftConstants.PARGEOMETRY);
 				taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
-				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, id);
+				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, 
+						NamedDataType.INTEGER, id);
 				dd.setTaskParams(taskParams);
 				
 				if (geomNames.size()==iacs.size())
@@ -1102,11 +1101,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
   	 * No special file structure required for NWChem. This method does nothing.
   	 */
   	@Override
-  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-			String outputFileName) 
-	{
-		return outputFileName;
-	}
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
+  	{
+  		return output;
+  	}
   	
 //------------------------------------------------------------------------------
 

@@ -1,9 +1,9 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
-TASK: FixAndRestartGaussian 
-INFILE: ../t13-fake.out
-NEWINPFILE: restart-t13.inp
-JOBDETAILSFILE: ../t11-jobDetails
-GAUSSIANERRORS: ../data/errorsDefAndFix/
+VERBOSITY: 1
+TASK: CureGaussianJob
+IC-LOGS: ../t13-fake.out
+JOBDEFINITION: ../t11-jobDetails.json
+SITUATIONSDBROOT: ../data/knowledgebase
+PATHNAMEOUTPUT: t14_restart.inp

@@ -2,7 +2,6 @@ package autocompchem.datacollections;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*   
@@ -52,9 +51,9 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixTest;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.situation.Situation;
-import autocompchem.run.Action;
-import autocompchem.run.Action.ActionObject;
-import autocompchem.run.Action.ActionType;
+import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.text.TextBlock;
 
 
@@ -149,7 +148,7 @@ public class NamedDataTest
     	assertTrue(NamedDataType.NORMALMODESET.equals(nd.getType()),
     			"Detecting NormalModeSet");  
     	
-    	Action a = new Action(ActionType.STOP,ActionObject.MASTERJOB);
+    	Action a = new Action(ActionType.STOP,ActionObject.FOCUSJOB);
     	nd.setValue(a);
     	assertTrue(NamedDataType.ACTION.equals(nd.getType()),
     			"Detecting Action");  

@@ -1,6 +1,8 @@
 package autocompchem.modeling.constraints;
 
 
+import java.util.Iterator;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -19,22 +21,7 @@ package autocompchem.modeling.constraints;
  */
 
 import java.util.TreeSet;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.molecule.intcoords.InternalCoord;
 

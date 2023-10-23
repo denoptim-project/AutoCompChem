@@ -21,19 +21,24 @@ import java.io.BufferedReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.IScoring;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.infochannel.InfoChannelTypeComparator;
+import autocompchem.perception.infochannel.ReadableIC;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.utils.StringUtils;
 
 /**
  * Perceptron is a neuron that collects information from a given list of 
@@ -55,6 +60,11 @@ public class Perceptron
      * Information channels base: list of available information channels
      */
     private InfoChannelBase icb;
+    
+    /**
+     * Information channels that have been visited
+     */
+    private Set<InfoChannel> previouslyReadInfoChannels = new HashSet<>();
 
     /**
      * Data structure collecting actual satisfaction scores
@@ -72,10 +82,14 @@ public class Perceptron
     private boolean iamaware = false;
 
     /**
+     * Flas enabling tolerance towards missing info channels
+     */
+    private boolean tolerateMissingIC = false;
+    
+    /**
      * Verbosity level
      */
     private int verbosity = 0;
-
 
     /**
      * New line character (for logging)
@@ -120,6 +134,24 @@ public class Perceptron
     public void setVerbosity(int l)
     {
         this.verbosity = l;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds the given info channel to the set of those that are not explored as
+     * they have been read before perception occurs. Info channels may be read
+     * prior to perception when further data has to be parsed from them. 
+     * To avoid reading them twice, we read them before perception and store
+     * the corresponding scores with 
+     * {@link Perceptron#collectPerceptionScoresForTxtMatchers(TxtQuery, List)}.
+     * Then we add them to the list of previously visited ones to avoid reading
+     * them again.
+     */
+    
+    public void setInfoChannelAsRead(InfoChannel ic)
+    {
+    	previouslyReadInfoChannels.add(ic);    	
     }
 
 //------------------------------------------------------------------------------
@@ -177,8 +209,8 @@ public class Perceptron
 //------------------------------------------------------------------------------
 
     /**
-     * Perception of situation occurring based on the available information 
-     * channels and situation base.
+     * Perception of situation that is occurring and do it based on the 
+     * available information channels and situation base.
      */
 
     public void perceive() throws Exception
@@ -227,35 +259,36 @@ public class Perceptron
         String init = "Perception result: ";
         switch (occurringSituations.size())
         {
-            case 0:
-                if (verbosity > 1)
-                {
-                    System.out.println(init + "Unknown situation");
-                }
-                break;
-            case 1:
-                iamaware = true;
-                if (verbosity > 1)
-                {
-                    System.out.println(init + "Known situation is " 
-                                                  + occurringSituations.get(0));
-                }
-                break;
-           default:
-                if (verbosity > 1)
-                {
-                	StringBuilder sb = new StringBuilder();
-                	sb.append(init + "Confusion - The situation matches "
-                			+ "multiple known situation. You may have to make "
-                            + "the situations more specific as to "
-                            + "disctiminate between these: ");
-                	for (Situation s : occurringSituations)
-                	{
-                		sb.append(s.getRefName()).append(" ");
-                	}
-                    System.out.println(sb.toString());
-                }
-                break;
+        case 0:
+            if (verbosity > 1)
+            {
+                System.out.println(init + "No situation has been detected");
+            }
+            break;
+            
+        case 1:
+            iamaware = true;
+            if (verbosity > 0)
+            {
+                System.out.println(init + "Known situation is " 
+                		+ occurringSituations.get(0).getRefName());
+            }
+            break;
+            
+       default:
+            if (verbosity > 0)
+            {
+            	List<String> names = new ArrayList<String>();
+            	occurringSituations.stream().forEach(s -> names.add(
+            			s.getRefName()));
+            	String msg = init + "Confusion - The situation matches "
+            			+ "multiple known situation. You may have to make "
+                        + "the situations more specific as to "
+                        + "disctiminate between these: " 
+                        + StringUtils.mergeListToString(names, ", ", true);
+                System.out.println(msg);
+            }
+            break;
         }
     }
 
@@ -265,8 +298,8 @@ public class Perceptron
      * Evaluates if a circumstance is satisfied. This recalls previous 
      * evaluations, or runs the evaluation if the result is not already
      * available.
-     * @param n the Situation owning the ICircumstance this evaluation
-     * @param c the actual ICircumstance to be evaluated 
+     * @param n the situation in which the circumstance is evaluated.
+     * @param c the actual circumstance to be evaluated.
      */
 
     private void evaluateOneCircumstance(Situation n, ICircumstance c)
@@ -275,34 +308,28 @@ public class Perceptron
 
         if (oldKey != null)
         {
-            //Previous evaluation exists in the scores collector 
-        }
-        else
-        {
+            // Previous evaluation exists in the scores collector. Nothing to do.
+        } else {
             SCPair scp = new SCPair(n,c);
-
-            if (verbosity > 3)
-            {
-                System.out.println("-?-> Evaluating SCPair: " 
-                                                            + scp.toIDString());
-                if (verbosity > 4)
+            
+            if (!(c instanceof IScoring))
+            	return;
+            
+            IScoring sc = (IScoring) c;
+            
+            // evaluate circumstance now
+            double score = 1.0;
+            
+            // Scan all the input channels of relevant type
+            for (InfoChannel ic : icb.getChannelsOfType(c.getChannelType()))
+            {	
+                if (verbosity > 2)
                 {
-                    System.out.println("     Child ICircumstance: "+c);
-                    System.out.println("     Parent Situation: " + n);
+                    System.out.println(newline +"Scanning InfoChannel: "+ic);
                 }
+                
+                score = score * sc.calculateScore(ic);
             }
-
-            //evaluate circumstance now
-            double score = 0.0;
-
-            //TODO: write method
-//TODO del
-System.out.println("has txt: " + c.requiresTXTMatch());
-System.out.println("     Child ICircumstance: "+c);
-System.out.println("     Parent Situation: " + n);
-this.printScores();
-            String msg = "ERROR! Evaluation of circumstances not based on text is still to be implemented.";
-            Terminator.withMsgAndStatus(msg,-1);
 
             scoreCollector.addScore(scp, score);
         }
@@ -315,7 +342,7 @@ this.printScores();
      * handling of text-matching queries. Different Situations may require 
      * to analyse the text of the same text-based source of information. Thus,
      * to avoid reading the same source multiple times, we collect all the
-     * text queries and analyse meant for a single source and read the source 
+     * text queries and analyses meant for a single source and read the source 
      * only one time. 
      * <b>WARNING: currently supporting only file-based InfoChannels.</b>
      * <b>WARNING: assuming all text-queries are single line. No new-line!</b>
@@ -324,8 +351,8 @@ this.printScores();
     private void analyzeAllText()
     {
         //Sort info source by type.
-        Map<InfoChannelType,ArrayList<Situation>> situationsByICType = 
-                                             sitsBase.getRelevantSituationsByICT(icb);
+        Map<InfoChannelType,List<Situation>> situationsByICType = 
+        		sitsBase.getRelevantSituationsByICT(icb);
 
 //TODO del
 //System.out.println("The relevant Situations are:");
@@ -355,9 +382,6 @@ this.printScores();
         }
 */
 
-        // Utility for comparing InfoChannelTypes
-        InfoChannelTypeComparator ictComparator =
-                                                new InfoChannelTypeComparator();
 
         // Explore all the information channels by type, so that we can take all
         // the Circumstances that involve such channel type
@@ -367,249 +391,237 @@ this.printScores();
             {
                 System.out.println(newline+newline+"InfoChannelType: "+ict);
             }
-
-            // Here we collect all the text queries removing duplicates
-            // The queries are collected also as objects to keep track of
-            // the combination of Situation and ICircumstance they belong to.
-            ArrayList<TxtQuery> txtQueries = new ArrayList<TxtQuery>();
-            // and in as plain strings to be send to text parser
-            ArrayList<String> txtQueriesAsStr = new ArrayList<String>();
-            for (Situation s : situationsByICType.get(ict))
-            {
-                for (ICircumstance c : s.getCircumstances())
-                {
-                    if (c.requiresTXTMatch() && 
-                        ictComparator.checkCompatibility(ict,
-                                                         c.getChannelType())) 
-                    {
-                        String queryStr = ((MatchText) c).getPattern();
-
-                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        //
-                        // WARNING!!!
-                        // No handling of multiline matches!!!!
-                        //
-                        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                        // Keep only one text query among duplicates
-                        if (txtQueriesAsStr.contains(queryStr))
-                        {
-                            TxtQuery tq = txtQueries.get(
-                                           txtQueriesAsStr.indexOf(queryStr));
-                            tq.addReference(s,c);
-                        }
-                        else
-                        {
-                            txtQueries.add(new TxtQuery(queryStr,s,c));
-                            txtQueriesAsStr.add(queryStr);
-                        }
-                    }
-                }  
-            }
-
+            
+            List<TxtQuery> txtQueries = new ArrayList<TxtQuery>(
+            		sitsBase.getAllTxTQueriesForICT(ict, true));
+            
             // Scan all the input channels of the present type
             for (InfoChannel ic : icb.getChannelsOfType(ict))
             {
+            	if (previouslyReadInfoChannels.contains(ic))
+            		continue;
+            	
+            	if (!(ic instanceof ReadableIC))
+            		continue;
+            	
                 if (verbosity > 2)
                 {
                     System.out.println(newline +"Scanning InfoChannel: "+ic);
                 }
-
-                BufferedReader br = null;
-                TreeMap<String,ArrayList<String>> allMatches = null;
-                try 
+                
+                Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(
+                		txtQueries, ic, tolerateMissingIC, 0);
+                for (TxtQuery tq : matches.keySet())
                 {
-                    br = new BufferedReader(ic.getSourceReader());
-
-                    // Extract potentially useful information from text
-                    // WARNING!!! No attempt to match multiline blocks here!
-                     allMatches = 
-                           TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
-                                                        txtQueriesAsStr,
-                                                        new ArrayList<String>(),
-                                                        new ArrayList<String>(),
-                                                        false,
-                                                        true);
-                }
-                catch (Exception e)
-                {
-                    String msg = "ERROR reading InfoChannel "+ic;
-                    Terminator.withMsgAndStatus(msg,-1);
-                }
-                finally
-                {
-                    if (br != null)
-                    {
-                        try
-                        {
-                            br.close();
-                        }
-                        catch (Exception e)
-                        {
-                            String msg = "ERROR closing InfoChannel "+ic;
-                            Terminator.withMsgAndStatus(msg,-1);
-                        }
-                    }
-                }
-
-                // Identify the queries that have matches
-                Map<Integer,ArrayList<String>> textQueriesWMatches = 
-                                       new HashMap<Integer,ArrayList<String>>();
-                for (String strQuery : allMatches.keySet())
-                {
-                    // The matches are returned with a key that contains
-                    // numerical indexes a_b_c.  For details,
-                    // see TextAnalyzer.extractMapOfTxtBlocksWithDelimiters.
-                    // First, we deal with the indexes
-                    String[] parts = strQuery.split("_");
-                    //...and get the index of the query given to FileAnalyzer
-                    int qID = Integer.parseInt(parts[1]); // the 'b'
-                    if (textQueriesWMatches.keySet().contains(qID))
-                    {
-                        textQueriesWMatches.get(qID).add(strQuery);
-                    }
-                    else
-                    {
-                        ArrayList<String> strQryKeys = new ArrayList<String>();
-                        strQryKeys.add(strQuery);
-                        textQueriesWMatches.put(qID,strQryKeys);
-                    }
-                }
-
-                // Process matched and unmatched queries
-                for (int qID = 0; qID < txtQueriesAsStr.size(); qID++)
-                {
-                    TxtQuery tq = txtQueries.get(qID);
                     if (verbosity > 4)
                     {
                         System.out.println("Result for text query "+tq);
                     }
-
-                    ArrayList<String> matches = new ArrayList<String>(0);
-                    if (textQueriesWMatches.keySet().contains(qID))
+                    
+                    if (matches.get(tq).size()!=0)
                     {
-                        // This text query has been matched 
-                        for (String strQuery : textQueriesWMatches.get(qID))
-                        {
-                            matches.addAll(allMatches.get(strQuery));
-                        }
-
                         if (verbosity > 3)
                         {        
-                             System.out.println("Matches for text query '" 
-                            		 + txtQueriesAsStr.get(qID) + "' = "
+                             System.out.println("#Matches for text query '" 
+                            		 + tq.query + "' = "
                             		 + matches.size() + ". Lines:");
-                            for (String m : matches)
+                            for (String m : matches.get(tq))
                             {
                                 System.out.println("  ->  " + m);
                             }
                         }
-                    }
-                    else 
-                    {
-                        //This is a text query that does NOT have any match
+                    } else {
                         if (verbosity > 3)
                         {        
                             System.out.println("No matches for text query '"
-                                             + txtQueriesAsStr.get(qID) + "'");
+                                             + tq.query + "'");
                         }
                     }
 
-                    // Add scores for all the Situation:ICircumnstance that 
-                    // include this text query
-                    for (SCPair sc: tq.sources)
-                    {
-                        Situation s = sc.getSituation();
-                        ICircumstance c = sc.getCircumstance();
-
-                        double score = ((MatchText)c).calculateScore(matches);
-
-                        //The resulting score can be zero even if the text has
-                        // been matched. For instance, when we don't want to 
-                        // find a string in a log feed, but, instead, we find 
-                        // it (i.e., negation of of a MatchText circumstance)
-                        // Therefore wi store also zero scores
-
-                        // Finally store the score
-                        scoreCollector.addScore(s,c,score);
-                    }
+                    // Collect scores afterwards
+                    collectPerceptionScoresForTxtMatchers(tq, matches.get(tq));
                 } //End loop over queries
             } // end loop over InfoChannels
-        } // End loop over InfoChannelTypes
-
-/*
-TODO NOtes:
-- the same mathes can be on the same feed
-- there might be further analysis to be done on the extracted text (e.g., for loop counter of output file analysis)
-*/
-        
+        } // End loop over InfoChannelTypes   
     }
+    
+//------------------------------------------------------------------------------
+    
+    public void collectPerceptionScoresForTxtMatchers(TxtQuery tq, 
+    		List<String> matches)
+    {
+        // Add scores for all the Situation:ICircumnstance that 
+        // include this text query
+        for (SCPair sc: tq.sources)
+        {
+            Situation s = sc.getSituation();
+            ICircumstance c = sc.getCircumstance();
 
+            double score = ((MatchText)c).calculateScore(matches);
+
+            //The resulting score can be zero even if the text has
+            // been matched. For instance, when we don't want to 
+            // find a string in a log feed, but, instead, we find 
+            // it (i.e., negation of a MatchText circumstance)
+            // Therefore we store also zero scores.
+
+            // Finally store the score
+            scoreCollector.addScore(s,c,score);
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Reads a feed searching for lines matching the given list of queries.
+     * @param txtQueries the queries defining what to search for in the text.
+     * @param ic channel we are reading now (only for logging).
+     * @param tolerant use <code>true</code> to simply skip info channels that
+     * cannot be read. Use <code>false</code> to trigger error upon finding
+     * that an info channel cannot be read.
+     * @param verbosity the level of verbosity (only for logging).
+     * @return a mapping of what lines matches which query.
+     */
+    public static Map<TxtQuery,List<String>> getTxtMatchesFromICReader(
+    		List<TxtQuery> txtQueries, InfoChannel ic, boolean tolerant,
+    		int verbosity)
+    {	
+    	List<String> txtQueriesAsStr = new ArrayList<String>();
+        txtQueries.stream().forEach(tq -> txtQueriesAsStr.add(tq.query));
+        
+        // Check readability
+        ReadableIC ric = null;
+        if (ic instanceof ReadableIC)
+        	ric = (ReadableIC) ic;
+        
+        if (ric==null || !ric.canBeRead())
+        {
+        	if (tolerant)
+        	{
+        		Map<TxtQuery,List<String>> emptyResult = 
+                		new HashMap<TxtQuery,List<String>>();
+                for (int qIdx = 0; qIdx < txtQueriesAsStr.size(); qIdx++)
+                {
+                    TxtQuery tq = txtQueries.get(qIdx);
+                    emptyResult.put(tq, new ArrayList<String>());
+                }
+                return emptyResult;
+        	} else {
+        		throw new IllegalStateException("Unreadable info channel "+ic);
+        	}
+        }
+
+        // The keys are "a_b_c" where b is the index of the string query
+        // in txtQueriesAsStr
+        TreeMap<String,List<String>> allMatches = null;
+        BufferedReader br = new BufferedReader(ric.getSourceReader());
+        try 
+        {   // Extract potentially useful information from text
+            // WARNING!!! No attempt to match multi-line blocks here!
+            allMatches = 
+            		TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
+                                                txtQueriesAsStr,
+                                                new ArrayList<String>(),
+                                                new ArrayList<String>(),
+                                                false,
+                                                true);
+        } catch (Exception e) {
+            String msg = "ERROR reading InfoChannel "+ic;
+            Terminator.withMsgAndStatus(msg, -1);
+        } finally {
+            if (br != null)
+            {
+                try
+                {
+                    br.close();
+                } catch (Exception e) {
+                    String msg = "ERROR closing InfoChannel "+ic;
+                    Terminator.withMsgAndStatus(msg,-1);
+                }
+            }
+        }
+        
+        // We now need to convert the "a_b_c" string from allMatches into
+        // references to the TxtQuery objects.
+        
+        // First create a mapping between TxtQuery identifier (key) and the 
+        // "a_b_c" strings (value. The key on this map is the
+        // index of the TxtQuery.patterm string in txtQueriesAsStr and of the 
+        // corresponding TxtQuery object in txtQueries. 
+        // The value is the list of "a_b_c"
+        // Strings that identify the matches. They are many because the string
+        // may have been found multiple times in the channel.
+        Map<Integer,List<String>> matchesIDsbyTxtQueryIdx = 
+                               new HashMap<Integer,List<String>>();
+        for (String strQuery : allMatches.keySet())
+        {
+            // The matches are returned with a key that contains
+            // numerical indexes a_b_c.  For details,
+            // see TextAnalyzer.extractMapOfTxtBlocksWithDelimiters.
+            // First, we deal with the indexes
+            String[] parts = strQuery.split("_");
+            //...and get the index of the query given to TextAnalyzer
+            int qID = Integer.parseInt(parts[1]); // the 'b'
+            if (matchesIDsbyTxtQueryIdx.keySet().contains(qID))
+            {
+            	matchesIDsbyTxtQueryIdx.get(qID).add(strQuery);
+            } else {
+                List<String> strQryKeys = new ArrayList<String>();
+                strQryKeys.add(strQuery);
+                matchesIDsbyTxtQueryIdx.put(qID,strQryKeys);
+            }
+        }
+    	
+        Map<TxtQuery,List<String>> mapOfMatches = 
+        		new HashMap<TxtQuery,List<String>>();
+        for (int qIdx = 0; qIdx < txtQueriesAsStr.size(); qIdx++)
+        {
+            TxtQuery tq = txtQueries.get(qIdx);
+
+            // The lines that match the present text query
+            List<String> matches = new ArrayList<String>();
+            if (matchesIDsbyTxtQueryIdx.keySet().contains(qIdx))
+            {
+                // This text query has been matched, so collect matching lines.
+                for (String strQuery : matchesIDsbyTxtQueryIdx.get(qIdx))
+                {
+                    matches.addAll(allMatches.get(strQuery));
+                }
+
+                if (verbosity > 3)
+                {        
+                     System.out.println("Matches for text query '" 
+                    		 + txtQueriesAsStr.get(qIdx) + "' = "
+                    		 + matches.size() + ". Lines:");
+                    for (String m : matches)
+                    {
+                        System.out.println("  ->  " + m);
+                    }
+                }
+            } else {
+                //This is a text query that does NOT have any match
+                if (verbosity > 3)
+                {        
+                    System.out.println("No matches for text query '"
+                                     + txtQueriesAsStr.get(qIdx) + "'");
+                }
+            }
+            mapOfMatches.put(tq, matches);
+        }
+    	return mapOfMatches;
+    }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Utility class representing a text query that is associated with one or
-     * more pairs of situation:circumstance/s
+     * Sets the possibility to tolerate the absence of some info channel.
+     * @param tolerateMissingIC use <code>true</code> to consider the absence
+     * of an info channel as lack of verification of a circumstance.
      */
-
-    private class TxtQuery
-    {
-        /**
-         * The text query
-         */
-        public String query = "";
-
-        /**
-         * List of sources as
-         * pairs of Situation and Circumstance that require matching
-         * this very same text.
-         */
-        public ArrayList<SCPair> sources = new ArrayList<SCPair>();
-
-    //-------------------------------------------------------------------------
-
-        /**
-         * Constructor with arguments
-         * @param query the actual text query 
-         * @param n the source situation that includes the circumstance 
-         * that include the query.
-         * @param c the circumstance that requires the query
-         */
-
-        public TxtQuery(String query, Situation n, ICircumstance c)
-        {
-            this.query = query;
-            this.sources.add(new SCPair(n,c));
-        }
-
-    //-------------------------------------------------------------------------
-
-        /**
-         * Add a pair of references
-         * @param n the source situation that includes the circumstance
-         * that include the query.
-         * @param c the circumstance that requires the query
-         */
-
-        public void addReference(Situation n, ICircumstance c)
-        {
-            this.sources.add(new SCPair(n,c));
-        }
-
-    //-------------------------------------------------------------------------
-        public String toString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[TxtQuery '"+query+"' in sources:").append(newline);
-            for (SCPair nc : sources)
-            {
-                sb.append("   -> "+nc.toString());
-            }
-            sb.append("]");
-            return sb.toString();
-        }
-    }
+	public void setTolerantMissingIC(boolean tolerateMissingIC) 
+	{
+		this.tolerateMissingIC = tolerateMissingIC;
+	}
 
 //------------------------------------------------------------------------------
  

@@ -1,11 +1,9 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-# Just evaluate the output and identify the error (if any)
-#
-VERBOSITY: 2
-TASK: FixAndRestartGaussian
-INFILE: ../t12.out
-NEWINPFILE: t12.inp
-JOBDETAILSFILE: ../t12.jd
-GAUSSIANERRORS: ../data/errorsDefAndFix/gaussian03
+VERBOSITY: 1
+TASK: CureGaussianJob
+IC-LOGS: ../t12-gaussian.out
+JOBDEFINITION: ../t12-jobDetails.json
+SITUATIONSDBROOT: ../data/knowledgebase/gaussian
+PATHNAMEOUTPUT: t12_restart.inp

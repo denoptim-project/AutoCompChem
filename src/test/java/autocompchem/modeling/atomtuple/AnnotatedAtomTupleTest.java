@@ -8,24 +8,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 
 public class AnnotatedAtomTupleTest 
 {
+
+    private IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 
 //------------------------------------------------------------------------------
 
@@ -48,7 +51,7 @@ public class AnnotatedAtomTupleTest
     	valuedAttributes.put("AttC".toUpperCase(), "valueC valueCC");
     	valuedAttributes.put("AttD".toUpperCase(), "valueD");
     	valuedAttributes.put("AttE".toUpperCase(), "");
-    	ConnectivityTable ct = new ConnectivityTable();
+    	NearestNeighborMap ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new ArrayList<Integer>(
     			Arrays.asList(2)));
     	ct.addNeighborningRelation(2, new ArrayList<Integer>(
@@ -61,6 +64,7 @@ public class AnnotatedAtomTupleTest
     			booleanAttributes, valuedAttributes, ct, 12);
     	return aat;
     }
+    
 //------------------------------------------------------------------------------
 
     @Test
@@ -148,6 +152,62 @@ public class AnnotatedAtomTupleTest
 
     	AnnotatedAtomTuple clone = original.clone();
 	    assertEquals(clone, fromJson);
+    }
+    
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testNeighborsDetection() throws Exception
+    {
+		IAtomContainer mol = builder.newAtomContainer();
+		String[] elements = new String[]{"C", "O", "N", "P", "H"};
+        for (int i=0; i<elements.length; i++)
+        {
+            IAtom atom = builder.newAtom();
+            atom.setSymbol(elements[i]);
+            atom.setPoint3d(new Point3d(0.0, 0.0, Double.valueOf(i)));
+            mol.addAtom(atom);
+            if (i>0 && i<4)
+                mol.addBond(i-1, i, IBond.Order.SINGLE);
+        }
+        mol.addBond(2, 4, IBond.Order.SINGLE);
+        
+        /*
+         *         H4
+         *        /
+         * C0-O1-N2-P3
+         * 
+         */
+        
+        AnnotatedAtomTuple tuple = new AnnotatedAtomTuple(Arrays.asList(
+        		mol.getAtom(0), mol.getAtom(1)), mol);
+        //NB: arguments of areNeighbors() are list indexes (not atom indexes!)
+        assertTrue(tuple.areNeighbors(0, 1)); 
+        
+        tuple = new AnnotatedAtomTuple(Arrays.asList(
+        		mol.getAtom(0), mol.getAtom(2)), mol);
+        assertFalse(tuple.areNeighbors(0, 1)); 
+        
+        tuple = new AnnotatedAtomTuple(Arrays.asList(
+        		mol.getAtom(1), mol.getAtom(0)), mol);
+        assertTrue(tuple.areNeighbors(0, 1)); 
+        
+        tuple = new AnnotatedAtomTuple(Arrays.asList(
+        		mol.getAtom(1), mol.getAtom(4)), mol);
+        assertFalse(tuple.areNeighbors(0, 1)); 
+        
+        tuple = new AnnotatedAtomTuple(Arrays.asList(
+        		mol.getAtom(0), mol.getAtom(1), mol.getAtom(2), mol.getAtom(3), 
+        		mol.getAtom(4)), mol);
+        assertTrue(tuple.areNeighbors(0, 1)); 
+        assertTrue(tuple.areNeighbors(1, 2));
+        assertTrue(tuple.areNeighbors(2, 3));
+        assertTrue(tuple.areNeighbors(2, 4)); 
+        assertFalse(tuple.areNeighbors(0, 2)); 
+        assertFalse(tuple.areNeighbors(0, 3));
+        assertFalse(tuple.areNeighbors(3, 1)); 
+        assertFalse(tuple.areNeighbors(3, 0)); 
     }
     
 //------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -19,6 +21,7 @@ package autocompchem.chemsoftware.gaussian;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.CompChemJob;
@@ -26,6 +29,7 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterUtils;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 
@@ -66,7 +70,7 @@ public class GaussianJob
     /**
      * The list of steps in this job
      */
-    private ArrayList<GaussianStep> steps = new ArrayList<GaussianStep>();
+    private List<GaussianStep> steps = new ArrayList<GaussianStep>();
 
     /**
      * the total number of steps
@@ -101,7 +105,7 @@ public class GaussianJob
 
     public GaussianJob(String inFile)
     {
-        this(IOtools.readTXT(inFile,true));
+        this(IOtools.readTXT(new File(inFile),true));
     }
 
 //------------------------------------------------------------------------------
@@ -116,7 +120,7 @@ public class GaussianJob
      * @param lines array of lines to be read
      */
 
-    public GaussianJob(ArrayList<String> lines)
+    public GaussianJob(List<String> lines)
     {
         numSteps = 0;
         ArrayList<String> linesOfAStep = new ArrayList<String>();
@@ -132,7 +136,8 @@ public class GaussianJob
                     i++;
                     String inLine = lines.get(i);
                     goon = !inLine.toUpperCase().contains(
-                                               ParameterConstants.ENDMULTILINE);                    line = line + System.getProperty("line.separator") + inLine;
+                                               ParameterConstants.ENDMULTILINE);
+                    line = line + System.getProperty("line.separator") + inLine;
                 }
                 if (goon)
                 {
@@ -358,7 +363,7 @@ public class GaussianJob
 						String subDirName = rKey.substring(3, rKey.indexOf("_$"));
 						String subkeyWLabel = rKey.substring(
 								rKey.indexOf("_$") + 1);
-	                    Directive outerDir = routeDir.getSubDirective(subDirName);
+	                    Directive outerDir = routeDir.getFirstDirective(subDirName);
 	                    boolean existed = true;
 	                    if (outerDir==null)
 	                    {
@@ -426,12 +431,23 @@ public class GaussianJob
 			for (String key : optSec.getRefNames())
 			{
 				String ddName = key.substring(3);
+				DirectiveData dd = null;
 				if (ddName.toUpperCase().equals("BASIS"))
+				{
 					ddName = "BASISSET";
-				DirectiveData dd = new DirectiveData(ddName,
+					dd = new DirectiveData(ddName,
+							new ArrayList<String>(Arrays.asList(
+											optSec.getValue(key).split(
+													System.getProperty(
+															"line.separator")))));
+				} else {
+					dd = new DirectiveData(ddName,
 						new ArrayList<String>(Arrays.asList(
-								optSec.getValue(key).split(
-										System.getProperty("line.separator")))));
+								ParameterUtils.removeMultilineLabels(
+										optSec.getValue(key)).split(
+												System.getProperty(
+														"line.separator")))));
+				}
 				if (dd.hasACCTask())
 					dd.removeValue();
 				optDir.addDirectiveData(dd);

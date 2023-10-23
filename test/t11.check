@@ -1,21 +1,26 @@
 #!/bin/bash
 
-#TODO-gg: upgrade
-echo "Skipped: to upgrade!"
-exit 0
+if ! grep -q 'The overall run did NOT terminate normally' t11.log ; then echo NOT Passed - Error 1 ; exit -1 ; fi
 
-grep -q 'Step 7 returned Error Message: e0010-QCNoLowerPoint' t11.log
-if [ $? != 0 ] ; then 
-echo NOT Passed
-exit -1
-fi
+if ! grep -q 'Perception result: Known situation is e001.0-QCNoLowerPoint' t11.log ; then echo NOT Passed - Error 2 ; exit -1 ; fi
 
+if [ ! -f 11restarted.inp ] ; then echo NOT Passed - Error 3 ; exit -1 ; fi
 
-grep -q 'Termination status: 0' t11.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if [ ! -f 11restarted.jd.json ] ; then echo NOT Passed - Error 4 ; exit -1 ; fi
+
+if ! grep -q -i "MaxConventionalCycles=1" 11restarted.inp ; then echo NOT Passed - Error 5 ; exit -1 ; fi
+
+n=$(grep -c -i "\-\-link1\-\-" 11restarted.inp)
+if [ 8 -ne "$n" ] ; then echo NOT Passed - Error 6 ; exit -1 ; fi
+
+n=$(grep -c -i '%chk=molecule_for_tests' 11restarted.inp)
+if [ 9 -ne "$n" ] ; then echo NOT Passed - Error 7 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t11.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed. ERROR 99
+  exit -1
 fi
+

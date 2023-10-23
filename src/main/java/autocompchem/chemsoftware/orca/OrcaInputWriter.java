@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.orca;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -20,6 +22,7 @@ package autocompchem.chemsoftware.orca;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,18 +39,22 @@ import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.io.IOtools;
+import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.CenterBasisSet;
+import autocompchem.modeling.basisset.ECPShell;
+import autocompchem.modeling.basisset.Primitive;
+import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -101,13 +108,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			// ONE single line.
 			for (Keyword k : d.getAllKeywords())
 			{
-				if (k.isLoud())
-				{
-					lines.add("#" + k.getName() + " " + k.getValueAsString());
-				} else
-				{
-					lines.add("#" + k.getValueAsString());	
-				}
+				lines.add("#"+k.toString(" "));
 			}
 			// Sub directives and DirectiveData are not suitable for Orca's
 			// "keyword line", so we do not expect them
@@ -149,14 +150,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				String line = "!";
 				for (Keyword k : d.getAllKeywords())
 				{
-					if (k.isLoud())
-					{
-						line = line + " " + k.getName() + " " 
-								+ k.getValueAsString();
-					} else
-					{
-						line = line + " " + k.getValueAsString();
-					}
+					line = line + " " + k.toString(" ");
 				}
 				// Sub directives and DirectiveData are not suitable for Orca's
 				// "keyword line", so we do not expect them
@@ -179,15 +173,22 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			case ("*"):
+			case ("*"): // OrcaConstants.STARDIRNAME
 			{
 				lines.addAll(getTextForCoordsBlock(d,true));
 				break;
 			}
 			
-			case ("COORDS"):
+			case ("COORDS"): // OrcaConstants.COORDSDIRNAME
 			{
-				lines.addAll(getTextForCoordsBlock(d,false));
+				String pre = "";
+				if (outmost)
+				{
+					pre = "%";
+				}
+				List<String> dirLines = getTextForCoordsBlock(d,false);
+				dirLines.set(0, pre+dirLines.get(0));
+				lines.addAll(dirLines);
 				break;
 			}
 			
@@ -197,11 +198,14 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			//TODO: add handling of customized basis set
-			// see https://www.researchgate.net/post/How_to_create_ORCA_input_and_insert_the_basis_sets_manually
+			//TODO-gg: remove?!
 			/*
-			case ("BASIS"):
+			case ("BASIS"): // OrcaConstants.BASISSETDIRNAME
 			{
+			    // NB: here we deal with any basis set information that is not 
+			    // specific to a center identified by index in the list of atoms.
+			    // Those are projected into the COORDS directive by the 
+			    // preProcessingJob() method. See also getTextForCoordsBlock().
 				lines.addAll(getTextForBasisSetDirective(d));
 				break;
 			}
@@ -219,13 +223,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				
 				for (Keyword k : d.getAllKeywords())
 				{
-					if (k.isLoud())
-					{
-						line = line + " " + k.getName() + " "
-								+ k.getValueAsString();
-					} else {
-						line = line + " " + k.getValueAsString();
-					}
+					line = line + " " + k.toString(" ");
 				}
 				lines.add(line);
 				
@@ -415,44 +413,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		{
 			line = "*";
 		} else {
-			line = "%coords";
-		}
-		
-		// Ensure we have the right keyword 
-		if (d.hasComponent(ChemSoftConstants.DIRDATAGEOMETRY, 
-				DirectiveComponentType.DIRECTIVEDATA))
-		{
-			DirectiveData dd = d.getDirectiveData(
-					ChemSoftConstants.DIRDATAGEOMETRY);
-			switch (dd.getType())
-			{
-				//TODO:
-				/*
-				case ZMATRIX:
-				{
-					break;
-				}
-				*/
-				case IATOMCONTAINER:
-				default:
-				{
-					d.setKeyword(new Keyword(ChemSoftConstants.PARCOORDTYPE,
-			        		false, CoordsType.XYZ.toString()));
-					break;
-				}
-			}
+			line = "coords";
 		}
 		
 		d.sortKeywordsBy(new CoordsKeywordsComparator());
 		for (Keyword k : d.getAllKeywords())
 		{
-			//TODO-gg this is what the toString() method of Keyword should do!
-			if (k.isLoud())
-			{
-				line = line + " " + k.getName() + " " + k.getValueAsString();
-			} else {
-				line = line + " " + k.getValueAsString();
-			}
+			line = line + " " + k.toString(" ");
 		}
 		lines.add(line);
 		
@@ -472,6 +439,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				Object o = dd.getValue();
 				switch (dd.getType())
 				{
+				
+					//TODO: you can save atom-specific basis set into the atom
+				    // and retrieve then here. This because ORCA only accepts 
+				    // atom specific information into the coords/xyz directive.
+				
 					case IATOMCONTAINER:
 					{
 						IAtomContainer mol = (IAtomContainer) o;
@@ -572,18 +544,33 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
 		if (dCoords==null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARCHARGE, false, charge);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSCHARGEDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARCHARGE, false, charge));
 		} else if (dCoords!=null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARCHARGE, false, charge);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSCHARGEDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARCHARGE, false, charge));
 		} else if (dCoords==null && dStar!=null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-			ChemSoftConstants.PARCHARGE, false, charge);
+			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
+					ChemSoftConstants.PARCHARGE, false, charge);
+		} else {
+			Terminator.withMsgAndStatus("ERROR! Neither '"
+				+ OrcaConstants.COORDSDIRNAME + "' nor '"
+				+ OrcaConstants.STARDIRNAME + "' directive found. "
+				+ "Cannot place charge info onto the"
+				+ "definition of the system.", -1);
 		}
-		//One or the other directive must be present!
 	}
 
 //------------------------------------------------------------------------------
@@ -621,17 +608,33 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
 		if (dCoords==null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARSPINMULT, false, sm);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSMULTDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARSPINMULT, false, sm));
 		} else if (dCoords!=null && dStar==null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.COORDSDIRNAME, 
-			ChemSoftConstants.PARSPINMULT, false, sm);
+	    	DirComponentAddress adrs = new DirComponentAddress();
+	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	adrs.addStep(OrcaConstants.COORDSMULTDIRNAME, 
+	    			DirectiveComponentType.DIRECTIVE);
+	    	addNewValueContainer(ccj, adrs, new Keyword(
+	    			ChemSoftConstants.PARSPINMULT, false, sm));
 		} else if (dCoords==null && dStar!=null)
 		{
-			ccj.setKeywordIfUnset(OrcaConstants.STARDIRNAME, 
-			ChemSoftConstants.PARSPINMULT, false, sm);
-		}
+			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
+					ChemSoftConstants.PARSPINMULT, false, sm);
+		} else {
+			Terminator.withMsgAndStatus("ERROR! Neither '"
+					+ OrcaConstants.COORDSDIRNAME + "' nor '"
+					+ OrcaConstants.STARDIRNAME + "' directive found. "
+					+ "Cannot place multiplicity info onto the"
+					+ "definition of the system.", -1);
+			}
 	}
 	
 //------------------------------------------------------------------------------
@@ -663,6 +666,9 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	    	for (int i=0; i<job.getNumberOfSteps(); i++)
 			{
 				CompChemJob step = (CompChemJob) job.getStep(i);
+				
+	    		preProcessingJob(step);
+	    		
 				Iterator<Directive> it = step.directiveIterator();
 				while (it.hasNext())
 				{
@@ -674,7 +680,20 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					lines.add(OrcaConstants.JOBSEPARATOR);
 				}
 			}
+    	} else if (job.getNumberOfSteps()==1) {
+    		System.out.println(NL + "WARNING! Found a multistep job with only "
+    				+ "one step. I assume you menat to prepare the input for"
+    				+ "a single step job." + NL);
+    		CompChemJob step = (CompChemJob) job.getStep(0);
+    		preProcessingJob(step);
+    		Iterator<Directive> it = step.directiveIterator();
+			while (it.hasNext())
+			{
+				Directive d = it.next();
+				lines.addAll(getTextForInput(d, true));
+			}
     	} else {
+    		preProcessingJob(job);
     		Iterator<Directive> it = job.directiveIterator();
 			while (it.hasNext())
 			{
@@ -693,12 +712,228 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	 * No special file structure required for Orca. This method does nothing.
 	 */
 	@Override
-	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
-  		return outputFileName;
+  		return output;
   	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Does nay pre-processing of a single job step. This is meant for any task
+	 * that needs to be done within a job step as to alter the directive to 
+	 * adhere to Orca's idiosyncrasies, such as the handling of atom-specific
+	 * basis set inside the directive defining coordinates. 
+	 */
+	private void preProcessingJob(CompChemJob step)
+	{
+		Directive sysDefDir = step.getDirective(OrcaConstants.COORDSDIRNAME);
+		if (sysDefDir == null) 
+		{
+			sysDefDir = step.getDirective(OrcaConstants.STARDIRNAME);
+		}
+		// NB: sysDefDir may still be null! Later we do check for null.
+		
+		// mode info on basis set, if needed
+		Directive basisSetDir = step.getDirective(OrcaConstants.BASISSETDIRNAME);
+		if (basisSetDir != null) 
+		{
+			Set<DirectiveData> ddsToRemove = new HashSet<DirectiveData>();
+			for (DirectiveData dd : basisSetDir.getAllDirectiveDataBlocks())
+			{
+				
+				if (dd.getType() != NamedDataType.BASISSET)
+					continue;
+				
+				BasisSet bs = (BasisSet) dd.getValue();
+				if (bs.hasIndexSpecificComponents())
+				{
+					if (sysDefDir == null)
+					{
+						Terminator.withMsgAndStatus("ERROR! Neither '"
+							+ OrcaConstants.COORDSDIRNAME + "' nor '"
+							+ OrcaConstants.STARDIRNAME + "' directive found. "
+							+ "Cannot project atom specific info onto the"
+							+ "definition of the system. Yet, the following "
+							+ "contains atom-specific information: " + NL
+							+ dd, -1);
+					}
+					
+					//TODO-gg: place info into COORDS directive
+					
+				} else {
+					// Convert basis set into directive for Orca
+					// Note that there are more than NewGTO and NewECP, but 
+					// their use is most probably not highly relevant for
+					// the scope of ACC applications. 
+					for (CenterBasisSet cbs : bs.centerBSs)
+					{
+						Directive bsComponentDir = new Directive("NewGTO " 
+								+ cbs.getElement());
+						bsComponentDir.addDirectiveData(
+								new DirectiveData("shells", 
+										getBSShellsLines(cbs)));
+						basisSetDir.addSubDirective(bsComponentDir);
+						
+						if (cbs.getECPShells().size() > 0)
+						{
+							Directive epcComponentDir = new Directive("NewECP " 
+									+ cbs.getElement());
+							epcComponentDir.addDirectiveData(
+									new DirectiveData("shells", 
+											getECPShellsLines(cbs)));
+							basisSetDir.addSubDirective(epcComponentDir);
+						}
+					}
+				}
+				ddsToRemove.add(dd);
+			}
+			// Now remove all directive data: they have been converted as to
+			// move the info into either sub-dirs or into the COORDS directive.
+			for (DirectiveData dd : ddsToRemove)
+				basisSetDir.deleteComponent(dd);
+		}
+	}
+
+//------------------------------------------------------------------------------
+	
+	private List<String> getBSShellsLines(CenterBasisSet cbs) 
+	{
+    	List<String> lines = new ArrayList<String>();
+    	for (Shell s : cbs.getShells())
+        {
+    		// NB: no scaling factor. Use Orca's "SCALE X statement"
+        	lines.add(String.format(Locale.ENGLISH, "%-3s %-3d",
+        			s.getType(), s.getSize()));
+        	int i = 0;
+            for (Primitive p : s.getPrimitives())
+            {
+            	i++;
+            	
+                String eForm = " %" + (p.getExpPrecision()+7) + ".7f     ";
+                String line = OrcaConstants.INDENT + i 
+                		+ String.format(Locale.ENGLISH, eForm,p.getExp());
+                
+                String cForm = " %" + (p.getCoeffPrecision()) + ".7f     ";
+                for (Double c : p.getCoeff())
+                {
+                	line = line + String.format(Locale.ENGLISH, cForm, c);
+                }
+                lines.add(line);
+            }
+        }
+        return lines;
+	}
+	
+//------------------------------------------------------------------------------
+	
+	private List<String> getECPShellsLines(CenterBasisSet cbs) 
+	{
+		List<String> lines = new ArrayList<String>();
+		
+    	lines.add("N_core " + String.format(Locale.ENGLISH, "%2d", 
+    			cbs.getElectronsInECP()));
+        lines.add("lmax " + convertAngMomentumToLetter(cbs.getECPMaxAngMom()));
+        
+        for (ECPShell s : cbs.getECPShells())
+        {
+        	lines.add(String.format(Locale.ENGLISH, "%-1s %2d", 
+        			s.getType().toLowerCase().substring(0, 1), s.getSize()));
+        	int i=0;
+            for (Primitive p : s.getPrimitives())
+            {
+            	i++;
+            	String line = OrcaConstants.INDENT + i;
+                String eForm = " %" + (p.getExpPrecision()) + ".7f     ";
+                line = line + String.format(Locale.ENGLISH, eForm, p.getExp());
+                
+                String cForm = " %" + (p.getCoeffPrecision()) + ".7f     ";
+                // NB: in Orca we expect only one coefficient
+                if (p.getCoeff().size()>1)
+                {
+                	Terminator.withMsgAndStatus("ERROR! In Orca we expect only "
+                			+ "one coefficient, but I've found " 
+                			+ p.getCoeff().size()
+                			+ " in the basis set. Change format of basis set.",
+                			-1);
+                }
+                line = line + String.format(Locale.ENGLISH, cForm, 
+                		p.getCoeff().get(0));
+
+            	// NB: rather  than ang. mom. is "radial power" in Orca.
+                line = line + String.format(Locale.ENGLISH, " %-1d", 
+                		p.getAngMmnt());
+                lines.add(line);
+            }
+        }
+    	return lines;
+	}
     
 //------------------------------------------------------------------------------
-
+	
+	/**
+	 * Maps angular momentum identifiers. Note that Orca (contrary to 
+	 * convention) includes the "j" letter. Empirical tests also show that 
+	 * the lmax in the ECP definition does not go above k, even though the 
+	 * Orca manusl (5.0.4) does mention "l" (angular momentum 9) in section 
+	 * 9.5.3.
+	 * Therefore, we use this Orca-specific
+	 * mapping of Azimuthal numbers to historical letters.
+	 */
+    
+	private String convertAngMomentumToLetter(int azimuthalNumber)
+	{
+		String l = null;
+		if (azimuthalNumber>6)
+		{
+			System.out.println(NL + NL +
+					"WARNING! since Orca (5.0.4) uses letter 'j' "
+					+ "as identifier for angular momentum with azimuthal "
+					+ "number 7, and this is contrary to the convention of "
+					+ "omitting letter 'j', you may be using the wrong angular "
+					+ "momentum! Make sure this is indeed what you want to do."
+					+ NL + NL);
+		}
+		switch (azimuthalNumber)
+		{
+		case 0:
+			l = "s";
+			break;
+		case 1:
+			l = "p";
+			break;
+		case 2:
+			l = "d";
+			break;
+		case 3:
+			l = "f";
+			break;
+		case 4:
+			l = "g";
+			break;
+		case 5:
+			l = "h";
+			break;
+		case 6:
+			l = "i";
+			break;
+		case 7:
+			l = "j";
+			break;
+		case 8:
+			l = "k";
+			break;
+		default:
+			Terminator.withMsgAndStatus("ERROR! You requied to convert "
+    				+ "angular momentom " + azimuthalNumber
+    				+ " into historical letter, but Orca 5.0.4 declares "
+    				+ "up to 'k' as maximum angular momentum. If this "
+    				+ "convention has changed, please inform the authors of "
+    				+ "AutoCompChem for an upgrade", -1);
+		}
+		return l;
+	}
+	
+//------------------------------------------------------------------------------
 }

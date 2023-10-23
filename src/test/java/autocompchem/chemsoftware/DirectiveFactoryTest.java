@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -80,19 +80,19 @@ public class DirectiveFactoryTest
     	assertEquals(2,d.getAllSubDirectives().get(0).getAllKeywords().size(),
     			"Number of keywords in subdir (A)");
     	assertEquals("val 1b",
-    			d.getSubDirective("subD1").getKeyword("key1b").getValue(),
+    			d.getFirstDirective("subD1").getFirstKeyword("key1b").getValue(),
     			"Value of key in subdir (A)");
     	assertEquals("val 2b",
-    			d.getSubDirective("subD1").getKeyword("key2b").getValue(),
+    			d.getFirstDirective("subD1").getFirstKeyword("key2b").getValue(),
     			"Value of key in subdir (B)");
     	
     	assertEquals(2,d.getAllDirectiveDataBlocks().size(),
     			"Number of data blocks (A)");
     	assertEquals(0,
-    			d.getSubDirective("subD1").getAllDirectiveDataBlocks().size(),
+    			d.getFirstDirective("subD1").getAllDirectiveDataBlocks().size(),
     			"Number of data blocks (B)");
     	assertEquals(1,
-    			d.getSubDirective("subD2").getAllDirectiveDataBlocks().size(),
+    			d.getFirstDirective("subD2").getAllDirectiveDataBlocks().size(),
     			"Number of data blocks (C)");
     }
     
@@ -191,7 +191,7 @@ public class DirectiveFactoryTest
     			+ ChemSoftConstants.JDCLOSEBLOCK);
     	lines.add(ChemSoftConstants.JDCLOSEBLOCK);
     	
-    	ArrayList<Directive> dirs = DirectiveFactory.buildAllFromJDText(lines);
+    	List<Directive> dirs = DirectiveFactory.buildAllFromJDText(lines);
     	
     	assertEquals(4,dirs.size(), "Numer of outermost Directives.");
     }

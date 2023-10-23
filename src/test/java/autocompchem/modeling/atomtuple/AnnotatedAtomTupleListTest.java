@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,14 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.Keyword;
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
-import autocompchem.modeling.constraints.Constraint;
-import autocompchem.modeling.constraints.Constraint.ConstraintType;
-import autocompchem.molecule.connectivity.ConnectivityTable;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 
 public class AnnotatedAtomTupleListTest 
 {
@@ -43,7 +35,7 @@ public class AnnotatedAtomTupleListTest
 	    valuedAttributes.put("AttC".toUpperCase(), "valueC valueC2");
 	    valuedAttributes.put("AttD".toUpperCase(), "valueD");
 	    valuedAttributes.put("AttE".toUpperCase(), "");
-    	ConnectivityTable ct = new ConnectivityTable();
+    	NearestNeighborMap ct = new NearestNeighborMap();
     	ct.addNeighborningRelation(1, new ArrayList<Integer>(
     			Arrays.asList(2)));
     	ct.addNeighborningRelation(2, new ArrayList<Integer>(

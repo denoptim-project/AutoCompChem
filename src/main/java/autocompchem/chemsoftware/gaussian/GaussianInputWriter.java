@@ -21,7 +21,6 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -37,12 +36,13 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
-import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSet;
-import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.CenterBasisSet;
 import autocompchem.modeling.basisset.ECPShell;
 import autocompchem.modeling.basisset.Primitive;
@@ -128,29 +128,71 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      * {@inheritDoc}
      * 
      * In Gaussian, a chemical system is defined in the {@link DirectiveData} of
-     * the {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}.
-     * 
-     * WARNING: so far it works with only one molecule.
+     * a {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive}. 
+     * If multiple systems (i.e., more than one atom container) are given, they
+     * are placed each in a dedicated 
+     * {@value GaussianConstants#DIRECTIVEMOLSPEC} {@link Directive} in the 
+     * same order as they are given.
      */
     protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs)
     {
     	if (!needsGeometry(ccj))
     		return;
     	
-    	//TODO-gg fixme!
-    	//WARNING so far works with only one chemical system
-    	IAtomContainer iac = iacs.get(0);
-
-    	DirectiveData dd = new DirectiveData("coordinates");
-    	dd.setValue(iac);
+    	CompChemJob ccjToAlter = ccj;
     	if (ccj.getNumberOfSteps()>0)
     	{
-        	setDirectiveDataIfNotAlreadyThere((CompChemJob) ccj.getStep(0), 
-        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
-    	} else {
-        	setDirectiveDataIfNotAlreadyThere(ccj, 
-        			GaussianConstants.DIRECTIVEMOLSPEC, "coordinates", dd);
+    		ccjToAlter = (CompChemJob) ccj.getStep(0);
     	}
+		if (iacs.size()==1)
+		{
+			DirectiveData dd = new DirectiveData(
+					GaussianConstants.DIRECTIVEMOLSPEC);
+	    	dd.setValue(iacs.get(0));
+    		addNewDirectiveData(ccjToAlter, 
+        			GaussianConstants.DIRECTIVEMOLSPEC, dd);
+		} else {
+			// Remove previously existing MolSpec (can have charge and spin)
+	    	DirComponentAddress molDirAdrs = new DirComponentAddress();
+	    	molDirAdrs.addStep(GaussianConstants.DIRECTIVEMOLSPEC, 
+	    			DirectiveComponentType.DIRECTIVE);
+			ccjToAlter.removeDirectiveComponent(molDirAdrs);
+
+			// Remove previously existing Title (can have charge and spin)
+	    	DirComponentAddress title = new DirComponentAddress();
+	    	title.addStep(GaussianConstants.DIRECTIVETITLE, 
+	    			DirectiveComponentType.DIRECTIVE);
+			ccjToAlter.removeDirectiveComponent(title);
+			
+			// Generate directives for each geometry
+    		for (IAtomContainer iac : iacs)
+    		{
+    	    	Directive titleDir = new Directive(
+    	    			GaussianConstants.DIRECTIVETITLE);
+    	    	titleDir.setKeyword(new Keyword("title", false, iac.getTitle()));
+    	    	ccjToAlter.addDirective(titleDir);
+    	    	
+    			DirectiveData dd = new DirectiveData(
+    					GaussianConstants.DIRECTIVEMOLSPEC);
+    	    	dd.setValue(iac);
+    	    	Directive molSpecDir = new Directive(
+    	    			GaussianConstants.DIRECTIVEMOLSPEC);
+    	    	molSpecDir.addDirectiveData(dd);
+    			Integer charge = getChargeFromMol(iac);
+    			if (charge != null)
+    			{
+    				molSpecDir.addKeyword(new Keyword(
+    						GaussianConstants.MSCHARGEKEY, false, charge));
+    			}
+    			Integer sm = getSpinMultiplicityFromMol(iac);
+    			if (sm != null)
+    			{
+    				molSpecDir.addKeyword(new Keyword(
+    						GaussianConstants.MSSPINMLTKEY, false, sm));
+    			}
+    	    	ccjToAlter.addDirective(molSpecDir);
+    		}
+		}
     }
     
 //------------------------------------------------------------------------------
@@ -198,7 +240,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     {
     	if (routeDir!=null)
     	{
-	    	Keyword geomKey = routeDir.getKeyword(GaussianConstants.GAUKEYGEOM);
+	    	Keyword geomKey = routeDir.getFirstKeyword(GaussianConstants.GAUKEYGEOM);
 			if (geomKey!=null)
 			{
 				String value = geomKey.getValueAsString().toUpperCase();
@@ -225,7 +267,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     protected void setSystemSpecificNames(CompChemJob ccj)
     {
     	File pathnameRoot = new File(outFileNameRoot);
-    	setKeywordIfNotAlreadyThere(ccj, GaussianConstants.DIRECTIVELINK0,
+    	addNewKeyword(ccj, GaussianConstants.DIRECTIVELINK0,
     			"chk", true, pathnameRoot.getName());
     }
     
@@ -280,10 +322,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		// We expect only keywords
     		for (Keyword k : lnkDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				lines.add("%" + k.getName() + "=" + k.getValueAsString());
-    			else
-        			lines.add("%" + k.getValueAsString());
+    			lines.add("%"+k.toString("="));
     		}
     		if (lnkDir.getAllDirectiveDataBlocks().size()>0)
     		{
@@ -308,7 +347,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     	Directive textHeader = step.getDirective(ChemSoftConstants.PARHEADER);
     	if (textHeader!=null)
     	{
-    		lines.add(textHeader.getDirectiveData(ChemSoftConstants.PARHEADER)
+    		lines.add(textHeader.getFirstDirectiveData(ChemSoftConstants.PARHEADER)
     				.getValueAsString());
     	}
     	
@@ -320,28 +359,28 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     	{
     		// First the special keywords
     		String firstLine = "";
-    		Keyword pKey = rouDir.getKeyword(GaussianConstants.KEYPRINT);
+    		Keyword pKey = rouDir.getFirstKeyword(GaussianConstants.KEYPRINT);
     		if (pKey!=null)
     		{
     			firstLine = "#"+pKey.getValueAsString();
     		}  else {
     			firstLine = "#P";
             }
-    		Keyword modKey = rouDir.getKeyword(GaussianConstants.KEYMODELMETHOD);
+    		Keyword modKey = rouDir.getFirstKeyword(GaussianConstants.KEYMODELMETHOD);
     		if (modKey!=null)
     		{
     			firstLine = firstLine + " " + modKey.getValueAsString() + "/";
     		} else {
     			firstLine = firstLine + " ";
     		}
-    		Keyword bsKey = rouDir.getKeyword(GaussianConstants.KEYMODELBASISET);
+    		Keyword bsKey = rouDir.getFirstKeyword(GaussianConstants.KEYMODELBASISET);
     		if (bsKey!=null)
     		{
     			// space has been already added, if needed
     			firstLine = firstLine + bsKey.getValueAsString();
     		}
     		lines.add(firstLine);
-    		Keyword jtKey = rouDir.getKeyword(GaussianConstants.KEYJOBTYPE);
+    		Keyword jtKey = rouDir.getFirstKeyword(GaussianConstants.KEYJOBTYPE);
     		if (jtKey!=null)
     		{
     			lines.add("# " + jtKey.getValueAsString());
@@ -352,12 +391,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		{
     			if (GaussianConstants.SPECIALKEYWORDS.contains(k.getName()))
     				continue;
-    			if (k.isLoud())
-    			{
-    				lines.add("# " + k.getName() + "=" + k.getValueAsString());
-    			} else {
-        			lines.add("# " + k.getValueAsString());
-    			}
+
+    			lines.add("# "+k.toString("="));
     		}
     		for (Directive subDir : rouDir.getAllSubDirectives())
     		{
@@ -383,13 +418,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     			boolean first = true;
     			for (Keyword k : subDir.getAllKeywords())
     			{
-    				String keyStr = "";
-    				if (k.isLoud())
-    				{
-    					keyStr = k.getName() + "=" + k.getValueAsString();
-    				} else {
-    					keyStr = k.getValueAsString();
-    				}
+    				String keyStr = k.toString("=");
     				if (first)
     				{
     					directiveLine = directiveLine + keyStr;
@@ -414,225 +443,323 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     			lines.add("#P");
     	}
 		lines.add(""); // Empty line terminating route section
-    	
-		//
-		// Building line of Title section (well, one line plus blank line)
-		//
-    	Directive titDir = step.getDirective(GaussianConstants.DIRECTIVETITLE);
-    	if (titDir != null)
-    	{
-    		// We expect only ONE keywords
-    		if (titDir.getAllKeywords().size()>1)
-    		{
-    			throw new IllegalArgumentException(
-    					"Directive for title section of Gaussian "
-    					+ "job contains more than one keyword. "
-    					+ "Check your input!");
-    		}
-    		Keyword k = titDir.getAllKeywords().get(0);
-    		lines.add(k.getValueAsString());
-    		
-    		if (titDir.getAllDirectiveDataBlocks().size()>0)
-    		{
-    			throw new IllegalArgumentException(
-    					"Directive for title section of Gaussian "
-    					+ "job contains data blocks but only keywords are "
-    					+ "expected. Check your input!");
-    		}
-    		if (titDir.getAllSubDirectives().size()>0)
-    		{
-    			throw new IllegalArgumentException(
-    					"Directive for title section of Gaussian "
-    					+ "job contains subdirectives but only keywords are "
-    					+ "expected. Check your input!");
-    		}
-    	} else {
-			lines.add("No title");
-    	}
-		lines.add(""); // Empty line terminating title section
 		
-		//
-		// Building lines of Molecular Specification Section
-		//
-		Directive molDir = step.getDirective(GaussianConstants.DIRECTIVEMOLSPEC);
-    	if (molDir != null)
-    	{
-    		// We expect TWO keywords
-    		if (molDir.getAllKeywords().size()!=2)
-    		{
-    			throw new IllegalArgumentException(
-    					"Directive for molecular specification "
-    					+ "section of Gaussian "
-    					+ "job contains N!=2 keywords. "
-    					+ "Check your input!");
-    		}
-    		Keyword kCharge = molDir.getKeyword(GaussianConstants.MSCHARGEKEY);
-	    	Keyword kSpinMult = molDir.getKeyword(GaussianConstants.MSSPINMLTKEY);
-    		lines.add(kCharge.getValueAsString() + " " + kSpinMult.getValueAsString());
-    		
-    		if (molDir.getAllDirectiveDataBlocks().size()>0)
-    		{
-    			for (DirectiveData dd : molDir.getAllDirectiveDataBlocks())
-    			{
-    				switch (dd.getType())
-    	        	{
-	    			case IATOMCONTAINER:
-	    				IAtomContainer mol = (IAtomContainer) dd.getValue();
-	    				for (IAtom atm : mol.atoms())
-	    				{
-	    					Point3d p3d = AtomUtils.getCoords3d(atm);
-
-	    		    		String el = AtomUtils.getSymbolOrLabel(atm);
-	    					lines.add(String.format(Locale.ENGLISH,"%s", el)
-	    							+ String.format(Locale.ENGLISH," %17.12f",
-	    									p3d.x)
-	    							+ String.format(Locale.ENGLISH," %17.12f",
-	    									p3d.y)
-	    							+ String.format(Locale.ENGLISH," %17.12f",
-	    									p3d.z));
-	    				}
-	    				break;
-	    			
-	    			case ZMATRIX:
-	    				ZMatrix zmat = (ZMatrix) dd.getValue();
-	    				if (!zmat.hasConstants()) 
-	    				{
-	    					for (int i=0; i<zmat.getZAtomCount(); i++)
-	    			        {
-	    			        	ZMatrixAtom atm = zmat.getZAtom(i);
-	    			        	StringBuilder sbAtom = new StringBuilder();
-	    			        	sbAtom.append("  ");
-	    			        	sbAtom.append(atm.getName()).append(" ");
-	    			            int idI = atm.getIdRef(0);
-	    			            int idJ = atm.getIdRef(1);
-	    			            int idK = atm.getIdRef(2);
-	    			            InternalCoord icI = atm.getIC(0);
-	    			            InternalCoord icJ = atm.getIC(1);
-	    			            InternalCoord icK = atm.getIC(2);
-	    			            if (atm.getIdRef(0) != -1)
-	    			            {
-	    			            	sbAtom.append(idI + 1).append(" ");
-	    			            	sbAtom.append(String.format(Locale.ENGLISH, 
-	    			                		"%5.8f", 
-	    			                		icI.getValue())).append(" ");
-	    			                if (idJ != -1)
-	    			                {
-	    			                	sbAtom.append(idJ + 1).append(" ");
-	    			                	sbAtom.append(String.format(
-	    			                			Locale.ENGLISH,
-	    			                    		"%5.8f", 
-	    			                    		icJ.getValue())).append(" ");
-	    			                    if (idK != -1)
-	    			                    {
-	    			                    	sbAtom.append(idK + 1).append(" ");
-	    			                    	sbAtom.append(String.format(
-	    			                        		Locale.ENGLISH,
-	    			                        		"%5.8f", 
-	    			                        		icK.getValue())).append(" ");
-	    			                        if (!icK.getType().equals(
-	    			                        		InternalCoord.NOTYPE))
-	    			                        {
-	    			                        	sbAtom.append(icK.getType());
-	    			                        }
-	    			                    }
-	    			                }
-	    			            }
-	    			            lines.add(sbAtom.toString());
-	    			        }
-	    				} else {
-	    					// First write the ZMatrix itself (with variable names)
-	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
-	    			        {
-	    			        	ZMatrixAtom atm = zmat.getZAtom(i);
-	    			        	StringBuilder sbAtom = new StringBuilder();
-	    			        	sbAtom.append(atm.getName()).append(" ");
-	    			            int idI = atm.getIdRef(0);
-	    			            int idJ = atm.getIdRef(1);
-	    			            int idK = atm.getIdRef(2);
-	    			            InternalCoord icI = atm.getIC(0);
-	    			            InternalCoord icJ = atm.getIC(1);
-	    			            InternalCoord icK = atm.getIC(2);
-	    			            if (atm.getIdRef(0) != -1)
-	    			            {
-	    			            	//NB: 1-based indexing!
-	    			            	sbAtom.append(idI + 1).append(" ");
-	    			            	sbAtom.append(icI.getName()).append(" ");
-	    			                if (idJ != -1)
-	    			                {
-	    			                	sbAtom.append(idJ + 1).append(" ");
-	    			                	sbAtom.append(
-	    			                			icJ.getName()).append(" ");
-	    			                    if (idK != -1)
-	    			                    {
-	    			                    	sbAtom.append(idK + 1).append(" ");
-	    			                    	sbAtom.append(
-	    			                    			icK.getName()).append(" ");
-	    			                    	if (!icK.getType().equals(
-	    			                        		InternalCoord.NOTYPE))
-	    			                        {
-	    			                    		sbAtom.append(icK.getType());
-	    			                        }
-	    			                    }
-	    			                }
-	    			            }
-	    			            lines.add(sbAtom.toString());
-	    			        }
-	    			        // Then write the list of variables with initial value
-	    			        lines.add("  Variables:");
-	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
-	    			        {
-	    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
-	    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
-	    			        	{
-	    			        		InternalCoord ic = zatm.getIC(iIC);
-	    			        		if (ic.isConstant())
-	    			        			continue;
-	    			        		lines.add(ic.getName() + " " 
-	    			        			+ String.format(Locale.ENGLISH, 
-	    			        					" %5.8f", ic.getValue()));
-	    			        	}
-	    			        }
-	    			        
-	    			        // And finally write the list of constants
-	    			        lines.add("  Constants:");
-	    			        for (int i=0; i<zmat.getZAtomCount(); i++)
-	    			        {
-	    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
-	    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
-	    			        	{
-	    			        		InternalCoord ic = zatm.getIC(iIC);
-	    			        		if (!ic.isConstant())
-	    			        			continue;
-	    			        		lines.add(ic.getName() + " " 
-	    			        			+ String.format(Locale.ENGLISH,
-	    			        					" %5.8f", ic.getValue()));
-	    			        	}
-	    			        }
-	    				}
-	    				break;
-	    				
-	    				default:
-	    					throw new IllegalArgumentException("Unexpected "
-	    							+ "type of DirectiveData. Check '"  
-	    							+ dd.getName() + "' in directive '" 
-	    							+ molDir.getName() + "'.");
-    	        	}
-    			}
-    		}
-    		if (molDir.getAllSubDirectives().size()>0)
-    		{
-    			throw new IllegalArgumentException(
-    					"Directive for molecular specification "
-    					+ "section of Gaussian "
-    					+ "job contains subdirectives but only keywords "
-    					+ "and ditrective data blocks are "
-    					+ "expected. Check your input!");
-    		}
-    	} // Since we always define charge and spin this directive is never null
-		lines.add(""); // Empty line terminating molecular specification section
+		// Title and MolSpec and ModRedundant directive go hand in hand: 
+		// if there are multiple geometries there can be also multiple titles
+		// and multiple mod redundant sections
+    	DirComponentAddress titleAddrs = new DirComponentAddress();
+    	titleAddrs.addStep(GaussianConstants.DIRECTIVETITLE, 
+    			DirectiveComponentType.DIRECTIVE);
+    	List<IDirectiveComponent> titleDirs = step.getDirectiveComponents(
+    			titleAddrs);
     	
+    	DirComponentAddress molSpecAddrs = new DirComponentAddress();
+    	molSpecAddrs.addStep(GaussianConstants.DIRECTIVEMOLSPEC, 
+    			DirectiveComponentType.DIRECTIVE);
+    	List<IDirectiveComponent> molSpecDirs = step.getDirectiveComponents(
+    			molSpecAddrs);
+    	
+    	DirComponentAddress modRedAddrs = new DirComponentAddress();
+    	modRedAddrs.addStep(GaussianConstants.DIRECTIVEOPTS, 
+    			DirectiveComponentType.DIRECTIVE);
+    	modRedAddrs.addStep(GaussianConstants.DDMODREDUNDANT, 
+    			DirectiveComponentType.DIRECTIVEDATA);
+    	List<IDirectiveComponent> modRedDirs = step.getDirectiveComponents(
+    			modRedAddrs);
+    	
+    	int numBlocks = Math.max(titleAddrs.size(), molSpecDirs.size());
+    	for (int blockId=0; blockId<numBlocks; blockId++)
+    	{
+			//
+			// Building line of Title section (well, one line plus blank line)
+			//
+	    	if (blockId < titleDirs.size())
+	    	{
+	    		Directive titDir = (Directive) titleDirs.get(blockId);
+	    		// We expect only ONE keywords
+	    		if (titDir.getAllKeywords().size()>1)
+	    		{
+	    			throw new IllegalArgumentException(
+	    					"Directive for title section of Gaussian "
+	    					+ "job contains more than one keyword. "
+	    					+ "Check your input!");
+	    		}
+	    		Keyword k = titDir.getAllKeywords().get(0);
+	    		lines.add(k.getValueAsString());
+	    		
+	    		if (titDir.getAllDirectiveDataBlocks().size()>0)
+	    		{
+	    			throw new IllegalArgumentException(
+	    					"Directive for title section of Gaussian "
+	    					+ "job contains data blocks but only keywords are "
+	    					+ "expected. Check your input!");
+	    		}
+	    		if (titDir.getAllSubDirectives().size()>0)
+	    		{
+	    			throw new IllegalArgumentException(
+	    					"Directive for title section of Gaussian "
+	    					+ "job contains subdirectives but only keywords are "
+	    					+ "expected. Check your input!");
+	    		}
+	    	} else {
+				lines.add("No title");
+	    	}
+			lines.add(""); // Empty line terminating title section
+		
+			
+			//
+			// Building lines of Molecular Specification Section
+			//
+			if (blockId > molSpecDirs.size()-1)
+	    	{
+				throw new IllegalArgumentException(
+    					"Found " + titleDirs.size() + " title directives but "
+    					+ "only " + molSpecDirs.size() + " molecular "
+    					+ "specification directives. Check your input!");
+	    	}
+			Directive molDir = (Directive) molSpecDirs.get(blockId);
+	    	if (molDir != null)
+	    	{
+	    		// We expect TWO keywords
+	    		if (molDir.getAllKeywords().size()!=2)
+	    		{
+	    			throw new IllegalArgumentException(
+	    					"Directive for molecular specification "
+	    					+ "section of Gaussian "
+	    					+ "job contains N!=2 keywords. "
+	    					+ "Check your input!");
+	    		}
+	    		Keyword kCharge = molDir.getFirstKeyword(GaussianConstants.MSCHARGEKEY);
+		    	Keyword kSpinMult = molDir.getFirstKeyword(GaussianConstants.MSSPINMLTKEY);
+	    		lines.add(kCharge.getValueAsString() + " " + kSpinMult.getValueAsString());
+	    		
+	    		if (molDir.getAllDirectiveDataBlocks().size()>0)
+	    		{
+	    			for (DirectiveData dd : molDir.getAllDirectiveDataBlocks())
+	    			{
+	    				switch (dd.getType())
+	    	        	{
+		    			case IATOMCONTAINER:
+		    				IAtomContainer mol = (IAtomContainer) dd.getValue();
+		    				for (IAtom atm : mol.atoms())
+		    				{
+		    					Point3d p3d = AtomUtils.getCoords3d(atm);
+	
+		    		    		String el = AtomUtils.getSymbolOrLabel(atm);
+		    					lines.add(String.format(Locale.ENGLISH,"%s", el)
+		    							+ String.format(Locale.ENGLISH," %17.12f",
+		    									p3d.x)
+		    							+ String.format(Locale.ENGLISH," %17.12f",
+		    									p3d.y)
+		    							+ String.format(Locale.ENGLISH," %17.12f",
+		    									p3d.z));
+		    				}
+		    				break;
+		    			
+		    			case ZMATRIX:
+		    				ZMatrix zmat = (ZMatrix) dd.getValue();
+		    				if (!zmat.hasConstants()) 
+		    				{
+		    					for (int i=0; i<zmat.getZAtomCount(); i++)
+		    			        {
+		    			        	ZMatrixAtom atm = zmat.getZAtom(i);
+		    			        	StringBuilder sbAtom = new StringBuilder();
+		    			        	sbAtom.append("  ");
+		    			        	sbAtom.append(atm.getName()).append(" ");
+		    			            int idI = atm.getIdRef(0);
+		    			            int idJ = atm.getIdRef(1);
+		    			            int idK = atm.getIdRef(2);
+		    			            InternalCoord icI = atm.getIC(0);
+		    			            InternalCoord icJ = atm.getIC(1);
+		    			            InternalCoord icK = atm.getIC(2);
+		    			            if (atm.getIdRef(0) != -1)
+		    			            {
+		    			            	sbAtom.append(idI + 1).append(" ");
+		    			            	sbAtom.append(String.format(Locale.ENGLISH, 
+		    			                		"%5.8f", 
+		    			                		icI.getValue())).append(" ");
+		    			                if (idJ != -1)
+		    			                {
+		    			                	sbAtom.append(idJ + 1).append(" ");
+		    			                	sbAtom.append(String.format(
+		    			                			Locale.ENGLISH,
+		    			                    		"%5.8f", 
+		    			                    		icJ.getValue())).append(" ");
+		    			                    if (idK != -1)
+		    			                    {
+		    			                    	sbAtom.append(idK + 1).append(" ");
+		    			                    	sbAtom.append(String.format(
+		    			                        		Locale.ENGLISH,
+		    			                        		"%5.8f", 
+		    			                        		icK.getValue())).append(" ");
+		    			                        if (!icK.getType().equals(
+		    			                        		InternalCoord.NOTYPE))
+		    			                        {
+		    			                        	sbAtom.append(icK.getType());
+		    			                        }
+		    			                    }
+		    			                }
+		    			            }
+		    			            lines.add(sbAtom.toString());
+		    			        }
+		    				} else {
+		    					// First write the ZMatrix itself (with variable names)
+		    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+		    			        {
+		    			        	ZMatrixAtom atm = zmat.getZAtom(i);
+		    			        	StringBuilder sbAtom = new StringBuilder();
+		    			        	sbAtom.append(atm.getName()).append(" ");
+		    			            int idI = atm.getIdRef(0);
+		    			            int idJ = atm.getIdRef(1);
+		    			            int idK = atm.getIdRef(2);
+		    			            InternalCoord icI = atm.getIC(0);
+		    			            InternalCoord icJ = atm.getIC(1);
+		    			            InternalCoord icK = atm.getIC(2);
+		    			            if (atm.getIdRef(0) != -1)
+		    			            {
+		    			            	//NB: 1-based indexing!
+		    			            	sbAtom.append(idI + 1).append(" ");
+		    			            	sbAtom.append(icI.getName()).append(" ");
+		    			                if (idJ != -1)
+		    			                {
+		    			                	sbAtom.append(idJ + 1).append(" ");
+		    			                	sbAtom.append(
+		    			                			icJ.getName()).append(" ");
+		    			                    if (idK != -1)
+		    			                    {
+		    			                    	sbAtom.append(idK + 1).append(" ");
+		    			                    	sbAtom.append(
+		    			                    			icK.getName()).append(" ");
+		    			                    	if (!icK.getType().equals(
+		    			                        		InternalCoord.NOTYPE))
+		    			                        {
+		    			                    		sbAtom.append(icK.getType());
+		    			                        }
+		    			                    }
+		    			                }
+		    			            }
+		    			            lines.add(sbAtom.toString());
+		    			        }
+		    			        // Then write the list of variables with initial value
+		    			        lines.add("  Variables:");
+		    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+		    			        {
+		    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+		    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+		    			        	{
+		    			        		InternalCoord ic = zatm.getIC(iIC);
+		    			        		if (ic.isConstant())
+		    			        			continue;
+		    			        		lines.add(ic.getName() + " " 
+		    			        			+ String.format(Locale.ENGLISH, 
+		    			        					" %5.8f", ic.getValue()));
+		    			        	}
+		    			        }
+		    			        
+		    			        // And finally write the list of constants
+		    			        lines.add("  Constants:");
+		    			        for (int i=0; i<zmat.getZAtomCount(); i++)
+		    			        {
+		    			        	ZMatrixAtom zatm = zmat.getZAtom(i);
+		    			        	for (int iIC=0; iIC<zatm.getICsCount(); iIC++)
+		    			        	{
+		    			        		InternalCoord ic = zatm.getIC(iIC);
+		    			        		if (!ic.isConstant())
+		    			        			continue;
+		    			        		lines.add(ic.getName() + " " 
+		    			        			+ String.format(Locale.ENGLISH,
+		    			        					" %5.8f", ic.getValue()));
+		    			        	}
+		    			        }
+		    				}
+		    				break;
+		    				
+		    				default:
+		    					throw new IllegalArgumentException("Unexpected "
+		    							+ "type of DirectiveData. Check '"  
+		    							+ dd.getName() + "' in directive '" 
+		    							+ molDir.getName() + "'.");
+	    	        	}
+	    			}
+	    		}
+	    		if (molDir.getAllSubDirectives().size()>0)
+	    		{
+	    			throw new IllegalArgumentException(
+	    					"Directive for molecular specification "
+	    					+ "section of Gaussian "
+	    					+ "job contains subdirectives but only keywords "
+	    					+ "and ditrective data blocks are "
+	    					+ "expected. Check your input!");
+	    		}
+	    	} // Since we always define charge and spin this directive is never null
+			lines.add(""); // Empty line terminating molecular specification section
+			
+			//
+			// Build line for modredudant option
+			//
+			if (blockId < modRedDirs.size())
+			{
+				DirectiveData dd = (DirectiveData) modRedDirs.get(blockId);
+				ConstraintsSet cs = (ConstraintsSet) dd.getValue();
+	            for (Constraint cns : cs)
+	            {
+	            	String str = "";
+	            	if (cns.getPrefix().isBlank())
+	            	{	
+	                	switch (cns.getType())
+	                	{
+							case ANGLE:
+								str = "A ";
+								break;
+							case DIHEDRAL:
+								str = "D ";
+								break;
+							case IMPROPERTORSION:
+								str = "D ";
+								break;
+							case DISTANCE:
+								str = "B ";
+								break;
+							case FROZENATM:
+								str = "X ";
+								break;
+							case UNDEFINED:
+								switch (cns.getAtomIDs().size())
+								{
+								case 1:
+									str = "X ";
+									break;
+								case 2:
+									str = "B ";
+									break;
+								case 3:
+									str = "A ";
+									break;
+								case 4:
+									str = "D ";
+									break;
+								}
+								break;
+							default:
+								break;
+	                	}
+	            	}
+	            	str = str + StringUtils.mergeListToString(
+	            			cns.getAtomIDs(), " ", true, 1);
+	            	
+	            	if (!cns.getSuffix().isBlank())
+	            	{
+	            		str = str + " " + cns.getSuffix();
+	            	}
+	            	
+	            	lines.add(str);
+	            }
+				lines.add(""); //empty line that terminates this part of option section
+	    	}
+    	}
+			
 		//
-		// Building lines of Options section
+		// Building lines of (unique) Options section
 		//
     	Directive optDir = step.getDirective(GaussianConstants.DIRECTIVEOPTS);
     	if (optDir != null)
@@ -644,7 +771,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		List<String> sortedOptNames = sortOpts(optNames);
     		for (String ddName : sortedOptNames)
     		{
-    			DirectiveData dd = optDir.getDirectiveData(ddName);
+    			DirectiveData dd = optDir.getFirstDirectiveData(ddName);
     			// Some of the directivedata blocks need to be interpreted to
     			// convert the agnostic data into Gaussian slang
     			switch (ddName.toUpperCase())
@@ -658,6 +785,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	    			
 	    			case GaussianConstants.DDMODREDUNDANT:
 	    			{
+	    				// We have done this together with the title and molSpec
+	    				/*
 	    				ConstraintsSet cs = (ConstraintsSet) dd.getValue();
 	                    for (Constraint cns : cs)
 	                    {
@@ -713,12 +842,13 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	                    	lines.add(str);
 	                    }
 	        			lines.add(""); //empty line that terminates this part of option section
+	        			*/
 	    				break;
 	    			}
 	    		
 	    			default:
 	    			{
-	    				lines.addAll(optDir.getDirectiveData(ddName).getLines());
+	    				lines.addAll(optDir.getFirstDirectiveData(ddName).getLines());
 	        			lines.add(""); //empty line that terminates this part of option section
 	    			}
     			}
@@ -729,10 +859,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		//results
     		for (Keyword k : optDir.getAllKeywords())
     		{
-    			if (k.isLoud())
-    				lines.add(k.getName() + "=" + k.getValueAsString());
-    			else
-        			lines.add(k.getValueAsString());
+    			lines.add(k.toString("="));
     			lines.add(""); //empty line that terminates this part of option section
     		}
     		
@@ -763,13 +890,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     			boolean first = true;
     			for (Keyword k : subDir.getAllKeywords())
     			{
-    				String keyStr = "";
-    				if (k.isLoud())
-    				{
-    					keyStr = k.getName() + "=" + k.getValueAsString();
-    				} else {
-    					keyStr = k.getValueAsString();
-    				}
+    				String keyStr = k.toString("=");
+    				lines.add("%"+k.toString("="));
     				if (first)
     				{
     					directiveLine = directiveLine + keyStr;
@@ -943,10 +1065,10 @@ public class GaussianInputWriter extends ChemSoftInputWriter
   	 * No special file structure required for Gaussian. This method does nothing.
   	 */
   	@Override
-  	protected String manageOutputFileStructure(List<IAtomContainer> mols,
-  			String outputFileName) 
+  	protected File manageOutputFileStructure(List<IAtomContainer> mols,
+  			File output) 
   	{
-  		return outputFileName;
+  		return output;
   	}
     
 //------------------------------------------------------------------------------

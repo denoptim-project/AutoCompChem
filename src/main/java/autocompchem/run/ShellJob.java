@@ -60,7 +60,7 @@ public class ShellJob extends Job
     public ShellJob()
     {
         super();
-        this.appID = RunnableAppID.SHELL;
+        this.appID = AppID.SHELL;
     }
 
 //------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ public class ShellJob extends Job
     public ShellJob(String interpreter, String script, String args, int verbosity)
     {
         super();
-        this.appID = RunnableAppID.SHELL;
+        this.appID = AppID.SHELL;
         this.command = new ArrayList<String>();
         this.command.add(interpreter);
         this.command.add(script);
@@ -134,7 +134,7 @@ public class ShellJob extends Job
     		File customUserDir, int verbosity)
     {
         super();
-        this.appID = RunnableAppID.SHELL;
+        this.appID = AppID.SHELL;
         this.command = new ArrayList<String>();
         this.command.add(interpreter);
         this.command.add(script);
@@ -218,7 +218,7 @@ public class ShellJob extends Job
     		}
     		System.out.println("WARNING: setting work directory to '"
     				+ workDir + "'.");
-    		this.setUserDir(workDir);
+    		this.setUserDirAndStdFiles(workDir);
     	}
     	
     	if (params.contains(ShellJobConstants.COPYTOWORKDIR))
@@ -255,7 +255,7 @@ public class ShellJob extends Job
         if (getVerbosity() > 0)
         {
             System.out.println(" " + date.toString());
-            System.out.println("Running SHELL Job: " + this.toString() 
+            System.out.println("Running " + appID + " Job: " + this.toString() 
                             + " Thread: " + Thread.currentThread().getName());
         }
         
@@ -324,7 +324,7 @@ public class ShellJob extends Job
 
         if (getVerbosity() > 0)
         {
-            System.out.println("Done with SHELL Job " + this.toString());
+            System.out.println("Done with " + appID + " Job " + this.toString());
         }
     }
     

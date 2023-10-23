@@ -1,0 +1,128 @@
+{
+  "type": "ERROR",
+  "refName": "e0010-QCNoLowerPoint",
+  "description": "Gaussian's QC algorithm for SCF cannot proceed.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Search did not lower the energy significantly."
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "No lower point found -- run aborted."
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "prerefinementSteps": [
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "Route",
+            "keywords": [
+              {
+                "reference": "PRINT",
+                "value": "P",
+                "isLoud": false
+              },
+              {
+                "reference": "GEOM",
+                "value": "CHECK"
+              },
+              {
+                "reference": "JOBTYPE",
+                "value": "SP",
+                "isLoud": false
+              }
+            ],
+            "subDirectives": [
+              {
+                "name": "SCF",
+                "keywords": [
+                  {
+                    "reference": "VSHIFT",
+                    "value": "1000"
+                  },
+                  {
+                    "reference": "SYMM",
+                    "value": "NOSYM",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "restart",
+                    "value": "restart",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "algorithm",
+                    "value": "XQC",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "VarAcc",
+                    "value": "novaracc",
+                    "isLoud": false
+                  },
+                  {
+                    "reference": "MaxConventionalCycles",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Title",
+            "keywords": [
+              {
+                "reference": "title",
+                "value": " pre-refinement step trying to fix error e0010-QCNoLowerPoint",
+                "isLoud": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "inheritedSettings": [
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:Link0|Key:*"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:Route|Key:model_Method"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:Route|Key:model_basisset"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:MolSpec|Key:charge"
+      },
+      {
+        "task": "INHERIT_KEYWORD",
+        "path": "Dir:MolSpec|Key:spin"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.inp"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.chk"
+      }
+    ]
+  }
+}

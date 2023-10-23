@@ -20,28 +20,19 @@ package autocompchem.molecule.conformation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
-import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
-import autocompchem.molecule.MolecularMeter;
+import autocompchem.modeling.constraints.ConstraintDefinition;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.SMARTS;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -76,15 +67,14 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
      */
     public ConformationalSpaceGenerator()
     {
-    	//TODO-gg create file
-    	//super("inputdefinition/ConformationalSpaceGenerator.json");
+    	// NB: this workers inherits all from the super class
     	ruleRoot = ConformationalCoordDefinition.BASENAME;
     }
 
 //------------------------------------------------------------------------------
 
     /**
-     * Parses the formatted text defining {@link ConstrainDefinition} and adds
+     * Parses the formatted text defining {@link ConstraintDefinition} and adds
      * the resulting rules to this instance of atom tuple generator.
      * @param lines the lines of text to be parsed into 
      * {@link AtomTupleMatchingRule}s.
@@ -137,7 +127,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
 
     public void createConformationalSpaces()
     {
-        if (inFile.equals("noInFile"))
+        if (inFile==null)
         {
             Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
                 + " Cannot generate conformational spaces.",-1);

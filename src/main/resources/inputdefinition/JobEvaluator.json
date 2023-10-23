@@ -25,9 +25,14 @@
     "doc": "List (separated by OS's path separator) of job details file to be used as source of information, i.e., information channel. With 'job' we mean the job being evaluated."
   },
   {
+    "key": "TOLERATEMISSINGIC",
+    "type": "<boolean>",
+    "doc": "Set the value to True to allow the evaluation to tolerate the lack of some information channels by considering any circumstance requiring such info channel as unverified. Default=False, i.e., does not tolerate lack of information channels."
+  },
+  {
     "key": "JOBDEFINITION",
     "type": "<String>",
-    "doc": "Pathname to the job details file defining the job being evaluated."
+    "doc": "Pathname to the job details file defining the job being evaluated. If this is not given error-curating actions that alter the job being evaluated cannot be performed."
   },
   {
     "key": "VERBOSITY",

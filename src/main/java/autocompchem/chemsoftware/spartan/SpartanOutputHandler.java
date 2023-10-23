@@ -1,5 +1,12 @@
 package autocompchem.chemsoftware.spartan;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -17,11 +24,7 @@ package autocompchem.chemsoftware.spartan;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,7 +91,7 @@ public class SpartanOutputHandler extends Worker
     /**
      * List of known errors messages
      */
-    private ArrayList<ErrorMessage> errorDef;
+    private List<ErrorMessage> errorDef;
 
     /**
      * Verbosity level
@@ -310,8 +313,8 @@ public class SpartanOutputHandler extends Worker
         }
 
         //Error identififcation
-        String sprtOutputLog = inFile + slash + molName + slash + 
-                                                SpartanConstants.OUTPUTFILENAME;
+        File sprtOutputLog = new File(inFile + slash + molName + slash +
+        		SpartanConstants.OUTPUTFILENAME);
         if (!normalTermiated && errorDef != null)
         {
             if (verbosity > 0)
@@ -320,7 +323,7 @@ public class SpartanOutputHandler extends Worker
             }
 
             // Read "tail" of output, but for now read all of it!
-            ArrayList<String> tail = IOtools.tailFrom(sprtOutputLog,0);
+            List<String> tail = IOtools.tailFrom(sprtOutputLog,0);
 
             //Compare with known errors
             identifyErrorMessage(tail);
@@ -357,7 +360,7 @@ public class SpartanOutputHandler extends Worker
 
     public IAtomContainer extractLastOutputGeometry()
     {
-        ArrayList<IAtomContainer> allGeoms = getAllGeometries();
+        List<IAtomContainer> allGeoms = getAllGeometries();
         if (allGeoms.size() == 0)
         {
             Terminator.withMsgAndStatus("ERROR! No geometry found under '" 
@@ -392,7 +395,7 @@ public class SpartanOutputHandler extends Worker
 
     public void printTrajectory()
     {
-        ArrayList<IAtomContainer> allGeoms = getAllGeometries();
+        List<IAtomContainer> allGeoms = getAllGeometries();
         IAtomContainerSet mols = new AtomContainerSet();
         for (IAtomContainer iac : allGeoms)
         {
@@ -405,7 +408,7 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".sdf";
                 }
-                IOtools.writeSDFAppendSet(outFile,mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile),mols,false);
                 break;
 
             case "XYZ":
@@ -413,12 +416,12 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppendSet(outFile,mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile),mols,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppendSet(outFile + ".xyz",mols,false);
-                IOtools.writeSDFAppendSet(outFile + ".sdf",mols,false);
+                IOtools.writeXYZAppendSet(new File(outFile + ".xyz"),mols,false);
+                IOtools.writeSDFAppendSet(new File(outFile + ".sdf"),mols,false);
                 break;
 
             default:
@@ -446,7 +449,7 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".sdf";
                 }
-                IOtools.writeSDFAppend(outFile,mol,false);
+                IOtools.writeSDFAppend(new File(outFile),mol,false);
                 break;
 
             case "XYZ":
@@ -454,12 +457,12 @@ public class SpartanOutputHandler extends Worker
                 {
                     outFile = outFile + ".xyz";
                 }
-                IOtools.writeXYZAppend(outFile,mol,false);
+                IOtools.writeXYZAppend(new File(outFile),mol,false);
                 break;
 
             case "SDFXYZ":
-                IOtools.writeXYZAppend(outFile + ".xyz",mol,false);
-                IOtools.writeSDFAppend(outFile + ".sdf",mol,false);
+                IOtools.writeXYZAppend(new File(outFile + ".xyz"),mol,false);
+                IOtools.writeSDFAppend(new File(outFile + ".sdf"),mol,false);
                 break;
 
             default:
@@ -477,13 +480,13 @@ public class SpartanOutputHandler extends Worker
      * step
      */
 
-    private void identifyErrorMessage(ArrayList<String> tail)
+    private void identifyErrorMessage(List<String> tail)
     {
         errorIsDecoded = false;
         for (ErrorMessage em : errorDef)
         {
             //Get the error message of this candidate error
-            ArrayList<String> emLines = em.getErrorMessage();
+            List<String> emLines = em.getErrorMessage();
             int numParts = emLines.size();
 
             if (verbosity > 1)
@@ -527,7 +530,7 @@ public class SpartanOutputHandler extends Worker
             if (errorIsDecoded)
             {
                 //Are there other conditions this .out has to fulfill?
-                ArrayList<String> conditions = em.getConditions();
+                List<String> conditions = em.getConditions();
                 int numberOfConditions = conditions.size();
                 if (numberOfConditions != 0)
                 {
@@ -788,7 +791,7 @@ TODO add other tasks here
      * (no connectivity)
      */
 
-    public ArrayList<IAtomContainer> getAllGeometries()
+    public List<IAtomContainer> getAllGeometries()
     {
         String slash = System.getProperty("file.separator");
         String sprtArchFile = inFile + slash + molName + slash
@@ -799,7 +802,7 @@ TODO add other tasks here
         FileUtils.foundAndPermissions(sprtInpFile,true,false,false);
 
         //Get number of lines of each block (i.e., number of atoms)
-        ArrayList<ArrayList<String>> firstGeom =
+        List<List<String>> firstGeom =
                       FileAnalyzer.extractMultiTxtBlocksWithDelimiters(
                                                                    sprtArchFile,
                                                   SpartanConstants.ARCHSTARTXYZ,
@@ -815,15 +818,15 @@ TODO add other tasks here
         }
 
         // Read in molecular befinition blocks
-        ArrayList<ArrayList<String>> blocks = 
+        List<List<String>> blocks = 
                       FileAnalyzer.extractMultiTxtBlocksWithDelimiterAndSize(
                                                                    sprtArchFile,
                                                   SpartanConstants.ARCHSTARTXYZ,
                                                                           nAtms,
                                                                          false);
         // Make molecular objects from text
-        ArrayList<IAtomContainer> molList = new ArrayList<IAtomContainer>();
-        for (ArrayList<String> singleBlock : blocks)
+        List<IAtomContainer> molList = new ArrayList<IAtomContainer>();
+        for (List<String> singleBlock : blocks)
         {
             molList.add(getIAtomContainerFromXYZblock(singleBlock));
         }
@@ -842,7 +845,7 @@ TODO add other tasks here
         // Get connectivity
         if (blocks.size() == 1)
         {
-            ArrayList<int[]> cnTab = new ArrayList<int[]>();
+            List<int[]> cnTab = new ArrayList<int[]>();
             int nAtmTypesFound = 0;
             for (String line : blocks.get(0))
             {
@@ -909,7 +912,7 @@ TODO add other tasks here
      * @return the molecule obtained
      */
 
-    public IAtomContainer getIAtomContainerFromXYZblock(ArrayList<String> lines)
+    public IAtomContainer getIAtomContainerFromXYZblock(List<String> lines)
     {
         double b2a = 1.0 / ACCConstants.ANGSTOMTOBOHR;
         IAtomContainer mol = new AtomContainer();

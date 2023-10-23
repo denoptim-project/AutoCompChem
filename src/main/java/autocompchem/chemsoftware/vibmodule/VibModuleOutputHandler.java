@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.vibmodule;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -46,6 +48,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.TaskID;
@@ -67,19 +70,19 @@ public class VibModuleOutputHandler extends Worker
                     Arrays.asList(TaskID.EXTRACTVIBMODULEFORCECONSTANTS)));
 
     /**
-     * Name of the output file from VibModule: the input of this class
+     * The output file from VibModule: the input of this class
      */
-    private String vmFile;
+    private File vmFile;
 
     /**
-     * Name of the molecular representation file
+     * The molecular representation file
      */
-    private String molFile;
+    private File molFile;
 
     /**
-     * Name of the output file for tasks run by this worker
+     * The output file for tasks run by this worker
      */
-    private String outFile = "noOutput";
+    private File outFile;
 
     /**
      * Verbosity level
@@ -209,24 +212,25 @@ public class VibModuleOutputHandler extends Worker
             System.out.println(" Adding parameters to VibModuleOutputHandler");
 
         //Get and check the input file (which is an output from VibModule)
-        this.vmFile = params.getParameter("VMFILE").getValue().toString();
+        String path = params.getParameter("VMFILE").getValue().toString();
+        this.vmFile = new File(path);
         FileUtils.foundAndPermissions(this.vmFile,true,false,false);
 
         //Get and check the input SDF file (which is the chemical system)
-        this.molFile = params.getParameter("MOLFILE").getValue().toString();
+        String path2 = params.getParameter("MOLFILE").getValue().toString();
+        this.molFile = new File(path2);
         FileUtils.foundAndPermissions(this.molFile,true,false,false);
-        //this.molName = FilesManager.getRootOfFileName(this.molFile);
 
         //Get and check the output file
         if (params.contains("OUTFILE"))
         {
-            this.outFile = 
-                         params.getParameter("OUTFILE").getValue().toString();
+            String path3= params.getParameter("OUTFILE").getValue().toString();
+            this.outFile = new File(path3);
             FileUtils.mustNotExist(this.outFile);
         } 
         else
         {
-            this.outFile = FileUtils.getRootOfFileName(this.vmFile);
+            this.outFile = new File(FileUtils.getRootOfFileName(this.vmFile));
         }
 
         //Import smarts
@@ -416,7 +420,7 @@ public class VibModuleOutputHandler extends Worker
         String msg = "noMsg";
 
         //Read the VibModule output file and collect counts and line numbers
-        ArrayList<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<String>();
         patterns.add(VibModuleConstants.NORMALCOMPLSTATUS); // 0
         patterns.add(VibModuleConstants.TITSTRSEC);         // 1
         patterns.add(VibModuleConstants.TITBENDSEC);        // 2
@@ -424,10 +428,10 @@ public class VibModuleOutputHandler extends Worker
         patterns.add(VibModuleConstants.TITTORSEC);         // 4
         patterns.add(VibModuleConstants.TITFFPARAMS);       // 5
         patterns.add(VibModuleConstants.TITFREQSEC);        // 6
-        ArrayList<ArrayList<Integer>> countsAndLineNum =
+        List<List<Integer>> countsAndLineNum =
                                            FileAnalyzer.count(vmFile,patterns);
         int indexOfCounts = countsAndLineNum.size() - 1;
-        ArrayList<Integer> counts = countsAndLineNum.get(indexOfCounts);
+        List<Integer> counts = countsAndLineNum.get(indexOfCounts);
 
         // Check for normal termination
         if (counts.get(0) > 0)
@@ -452,8 +456,8 @@ public class VibModuleOutputHandler extends Worker
             }
 
             //Read selected lines
-            ArrayList<String> lines = IOtools.extractFromTo(vmFile,startLine,
-                                                                      stopLine);
+            List<String> lines = IOtools.extractFromTo(vmFile, startLine,
+            		stopLine);
 
             //Extract internal coordinated and force constants
             int nstr = 0;
@@ -782,7 +786,7 @@ public class VibModuleOutputHandler extends Worker
         IAtomContainer mol = new AtomContainer();
         try 
         {
-            ArrayList<IAtomContainer> mols = new ArrayList<IAtomContainer>();
+            List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
             mols = IOtools.readSDF(molFile);
             if (mols.size() > 1)
             {
@@ -807,14 +811,14 @@ public class VibModuleOutputHandler extends Worker
         }
 
         // Reorganize lists to group single-atom smarts of the same IC
-        Map<String,ArrayList<ArrayList<Integer>>> allIcMatched =
-                            new HashMap<String,ArrayList<ArrayList<Integer>>>();
+        Map<String,List<List<Integer>>> allIcMatched =
+                            new HashMap<String,List<List<Integer>>>();
         for (String icRuleName : getSortedSMARTSRefNames(smarts))
         {
             boolean skipRule =false;
             String preStr = icRuleName + SUBRULELAB;
-            ArrayList<ArrayList<Integer>> componentsIcRule =
-                                           new ArrayList<ArrayList<Integer>>(4);
+            List<List<Integer>> componentsIcRule = 
+            		new ArrayList<List<Integer>>(4);
             for (int i=0; i<4; i++)
             {
                 componentsIcRule.add(null);
@@ -839,11 +843,14 @@ public class VibModuleOutputHandler extends Worker
                     break;
                 }
 
-                List<List<Integer>> matches = msq.getMatchesOfSMARTS(key);
-                ArrayList<Integer> allAtmsIds = new ArrayList<Integer>();
-                for (List<Integer> innerLst : matches)
+                //Get matches for this SMARTS query
+                MatchingIdxs matches =  msq.getMatchingIdxsOfSMARTS(key);
+                
+                // Collect all matches
+                List<Integer> allAtmsIds = new ArrayList<Integer>();
+                for (List<Integer> innerList : matches)
                 {
-                    allAtmsIds.addAll(innerLst);
+                	allAtmsIds.addAll(innerList);
                 }
                 componentsIcRule.set(pos,allAtmsIds);
             }
@@ -869,8 +876,7 @@ public class VibModuleOutputHandler extends Worker
             {
                 continue;
             }
-            ArrayList<ArrayList<Integer>> componentsIcRule =
-                                                      allIcMatched.get(rulKey);
+            List<List<Integer>> componentsIcRule = allIcMatched.get(rulKey);
             for (Integer idA : componentsIcRule.get(0))
             {
                 IAtom atmA = mol.getAtom(idA);
@@ -943,8 +949,7 @@ public class VibModuleOutputHandler extends Worker
             {
                 continue;
             }
-            ArrayList<ArrayList<Integer>> componentsIcRule =
-                                                      allIcMatched.get(rulKey);
+            List<List<Integer>> componentsIcRule = allIcMatched.get(rulKey);
             if (componentsIcRule.get(3) != null)
             {
                 for (Integer idA : componentsIcRule.get(0))
