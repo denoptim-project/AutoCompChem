@@ -381,7 +381,7 @@ public class NWChemReStarter extends Worker
     	// We take most of the parameters of the present worker
     	ParameterStorage paramsForOutputHandler = paramsLoc.clone();
     	paramsForOutputHandler.setParameter(WorkerConstants.PARTASK,
-    			"EVALUATENWCHEMOUTPUT");
+    			TaskID.ANALYSENWCHEMOUTPUT.toString()); 
     	
         //Gather information on the error job
     	Worker w = WorkerFactory.createWorker(paramsForOutputHandler, 

@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 2
-TASK: EvaluateNWChemOutput
+TASK: AnalyseNWChemOutput
 INFILE: ../t111-nwc.out
 ANALYSE: ENERGY IMGFREQ
 QUASIHARM: 100.0

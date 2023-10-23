@@ -4,7 +4,7 @@
 # Read and interprete NWChem output file
 #
 VERBOSITY: 2
-TASK: EvaluateNWChemOutput
+TASK: AnalyseNWChemOutput
 INFILE: ../t55-nwc.out 
 JOBDETAILSFILE: ../t55-jobDetails.json
 NWCHEMERRORS: ../data/errorsDefAndFix/nwchem6.3

@@ -64,7 +64,7 @@ public class NWChemOutputHandler extends Worker
      */
     public static final Set<TaskID> capabilities =
             Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.EVALUATENWCHEMOUTPUT,
+                    Arrays.asList(TaskID.ANALYSENWCHEMOUTPUT,
                     		TaskID.EXTRACTOPTGEOMSFROMNWCHEMOUTPUT,
                     		TaskID.EXTRACTTRAJECTORYFROMNWCHEMOUTPUT,
                     		TaskID.EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT)));
@@ -435,7 +435,7 @@ public class NWChemOutputHandler extends Worker
     {
         switch (task)
           {
-          case EVALUATENWCHEMOUTPUT:
+          case ANALYSENWCHEMOUTPUT:
         	  evaluateOutputNWChem();
               break;
               

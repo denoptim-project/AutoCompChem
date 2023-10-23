@@ -1,5 +1,5 @@
 VERBOSITY: 2
-TASK: EvaluateNWChemOutput
+TASK: AnalyseNWChemOutput
 INFILE: ../t114.out
 TEMPLATECONNECTIVITY: ../t114_tmpl.sdf
 ANALYSE: IMGFREQ
