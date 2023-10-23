@@ -68,7 +68,7 @@ public class Job implements Runnable
 	/**
 	 * Reference to any child job. Child jobs are NOT steps of this job, but are
 	 * jobs started by this job to perform specific tasks.
-	 * Reference to a child job is volatile: it is removes once the child job
+	 * Reference to a child job is volatile: it is removed once the child job
 	 * is completed.
 	 */
 	private Set<Job> childJobs = new HashSet<Job>();
@@ -863,16 +863,19 @@ public class Job implements Runnable
         // First do the work of this very Job
         runThisJobSubClassSpecific();
         
-        // Then, run the sub-jobs
-        if (nThreads > 1 && parallelizableSubJobs())
+        // Then, run the sub-jobs (steps)
+        if (steps.size()>0)
         {
-            //Parallel execution of sub-jobs
-            runSubJobsParallely();
-        }
-        else
-        {
-            //Serial execution
-            runSubJobsSequentially();
+	        if (nThreads > 1 && parallelizableSubJobs())
+	        {
+	            //Parallel execution of sub-jobs
+	            runSubJobsParallely();
+	        }
+	        else
+	        {
+	            //Serial execution
+	            runSubJobsSequentially();
+	        }
         }
         
         finalizeStatusAndNotifications(!jobIsBeingKilled);

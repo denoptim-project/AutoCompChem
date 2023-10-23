@@ -457,6 +457,7 @@ public class ParallelJobsRunner extends JobsRunner
         // Submit all sub-jobs in once. Those that do not fit because of all
         // thread pool is filled-up are dealt with by RejectedExecHandlerImp
         Iterator<Job> it = todoJobs.iterator();
+        int numSubmittedJobs = 0;
         while (it.hasNext())
         {
             
@@ -473,6 +474,7 @@ public class ParallelJobsRunner extends JobsRunner
 			} else {
 				submittedJobs.put(job, job.submitThread(tpExecutor));
 			}
+			numSubmittedJobs++;
         }
         
         // NB: tpExecutor.shutdown() stops the execution from accepting tasks
@@ -503,7 +505,7 @@ public class ParallelJobsRunner extends JobsRunner
 	            {
 	            	if (verbosity > 0)
 	                {
-	                    System.out.println("All " + submittedJobs.size()
+	                    System.out.println("All " + numSubmittedJobs
 	                    		+ " sub-jobs are completed. Parallelized "
 	                    		+ "jobs done.");
 	                }

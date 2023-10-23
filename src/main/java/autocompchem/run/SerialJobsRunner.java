@@ -280,12 +280,14 @@ public class SerialJobsRunner extends JobsRunner
     	requestedToStart = false;
     	
         Iterator<Job> it = todoJobs.iterator();
+        int numSubmittedJobs = 0;
         while (it.hasNext())
         {
             //TODO: set dedicated logger with dedicated log file
             Job job = it.next();
 			job.setJobNotificationListener(new SerialJobListener());
 		    submittedJobs.put(job, job.submitThread(executor));
+		    numSubmittedJobs++;
         }
         
         
@@ -310,7 +312,7 @@ public class SerialJobsRunner extends JobsRunner
 	            {
 	            	if (verbosity > 0)
 	                {
-	                    System.out.println("All " + submittedJobs.size()
+	                    System.out.println("All " + numSubmittedJobs
 	                    		+ " steps are completed. Serialized workflow "
 	                    		+ "completed.");
 	                }
