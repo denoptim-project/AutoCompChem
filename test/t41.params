@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+TASK: PrepareInputGaussian
+INPUTGEOMETRIESFILE: ../t41-mols.sdf
+JOBDETAILSFILE: ../t41-jobDetails.json
+MULTIGEOMNAMES: rrr ppp TSguess
+MULTIGEOMMODE: allInOneJob
+PATHNAMEOUTPUT: t41_qst3.inp

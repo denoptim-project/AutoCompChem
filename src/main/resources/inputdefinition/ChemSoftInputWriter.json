@@ -8,7 +8,12 @@
   {
     "key": "MULTIGEOMMODE",
     "type": "<String>",
-    "doc": "Defines how to interprete an input file containing multiple geometries. Possible values are SingleGeom, ReactProd, ReactTSProd, and Path."
+    "doc": "Defines how to interprete an input file containing multiple geometries. Possible values are IndependentJobs (to create an independent input file for each geometry) or AllInOneJob (to place all geometries in a single input file)."
+  },
+  {
+    "key": "MULTIGEOMNAMES",
+    "type": "<String>",
+    "doc": "Provides a space-separated list of strings to be used as geometry names. This overwrites the names imported from molecular structures file."
   },
   {
     "key": "JOBDETAILSFILE",

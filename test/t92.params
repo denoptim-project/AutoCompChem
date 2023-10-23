@@ -6,5 +6,5 @@
 VERBOSITY: 1
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t92-mol.sdf
-MULTIGEOMMODE: path
+MULTIGEOMMODE: allInOneJob
 JOBDETAILSFILE: ../t92-jobDetails.json

@@ -5,5 +5,5 @@ VERBOSITY: 1
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t91-mol.sdf
 MULTIGEOMNAMES: first_G second_G
-MULTIGEOMMODE: path
+MULTIGEOMMODE: allInOneJob
 JOBDETAILSFILE: ../t91-jobDetails.json

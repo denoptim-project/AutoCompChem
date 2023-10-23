@@ -618,10 +618,36 @@ public class CompChemJob extends Job implements Cloneable
 		addDirectiveComponent(parentAddress, valueContainer, false, true);
     }
     
+//------------------------------------------------------------------------------
+    
+    /**
+     * Adds a {@link IValueContainer} at the 
+     * given address, name, and type. Ignores the potential existence of other
+     * value containers at the same location, i.e., it appends the new 
+     * container.
+     * @param parentAddress address of the container holding the 
+     * {@link IValueContainer} to add. If no parent container exists, nothing
+     * happens.
+     * @param valueContainer a container for the value to set in any existing
+     * container found in the directive's structure. The name and type of this 
+     * container determine also the nature of the value container we are setting.
+     */
+    public void appendValueContainer(DirComponentAddress parentAddress, 
+    		IValueContainer valueContainer)
+    {
+    	// NB: IValueContainers have address length > 1. 
+    	// So one parent must exist
+    	if (parentAddress.size()<1)
+    		return;
+		
+		addDirectiveComponent(parentAddress, valueContainer, false, true);
+    }
+    
 //-----------------------------------------------------------------------------
     
     /**
-     * Finds and return a specified directive. This method looks only at the 
+     * Finds and return the first directive that matches the given name. 
+     * This method looks only at the 
      * directives of this very job, not at the content of any embedded job.
      * @param name of the directive to return (case insensitive).
      * @return the directive or null if none is found with that name.
@@ -635,7 +661,8 @@ public class CompChemJob extends Job implements Cloneable
 //-----------------------------------------------------------------------------
     
     /**
-     * Finds and return a specified directive. This method looks also at the 
+     * Finds and return the first directive that matches the given name. 
+     * This method looks also at the 
      * content of any embedded job, if recursion is required. Note that we 
      * return the first-encountered directive with the given name.
      * @param name of the directive to return (case insensitive).

@@ -62,12 +62,12 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Definition of how to use multiple geometries
      */
-    private enum MultiGeomMode {INDEPENDENT, PATH};
+    private enum MultiGeomMode {INDEPENDENTJOBS, ALLINONEJOB};
     
     /**
      * Chosen mode of handling multiple geometries.
      */
-    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENT;
+    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
 
     /**
      * Flag requesting to overwrite geometry names
@@ -365,7 +365,7 @@ public abstract class ChemSoftInputWriter extends Worker
     		
     		switch (multiGeomMode)
     		{
-			case INDEPENDENT:
+			case INDEPENDENTJOBS:
 				// We simply repeat the same operation for each geometry.
 				for (int molId = 0; molId<inpGeom.size(); molId++)
 		        {
@@ -394,7 +394,7 @@ public abstract class ChemSoftInputWriter extends Worker
 		        }
 				break;
 				
-			case PATH:
+			case ALLINONEJOB:
 				// All geometries are included in a single input
 	            if (verbosity > 0)
 	            {
@@ -443,11 +443,11 @@ public abstract class ChemSoftInputWriter extends Worker
      * software tool.
      * @param mols the set of geometries that pertain this single job. Note that
      * in the vast majority of cases there will be only one geometry. This
-     * corresponds to multi-geometry mode {@value MultiGeomMode#INDEPENDENT}.
+     * corresponds to multi-geometry mode {@value MultiGeomMode#INDEPENDENTJOBS}.
      * However, jobs do use multiple input geometries within the same job
      * (e.g., transition state searches that start from the geometries of the
      * reactant and product). This is the case of multi-geometry mode 
-     * {@value MultiGeomMode#PATH}.
+     * {@value MultiGeomMode#ALLINONEJOB}.
      * <br>
      * <b>WARNING</b>: Changes in the number of electrons or in spin 
      * multiplicity among the geometries are not supported (yet).
@@ -474,33 +474,19 @@ public abstract class ChemSoftInputWriter extends Worker
 		// links that are explicitly defined in any part of any input file.
 		setSystemSpecificNames(molSpecJob);
 		
-		// WARNING: for now we do not expect any change of #electrons or spin
-		Object pCharge = mols.get(0).getProperty(ChemSoftConstants.PARCHARGE);
-		if (pCharge != null)
+		// WARNING: changes of charge and spin in multiple geometries
+		// must be reflected in the input of each geometry. Here we apply
+		// the properties of the first, just in case they have not being set
+		// otherwise.
+		Integer chargeFromMol = getChargeFromMol(mols.get(0));
+		if (chargeFromMol != null)
 		{
-			try {
-				Integer.valueOf(pCharge.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pCharge.toString() + "' as charge. Check "
-						+ "value of property '" + ChemSoftConstants.PARCHARGE
-						+ "'.", -1);
-			}
-			setChargeIfUnset(molSpecJob, pCharge.toString(), omitCharge);
+			setChargeIfUnset(molSpecJob, chargeFromMol+"", omitCharge);
 		}
-		
-		Object pSpin = mols.get(0).getProperty(ChemSoftConstants.PARSPINMULT);
-		if (pSpin != null)
+		Integer smFromMol = getSpinMultiplicityFromMol(mols.get(0));
+		if (smFromMol != null)
 		{
-			try {
-				Integer.valueOf(pSpin.toString());
-			} catch (NumberFormatException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
-						+ pSpin.toString() + "' as spin multiplicity. Check "
-						+ "value of property '" + ChemSoftConstants.PARSPINMULT
-						+ "'.", -1);
-			}
-			setSpinMultiplicityIfUnset(molSpecJob, pSpin.toString(), omitSpinMult);
+			setSpinMultiplicityIfUnset(molSpecJob, smFromMol +"", omitSpinMult);
 		}
 		
 		// These calls take care also of the sub-jobs/directives
@@ -529,7 +515,47 @@ public abstract class ChemSoftInputWriter extends Worker
 			IOtools.writeTXTAppend(jdFileOut, writer.toJson(cleanCCJ), true);
 		}
     }
-
+ 
+//------------------------------------------------------------------------------
+    
+    protected static Integer getChargeFromMol(IAtomContainer mol)
+    {
+    	Integer charge = null;
+    	Object pCharge = mol.getProperty(ChemSoftConstants.PARCHARGE);
+		if (pCharge != null)
+		{
+			try {
+				charge = Integer.valueOf(pCharge.toString());
+			} catch (NumberFormatException e) {
+				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+						+ pCharge.toString() + "' as charge. Check "
+						+ "value of property '" + ChemSoftConstants.PARCHARGE
+						+ "'.", -1);
+			}
+		}
+		return charge;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    protected static Integer getSpinMultiplicityFromMol(IAtomContainer mol)
+    {
+    	Integer sm = null;
+    	Object pSM = mol.getProperty(ChemSoftConstants.PARSPINMULT);
+		if (pSM != null)
+		{
+			try {
+				sm = Integer.valueOf(pSM.toString());
+			} catch (NumberFormatException e) {
+				Terminator.withMsgAndStatus("ERROR! Could not interprete '" 
+						+ pSM.toString() + "' as spin multiplicity. Check "
+						+ "value of property '" + ChemSoftConstants.PARSPINMULT
+						+ "'.", -1);
+			}
+		}
+		return sm;
+    }
+    
 //------------------------------------------------------------------------------
     
     /**
@@ -692,7 +718,8 @@ public abstract class ChemSoftInputWriter extends Worker
      * container is already present on the given address.
      * @param ccj the job to customize.
      * @param address the location where to place the value container in the
-     * directive's component structure. Any level of embedding is allowed.
+     * directive's component structure. Any level of embedding is allowed. This
+     * address should not include the component being added.
      * @param container the data container that is to be added.
      */
     public static void addNewValueContainer(CompChemJob ccj, 
@@ -706,6 +733,31 @@ public abstract class ChemSoftInputWriter extends Worker
     		}
     	} else {
     		ccj.addNewValueContainer(address, container);
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Adds a value container at any level of embedding in a job directive's 
+     * component structure. Ignores the potential existence of previously 
+     * containers, i.e., does not overwrite existing containers.
+     * @param ccj the job to customize.
+     * @param address the location where to place the value container in the
+     * directive's component structure. Any level of embedding is allowed.
+     * @param container the data container that is to be added.
+     */
+    public static void appendValueContainer(CompChemJob ccj, 
+    		DirComponentAddress address, IValueContainer container)
+    {
+    	if (ccj.getNumberOfSteps()>0)
+    	{
+    		for (Job stepJob : ccj.getSteps())
+    		{
+    			((CompChemJob) stepJob).appendValueContainer(address, container);
+    		}
+    	} else {
+    		ccj.appendValueContainer(address, container);
     	}
     }
     

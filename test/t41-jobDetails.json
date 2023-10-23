@@ -1,0 +1,246 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "WB97XD",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "INT",
+              "value": "SUPERFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "GENECP 5D 7F",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "reference": "CRITICALPOINT",
+                  "value": "QST3",
+                  "isLoud": false
+                },
+                {
+                  "reference": "FORCECONSTANTS",
+                  "value": "CALCFC",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MODREDUNDANT",
+                  "value": "MODREDUNDANT",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLES",
+                  "value": "150"
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "10"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "250"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "300"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Transition State optimization",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "reference": "BASISSET",
+              "type": "UNDEFINED",
+              "value": "Type is not JSON-able",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "SMARTS [#1] Link ../data/basisset/gaussian/aug-cc-PVDdZ_C_H_F_Cl.gbs\nSMARTS [#6] Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [#9] Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs\nSMARTS [#17] Link ../data/basisset/gaussian/H_C-F_Si-Cl_Br_I__LANL2DZ_EPC.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            },
+            {
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [#6] [#1] suffix:F"
+                }
+              ]
+            },
+            {
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [#6] [#1] suffix:F"
+                }
+              ]
+            },
+            {
+              "reference": "MODREDUNDANT",
+              "type": "UNDEFINED",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[#1] [#6] [#1] suffix:F"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "WB97XD",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "INT",
+              "value": "SUPERFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "FREQ",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "300"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "10"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "250"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Stationary point characterization",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
