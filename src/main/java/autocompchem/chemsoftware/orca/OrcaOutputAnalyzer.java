@@ -226,20 +226,20 @@ public class OrcaOutputAnalyzer extends ChemSoftOutputAnalyzer
                 	} else {
                 		// This lines contain the actual components
                 		String[] p = line.trim().split("\\s+");
-                    		int atmId = Integer.parseInt(p[0])/3;
-                    		int compId =  (Integer.parseInt(p[0]) % 3);
-                        	for (int k=1; k<p.length; k++)
-                        	{
-                        		nms.setComponent(currModes[k-1], atmId, 
-                    					compId, Double.parseDouble(p[k]));
-                        	}
-                    	}
-                    }
-            	    stepData.putNamedData(new NamedData(
-        					ChemSoftConstants.JOBDATAVIBMODES,nms));
-            	}
-   
-            	if (line.matches(".*" + OrcaConstants.LOGGIBBSFREEENERGY+ ".*"))
+                 		int atmId = Integer.parseInt(p[0])/3;
+                   		int compId =  (Integer.parseInt(p[0]) % 3);
+                       	for (int k=1; k<p.length; k++)
+                       	{
+                       		nms.setComponent(currModes[k-1], atmId, 
+                   					compId, Double.parseDouble(p[k]));
+                       	}
+                   	}
+                }
+           	    stepData.putNamedData(new NamedData(
+    				ChemSoftConstants.JOBDATAVIBMODES,nms));
+           	}
+        	
+           	if (line.matches(".*" + OrcaConstants.LOGGIBBSFREEENERGY+ ".*"))
         	{
         		String[] p = line.trim().split("\\s+");
         	    stepData.putNamedData(new NamedData(

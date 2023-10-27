@@ -40,21 +40,22 @@ public enum TaskID
     CONVERTZMATRIXTOSDF,
     CONVERTJOBDETAILS,
     CUREGAUSSIANJOB,
-    // analyze data in the output
+    // analyze data in the output/log
     ANALYSEGAUSSIANOUTPUT, 
     ANALYSEORCAOUTPUT,
     ANALYSEXTBOUTPUT,
     ANALYSENWCHEMOUTPUT,
     // check for errors using also data taken from the analysis of the output
     EVALUATEGAUSSIANOUTPUT, //TODO-gg to to use generic EVALUATEJOB with detection of type
+    EVALUATENWCHEMOUTPUT, //TODO-gg to to use generic EVALUATEJOB with detection of type
     EVALUATEGENERICOUTPUT, //TODO to del
     EVALUATEJOB, 
     // TODO-gg minor tasks to be made agnostic
-    EXTRACTGEOMETRIESFROMSPARTANTREE,   
-    EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT,
-    EXTRACTLASTGEOMETRYFROMSPARTANTREE, 
-    EXTRACTOPTGEOMSFROMNWCHEMOUTPUT,    
-    EXTRACTTRAJECTORYFROMNWCHEMOUTPUT,  
+    EXTRACTGEOMETRIESFROMSPARTANTREE,   //TODO-gg remove: use general purpose job analysis
+    EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT, //TODO-gg remove: use general purpose job analysis
+    EXTRACTLASTGEOMETRYFROMSPARTANTREE, //TODO-gg remove: use general purpose job analysis
+    EXTRACTOPTGEOMSFROMNWCHEMOUTPUT,    //TODO-gg remove: use general purpose job analysis
+    EXTRACTTRAJECTORYFROMNWCHEMOUTPUT,  //TODO-gg remove: use general purpose job analysis
     EXTRACTVIBMODULEFORCECONSTANTS,     
     FIXANDRESTARTGAUSSIAN,   //TODO remove
     FIXANDRESTARTNWCHEM,  //TODO to CURENWCHEMJOB

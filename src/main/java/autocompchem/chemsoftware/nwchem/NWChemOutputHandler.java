@@ -64,7 +64,9 @@ public class NWChemOutputHandler extends Worker
      */
     public static final Set<TaskID> capabilities =
             Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.ANALYSENWCHEMOUTPUT,
+                    Arrays.asList(
+                    		//TODO-gg delete this class one replacement is in place
+                    		//TaskID.ANALYSENWCHEMOUTPUT,
                     		TaskID.EXTRACTOPTGEOMSFROMNWCHEMOUTPUT,
                     		TaskID.EXTRACTTRAJECTORYFROMNWCHEMOUTPUT,
                     		TaskID.EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT)));

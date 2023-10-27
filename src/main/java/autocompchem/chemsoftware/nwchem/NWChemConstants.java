@@ -297,7 +297,7 @@ public class NWChemConstants
      * a frequency/Hessian task. WARNING! Geometry optimization tasks use a
      * different syntax.
      */
-    public final static String OUTHESENDXYZ = "^\\s*$";
+    public final static String OUTHESENDXYZ = "^\\s-*$";
 
     /**
      * String identifying end of a geometry optimization step. Both
@@ -311,9 +311,24 @@ public class NWChemConstants
     public final static String OUTENDCONVGEOMOPTSTEP = "^\\s* Optimization converged";
 
     /**
+     * String identifying total SCF iteration energy
+     */
+    public final static String OUTSCFENERGY = "^\\sd=.*,.*";
+
+    /**
+     * String identifying total SCF energy
+     */
+    public final static String OUTTOTSCFENERGY = "^\\s* Total SCF energy =(.*)";
+
+    /**
      * String identifying total DFT energy
      */
     public final static String OUTTOTDFTENERGY = "^\\s* Total DFT energy =(.*)";
+
+    /**
+     * String identifying zero-point correction 
+     */
+    public final static String OUTCORRZPE = "^ Zero-Point correction to Energy \\s*=(.*)";
 
     /**
      * String identifying thermal correction to enthalpy

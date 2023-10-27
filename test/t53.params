@@ -1,0 +1,13 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: AnalyseNWChemOutput
+JOBOUTPUTFILE: ../t53-nwc.out 
+# Not needed but it is available
+#JOBDETAILSFILE: ../t53-jobDetails.json
+PRINTALLGEOMETRIES: XYZ t53_allGeoms.xyz
+PRINTLASTGEOMETRY: SDF t53_lastGeom.sdf
+PRINTVIBMODES: 0 6 7 164 t53_vibModes_0_6_7_164.xyz
+TEMPLATECONNECTIVITY: ../t53-mol.sdf
+DETECTKINDOFcriTICALPOINT: LOwesTFREQ 30

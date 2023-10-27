@@ -478,6 +478,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
         			+ inFile.getAbsolutePath(),-1);
         } catch (IOException ioex) {
+			ioex.printStackTrace();
         	Terminator.withMsgAndStatus("ERROR! While reading file '" 
         			+ inFile.getAbsolutePath() + "'. Details: "
         			+ ioex.getMessage(),-1);
@@ -628,7 +629,8 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 
 	        			if (verbosity > 1)
 	        			{
-	        				System.out.println("Writing all geometries of "
+	        				System.out.println("Writing all geometries ("
+	        						+ acs.getAtomContainerCount() + ") of "
 	        						+ "step " + stepId + " to file '" 
 	        						+ outFile+"'");
 	        			}

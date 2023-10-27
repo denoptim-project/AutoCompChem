@@ -1,0 +1,387 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "start"
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step1: SP with HF\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "units",
+              "value": "angstrom",
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                }
+              ],
+              "reference": "geometry"
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"ao basis\"",
+              "isLoud": false
+            },
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "basisdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement O Name lanl2dz_ecp\nSMARTS [$([F,Cl,Br,I]);!$([*]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZ_ECP_H_C-F_Si-Cl_Br_I_Ru.gbs\nSMARTS [$([#8]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [$([#17]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [$([#6;X3]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [$([#6;X4]~[Ru]),$([#1,#6]~[#6;X4]~[Ru]),$([#1,#6]~[#6]~[#6;X4]~[Ru]),$([#1]~[#6]~[#6]~[#6;X4]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [Ru] Link ../data/basisset/gaussian/LANL2DZ_ECP_H_C-F_Si-Cl_Br_I_Ru.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ecp",
+          "keywords": [
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData": [
+            {
+              "reference": "ecpdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nElement C Name lanl2dz_ecp\nElement N Name lanl2dz_ecp\nElement O Name lanl2dz_ecp\nSMARTS [$([F,Cl,Br,I]);!$([*]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZ_ECP_H_C-F_Si-Cl_Br_I_Ru.gbs\nSMARTS [$([#8]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [$([#17]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [$([#6;X3]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [$([#6;X4]~[Ru]),$([#1,#6]~[#6;X4]~[Ru]),$([#1,#6]~[#6]~[#6;X4]~[Ru]),$([#1]~[#6]~[#6]~[#6;X4]~[Ru])] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [Ru] Link ../data/basisset/gaussian/LANL2DZ_ECP_H_C-F_Si-Cl_Br_I_Ru.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "scf",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step2: SP with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "dft",
+          "subDirectives": [
+            {
+              "name": "XC",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "disp",
+              "keywords": [
+                {
+                  "reference": "vdw",
+                  "value": "3"
+                }
+              ]
+            },
+            {
+              "name": "grid",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "xfine",
+                  "isLoud": false
+                },
+                {
+                  "reference": "disk",
+                  "value": "nodisk",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "direct"
+            },
+            {
+              "name": "convergence",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-8"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-7"
+                },
+                {
+                  "reference": "gradient",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "ncyds",
+                  "value": "150"
+                }
+              ]
+            },
+            {
+              "name": "tolerances",
+              "keywords": [
+                {
+                  "reference": "tight",
+                  "value": "tight"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step3: hessian+freq III\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step4: sabble opt. - all free\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "SADSTP",
+              "keywords": [
+                {
+                  "reference": "sadstp",
+                  "value": "0.10",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "clear"
+            },
+            {
+              "name": "default"
+            },
+            {
+              "name": "moddir",
+              "keywords": [
+                {
+                  "reference": "modeToFollow",
+                  "value": "1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "inhess",
+              "keywords": [
+                {
+                  "reference": "inhess",
+                  "value": "2",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "EPREC",
+              "keywords": [
+                {
+                  "reference": "eprec",
+                  "value": "1e-8",
+                  "isLoud": false
+                }
+              ]
+            }
+            {
+              "name": "maxiter",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            },
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "saddle",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step5: final frequencies\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -26,6 +26,7 @@ import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
+import autocompchem.chemsoftware.nwchem.NWChemOutputAnalyzer;
 import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
 import autocompchem.chemsoftware.nwchem.NWChemReStarter;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
@@ -295,8 +296,11 @@ public class WorkerFactory
             return MolecularSorter.capabilities;
         case NWChemInputWriter:
 			return NWChemInputWriter.capabilities; 
+			//TODO-gg del
         case NWChemOutputHandler:
             return NWChemOutputHandler.capabilities;
+        case NWChemOutputAnalyzer:
+            return NWChemOutputAnalyzer.capabilities;
         case NWChemReStarter:
             return NWChemReStarter.capabilities;
         case OrcaInputWriter:
@@ -388,8 +392,11 @@ public class WorkerFactory
             return new MolecularSorter();
 		case NWChemInputWriter:
 			return new NWChemInputWriter();
+			//TODO-gg del
         case NWChemOutputHandler:
             return new NWChemOutputHandler();
+        case NWChemOutputAnalyzer:
+            return new NWChemOutputAnalyzer();
         case NWChemReStarter:
             return new NWChemReStarter();
         case OrcaInputWriter:

@@ -50,7 +50,8 @@ public enum WorkerID
     MolecularReorderer,
     MolecularSorter,
     NWChemInputWriter,
-    NWChemOutputHandler,
+    NWChemOutputHandler, //TODO-gg del
+    NWChemOutputAnalyzer,
     NWChemReStarter,
     OrcaInputWriter,
     OrcaOutputAnalyzer,
