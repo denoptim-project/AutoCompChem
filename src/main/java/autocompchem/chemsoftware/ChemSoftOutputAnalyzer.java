@@ -627,19 +627,39 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 		        			}
 	        				break;
 	        			}
-
-	        			if (verbosity > 1)
-	        			{
-	        				System.out.println("Writing all geometries ("
-	        						+ acs.getAtomContainerCount() + ") of "
-	        						+ "step " + stepId + " to file '" 
-	        						+ outFile+"'");
-	        			}
 	        			
 	        			geomsToExpose.add(acs);
 	        			
-	        			IOtools.writeAtomContainerSetToFile(outFile, acs,
-	        					format,true);
+	        			if (format.equals("XYZSDF") || format.equals("SDFXYZ"))
+	        			{
+	        				String pathnameBase = FileUtils.getPathToPatent(
+	        						outFile.getAbsolutePath()) 
+	        						+ File.separator
+	        						+ FileUtils.getRootOfFileName(outFile);
+	        				File outXYZ = new File(pathnameBase + ".xyz");
+	        				File outSDF = new File(pathnameBase + ".sdf");
+		        			if (verbosity > 1)
+		        			{
+		        				System.out.println("Writing all geometries ("
+		        						+ acs.getAtomContainerCount() + ") of "
+		        						+ "step " + stepId + " to files '" 
+		        						+ outXYZ + "' and '" + outSDF + "'.");
+		        			}
+		        			IOtools.writeAtomContainerSetToFile(outXYZ, acs,
+		        					"XYZ", true);
+		        			IOtools.writeAtomContainerSetToFile(outSDF, acs,
+		        					"SDF", true);
+	        			} else {
+		        			if (verbosity > 1)
+		        			{
+		        				System.out.println("Writing all geometries ("
+		        						+ acs.getAtomContainerCount() + ") of "
+		        						+ "step " + stepId + " to file '" 
+		        						+ outFile+"'");
+		        			}
+		        			IOtools.writeAtomContainerSetToFile(outFile, acs,
+		        					format, true);
+	        			}
 	        			
 	        			resultsString.append("-> #geometries ").append(
 	        					acs.getAtomContainerCount());
@@ -682,20 +702,38 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        				break;
 	        			}
 	        			
-	        			if (verbosity > 1)
-	        			{
-	        				System.out.println("Writing last geometry of "
-	        						+ "step " + stepId + " to file '" 
-	        						+ outFileName+"'");
-	        			}
-	        			
 	        			IAtomContainer mol = acs.getAtomContainer(
 	        					acs.getAtomContainerCount()-1);
 	        			
 	        			lastGeomToExpose = mol;
 	        			
-	        			IOtools.writeAtomContainerToFile(outFile, mol,
-	        					format, true);
+	        			if (format.equals("XYZSDF") || format.equals("SDFXYZ"))
+	        			{
+	        				String pathnameBase = FileUtils.getPathToPatent(
+	        						outFile.getAbsolutePath()) 
+	        						+ File.separator
+	        						+ FileUtils.getRootOfFileName(outFile);
+	        				File outXYZ = new File(pathnameBase + ".xyz");
+	        				File outSDF = new File(pathnameBase + ".sdf");
+		        			if (verbosity > 1){
+		        				System.out.println("Writing last geometry of "
+		        						+ "step " + stepId + " to files '" 
+		        						+ outXYZ + "' and '" + outSDF + "'");
+		        			}
+		        			IOtools.writeAtomContainerToFile(outXYZ, mol,
+		        					"XYZ", true);
+		        			IOtools.writeAtomContainerToFile(outSDF, mol,
+		        					"SDF", true);
+	        			} else {
+		        			if (verbosity > 1)
+		        			{
+		        				System.out.println("Writing last geometry of "
+		        						+ "step " + stepId + " to file '" 
+		        						+ outFileName+"'");
+		        			}
+		        			IOtools.writeAtomContainerToFile(outFile, mol,
+		        					format, true);
+	        			}
 
                         resultsString.append("-> extracting last geometry out"
                         		+ " of ")

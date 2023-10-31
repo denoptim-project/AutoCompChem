@@ -731,6 +731,7 @@ public class IOtools
 			case "SDF":
 				writeSDFAppend(file, ac, append);
 				break;
+				
 			
 			default:
 				Terminator.withMsgAndStatus("ERROR! Format '" + format + "' is "

@@ -12,17 +12,17 @@
   {
     "key": "PRINTLASTGEOMETRY",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction of the last geometry found in the output to analyze and specifies the format and (optionally) pathname of the file where to save such geometry. Format can be XYZ (default) or SDF. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
+    "doc": "Requires extraction of the last geometry found in the output to analyze and specifies the format and (optionally) pathname of the file where to save such geometry. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "PRINTLASTGEOMETRYOFEACHSTEP",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction of the last geometry of each step found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default) or SDF. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
+    "doc": "Requires extraction of the last geometry of each step found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "PRINTALLGEOMETRIES",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction ofall geometries found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default) or SDF. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
+    "doc": "Requires extraction ofall geometries found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "TEMPLATECONNECTIVITY",
