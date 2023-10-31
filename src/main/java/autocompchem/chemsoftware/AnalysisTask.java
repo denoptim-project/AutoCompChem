@@ -67,6 +67,16 @@ public class AnalysisTask
     {
     	this.params = params;
     }
+
+//-----------------------------------------------------------------------------
+    
+    /**
+     * @param kind the kind of analysis represented by this object
+     */
+    public void setKind(AnalysisKind kind)
+    {
+    	this.kind = kind;
+    }
     
 //-----------------------------------------------------------------------------
     

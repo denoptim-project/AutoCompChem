@@ -93,7 +93,14 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
         	if (line.matches(".*" + NWChemConstants.OUTNORMALENDSTR+ ".*"))
         	{
         		normalTerminated = true;
+        		// NB: the citation message is reported after a misleading line
+        		// that states "NWChem Input Module", which is what we use to 
+        		// identify the beginning of a step/task. 
+        		// When we find this line we could stop reading, but we go on to
+        		// count the lines.
         	}
+        	if (normalTerminated)
+        		continue;
         	
         	if (line.matches(".*" + NWChemConstants.OUTTOTSCFENERGY+ ".*")
         			|| line.matches(".*" + NWChemConstants.OUTTOTDFTENERGY+ ".*"))
@@ -243,7 +250,7 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
                 	} else if (line.startsWith(" --------------")) {
                 		// End of frequencies 
                 		break;
-                	} else {
+                	} else if (line.matches("^ *[1-9].*$")){
                 		// This lines contain the actual components
                 		String[] p = line.trim().split("\\s+");
                 		int atmId = (Integer.parseInt(p[0])-1)/3;
@@ -253,6 +260,9 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
                     		nms.setComponent(currModes[k-1], atmId, 
                 					compId, Double.parseDouble(p[k]));
                     	}
+                    } else {
+                		// End of frequencies 
+                		break;
                     }
                 }
 
@@ -261,6 +271,21 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
         	    
            	    stepData.putNamedData(new NamedData(
            				ChemSoftConstants.JOBDATAVIBMODES, nms));
+
+           	    double dftNrg = stepScfConvEnergies.get(
+           	    		stepScfConvEnergies.size()-1);
+           	    double corrH = (Double) stepData.getNamedData(
+                        ChemSoftConstants.JOBDATTHERMOCHEM_H).getValue();
+           	    double temp = (Double) stepData.getNamedData(
+                        ChemSoftConstants.JOBDATTHERMOCHEM_TEMP).getValue();
+           	    double totS = (Double) stepData.getNamedData(
+                        ChemSoftConstants.JOBDATTHERMOCHEM_S_TOT).getValue();
+           	    
+           	    double gibbsFreeNRG = dftNrg + corrH - temp * (totS / 
+           	    		(1000.0*NWChemConstants.AUKCAL));
+           	    
+           	    stepData.putNamedData(new NamedData(
+           	    		ChemSoftConstants.JOBDATAGIBBSFREEENERGY,gibbsFreeNRG));
             }
         	
             if (line.matches(".*" + NWChemConstants.OUTTEMP + ".*"))
@@ -269,6 +294,15 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
                 Double val = Double.parseDouble(p[2]);
                 stepData.putNamedData(new NamedData(
                         ChemSoftConstants.JOBDATTHERMOCHEM_TEMP,
+                        val));
+            }
+
+            if (line.matches(".*" + NWChemConstants.OUTTOTS + ".*"))
+            {
+                String[] p = line.trim().split("\\s+");
+                Double val = Double.parseDouble(p[3]);
+                stepData.putNamedData(new NamedData(
+                        ChemSoftConstants.JOBDATTHERMOCHEM_S_TOT,
                         val));
             }
 
@@ -302,7 +336,7 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
             if (line.matches(".*" + NWChemConstants.OUTCORRH + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
-                Double val = Double.parseDouble(p[5]);
+                Double val = Double.parseDouble(p[8]);
                 stepData.putNamedData(new NamedData(
                         ChemSoftConstants.JOBDATTHERMOCHEM_H,
                         val));
@@ -311,10 +345,10 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
             if (line.matches(".*" + NWChemConstants.OUTCORRZPE + ".*"))
             {
                 String[] p = line.trim().split("\\s+");
-                Double val = Double.parseDouble(p[5]);
+                Double valInEh = Double.parseDouble(p[8]);
                 stepData.putNamedData(new NamedData(
                         ChemSoftConstants.JOBDATTHERMOCHEM_ZPE,
-                        val));
+                        valInEh));
             }
         	
     
@@ -336,11 +370,17 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
         	*/
         }
         
-		// Store data of last job, which ended with the end of the file
 		stepEndLineNum = lineNum-1;
-		storeDataOfOneStep(stepId, stepData, stepInitLineNum, 
-				stepEndLineNum, stepScfConvEnergies, 
-				stepGeoms);
+		
+		// Store data of last job, which ended with the end of the file, unless
+		// it is a normally terminated job. In which case, the citation text
+		// that identifies the normal termination of a job is reported by
+		// the input module, so it looks like a new and empty step, which we
+		// do not include in the parsed data.
+		if (!normalTerminated)
+			storeDataOfOneStep(stepId, stepData, stepInitLineNum, 
+					stepEndLineNum, stepScfConvEnergies, 
+					stepGeoms);
     }
     
 //-----------------------------------------------------------------------------

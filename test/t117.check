@@ -23,7 +23,7 @@ fi
 n=0;n=$(grep -c ".*TRANSITION STATE.*ignoring v<30.*i35.0.*" t117.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c ".*Gibbs free energy -76.3584.* (123.0; 0.0; 0.1)" t117.log )
+n=0;n=$(grep -c ".*Gibbs free energy -76.3584.* (.* 123.0; .* 0.0; .* 0.01)" t117.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^3$" t117_allGeoms.xyz )

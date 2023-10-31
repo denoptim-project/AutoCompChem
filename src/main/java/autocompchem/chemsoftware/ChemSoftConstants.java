@@ -373,7 +373,7 @@ public class ChemSoftConstants
 	/**
 	 * Key for parameter requesting to calculate free energy
 	 */
-	public static final String PARGETENERGY = "CALCULATEENERGY";
+	public static final String PARGETENERGY = "GETFREEENERGY";
 
 	/**
 	 * Key for parameter requesting analysis of the kind of critical point

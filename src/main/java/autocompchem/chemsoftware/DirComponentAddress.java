@@ -193,6 +193,9 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
 		if (path.equals("."))
 		{
 			return address;
+		} else if (path.trim().equals(""))
+		{
+			return address;
 		}
         String[] places = path.trim().split("\\"+PLACESEPARATOR);
         for (int i=0; i<places.length; i++)

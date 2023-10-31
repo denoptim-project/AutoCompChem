@@ -6,9 +6,8 @@ TASK: AnalyseXTBOutput
 JobOutputFile: ../t135-xtb.log
 PRINTALLGEOMETRIES: XYZ t135_allGeoms.xyz
 PRINTLASTGEOMETRY: SDF t135_lastGeom.sdf
-#Not implemented yet
+#TODO-gg: Not implemented yet
 #PRINTVIBMODES: 6 7 t135_vibModes_6_7.xyz
 TEMPLATECONNECTIVITY: ../t135-tmpl.sdf TOLERANCE=0.20
-#Not implemented yet
-#CALCULATEEneRGY: QHTHREshOLD 123
+GetFreeEnergy: QHTHREshOLD 123
 DETECTKINDOFcriTICALPOINT: LOwesTFREQ 30

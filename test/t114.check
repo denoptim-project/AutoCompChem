@@ -4,18 +4,22 @@ if [ ! -f "t114.log" ]; then echo NOT Passed ERROR 1; exit -1 ; fi
 if [ ! -f "t114_final.sdf" ]; then echo NOT Passed ERROR 2; exit -1 ; fi
 if [ ! -f "t114_vb.xyz" ]; then echo NOT Passed ERROR 3; exit -1 ; fi
 
-n=0;n=$(grep -c " 0.0035.* -0.0054.* -0.0014.*" t114_vb.xyz)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+if ! head -n 2 t114_vb.xyz | grep -q  "0.00227.* 0.00125.* 0.00393.*" ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
+if ! head -n 69 t114_vb.xyz | tail -n 1 | grep -q  "0.00053.* 0.00188.* -0.00157.*" ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c " 0.0357.* -0.0453.* 0.0179.*" t114_vb.xyz)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+if ! tail -n 69 t114_vb.xyz | head -n 1 | grep -q  "0.00353.* \-0.00548.* \-0.00143.*" ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+if ! tail -n 2 t114_vb.xyz | tail -n 2 | head -n 1 | grep -q  "\-0.09360.* \-0.17474.* 0.20178.*" ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
-grep -q 'Termination status: 0' "t114.log"
-if [ "$?" == 0 ] ; then
-echo Passed
-exit 0
+if ! head -n 4 t114_final.sdf | tail -n 1 | grep -q  "^ 68 71  0  0  0" ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c '\$\$\$\$' t114_final.sdf)
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t114.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 6
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi
 

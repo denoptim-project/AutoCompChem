@@ -178,7 +178,7 @@ public class SetDirectiveComponent extends AddDirectiveComponent
 	        switch (type)
 	        {
 			case SET_DIRECTIVE:
-				content = context.deserialize(jsonObject.get("content"), 
+				content = context.deserialize(jsonObject.get("content"),
 						Directive.class);
 				break;
 			case SET_DIRECTIVEDATA:

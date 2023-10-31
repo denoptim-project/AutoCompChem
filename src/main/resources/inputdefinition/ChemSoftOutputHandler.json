@@ -35,9 +35,9 @@
     "doc": "Requires extraction of vibrational modes from the output to analyze. The modes are specified by the list of 0-based indexes (any number of indexes). The last string defines the pathname where the modes are saved."
   },
   {
-    "key": "CALCULATEENERGY",
-    "type": "[QHTHRESHOLD <float>]",
-    "doc": "Requires extraction of the energy values. Optionally, the presence of QHTHRESHOLD option triggers the calculation of free energy with the quasi-harmonic approximation where all frequencies below a given threshold (the integer value, in 1/cm) are considered for the calculation of the vibrational entropy as if their frequency was the value of the threshold."
+    "key": "GETFREEENERGY",
+    "type": "[QHTHRESHOLD <float>] [QHARMTOREAL <float>] [QHARMIGNORE <float>]",
+    "doc": "Requires extraction of the energy values. Optionally, the presence of QHTHRESHOLD option triggers the calculation of Gibbs free energy with the quasi-harmonic approximation where all frequencies below a given threshold (the integer value, in 1/cm) are considered for the calculation of the vibrational entropy as if their frequency was the value of the threshold. Optionally, the QHARMTOREAL option can be used to provide a threshold for |v| below which the we consider any imaginary mode a read one. If |iv|<val then iv becomes v when calculating quasi-harmonic vibrational component of entropy. Optionally, the QHARMIGNORE option can be used to provide a threshold frequency (in 1/cm) below which we ignore frequencies when calculating the quasi-harmonic vibrational entropy. Imaginary modes are ignored always. "
   },
   {
     "key": "DETECTKINDOFCRITICALPOINT",

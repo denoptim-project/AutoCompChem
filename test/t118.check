@@ -23,7 +23,7 @@ fi
 n=0;n=$(grep -c " MINIMUM " t118.log )
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c ".*Gibbs free energy -5.068905.* (123.0; 0.0; 0.1)" t118.log )
+n=0;n=$(grep -c ".*Gibbs free energy -5.068905.* (.* 123.0; .* 0.0; .* 0.01)" t118.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^3$" t118_allGeoms.xyz )

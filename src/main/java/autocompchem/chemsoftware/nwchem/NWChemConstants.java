@@ -382,6 +382,12 @@ public class NWChemConstants
      * Lowest non-zero frequency (absolute value)
      */
     public final static double MINFREQ = 0.1;
+    
+    /**
+     * Conversion factor from AU to kcal/mol (taken from NWChem source:
+     * https://github.com/nwchemgit/nwchem/blob/3521c0907173930c02f0677d2744cac4414ae225/src/vib/vib_wrtfreq.F#L41C25-L41C36
+     */
+    public final static double AUKCAL = 627.5093314;
 
     
 }

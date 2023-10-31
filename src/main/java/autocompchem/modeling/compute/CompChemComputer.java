@@ -84,51 +84,49 @@ public class CompChemComputer
                      //hck units are  [J*s]*[cm/s]/[J/K]=cm/K
 
         String w = "VibS:";
-        for (Double freq : freqs)
+        for (Double freqOrig : freqs)
         {
-            // imaginary modes
-            if (freq < 0.0d)
+        	double freq = freqOrig;
+        	if (freqOrig < 0.0d && Math.abs(freqOrig) < imThrsh)
             {
-                if (Math.abs(freq) < imThrsh)
+        		if (verbosity > 1)
                 {
-                    if (verbosity > 1)
-                    {
-                        System.out.println(w + " changing sign to "
-                                           + "imaginary mode "+freq);
-                    }
-                    freq = -freq;
+                    System.out.println(w + " changing sign to imaginary "
+                    		+ "frequency i" + Math.abs(freqOrig));
                 }
-                else
-                {
-                    if (verbosity > 1)
-                    {
-                        System.out.println(w + " ignoring imaginary mode "
-                                                                        + freq);
-                    }
-                    continue;
-                }
+        		freq = Math.abs(freqOrig);
             }
-
-            // get rid of translations and rotations
-            if (Math.abs(freq) < ignThrsh)
+        	
+            if (freq < 0.0d)
             {
                 if (verbosity > 1)
                 {
-                    System.out.println(w + " ignoring frequency "+freq);
+                    System.out.println(w + " ignoring imaginary frequency " 
+                    		+ "i" + Math.abs(freq));
                 }
                 continue;
             }
-
+        	// Typically here we get rid of translations and rotations
+            if (freq < ignThrsh)
+            {
+                if (verbosity > 1)
+                {
+                    System.out.println(w + " ignoring frequency " + freq);
+                }
+                continue;
+            }
+            
             // scale to threshold value
             if (freq < qhThrsh)
             {
                 if (verbosity > 1)
                 {
                     System.out.println(w + " scaling frequency " + freq 
-                                                            + " to " + qhThrsh);
+                    		+ " to " + qhThrsh);
                 }
                 freq = qhThrsh;  
             }
+            
             // calculate contribution for this mode
             freq = hck * freq;  //[cm/K] * [1/cm] = 1/K
             double vs = cR*((freq/temp)/(Math.exp(freq/temp) - 1.0) 

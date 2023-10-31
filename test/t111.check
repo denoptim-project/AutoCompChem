@@ -1,46 +1,57 @@
 #!/bin/bash
 
-grep -q -i "DFT Energy: -117.767629696489 0.084848 298.15 63.564 124.76  TRANSITION STATE" t111.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
+if [ ! -f t111.log ]; then
+  echo NOT Passed ERROR 1 ; exit -1
 fi
 
-grep -q -i "ignoring imaginary mode -93.28" t111.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 2
-exit -1
+n=0;n=$(grep -c -i "VibS: ignoring imaginary frequency " t111.log)
+if [ $n != 1 ] ; then echo NOT Passed ERROR 2a ; exit -1 ; fi
+
+if ! grep -q "VibS: ignoring imaginary frequency i93.28" t111.log ; then
+  echo NOT Passed ERROR 2b ; exit -1
 fi
 
-grep -q -i "changing sign to imaginary mode -12.74" t111.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 3
-exit -1
+n=0;n=$(grep -c -i "VibS: ignoring frequency 0.005" t111.log)
+if [ $n != 2 ] ; then echo NOT Passed ERROR 3a ; exit -1 ; fi
+
+n=0;n=$(grep -c -i "VibS: changing sign" t111.log)
+if [ $n != 2 ] ; then echo NOT Passed ERROR 4a ; exit -1 ; fi
+
+if ! grep -q "VibS: changing sign to imaginary frequency i0.005" t111.log ; then
+  echo NOT Passed ERROR 4b ; exit -1
+fi
+if ! grep -q "VibS: changing sign to imaginary frequency i12.74" t111.log ; then
+  echo NOT Passed ERROR 4c ; exit -1
 fi
 
-grep -q -i "scaling frequency 12.74 to 100.0" t111.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 4
-exit -1
+n=0;n=$(grep -c -i "VibS: scaling" t111.log)
+if [ $n != 4 ] ; then echo NOT Passed ERROR 5 ; exit -1 ; fi
+
+if ! grep -q "VibS: scaling frequency 20.88 to 101.0" t111.log ; then
+  echo NOT Passed ERROR 5a ; exit -1
+fi
+if ! grep -q "VibS: scaling frequency 45.96 to 101.0" t111.log ; then
+  echo NOT Passed ERROR 5b ; exit -1
+fi
+if ! grep -q "VibS: scaling frequency 12.58 to 101.0" t111.log ; then
+  echo NOT Passed ERROR 5c ; exit -1
+fi
+if ! grep -q "VibS: scaling frequency 12.74 to 101.0" t111.log ; then
+  echo NOT Passed ERROR 5d ; exit -1
 fi
 
-n=$(grep -c -i "ignoring frequency 0.005" t111.log)
-if [ $n != 2 ] ; then
-echo NOT Passed ERROR 5
-exit -1
+if ! grep -q  " Quasi-Harm. corrected Gibbs free energy -117.6615270" t111.log; then
+  echo NOT Passed ERROR 6 ; exit -1
 fi
 
-grep -q -i "scaling frequency 12.58 to 100.0" t111.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 6
-exit -1
+if ! grep -q  "Critial Point: SADDLE POINT (order 2) (ignoring v<0.01) \[i93.28, i12.74\]" t111.log; then
+  echo NOT Passed ERROR 7 ; exit -1
 fi
 
-grep -q 'Termination status: 0' t111.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if grep -q 'Termination status: 0' t111.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 7
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi

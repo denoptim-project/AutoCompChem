@@ -1,16 +1,21 @@
 #!/bin/bash
 
-grep -q -i "DFT Energy: -117.767629696489 0.084848 298.15 63.564  TRANSITION STATE" t83.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
+if [ ! -f t83.log ]; then
+  echo NOT Passed ERROR 0 ; exit -1
 fi
 
-grep -q 'Termination status: 0' t83.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if ! grep -q  " Gibbs free energy -229.04687107" t83.log; then
+  echo NOT Passed ERROR 1 ; exit -1
+fi
+
+if ! grep -q  "Critial Point: TRANSITION STATE .* \[i1.0\]" t83.log; then
+  echo NOT Passed ERROR 2 ; exit -1
+fi
+
+if  grep -q 'Termination status: 0' t83.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 2
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi

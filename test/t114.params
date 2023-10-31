@@ -1,9 +1,7 @@
 VERBOSITY: 2
 TASK: AnalyseNWChemOutput
-INFILE: ../t114.out
+JOBOUTPUTFILE: ../t114.out
 TEMPLATECONNECTIVITY: ../t114_tmpl.sdf
-ANALYSE: IMGFREQ
-PRINTLASTGEOMETRY: no need of argument here
+getFreeEnergy
+PRINTLASTGEOMETRY: SDF t114_final.sdf
 PRINTVIBMODEs: 0 1 5 6 7 t114_vb.xyz
-OUTFORMAT: SDF
-OUTFILE: t114_final.sdf

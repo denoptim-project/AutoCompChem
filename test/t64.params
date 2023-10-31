@@ -3,4 +3,4 @@
 #
 VERBOSITY: 3
 TASK: AnalyseNWChemOutput
-INFILE: ../t64-nwc.out
+JOBOUTPUTFILE: ../t64-nwc.out

@@ -1,8 +1,8 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 4
 TASK: AnalyseNWChemOutput
-INFILE: ../t83-nwc.out
-ANALYSE: ENERGY IMGFREQ
-LOWESTFREQ: 0.01
+JOBOUTPUTFILE: ../t83-nwc.out
+GETFREEENERGY
+DETECTKINDOFcriTICALPOINT: LOWESTFREQ 0.01

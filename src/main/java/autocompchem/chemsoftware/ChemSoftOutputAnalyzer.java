@@ -359,22 +359,23 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
             String s = params.getParameter(ChemSoftConstants.PARGETENERGY)
             		.getValueAsString();
             String[] p = s.split("\\s+");
-            AnalysisTask a = new AnalysisTask(AnalysisKind.SCFENERGY);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.QHTHERMOCHEMISTRY);
             ParameterStorage ps = new ParameterStorage();
             for (int i=0; i<p.length; i++)
             {
             	String w = p[i].toUpperCase();
             	switch(w) 
             	{
-	            	case (ChemSoftConstants.QHARMTHRSLD): 
+	            	case (ChemSoftConstants.QHARMTHRSLD):
+	            	case (ChemSoftConstants.QHARMIGNORE):
+	            	case (ChemSoftConstants.QHARMTOREAL): 
 	            	{
-	            		a = new AnalysisTask(AnalysisKind.QHTHERMOCHEMISTRY);
 	            		if ((i+1)>=p.length || !NumberUtils.isNumber(p[i+1]))
-	            		{
+	            		{ 
 	            			Terminator.withMsgAndStatus("ERROR! expecting a "
-	            					+ "value after QUASIHARM.",-1);
+	            					+ "value after " + w + ".",-1);
 	            		}
-	            		ps.setParameter(ChemSoftConstants.QHARMTHRSLD, p[i+1]);
+	            		ps.setParameter(w, p[i+1]);
 	            	}
             	}
             }
@@ -780,6 +781,15 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        			}
 	        			ListOfDoubles l = (ListOfDoubles) stepData.getNamedData(
 	        					ChemSoftConstants.JOBDATASCFENERGIES).getValue();
+	        			if (l.size()==0)
+	        			{
+	        				if (verbosity > 1)
+		        			{
+		        				System.out.println("Zero SCF converged energy "
+		        						+ "found in step " + stepId + ".");
+		        			}
+	        				break;
+	        			}
 	        			Double energy = l.get(l.size()-1);
 	        			resultsString.append("-> SCF Energy ").append(energy);
 	        			resultsString.append(NL);
@@ -817,51 +827,71 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY)
 	        					.getValue();
 	        			
-	        			Double temp = changeIfParameterIsFound(298.15,
-	        					ChemSoftConstants.JOBDATTHERMOCHEM_TEMP,atParams);
-	        			
-	        			@SuppressWarnings("unchecked")
-						Double vibS = CompChemComputer.vibrationalEntropyCorr(
-	        					(ArrayList<Double>) stepData.getNamedData(
-	    	        					ChemSoftConstants.JOBDATAVIBFREQ)
-	        					.getValue(), temp); // J/(mol*K)
-	        			vibS = vibS / ACCConstants.HARTREETOJOULEPERMOLE;
-	        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
-
-	        			Double qhThrsh = 0.0;
+	        			String qhTitlePrefix = "";
+	        			String qhTitleSuffix = "";
+	        			Double qhThrsh = 0.0; //NB: hard-coded value used below!
 	        			qhThrsh = changeIfParameterIsFound(qhThrsh,
 	        					ChemSoftConstants.QHARMTHRSLD,atParams);
-	        			Double imThrsh = 0.0;
+	        			Double imThrsh = 0.0; //NB: hard-coded value used below!
 	        			imThrsh  = changeIfParameterIsFound(imThrsh,
 	        					ChemSoftConstants.QHARMTOREAL,atParams);
-	        			Double ignThrsh = 0.1;
+	        			Double ignThrsh = 0.01;//NB: hard-coded value used below!
 	        			ignThrsh = changeIfParameterIsFound(ignThrsh,
 	        					ChemSoftConstants.QHARMIGNORE,atParams);
-	        			@SuppressWarnings("unchecked")
-						Double qhVibS = CompChemComputer.vibrationalEntropyCorr(
-	        					(ArrayList<Double>) stepData.getNamedData(
-	    	        					ChemSoftConstants.JOBDATAVIBFREQ)
-	        					.getValue(), temp, qhThrsh, imThrsh, ignThrsh, 
-	        					verbosity-1); // J/(mol*K)
-	        			qhVibS = qhVibS / ACCConstants.HARTREETOJOULEPERMOLE;
-	        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
-
-	        			if (verbosity > 1)
+	        			if (!NumberUtils.closeEnough(qhThrsh, 0.0) 
+	        					|| !NumberUtils.closeEnough(imThrsh, 0.0) 
+	        					|| !NumberUtils.closeEnough(ignThrsh, 0.01) )
 	        			{
-	        				System.out.println("Quasi-harmonic approx changes "
-	        						+ "vibrational entropy from "
-	        						+ vibS + " (a.u.) to " + qhVibS + " (a.u.).");
+	        				qhTitlePrefix = "Quasi-Harm. corrected ";
+	        				qhTitleSuffix =  " (" 
+	        						+ ChemSoftConstants.QHARMTHRSLD + " "
+	    	        				+ qhThrsh + "; "
+	    	        				+ ChemSoftConstants.QHARMTOREAL + " "
+	    	        			    + imThrsh + "; "
+	    	        			    + ChemSoftConstants.QHARMIGNORE + " " 
+	    	        			    + ignThrsh + ")";
+	        			
+		        			Double temp = changeIfParameterIsFound(298.15,
+		        					ChemSoftConstants.JOBDATTHERMOCHEM_TEMP,
+		        					atParams);
+		        			
+		        			@SuppressWarnings("unchecked")
+							Double vibS = 
+								CompChemComputer.vibrationalEntropyCorr(
+		        					(ArrayList<Double>) stepData.getNamedData(
+		    	        					ChemSoftConstants.JOBDATAVIBFREQ)
+		        					.getValue(), temp); // J/(mol*K)
+		        			vibS = vibS / ACCConstants.HARTREETOJOULEPERMOLE;
+		        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
+	
+		        			@SuppressWarnings("unchecked")
+							Double qhVibS = 
+								CompChemComputer.vibrationalEntropyCorr(
+		        					(ArrayList<Double>) stepData.getNamedData(
+		    	        					ChemSoftConstants.JOBDATAVIBFREQ)
+		        					.getValue(), temp, qhThrsh, imThrsh, 
+		        						ignThrsh, 
+		        					verbosity-1); // J/(mol*K)
+		        			qhVibS = qhVibS / ACCConstants.HARTREETOJOULEPERMOLE;
+		        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
+	
+		        			if (verbosity > 1)
+		        			{
+		        				System.out.println("Quasi-harmonic approx "
+		        						+ "changes vibrational entropy from "
+		        						+ vibS + " (a.u.) to " + qhVibS 
+		        						+ " (a.u.).");
+		        			}
+	        			
+		        			gibbsFreeEnergy = gibbsFreeEnergy + vibS*temp 
+		        					- qhVibS*temp;
 	        			}
 	        			
-	        			gibbsFreeEnergy = gibbsFreeEnergy + vibS*temp 
-	        					- qhVibS*temp;
-	        			
-	        			resultsString.append("-> Quasi-Harm. corrected "
-	        					+ "Gibbs free energy ").append(gibbsFreeEnergy);
-	        			resultsString.append(" (").append(qhThrsh).append("; ");
-	        			resultsString.append(imThrsh).append("; ");
-	        			resultsString.append(ignThrsh);
-	        			resultsString.append(")").append(NL);
+	        			resultsString.append("-> ")
+	        				.append(qhTitlePrefix)
+	        				.append("Gibbs free energy ")
+	        				.append(gibbsFreeEnergy)
+	        				.append(qhTitleSuffix).append(NL);
 	        			
 	        			qhGibbsEnergies.add(gibbsFreeEnergy);
 	        			break;
