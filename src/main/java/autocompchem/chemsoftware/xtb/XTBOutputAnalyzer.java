@@ -16,6 +16,7 @@ import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -379,7 +380,23 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
 		
 		stepsData.put(stepId, stepData.clone());
     }
+    
+//------------------------------------------------------------------------------
 
+  	@Override
+  	protected Set<FileFingerprint> getOutputFingerprint() 
+  	{
+  		Set<FileFingerprint> conditions = new HashSet<FileFingerprint>();
+  		conditions.add(new FileFingerprint(".", 10, 
+  				"^\\s*\\|\\s*x T B\\s*\\|\\s*$"));
+  		// NB: we allow to consider the working directory as output as xTB 
+  		// creates many useful files in the work space and with conventional 
+  		// names.
+  		conditions.add(new FileFingerprint("./*", 10, 
+  				"^\\s*\\|\\s*x T B\\s*\\|\\s*$"));
+  		return conditions;
+  	}
+  	
 //-----------------------------------------------------------------------------
     
 }

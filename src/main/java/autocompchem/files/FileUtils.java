@@ -19,10 +19,14 @@ package autocompchem.files;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import autocompchem.run.Terminator;
 
@@ -187,6 +191,28 @@ public class FileUtils
     public static List<File> find(File root, String pattern, Integer maxdepth, 
     		boolean collectFolders)
     {
+    	//TODO-gg replace with find2
+    	
+    	if (pattern.equals("*"))
+    	{
+	    	List<File> result = new ArrayList<File>();
+	        try {
+	        	if (collectFolders)
+	        	{
+					Files.walk(root.toPath(), maxdepth)
+						.filter(p -> !p.equals(root.toPath()))
+						.forEach(p -> result.add(p.toFile()));
+	        	} else {
+					Files.walk(root.toPath(), maxdepth)
+						.filter(p -> !p.equals(root.toPath()))
+						.filter(p -> !p.toFile().isDirectory())
+						.forEach(p -> result.add(p.toFile()));
+	        	}
+			} catch (IOException e) {
+			}
+	        return result;
+    	}
+        
     	boolean starts = false;
         boolean ends = false;
         boolean mid = true;
@@ -230,6 +256,34 @@ public class FileUtils
 		}
         
         return result;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    public static List<File> find2(File root, Integer maxdepth, String pattern,
+    		boolean collectFolders) throws IOException
+    {
+    	//PathMatcher matcher = FileSystems.getDefault().getPathMatcher(
+    	//		"glob:"+pattern);
+    	String absPattern = root.getAbsolutePath() + File.separator + pattern;
+    	//PathMatcher matcher = new MyPathMatcher(absPattern);
+    	PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:"+absPattern);
+    	
+    	List<Path> paths = Files.find(root.toPath(), maxdepth,
+    	        (path, basicFileAttributes) ->  matcher.matches(path))
+    			.collect(Collectors.toList());
+    	
+    	if (!collectFolders)
+    	{
+	    	paths = paths.stream()
+	    			.filter(p -> !Files.isDirectory(p, 
+	    					LinkOption.NOFOLLOW_LINKS))
+	    			.collect(Collectors.toList());
+    	}
+    	
+    	List<File> files = new ArrayList<File>();
+    	paths.stream().forEach(p -> files.add(new File(p.toString())));
+    	return files;
     }
     
 //------------------------------------------------------------------------------

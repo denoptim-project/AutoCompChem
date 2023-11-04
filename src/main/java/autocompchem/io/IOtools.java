@@ -32,7 +32,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.exception.CDKException;
@@ -49,6 +52,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputAnalyzerBuilder;
+import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
@@ -56,6 +66,9 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.WorkerConstants;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -542,7 +555,8 @@ public class IOtools
 
     /**
      * Read a molecular structure file that might contain multiple structures.
-     * Accepts SDF or XYZ files
+     * Accepts SDF, XYZ files, or any output file that can be analyzed by 
+     * any registered implementation of {@link ChemSoftOutputAnalyzer}.
      * @param file file to be read
      * @return all the chemical objects into an <code>ArrayList</code>
      */
@@ -552,17 +566,71 @@ public class IOtools
         if (file.getName().endsWith(".sdf"))
         {
             mols = IOtools.readSDF(file);
-        }
-        else if (file.getName().endsWith(".xyz"))
+        } else if (file.getName().endsWith(".xyz"))
         {
             mols = IOtools.readXYZ(file);
+        } else {
+        	try {
+        		ChemSoftOutputAnalyzerBuilder builder =
+        				new ChemSoftOutputAnalyzerBuilder();
+				ChemSoftOutputAnalyzer analyzer = builder.makeInstance(file);
+				if (analyzer!=null)
+				{
+					ParameterStorage params = new ParameterStorage();
+					params.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE,
+							file.getAbsolutePath());
+				//TODO-gg make general task ID
+					params.setParameter(WorkerConstants.PARTASK,
+							TaskID.ANALYSENWCHEMOUTPUT.toString());
+					analyzer.setParameters(params);
+					analyzer.initialize();
+					NamedDataCollector allData = new NamedDataCollector();
+					analyzer.setDataCollector(allData);
+					analyzer.performTask();
+					
+					@SuppressWarnings("unchecked")
+					Map<Integer, NamedDataCollector> dataByStep =
+							(Map<Integer, NamedDataCollector>) 
+								allData.getNamedData(ChemSoftConstants
+										.JOBOUTPUTDATA).getValue();
+					
+					for (Integer stepId : dataByStep.keySet())
+					{
+						NamedDataCollector stepData = dataByStep.get(stepId);
+						if (stepData.contains(
+								ChemSoftConstants.JOBDATAGEOMETRIES))
+						{
+							AtomContainerSet acs = (AtomContainerSet) 
+									stepData.getNamedData(ChemSoftConstants
+											.JOBDATAGEOMETRIES).getValue();
+							for (IAtomContainer iac : acs.atomContainers())
+								mols.add(iac);
+						}
+					}
+					
+					if (mols.size()==0)
+					{
+						Terminator.withMsgAndStatus("ERROR! No geometry found "
+								+ "in '" + file.getName() + "' (analyzed by "
+								+ analyzer.getClass().getSimpleName()
+								+ ").", -1);
+					}
+				}
+			} catch (FileNotFoundException e) {
+				Terminator.withMsgAndStatus("ERROR! File '"
+                        + file.getName() + "' not found.", -1);
+			}
         }
-        else
+        
+        if (mols.size()==0) 
         {
             Terminator.withMsgAndStatus("ERROR! Cannot understand format of '"
                         + file.getName() + "'."
                         + " In this version, you can read multiple "
-                        + "chemical entities only from SDF or XYZ files.",-1);
+                        + "chemical entities only from SDF, XYZ files, or "
+                        + "any output from any of these: " 
+                        + ChemSoftOutputAnalyzerBuilder
+                        	.CHEMSOFTWITHINTERNALANALYZER.values(),-1);
         }
         return mols;
     }

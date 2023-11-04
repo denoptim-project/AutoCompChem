@@ -1,0 +1,4 @@
+$opt
+  logfile=trajectory.xyz
+$constrain
+   distance: 3, 4, auto

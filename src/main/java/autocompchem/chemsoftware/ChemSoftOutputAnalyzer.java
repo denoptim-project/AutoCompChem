@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.openscience.cdk.AtomContainerSet;
@@ -41,6 +42,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileFingerprint;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
@@ -150,10 +152,10 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	 * Name of data containing the matches to {@link TxtQuery}s involved in 
 	 * perception and detected upon analysis of chem. soft. output files.
 	 */
+    //TODO-gg fix typo
 	public static final String MATCHESTOTEXTQRYSFORPERCEPTION = 
 			"PERCEPTIONTXTWUERYMATCHES";
-    
-    
+	
     private static String NL = System.getProperty("line.separator");
 
 //------------------------------------------------------------------------------
@@ -428,8 +430,8 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	        }
         }
     }
-
-//-----------------------------------------------------------------------------
+    
+//------------------------------------------------------------------------------
 
     /**
      * Performs any of the analysis tasks set upon initialization.
@@ -729,7 +731,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 		        			{
 		        				System.out.println("Writing last geometry of "
 		        						+ "step " + stepId + " to file '" 
-		        						+ outFileName+"'");
+		        						+ outFileName + "'");
 		        			}
 		        			IOtools.writeAtomContainerToFile(outFile, mol,
 		        					format, true);
@@ -1129,8 +1131,11 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         }
         
         //TODO-gg expose more
-        exposeOutputData(new NamedData(ChemSoftConstants.JOBDATAGEOMETRIES,
-        		NamedDataType.UNDEFINED, geomsToExpose));
+        if (geomsToExpose.getAtomContainerCount()>0)
+        {
+	        exposeOutputData(new NamedData(ChemSoftConstants.JOBDATAGEOMETRIES,
+	        		NamedDataType.UNDEFINED, geomsToExpose));
+        }
         
         if (verbosity > 0 && !finalResultsString.toString().isBlank())
         {
@@ -1257,6 +1262,16 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
      * @param reader the line-by-line reader that reads the log file.
      */
     protected abstract void readLogFile(LogReader reader) throws Exception;
+    
+//------------------------------------------------------------------------------
+
+	/**
+	 * Provides info on how to identify software output that can be analyzed
+	 * by this class.
+	 * @return the data structure defining how to identify an output file 
+	 * readable by this class.
+	 */
+	protected abstract Set<FileFingerprint> getOutputFingerprint();
     
 //------------------------------------------------------------------------------
     

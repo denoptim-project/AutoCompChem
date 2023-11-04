@@ -20,6 +20,7 @@ import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.files.FileFingerprint;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.worker.TaskID;
@@ -111,7 +112,7 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
             		}
                 	if (line.matches("^ -----------------.*$"))
                 	{
-                		// NB: the first such lines was skilled above
+                		// NB: the first such lines was skipped above
                 		break;
                 	}
                     String[] parts = line.trim().split("\\s+");
@@ -263,6 +264,17 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
 		stepsData.put(stepId, stepData.clone());
     }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+	@Override
+	protected Set<FileFingerprint> getOutputFingerprint() 
+	{
+		Set<FileFingerprint> conditions = new HashSet<FileFingerprint>();
+		conditions.add(new FileFingerprint(".", 10, 
+				"^ Entering Gaussian System, Link 0=.*$"));
+		return conditions;
+	}
+
+//------------------------------------------------------------------------------
     
 }

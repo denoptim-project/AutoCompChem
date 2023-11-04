@@ -36,6 +36,7 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.Worker;
 
 /**
@@ -175,11 +176,42 @@ public abstract class ChemSoftInputWriter extends Worker
 
         if (params.contains(ChemSoftConstants.PARGEOMFILE))
         {
-            String pathname = params.getParameter(
+            String value = params.getParameter(
                     ChemSoftConstants.PARGEOMFILE).getValueAsString();
+            String[] words = value.trim().split("\\s+");
+            String pathname = words[0];
             FileUtils.foundAndPermissions(pathname,true,false,false);
             this.inGeomFile = new File(pathname);
-            this.inpGeom = IOtools.readMultiMolFiles(this.inGeomFile);
+            List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inGeomFile);
+            if (words.length > 1)
+            {
+            	for (int iw=1; iw<words.length; iw++)
+            	{
+            		String idStr = words[iw];
+            		if (NumberUtils.isParsableToInt(idStr))
+            		{
+            			int id = Integer.parseInt(idStr);
+            			if (id>-1 && id < iacs.size())
+            			{
+            				this.inpGeom.add(iacs.get(iacs.size()-1));
+            			} else {
+                        	Terminator.withMsgAndStatus("ERROR! Found request "
+                        			+ "to take geometry " + id + " from '"
+                        			+ pathname + "' but found "+ iacs.size() 
+                        			+ " geometries. Check your input.",-1); 
+            			}
+            		} else if ("LAST".equals(idStr.toUpperCase())) {
+            			this.inpGeom.add(iacs.get(iacs.size()-1));
+            		} else {
+            			Terminator.withMsgAndStatus("ERROR! Unable to "
+                    			+ "understand option '" + idStr + "' for "
+                    			+ ChemSoftConstants.PARGEOMFILE 
+                    			+ ". Check your input.",-1); 
+            		}
+            	}
+            } else {
+            	this.inpGeom = iacs;
+            }
         } 
         
         if (params.contains(ChemSoftConstants.PARGEOM))
@@ -217,7 +249,7 @@ public abstract class ChemSoftInputWriter extends Worker
             {
             	Terminator.withMsgAndStatus("ERROR! Found " + inpGeom.size() 
             		+ " geometries, but " + geomNames.size() + " names. Check "
-            		+ "yout input.",-1); 
+            		+ "your input.",-1); 
             }
         }
 

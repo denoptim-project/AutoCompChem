@@ -794,12 +794,14 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 		}
 		boolean removeOriginalDir = false;
 		boolean hasAddGeometryTask = false;
+		boolean usingOriginalDir = false;
 		for (int id=0; id<iacs.size(); id++)
 		{
 			Directive geomDir = null;
 			if (iacs.size()==1)
 			{
 				geomDir = origiGeomDir;
+				usingOriginalDir = true;
 			} else {
 				removeOriginalDir = true;
 				try {
@@ -811,7 +813,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				}
 			}
 	
-			DirectiveData dd = geomDir.getFirstDirectiveData(NWChemConstants.GEOMDIR);
+			DirectiveData dd = geomDir.getFirstDirectiveData(
+					NWChemConstants.GEOMDIR);
 			if (dd==null)
 			{
 				dd = new DirectiveData(NWChemConstants.GEOMDIR);
@@ -841,7 +844,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					geomDir.addKeyword(new Keyword(NWChemConstants.GEOMNAMEKW, 
 							false, MolecularUtils.getNameOrID(iacs.get(id))));
 				}
-				innermostJob.addDirective(geomDir);
+				if (!usingOriginalDir)
+					innermostJob.addDirective(geomDir);
 			}
 		}
 		if (removeOriginalDir)

@@ -1,9 +1,9 @@
 [
   {
     "key": "INPUTGEOMETRIESFILE",
-    "type": "<String>",
+    "type": "<String> [<int> ...] [<String>]",
     "isForStandalone": true,
-    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input."
+    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input. "
   },
   {
     "key": "MULTIGEOMMODE",

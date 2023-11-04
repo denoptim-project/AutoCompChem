@@ -22,6 +22,7 @@ import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.files.FileFingerprint;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
@@ -422,6 +423,17 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
 		
 		stepsData.put(stepId,stepData.clone());
     }
+
+//------------------------------------------------------------------------------
+
+  	@Override
+  	protected Set<FileFingerprint> getOutputFingerprint() 
+  	{
+  		Set<FileFingerprint> conditions = new HashSet<FileFingerprint>();
+  		conditions.add(new FileFingerprint(".", 10, 
+  			"^\\s*Northwest Computational Chemistry Package \\(NWChem\\) .*$"));
+  		return conditions;
+  	}
 
 //-----------------------------------------------------------------------------
     

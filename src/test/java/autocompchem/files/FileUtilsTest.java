@@ -81,6 +81,97 @@ public class FileUtilsTest
     	assertEquals(3, FileUtils.find(tempDir, "ttt*", 1, true).size());
     	assertEquals(6, FileUtils.find(tempDir, "ttt*", 2, true).size());
     }
+
+//------------------------------------------------------------------------------
+
+	@Test
+    public void testFind2() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+
+		String basePath = tempDir.getAbsolutePath() + fileSeparator ;
+	
+		File d1Ad1A = new File(basePath + "sub1_abc" + fileSeparator + "subsub1_abc");
+		d1Ad1A.mkdirs();
+				
+		File d2Ad2A = new File(basePath + "sub2_abc" + fileSeparator + "subsub2_abc");
+		d2Ad2A.mkdirs();
+		
+    	File d1Ad1D = new File(basePath + "sub1_abc" + fileSeparator + "subsub1_def");
+    	d1Ad1D.mkdirs();
+    	
+    	File d1Dd1D = new File(basePath + "sub1_def" + fileSeparator + "subsub1_def");
+    	d1Dd1D.mkdirs();
+
+		IOtools.writeTXTAppend(new File(basePath + "file_abc"), "text", false);
+		IOtools.writeTXTAppend(new File(d1Ad1A.getAbsolutePath() 
+				+ fileSeparator + "file_abc"), "text", false);
+		IOtools.writeTXTAppend(new File(d1Ad1A.getParentFile().getAbsolutePath() 
+				+ fileSeparator + "file_abc"), "text", false);
+		IOtools.writeTXTAppend(new File(d2Ad2A.getAbsolutePath() 
+				+ fileSeparator + "file_abc"), "text", false);
+		IOtools.writeTXTAppend(new File(d2Ad2A.getParentFile().getAbsolutePath() 
+				+ fileSeparator + "file_abc"), "text", false);
+		
+		IOtools.writeTXTAppend(new File(basePath + "file_def"), "text", false);
+		IOtools.writeTXTAppend(new File(d1Ad1A.getParentFile().getAbsolutePath() 
+				+ fileSeparator + "file_def"), "text", false);
+		IOtools.writeTXTAppend(new File(d1Ad1A.getAbsolutePath() 
+				+ fileSeparator + "file_def"), "text", false);
+		IOtools.writeTXTAppend(new File(d1Dd1D.getAbsolutePath() 
+				+ fileSeparator + "file_def"), "text", false);
+		
+    	/* 
+   	 FILES
+file_abc
+file_def
+sub1_abc/subsub1_abc/file_abc
+sub1_abc/subsub1_abc/file_def
+sub1_abc/file_abc
+sub1_abc/file_def
+sub1_def/subsub1_def/file_def
+sub2_abc/subsub2_abc/file_abc
+sub2_abc/file_abc
+
+		DIRECTORIES
+sub1_abc
+sub1_abc/subsub1_def
+sub1_abc/subsub1_abc
+sub1_def
+sub1_def/subsub1_def
+sub2_abc
+sub2_abc/subsub2_abc
+   	 */
+		
+		assertEquals(5, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*", true).size());
+		assertEquals(7, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*", true).size());
+		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*", true).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*", false).size());
+		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*", false).size());
+		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*", false).size());
+		
+		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*ab*", true).size());
+		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*ab*", true).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*ab*", true).size());
+		assertEquals(1, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*ab*", false).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*ab*", false).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*ab*", false).size());
+		
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file*", true).size());
+		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file*", true).size());
+		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file*", true).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file*", false).size());
+		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file*", false).size());
+		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file*", false).size());
+		
+		assertEquals(1, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file_abc", true).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file_abc", true).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file_abc", true).size());
+		assertEquals(1, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file_abc", false).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file_abc", false).size());
+		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file_abc", false).size());
+		
+    }
 	
 //------------------------------------------------------------------------------
 	

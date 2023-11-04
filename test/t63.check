@@ -1,27 +1,23 @@
 #!/bin/bash
 
-#TODO-gg: upgrade: reading input from app log/output file
-echo "Skipped: to upgrade!"
-exit 0
+if ! grep -q -i "C.*-3\.164005.*-10\.435414.*0\.005939" t63-nwc.nw ; then
+  echo NOT Passed ERROR 1 ; exit -1
+fi
 
-
-grep -q -i "C.*-3\.164004.*-10\.435414.*0\.005938" t63-nwc.nw
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
+if ! grep -q -i "H79.*\-4\.618275.*\-1\.819653.*\-0\.756420" t63-nwc.nw ; then
+  echo NOT Passed ERROR 2 ; exit -1
 fi
 
 n=$(wc -l t63-nwc.nw | awk '{print $1}')
-if [ "$n" != 121 ] ; then
-echo NOT Passed ERROR 2
-exit -1
+if [ "$n" != 123 ] ; then
+  echo NOT Passed ERROR 3
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t63.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if grep -q 'Termination status: 0' t63.log ; then 
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 3
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi

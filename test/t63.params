@@ -1,11 +1,9 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
-#
 VERBOSITY: 1
 TASK: PrepareInputNWChem
-INPUTGEOMETRIESFILE: ../t63-nwc.out
+INPUTGEOMETRIESFILE: ../t63-nwc.out last
 JOBDETAILSFILE: ../t63-jobDetails.json
 CHARGE: 0
 SPIN_MULTIPLICITY: 1
