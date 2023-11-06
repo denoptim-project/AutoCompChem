@@ -133,6 +133,29 @@ public class MolecularReorderer extends Worker
         super("inputdefinition/MolecularReorderer.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.REORDERATOMLIST,
+                		TaskID.ALIGNATOMLISTS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularReorderer.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularReorderer();
+    }
+
 //-----------------------------------------------------------------------------
 
     /**

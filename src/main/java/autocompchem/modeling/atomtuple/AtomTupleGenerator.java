@@ -126,6 +126,28 @@ public class AtomTupleGenerator extends Worker
         super("inputdefinition/AtomTupleGenerator.json");
     }
     
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.GENERATEATOMTUPLES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/AtomTupleGenerator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new AtomTupleGenerator();
+    }
+    
 //-----------------------------------------------------------------------------
 	
     /**

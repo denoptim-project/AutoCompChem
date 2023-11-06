@@ -41,6 +41,7 @@ public enum TaskID
     CONVERTJOBDETAILS,
     CUREGAUSSIANJOB,
     // analyze data in the output/log
+    ANALYSEOUTPUT,
     ANALYSEGAUSSIANOUTPUT, 
     ANALYSEORCAOUTPUT,
     ANALYSEXTBOUTPUT,

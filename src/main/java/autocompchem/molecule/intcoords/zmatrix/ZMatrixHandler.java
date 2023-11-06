@@ -166,6 +166,30 @@ public class ZMatrixHandler extends Worker
         super("inputdefinition/ZMatrixHandler.json");
     }
 
+  //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.PRINTZMATRIX,
+                		TaskID.CONVERTZMATRIXTOSDF,
+                		TaskID.SUBTRACTZMATRICES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/ZMatrixHandler.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new ZMatrixHandler();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

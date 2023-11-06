@@ -71,6 +71,28 @@ public class MolecularSorter extends Worker
         super("inputdefinition/MolecularSorter.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.SORTSDFMOLECULES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularSorter.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularSorter();
+    }
+
 //-----------------------------------------------------------------------------
 
     /**

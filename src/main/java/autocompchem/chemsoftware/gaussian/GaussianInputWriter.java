@@ -83,6 +83,21 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     {
 		inpExtrension = GaussianConstants.GAUINPEXTENSION;
 	}
+  
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PREPAREINPUTGAUSSIAN)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new GaussianInputWriter();
+    }
 
 //------------------------------------------------------------------------------
     

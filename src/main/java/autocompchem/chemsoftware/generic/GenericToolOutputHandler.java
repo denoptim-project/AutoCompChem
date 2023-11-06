@@ -121,6 +121,28 @@ public class GenericToolOutputHandler extends Worker
     {
         super("inputdefinition/GenericToolOutputHandler.json");
     }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.EVALUATEGENERICOUTPUT)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/GenericToolOutputHandler.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new GenericToolOutputHandler();
+    }
 
 //-----------------------------------------------------------------------------
 

@@ -92,6 +92,31 @@ public class ConnectivityGenerator extends Worker
         super("inputdefinition/ConnectivityGenerator.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.RICALCULATECONNECTIVITY,
+                		TaskID.ADDBONDSFORSINGLEELEMENT,
+                		TaskID.IMPOSECONNECTIONTABLE,
+                		TaskID.CHECKBONDLENGTHS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/ConnectivityGenerator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new ConnectivityGenerator();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

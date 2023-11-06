@@ -50,7 +50,29 @@ public class DummyWorker extends Worker
 	{
 		super("inputdefinition/DummyWorker.json");
 	}
+	
+//------------------------------------------------------------------------------
 
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.DUMMYTASK)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/DummyWorker.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new DummyWorker();
+    }
+    
 //-----------------------------------------------------------------------------
 	
 	@Override

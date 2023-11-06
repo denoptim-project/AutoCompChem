@@ -209,6 +209,28 @@ public class NWChemOutputHandler extends Worker
         super("inputdefinition/todo.json");
     }
 
+
+  //------------------------------------------------------------------------------
+
+        @Override
+        public Set<TaskID> getCapabilities() {
+            return Collections.unmodifiableSet(new HashSet<TaskID>(
+                 Arrays.asList()));
+        }
+
+  //------------------------------------------------------------------------------
+
+        @Override
+        public Worker makeInstance(Object... args) {
+            return new NWChemOutputHandler();
+        }
+        
+      //------------------------------------------------------------------------------
+
+        @Override
+        public String getKnownInputDefinition() {
+            return "";
+        }
 //-----------------------------------------------------------------------------
 
 //TODO move to class doc

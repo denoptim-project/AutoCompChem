@@ -169,6 +169,36 @@ public class JobEvaluator extends Worker
         super("inputdefinition/JobEvaluator.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+				Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
+//TODO-gg add these 
+				/*
+				TaskID.EVALUATENWCHEMOUTPUT,
+				TaskID.EVALUATEORCAOUTPUT,
+				TaskID.EVALUATEXTBOUTPUT,
+				TaskID.EVALUATESPARTANOUTPUT,
+				*/
+						)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/JobEvaluator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new JobEvaluator();
+    }
+        
 //-----------------------------------------------------------------------------
     
     /**

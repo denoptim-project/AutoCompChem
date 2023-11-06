@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import autocompchem.chemsoftware.AspecificOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;
@@ -278,6 +279,8 @@ public class WorkerFactory
         case GenericToolOutputHandler:
             return GenericToolOutputHandler.capabilities;
         */
+        case AspecificOutputAnalyzer:
+        	return AspecificOutputAnalyzer.capabilities;
         case JobEvaluator:
         	return JobEvaluator.capabilities;
         case MolecularComparator:
@@ -374,6 +377,8 @@ public class WorkerFactory
         case GenericToolOutputHandler:
             return new GenericToolOutputHandler();
         */
+        case AspecificOutputAnalyzer:
+        	return new AspecificOutputAnalyzer();
         case JobEvaluator:
         	return new JobEvaluator();
         case MolecularComparator:

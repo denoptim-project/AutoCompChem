@@ -265,7 +265,7 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
 
     /**
-     * Initialise this worker according to the given parameters. 
+     * Initialize this worker according to the given parameters. 
      * This method is overwritten by subclasses.
      */
     
@@ -280,6 +280,29 @@ public abstract class Worker implements IOutputExposer
     
     public abstract void performTask();
     
+//------------------------------------------------------------------------------
+      
+    /**
+     * Declaration of the capabilities of an implementation of {@link Worker}.
+     */
+    public abstract Set<TaskID> getCapabilities();
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns pathname of the resource collecting the documentation of any
+     * setting that this worker can react to.
+     */
+    public abstract String getKnownInputDefinition();
+  
+//------------------------------------------------------------------------------
+    
+    /**
+     * Makes an instance of the specific implementation possibly adapting
+     * the instance to the given arguments.
+     */
+    public abstract Worker makeInstance(Object... args);
+      
 //------------------------------------------------------------------------------
 	
     /**

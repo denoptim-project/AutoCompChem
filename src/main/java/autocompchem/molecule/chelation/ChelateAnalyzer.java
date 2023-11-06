@@ -84,7 +84,7 @@ public class ChelateAnalyzer extends Worker
      * Containers for the results
      */
     private ArrayList<ArrayList<Chelant>> results = 
-                                            new ArrayList<ArrayList<Chelant>>();
+    		new ArrayList<ArrayList<Chelant>>();
 
     /**
      * Flag defining to work on a selection of atoms
@@ -115,6 +115,28 @@ public class ChelateAnalyzer extends Worker
         super("inputdefinition/ChelateAnalyzer.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.ANALYSISCHELATES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/ChelateAnalyzer.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new ChelateAnalyzer();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

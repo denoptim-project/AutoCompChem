@@ -152,6 +152,27 @@ public class ForceFieldEditor extends Worker
         super("inputdefinition/ForceFieldEditor.json");
     }
     
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PARAMETRIZEFORCEFIELD)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/ForceFieldEditor.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new ForceFieldEditor();
+    }
 //-----------------------------------------------------------------------------
 
     /**

@@ -161,6 +161,28 @@ public class NWChemReStarter extends Worker
         super("inputdefinition/todo.json");
     }
 
+    //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList()));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new NWChemReStarter();
+    }
+    
+  //------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "";
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

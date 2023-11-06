@@ -83,6 +83,21 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     {
 		inpExtrension = OrcaConstants.INPEXTENSION;
 	}
+  
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PREPAREINPUTORCA)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new OrcaInputWriter();
+    }
     
 //------------------------------------------------------------------------------
     

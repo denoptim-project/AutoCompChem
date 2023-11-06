@@ -64,7 +64,29 @@ public class GaussianJobDetailsConverter extends Worker
     {
         super("inputdefinition/GaussianJobDetailsConverter.json");
     }
+  
+//------------------------------------------------------------------------------
 
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.CONVERTJOBDETAILS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/GaussianJobDetailsConverter.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new GaussianJobDetailsConverter();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

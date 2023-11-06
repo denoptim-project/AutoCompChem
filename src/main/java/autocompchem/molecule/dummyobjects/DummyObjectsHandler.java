@@ -130,6 +130,29 @@ public class DummyObjectsHandler extends Worker
         super("inputdefinition/DummyObjectsHandler.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.ADDDUMMYATOMS,
+                		TaskID.REMOVEDUMMYATOMS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/DummyObjectsHandler.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new DummyObjectsHandler();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

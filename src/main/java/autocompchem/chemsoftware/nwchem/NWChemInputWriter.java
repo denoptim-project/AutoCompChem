@@ -91,6 +91,21 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	}
     
 //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PREPAREINPUTNWCHEM)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new NWChemInputWriter();
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * This is the method the encodes the syntax of the NWChem input file for a 

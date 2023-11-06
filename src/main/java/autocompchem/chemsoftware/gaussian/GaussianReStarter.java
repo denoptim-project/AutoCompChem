@@ -141,6 +141,27 @@ public class GaussianReStarter extends Worker
     }
 */
     
+  //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList()));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new GaussianReStarter();
+    }
 
     /**
      * Constructor.
@@ -149,7 +170,6 @@ public class GaussianReStarter extends Worker
     {
         super("inputdefinition/todo.json");
     }
-
 //------------------------------------------------------------------------------
 
     /**

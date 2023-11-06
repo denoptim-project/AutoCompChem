@@ -104,6 +104,28 @@ public class AtomTypeMatcher extends Worker
         super("inputdefinition/AtomTypeMatcher.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.ASSIGNATOMTYPES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/AtomTypeMatcher.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new AtomTypeMatcher();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

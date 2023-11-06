@@ -115,6 +115,28 @@ public class BasisSetGenerator extends Worker
         super("inputdefinition/BasisSetGenerator.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.GENERATEBASISSET)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/BasisSetGenerator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new BasisSetGenerator();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

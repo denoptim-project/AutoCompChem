@@ -199,6 +199,28 @@ public class GaussianOutputHandler extends Worker
     {
         super("inputdefinition/todo.json");
     }
+    
+  //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList()));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new GaussianOutputHandler();
+    }
+    
+
+	@Override
+	public String getKnownInputDefinition() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 //-----------------------------------------------------------------------------
 

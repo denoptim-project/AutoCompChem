@@ -45,6 +45,21 @@ public class OrcaOutputAnalyzer extends ChemSoftOutputAnalyzer
                     Collections.unmodifiableSet(new HashSet<TaskID>(
                                     Arrays.asList(TaskID.ANALYSEORCAOUTPUT)));
     
+  //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.ANALYSEORCAOUTPUT)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new OrcaOutputAnalyzer();
+    }
+    
 //-----------------------------------------------------------------------------
     
     /**

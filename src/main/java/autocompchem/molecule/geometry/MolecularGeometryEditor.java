@@ -127,7 +127,7 @@ public class MolecularGeometryEditor extends Worker
      * Scale factor for Move
      */
     private List<Double> scaleFactors = new ArrayList<Double>(
-                                                            Arrays.asList(1.0));
+    		Arrays.asList(1.0));
     
     /**
      * Flag controlling optimisation of scaling factors
@@ -209,6 +209,28 @@ public class MolecularGeometryEditor extends Worker
         super("inputdefinition/MolecularGeometryEditor.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.MODIFYGEOMETRY)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularGeometryEditor.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularGeometryEditor();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

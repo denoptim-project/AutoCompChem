@@ -45,6 +45,21 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
                     Collections.unmodifiableSet(new HashSet<TaskID>(
                                     Arrays.asList(TaskID.ANALYSENWCHEMOUTPUT)));
     
+//------------------------------------------------------------------------------
+
+    @Override
+  	public Set<TaskID> getCapabilities() {
+  		return Collections.unmodifiableSet(new HashSet<TaskID>(
+  				Arrays.asList(TaskID.ANALYSENWCHEMOUTPUT)));
+  	}
+
+//------------------------------------------------------------------------------
+
+  	@Override
+  	public Worker makeInstance(Object... args) {
+  		return new NWChemOutputAnalyzer();
+  	}
+    
 //-----------------------------------------------------------------------------
     
     /**

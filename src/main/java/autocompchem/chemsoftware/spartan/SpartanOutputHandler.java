@@ -128,7 +128,30 @@ public class SpartanOutputHandler extends Worker
     {
         super("inputdefinition/todo.json");
     }
+    
+//------------------------------------------------------------------------------
 
+    @Override
+    public String getKnownInputDefinition() {
+        return "";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.EXTRACTGEOMETRIESFROMSPARTANTREE,
+                		TaskID.EXTRACTLASTGEOMETRYFROMSPARTANTREE)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new SpartanOutputHandler();
+    }
+    
 //-----------------------------------------------------------------------------
 
     //TODO move to class doc

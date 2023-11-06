@@ -71,6 +71,21 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	}
     
 //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PREPAREINPUTXTB)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new XTBInputWriter();
+    }
+    
+//------------------------------------------------------------------------------
  
     /**
      * This is the method the encodes the syntax of the XTB input file for a 

@@ -122,6 +122,27 @@ public class MolecularMeter extends Worker
         super("inputdefinition/MolecularMeter.json");
     }
     	
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.MEASUREGEOMDESCRIPTORS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularMeter.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularMeter();
+    }
 //-----------------------------------------------------------------------------
 
     /**

@@ -85,6 +85,30 @@ public class MolecularComparator extends Worker
         super("inputdefinition/MolecularComparator.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+                Arrays.asList(TaskID.COMPARETWOMOLECULES,
+                		TaskID.COMPARETWOGEOMETRIES,
+                		TaskID.COMPARETWOCONNECTIVITIES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularComparator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularComparator();
+    }
+    
 //-----------------------------------------------------------------------------
     
     /**

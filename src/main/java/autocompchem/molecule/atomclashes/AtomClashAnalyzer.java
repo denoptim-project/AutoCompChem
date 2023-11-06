@@ -114,6 +114,28 @@ public class AtomClashAnalyzer extends Worker
         super("inputdefinition/AtomClashAnalyzer.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.ANALYZEVDWCLASHES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/AtomClashAnalyzer.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new AtomClashAnalyzer();
+    }
+
 //-----------------------------------------------------------------------------
 
       /**

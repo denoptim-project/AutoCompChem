@@ -94,7 +94,7 @@ import autocompchem.worker.Worker;
 /**
  * A factory to create instances of {@link ChemSoftOutputAnalyzer} that are
  * possibly specific for a software defined by the context (e.g., by a log file
- * that should be read).
+ * that should be read, or a declaration of which analyzer one wants).
  * 
  * @author Marco Foscato
  */

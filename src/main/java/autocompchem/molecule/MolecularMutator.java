@@ -108,6 +108,28 @@ public class MolecularMutator extends Worker
         super("inputdefinition/MolecularMutator.json");
     }
 
+  //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.MUTATEATOMS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularMutator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularMutator();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

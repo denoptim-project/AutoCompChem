@@ -95,6 +95,28 @@ public class MolecularPruner extends Worker
         super("inputdefinition/MolecularPruner.json");
     }
     
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PRUNEMOLECULES)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/MolecularPruner.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new MolecularPruner();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

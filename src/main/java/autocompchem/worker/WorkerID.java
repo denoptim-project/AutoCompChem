@@ -25,6 +25,8 @@ package autocompchem.worker;
  */
 public enum WorkerID 
 {
+	AspecificOutputAnalyzer,
+	
 	DummyWorker,
     AtomClashAnalyzer,
     AtomTypeMatcher,

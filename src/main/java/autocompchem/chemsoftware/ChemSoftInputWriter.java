@@ -152,6 +152,13 @@ public abstract class ChemSoftInputWriter extends Worker
     	super("inputdefinition/ChemSoftInputWriter.json");
     }
     
+//------------------------------------------------------------------------------
+
+	@Override
+	public String getKnownInputDefinition() {
+		return "inputdefinition/ChemSoftInputWriter.json";
+	}
+    
 //-----------------------------------------------------------------------------
 
     /**

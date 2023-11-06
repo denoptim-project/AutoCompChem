@@ -44,6 +44,21 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
                     Collections.unmodifiableSet(new HashSet<TaskID>(
                                     Arrays.asList(TaskID.ANALYSEGAUSSIANOUTPUT)));
     
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.ANALYSEGAUSSIANOUTPUT)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new GaussianOutputAnalyzer();
+    }
+    
 //-----------------------------------------------------------------------------
     
     /**

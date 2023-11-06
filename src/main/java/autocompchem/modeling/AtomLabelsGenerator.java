@@ -106,6 +106,28 @@ public class AtomLabelsGenerator extends Worker
         super("inputdefinition/AtomLabelsGenerator.json");
     }
 
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.GENERATEATOMLABELS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/AtomLabelsGenerator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new AtomLabelsGenerator();
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**

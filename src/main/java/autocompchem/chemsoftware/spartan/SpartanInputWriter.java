@@ -83,6 +83,21 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     }
 
 //------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.PREPAREINPUTSPARTAN)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new SpartanInputWriter();
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * {@inheritDoc}

@@ -19,10 +19,14 @@ package autocompchem.chemsoftware;
 
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.files.FileFingerprint;
+import autocompchem.worker.TaskID;
+import autocompchem.worker.Worker;
 
 /**
  * A dummy implementation that is meant only to for testing the 
@@ -54,7 +58,22 @@ class TestOutputAnalyzer extends ChemSoftOutputAnalyzer
 		// the data structure of this analyzer.
 		inFile = new File(IDVAL);
 	}
+		
+//------------------------------------------------------------------------------
 
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.ANALYSEOUTPUT)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new TestOutputAnalyzer();
+    }
+    
 //------------------------------------------------------------------------------
 
 	@Override

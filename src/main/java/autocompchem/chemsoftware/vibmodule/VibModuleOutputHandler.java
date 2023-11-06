@@ -145,7 +145,28 @@ public class VibModuleOutputHandler extends Worker
     {
         super("inputdefinition/todo.json");
     }
+  
+//------------------------------------------------------------------------------
 
+    @Override
+    public String getKnownInputDefinition() {
+        return "";
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.EXTRACTVIBMODULEFORCECONSTANTS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new VibModuleOutputHandler();
+    }
 //-----------------------------------------------------------------------------
 
     //TODO move to class doc
