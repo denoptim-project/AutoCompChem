@@ -63,13 +63,6 @@ import autocompchem.worker.Worker;
 
 public class GaussianOutputHandler extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-                    Collections.unmodifiableSet(new HashSet<TaskID>(
-                                 //   Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT)));
-                            Arrays.asList()));
     
     /**
      * Name of the .out file from Gaussian (the input of this class)
@@ -196,9 +189,7 @@ public class GaussianOutputHandler extends Worker
      * Constructor.
      */
     public GaussianOutputHandler()
-    {
-        super("inputdefinition/todo.json");
-    }
+    {}
     
   //------------------------------------------------------------------------------
 

@@ -53,7 +53,6 @@ import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 import autocompchem.worker.WorkerFactory2;
 
 
@@ -86,18 +85,6 @@ public class JobEvaluator extends Worker
 	public static final Set<TaskID> CURECOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
 					Arrays.asList(TaskID.CUREGAUSSIANJOB)));
-	
-	/**
-	 * Declaration of what this worker is capable of.
-	 */
-	public static final Set<TaskID> capabilities;
-	static {
-		Set<TaskID> tmpSet = new HashSet<TaskID>(EVALCOMPCHEMJOBTASKS);
-		tmpSet.addAll(CURECOMPCHEMJOBTASKS);
-		tmpSet.add(TaskID.EVALUATEJOB);
-		//TODO-gg tmpSet.add(TaskID.CUREJOB);
-		capabilities = Collections.unmodifiableSet(tmpSet);
-	}
 	
 	/**
 	 * The string used to identify the kind of termination of the evaluated job.
@@ -166,9 +153,7 @@ public class JobEvaluator extends Worker
      * Constructor.
      */
     public JobEvaluator()
-    {
-        super("inputdefinition/JobEvaluator.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

@@ -236,7 +236,7 @@ public class JobFactory
         {
         	TaskID task = TaskID.valueOf(locPar.getParameterValue(
         			WorkerConstants.PARTASK).toUpperCase());
-        	if (JobEvaluator.capabilities.contains(task))
+        	if (new JobEvaluator().getCapabilities().contains(task))
 	        {
 	        	if (locPar.contains(MonitoringJob.PERIODPAR) 
 	        			|| locPar.contains(MonitoringJob.DELAYPAR))

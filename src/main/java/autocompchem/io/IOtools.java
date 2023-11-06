@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.ChemFile;
@@ -55,8 +54,6 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzerBuilder;
-import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.molecule.MolecularUtils;
@@ -68,7 +65,6 @@ import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 
 /**

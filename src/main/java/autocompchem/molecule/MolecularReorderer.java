@@ -54,22 +54,14 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-
 public class MolecularReorderer extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.REORDERATOMLIST,
-                    		TaskID.ALIGNATOMLISTS)));
-    
+	
     /**
      * Flag indicating the input is from file
      */
     @SuppressWarnings("unused")
-        private boolean inpFromFile = false;
+    private boolean inpFromFile = false;
 
     /**
      * Name of the input file
@@ -129,9 +121,7 @@ public class MolecularReorderer extends Worker
      * Constructor.
      */
     public MolecularReorderer()
-    {
-        super("inputdefinition/MolecularReorderer.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

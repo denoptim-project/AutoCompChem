@@ -40,16 +40,10 @@ public class DummyWorker extends Worker
 	
 	protected String infile = "empty";
 	
-	public static final Set<TaskID> capabilities = 
-			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.DUMMYTASK)));
-	
 //-----------------------------------------------------------------------------
 
 	public DummyWorker()
-	{
-		super("inputdefinition/DummyWorker.json");
-	}
+	{}
 	
 //------------------------------------------------------------------------------
 

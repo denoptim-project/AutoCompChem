@@ -39,7 +39,6 @@ import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 import autocompchem.worker.WorkerFactory2;
 
 /**
@@ -87,14 +86,7 @@ import autocompchem.worker.WorkerFactory2;
 
 
 public class GaussianReStarter extends Worker
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-                    Collections.unmodifiableSet(new HashSet<TaskID>(
-                                    Arrays.asList(TaskID.FIXANDRESTARTGAUSSIAN)));
-	
+{	
     /**
      * Name of the Gaussian output file (the input for this class)
      */
@@ -168,9 +160,8 @@ public class GaussianReStarter extends Worker
      * Constructor.
      */
     public GaussianReStarter()
-    {
-        super("inputdefinition/todo.json");
-    }
+    {}
+    
 //------------------------------------------------------------------------------
 
     /**

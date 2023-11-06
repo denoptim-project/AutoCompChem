@@ -52,14 +52,7 @@ import autocompchem.worker.Worker;
 
 
 public class ChelateAnalyzer extends Worker
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.ANALYSISCHELATES)));
-    
+{   
     /**
      * Name of the input file
      */
@@ -111,9 +104,7 @@ public class ChelateAnalyzer extends Worker
      * Constructor.
      */
     public ChelateAnalyzer()
-    {
-        super("inputdefinition/ChelateAnalyzer.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

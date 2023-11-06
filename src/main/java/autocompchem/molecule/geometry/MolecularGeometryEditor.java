@@ -48,7 +48,6 @@ import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 import autocompchem.worker.WorkerFactory2;
 
 
@@ -61,14 +60,7 @@ import autocompchem.worker.WorkerFactory2;
 
 
 public class MolecularGeometryEditor extends Worker
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.MODIFYGEOMETRY)));
-    
+{   
     /**
      * Flag indicating the input is from file
      */
@@ -206,9 +198,7 @@ public class MolecularGeometryEditor extends Worker
      * Constructor.
      */
     public MolecularGeometryEditor()
-    {
-        super("inputdefinition/MolecularGeometryEditor.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

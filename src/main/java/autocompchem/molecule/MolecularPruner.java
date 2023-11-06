@@ -67,14 +67,7 @@ import autocompchem.worker.Worker;
 
 
 public class MolecularPruner extends Worker
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.PRUNEMOLECULES)));
-    
+{   
     //Filenames
     private File inFile;
     private File outFile;
@@ -91,9 +84,7 @@ public class MolecularPruner extends Worker
      * Constructor.
      */
     public MolecularPruner()
-    {
-        super("inputdefinition/MolecularPruner.json");
-    }
+    {}
     
 //------------------------------------------------------------------------------
 

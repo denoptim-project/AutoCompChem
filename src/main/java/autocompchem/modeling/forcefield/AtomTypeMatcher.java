@@ -52,12 +52,6 @@ import autocompchem.worker.Worker;
 
 public class AtomTypeMatcher extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.ASSIGNATOMTYPES)));
     
     /**
      * The name of the input file
@@ -100,9 +94,7 @@ public class AtomTypeMatcher extends Worker
      * Constructor.
      */
     public AtomTypeMatcher()
-    {
-        super("inputdefinition/AtomTypeMatcher.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

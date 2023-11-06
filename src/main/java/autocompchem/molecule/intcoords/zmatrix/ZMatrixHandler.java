@@ -63,15 +63,6 @@ import autocompchem.worker.Worker;
 public class ZMatrixHandler extends Worker
 {
     /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.PRINTZMATRIX,
-                    		TaskID.CONVERTZMATRIXTOSDF,
-                    		TaskID.SUBTRACTZMATRICES)));
-
-    /**
      * The CDK representation of the chemical entity
      */
     private IAtomContainer iac = new AtomContainer();
@@ -162,11 +153,9 @@ public class ZMatrixHandler extends Worker
      * Constructor.
      */
     public ZMatrixHandler()
-    {
-        super("inputdefinition/ZMatrixHandler.json");
-    }
+    {}
 
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     @Override
     public Set<TaskID> getCapabilities() {

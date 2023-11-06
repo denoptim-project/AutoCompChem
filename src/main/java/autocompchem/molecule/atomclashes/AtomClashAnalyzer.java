@@ -62,12 +62,6 @@ import autocompchem.worker.Worker;
 
 public class AtomClashAnalyzer extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.ANALYZEVDWCLASHES)));
     
     //Filenames
     private File inFile;
@@ -110,9 +104,7 @@ public class AtomClashAnalyzer extends Worker
      * Constructor.
      */
     public AtomClashAnalyzer()
-    {
-        super("inputdefinition/AtomClashAnalyzer.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

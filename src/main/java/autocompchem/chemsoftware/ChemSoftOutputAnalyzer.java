@@ -161,16 +161,6 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 			"PERCEPTIONTXTWUERYMATCHES";
 	
     private static String NL = System.getProperty("line.separator");
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Constructor. //TODO-gg del
-     */
-    public ChemSoftOutputAnalyzer()
-    {
-        super("inputdefinition/ChemSoftOutputHandler.json");
-    }
     
 
 //------------------------------------------------------------------------------

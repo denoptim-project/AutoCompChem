@@ -22,21 +22,11 @@ import java.net.URL;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.qsar.IDescriptor;
-
-import com.google.common.io.Files;
 
 import autocompchem.chemsoftware.AspecificOutputAnalyzer;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzerBuilder;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianReStarter;

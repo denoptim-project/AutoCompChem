@@ -58,15 +58,7 @@ import autocompchem.worker.Worker;
 
 
 public class DummyObjectsHandler extends Worker
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.ADDDUMMYATOMS,
-                    		TaskID.REMOVEDUMMYATOMS)));
-	
+{	
     /**
      * Pathname to file containing the input molecular systems
      */
@@ -126,9 +118,7 @@ public class DummyObjectsHandler extends Worker
      * Constructor.
      */
     public DummyObjectsHandler()
-    {
-        super("inputdefinition/DummyObjectsHandler.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

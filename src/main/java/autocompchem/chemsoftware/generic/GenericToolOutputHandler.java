@@ -60,12 +60,6 @@ import autocompchem.worker.Worker;
 
 public class GenericToolOutputHandler extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.EVALUATEGENERICOUTPUT)));	
 	
     /**
      * Name of the output file from GenericTool: the input of this class
@@ -118,9 +112,7 @@ public class GenericToolOutputHandler extends Worker
      * Constructor.
      */
     public GenericToolOutputHandler()
-    {
-        super("inputdefinition/GenericToolOutputHandler.json");
-    }
+    {}
     
 //------------------------------------------------------------------------------
 

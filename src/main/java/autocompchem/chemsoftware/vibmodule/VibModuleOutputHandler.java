@@ -62,12 +62,6 @@ import autocompchem.worker.Worker;
 
 public class VibModuleOutputHandler extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.EXTRACTVIBMODULEFORCECONSTANTS)));
 
     /**
      * The output file from VibModule: the input of this class
@@ -142,14 +136,13 @@ public class VibModuleOutputHandler extends Worker
      * Constructor.
      */
     public VibModuleOutputHandler()
-    {
-        super("inputdefinition/todo.json");
-    }
+    {}
   
 //------------------------------------------------------------------------------
 
     @Override
     public String getKnownInputDefinition() {
+    	//TODO-gg
         return "";
     }
     

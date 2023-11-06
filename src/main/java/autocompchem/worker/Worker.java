@@ -63,12 +63,6 @@ import autocompchem.run.Job;
 
 public abstract class Worker implements IOutputExposer
 {
-    /**
-     * Declaration of the capabilities of this class of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList()));
 	
     /**
      * Container for parameters fed to this worker. 
@@ -86,12 +80,6 @@ public abstract class Worker implements IOutputExposer
      * The job that this worker is charged with.
      */
     protected Job myJob;
-    
-    /**
-     * The pathname of the resource collecting the documentation of any
-     * setting that this worker can take as input.
-     */
-    final String knownInputDefinition;
     
     /**
      * Flag notifying that worker had completed its work.
@@ -117,21 +105,16 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty worker.
-     * @param knownInputDefinition the pathname to the JSON file in the 
-     * package resources that contains the definition of the input settings
-     * as {@link ConfigItem}s.
+     * Constructor for an empty worker..
      */
 
-    protected Worker(String knownInputDefinition)
-    {
-    	this.knownInputDefinition = knownInputDefinition;
-    }
+    protected Worker()
+    {}
     
 //------------------------------------------------------------------------------
     
     /**
-     * Setup the parameters used to initialise this worker.
+     * Setup the parameters used to initialize this worker.
      * @param params the collection of parameters.
      */
     
@@ -184,7 +167,7 @@ public abstract class Worker implements IOutputExposer
     	Gson reader = ACCJson.getReader();
     	List<ConfigItem> knownParams = new ArrayList<ConfigItem>();
         InputStream ins = Worker.class.getClassLoader()
-        	 .getResourceAsStream(knownInputDefinition);
+        	 .getResourceAsStream(getKnownInputDefinition());
         BufferedReader br = null;
         try
         {
@@ -194,7 +177,7 @@ public abstract class Worker implements IOutputExposer
         }
         catch (JsonSyntaxException jse)
         {
-        	throw new Error("Format of '" + knownInputDefinition + "' is "
+        	throw new Error("Format of '" + getKnownInputDefinition() + "' is "
            		+ "corrupted. Please report this to the authors.", jse);
         }
         finally 

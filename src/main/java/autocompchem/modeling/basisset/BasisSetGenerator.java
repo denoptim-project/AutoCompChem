@@ -56,12 +56,6 @@ import autocompchem.worker.Worker;
 
 public class BasisSetGenerator extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.GENERATEBASISSET)));
     
     /**
      * The input file (molecular structure files)
@@ -111,9 +105,7 @@ public class BasisSetGenerator extends Worker
      * Constructor.
      */
     public BasisSetGenerator()
-    {
-        super("inputdefinition/BasisSetGenerator.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

@@ -51,12 +51,6 @@ import autocompchem.worker.Worker;
 
 public class AtomLabelsGenerator extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.GENERATEATOMLABELS)));
     
     /**
      * The name of the input file (molecular structure files)
@@ -102,9 +96,7 @@ public class AtomLabelsGenerator extends Worker
      * Constructor.
      */
     public AtomLabelsGenerator()
-    {
-        super("inputdefinition/AtomLabelsGenerator.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

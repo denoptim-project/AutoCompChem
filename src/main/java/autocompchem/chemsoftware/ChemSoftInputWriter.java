@@ -148,9 +148,7 @@ public abstract class ChemSoftInputWriter extends Worker
      * Constructor.
      */
     public ChemSoftInputWriter()
-    {
-    	super("inputdefinition/ChemSoftInputWriter.json");
-    }
+    {}
     
 //------------------------------------------------------------------------------
 

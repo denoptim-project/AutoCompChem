@@ -32,7 +32,6 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory;
 import autocompchem.worker.WorkerFactory2;
 
 

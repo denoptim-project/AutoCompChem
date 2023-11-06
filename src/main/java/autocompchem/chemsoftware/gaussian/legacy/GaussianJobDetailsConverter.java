@@ -41,12 +41,6 @@ import autocompchem.worker.Worker;
 
 public class GaussianJobDetailsConverter extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.CONVERTJOBDETAILS)));
 	
     //Files we work with
     private File inFile;
@@ -62,7 +56,6 @@ public class GaussianJobDetailsConverter extends Worker
      */
     public GaussianJobDetailsConverter()
     {
-        super("inputdefinition/GaussianJobDetailsConverter.json");
     }
   
 //------------------------------------------------------------------------------
@@ -90,7 +83,7 @@ public class GaussianJobDetailsConverter extends Worker
 //-----------------------------------------------------------------------------
 
     /**
-     * Initialise the worker according to the parameters loaded by constructor.
+     * Initialize the worker according to the parameters loaded by constructor.
      */
 
     @Override
@@ -125,7 +118,7 @@ public class GaussianJobDetailsConverter extends Worker
 
       /**
        * Performs any of the registered tasks according to how this worker
-       * has been initialised.
+       * has been initialized.
        */
 
       @Override

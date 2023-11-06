@@ -22,7 +22,6 @@ import java.util.Date;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 import autocompchem.worker.WorkerFactory2;
 
 /**

@@ -54,14 +54,7 @@ import autocompchem.worker.Worker;
 
 
 public class MolecularMutator extends Worker
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.MUTATEATOMS)));
-    
+{   
     /**
      * Flag indicating the input is from file
      */
@@ -104,9 +97,7 @@ public class MolecularMutator extends Worker
      * Constructor.
      */
     public MolecularMutator()
-    {
-        super("inputdefinition/MolecularMutator.json");
-    }
+    {}
 
   //------------------------------------------------------------------------------
 

@@ -49,15 +49,6 @@ import autocompchem.worker.Worker;
 
 public class ConnectivityGenerator extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.RICALCULATECONNECTIVITY,
-                    		TaskID.ADDBONDSFORSINGLEELEMENT,
-                    		TaskID.IMPOSECONNECTIONTABLE,
-                    		TaskID.CHECKBONDLENGTHS)));
 	
     //Files we work with
     private File inFile;
@@ -66,9 +57,6 @@ public class ConnectivityGenerator extends Worker
 
     //Reporting flag
     private int verbosity = 0;
-
-    //Recursion flag for reporting infos
-    private int recNum = 1;
 
     //Default bond order
     private String defBO = "SINGLE";
@@ -88,9 +76,7 @@ public class ConnectivityGenerator extends Worker
      * Constructor.
      */
     public ConnectivityGenerator()
-    {
-        super("inputdefinition/ConnectivityGenerator.json");
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

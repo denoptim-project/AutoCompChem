@@ -60,17 +60,6 @@ import autocompchem.worker.Worker;
 public class NWChemOutputHandler extends Worker
 {
     /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(
-                    		//TODO-gg delete this class one replacement is in place
-                    		//TaskID.ANALYSENWCHEMOUTPUT,
-                    		TaskID.EXTRACTOPTGEOMSFROMNWCHEMOUTPUT,
-                    		TaskID.EXTRACTTRAJECTORYFROMNWCHEMOUTPUT,
-                    		TaskID.EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT)));
-    /**
      * Name of the output file from NWChem: the input of this class
      */
     private String inFile;
@@ -205,9 +194,7 @@ public class NWChemOutputHandler extends Worker
      * Constructor.
      */
     public NWChemOutputHandler()
-    {
-        super("inputdefinition/todo.json");
-    }
+    {}
 
 
   //------------------------------------------------------------------------------

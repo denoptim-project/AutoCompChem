@@ -53,13 +53,6 @@ import autocompchem.worker.Worker;
 
 public class MolecularMeter extends Worker
 {
-	/**
-	 * Declaration of the capabilities of this subclass of {@link Worker}.
-	 */
-	public static final Set<TaskID> capabilities = 
-			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.MEASUREGEOMDESCRIPTORS)));
-	
     /**
      * Unique counter for naming quantities
      */
@@ -118,9 +111,7 @@ public class MolecularMeter extends Worker
      * Constructor.
      */
     public MolecularMeter()
-    {
-        super("inputdefinition/MolecularMeter.json");
-    }
+    {}
     	
 //------------------------------------------------------------------------------
 

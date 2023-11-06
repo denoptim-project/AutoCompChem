@@ -60,13 +60,6 @@ import autocompchem.worker.Worker;
 
 public class SpartanOutputHandler extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.EXTRACTGEOMETRIESFROMSPARTANTREE,
-                    		TaskID.EXTRACTLASTGEOMETRYFROMSPARTANTREE)));
 
     /**
      * Name of the output file from Spartan: the input of this class
@@ -125,9 +118,7 @@ public class SpartanOutputHandler extends Worker
      * Constructor.
      */
     public SpartanOutputHandler()
-    {
-        super("inputdefinition/todo.json");
-    }
+    {}
     
 //------------------------------------------------------------------------------
 

@@ -47,12 +47,6 @@ import autocompchem.worker.Worker;
 
 public class ConformationalSpaceGenerator extends AtomTupleGenerator
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.GENERATECONFORMATIONALSPACE)));
     
     /**
      * Results

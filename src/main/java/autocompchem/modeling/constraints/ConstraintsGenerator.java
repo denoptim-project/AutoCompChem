@@ -45,12 +45,6 @@ import autocompchem.worker.Worker;
 
 public class ConstraintsGenerator extends AtomTupleGenerator
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.GENERATECONSTRAINTS)));
     
     /**
      * Results
@@ -64,7 +58,6 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      */
     public ConstraintsGenerator()
     {
-    	super("inputdefinition/ConstraintsGenerator.json");
     	ruleRoot = ConstraintDefinition.BASENAME;
     }
     

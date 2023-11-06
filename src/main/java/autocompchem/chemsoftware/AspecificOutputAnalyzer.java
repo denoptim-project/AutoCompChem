@@ -36,14 +36,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 public class AspecificOutputAnalyzer extends ChemSoftOutputAnalyzer
-{
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-                    Collections.unmodifiableSet(new HashSet<TaskID>(
-                                    Arrays.asList(TaskID.ANALYSEOUTPUT)));
-    
+{   
 
 //-----------------------------------------------------------------------------
 

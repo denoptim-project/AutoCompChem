@@ -63,12 +63,6 @@ import autocompchem.worker.Worker;
 
 public class AtomTupleGenerator extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.GENERATEATOMTUPLES)));
     
     /**
      * The input file (molecular structure files)
@@ -122,9 +116,7 @@ public class AtomTupleGenerator extends Worker
      * Constructor.
      */
     public AtomTupleGenerator()
-    {
-        super("inputdefinition/AtomTupleGenerator.json");
-    }
+    {}
     
 //------------------------------------------------------------------------------
 
@@ -148,17 +140,6 @@ public class AtomTupleGenerator extends Worker
         return new AtomTupleGenerator();
     }
     
-//-----------------------------------------------------------------------------
-	
-    /**
-     * Constructor that allows to change the pathname to the JSON file that 
-     * contains the definition of the input settings as {@link ConfigItem}s.
-     */
-    public AtomTupleGenerator(String knownInputDefinition)
-    {
-        super(knownInputDefinition);
-    }
-
 //-----------------------------------------------------------------------------
 
     /**

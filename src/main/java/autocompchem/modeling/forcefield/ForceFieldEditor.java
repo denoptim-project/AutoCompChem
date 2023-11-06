@@ -40,7 +40,6 @@ import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory;
 import autocompchem.worker.WorkerFactory2;
 
 
@@ -52,12 +51,6 @@ import autocompchem.worker.WorkerFactory2;
 
 public class ForceFieldEditor extends Worker
 {
-    /**
-     * Declaration of the capabilities of this subclass of {@link Worker}.
-     */
-    public static final Set<TaskID> capabilities =
-            Collections.unmodifiableSet(new HashSet<TaskID>(
-                    Arrays.asList(TaskID.PARAMETRIZEFORCEFIELD)));
     /**
      * The pathname of the input force field file
      */
@@ -149,9 +142,7 @@ public class ForceFieldEditor extends Worker
      * Constructor.
      */
     public ForceFieldEditor()
-    {
-        super("inputdefinition/ForceFieldEditor.json");
-    }
+    {}
     
 //------------------------------------------------------------------------------
 

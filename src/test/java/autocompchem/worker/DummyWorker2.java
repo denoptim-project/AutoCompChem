@@ -28,7 +28,8 @@ import autocompchem.datacollections.NamedDataCollector;
 
 
 /**
- * A dummy worker that is meant only for testing purposes.
+ * A dummy worker that is meant only for testing purposes. this is meant to be 
+ * a different class than {@link DummyWorker}.
  * 
  * @author Marco Foscato
  */
@@ -40,16 +41,11 @@ public class DummyWorker2 extends Worker
 	
 	protected String infile = "empty";
 	
-	public static final Set<TaskID> capabilities = 
-			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.DUMMYTASK2)));
 	
 //-----------------------------------------------------------------------------
 
 	public DummyWorker2()
-	{
-		super("inputdefinition/DummyWorker.json");
-	}
+	{}
 	
 //------------------------------------------------------------------------------
 
