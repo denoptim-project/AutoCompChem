@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ ! -f t139.log ]; then echo NOT Passed ERROR 1 ; exit -1 ; fi
+
+if ! grep -q 'Log file .* contains 1 steps.' t139.log; then echo NOT Passed ERROR 2 ; exit -1 ; fi
+if ! grep -q 'run did NOT terminate normally' t139.log; then echo NOT Passed ERROR 3 ; exit -1 ; fi
+
+
+if [ ! -f t139_last.xyz ]; then echo NOT Passed ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -c '^79$' t139_last.xyz) # is it XYZ format
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 5 ; exit -1 ; fi
+n=0;n=$(grep -c '^Ru\s' t139_last.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 6 ; exit -1 ; fi
+n=0;n=$(grep -c '^C\s*\-3.164005\s*\-10.435414\s*0.005939\s*' t139_last.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 7 ; exit -1 ; fi
+n=0;n=$(grep -c '^H\s*\-4.618275\s*\-1.819653\s*\-0.756420\s*' t139_last.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 8 ; exit -1 ; fi
+
+
+if grep -q 'Termination status: 0' t139.log ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi

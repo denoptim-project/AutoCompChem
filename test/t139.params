@@ -1,0 +1,6 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+TASK: AnalyseOutput
+JOBOUTPUTFILE: ../t139.out
+PRINTLASTGEOMETRY: XYZ t139_last.xyz

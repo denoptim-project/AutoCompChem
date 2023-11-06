@@ -575,9 +575,8 @@ public class IOtools
 					ParameterStorage params = new ParameterStorage();
 					params.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE,
 							file.getAbsolutePath());
-				//TODO-gg make general task ID
 					params.setParameter(WorkerConstants.PARTASK,
-							TaskID.ANALYSENWCHEMOUTPUT.toString());
+							TaskID.ANALYSEOUTPUT.toString());
 					analyzer.setParameters(params);
 					analyzer.initialize();
 					NamedDataCollector allData = new NamedDataCollector();
@@ -796,7 +795,6 @@ public class IOtools
 				writeSDFAppend(file, ac, append);
 				break;
 				
-			
 			default:
 				Terminator.withMsgAndStatus("ERROR! Format '" + format + "' is "
 						+ "not a known format for writing atom containers", -1);

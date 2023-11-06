@@ -17,79 +17,20 @@ package autocompchem.chemsoftware;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.BufferedReader;
-
-/*
- *   Copyright (C) 2016  Marco Foscato
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.qsar.IDescriptor;
-
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapter;
-import com.google.gson.internal.$Gson$Preconditions;
-import com.google.gson.internal.bind.TreeTypeAdapter;
-import com.google.gson.internal.bind.TypeAdapters;
-import com.google.gson.reflect.TypeToken;
-
-import autocompchem.chemsoftware.AnalysisTask.AnalysisKind;
 import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
 import autocompchem.chemsoftware.nwchem.NWChemOutputAnalyzer;
 import autocompchem.chemsoftware.orca.OrcaOutputAnalyzer;
 import autocompchem.chemsoftware.xtb.XTBOutputAnalyzer;
-import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.ListOfIntegers;
-import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileFingerprint;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
-import autocompchem.modeling.compute.CompChemComputer;
-import autocompchem.molecule.connectivity.ConnectivityUtils;
-import autocompchem.molecule.vibrations.NormalModeSet;
-import autocompchem.perception.TxtQuery;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Terminator;
-import autocompchem.text.TextBlock;
-import autocompchem.utils.NumberUtils;
-import autocompchem.utils.StringUtils;
-import autocompchem.worker.Worker;
 
 /**
  * A factory to create instances of {@link ChemSoftOutputAnalyzer} that are
@@ -159,10 +100,14 @@ public final class ChemSoftOutputAnalyzerBuilder
 	 * @param file the output to analyze. Note it can be a file or a folder.
 	 * @return the name of the software or null if the identification was not
 	 * successful.
+	 * @throws FileNotFoundException  if the output does nto exist.
 	 */
 	
-	public String detectOutputFormat(File file)
+	public String detectOutputFormat(File file) throws FileNotFoundException
 	{
+		if (!file.exists())
+			throw new FileNotFoundException("File '" + file + "' not found.");
+		
 		for (String softwareName : knownAnalyzers.keySet())
 		{
 			for (FileFingerprint fp : 

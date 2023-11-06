@@ -173,7 +173,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 //-----------------------------------------------------------------------------
 
     /**
-     * Initialise the worker according to the parameters given to the 
+     * Initialize the worker according to the parameters given to the 
      * constructor.
      */
 
