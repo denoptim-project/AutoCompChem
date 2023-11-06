@@ -38,6 +38,7 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.utils.StringUtils;
@@ -75,7 +76,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new XTBInputWriter();
     }
     

@@ -18,6 +18,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -44,7 +45,7 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new XTBOutputAnalyzer();
     }
     

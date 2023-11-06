@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.files.FileFingerprint;
+import autocompchem.run.Job;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -70,7 +71,7 @@ class TestOutputAnalyzer extends ChemSoftOutputAnalyzer
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new TestOutputAnalyzer();
     }
     

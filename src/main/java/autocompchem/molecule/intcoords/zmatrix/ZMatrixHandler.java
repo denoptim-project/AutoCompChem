@@ -48,6 +48,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
@@ -175,7 +176,7 @@ public class ZMatrixHandler extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new ZMatrixHandler();
     }
     

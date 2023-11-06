@@ -89,7 +89,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new GaussianInputWriter();
     }
 

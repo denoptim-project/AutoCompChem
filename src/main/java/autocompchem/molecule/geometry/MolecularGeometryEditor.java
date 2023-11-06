@@ -44,11 +44,12 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -218,7 +219,7 @@ public class MolecularGeometryEditor extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new MolecularGeometryEditor();
     }
     
@@ -1123,7 +1124,7 @@ public class MolecularGeometryEditor extends Worker
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
         locPar.setParameter(WorkerConstants.PARTASK, "PRINTZMATRIX");
-        Worker w = WorkerFactory2.createWorker(locPar, this.getMyJob());
+        Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix();
         if (verbosity > 1)

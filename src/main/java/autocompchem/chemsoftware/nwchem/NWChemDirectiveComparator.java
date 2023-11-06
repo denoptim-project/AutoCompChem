@@ -9,7 +9,7 @@ import autocompchem.chemsoftware.Directive;
  */
 
 //TODO-gg refactor to replace version without number at the end
-public class NWChemDirectiveComparator2 implements Comparator<Directive> 
+public class NWChemDirectiveComparator implements Comparator<Directive> 
 {
 
 	@Override

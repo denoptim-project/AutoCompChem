@@ -284,7 +284,7 @@ public abstract class Worker implements IOutputExposer
      * Makes an instance of the specific implementation possibly adapting
      * the instance to the given arguments.
      */
-    public abstract Worker makeInstance(Object... args);
+    public abstract Worker makeInstance(Job job);
       
 //------------------------------------------------------------------------------
 	

@@ -59,7 +59,7 @@ import autocompchem.text.TextBlock;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * This object represents a single directive that consists of
@@ -1132,7 +1132,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		labMakerParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
 				AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
-            			WorkerFactory2.createWorker(labMakerParams, masterJob);
+            			WorkerFactory.createWorker(labMakerParams, masterJob);
         		List<String> pointers = labGenerator.generateAtomLabels(mol);
         		
 	        	// Identify specific atoms to work with
@@ -1145,7 +1145,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 cnstrParams.setParameter("VALUEDKEYWORDS", 
                 		"options prefix suffix");
                 
-            	Worker w = WorkerFactory2.createWorker(cnstrParams, masterJob);
+            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	AtomTupleGenerator cnstrg = (AtomTupleGenerator) w;
             	
             	for (AnnotatedAtomTuple tuple : cnstrg.createTuples(mol))
@@ -1241,7 +1241,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 		zmatMakerTask.setParameter("MOL", 
                 				NamedDataType.IATOMCONTAINER, 
                 				mols.get(geometryId));
-                        Worker w = WorkerFactory2.createWorker(zmatMakerTask,
+                        Worker w = WorkerFactory.createWorker(zmatMakerTask,
                         		masterJob);
                         ZMatrixHandler zmh = (ZMatrixHandler) w;
                         ZMatrix zmat = zmh.makeZMatrix();
@@ -1255,7 +1255,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                         			TaskID.GENERATECONSTRAINTS.toString());
                         	
                             ConstraintsGenerator cnstrg = (ConstraintsGenerator)
-                            		WorkerFactory2.createWorker(cnstMakerTask,
+                            		WorkerFactory.createWorker(cnstMakerTask,
                             				masterJob);
                         	ConstraintsSet cs = new ConstraintsSet();
                         	try {
@@ -1323,7 +1323,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO-gg this simplifies if we use TaskID as it should 
                 bsGenParams.setParameter("TASK", "GENERATEBASISSET");
-            	Worker w = WorkerFactory2.createWorker(bsGenParams, masterJob);
+            	Worker w = WorkerFactory.createWorker(bsGenParams, masterJob);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
                 bsg.setAtmIdxAsId(true);
@@ -1353,7 +1353,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 cnstrParams.setParameter("TASK", 
                 		TaskID.GENERATECONSTRAINTS.toString());
                 
-            	Worker w = WorkerFactory2.createWorker(cnstrParams, masterJob);
+            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
             	
             	ConstraintsSet cs = new ConstraintsSet();
@@ -1387,7 +1387,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 csGenParams.setParameter("TASK", 
                 		TaskID.GENERATECONFORMATIONALSPACE.toString());
                 
-            	Worker w = WorkerFactory2.createWorker(csGenParams, masterJob);
+            	Worker w = WorkerFactory.createWorker(csGenParams, masterJob);
             	ConformationalSpaceGenerator csGen = 
             			(ConformationalSpaceGenerator) w;
             	
@@ -1429,7 +1429,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 atmLabelsParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
                 
-            	Worker w = WorkerFactory2.createWorker(atmLabelsParams, 
+            	Worker w = WorkerFactory.createWorker(atmLabelsParams, 
             			masterJob);
             	AtomLabelsGenerator labelsGenerator = (AtomLabelsGenerator) w;
             	
@@ -1455,7 +1455,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 atmTuplesParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMTUPLES.toString());
                 
-            	Worker w = WorkerFactory2.createWorker(atmTuplesParams, 
+            	Worker w = WorkerFactory.createWorker(atmTuplesParams, 
             			masterJob);
             	AtomTupleGenerator labelsGenerator = (AtomTupleGenerator) w;
             	

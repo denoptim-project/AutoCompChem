@@ -22,7 +22,7 @@ import java.util.Date;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * A job class that represents work to be done by AutoCompChem itself
@@ -91,7 +91,7 @@ public class ACCJob extends Job
 
         Worker worker = null;
 		try {
-			worker = WorkerFactory2.createWorker(this);
+			worker = WorkerFactory.createWorker(this);
 		} catch (ClassNotFoundException e) {
 			throw new Error("Unable to make worker for " 
 					+ params.getParameterValue(WorkerConstants.PARTASK));
@@ -121,7 +121,7 @@ public class ACCJob extends Job
     	}
     	Worker worker = null;
     	try {
-			worker = WorkerFactory2.createWorker(this);
+			worker = WorkerFactory.createWorker(this);
 		} catch (ClassNotFoundException e) {
 			throw new Error("Unable to make worker for " 
 					+ params.getParameterValue(WorkerConstants.PARTASK));

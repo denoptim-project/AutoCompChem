@@ -77,7 +77,7 @@ import autocompchem.run.JobEvaluator;
  * @author Marco Foscato
  */
 
-public final class WorkerFactory2
+public final class WorkerFactory
 {
 	/**
 	 * The collection of registered types of {@link Worker}.
@@ -88,12 +88,12 @@ public final class WorkerFactory2
 	/**
 	 * Singleton instance of this class
 	 */
-	private static WorkerFactory2 INSTANCE;
+	private static WorkerFactory INSTANCE;
 
 	
 //-----------------------------------------------------------------------------
 	
-	private WorkerFactory2() 
+	private WorkerFactory() 
 	{
 		// Here we add all the workers those implemented in AAudoCompChem        
         registerType(new AspecificOutputAnalyzer());
@@ -139,10 +139,10 @@ public final class WorkerFactory2
 	 * {@link Worker}s that can be configured and used.
 	 * @return the singleton instance.
 	 */
-	public synchronized static WorkerFactory2 getInstance()
+	public synchronized static WorkerFactory getInstance()
 	{
 		if (INSTANCE==null)
-			INSTANCE = new WorkerFactory2();
+			INSTANCE = new WorkerFactory();
 		return INSTANCE;
 	}
 
@@ -199,7 +199,7 @@ public final class WorkerFactory2
 			if (exampleObj.getClass().getSimpleName().toUpperCase().equals(
 					className.toUpperCase()))
 			{
-				return exampleObj.makeInstance();
+				return exampleObj.makeInstance(null);
 			}
 		}
 		throw new InstantiationException("Could not make new instance of '" 

@@ -75,7 +75,7 @@ public class GaussianJobDetailsConverter extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new GaussianJobDetailsConverter();
     }
     

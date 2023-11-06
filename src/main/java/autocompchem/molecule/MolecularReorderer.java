@@ -39,6 +39,7 @@ import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.geometry.ComparatorOfGeometries;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
@@ -142,7 +143,7 @@ public class MolecularReorderer extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new MolecularReorderer();
     }
 

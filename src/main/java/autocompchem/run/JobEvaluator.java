@@ -53,7 +53,7 @@ import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -176,7 +176,7 @@ public class JobEvaluator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new JobEvaluator();
     }
         
@@ -559,7 +559,7 @@ public class JobEvaluator extends Worker
 					ChemSoftInputWriter worker;
 					try {
 						worker = (ChemSoftInputWriter) 
-								WorkerFactory2.createWorker(makeInputPars, myJob);
+								WorkerFactory.createWorker(makeInputPars, myJob);
 					} catch (ClassNotFoundException e) {
 						throw new Error("Unable to make worker for " + task);
 					}
@@ -679,7 +679,7 @@ public class JobEvaluator extends Worker
 		ChemSoftOutputAnalyzer outputParser;
 		try {
 			outputParser = (ChemSoftOutputAnalyzer) 
-					WorkerFactory2.createWorker(analysisParams, this.getMyJob());
+					WorkerFactory.createWorker(analysisParams, this.getMyJob());
 		} catch (ClassNotFoundException e) {
 			throw new Error("Unable to make worker for " 
 					+ analysisParams.getParameterValue(WorkerConstants.PARTASK));

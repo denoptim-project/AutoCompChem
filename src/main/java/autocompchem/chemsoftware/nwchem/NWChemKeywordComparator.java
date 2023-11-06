@@ -31,7 +31,7 @@ import autocompchem.chemsoftware.Keyword;
  * the directive TASK: first the 'theory', then the 'operation' type.
  */
 
-public class NWChemKeywordComparator2 implements Comparator<Keyword>
+public class NWChemKeywordComparator implements Comparator<Keyword>
 {
     @Override
     public int compare(Keyword a, Keyword b)

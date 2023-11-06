@@ -38,7 +38,7 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -79,7 +79,7 @@ public class JobEvaluatorTest
     	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "true");
     	
-    	JobEvaluator w = (JobEvaluator) WorkerFactory2.createWorker(evalJob);
+    	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	NamedDataCollector output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();
@@ -96,7 +96,7 @@ public class JobEvaluatorTest
 
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "false");
     	
-    	w = (JobEvaluator) WorkerFactory2.createWorker(evalJob);
+    	w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();

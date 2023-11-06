@@ -95,7 +95,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new NWChemInputWriter();
     }
     
@@ -118,7 +118,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         sb.append(dirName).append(" ");
 
         // keywords are appended in the same line as the directive's name
-        Collections.sort(d.getAllKeywords(), new NWChemKeywordComparator2());
+        Collections.sort(d.getAllKeywords(), new NWChemKeywordComparator());
         int ik = 0;
         for (Keyword k : d.getAllKeywords())
         {
@@ -948,7 +948,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	    	for (int i=0; i<job.getNumberOfSteps(); i++)
 			{
 				CompChemJob step = (CompChemJob) job.getStep(i);
-				step.sortDirectivesBy(new NWChemDirectiveComparator2());
+				step.sortDirectivesBy(new NWChemDirectiveComparator());
 				Iterator<Directive> it = step.directiveIterator();
 				while (it.hasNext())
 				{
@@ -961,7 +961,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				}
 			}
     	} else {
-			job.sortDirectivesBy(new NWChemDirectiveComparator2());
+			job.sortDirectivesBy(new NWChemDirectiveComparator());
     		Iterator<Directive> it = job.directiveIterator();
 			while (it.hasNext())
 			{

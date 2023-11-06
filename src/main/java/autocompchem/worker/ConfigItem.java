@@ -65,7 +65,7 @@ public class ConfigItem
 			sb.append(System.getProperty("line.separator"));
 			Worker w;
 			try {
-				w = WorkerFactory2.createWorker(embeddedWorker);
+				w = WorkerFactory.createWorker(embeddedWorker);
 				sb.append(w.getEmbeddedTaskSpecificHelp());
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block

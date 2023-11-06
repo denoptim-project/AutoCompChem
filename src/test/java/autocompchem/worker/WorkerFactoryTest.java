@@ -38,7 +38,7 @@ import autocompchem.run.AppID;
  */
 
 //TODO-gg rename
-public class WorkerFactory2Test 
+public class WorkerFactoryTest 
 {
     
 //-----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ public class WorkerFactory2Test
     	// Trying to create a worker for a task that is not registered
     	boolean triggered = false;
     	try {
-    		WorkerFactory2.createWorker(TaskID.DUMMYTASK2);
+    		WorkerFactory.createWorker(TaskID.DUMMYTASK2);
     	} catch (ClassNotFoundException e)
     	{
     		if (e.getMessage().contains("has not been registered"))
@@ -58,9 +58,9 @@ public class WorkerFactory2Test
     	assertTrue(triggered);
     	
     	// Now we register that type and try again
-    	WorkerFactory2.getInstance().registerType(TaskID.DUMMYTASK2, 
+    	WorkerFactory.getInstance().registerType(TaskID.DUMMYTASK2, 
     			new DummyWorker2());
-    	Worker w = WorkerFactory2.createWorker(TaskID.DUMMYTASK2);
+    	Worker w = WorkerFactory.createWorker(TaskID.DUMMYTASK2);
     	assertTrue(w instanceof DummyWorker2);
     }
     
@@ -74,10 +74,10 @@ public class WorkerFactory2Test
     	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK2.toString());
     	job.setParameters(params);
     	
-    	WorkerFactory2.getInstance().registerType(TaskID.DUMMYTASK2, 
+    	WorkerFactory.getInstance().registerType(TaskID.DUMMYTASK2, 
     			new DummyWorker2());
     	
-    	Worker w = WorkerFactory2.createWorker(job);
+    	Worker w = WorkerFactory.createWorker(job);
     	assertTrue(w instanceof DummyWorker2);
     }
 

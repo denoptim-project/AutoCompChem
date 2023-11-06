@@ -32,7 +32,7 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -60,7 +60,7 @@ public class EvaluationJobTest
     	Job jobToEvaluate = new Job();
     	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
     	
-    	Worker w = WorkerFactory2.createWorker(evalJob);
+    	Worker w = WorkerFactory.createWorker(evalJob);
     	
     	assertTrue(w instanceof JobEvaluator);
     	JobEvaluator je = (JobEvaluator) w;

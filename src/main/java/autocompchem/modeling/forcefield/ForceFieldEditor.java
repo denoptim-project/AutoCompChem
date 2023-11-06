@@ -35,12 +35,13 @@ import autocompchem.chemsoftware.tinker.TinkerForceFieldHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory2;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -162,7 +163,7 @@ public class ForceFieldEditor extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new ForceFieldEditor();
     }
 //-----------------------------------------------------------------------------
@@ -425,7 +426,7 @@ public class ForceFieldEditor extends Worker
                 	
                 	Worker w;
 					try {
-						w = WorkerFactory2.createWorker(ps, this.getMyJob());
+						w = WorkerFactory.createWorker(ps, this.getMyJob());
 					} catch (ClassNotFoundException e) {
 						throw new Error("Unable to make worker "
 								+ "VibModuleOutputHandler");

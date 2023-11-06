@@ -40,6 +40,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
@@ -136,7 +137,7 @@ public class AtomTupleGenerator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new AtomTupleGenerator();
     }
     

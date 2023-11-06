@@ -52,6 +52,7 @@ import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.conformation.ConformationalCoordinate;
 import autocompchem.molecule.conformation.ConformationalSpace;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.worker.TaskID;
@@ -87,7 +88,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new SpartanInputWriter();
     }
     

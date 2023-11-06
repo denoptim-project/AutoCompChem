@@ -38,6 +38,7 @@ import autocompchem.molecule.coordinationgeometry.CoordinationGeometry;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometryReferences;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
 import autocompchem.molecule.geometry.ComparatorOfGeometries;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
@@ -94,7 +95,7 @@ public class MolecularComparator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new MolecularComparator();
     }
     

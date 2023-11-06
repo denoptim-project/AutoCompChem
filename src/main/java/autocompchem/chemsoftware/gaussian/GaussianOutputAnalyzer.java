@@ -23,6 +23,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.run.Job;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -49,7 +50,7 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new GaussianOutputAnalyzer();
     }
     

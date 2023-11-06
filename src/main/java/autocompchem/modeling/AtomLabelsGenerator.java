@@ -36,6 +36,7 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.TaskID;
@@ -116,7 +117,7 @@ public class AtomLabelsGenerator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new AtomLabelsGenerator();
     }
     

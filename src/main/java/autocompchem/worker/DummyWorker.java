@@ -25,6 +25,7 @@ import java.util.Set;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.run.Job;
 
 
 /**
@@ -63,7 +64,7 @@ public class DummyWorker extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Worker makeInstance(Object... args) {
+    public Worker makeInstance(Job job) {
         return new DummyWorker();
     }
     
