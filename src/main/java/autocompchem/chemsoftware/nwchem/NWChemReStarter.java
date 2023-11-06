@@ -39,6 +39,7 @@ import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
+import autocompchem.worker.WorkerFactory2;
 
 /**
  * Restarts a NWChem job that returned an error. The tool evaluates
@@ -406,8 +407,14 @@ public class NWChemReStarter extends Worker
     			TaskID.ANALYSENWCHEMOUTPUT.toString()); 
     	
         //Gather information on the error job
-    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler, 
-    			this.getMyJob());
+    	Worker w = null;
+		try {
+			w = WorkerFactory2.createWorker(paramsForOutputHandler, 
+					this.getMyJob());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	NWChemOutputHandler oEval = (NWChemOutputHandler) w;
     	
                                                   

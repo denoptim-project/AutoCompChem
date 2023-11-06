@@ -70,6 +70,28 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     	// NB: this workers inherits all from the super class
     	ruleRoot = ConformationalCoordDefinition.BASENAME;
     }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.GENERATECONFORMATIONALSPACE)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new ConformationalSpaceGenerator();
+    }
 
 //------------------------------------------------------------------------------
 

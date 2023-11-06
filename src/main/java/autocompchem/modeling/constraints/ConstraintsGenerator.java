@@ -67,6 +67,28 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     	super("inputdefinition/ConstraintsGenerator.json");
     	ruleRoot = ConstraintDefinition.BASENAME;
     }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public Set<TaskID> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<TaskID>(
+             Arrays.asList(TaskID.GENERATECONSTRAINTS)));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/ConstraintsGenerator.json";
+    }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public Worker makeInstance(Object... args) {
+        return new ConstraintsGenerator();
+    }
 
 //------------------------------------------------------------------------------
 

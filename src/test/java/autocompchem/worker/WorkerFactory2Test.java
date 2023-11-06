@@ -49,7 +49,7 @@ public class WorkerFactory2Test
     	// Trying to create a worker for a task that is not registered
     	boolean triggered = false;
     	try {
-    		WorkerFactory2.createWorker(TaskID.DUMMYTASK);
+    		WorkerFactory2.createWorker(TaskID.DUMMYTASK2);
     	} catch (ClassNotFoundException e)
     	{
     		if (e.getMessage().contains("has not been registered"))
@@ -58,10 +58,10 @@ public class WorkerFactory2Test
     	assertTrue(triggered);
     	
     	// Now we register that type and try again
-    	WorkerFactory2.getInstance().registerType(TaskID.DUMMYTASK, 
-    			new DummyWorker());
-    	Worker w = WorkerFactory2.createWorker(TaskID.DUMMYTASK);
-    	assertTrue(w instanceof DummyWorker);
+    	WorkerFactory2.getInstance().registerType(TaskID.DUMMYTASK2, 
+    			new DummyWorker2());
+    	Worker w = WorkerFactory2.createWorker(TaskID.DUMMYTASK2);
+    	assertTrue(w instanceof DummyWorker2);
     }
     
 //-----------------------------------------------------------------------------
@@ -71,14 +71,14 @@ public class WorkerFactory2Test
     {
     	Job job = JobFactory.createJob(AppID.ACC);
     	ParameterStorage params = new ParameterStorage();
-    	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK.toString());
+    	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK2.toString());
     	job.setParameters(params);
     	
-    	WorkerFactory2.getInstance().registerType(TaskID.DUMMYTASK, 
-    			new DummyWorker());
+    	WorkerFactory2.getInstance().registerType(TaskID.DUMMYTASK2, 
+    			new DummyWorker2());
     	
     	Worker w = WorkerFactory2.createWorker(job);
-    	assertTrue(w instanceof DummyWorker);
+    	assertTrue(w instanceof DummyWorker2);
     }
 
 //------------------------------------------------------------------------------

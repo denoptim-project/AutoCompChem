@@ -28,6 +28,7 @@ public enum TaskID
 {
 	UNSET,
 	DUMMYTASK,
+	DUMMYTASK2,
     ADDBONDSFORSINGLEELEMENT,
     ADDDUMMYATOMS,           
     ALIGNATOMLISTS,          

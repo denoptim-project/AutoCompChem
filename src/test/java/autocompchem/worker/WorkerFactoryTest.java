@@ -41,32 +41,10 @@ public class WorkerFactoryTest
 {
     
 //-----------------------------------------------------------------------------
-    
-    @Test
-    public void testGetNewWorkerInstance() throws Exception
-    {
-    	Worker w = WorkerFactory.getNewWorkerInstance(WorkerID.DummyWorker);
-    	
-    	assertTrue(w instanceof DummyWorker, "Type of worker created from "
-    			+ "dummy task.");
-    }
+
     
 //-----------------------------------------------------------------------------
-    
-    @Test
-    public void testCreateDummyWorkerFromJob() throws Exception
-    {
-    	Job job = JobFactory.createJob(AppID.ACC);
-    	ParameterStorage params = new ParameterStorage();
-    	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK.toString());
-    	job.setParameters(params);
-    	job.run();
-    	NamedData output = job.getOutput(DummyWorker.DATAREF);
-    	
-    	assertTrue(output != null, "Output from dummy atom is found.");
-    	assertEquals(output.getValue(),DummyWorker.DATAVALUE,
-    			"Stored output data.");
-    }
+
 
 //------------------------------------------------------------------------------
 

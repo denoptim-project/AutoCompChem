@@ -41,7 +41,7 @@ public class WorkerTest
     @Test
     public void testGetKnownSettings() throws Exception
     {
-    	DummyWorker w = new DummyWorker();
+    	DummyWorker2 w = new DummyWorker2();
     	
     	List<ConfigItem> knownInput = w.getKnownParameters();
     	

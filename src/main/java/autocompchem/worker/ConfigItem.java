@@ -63,9 +63,16 @@ public class ConfigItem
 			StringBuilder sb = new StringBuilder();
 			sb.append(" Settings pertaining ").append(tag).append(": ");
 			sb.append(System.getProperty("line.separator"));
-			Worker w = WorkerFactory.getNewWorkerInstance(WorkerID.valueOf(
-					embeddedWorker));
-			sb.append(w.getEmbeddedTaskSpecificHelp());
+			Worker w;
+			try {
+				w = WorkerFactory2.createWorker(embeddedWorker);
+				sb.append(w.getEmbeddedTaskSpecificHelp());
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				sb.append(" Error fetching help msg for '" + embeddedWorker 
+						+ "'");
+			}
 			return sb.toString();
 		} else {
 			return getStringThisKey();

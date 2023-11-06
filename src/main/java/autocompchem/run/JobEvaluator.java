@@ -54,6 +54,7 @@ import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
+import autocompchem.worker.WorkerFactory2;
 
 
 /**
@@ -71,7 +72,7 @@ public class JobEvaluator extends Worker
 	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
 					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
-	//TODO-gg add these 
+	//TODO-gg add these, but not here, in the getCapabilities
 					/*
 					TaskID.EVALUATENWCHEMOUTPUT,
 					TaskID.EVALUATEORCAOUTPUT,
@@ -173,16 +174,11 @@ public class JobEvaluator extends Worker
 
     @Override
     public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-				Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
-//TODO-gg add these 
-				/*
-				TaskID.EVALUATENWCHEMOUTPUT,
-				TaskID.EVALUATEORCAOUTPUT,
-				TaskID.EVALUATEXTBOUTPUT,
-				TaskID.EVALUATESPARTANOUTPUT,
-				*/
-						)));
+		Set<TaskID> tmpSet = new HashSet<TaskID>(EVALCOMPCHEMJOBTASKS);
+		tmpSet.addAll(CURECOMPCHEMJOBTASKS);
+		tmpSet.add(TaskID.EVALUATEJOB);
+		//TODO-gg tmpSet.add(TaskID.CUREJOB);
+		return Collections.unmodifiableSet(tmpSet);
     }
 
 //------------------------------------------------------------------------------
@@ -575,8 +571,13 @@ public class JobEvaluator extends Worker
 							params.getParameter(ChemSoftConstants.PAROUTFILE)
 								.getValueAsString());
 					}
-					ChemSoftInputWriter worker = (ChemSoftInputWriter) 
-							WorkerFactory.createWorker(makeInputPars, myJob);
+					ChemSoftInputWriter worker;
+					try {
+						worker = (ChemSoftInputWriter) 
+								WorkerFactory2.createWorker(makeInputPars, myJob);
+					} catch (ClassNotFoundException e) {
+						throw new Error("Unable to make worker for " + task);
+					}
 					worker.performTask();
 				}
 			}
@@ -690,8 +691,14 @@ public class JobEvaluator extends Worker
 		
 		// Prepare a worker that parses data and searches for strings that may
 		// be requested by the perceptron.
-		ChemSoftOutputAnalyzer outputParser = (ChemSoftOutputAnalyzer) 
-				WorkerFactory.createWorker(analysisParams, this.getMyJob());
+		ChemSoftOutputAnalyzer outputParser;
+		try {
+			outputParser = (ChemSoftOutputAnalyzer) 
+					WorkerFactory2.createWorker(analysisParams, this.getMyJob());
+		} catch (ClassNotFoundException e) {
+			throw new Error("Unable to make worker for " 
+					+ analysisParams.getParameterValue(WorkerConstants.PARTASK));
+		}
 		outputParser.setSituationBaseForPerception(sitsDB);
 		NamedDataCollector exposedByAnalzer = new NamedDataCollector();
 		outputParser.setDataCollector(exposedByAnalzer);

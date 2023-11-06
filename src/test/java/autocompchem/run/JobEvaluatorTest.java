@@ -55,6 +55,7 @@ import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
+import autocompchem.worker.WorkerFactory2;
 import autocompchem.run.jobediting.SetJobParameter;
 
 
@@ -96,7 +97,7 @@ public class JobEvaluatorTest
     	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "true");
     	
-    	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
+    	JobEvaluator w = (JobEvaluator) WorkerFactory2.createWorker(evalJob);
     	NamedDataCollector output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();
@@ -113,7 +114,7 @@ public class JobEvaluatorTest
 
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "false");
     	
-    	w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
+    	w = (JobEvaluator) WorkerFactory2.createWorker(evalJob);
     	output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();

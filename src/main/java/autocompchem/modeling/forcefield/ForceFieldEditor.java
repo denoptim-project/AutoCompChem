@@ -41,6 +41,7 @@ import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
+import autocompchem.worker.WorkerFactory2;
 
 
 /**
@@ -431,7 +432,13 @@ public class ForceFieldEditor extends Worker
                 	ps.setParameter( 
                 			params.getParameter("VERBOSITY"));
                 	
-                	Worker w = WorkerFactory.createWorker(ps, this.getMyJob());
+                	Worker w;
+					try {
+						w = WorkerFactory2.createWorker(ps, this.getMyJob());
+					} catch (ClassNotFoundException e) {
+						throw new Error("Unable to make worker "
+								+ "VibModuleOutputHandler");
+					}
                 	VibModuleOutputHandler vmoh = (VibModuleOutputHandler) w;
                 	
                 	/*

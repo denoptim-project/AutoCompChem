@@ -95,7 +95,7 @@ public class WorkerFactory
      * @return a suitable worker for the task.
      */ 
 
-    public static Worker createWorker(Job job)
+    private static Worker createWorker(Job job)
     {
     	return createWorker(job, true);
     }
@@ -118,7 +118,7 @@ public class WorkerFactory
      * @return a suitable worker for the task.
      */ 
 
-    public static Worker createWorker(ParameterStorage params, Job mainJob)
+    private static Worker createWorker(ParameterStorage params, Job mainJob)
     {
     	Job subjob = new ACCJob(params);
     	if (mainJob!=null)
@@ -141,7 +141,7 @@ public class WorkerFactory
      * @return a suitable worker for the task defined by the job.
      */ 
 
-    public static Worker createWorker(Job job, boolean initializeIt)
+    private static Worker createWorker(Job job, boolean initializeIt)
     {
     	String taskStr = job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString();
@@ -206,7 +206,7 @@ public class WorkerFactory
      * @return the list of suitable workers (which can be empty!).
      */
     
-    public static ArrayList<WorkerID> getWorkersCapableOfTask(TaskID task)
+    private static ArrayList<WorkerID> getWorkersCapableOfTask(TaskID task)
     {
     	ArrayList<WorkerID> suitableWorkerIDs = new ArrayList<WorkerID>();
     	for (WorkerID wid : WorkerID.values())
@@ -238,7 +238,7 @@ public class WorkerFactory
      * @return the set of tasks that the given worker is capable of
      */
     
-    public static Set<TaskID> getWorkerCapabilities(WorkerID wid)
+    private static Set<TaskID> getWorkerCapabilities(WorkerID wid)
 	{
     	//TODO: evaluate registering the workers in other ways
 		switch (wid)
@@ -337,7 +337,7 @@ public class WorkerFactory
      * @return
      */
     
-    public static Worker getNewWorkerInstance(WorkerID wid)
+    private static Worker getNewWorkerInstance(WorkerID wid)
     {
 		switch (wid)
 		{

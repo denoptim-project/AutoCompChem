@@ -40,6 +40,7 @@ import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
+import autocompchem.worker.WorkerFactory2;
 
 /**
  * Restarts a Gaussian job that returned an error. The tool evaluates
@@ -400,8 +401,14 @@ public class GaussianReStarter extends Worker
     			WorkerConstants.PARTASK, "EVALUATEGAUSSIANOUTPUT");
     	
         //Gather information on the error job
-    	Worker w = WorkerFactory.createWorker(paramsForOutputHandler, 
-    			this.getMyJob());
+    	Worker w = null;
+		try {
+			w = WorkerFactory2.createWorker(paramsForOutputHandler, 
+					this.getMyJob());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         GaussianOutputHandler oEval = (GaussianOutputHandler) w;
                                                   
         oEval.evaluateGaussianOutput();

@@ -1,5 +1,10 @@
 package autocompchem.worker;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+
 /*
  *   Copyright (C) 2020  Marco Foscato
  *
@@ -18,10 +23,16 @@ package autocompchem.worker;
  */
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.qsar.IDescriptor;
+
+import com.google.common.io.Files;
 
 import autocompchem.chemsoftware.AspecificOutputAnalyzer;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
@@ -103,6 +114,7 @@ public final class WorkerFactory2
 	{
 		// Here we add all the workers those implemented in AAudoCompChem        
         registerType(new AspecificOutputAnalyzer());
+        registerType(new DummyWorker()); //This is only for tests
         registerType(new AtomClashAnalyzer());
         registerType(new AtomTypeMatcher());
         registerType(new AtomLabelsGenerator());
@@ -194,6 +206,27 @@ public final class WorkerFactory2
 	}
 	
 //-----------------------------------------------------------------------------
+	
+	/**
+     * Create a new {@link Worker} of a given class
+     * @param className the simple name of the {@link Worker}'s class
+     */
+	public static Worker createWorker(String className) 
+			throws InstantiationException
+	{
+		for (Worker exampleObj : knownWorkers.values())
+		{
+			if (exampleObj.getClass().getSimpleName().toUpperCase().equals(
+					className.toUpperCase()))
+			{
+				return exampleObj.makeInstance();
+			}
+		}
+		throw new InstantiationException("Could not make new instance of '" 
+                    + className + "'.");
+	}
+	
+//-----------------------------------------------------------------------------
 
     /**
      * Create a new worker that is meant to do the task in the given job. 
@@ -275,7 +308,6 @@ public final class WorkerFactory2
     	return worker;
     }
     
-    
 //-----------------------------------------------------------------------------
 
     /**
@@ -312,7 +344,7 @@ public final class WorkerFactory2
     	if (!knownWorkers.containsKey(task))
     	{
     		throw new ClassNotFoundException("Type of "
-    				+ Worker.class.getName() + " has not been registered "
+    				+ Worker.class.getSimpleName() + " has not been registered "
     				+ "in " + INSTANCE.getClass().getName() + " for task '"
     		 		+ task + "'.");
     	}

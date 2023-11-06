@@ -33,6 +33,7 @@ import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
+import autocompchem.worker.WorkerFactory2;
 
 
 /**
@@ -60,7 +61,7 @@ public class EvaluationJobTest
     	Job jobToEvaluate = new Job();
     	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
     	
-    	Worker w = WorkerFactory.createWorker(evalJob);
+    	Worker w = WorkerFactory2.createWorker(evalJob);
     	
     	assertTrue(w instanceof JobEvaluator);
     	JobEvaluator je = (JobEvaluator) w;
