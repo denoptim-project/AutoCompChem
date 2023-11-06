@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.gaussian;
+package autocompchem.chemsoftware.gaussian.legacy;
 
 import java.io.File;
 
@@ -28,6 +28,7 @@ import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterUtils;
 import autocompchem.io.IOtools;

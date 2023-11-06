@@ -25,7 +25,6 @@ import java.io.File;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.gaussian.GaussianJob;
 import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;

@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.gaussian;
+package autocompchem.chemsoftware.gaussian.legacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,8 @@ import java.util.Map;
  */
 
 import java.util.Set;
+
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 
 /**
  * Object representing "Route Section" section of Gaussian input files

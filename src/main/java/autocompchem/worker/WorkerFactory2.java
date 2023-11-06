@@ -1,9 +1,5 @@
 package autocompchem.worker;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.net.URL;
 
 /*
  *   Copyright (C) 2020  Marco Foscato
@@ -29,12 +25,9 @@ import autocompchem.chemsoftware.AspecificOutputAnalyzer;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
-import autocompchem.chemsoftware.gaussian.GaussianReStarter;
 import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemOutputAnalyzer;
-import autocompchem.chemsoftware.nwchem.NWChemOutputHandler;
-import autocompchem.chemsoftware.nwchem.NWChemReStarter;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.chemsoftware.orca.OrcaOutputAnalyzer;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
@@ -119,7 +112,6 @@ public final class WorkerFactory2
         registerType(new ForceFieldEditor());
         registerType(new GaussianInputWriter());
         registerType(new GaussianOutputAnalyzer());
-        registerType(new GaussianReStarter());
         registerType(new JobEvaluator());
         registerType(new MolecularComparator());
         registerType(new MolecularGeometryEditor());
@@ -129,9 +121,7 @@ public final class WorkerFactory2
         registerType(new MolecularReorderer());
         registerType(new MolecularSorter());
         registerType(new NWChemInputWriter());
-        registerType(new NWChemOutputHandler());
         registerType(new NWChemOutputAnalyzer());
-        registerType(new NWChemReStarter());
         registerType(new OrcaInputWriter());
         registerType(new OrcaOutputAnalyzer());
         registerType(new XTBInputWriter());

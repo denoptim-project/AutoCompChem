@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.gaussian;
+package autocompchem.chemsoftware.gaussian.legacy;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterUtils;
 import autocompchem.run.Terminator;

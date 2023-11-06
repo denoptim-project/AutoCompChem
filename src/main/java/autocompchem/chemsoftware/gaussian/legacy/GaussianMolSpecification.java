@@ -1,4 +1,4 @@
-package autocompchem.chemsoftware.gaussian;
+package autocompchem.chemsoftware.gaussian.legacy;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -26,6 +26,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.run.Terminator;
 
 /**
