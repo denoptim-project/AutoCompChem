@@ -1,0 +1,58 @@
+#!/bin/bash
+
+if [ ! -f t53.log ]; then echo NOT Passed ERROR 1 ; exit -1 ; fi
+
+if ! grep -q 'Log file .* contains 5 steps.' t53.log; then echo NOT Passed ERROR 2 ; exit -1 ; fi
+if ! grep -q 'run did terminate normally' t53.log; then echo NOT Passed ERROR 3 ; exit -1 ; fi
+
+if [ ! -f t53_allGeoms.xyz ]; then echo NOT Passed ERROR 4 ; exit -1 ; fi
+n=0;n=$(grep -c '^55$' t53_allGeoms.xyz) # is it XYZ format
+if [ "$n" != 24 ]; then echo NOT Passed ERROR 5 ; exit -1 ; fi
+n=0;n=$(grep -c '^Ru\s' t53_allGeoms.xyz)
+if [ "$n" != 24 ]; then echo NOT Passed ERROR 6 ; exit -1 ; fi
+n=0;n=$(grep -c '^Ru\s*1.327284' t53_allGeoms.xyz) # input geometry in pre-opt jobs
+if [ "$n" != 4 ]; then echo NOT Passed ERROR 7 ; exit -1 ; fi
+n=0;n=$(grep -c '^Ru\s*1.357094' t53_allGeoms.xyz) # opt geometry in opt and post-opt jobs
+if [ "$n" != 3 ]; then echo NOT Passed ERROR 8 ; exit -1 ; fi
+
+if [ ! -f t53_lastGeom.sdf ]; then echo NOT Passed ERROR 4b ; exit -1 ; fi
+if ! grep -q '^ 55 56  0  0  0  0' t53_lastGeom.sdf ; then echo NOT Passed ERROR 5b ; exit -1 ; fi
+n=0;n=$(grep -c '^\$\$\$\$' t53_lastGeom.sdf)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 6b ; exit -1 ; fi
+n=0;n=$(grep -c ' 1.3571 .* -0.8617 .* 0.7596 Ru ' t53_lastGeom.sdf) 
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 7b ; exit -1 ; fi
+
+if [ ! -f t53_vibModes_0_6_7_164.xyz ]; then echo NOT Passed ERROR 9 ; exit -1 ; fi
+n=0;n=$(grep -c '^# Normal mode' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 8 ]; then echo NOT Passed ERROR 10 ; exit -1 ; fi
+# 1st mode 1st Hessian
+n=0;n=$(grep -c '^0.0005400\s*0.3459600\s*-0.4665300' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 12 ; exit -1 ; fi
+n=0;n=$(grep -c '^-0.1813200\s*0.0495800\s*-0.4013000' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 13 ; exit -1 ; fi
+# 8th mode 1st Hessian
+n=0;n=$(grep -c '^-0.0790800\s*-0.0510500\s*0.0419900' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 14 ; exit -1 ; fi
+n=0;n=$(grep -c '^-0.1120100\s*-0.0449600\s*0.0588900' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 15 ; exit -1 ; fi
+# 1st mode 2nd Hessian
+n=0;n=$(grep -c '^0.0114600\s*-0.4738500\s*0.5471600' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 16 ; exit -1 ; fi
+n=0;n=$(grep -c '^0.1621200\s*-0.0867100\s*0.4318200' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 17 ; exit -1 ; fi
+# 165th mode 2nd Hessian
+n=0;n=$(grep -c '^-0.0014300\s*-0.0014600\s*-0.0038900' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 18 ; exit -1 ; fi
+n=0;n=$(grep -c '^0.0106500\s*-0.0252900\s*-0.0072200' t53_vibModes_0_6_7_164.xyz)
+if [ "$n" != 1 ]; then echo NOT Passed ERROR 19 ; exit -1 ; fi
+
+n=0;n=$(grep -c 'Critial Point: TRANSITION STATE' t53.log)
+if [ "$n" != 2 ]; then echo NOT Passed ERROR 20 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' t53.log ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed 99
+  exit -1
+fi
