@@ -1,0 +1,80 @@
+{
+  "type": "ERROR",
+  "refName": "e2.0-DFT-SCF_Not_Converged",
+  "description": "Situation occurring when NWChem reports the failure of the SCF procedure in a DFT calculation.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Calculation failed to converge"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "dft energy failed"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "This type of error is most commonly associated with calculations not reaching"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "convergence criteria"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "jobEditTasks": [
+      {
+        "task": "SET_DIRECTIVE",
+        "path": "",
+        "content": 
+           {
+             "name": "restart"
+           }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:title",
+        "content": {
+            "reference": "title",
+            "value": "Restarting upon failed DFT-SCF convergence",
+            "isLoud": false
+        }
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:start"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:geometry"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:SCF|Dir:VECTORS"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.nw"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.db"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.hess"
+      }
+    ]
+  }
+}

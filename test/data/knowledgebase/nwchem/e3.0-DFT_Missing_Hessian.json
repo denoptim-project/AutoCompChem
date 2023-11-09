@@ -1,0 +1,94 @@
+{
+  "type": "ERROR",
+  "refName": "e3.0-DFT_Missing_Hessian",
+  "description": "Situation occurring when Driver reports it cannot find the Hessian, but the input expected to read from it.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "error in reading"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "driver_hess_cart: fatal error"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "prerefinementSteps": [
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "restart"
+          },
+          {
+            "name": "title",
+            "keywords": [
+              {
+                "reference": "title",
+                "value": "\"Error Fix: calculation of Hessian+Frequencies\"",
+                "isLoud": false
+              }
+            ]
+          },
+          {
+            "name": "task",
+            "keywords": [
+              {
+                "reference": "theory",
+                "value": "dft",
+                "isLoud": false
+              },
+              {
+                "reference": "tasktype",
+                "value": "frequencies",
+                "isLoud": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "inheritedSettings": [
+      {
+        "task": "INHERIT_DIRECTIVE",
+        "path": "Dir:dft"
+      }
+    ],
+    "jobEditTasks": [
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:start"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:geometry"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:SCF|Dir:VECTORS"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.nw"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.db"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.hess"
+      }
+    ]
+  }
+}

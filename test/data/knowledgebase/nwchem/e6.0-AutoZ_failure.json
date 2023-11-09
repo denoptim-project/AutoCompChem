@@ -1,0 +1,75 @@
+{
+  "type": "ERROR",
+  "refName": "e6.0-AutoZ_failure",
+  "description": "Situation occurring when AutoZ cannot generate a Z-matrix.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "There are insufficient internal variables"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Either AUTOZ failed or your geometry has"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "jobEditTasks": [
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:restart"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:start"
+      },
+      {
+        "task": "SET_DIRECTIVE",
+        "path": "",
+        "content": 
+           {
+             "name": "start"
+           }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:title",
+        "content": {
+            "reference": "title",
+            "value": "Restarting upon AutoZ failure",
+            "isLoud": false
+        }
+      },
+      {
+        "task": "SET_KEYWORD",
+        "path": "Dir:geometry",
+        "content": {
+            "reference": "autoz",
+            "value": "noautoz",
+            "isLoud": false
+        }
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.nw"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.db"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.hess"
+      }
+    ]
+  }
+}

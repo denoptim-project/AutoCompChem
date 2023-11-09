@@ -55,6 +55,7 @@ public interface IJobEditingTask
 			case SET_DIRECTIVEDATA:
 				result = context.deserialize(json, SetDirectiveComponent.class);
 				break;
+			case REMOVE_COMPONENT:
 			case REMOVE_KEYWORD:
 			case REMOVE_DIRECTIVE:
 			case REMOVE_DIRECTIVEDATA:

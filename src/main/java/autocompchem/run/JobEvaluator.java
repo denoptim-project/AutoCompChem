@@ -70,8 +70,9 @@ public class JobEvaluator extends Worker
 	 */
 	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT
-	//TODO-gg add these, but not here, in the getCapabilities
+					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT,
+							TaskID.EVALUATENWCHEMOUTPUT
+	//TODO-gg add these, after checking them
 					/*
 					TaskID.EVALUATENWCHEMOUTPUT,
 					TaskID.EVALUATEORCAOUTPUT,
@@ -84,7 +85,8 @@ public class JobEvaluator extends Worker
 	 */
 	public static final Set<TaskID> CURECOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.CUREGAUSSIANJOB)));
+					Arrays.asList(TaskID.CUREGAUSSIANJOB,
+							TaskID.CURENWCHEMJOB)));
 	
 	/**
 	 * The string used to identify the kind of termination of the evaluated job.
@@ -584,43 +586,8 @@ public class JobEvaluator extends Worker
 		if (EVALCOMPCHEMJOBTASKS.contains(task)
 				|| CURECOMPCHEMJOBTASKS.contains(task))
 		{
-			//TODO-gg this conversion should be a functionality of the TaskID
-			// coupled with appId
-			
-			TaskID analysisTask = TaskID.UNSET;
-			switch (task) {
-
-			case CUREGAUSSIANJOB:
-			case EVALUATEGAUSSIANOUTPUT:
-				
-				analysisTask = TaskID.ANALYSEGAUSSIANOUTPUT;
-				break;
-/*
-			case CURENWCHEMJOB:
-			case EVALUATENWCHEMOUTPUT:
-				analysisTask = TaskID.ANALYSENWCHEMOUTPUT;
-				break;
-				
-			case CUREORCAJOB:	
-			case EVALUATEORCAOUTPUT:
-				analysisTask = TaskID.ANALYSEORCAOUTPUT;
-				break;
-				
-			case CUREXTBJOB:
-			case EVALUATENXTBOUTPUT:
-				analysisTask = TaskID.ANALYSEXTBOUTPUT;
-				break;
-				
-			case CURESPARTANJOB:
-			case EVALUATESPAARTANOUTPUT:
-				analysisTask = TaskID.ANALYSESPARTANOUTPUT;
-				break;
-*/
-			default:
-				break;
-			}
 			analysisParams.setParameter(WorkerConstants.PARTASK, 
-					analysisTask.toString());
+					TaskID.ANALYSEOUTPUT.toString());
 			List<InfoChannel> logChannels = icDB.getChannelsOfType(
 					InfoChannelType.LOGFEED);
 			String msg = "";

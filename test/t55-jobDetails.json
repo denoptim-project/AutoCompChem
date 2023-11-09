@@ -5,66 +5,12 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "task",
+          "name": "restart",
           "keywords": [
             {
-              "reference": "theory",
-              "value": "scf",
+              "reference": "dbname",
+              "value": "dnRun_Stallo-1_M00000037_X",
               "isLoud": false
-            },
-            {
-              "reference": "tasktype",
-              "value": "energy",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "start"
-        },
-        {
-          "name": "geometry",
-          "keywords": [
-            {
-              "reference": "units",
-              "value": "angstrom"
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "SYMMETRY",
-              "keywords": [
-                {
-                  "reference": "pointgroup",
-                  "value": "c1",
-                  "isLoud": false
-                }
-              ]
-            }
-          ],
-          "dirData": [
-            {
-              "accTaskParams": [
-                {
-                  "reference": "TASK",
-                  "value": "ADD_GEOMETRY"
-                }
-              ],
-              "reference": "geometry",
-              "type": "UNDEFINED"
             }
           ]
         },
@@ -73,80 +19,29 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "\"Step:1 SP with HF\"",
+              "value": "\"Error Fix: calculation of Hessian+Frequencies  Additional step 0 in attempt to fix: Step4: sabble opt. - all free\"",
               "isLoud": false
             }
           ]
         },
         {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
+          "name": "driver",
           "subDirectives": [
             {
-              "name": "GRID",
+              "name": "clear"
+            },
+            {
+              "name": "inhess",
               "keywords": [
                 {
-                  "reference": "finess",
-                  "value": "fine",
+                  "reference": "inhess",
+                  "value": "2",
                   "isLoud": false
                 }
               ]
             },
             {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "value": "1e-6"
-                },
-                {
-                  "reference": "density",
-                  "value": "1e-5"
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "value": "pbe0",
-                  "isLoud": false
-                }
-              ]
+              "name": "default"
             }
           ]
         },
@@ -160,34 +55,8 @@
             },
             {
               "reference": "tasktype",
-              "value": "energy",
+              "value": "frequencies",
               "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "\"Step:2 SP with DFT\"",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
             }
           ]
         }
@@ -197,289 +66,12 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "keywords": [
-            {
-              "reference": "mult",
-              "value": "2"
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "value": "fine",
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "value": "1e-6"
-                },
-                {
-                  "reference": "density",
-                  "value": "1e-5"
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "value": "pbe0",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "task",
-          "keywords": [
-            {
-              "reference": "theory",
-              "value": "dft",
-              "isLoud": false
-            },
-            {
-              "reference": "tasktype",
-              "value": "optimize",
-              "isLoud": false
-            }
-          ]
-        },
-        {
           "name": "title",
           "keywords": [
             {
               "reference": "title",
-              "value": "\"Step3: geometry optimization with DFT - frozen core\"",
+              "value": "\"Step4: sabble opt. - all free\"",
               "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "SET",
-          "keywords": [
-            {
-              "reference": "geometry:actlist",
-              "accTaskParams": [
-                {
-                  "reference": "TASK",
-                  "value": "GENERATEATOMTUPLES"
-                },
-                {
-                  "reference": "SMARTS",
-                  "value": "[#1][#6,#14][Ru]\n[#1][#6][#6,#14][Ru]\n[#1][#6][#6][#14][Ru]"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "value": "fine",
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "value": "1e-6"
-                },
-                {
-                  "reference": "density",
-                  "value": "1e-5"
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "value": "pbe0",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "task",
-          "keywords": [
-            {
-              "reference": "theory",
-              "value": "dft",
-              "isLoud": false
-            },
-            {
-              "reference": "tasktype",
-              "value": "optimize",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "\"Step4: geometry optimization with DFT - frozen C-C bond\"",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "SET",
-          "keywords": [
-            {
-              "reference": "geometry:actlist",
-              "accTaskParams": [
-                {
-                  "reference": "TASK",
-                  "value": "GENERATEATOMTUPLES"
-                },
-                {
-                  "reference": "SMARTS",
-                  "value": "[#6]@[#14]"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "value": "fine",
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "value": "1e-6"
-                },
-                {
-                  "reference": "density",
-                  "value": "1e-5"
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "value": "pbe0",
-                  "isLoud": false
-                }
-              ]
             }
           ]
         },
@@ -499,48 +91,66 @@
           ]
         },
         {
-          "name": "charge",
-          "keywords": [
+          "name": "driver",
+          "subDirectives": [
             {
-              "reference": "value",
-              "value": "-26",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "title",
-          "keywords": [
+              "name": "clear"
+            },
             {
-              "reference": "title",
-              "value": "\"Step5: TS optimization with DFT\"",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
+              "name": "INHESS",
+              "keywords": [
+                {
+                  "reference": "inhess",
+                  "value": "2",
+                  "isLoud": false
+                }
+              ]
+            },
             {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "unset",
-          "keywords": [
+              "name": "MODDIR",
+              "keywords": [
+                {
+                  "reference": "modeToFollow",
+                  "value": "1",
+                  "isLoud": false
+                }
+              ]
+            },
             {
-              "reference": "defreeze",
-              "value": "geometry:actlist",
-              "isLoud": false
+              "name": "SADSTP",
+              "keywords": [
+                {
+                  "reference": "sadstp",
+                  "value": "0.10",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "EPREC",
+              "keywords": [
+                {
+                  "reference": "eprec",
+                  "value": "1.0e-8",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maviterations",
+                  "value": "200",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "default"
+            },
+            {
+              "name": "clear"
             }
           ]
         }
@@ -550,53 +160,12 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "ecp",
-          "dirData": [
+          "name": "title",
+          "keywords": [
             {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "value": "fine",
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "value": "1e-6"
-                },
-                {
-                  "reference": "density",
-                  "value": "1e-5"
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "value": "pbe0",
-                  "isLoud": false
-                }
-              ]
+              "reference": "title",
+              "value": "\"Step5: final frequencies\"",
+              "isLoud": false
             }
           ]
         },
@@ -612,40 +181,6 @@
               "reference": "tasktype",
               "value": "frequencies",
               "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "freq",
-          "subDirectives": [
-            {
-              "name": "ANIMATE"
-            }
-          ]
-        },
-        {
-          "name": "title",
-          "keywords": [
-            {
-              "reference": "title",
-              "value": "\"Step6: frequencies\"",
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
             }
           ]
         }

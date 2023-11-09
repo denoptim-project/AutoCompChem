@@ -1,0 +1,112 @@
+{
+  "type": "ERROR",
+  "refName": "e5.0-DFT-SaddleOpt_Driver_run_out_of_cycles",
+  "description": "Situation occurring when a saddle-point optimization reaches the maximum number of optimization cycles in a DFT-based calculation.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "dft saddle failed"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Failed to converge in maximum number of steps"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FOCUSJOB",
+    "prerefinementSteps": [
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "restart"
+          },
+          {
+            "name": "title",
+            "keywords": [
+              {
+                "reference": "title",
+                "value": "\"Error Fix: calculation of Hessian+Frequencies\"",
+                "isLoud": false
+              }
+            ]
+          },
+          {
+            "name": "driver",
+            "subDirectives": [
+              {
+                "name": "clear"
+              },
+              {
+                "name": "inhess",
+                "keywords": [
+                  {
+                    "reference": "inhess",
+                    "value": "2",
+                    "isLoud": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "task",
+            "keywords": [
+              {
+                "reference": "theory",
+                "value": "dft",
+                "isLoud": false
+              },
+              {
+                "reference": "tasktype",
+                "value": "frequencies",
+                "isLoud": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "inheritedSettings": [
+      {
+        "task": "INHERIT_DIRECTIVE",
+        "path": "Dir:dft"
+      }
+    ],
+    "jobEditTasks": [
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:start"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:geometry"
+      },
+      {
+        "task": "REMOVE_COMPONENT",
+        "path": "Dir:SCF|Dir:VECTORS"
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "MOVE",
+        "pattern": "*.out"
+      },
+      {
+        "type": "MOVE",
+        "pattern": "*.nw"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.db"
+      },
+      {
+        "type": "COPY",
+        "pattern": "*.hess"
+      }
+    ]
+  }
+}

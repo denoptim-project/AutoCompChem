@@ -40,7 +40,6 @@ public enum TaskID
     COMPARETWOMOLECULES,     
     CONVERTZMATRIXTOSDF,
     CONVERTJOBDETAILS,
-    CUREGAUSSIANJOB,
     // analyze data in the output/log
     ANALYSEOUTPUT,
     ANALYSEGAUSSIANOUTPUT, 
@@ -52,6 +51,9 @@ public enum TaskID
     EVALUATENWCHEMOUTPUT, //TODO-gg to to use generic EVALUATEJOB with detection of type
     EVALUATEGENERICOUTPUT, //TODO to del
     EVALUATEJOB, 
+    // Analyze and detect problems, if any, try to solve
+    CUREGAUSSIANJOB,
+    CURENWCHEMJOB,
     // TODO-gg minor tasks to be made agnostic
     EXTRACTGEOMETRIESFROMSPARTANTREE,   //TODO-gg remove: use general purpose job analysis
     EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT, //TODO-gg remove: use general purpose job analysis
