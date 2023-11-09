@@ -37,9 +37,11 @@ public class AspecificOutputAnalyzer extends Worker
 	{
 		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
 		{
-			Terminator.withMsgAndStatus("ERROR: cannot detect the type of "
-					+ "ouput to analyze. Make sure the parameter '" 
-					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.", -1);
+			//TODO-gg log
+			System.err.println("WARNING: cannot detect the type of "
+					+ "output to analyze. Make sure the parameter '" 
+					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
+			return new AspecificOutputAnalyzer();
 		}
 		String fileName = job.getParameter(
         		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
@@ -54,7 +56,7 @@ public class AspecificOutputAnalyzer extends Worker
 					+ ChemSoftConstants.PARJOBOUTPUTFILE 
 					+ "' but does not exist.", -1);
 		}
-		return null;
+		return new AspecificOutputAnalyzer();
 	}
 
 //------------------------------------------------------------------------------
