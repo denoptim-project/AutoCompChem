@@ -34,10 +34,29 @@ public class AtomTupleConstants
 	public static final String KEYONLYBONDED = "ONLYBONDED";
 	
     /**
+     * Keyword used to identify prefixes
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
+    public static final String KEYPREFIX = "PREFIX";
+    
+    /**
+     * Keyword used to identify suffix
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
+    public static final String KEYSUFFIX= "SUFFIX";
+	
+    /**
      * List of default valued keywords recognized in text-like definition of 
      * atom tuple matching rules.
      */
-    public static final String[] DEFAULTVALUEDKEYS = {};
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
+    public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX};
     
     /**
      * List of default value-less keywords recognized in text-like definition of 

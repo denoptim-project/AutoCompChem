@@ -1,0 +1,488 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "start"
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step:2 SP with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "dirData" : [
+            {
+              "reference": "basisdata",
+              "value": "H library lanl2dz_ecp\nC library lanl2dz_ecp\nN library lanl2dz_ecp\nCl library lanl2dz_ecp\nRu library lanl2dz_ecp"
+            }
+          ]
+        },
+        {
+          "name": "ecp",
+          "dirData" : [
+            {
+              "reference": "ecpdata",
+              "value": "Cl library lanl2dz_ecp\nRu library lanl2dz_ecp"
+            }
+          ]
+        },
+        {
+          "name" : "dft",
+          "subDirectives": [
+            {
+              "name": "xc",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "convergence",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "grid",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "fine",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "subDirectives": [
+            {
+              "name": "symmetry",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step3: geometry optimization with DFT - frozen core\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "symmetry",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "constraints",
+          "subDirectives" : [
+            {
+              "name": "enable"
+            }
+          ],
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "freeze-core",
+              "isLoud": false
+            }
+          ],
+          "dirData": 
+          [
+            {
+              "reference": "fixed atoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEATOMTUPLES"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[Ru]([#17])([#17])~[#6;X3]([#1])[#1] prefix:fix atom\n[#6;X4;$([#6]~[Ru])]([#1])([#6;X4]([#1])([#1])[#1])[#6]([#1])[#6;X4]([#1])([#1])[#1] prefix:fix atom\n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "100",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CLEAR"
+            },
+            {
+              "name": "DEFAULT"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step4: geometry optimization with DFT - frozen C-C bond\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+              }
+          ],
+          "subDirectives": [
+            {
+              "name": "symmetry",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "reference": "zcoordconstraints",
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[$([#6]([#1])([#1])[Ru])][Ru] suffix:constant"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "constraints",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "freeze-core",
+              "isLoud": false
+            }
+          ],
+          "subDirectives" : [
+            {
+              "name": "disable"
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "100",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CLEAR"
+            },
+            {
+              "name": "DEFAULT"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step5: Hessian pre-opt\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step6: TS optimization with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+              }
+          ],
+          "subDirectives": [
+            {
+              "name": "symmetry",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "reference": "zcoordconstraints",
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[$([#6]([#1])([#1])[Ru])][Ru]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "stepper",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "100",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "INHESS",
+              "keywords": [
+                {
+                  "reference": "inhess",
+                  "value": "2",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CLEAR"
+            },
+            {
+              "name": "DEFAULT"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "saddle",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step7: final frequencies\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "freq",
+          "subDirectives": [
+            {
+              "name": "animate"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

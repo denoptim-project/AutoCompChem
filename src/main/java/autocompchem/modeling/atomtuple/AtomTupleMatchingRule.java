@@ -128,6 +128,23 @@ public class AtomTupleMatchingRule
      * @param txt the string to be parsed.
      * @param ruleName a unique name used to identify this rule. We do not check
      * for uniqueness.
+     */
+
+    public AtomTupleMatchingRule(String txt, String ruleName)
+    {
+    	this(txt, ruleName, new ArrayList<String>(), new ArrayList<String>());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a rule by parsing a formatted string of text. 
+     * Default keywords that are recognized in the syntax are defined in
+     * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
+     * {@link AtomTupleConstants#DEFAULTVALUELESSKEYS}.
+     * @param txt the string to be parsed.
+     * @param ruleName a unique name used to identify this rule. We do not check
+     * for uniqueness.
      * @param valuedKeywords list of keywords expected to have a value.
      * @param booleanKeywords list of keywords expected to have no value, 
      * i.e., their presence is sufficient to convey meaning.

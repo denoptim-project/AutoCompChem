@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
+import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -208,6 +210,33 @@ public class AnnotatedAtomTupleTest
         assertFalse(tuple.areNeighbors(0, 3));
         assertFalse(tuple.areNeighbors(3, 1)); 
         assertFalse(tuple.areNeighbors(3, 0)); 
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testPrefixSuffix() throws Exception
+    {
+    	final String SUFFIX = "THIS IS THE SUPHPHIX";
+    	final String PREFIX = "PRE fi XXX";
+    	AtomTupleMatchingRule rule = new AtomTupleMatchingRule(
+    			"1 3 5 7 2 4 " 
+    					+ AtomTupleConstants.KEYSUFFIX + ":" + SUFFIX + " " 
+    					+ AtomTupleConstants.KEYPREFIX + ": " + PREFIX, 
+    			"ruleName");
+    	
+    	IAtomContainer mol = builder.newAtomContainer();
+    	for (int i=1; i<10; i++)
+    		mol.addAtom(new Atom(i));
+    	
+    	List<AtomTupleMatchingRule> rules = new ArrayList<AtomTupleMatchingRule>(
+    			Arrays.asList(rule));
+    	List<AnnotatedAtomTuple> tuples = AtomTupleGenerator.createTuples(
+    			mol, rules);
+    	
+    	assertEquals(1,tuples.size());
+    	assertEquals(SUFFIX, tuples.get(0).getSuffix());
+    	assertEquals(PREFIX, tuples.get(0).getPrefix());
     }
     
 //------------------------------------------------------------------------------

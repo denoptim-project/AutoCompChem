@@ -11,8 +11,8 @@ if [[ "$(uname)" == CYGWIN* ]] || [[ "$(uname)" == MINGW* ]] || [[ "$(uname)" ==
 then
     echo Skipping UNIX-only checks
 else
-    n=$(echo $(wc -l t49-mol.nw | awk '{print $1}') - $(grep -n SCF t49-mol.nw | awk -F":" '{print $1}') | bc)
-    m=$(tail -n $n t49-mol.nw | grep -n -m1 END | awk -F":" '{print $1}')
+    n=$(echo $(wc -l t49-mol.nw | awk '{print $1}') - $(grep -n -i "^SCF" t49-mol.nw | awk -F":" '{print $1}') | bc)
+    m=$(tail -n $n t49-mol.nw | grep -n -i -m1 END | awk -F":" '{print $1}')
     tail -n $n t49-mol.nw | head -n $m | grep -i -q "TRIPLET"
     if [ $? != 0 ] ; then
         echo NOT Passed ERROR 4

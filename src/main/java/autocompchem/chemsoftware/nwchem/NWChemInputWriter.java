@@ -72,6 +72,10 @@ import autocompchem.worker.Worker;
 
 public class NWChemInputWriter extends ChemSoftInputWriter
 {
+	/**
+	 * Flag controlling whether we write upper or lower case directive names.
+	 */
+    private boolean dirnamesInUppercase = true;
     
 //-----------------------------------------------------------------------------
 
@@ -101,6 +105,46 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     
 //------------------------------------------------------------------------------
     
+    private void configureToUppercase(CompChemJob ccj)
+    {
+    	// We set the default format for directive names: upper-/lower-case
+    	int numUppercase = 0;
+    	int numTotal = 0;
+    	Iterator<Directive> iter = ccj.directiveIterator();
+    	while (iter.hasNext())
+    	{
+    		Directive d = iter.next();
+    		numTotal++;
+    		if (d.getName().equals(d.getName().toUpperCase()))
+    			numUppercase++;
+    	}
+    	for (Job step : ccj.getSteps())
+    	{
+    		CompChemJob ccStep = (CompChemJob) step;
+    		Iterator<Directive> iter2 = ccStep.directiveIterator();
+        	while (iter2.hasNext())
+        	{
+        		Directive d = iter2.next();
+        		numTotal++;
+        		if (d.getName().equals(d.getName().toUpperCase()))
+        			numUppercase++;
+        	}
+    	}
+    	this.dirnamesInUppercase = numUppercase > (numTotal/2);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private String formatCase(String directiveName)
+    {
+    	if (dirnamesInUppercase)
+    		return directiveName.toUpperCase();
+    	else
+    		return directiveName.toLowerCase();
+    }
+    
+//------------------------------------------------------------------------------
+    
     /**
      * This is the method the encodes the syntax of the NWChem input file for a 
      * single job directive. Here we translate all chem.-software-agnostic 
@@ -115,6 +159,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
         StringBuilder sb = new StringBuilder();
     	
     	String dirName = d.getName();
+    	boolean dirNameIsUpperCase = dirName.equals(dirName.toUpperCase());
         sb.append(dirName).append(" ");
 
         // keywords are appended in the same line as the directive's name
@@ -144,6 +189,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
                 {
             		ids.addAll(tuple.getAtomIDs());
                 }
+            	//
+            	//NB: we print the complementary list here!!!
+            	// TODO-gg change to make switch to complementary optional
+            	//
             	List<String> ranges = StringUtils.makeStringForIndexes(
             			NumberUtils.getComplementaryIndexes(ids, 
             					tuples.get(0).getNumAtoms()), ":", 
@@ -266,7 +315,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				
 			case ZMATRIX:
 				if (!d.getName().toUpperCase().equals("ZMATRIX"))
-					ddLines.add("ZMATRIX");
+					ddLines.add(formatCase("ZMATRIX"));
 				
 				ZMatrix zmat = (ZMatrix) data.getValue();
 				
@@ -347,7 +396,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			            ddLines.add(sbAtom.toString());
 			        }
 			        // Then write the list of variables with initial value
-			        ddLines.add("VARIABLES");
+			        ddLines.add(formatCase("VARIABLES"));
 			        for (int i=0; i<zmat.getZAtomCount(); i++)
 			        {
 			        	ZMatrixAtom zatm = zmat.getZAtom(i);
@@ -362,7 +411,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			        }
 			        
 			        // And finally write the list of constants
-			        ddLines.add("CONSTANTS");
+			        ddLines.add(formatCase("CONSTANTS"));
 			        for (int i=0; i<zmat.getZAtomCount(); i++)
 			        {
 			        	ZMatrixAtom zatm = zmat.getZAtom(i);
@@ -376,11 +425,40 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			        	}
 			        }
 				}
-				if (!d.getName().toUpperCase().equals("ZMATRIX"))
-					ddLines.add("END");
+				if (!d.getName().toUpperCase().equals(formatCase("ZMATRIX")))
+					ddLines.add(formatCase("END"));
 				break;
 
-        	default:
+			case ANNOTATEDATOMTUPLELIST:
+            	AnnotatedAtomTupleList tuples = 
+            		(AnnotatedAtomTupleList) data.getValue();
+        		Set<String> includedLines = new HashSet<String>();
+            	for (AnnotatedAtomTuple tuple : tuples)
+                {
+            		String line = tuple.getPrefix() + " ";
+                	boolean first = true;
+            		for (String idOrRange : StringUtils.makeStringForIndexes(
+            				tuple.getAtomIDs(), ":", 1)) // From 0-based to 1-based)
+    				{
+            			if (first)
+            			{
+            				line = line + idOrRange;
+            			    first = false;
+            			} else {
+            				line = line + " " + idOrRange;
+            			}
+    			
+    				}
+                	line = line + " " + tuple.getSuffix();
+                	if (!includedLines.contains(line))
+                	{
+                		ddLines.add(line);
+                		includedLines.add(line);
+                	}
+                }
+            	break;
+            	
+			default:
         		ddLines = data.getLines();
         		break;
         	}
@@ -436,7 +514,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
                 || dirName.toUpperCase().equals(NWChemConstants.DFTDIR)
                 || dirName.toUpperCase().equals(NWChemConstants.GEOMDIR))
             {
-                lines.add("END");
+            	if (dirNameIsUpperCase)
+            		lines.add("END");
+            	else
+            		lines.add("end");
             }
         }
         return lines;
@@ -645,11 +726,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     			{
     				continue;
     			}
-    			addNewKeyword(ccjStep, NWChemConstants.CHARGEDIR, 
+    			addNewKeyword(ccjStep, formatCase(NWChemConstants.CHARGEDIR), 
     				"value", false, charge);
     		}
     	} else {
-    		addNewKeyword(ccj, NWChemConstants.CHARGEDIR, 
+    		addNewKeyword(ccj, formatCase(NWChemConstants.CHARGEDIR), 
     				"value", false, charge);
     	}
 	}
@@ -697,7 +778,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	
 //------------------------------------------------------------------------------
 	
-	private static void setSpinMultiplicity(CompChemJob ccjStep, String sm)
+	private void setSpinMultiplicity(CompChemJob ccjStep, String sm)
 	{
 		Directive dSCF = ccjStep.getDirective(NWChemConstants.SCFDIR);
 		Directive dDFT = ccjStep.getDirective(NWChemConstants.DFTDIR);
@@ -715,7 +796,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					    + "Unable to guess where "
 						+ "to define spin multiplicity.");
 			}
-			Keyword theory =  task.getFirstKeyword(NWChemConstants.THEORYKW);
+			Keyword theory = task.getFirstKeyword(NWChemConstants.THEORYKW);
 			if (theory == null)
 			{
 				throw new IllegalArgumentException(NWChemConstants.TASKDIR
@@ -736,22 +817,25 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 		}
 		if (useDFT)
 		{
-			addNewKeyword(ccjStep, NWChemConstants.DFTDIR, "mult", true, sm);	
+			addNewKeyword(ccjStep, formatCase(NWChemConstants.DFTDIR), "mult", 
+					true, sm);	
 		} else if (useSCF) 
 		{
-			Directive dirSCF = ccjStep.getDirective(NWChemConstants.SCFDIR);
+			Directive dirSCF = ccjStep.getDirective(formatCase(
+					NWChemConstants.SCFDIR));
 			if (dirSCF==null)
 			{
-				dirSCF = new Directive(NWChemConstants.SCFDIR);
+				dirSCF = new Directive(formatCase(NWChemConstants.SCFDIR));
 				if (Integer.parseInt(sm)-1 < 7)
 				{
 					// NB: here sm-1 is to get the index in the list!
-					dirSCF.addSubDirective(new Directive(
+					dirSCF.addSubDirective(new Directive(formatCase(
 							NWChemConstants.SCFSPINMULT.get(
-									Integer.parseInt(sm)-1)));
+									Integer.parseInt(sm)-1))));
 				} else {
 					// NB: here sm-1 because we need the number of singly occupied orbitals
-					Directive nopenDir = new Directive(NWChemConstants.NOPENDIR);
+					Directive nopenDir = new Directive(
+							formatCase(NWChemConstants.NOPENDIR));
 					nopenDir.addKeyword(new Keyword("value", false, 
 							Integer.parseInt(sm)-1));
 					dirSCF.addSubDirective(nopenDir);
@@ -769,9 +853,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 						return;
 					}
 				}
-				dirSCF.addSubDirective(new Directive(
+				dirSCF.addSubDirective(new Directive(formatCase(
 						NWChemConstants.SCFSPINMULT.get(
-								Integer.parseInt(sm)-1)));
+								Integer.parseInt(sm)-1))));
 			}
 		}
 	}
@@ -790,6 +874,9 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	@Override
 	protected void setChemicalSystem(CompChemJob ccj, List<IAtomContainer> iacs) 
 	{
+		// Just to try to be as consistent as possible wrt upper/lower case
+		configureToUppercase(ccj);
+		
 		CompChemJob innermostJob = (CompChemJob) ccj.getInnermostFirstStep();
 		if (innermostJob.getDirective(NWChemConstants.RESTARTDIR)!=null)
 			return;
@@ -798,7 +885,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				NWChemConstants.GEOMDIR);
 		if (origiGeomDir==null)
 		{
-			origiGeomDir = new Directive(NWChemConstants.GEOMDIR);
+			origiGeomDir = new Directive(formatCase(NWChemConstants.GEOMDIR));
 			innermostJob.addDirective(origiGeomDir);
 		}
 		boolean removeOriginalDir = false;
@@ -826,7 +913,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					NWChemConstants.GEOMDIR);
 			if (dd==null)
 			{
-				dd = new DirectiveData(NWChemConstants.GEOMDIR);
+				dd = new DirectiveData(formatCase(NWChemConstants.GEOMDIR));
 				geomDir.addDirectiveData(dd);
 			}
 			
@@ -887,7 +974,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					NWChemConstants.GEOMDIR);
 			if (origiGeomDirStep==null)
 			{
-				origiGeomDirStep = new Directive(NWChemConstants.GEOMDIR);
+				origiGeomDirStep = new Directive(formatCase(
+						NWChemConstants.GEOMDIR));
 				stepJob.addDirective(origiGeomDirStep);
 			}
 			removeOriginalDir = false;

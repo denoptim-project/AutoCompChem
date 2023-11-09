@@ -184,60 +184,6 @@ public class Constraint extends AnnotatedAtomTuple
     	return hasCurrentValue() ? Double.parseDouble(getValueOfAttribute(
     		    			AtomTupleConstants.KEYCURRENTVALUE)) : null;
     }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * @return the string collecting prefix or an empty string is no prefix
-     * is available.
-     */
-
-    public String getPrefix()
-    {
-    	String value = getValueOfAttribute(ConstraintDefinition.KEYPREFIX);
-    	if (value != null)
-    		return value;
-    	else
-    		return "";
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * @return the string collecting suffix or an empty string is no suffix
-     * is available.
-     */
-
-    public String getSuffix()
-    {
-    	String value = getValueOfAttribute(ConstraintDefinition.KEYSUFFIX);
-    	if (value != null)
-    		return value;
-    	else
-    		return "";
-    }
-    	
-//------------------------------------------------------------------------------
-    
-  	/**
-  	 * Set any optional string marked to be a prefix.
-  	 * @param prefix the string to use as prefix
-  	 */
-  	public void setPrefix(String prefix) 
-  	{
-  		setValueOfAttribute(ConstraintDefinition.KEYPREFIX, prefix);
-  	}
-  	
-//------------------------------------------------------------------------------
-
-  	/**
-  	 * Set any optional string marked to be a suffix.
-  	 * @param suffix the string to use as suffix
-  	 */
-  	public void setSuffix(String suffix) 
-  	{
-  		setValueOfAttribute(ConstraintDefinition.KEYSUFFIX, suffix);
-  	}
 	
 //------------------------------------------------------------------------------
 
@@ -293,9 +239,9 @@ public class Constraint extends AnnotatedAtomTuple
 		}
 		sb.append("], value=").append(hasValue() ? getValue() : "null");
 		sb.append("], prefix=").append(
-				getValueOfAttribute(ConstraintDefinition.KEYPREFIX));
+				getValueOfAttribute(AtomTupleConstants.KEYPREFIX));
 		sb.append("], suffix=").append(
-				getValueOfAttribute(ConstraintDefinition.KEYSUFFIX));
+				getValueOfAttribute(AtomTupleConstants.KEYSUFFIX));
 		sb.append("] ");
 		return sb.toString();
 	}

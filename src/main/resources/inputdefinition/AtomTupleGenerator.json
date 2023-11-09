@@ -13,7 +13,7 @@
   {
     "key": "VALUEDKEYWORDS",
     "type": "<String>",
-    "doc": "Provides a space-separated list of keywords that should be in interpreted as the keys of key:values pairs. The separator bewteen the key and the value can be ':' or '=' and does not need to be specified. If any ':' or '=' is given in the definition of the keyword it will be ignored and threated as part of the keyword. Any word following the separator will be interpreted as part of the value until a word is found that is recognized as a keyword."
+    "doc": "Provides a space-separated list of keywords that should be in interpreted as the keys of key:value pairs. The separator bewteen the key and the value can be ':' or '=' and does not need to be specified. If any ':' or '=' is given in the definition of the keyword it will be ignored and threated as part of the keyword. Any word following the separator will be interpreted as part of the value until a word is found that is recognized as a keyword. By default the following keywords are recognized and can be used without explicitly adding them as new VALUEDKEYWORDS:\n --> 'Prefix=<text with spaces>' to specify a text to be placed before the list of atom tupla.\n --> 'Suffix=<text with spaces>' to specify text to be placed after the list of atom tupla)."
   },
   {
     "key": "BOOLEANKEYWORDS",
@@ -23,7 +23,7 @@
   {
     "key": "SMARTS",
     "type": "<String>",
-    "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as a single SMARTS until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as SMARTS. The order of the SMARTS i retained."
+    "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as a single SMARTS until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as SMARTS. The order of the SMARTS is retained."
   },
   {
     "key": "ATOMIDS",

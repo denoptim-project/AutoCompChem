@@ -340,6 +340,60 @@ public class AnnotatedAtomTuple implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
+     * @return the string collecting prefix or an empty string is no prefix
+     * is available.
+     */
+
+    public String getPrefix()
+    {
+    	String value = getValueOfAttribute(AtomTupleConstants.KEYPREFIX);
+    	if (value != null)
+    		return value;
+    	else
+    		return "";
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the string collecting suffix or an empty string is no suffix
+     * is available.
+     */
+
+    public String getSuffix()
+    {
+    	String value = getValueOfAttribute(AtomTupleConstants.KEYSUFFIX);
+    	if (value != null)
+    		return value;
+    	else
+    		return "";
+    }
+    	
+//------------------------------------------------------------------------------
+    
+  	/**
+  	 * Set any optional string marked to be a prefix.
+  	 * @param prefix the string to use as prefix
+  	 */
+  	public void setPrefix(String prefix) 
+  	{
+  		setValueOfAttribute(AtomTupleConstants.KEYPREFIX, prefix);
+  	}
+  	
+//------------------------------------------------------------------------------
+
+  	/**
+  	 * Set any optional string marked to be a suffix.
+  	 * @param suffix the string to use as suffix
+  	 */
+  	public void setSuffix(String suffix) 
+  	{
+  		setValueOfAttribute(AtomTupleConstants.KEYSUFFIX, suffix);
+  	}
+    
+//------------------------------------------------------------------------------
+
+    /**
      * @return the table defining the which atom is connected to which other one
      * in terms of their atom indexes.
      */

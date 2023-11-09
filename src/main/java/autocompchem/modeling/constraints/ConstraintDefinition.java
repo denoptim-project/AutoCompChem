@@ -35,15 +35,6 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
      * from the initial position of the identified atoms.
      */
     public static final String KEYNOINTCOORD = "NOTANIC";
-    /**
-     * Keyword used to identify prefixes
-     */
-    public static final String KEYPREFIX = "PREFIX";
-    
-    /**
-     * Keyword used to identify suffix
-     */
-    public static final String KEYSUFFIX= "SUFFIX";
     
 	/**
 	 * Keywords that expect values and are used to annotate constraints.
@@ -51,7 +42,8 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/ConstraintsGenerator.json.
 	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
-			KEYVALUES, KEYPREFIX, KEYSUFFIX);
+			KEYVALUES, AtomTupleConstants.KEYPREFIX, 
+			AtomTupleConstants.KEYSUFFIX);
 
 	/**
 	 * Keywords that do not expect values and are used to annotate constraints.
@@ -103,7 +95,7 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
 
     public String getPrefix()
     {
-        return getValueOfAttribute(KEYPREFIX);
+        return getValueOfAttribute(AtomTupleConstants.KEYPREFIX);
     }
     
 //------------------------------------------------------------------------------
@@ -114,7 +106,7 @@ public class ConstraintDefinition extends AtomTupleMatchingRule
 
     public String getSuffix()
     {
-        return getValueOfAttribute(KEYSUFFIX);
+        return getValueOfAttribute(AtomTupleConstants.KEYSUFFIX);
     }
     
 //------------------------------------------------------------------------------

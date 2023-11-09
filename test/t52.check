@@ -11,12 +11,12 @@ if [ $? != 0 ] ; then
   exit -1
 fi
 
-if ! $(grep -A179 VARIABLES t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*CONSTANTS[[:space:]]*$"); then
+if ! $(grep -A179 -i VARIABLES t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*CONSTANTS[[:space:]]*$"); then
   echo NOT Passed ERROR 3
   exit -1
 fi
 
-if ! $(grep -A6 CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*end[[:space:]]*$"); then
+if ! $(grep -A6 -i CONSTANTS t52-mol.nw | tail -n 1 | grep -q -i "^[[:space:]]*end[[:space:]]*$"); then
   echo NOT Passed ERROR 4
   exit -1
 fi
@@ -51,19 +51,19 @@ if [ $? != 0 ] ; then
   exit -1
 fi
 
-grep -A6 CONSTANTS t52-mol.nw | grep -q "^[[:space:]]*ang7[[:space:]]*112.8.......[[:space:]]*$"
+grep -A6 -i CONSTANTS t52-mol.nw | grep -q "^[[:space:]]*ang7[[:space:]]*112.8.......[[:space:]]*$"
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 11
   exit -1
 fi
 
-grep -A6 CONSTANTS t52-mol.nw | grep -q "^[[:space:]]*tor2[[:space:]]*33.1.......[[:space:]]*$"
+grep -A6 -i CONSTANTS t52-mol.nw | grep -q "^[[:space:]]*tor2[[:space:]]*33.1.......[[:space:]]*$"
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 12
   exit -1
 fi
 
-grep -A6 CONSTANTS t52-mol.nw | grep -q "^[[:space:]]*dst.[[:space:]]*2.4.......[[:space:]]*$"
+grep -A6 -i CONSTANTS t52-mol.nw | grep -q "^[[:space:]]*dst.[[:space:]]*2.4.......[[:space:]]*$"
 if [ $? != 0 ] ; then
   echo NOT Passed ERROR 13
   exit -1
