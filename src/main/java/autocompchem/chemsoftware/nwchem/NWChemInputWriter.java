@@ -974,9 +974,13 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					NWChemConstants.GEOMDIR);
 			if (origiGeomDirStep==null)
 			{
+				continue;
+				// Do not add empty 'geometry' directives
+				/*
 				origiGeomDirStep = new Directive(formatCase(
 						NWChemConstants.GEOMDIR));
 				stepJob.addDirective(origiGeomDirStep);
+				*/
 			}
 			removeOriginalDir = false;
 			for (int id=0; id<iacs.size(); id++)

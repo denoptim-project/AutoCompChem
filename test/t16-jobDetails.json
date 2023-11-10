@@ -119,28 +119,6 @@
           ]
         },
         {
-          "name": "geometry",
-          "keywords": [
-            {
-              "reference": "adjust",
-              "value": "adjust",
-              "isLoud": false
-            }
-          ],
-          "subDirectives": [
-            {
-              "name": "symmetry",
-              "keywords": [
-                {
-                  "reference": "pointgroup",
-                  "value": "c1",
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
           "name": "constraints",
           "subDirectives" : [
             {
@@ -232,16 +210,6 @@
               }
           ],
           "subDirectives": [
-            {
-              "name": "symmetry",
-              "keywords": [
-                {
-                  "reference": "pointgroup",
-                  "value": "c1",
-                  "isLoud": false
-                }
-              ]
-            },
             {
               "name": "ZCOORD",
               "dirData": [
@@ -368,16 +336,6 @@
               }
           ],
           "subDirectives": [
-            {
-              "name": "symmetry",
-              "keywords": [
-                {
-                  "reference": "pointgroup",
-                  "value": "c1",
-                  "isLoud": false
-                }
-              ]
-            },
             {
               "name": "ZCOORD",
               "dirData": [
