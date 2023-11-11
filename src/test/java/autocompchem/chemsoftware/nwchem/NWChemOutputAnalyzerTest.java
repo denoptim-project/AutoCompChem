@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 
 public class NWChemOutputAnalyzerTest 
@@ -21,9 +21,9 @@ public class NWChemOutputAnalyzerTest
 		File nwchemLogFile = new File(classLoader.getResource(
 				"chemSoft_output_examples/nwchem.log").getFile());
 		
-      	ChemSoftOutputAnalyzer csoa = ChemSoftReaderWriterFactory.getInstance()
+      	ChemSoftOutputReader csoa = ChemSoftReaderWriterFactory.getInstance()
       			.makeOutputReaderInstance(nwchemLogFile);
-      	assertTrue(csoa instanceof NWChemOutputAnalyzer);
+      	assertTrue(csoa instanceof NWChemOutputReader);
     }
   
 //------------------------------------------------------------------------------

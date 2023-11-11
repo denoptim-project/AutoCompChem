@@ -27,17 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
-import autocompchem.chemsoftware.nwchem.NWChemOutputAnalyzer;
-import autocompchem.chemsoftware.orca.OrcaOutputAnalyzer;
-import autocompchem.chemsoftware.xtb.XTBOutputAnalyzer;
+import autocompchem.chemsoftware.gaussian.GaussianOutputReader;
+import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
+import autocompchem.chemsoftware.orca.OrcaOutputReader;
+import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.files.FileFingerprint;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
 
 /**
  * A factory to create software-specific instances of 
- * {@link ChemSoftOutputAnalyzer} and {@link ChemSoftInputWriter}.
+ * {@link ChemSoftOutputReader} and {@link ChemSoftInputWriter}.
  * The specific software is defined by the context, e.g., by a log file
  * that should be read, or a declaration of which output reader one wants, or
  * by a declaration of which software an input should be made for.
@@ -53,11 +53,11 @@ public final class ChemSoftReaderWriterFactory
 	/**
 	 * The collection of known output readers. Note that since each reader 
 	 * declares an input writer implementation (via the 
-	 * {@link ChemSoftOutputAnalyzer#getChemSoftInputWriter()}), 
+	 * {@link ChemSoftOutputReader#getChemSoftInputWriter()}), 
 	 * this is effectively also a registry of input writers.
 	 */
-	private static Map<String, ChemSoftOutputAnalyzer> knownOutputReaders = 
-			new HashMap<String, ChemSoftOutputAnalyzer>();
+	private static Map<String, ChemSoftOutputReader> knownOutputReaders = 
+			new HashMap<String, ChemSoftOutputReader>();
 
 	/**
 	 * Singleton instance of this class
@@ -73,18 +73,18 @@ public final class ChemSoftReaderWriterFactory
 	 */
 	private ChemSoftReaderWriterFactory()
 	{
-		this.registerOutputReader(new NWChemOutputAnalyzer());
-		this.registerOutputReader(new GaussianOutputAnalyzer());
-		this.registerOutputReader(new OrcaOutputAnalyzer());
-		this.registerOutputReader(new OrcaOutputAnalyzer());
-		this.registerOutputReader(new XTBOutputAnalyzer());
+		this.registerOutputReader(new NWChemOutputReader());
+		this.registerOutputReader(new GaussianOutputReader());
+		this.registerOutputReader(new OrcaOutputReader());
+		this.registerOutputReader(new OrcaOutputReader());
+		this.registerOutputReader(new XTBOutputReader());
 	}
 
 //-----------------------------------------------------------------------------
 
 	/**
 	 * Returns the singleton instance of this class, i.e., the sole factory of
-	 * {@link ChemSoftOutputAnalyzer}s and {@link ChemSoftInputWriter}
+	 * {@link ChemSoftOutputReader}s and {@link ChemSoftInputWriter}
 	 * that can be configured and used.
 	 * @return the singleton instance.
 	 */
@@ -106,7 +106,7 @@ public final class ChemSoftReaderWriterFactory
 	 * @throws FileNotFoundException if the file is not found.
 	 */
 	 
-	public ChemSoftOutputAnalyzer makeOutputReaderInstance(File file) 
+	public ChemSoftOutputReader makeOutputReaderInstance(File file) 
 			throws FileNotFoundException
 	{
 		String detectedSoftwareName = detectOutputFormat(file);
@@ -121,7 +121,7 @@ public final class ChemSoftReaderWriterFactory
 
 	/**
 	 * Identifies the software that generated the file or file structure based
-	 * on the list of registered {@link ChemSoftOutputAnalyzer}s.
+	 * on the list of registered {@link ChemSoftOutputReader}s.
 	 * @param file the output to read. Note it can be a file or a folder.
 	 * @return the name of the software or null if the identification was not
 	 * successful.
@@ -154,27 +154,27 @@ public final class ChemSoftReaderWriterFactory
 //------------------------------------------------------------------------------
 
 	/**
-	 * Constructs a new instance of the {@link ChemSoftOutputAnalyzer} dedicated
+	 * Constructs a new instance of the {@link ChemSoftOutputReader} dedicated
 	 * to the given software identifier.
 	 * @param softwareName
 	 * @return the software-specific instance, or <code>null</code> if 
 	 * no software-specific implementation is registered for the given 
 	 * identifier.
 	 */
-	public ChemSoftOutputAnalyzer makeOutputReaderInstance(String softwareName)
+	public ChemSoftOutputReader makeOutputReaderInstance(String softwareName)
 	{
 		if (!knownOutputReaders.containsKey(softwareName))
 		{
 			return null;
 		}
-		ChemSoftOutputAnalyzer target = knownOutputReaders.get(softwareName);
+		ChemSoftOutputReader target = knownOutputReaders.get(softwareName);
 		String readerName = target.getClass().getName();
-		ChemSoftOutputAnalyzer csoa = null;
+		ChemSoftOutputReader csoa = null;
 		ClassLoader classLoader = getClass().getClassLoader();
 		try {
             @SuppressWarnings("unchecked")
-			Class<? extends ChemSoftOutputAnalyzer> c = 
-            		(Class<? extends ChemSoftOutputAnalyzer>) classLoader
+			Class<? extends ChemSoftOutputReader> c = 
+            		(Class<? extends ChemSoftOutputReader>) classLoader
             			.loadClass(readerName);
             
             csoa = instantiateOutputReader(c);
@@ -194,15 +194,15 @@ public final class ChemSoftReaderWriterFactory
 	 * @param c the class of the object to instantiate.
 	 * @return the instance of the given class.
 	 */
-	private ChemSoftOutputAnalyzer instantiateOutputReader(
-			Class<? extends ChemSoftOutputAnalyzer> c)
+	private ChemSoftOutputReader instantiateOutputReader(
+			Class<? extends ChemSoftOutputReader> c)
 	{
-		ChemSoftOutputAnalyzer csoa = null;
+		ChemSoftOutputReader csoa = null;
 		try {
 	        for (@SuppressWarnings("rawtypes") Constructor constructor : 
 	        	c.getConstructors()) 
 	        {
-	        	csoa = (ChemSoftOutputAnalyzer) constructor.newInstance();
+	        	csoa = (ChemSoftOutputReader) constructor.newInstance();
 	        }
         } catch (InstantiationException 
         		| IllegalAccessException 
@@ -298,25 +298,25 @@ public final class ChemSoftReaderWriterFactory
 
 	/**
 	 * Adds to the registry of known output readers. Note that 
-	 * {@link ChemSoftOutputAnalyzer#getChemSoftInputWriter()} define a precise 
+	 * {@link ChemSoftOutputReader#getChemSoftInputWriter()} define a precise 
 	 * relation between a software-specific implementation of 
-	 * {@link ChemSoftOutputAnalyzer} and the corresponding software-specific
+	 * {@link ChemSoftOutputReader} and the corresponding software-specific
 	 * implementation of {@link ChemSoftInputWriter}. Thus, by registering the 
-	 * {@link ChemSoftOutputAnalyzer} for a software, you are effectively 
+	 * {@link ChemSoftOutputReader} for a software, you are effectively 
 	 * registering also the {@link ChemSoftInputWriter} for that same software.
 	 * @param exampleReader the worker to register.
 	 */
 	public synchronized void registerOutputReader(Object exampleReader)
 	{
-		if (exampleReader instanceof ChemSoftOutputAnalyzer)
+		if (exampleReader instanceof ChemSoftOutputReader)
 		{
-			ChemSoftOutputAnalyzer csoa = (ChemSoftOutputAnalyzer) exampleReader;
+			ChemSoftOutputReader csoa = (ChemSoftOutputReader) exampleReader;
 			knownOutputReaders.put(csoa.getSoftwareID(), csoa);
 		} else {
 			//TODO-gg: log warning
 			System.err.println("Registration of output reader has failed "
 					+ "because the given object is not an instance of "
-					+ ChemSoftOutputAnalyzer.class.getSimpleName() 
+					+ ChemSoftOutputReader.class.getSimpleName() 
 					+ ". Ignoting reader '" + exampleReader.toString() + "'");
 		}
 	}
@@ -330,9 +330,9 @@ public final class ChemSoftReaderWriterFactory
 	//TODO-gg change type of arg to template
 	public synchronized void deregisterOutputReader(Object reader)
 	{
-		if (reader instanceof ChemSoftOutputAnalyzer)
+		if (reader instanceof ChemSoftOutputReader)
 		{
-			ChemSoftOutputAnalyzer csoa = (ChemSoftOutputAnalyzer) reader;
+			ChemSoftOutputReader csoa = (ChemSoftOutputReader) reader;
 			knownOutputReaders.remove(csoa.getSoftwareID());
 		}
 	}

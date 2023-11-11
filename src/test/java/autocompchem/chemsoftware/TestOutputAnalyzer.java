@@ -39,7 +39,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  *
  */
-class TestOutputAnalyzer extends ChemSoftOutputAnalyzer
+class TestOutputAnalyzer extends ChemSoftOutputReader
 {
 	public static final String IDVAL = "12@4%oi598";
 	

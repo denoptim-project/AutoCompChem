@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 
 public class XtbOutputAnalyzerTest 
@@ -24,12 +24,12 @@ public class XtbOutputAnalyzerTest
 		File logFile = new File(classLoader.getResource(
 				"chemSoft_output_examples/xtb_output/log").getFile());
 		
-      	assertTrue(b.makeOutputReaderInstance(logFile) instanceof XTBOutputAnalyzer);
+      	assertTrue(b.makeOutputReaderInstance(logFile) instanceof XTBOutputReader);
       	
 		File outputFolder = new File(classLoader.getResource(
 				"chemSoft_output_examples/xtb_output/log").getFile());
 
-      	assertTrue(b.makeOutputReaderInstance(outputFolder) instanceof XTBOutputAnalyzer);
+      	assertTrue(b.makeOutputReaderInstance(outputFolder) instanceof XTBOutputReader);
     }
   
 //------------------------------------------------------------------------------

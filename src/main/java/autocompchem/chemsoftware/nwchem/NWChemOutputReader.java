@@ -17,7 +17,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
@@ -35,11 +35,11 @@ import autocompchem.worker.Worker;
  * Reader for NWChem output data files. This class implements all
  * the software specific features that are needed to extract information
  * from the output of NWChem. The rest of the functionality is in the superclass
- * {@link ChemSoftOutputAnalyzer}.
+ * {@link ChemSoftOutputReader}.
  * 
  * @author Marco Foscato
  */
-public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
+public class NWChemOutputReader extends ChemSoftOutputReader
 {
 	
 //------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
 
   	@Override
   	public Worker makeInstance(Job job) {
-  		return new NWChemOutputAnalyzer();
+  		return new NWChemOutputReader();
   	}
     
 //-----------------------------------------------------------------------------

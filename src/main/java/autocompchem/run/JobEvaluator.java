@@ -30,7 +30,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -664,9 +664,9 @@ public class JobEvaluator extends Worker
 		
 		// Prepare a worker that parses data and searches for strings that may
 		// be requested by the perceptron.
-		ChemSoftOutputAnalyzer outputParser;
+		ChemSoftOutputReader outputParser;
 		try {
-			outputParser = (ChemSoftOutputAnalyzer) 
+			outputParser = (ChemSoftOutputReader) 
 					WorkerFactory.createWorker(analysisParams, this.getMyJob());
 		} catch (ClassNotFoundException e) {
 			throw new Error("Unable to make worker for " 
@@ -701,7 +701,7 @@ public class JobEvaluator extends Worker
 		@SuppressWarnings("unchecked")
 		Map<TxtQuery,List<String>> matchesByTQ = (Map<TxtQuery,List<String>>)
 				exposedByAnalzer.getNamedData(
-						ChemSoftOutputAnalyzer.MATCHESTOTEXTQRYSFORPERCEPTION)
+						ChemSoftOutputReader.MATCHESTOTEXTQRYSFORPERCEPTION)
 				.getValue();
 		for (TxtQuery tq : matchesByTQ.keySet())
 			p.collectPerceptionScoresForTxtMatchers(tq, matchesByTQ.get(tq));

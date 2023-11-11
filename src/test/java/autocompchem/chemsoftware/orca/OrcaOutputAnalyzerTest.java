@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 
 public class OrcaOutputAnalyzerTest 
@@ -22,7 +22,7 @@ public class OrcaOutputAnalyzerTest
 				"chemSoft_output_examples/orca.log").getFile());
 		
       	assertTrue(ChemSoftReaderWriterFactory.getInstance().makeOutputReaderInstance(
-      			logFile) instanceof OrcaOutputAnalyzer);
+      			logFile) instanceof OrcaOutputReader);
     }
   
 //------------------------------------------------------------------------------

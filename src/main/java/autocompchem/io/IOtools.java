@@ -52,7 +52,7 @@ import com.google.gson.JsonSyntaxException;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
@@ -552,7 +552,7 @@ public class IOtools
     /**
      * Read a molecular structure file that might contain multiple structures.
      * Accepts SDF, XYZ files, or any output file that can be analyzed by 
-     * any registered implementation of {@link ChemSoftOutputAnalyzer}.
+     * any registered implementation of {@link ChemSoftOutputReader}.
      * @param file file to be read
      * @return all the chemical objects into an <code>ArrayList</code>
      */
@@ -570,7 +570,7 @@ public class IOtools
             mols = IOtools.readXYZ(file);
         } else {
         	try {
-				ChemSoftOutputAnalyzer analyzer = builder.makeOutputReaderInstance(file);
+				ChemSoftOutputReader analyzer = builder.makeOutputReaderInstance(file);
 				if (analyzer!=null)
 				{
 					ParameterStorage params = new ParameterStorage();

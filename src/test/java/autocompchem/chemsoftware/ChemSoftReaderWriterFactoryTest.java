@@ -27,7 +27,7 @@ import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.chemsoftware.nwchem.NWChemOutputAnalyzer;
+import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
 import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
 import autocompchem.worker.Worker;
@@ -39,7 +39,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-public class ChemSoftOutputAnalyzerBuilderTest 
+public class ChemSoftReaderWriterFactoryTest 
 {
 	private static String fileSeparator = System.getProperty("file.separator");
 	private static String NL = System.getProperty("line.separator");
@@ -70,12 +70,12 @@ public class ChemSoftOutputAnalyzerBuilderTest
 //------------------------------------------------------------------------------
 	  
     @Test
-    public void testMakeAnalyzerInstanceFromName() throws Exception
+    public void testMakeInstanceFromName() throws Exception
     {
     	TestOutputAnalyzer example = new TestOutputAnalyzer();
     	ChemSoftReaderWriterFactory.getInstance().registerOutputReader(example);
         		
-    	ChemSoftOutputAnalyzer csoa = ChemSoftReaderWriterFactory.getInstance()
+    	ChemSoftOutputReader csoa = ChemSoftReaderWriterFactory.getInstance()
     			.makeOutputReaderInstance(example.getSoftwareID());
     	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
     }
@@ -83,7 +83,7 @@ public class ChemSoftOutputAnalyzerBuilderTest
 //------------------------------------------------------------------------------
 
     @Test
-    public void testMakeAnalyzerInstanceForFile() throws Exception
+    public void testMakeInstanceForFile() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
     	
@@ -106,7 +106,7 @@ public class ChemSoftOutputAnalyzerBuilderTest
 		IOtools.writeTXTAppend(logFile, query + NL + "more"
 				+ NL + "and more text", false);
 		
-      	ChemSoftOutputAnalyzer csoa = b.makeOutputReaderInstance(logFile);
+		ChemSoftOutputReader csoa = b.makeOutputReaderInstance(logFile);
       	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
       	
 
@@ -156,19 +156,6 @@ public class ChemSoftOutputAnalyzerBuilderTest
       	csoa = b.makeOutputReaderInstance(tempDir);
       	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
     }   
-
-//------------------------------------------------------------------------------
-  	  
-    @Test
-    public void testMakeInputWriterInstanceFromName() throws Exception
-    {
-      	TestOutputAnalyzer example = new TestOutputAnalyzer();
-      	ChemSoftReaderWriterFactory.getInstance().registerOutputReader(example);
-          		
-      	ChemSoftInputWriter csip = ChemSoftReaderWriterFactory.getInstance()
-      			.makeInstanceInputWriter(example.getSoftwareID());
-      	assertEquals(TestInputWriter.IDVAL, csip.outFile.getName());
-    }
     
 //------------------------------------------------------------------------------
 

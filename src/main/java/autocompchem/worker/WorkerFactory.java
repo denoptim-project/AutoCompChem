@@ -23,19 +23,19 @@ import java.util.Map;
 
 import autocompchem.chemsoftware.AspecificInputWriter;
 import autocompchem.chemsoftware.AspecificOutputAnalyzer;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
-import autocompchem.chemsoftware.gaussian.GaussianOutputAnalyzer;
+import autocompchem.chemsoftware.gaussian.GaussianOutputReader;
 import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
-import autocompchem.chemsoftware.nwchem.NWChemOutputAnalyzer;
+import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
-import autocompchem.chemsoftware.orca.OrcaOutputAnalyzer;
+import autocompchem.chemsoftware.orca.OrcaOutputReader;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
-import autocompchem.chemsoftware.xtb.XTBOutputAnalyzer;
+import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
@@ -113,7 +113,7 @@ public final class WorkerFactory
         registerType(new DummyObjectsHandler());
         registerType(new ForceFieldEditor());
         registerType(new GaussianInputWriter());
-        registerType(new GaussianOutputAnalyzer());
+        registerType(new GaussianOutputReader());
         registerType(new JobEvaluator());
         registerType(new MolecularComparator());
         registerType(new MolecularGeometryEditor());
@@ -123,11 +123,11 @@ public final class WorkerFactory
         registerType(new MolecularReorderer());
         registerType(new MolecularSorter());
         registerType(new NWChemInputWriter());
-        registerType(new NWChemOutputAnalyzer());
+        registerType(new NWChemOutputReader());
         registerType(new OrcaInputWriter());
-        registerType(new OrcaOutputAnalyzer());
+        registerType(new OrcaOutputReader());
         registerType(new XTBInputWriter());
-        registerType(new XTBOutputAnalyzer());
+        registerType(new XTBOutputReader());
         registerType(new SpartanInputWriter());
         registerType(new SpartanOutputHandler());
         registerType(new VibModuleOutputHandler());
@@ -182,7 +182,7 @@ public final class WorkerFactory
 			System.err.println("Registration of " + Worker.class.getSimpleName() 
 					+ " has failed because the given example object is not an "
 					+ "instance of "
-					+ ChemSoftOutputAnalyzer.class.getSimpleName() 
+					+ ChemSoftOutputReader.class.getSimpleName() 
 					+ ". Not registering task '" + taskId + "'");
 		}
 	}

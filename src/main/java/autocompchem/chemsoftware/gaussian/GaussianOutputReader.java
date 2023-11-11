@@ -16,7 +16,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
@@ -34,11 +34,11 @@ import autocompchem.worker.Worker;
  * the software specific features that are needed to extract information
  * from the output of Gaussian jobs. 
  * The rest of the functionality is in the superclass
- * {@link ChemSoftOutputAnalyzer}.
+ * {@link ChemSoftOutputReader}.
  * 
  * @author Marco Foscato
  */
-public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
+public class GaussianOutputReader extends ChemSoftOutputReader
 {
     
 //------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
 
     @Override
     public Worker makeInstance(Job job) {
-        return new GaussianOutputAnalyzer();
+        return new GaussianOutputReader();
     }
     
 //-----------------------------------------------------------------------------

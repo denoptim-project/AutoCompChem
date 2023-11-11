@@ -17,7 +17,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
@@ -34,11 +34,11 @@ import autocompchem.worker.Worker;
  * Reader for Orca output data files. This class implements all
  * the software specific features that are needed to extract information
  * from the output of Orca. The rest of the functionality is in the superclass
- * {@link ChemSoftOutputAnalyzer}.
+ * {@link ChemSoftOutputReader}.
  * 
  * @author Marco Foscato
  */
-public class OrcaOutputAnalyzer extends ChemSoftOutputAnalyzer
+public class OrcaOutputReader extends ChemSoftOutputReader
 {
     
 //------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public class OrcaOutputAnalyzer extends ChemSoftOutputAnalyzer
 
     @Override
     public Worker makeInstance(Job job) {
-        return new OrcaOutputAnalyzer();
+        return new OrcaOutputReader();
     }
     
 //-----------------------------------------------------------------------------

@@ -68,7 +68,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-public abstract class ChemSoftOutputAnalyzer extends Worker
+public abstract class ChemSoftOutputReader extends Worker
 {   
     /**
      * Name of the log (commonly referred to as the "output") file from 
@@ -167,7 +167,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 
 	@Override
 	public String getKnownInputDefinition() {
-		return "inputdefinition/ChemSoftOutputHandler.json";
+		return "inputdefinition/ChemSoftOutputReader.json";
 	}
 
 //-----------------------------------------------------------------------------
@@ -192,7 +192,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 
         if (verbosity > 0)
             System.out.println("Adding parameters to "
-            		+ "ChemSoftwareOutputHandler");
+            		+ this.getClass().getSimpleName());
 
         //Get and check the input file (which is an output from a comp.chem. 
         // software)
@@ -1328,7 +1328,7 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
      * of result is associated with automated perception, it is often 
      * needed to search for strings in a log file. Such 
      * {@link TxtQuery}s are embedded in the situations and by giving 
-     * the situations here we make the analyzer aware of the
+     * the situations here we make the reader aware of the
      * strings that should be searched in the files. 
      * This way we search them while parsing the 
      * log/output, thus avoiding to read the file one or more times after the 

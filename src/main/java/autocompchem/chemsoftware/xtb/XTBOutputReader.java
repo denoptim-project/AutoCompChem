@@ -12,7 +12,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
@@ -28,11 +28,11 @@ import autocompchem.worker.Worker;
  * Reader for XTB output data files. This class implements all
  * the software specific features that are needed to extract information
  * from the output of XTB. The rest of the functionality is in the superclass
- * {@link ChemSoftOutputAnalyzer}.
+ * {@link ChemSoftOutputReader}.
  * 
  * @author Marco Foscato
  */
-public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
+public class XTBOutputReader extends ChemSoftOutputReader
 {
     
 //------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
 
     @Override
     public Worker makeInstance(Job job) {
-        return new XTBOutputAnalyzer();
+        return new XTBOutputReader();
     }
     
 //-----------------------------------------------------------------------------

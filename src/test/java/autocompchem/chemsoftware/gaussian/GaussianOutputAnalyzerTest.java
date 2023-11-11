@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 
 public class GaussianOutputAnalyzerTest 
@@ -22,7 +22,7 @@ public class GaussianOutputAnalyzerTest
 				"chemSoft_output_examples/g16.log").getFile());
 		
       	assertTrue(ChemSoftReaderWriterFactory.getInstance().makeOutputReaderInstance(
-      			logFile) instanceof GaussianOutputAnalyzer);
+      			logFile) instanceof GaussianOutputReader);
     }
   
 //------------------------------------------------------------------------------
