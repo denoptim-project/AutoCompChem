@@ -454,6 +454,8 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
         			perceptionTQMatches));
         	exposeOutputData(new NamedData(ChemSoftConstants.JOBOUTPUTDATA, 
         			stepsData));
+        	exposeOutputData(new NamedData(ChemSoftConstants.SOFTWAREID, 
+        			getSoftwareID()));
 /*
 //TODO
             String refName = "";
@@ -1274,6 +1276,23 @@ public abstract class ChemSoftOutputAnalyzer extends Worker
 	 * readable by this class.
 	 */
 	protected abstract Set<FileFingerprint> getOutputFingerprint();
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Return a string that identifies the software that has generated the 
+	 * output that the concrete implementations of this class can analyze.
+	 */
+	protected abstract String getSoftwareID();
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Return the implementation of {@link ChemSoftInputWriter} that is meant 
+	 * to prepare input files for the software the output of which can be 
+	 * analyzed by a concrete implementation of this class.
+	 */
+	protected abstract ChemSoftInputWriter getChemSoftInputWriter();
     
 //------------------------------------------------------------------------------
     

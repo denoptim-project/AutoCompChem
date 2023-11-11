@@ -15,7 +15,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
@@ -283,6 +285,20 @@ public class GaussianOutputAnalyzer extends ChemSoftOutputAnalyzer
 		conditions.add(new FileFingerprint(".", 10, 
 				"^ Entering Gaussian System, Link 0=.*$"));
 		return conditions;
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	protected String getSoftwareID() {
+		return "Gaussian";
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	protected ChemSoftInputWriter getChemSoftInputWriter() {
+		return new GaussianInputWriter();
 	}
 
 //------------------------------------------------------------------------------

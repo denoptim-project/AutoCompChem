@@ -53,7 +53,7 @@ import com.google.gson.JsonSyntaxException;
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
-import autocompchem.chemsoftware.ChemSoftOutputAnalyzerBuilder;
+import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.molecule.MolecularUtils;
@@ -558,6 +558,9 @@ public class IOtools
      */
     public static List<IAtomContainer> readMultiMolFiles(File file)
     {
+		ChemSoftReaderWriterFactory builder = 
+				ChemSoftReaderWriterFactory.getInstance();
+		
         List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
         if (file.getName().endsWith(".sdf"))
         {
@@ -567,9 +570,7 @@ public class IOtools
             mols = IOtools.readXYZ(file);
         } else {
         	try {
-        		ChemSoftOutputAnalyzerBuilder builder =
-        				new ChemSoftOutputAnalyzerBuilder();
-				ChemSoftOutputAnalyzer analyzer = builder.makeInstance(file);
+				ChemSoftOutputAnalyzer analyzer = builder.makeOutputReaderInstance(file);
 				if (analyzer!=null)
 				{
 					ParameterStorage params = new ParameterStorage();
@@ -624,8 +625,7 @@ public class IOtools
                         + " In this version, you can read multiple "
                         + "chemical entities only from SDF, XYZ files, or "
                         + "any output from any of these: " 
-                        + ChemSoftOutputAnalyzerBuilder
-                        	.CHEMSOFTWITHINTERNALANALYZER.values(),-1);
+                        + builder.getRegisteredSoftwareIDs(),-1);
         }
         return mols;
     }

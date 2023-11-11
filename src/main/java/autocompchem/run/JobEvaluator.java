@@ -523,8 +523,10 @@ public class JobEvaluator extends Worker
 				exposeOutputData(new NamedData(EVALUATEDJOB,
 						NamedDataType.JOB, jobBeingEvaluated));
 				
-				// In case this is a stand-alone CURE-job we do the action here,
-				// but this is has limited capability: it cannot restart the job.
+				// In case this is a stand-alone CURE-type job, we do the 
+				// action triggered by the jobBeingEvaluated here,
+				// but this is has limited capability: it cannot restart the job,
+				// but it can prepare a new input.
 				if (standaloneCureJob)
 				{
 					ActionApplier.performAction(s.getReaction(), myJob, 
@@ -545,8 +547,13 @@ public class JobEvaluator extends Worker
 						break;
 					
 					}
+					
 					makeInputPars.setParameter(WorkerConstants.PARTASK, 
-							task.toString());
+							TaskID.PREPAREINPUT.toString());
+					makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
+							exposedOutputCollector.getNamedData(
+									ChemSoftConstants.SOFTWAREID)
+							.getValueAsString());
 					makeInputPars.setParameter(
 							ChemSoftConstants.PARJOBDETAILSOBJ, 
 							NamedDataType.JOB, jobBeingEvaluated);
@@ -558,6 +565,20 @@ public class JobEvaluator extends Worker
 							params.getParameter(ChemSoftConstants.PAROUTFILE)
 								.getValueAsString());
 					}
+					
+					/*
+					 * TODO-gg: do like you have done for the output analyzer:
+					 * - use the PREPAREINPUT task that is agnostic
+					 * - that will call the AspecificOutputAnalyzer via WorkerFactory.createInstance()
+					 * - AspecificOutputAnalyzer.makeInstance/jobToDoByInstance)
+					 * - ChemSoftOutputAnalyzerBuilder.makeInstance(outputFile) makes 
+					 *   the instance based on the type detected in the output
+					 *  - The workerFactory initialises the worked soororuetky
+					 *  - the performTask of the Worker (a concrete impl) 
+					 *  does the actual analysis of the output.
+					 */
+					
+					
 					ChemSoftInputWriter worker;
 					try {
 						worker = (ChemSoftInputWriter) 
@@ -660,6 +681,12 @@ public class JobEvaluator extends Worker
 				outputParser.getNormalTerminationFlag()));
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.JOBOUTPUTDATA));
+		// This is already in the JOBOUTPUTDATA but it is convenient to expose 
+		// it even further to simplify access to this pivotal bit of 
+		// information.
+		exposeOutputData(exposedByAnalzer.getNamedData(
+				ChemSoftConstants.SOFTWAREID));
+		
 		lastJobStepId = outputParser.getStepsFound()-1;
 		/*
 		This is done for any job type, so outside of this method

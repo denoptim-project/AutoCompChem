@@ -282,7 +282,8 @@ public abstract class Worker implements IOutputExposer
     
     /**
      * Makes an instance of the specific implementation possibly adapting
-     * the instance to the given arguments.
+     * the instance to the given argument.
+     * @param job the job meant to be done by the instance of worker to make.
      */
     public abstract Worker makeInstance(Job job);
       

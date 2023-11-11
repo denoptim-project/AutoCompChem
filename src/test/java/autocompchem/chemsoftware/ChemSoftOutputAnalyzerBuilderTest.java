@@ -34,7 +34,7 @@ import autocompchem.worker.Worker;
 
 
 /**
- * Unit Test for {@link ChemSoftOutputAnalyzerBuilder}.
+ * Unit Test for {@link ChemSoftReaderWriterFactory}.
  * 
  * @author Marco Foscato
  */
@@ -52,32 +52,38 @@ public class ChemSoftOutputAnalyzerBuilderTest
     @Test
     public void testRegisterAnalyzer() throws Exception
     {
-    	ChemSoftOutputAnalyzerBuilder b = new ChemSoftOutputAnalyzerBuilder();
-    	int defaultSize = b.getAnalyzableSoftwareNames().size();
+    	// This is needed to make sure we do not have the test analyzer in the 
+    	// registry, which could happen if any other unit test that registers 
+    	// that analyzer is run before this one.
+    	ChemSoftReaderWriterFactory.getInstance().deregisterOutputReader(
+    			new TestOutputAnalyzer());
+    	
+    	int defaultSize = 
+    			ChemSoftReaderWriterFactory.getRegisteredSoftwareIDs().size();
     		
-    	b = new ChemSoftOutputAnalyzerBuilder()
-        		.registerAnalyzer("123a", new TestOutputAnalyzer())
-        		.registerAnalyzer("123b", new TestOutputAnalyzer())
-        		.registerAnalyzer("123", new TestOutputAnalyzer());
-    	assertEquals(3+defaultSize, b.getAnalyzableSoftwareNames().size());
+    	ChemSoftReaderWriterFactory.getInstance().registerOutputReader(
+    			new TestOutputAnalyzer());
+    	assertEquals(1+defaultSize, 
+    			ChemSoftReaderWriterFactory.getRegisteredSoftwareIDs().size());
     }
 
 //------------------------------------------------------------------------------
 	  
     @Test
-    public void testMakeInstanceFromName() throws Exception
+    public void testMakeAnalyzerInstanceFromName() throws Exception
     {
-    	ChemSoftOutputAnalyzerBuilder b = new ChemSoftOutputAnalyzerBuilder()
-        		.registerAnalyzer("123", new TestOutputAnalyzer());
+    	TestOutputAnalyzer example = new TestOutputAnalyzer();
+    	ChemSoftReaderWriterFactory.getInstance().registerOutputReader(example);
         		
-    	ChemSoftOutputAnalyzer csoa = b.makeInstance("123");
+    	ChemSoftOutputAnalyzer csoa = ChemSoftReaderWriterFactory.getInstance()
+    			.makeOutputReaderInstance(example.getSoftwareID());
     	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
     }
     
 //------------------------------------------------------------------------------
 
     @Test
-    public void testMakeInstanceForFile() throws Exception
+    public void testMakeAnalyzerInstanceForFile() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
     	
@@ -90,8 +96,9 @@ public class ChemSoftOutputAnalyzerBuilderTest
     	analyzer.outputFingerprints.add(
     			new FileFingerprint(".", 3, " more stuff we'll not find"));
     	
-      	ChemSoftOutputAnalyzerBuilder b = new ChemSoftOutputAnalyzerBuilder()
-          		.registerAnalyzer("MySoftware", analyzer);
+      	ChemSoftReaderWriterFactory b = 
+      			ChemSoftReaderWriterFactory.getInstance();
+      	b.registerOutputReader(analyzer);
           		
       	// Simple log/output file
     	String logFilePath = tempDir.getAbsolutePath() + fileSeparator + "log";
@@ -99,7 +106,7 @@ public class ChemSoftOutputAnalyzerBuilderTest
 		IOtools.writeTXTAppend(logFile, query + NL + "more"
 				+ NL + "and more text", false);
 		
-      	ChemSoftOutputAnalyzer csoa = b.makeInstance(logFile);
+      	ChemSoftOutputAnalyzer csoa = b.makeOutputReaderInstance(logFile);
       	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
       	
 
@@ -109,7 +116,7 @@ public class ChemSoftOutputAnalyzerBuilderTest
 		IOtools.writeTXTAppend(logFile2, NL + NL + NL + NL + query + " more"
 				+ NL + "and more text", false);
 		
-      	csoa = b.makeInstance(logFile2);
+      	csoa = b.makeOutputReaderInstance(logFile2);
       	assertNull(csoa);
       	
      
@@ -119,7 +126,7 @@ public class ChemSoftOutputAnalyzerBuilderTest
 		IOtools.writeTXTAppend(logFile3, query + " and more"
 				+ NL + "and more text", false);
 		
-      	csoa = b.makeInstance(logFile3);
+      	csoa = b.makeOutputReaderInstance(logFile3);
       	assertNull(csoa);
       	
       	
@@ -133,22 +140,35 @@ public class ChemSoftOutputAnalyzerBuilderTest
 
     	analyzer.outputFingerprints.add(
     			new FileFingerprint("./*/*.log", 2, "^" + query2+ "$"));
-      	csoa = b.makeInstance(dir);
+      	csoa = b.makeOutputReaderInstance(dir);
       	assertNull(csoa); // Log exists but is in wrong location
       	
     	analyzer.outputFingerprints.add(
     			new FileFingerprint("./*/*/*.out", 2, "^" + query2+ "$"));
-      	csoa = b.makeInstance(dir);
+      	csoa = b.makeOutputReaderInstance(dir);
       	assertNull(csoa); // Log exists but has wrong name
       	
-      	csoa = b.makeInstance(dir);
+      	csoa = b.makeOutputReaderInstance(dir);
       	assertNull(csoa); //Log exists but we use wrong root
 
     	analyzer.outputFingerprints.add(
     			new FileFingerprint("./*/*/*.log", 2, "^" + query2+ "$"));
-      	csoa = b.makeInstance(tempDir);
+      	csoa = b.makeOutputReaderInstance(tempDir);
       	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
     }   
+
+//------------------------------------------------------------------------------
+  	  
+    @Test
+    public void testMakeInputWriterInstanceFromName() throws Exception
+    {
+      	TestOutputAnalyzer example = new TestOutputAnalyzer();
+      	ChemSoftReaderWriterFactory.getInstance().registerOutputReader(example);
+          		
+      	ChemSoftInputWriter csip = ChemSoftReaderWriterFactory.getInstance()
+      			.makeInstanceInputWriter(example.getSoftwareID());
+      	assertEquals(TestInputWriter.IDVAL, csip.outFile.getName());
+    }
     
 //------------------------------------------------------------------------------
 

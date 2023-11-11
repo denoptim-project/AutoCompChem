@@ -21,6 +21,7 @@ package autocompchem.worker;
 import java.util.HashMap;
 import java.util.Map;
 
+import autocompchem.chemsoftware.AspecificInputWriter;
 import autocompchem.chemsoftware.AspecificOutputAnalyzer;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
@@ -95,7 +96,8 @@ public final class WorkerFactory
 	
 	private WorkerFactory() 
 	{
-		// Here we add all the workers those implemented in AAudoCompChem        
+		// Here we add all the workers those implemented in AudoCompChem      
+        registerType(new AspecificInputWriter());      
         registerType(new AspecificOutputAnalyzer());
         registerType(new DummyWorker()); //This is only for tests
         registerType(new AtomClashAnalyzer());

@@ -16,7 +16,9 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
+import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
@@ -443,6 +445,20 @@ public class NWChemOutputAnalyzer extends ChemSoftOutputAnalyzer
   		conditions.add(new FileFingerprint(".", 10, 
   			"^\\s*Northwest Computational Chemistry Package \\(NWChem\\) .*$"));
   		return conditions;
+  	}
+
+//------------------------------------------------------------------------------
+
+  	@Override
+  	protected String getSoftwareID() {
+  		return "NWChem";
+  	}
+
+//------------------------------------------------------------------------------
+
+  	@Override
+  	protected ChemSoftInputWriter getChemSoftInputWriter() {
+  		return new NWChemInputWriter();
   	}
 
 //-----------------------------------------------------------------------------

@@ -11,6 +11,7 @@ import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
@@ -405,6 +406,20 @@ public class XTBOutputAnalyzer extends ChemSoftOutputAnalyzer
   		conditions.add(new FileFingerprint("./*", 10, 
   				"^\\s*\\|\\s*x T B\\s*\\|\\s*$"));
   		return conditions;
+  	}
+
+//------------------------------------------------------------------------------
+
+  	@Override
+  	protected String getSoftwareID() {
+  		return "xTB";
+  	}
+
+//------------------------------------------------------------------------------
+
+  	@Override
+  	protected ChemSoftInputWriter getChemSoftInputWriter() {
+  		return new XTBInputWriter();
   	}
   	
 //-----------------------------------------------------------------------------

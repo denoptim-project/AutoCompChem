@@ -72,11 +72,14 @@ public enum TaskID
     MODIFYGEOMETRY,          
     MUTATEATOMS,             
     PARAMETRIZEFORCEFIELD,
+    // Prepare the input file /files of third parties software package
+    PREPAREINPUT,
     PREPAREINPUTGAUSSIAN,    
     PREPAREINPUTNWCHEM,
     PREPAREINPUTORCA,
     PREPAREINPUTXTB,        
     PREPAREINPUTSPARTAN,  
+    //
     PRINTZMATRIX,            
     PRUNEMOLECULES,           
     REMOVEDUMMYATOMS,         

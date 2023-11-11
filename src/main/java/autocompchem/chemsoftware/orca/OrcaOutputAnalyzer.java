@@ -16,6 +16,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputAnalyzer;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
@@ -458,6 +459,20 @@ public class OrcaOutputAnalyzer extends ChemSoftOutputAnalyzer
 		return conditions;
 	}
 
+//------------------------------------------------------------------------------
+
+	@Override
+	protected String getSoftwareID() {
+		return "Orca";
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	protected ChemSoftInputWriter getChemSoftInputWriter() {
+		return new OrcaInputWriter();
+	}
+		
 //-----------------------------------------------------------------------------
     
 }

@@ -568,6 +568,12 @@ public class ChemSoftConstants
 	 * the geometries.
 	 */
 	public static final String EXTERNALFILEGEOMETRIES = "EXTERNALGEOMSFILE";
+
+	/**
+	 * Name of data containing an identifier of a software, i.e., the
+	 * computational chemistry software that created some output data.
+	 */
+	public static final String SOFTWAREID = "SOFTWAREID";
 	
 
 }

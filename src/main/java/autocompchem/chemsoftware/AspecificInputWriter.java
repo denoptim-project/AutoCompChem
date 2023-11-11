@@ -28,15 +28,24 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
+import autocompchem.worker.WorkerFactory;
 
 /**
- * Aspecific reader for log/output data files. This is a wrapper that includes
- * both detection of the type of data to read and creation of a suitable 
- * {@link Worker} to read and analyze that data.
+ * Software-agnostic wrapper for classes able to write input files for comp.
+ * chem. software packages (i.e., implementations of {@link ChemSoftInputWriter}.
+ * This class allows to perform software agnostic operations directly.
+ * For example, getting the help message for any implementation of 
+ * {@link ChemSoftInputWriter}.  It also allows to make a concrete 
+ * implementation of {@link ChemSoftInputWriter} based on any hint on the 
+ * identity of the comp. chem. software package for which the input has to be 
+ * prepared.
  * 
  * @author Marco Foscato
  */
-public class AspecificOutputAnalyzer extends Worker
+
+//TODO-gg refactor to agnostic
+public class AspecificInputWriter extends Worker
 {
 	
 //------------------------------------------------------------------------------
@@ -44,7 +53,7 @@ public class AspecificOutputAnalyzer extends Worker
   	@Override
 	public Set<TaskID> getCapabilities() {
 		return Collections.unmodifiableSet(new HashSet<TaskID>(
-                        Arrays.asList(TaskID.ANALYSEOUTPUT)));
+                        Arrays.asList(TaskID.PREPAREINPUT)));
 	}
 
 //------------------------------------------------------------------------------
@@ -52,28 +61,33 @@ public class AspecificOutputAnalyzer extends Worker
 	@Override
 	public Worker makeInstance(Job job) 
 	{
-		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
+		String taskStr = job.getParameter(WorkerConstants.PARTASK)
+				.getValueAsString();
+    	TaskID taskID = TaskID.getFromString(taskStr);
+    	if (taskID != TaskID.PREPAREINPUT)
+    	{
+			//TODO-gg log
+			System.err.println("WARNING: attempt to make a " 
+					+ ChemSoftInputWriter.class.getSimpleName() 
+					+ " for task '" + taskStr + "', but this is not allowed.");
+			return new AspecificInputWriter();
+    	}
+    	if (!job.hasParameter(ChemSoftConstants.SOFTWAREID))
 		{
 			//TODO-gg log
 			System.err.println("WARNING: cannot detect the type of "
-					+ "output to analyze. Make sure the parameter '" 
-					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
-			return new AspecificOutputAnalyzer();
+					+ "software for which to prepare an input. "
+					+ "Make sure the parameter '" 
+					+ ChemSoftConstants.SOFTWAREID + "' is given.");
+			return new AspecificInputWriter();
 		}
-		String fileName = job.getParameter(
-        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
+    	
+    	String softwareID = job.getParameter(ChemSoftConstants.SOFTWAREID)
+    			.getValueAsString();
+    	
 		ChemSoftReaderWriterFactory builder = 
 				ChemSoftReaderWriterFactory.getInstance();
-		
-		try {
-			return builder.makeOutputReaderInstance(new File(fileName));
-		} catch (FileNotFoundException e) {
-			Terminator.withMsgAndStatus("ERROR: log/output file '"
-					+ fileName + "' is defined by '" 
-					+ ChemSoftConstants.PARJOBOUTPUTFILE 
-					+ "' but does not exist.", -1);
-		}
-		return new AspecificOutputAnalyzer();
+		return builder.makeInstanceInputWriter(softwareID);
 	}
 
 //------------------------------------------------------------------------------
@@ -90,7 +104,7 @@ public class AspecificOutputAnalyzer extends Worker
 
 	@Override
 	public String getKnownInputDefinition() {
-		return "inputdefinition/ChemSoftOutputHandler.json";
+		return "inputdefinition/ChemSoftInputWriter.json";
 	}
 
 //-----------------------------------------------------------------------------

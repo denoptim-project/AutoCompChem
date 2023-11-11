@@ -22,7 +22,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.files.FileFingerprint;
 import autocompchem.run.Job;
@@ -32,75 +35,78 @@ import autocompchem.worker.Worker;
 /**
  * A dummy implementation that is meant only to for testing the 
  * {@link ChemSoftReaderWriterFactory}. This class does not do any real
- * analysis, but offers utilities to ensure this implementation is the one built
- * by the builder. It is also tunable with respect to the definition of the
- * {@link FileFingerprint} that identifies a readable file structure.
+ * preparation of input files, but offers utilities to ensure this 
+ * implementation is the one built by the builder.
  * 
  * @author Marco Foscato
  *
  */
-class TestOutputAnalyzer extends ChemSoftOutputAnalyzer
+class TestInputWriter extends ChemSoftInputWriter
 {
 	public static final String IDVAL = "12@4%oi598";
 	
-	public Set<FileFingerprint> outputFingerprints = 
-			new HashSet<FileFingerprint>();
+//------------------------------------------------------------------------------
+	
+	public TestInputWriter()
+	{
+		outFile = new File(IDVAL);
+	}
+
+//------------------------------------------------------------------------------
+
+	@Override
+	protected File manageOutputFileStructure(List<IAtomContainer> mols, 
+			File output) {
+		return null;
+	}
+
+//------------------------------------------------------------------------------
+	
+	@Override
+	protected void setSystemSpecificNames(CompChemJob ccj) {
+	}
+
+//------------------------------------------------------------------------------
+	
+	@Override
+	protected void setChargeIfUnset(CompChemJob ccj, String charge, 
+			boolean omitIfPossible) {
+	}
+
+//------------------------------------------------------------------------------
+	
+	@Override
+	protected void setSpinMultiplicityIfUnset(CompChemJob ccj, String sm, 
+			boolean omitIfPossible) {
+	}
+
+//------------------------------------------------------------------------------
+	
+	@Override
+	protected void setChemicalSystem(CompChemJob ccj, 
+			List<IAtomContainer> iacs) {
+	}
+
+//------------------------------------------------------------------------------
+	
+	@Override
+	protected List<String> getTextForInput(CompChemJob job) {
+		return null;
+	}
 	
 //------------------------------------------------------------------------------
-
-	/**
-	 * Constructor that sets the name of the superclass field to a hard-coded
-	 * value. this way, we can test the content of that field to see if we have
-	 * indeed created an instance of this very class using this constructor.
-	 */
-	public TestOutputAnalyzer() 
-	{
-		// We do not really read anything, we just put an identifier in
-		// the data structure of this analyzer.
-		inFile = new File(IDVAL);
-	}
-		
-//------------------------------------------------------------------------------
-
-    @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.ANALYSEOUTPUT)));
-    }
-
-//------------------------------------------------------------------------------
-
-    @Override
-    public Worker makeInstance(Job job) {
-        return new TestOutputAnalyzer();
-    }
-    
-//------------------------------------------------------------------------------
-
+	
 	@Override
-	protected void readLogFile(LogReader reader) throws Exception {
+	public Set<TaskID> getCapabilities() {
+        return new HashSet<TaskID>();
 	}
 
 //------------------------------------------------------------------------------
-
+	
 	@Override
-	protected Set<FileFingerprint> getOutputFingerprint() {
-		return outputFingerprints;
-	}
-
-//------------------------------------------------------------------------------
-
-	@Override
-	protected String getSoftwareID() {
-		return "Tester";
-	}
-
-//------------------------------------------------------------------------------
-
-	@Override
-	protected ChemSoftInputWriter getChemSoftInputWriter() {
+	public Worker makeInstance(Job job) {
 		return new TestInputWriter();
 	}
-	
+
 //------------------------------------------------------------------------------
 }
