@@ -1,17 +1,21 @@
 #!/bin/bash
 
-if ! grep -q -i "C.*-3\.164005.*-10\.435414.*0\.005939" t63-nwc.nw ; then
+if ! grep -q -i "C .*-3\.164005.*-10\.435414.*0\.005939" t63-nwc.nw ; then
   echo NOT Passed ERROR 1 ; exit -1
 fi
 
-if ! grep -q -i "H79.*\-4\.618275.*\-1\.819653.*\-0\.756420" t63-nwc.nw ; then
+if ! grep -q -i "H .*\-4\.618275.*\-1\.819653.*\-0\.756420" t63-nwc.nw ; then
   echo NOT Passed ERROR 2 ; exit -1
 fi
 
 n=$(wc -l t63-nwc.nw | awk '{print $1}')
-if [ "$n" != 123 ] ; then
+if [ "$n" != 121 ] ; then
   echo NOT Passed ERROR 3
   exit -1
+fi
+
+if grep -q -i "^geometry.*[a-z,A-Z].*" t63-nwc.nw ; then
+  echo NOT Passed ERROR 4 ; exit -1
 fi
 
 if grep -q 'Termination status: 0' t63.log ; then 

@@ -78,8 +78,12 @@ public abstract class ChemSoftInputWriter extends Worker
     /**
      * Geometry names
      */
-    protected List<String> geomNames = new ArrayList<String>(
-    		Arrays.asList("geometry"));
+    protected List<String> geomNames = new ArrayList<String>();
+    
+    /**
+     * Flag controlling if we use atom tags or not.
+     */
+    protected boolean useAtomTags = false;
 
     /**
      * Pathname root for output files (input for comp.chem. software).
@@ -231,6 +235,11 @@ public abstract class ChemSoftInputWriter extends Worker
             String value = params.getParameter(
             		ChemSoftConstants.PARMULTIGEOMMODE).getValueAsString();
             this.multiGeomMode = MultiGeomMode.valueOf(value.toUpperCase());
+        }
+        
+        if (params.contains(ChemSoftConstants.PARUSEATMTAGS))
+        {
+        	this.useAtomTags = true;
         }
         
         if (params.contains(ChemSoftConstants.PARGEOMNAMES))

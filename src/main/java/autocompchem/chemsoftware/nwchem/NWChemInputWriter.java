@@ -927,7 +927,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				taskParams = new ParameterStorage();
 				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
 						ChemSoftConstants.PARGEOMETRY);
-				taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
+				if (useAtomTags)
+					taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
 				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, 
 						NamedDataType.INTEGER, id);
 				dd.setTaskParams(taskParams);
@@ -937,8 +938,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					geomDir.addKeyword(new Keyword(NWChemConstants.GEOMNAMEKW, 
 							false, geomNames.get(id)));
 				} else {
-					geomDir.addKeyword(new Keyword(NWChemConstants.GEOMNAMEKW, 
-							false, MolecularUtils.getNameOrID(iacs.get(id))));
+					String name = MolecularUtils.getNameIDOrNull(iacs.get(id));
+					if (name!=null)
+						geomDir.addKeyword(new Keyword(
+								NWChemConstants.GEOMNAMEKW, false, name));
 				}
 				if (!usingOriginalDir)
 					innermostJob.addDirective(geomDir);

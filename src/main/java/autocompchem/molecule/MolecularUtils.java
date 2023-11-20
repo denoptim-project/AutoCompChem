@@ -391,21 +391,52 @@ public class MolecularUtils
         return true;
     }
 
+  //-----------------------------------------------------------------------------
+
+    /**
+     * Looks for a property referring to the name or ID of the molecule.
+     * Recognized cdk:Title,ChEBI ID,TTD DRUGID.
+     * @param mol molecule
+     * @return the name or ID if any. Otherwise <code>null</code>.
+     */
+
+    public static String getNameIDOrNull(IAtomContainer mol)
+    {
+    	return getNameOrID(mol, null);
+    }
+    
+ //-----------------------------------------------------------------------------
+
+    /**
+     * Looks for a property referring to the name or ID of the molecule.
+     * Recognized cdk:Title,ChEBI ID,TTD DRUGID.
+     * @param mol molecule
+     * @return the name or ID if any. Otherwise, 'noname'.
+     */
+
+    public static String getNameOrID(IAtomContainer mol)
+    {
+    	return getNameOrID(mol, "noname");
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
      * Looks for a property referring to the name or ID of the molecule.
      * Recognized cdk:Title,ChEBI ID,TTD DRUGID.
      * @param mol molecule
-     * @return the name or ID if any. Otherwise 'noname'
+     * @param defaultName the default value to give to the result.
+     * @return the name or ID if any common way to name the atom container is
+     * used. Otherwise, the value given as default will
+     * be returned.
      */
 
-    public static String getNameOrID(IAtomContainer mol)
+    public static String getNameOrID(IAtomContainer mol, String defaultName)
     {
     	String name = mol.getTitle();
     	if (name==null || name.equals("") || name.isBlank())
     	{
-    		name = "noname";
+    		name = defaultName;
 	        //ChEBI
 	        try {
 	            name = mol.getProperty("ChEBI ID").toString();
