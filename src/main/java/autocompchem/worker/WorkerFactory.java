@@ -332,11 +332,12 @@ public final class WorkerFactory
     	}
     	
     	Worker worker = knownWorkers.get(task).makeInstance(job);
-    	worker.myJob = job;
-    	
-    	if (job != null)
-    	{
-    	    worker.setDataCollector(job.getOutputCollector());
+    	if (worker!=null)
+    	{	worker.myJob = job;
+    		if (job != null)
+	    	{
+	    	    worker.setDataCollector(job.getOutputCollector());
+	    	}
     	}
     	
     	return worker;

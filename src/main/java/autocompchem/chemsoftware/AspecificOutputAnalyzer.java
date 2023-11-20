@@ -70,7 +70,15 @@ public class AspecificOutputAnalyzer extends Worker
 				ChemSoftReaderWriterFactory.getInstance();
 		
 		try {
-			return builder.makeOutputReaderInstance(new File(fileName));
+			Worker w = builder.makeOutputReaderInstance(new File(fileName));
+			if (w==null)
+			{
+				Terminator.withMsgAndStatus("ERROR: log/output file '"
+						+ fileName + "' could not be understood as any "
+						+ "log/output "
+						+ "that can be read by AutoCompChem.", -1);	
+			}
+			return w;
 		} catch (FileNotFoundException e) {
 			Terminator.withMsgAndStatus("ERROR: log/output file '"
 					+ fileName + "' is defined by '" 
