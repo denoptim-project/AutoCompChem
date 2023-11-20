@@ -54,6 +54,7 @@ public enum TaskID
     // Analyze and detect problems, if any, try to solve
     CUREGAUSSIANJOB,
     CURENWCHEMJOB,
+    //TODO-gg make agnostic CUREJOB task
     // TODO-gg minor tasks to be made agnostic
     EXTRACTGEOMETRIESFROMSPARTANTREE,   //TODO-gg remove: use general purpose job analysis
     EXTRACTLASTGEOMETRYFROMNWCHEMOUTPUT, //TODO-gg remove: use general purpose job analysis
@@ -61,7 +62,7 @@ public enum TaskID
     EXTRACTOPTGEOMSFROMNWCHEMOUTPUT,    //TODO-gg remove: use general purpose job analysis
     EXTRACTTRAJECTORYFROMNWCHEMOUTPUT,  //TODO-gg remove: use general purpose job analysis
     EXTRACTVIBMODULEFORCECONSTANTS,     
-    FIXANDRESTARTGAUSSIAN,   //TODO remove
+    FIXANDRESTARTGAUSSIAN,   //TODO removve
     FIXANDRESTARTNWCHEM,  //TODO to CURENWCHEMJOB
     GENERATEATOMLABELS,
     GENERATEATOMTUPLES,

@@ -1,22 +1,28 @@
 #!/bin/bash
 
-#TODO-gg reactivate once code is made agnostic
-echo Skipped: to upgrade to agnostic approach
-exit 0
-
-if [ ! -f t62-lastgeom.xyz ]; then 
+if [ ! -f t62-lastgeom ]; then 
   echo NOT Passed Error 0 
   exit -1
 fi
 
-if ! grep -q -i "C.*-3\.164005.*-10\.435414.*0\.005939" t62-lastgeom.xyz ; then
+if ! head -n 1 t62-lastgeom | grep -q "^71" ; then
   echo NOT Passed ERROR 1
   exit -1
 fi
 
-n=$(wc -l t62-lastgeom.xyz | awk '{print $1}')
-if [ "$n" != 81 ] ; then
+if ! grep -q -i "Ru\\s*\-0\.00198.*\\s*0\.93055.*\\s*0\.08053" t62-lastgeom ; then
   echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if ! grep -q -i "O\\s*0\.53823.*\\s*1\.17203.*\\s*4\.38063" t62-lastgeom ; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+n=$(wc -l t62-lastgeom | awk '{print $1}')
+if [ "$n" != 73 ] ; then
+  echo NOT Passed ERROR 4
   exit -1
 fi
 

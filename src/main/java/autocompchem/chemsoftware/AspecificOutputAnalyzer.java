@@ -36,6 +36,9 @@ import autocompchem.worker.Worker;
  * 
  * @author Marco Foscato
  */
+
+//TODO-gg remane to reader
+
 public class AspecificOutputAnalyzer extends Worker
 {
 	
@@ -60,6 +63,7 @@ public class AspecificOutputAnalyzer extends Worker
 					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
 			return new AspecificOutputAnalyzer();
 		}
+		
 		String fileName = job.getParameter(
         		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
 		ChemSoftReaderWriterFactory builder = 
