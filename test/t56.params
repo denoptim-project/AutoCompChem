@@ -2,8 +2,9 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 1
-TASK: FixAndRestartNWChem
-INFILE: ../t56-nwc.out
-NewNwFile: restart-t56.pro.nw
-JOBDETAILSFILE: ../t56-jobDetails.json
-NWChemERRORS: ../data/errorsDefAndFix/nwchem6.3
+TASK: CureNWChemJob
+JOBDEFINITION: ../t56-jobDetails.json
+SITUATIONSDBROOT: ../data/knowledgebase/nwchem
+IC-LOGS: ../t56-nwc.out
+#IC-JOBDETAILS: ../t56-jobDetails.json
+PATHNAMEOUTPUT: t56_restart.nw

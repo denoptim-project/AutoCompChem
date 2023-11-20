@@ -5,62 +5,65 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "ecp",
-          "dirData": [
+          "name": "title",
+          "keywords": [
             {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
+              "reference": "title",
+              "value": "\"Step:2 SP with DFT\"",
+              "isLoud": false
             }
           ]
         },
         {
-          "name": "dft",
+          "name": "basis",
+          "dirData" : [
+            {
+        	  "reference": "basisdata",
+        	  "value": "H library lanl2dz_ecp\nC library lanl2dz_ecp\nN library lanl2dz_ecp\nCl library lanl2dz_ecp\nRu library lanl2dz_ecp"
+        	}
+          ]
+        },
+        {
+          "name": "ecp",
+          "dirData" : [
+        	{
+        	  "reference": "ecpdata",
+        	  "value": "Cl library lanl2dz_ecp\nRu library lanl2dz_ecp"
+        	}
+          ]
+        },
+        {
+          "name" : "dft",
           "subDirectives": [
             {
-              "name": "GRID",
+              "name": "xc",
               "keywords": [
                 {
-                  "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
+                  "reference": "functional",
+                  "value": "pbe0",
                   "isLoud": false
                 }
               ]
             },
             {
-              "name": "CONVERGENCE",
+              "name": "convergence",
               "keywords": [
                 {
                   "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
+                  "value": "1e-6"
                 },
                 {
                   "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
+                  "value": "1e-5"
                 }
               ]
             },
             {
-              "name": "XC",
+              "name": "grid",
               "keywords": [
                 {
-                  "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
+                  "reference": "finess",
+                  "value": "fine",
                   "isLoud": false
                 }
               ]
@@ -72,51 +75,13 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "energy"
-              ],
+              "value": "energy",
               "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "title",
-          "keywords": [
-            {
-              "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step:2",
-                "SP",
-                "with",
-                "DFT\""
-              ],
-              "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
             }
           ]
         }
@@ -124,142 +89,26 @@
     },
     {
       "jobType": "CompChemJob",
-      "params": [
-        {
-          "reference": "SPIN_MULTIPLICITY",
-          "value": "2"
-        }
-      ],
       "directives": [
-        {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
-                },
-                {
-                  "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "task",
-          "keywords": [
-            {
-              "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
-              "isLoud": false
-            },
-            {
-              "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
-              "isLoud": false
-            }
-          ]
-        },
         {
           "name": "title",
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step3:",
-                "geometry",
-                "optimization",
-                "with",
-                "DFT",
-                "-",
-                "frozen",
-                "core\""
-              ],
+              "value": "\"Step3: geometry optimization with DFT - frozen core\"",
               "isLoud": false
             }
           ]
         },
         {
-          "name": "basis",
+          "name": "ZCOORD",
           "dirData": [
             {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "SET",
-          "keywords": [
-            {
-              "reference": "geometry:actlist",
+              "reference": "zcoordconstraints",
               "accTaskParams": [
                 {
                   "reference": "TASK",
-                  "value": "GENERATEATOMTUPLES"
+                  "value": "GENERATECONSTRAINTS"
                 },
                 {
                   "reference": "SMARTS",
@@ -268,220 +117,50 @@
               ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "params": [
-        {
-          "reference": "CHARGE",
-          "value": "-26"
-        }
-      ],
-      "directives": [
-        {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
-                },
-                {
-                  "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
         },
         {
           "name": "task",
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "optimize"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
         {
           "name": "title",
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step4:",
-                "geometry",
-                "optimization",
-                "with",
-                "DFT",
-                "-",
-                "frozen",
-                "C-C",
-                "bond\""
-              ],
+              "value": "\"Step4: geometry optimization with DFT - frozen C-C bond\"",
               "isLoud": false
             }
           ]
         },
         {
-          "name": "basis",
+          "name": "ZCOORD",
           "dirData": [
             {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "SET",
-          "keywords": [
-            {
-              "reference": "geometry:actlist",
+              "reference": "zcoordconstraints",
               "accTaskParams": [
                 {
                   "reference": "TASK",
-                  "value": "GENERATEATOMTUPLES"
+                  "value": "GENERATECONSTRAINTS"
                 },
                 {
                   "reference": "SMARTS",
-                  "value": "[#6]@[#14]"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "jobType": "CompChemJob",
-      "directives": [
-        {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
-                },
-                {
-                  "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
-                  "isLoud": false
+                  "value": "[#6]@[#14] onlybonded suffix:constant"
                 }
               ]
             }
@@ -492,64 +171,42 @@
           "keywords": [
             {
               "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
+              "value": "dft",
               "isLoud": false
             },
             {
               "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "saddle"
-              ],
+              "value": "optimize",
               "isLoud": false
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
         {
           "name": "title",
           "keywords": [
             {
               "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step5:",
-                "TS",
-                "optimization",
-                "with",
-                "DFT\""
-              ],
+              "value": "\"Step5: TS optimization with DFT\"",
               "isLoud": false
             }
           ]
         },
         {
-          "name": "basis",
-          "dirData": [
-            {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "unset",
+          "name": "task",
           "keywords": [
             {
-              "reference": "defreeze",
-              "type": "TEXTBLOCK",
-              "value": [
-                "geometry:actlist"
-              ],
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "frequencies",
               "isLoud": false
             }
           ]
@@ -560,85 +217,11 @@
       "jobType": "CompChemJob",
       "directives": [
         {
-          "name": "ecp",
-          "dirData": [
-            {
-              "reference": "ecp",
-              "value": [
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
-            }
-          ]
-        },
-        {
-          "name": "dft",
-          "subDirectives": [
-            {
-              "name": "GRID",
-              "keywords": [
-                {
-                  "reference": "finess",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "fine"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            },
-            {
-              "name": "CONVERGENCE",
-              "keywords": [
-                {
-                  "reference": "energy",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-6"
-                  ]
-                },
-                {
-                  "reference": "density",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "1e-5"
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "XC",
-              "keywords": [
-                {
-                  "reference": "functional",
-                  "type": "TEXTBLOCK",
-                  "value": [
-                    "pbe0"
-                  ],
-                  "isLoud": false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "task",
+          "name": "title",
           "keywords": [
             {
-              "reference": "theory",
-              "type": "TEXTBLOCK",
-              "value": [
-                "dft"
-              ],
-              "isLoud": false
-            },
-            {
-              "reference": "tasktype",
-              "type": "TEXTBLOCK",
-              "value": [
-                "frequencies"
-              ],
+              "reference": "title",
+              "value": "\"Step6: frequencies\"",
               "isLoud": false
             }
           ]
@@ -647,37 +230,22 @@
           "name": "freq",
           "subDirectives": [
             {
-              "name": "ANIMATE"
+              "name": "animate"
             }
           ]
         },
         {
-          "name": "title",
+          "name": "task",
           "keywords": [
             {
-              "reference": "title",
-              "type": "TEXTBLOCK",
-              "value": [
-                "\"Step6:",
-                "frequencies\""
-              ],
+              "reference": "theory",
+              "value": "dft",
               "isLoud": false
-            }
-          ]
-        },
-        {
-          "name": "basis",
-          "dirData": [
+            },
             {
-              "reference": "basis",
-              "value": [
-                "H library lanl2dz_ecp",
-                "C library lanl2dz_ecp",
-                "N library lanl2dz_ecp",
-                "Cl library lanl2dz_ecp",
-                "Ru library lanl2dz_ecp"
-              ],
-              "type": "TEXTBLOCK"
+              "reference": "tasktype",
+              "value": "frequencies",
+              "isLoud": false
             }
           ]
         }

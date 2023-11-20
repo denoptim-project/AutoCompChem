@@ -323,7 +323,7 @@
                   "isLoud": false
                 }
               ]
-            }
+            },
             {
               "name": "maxiter",
               "keywords": [
@@ -333,7 +333,7 @@
                   "isLoud": false
                 }
               ]
-            },
+            }
           ]
         },
         {
