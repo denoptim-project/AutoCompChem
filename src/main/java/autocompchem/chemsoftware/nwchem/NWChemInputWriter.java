@@ -272,22 +272,10 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				break;
 				
 			case IATOMCONTAINER:
-            	boolean useTags = false;
-            	if (data.getTaskParams()!=null 
-            			&& data.getTaskParams().contains(
-            					ChemSoftConstants.PARUSEATMTAGS))
-            	{
-            		useTags = true;
-            	}
 				IAtomContainer mol = (IAtomContainer) data.getValue();
 				for (IAtom atm : mol.atoms())
 				{
 					String atmId = AtomUtils.getSymbolOrLabel(atm);
-					if (useTags)
-					{
-						// Convention is to use 1-based indexing here
-						atmId = atmId + (mol.indexOf(atm)+1);
-					}
 					Point3d p3d = AtomUtils.getCoords3d(atm);
 					ddLines.add(String.format(Locale.ENGLISH," %3s", atmId)
 							+ String.format(Locale.ENGLISH," %10.6f",p3d.x)

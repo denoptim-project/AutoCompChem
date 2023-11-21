@@ -1,33 +1,39 @@
 #!/bin/bash
 
-#TODO-gg: upgrade: reading input from app log/output file
-echo "Skipped: to upgrade!"
-exit 0
-
-
-grep -q -i "File:../t112-nwc.out Steps:1 NormalTerm:false Error:e6.0-AutoZ_failure" t112.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
+if [ ! -f t112.log ]; then
+  echo NOT Passed ERROR 0
+  exit -1
 fi
 
-grep -i -q "^START *blablabla" restart-t112.nw
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 2
-exit -1
+if ! grep -q -i "Situation perceived = e6.0-AutoZ_failure" t112.log; then
+  echo NOT Passed ERROR 1
+  exit -1
 fi
 
-n=$(grep -c "RESTART" restart-t112.nw)
-if [ $n != 0 ] ; then
-echo NOT Passed ERROR 3
-exit -1
+if [ ! -f restart-t112.nw ]; then
+  echo NOT Passed ERROR 2
+  exit -1
 fi
 
-grep -q 'Termination status: 0' t112.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if ! grep -q -i "geometry\\s*noautoz" restart-t112.nw ; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if grep -q -i "^\\s*restart" restart-t112.nw ; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if ! grep -q -i "Ru1\\s*2\.7141.*\\s*\-1\.3069.*\\s*\-0\.6133" restart-t112.nw ; then
+  echo NOT Passed ERROR 5
+  exit -1
+fi
+
+if grep -q -i 'Termination status: 0' t112.log; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 4
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi

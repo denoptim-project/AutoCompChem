@@ -47,6 +47,7 @@ import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
@@ -1231,6 +1232,8 @@ public class Directive implements IDirectiveComponent, Cloneable
             				ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
             	}
             	
+            	boolean useAtomTags = params.contains(ChemSoftConstants.PARUSEATMTAGS);
+            	
             	switch (coordsType)
             	{    
                 	case ZMAT:
@@ -1244,6 +1247,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                         Worker w = WorkerFactory.createWorker(zmatMakerTask,
                         		masterJob);
                         ZMatrixHandler zmh = (ZMatrixHandler) w;
+                        //TODO-gg make it use atom tags upon request
                         ZMatrix zmat = zmh.makeZMatrix();
                         if (params.contains(ZMatrixConstants.SELECTORMODE))
                         {
@@ -1290,6 +1294,10 @@ public class Directive implements IDirectiveComponent, Cloneable
                 	default:
                 	{
                 		IAtomContainer mol = mols.get(geometryId);
+                		if (useAtomTags)
+                		{
+                			mol = MolecularUtils.makeSimpleCopyWithAtomTags(mol);
+                		}
                 		((IValueContainer) dirComp).setValue(mol);
                 		break;
                 	}

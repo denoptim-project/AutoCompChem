@@ -24,10 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
+
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
+
+import autocompchem.molecule.MolecularUtils;
 
 /**
  * Unit Test for atom utilities
@@ -37,6 +44,9 @@ import org.openscience.cdk.interfaces.IAtom;
 
 public class AtomUtilsTest 
 {
+
+	private static IChemObjectBuilder chemBuilder = 
+    		DefaultChemObjectBuilder.getInstance();
 
 //------------------------------------------------------------------------------
 
@@ -79,6 +89,33 @@ public class AtomUtilsTest
     	assertEquals(AtomConstants.ATTACHMENTPOINTLABEL,
     			AtomUtils.getSymbolOrLabel(atp),
     			"Return label for attachment points");
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testGetCoords3d() throws Exception
+    {
+    	IAtom atm = chemBuilder.newAtom();
+    	assertTrue(closeEnough(AtomUtils.getCoords3d(atm), new Point3d(0,0,0)));
+    	
+    	atm.setPoint2d(new Point2d(1.2, 2.3));
+    	assertTrue(closeEnough(AtomUtils.getCoords3d(atm), 
+    			new Point3d(1.2, 2.3,0)));
+    	
+    	atm.setPoint3d(new Point3d(1.2, 2.3, -3.4));
+    	assertTrue(closeEnough(AtomUtils.getCoords3d(atm), 
+    			new Point3d(1.2, 2.3,  -3.4)));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private boolean closeEnough(Point3d pA, Point3d pB)
+    {
+    	if (pA==null | pB==null)
+    		return false;
+    	
+    	return pA.distance(pB) < 0.0002;
     }
     
 //------------------------------------------------------------------------------
