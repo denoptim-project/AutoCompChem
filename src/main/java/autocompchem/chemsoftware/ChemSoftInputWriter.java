@@ -515,8 +515,12 @@ public abstract class ChemSoftInputWriter extends Worker
 		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, 
 				outFileNameRoot, true);
 		
-		// Add atom coordinates to the so-far molecule-agnostic job
-		setChemicalSystem(molSpecJob, mols);
+		// Add atom coordinates to the so-far possible molecule-agnostic job
+		if (useAtomTags)
+			setChemicalSystem(molSpecJob, makeAtomContainersWithAtomTags(mols));
+		else
+			setChemicalSystem(molSpecJob, mols);
+		
 		// We keep a copy of the agnostic chemical system definition in the job 
 		// parameters
 		setChemicalSystemAsJobParam(molSpecJob, mols);
@@ -543,7 +547,7 @@ public abstract class ChemSoftInputWriter extends Worker
 			}
     	}
 		
-		// These calls take care also of the sub-jobs/directives
+		// This call takes care also of the sub-jobs/directives
 		molSpecJob.processDirectives(mols, this.getMyJob());
 		
 		// Ensure a value of charge and spin has been defined
@@ -568,6 +572,19 @@ public abstract class ChemSoftInputWriter extends Worker
 			Gson writer = ACCJson.getWriter();
 			IOtools.writeTXTAppend(jdFileOut, writer.toJson(cleanCCJ), true);
 		}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private List<IAtomContainer> makeAtomContainersWithAtomTags(
+    		List<IAtomContainer> mols)
+    {
+    	List<IAtomContainer> molsWithAtomTags = new ArrayList<IAtomContainer>();
+    	for (IAtomContainer iac : mols)
+    	{
+    		molsWithAtomTags.add(MolecularUtils.makeSimpleCopyWithAtomTags(iac));
+    	}
+    	return molsWithAtomTags;
     }
     
 //------------------------------------------------------------------------------

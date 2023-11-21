@@ -345,15 +345,7 @@ public class AtomUtils
     	} 
     	else if (atm instanceof PseudoAtom) 
     	{
-	    	if (isPsaudoAtmWithLabel(atm,AtomConstants.DUMMYATMLABEL))
-	    	{
-	    		res = AtomConstants.DUMMYATMLABEL;
-	    	}
-	    	else if (isPsaudoAtmWithLabel(atm,
-	    			AtomConstants.ATTACHMENTPOINTLABEL))
-	    	{
-	    		res = AtomConstants.ATTACHMENTPOINTLABEL;
-	    	}
+    		res = ((PseudoAtom) atm).getLabel();
     	}
     	else if (atm instanceof Atom)
     	{
@@ -418,18 +410,14 @@ public class AtomUtils
     public static Point3d getCoords3d(IAtom atom)
     {
         Point3d p3d = new Point3d();
-        try {
-            Point2d atp2d = new Point2d();
-            atp2d = atom.getPoint2d();
-            p3d.x = atp2d.x;
-            p3d.y = atp2d.y;
-            p3d.z = 0.0000;
-        } catch (Throwable t) {
-            Point3d atp3d = new Point3d();
-            atp3d = atom.getPoint3d();
-            p3d.x = atp3d.x;
-            p3d.y = atp3d.y;
-            p3d.z = atp3d.z;            
+        if (atom.getPoint3d()!=null)
+        {
+        	Point3d atp3d = atom.getPoint3d();
+        	p3d = new Point3d(atp3d.x, atp3d.y, atp3d.z);
+        } else if (atom.getPoint2d()!=null)
+        {
+        	Point2d atp2d = atom.getPoint2d();
+        	p3d = new Point3d(atp2d.x, atp2d.y, 0);
         }
         return p3d;
     }

@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
@@ -25,10 +26,13 @@ import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.PseudoAtom;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.geometry.DistanceMatrix;
 
 /**
@@ -39,13 +43,43 @@ import autocompchem.geometry.DistanceMatrix;
 
 public class MolecularUtilsTest 
 {
+
+	private static IChemObjectBuilder chemBuilder = 
+    		DefaultChemObjectBuilder.getInstance();
+	
+//------------------------------------------------------------------------------
+	
+	@Test
+	public void testMakeSimpleCopyWithAtomTags() throws Exception
+	{
+		IAtomContainer mol = chemBuilder.newAtomContainer();
+    	mol.addAtom(new Atom("H"));
+    	mol.addAtom(new Atom("C"));
+    	mol.addAtom(new Atom("O"));
+    	mol.addAtom(new Atom("Ru"));
+    	mol.addAtom(new PseudoAtom("Du"));
+    	mol.addAtom(new PseudoAtom("Xx")); 
+    	
+    	IAtomContainer tagged = MolecularUtils.makeSimpleCopyWithAtomTags(mol);
+    	
+    	assertEquals(mol.getAtomCount(),tagged.getAtomCount());
+    	for (int iAtm=0; iAtm<mol.getAtomCount(); iAtm++)
+    	{
+    		IAtom atm = tagged.getAtom(iAtm);
+    		IAtom origAtm = mol.getAtom(iAtm);
+    		// NB: so far there is only one format for atom tags, so we can
+    		// hard-code the expected tag.
+    		String expectedTag = AtomUtils.getSymbolOrLabel(origAtm)+(iAtm+1);
+    		assertEquals(expectedTag, AtomUtils.getSymbolOrLabel(atm));
+    	}
+	}
 	
 //------------------------------------------------------------------------------
 
 	@Test
 	public void testElementalSymbols() throws Exception
     {
-    	IAtomContainer mol = new AtomContainer();
+		IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("H"));
     	mol.addAtom(new Atom("C"));
     	mol.addAtom(new Atom("O"));
@@ -72,7 +106,7 @@ public class MolecularUtilsTest
 	@Test
 	public void testMinInterelementalBondDistance() throws Exception
     {
-    	IAtomContainer mol = new AtomContainer();
+		IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
     	mol.addAtom(new Atom("C",new Point3d(1.0,0,0)));
     	mol.addAtom(new Atom("C",new Point3d(2.0,0,0)));
@@ -92,8 +126,7 @@ public class MolecularUtilsTest
     @Test
     public void testInteratormicDistanceMatrix() throws Exception
     {
-
-    	IAtomContainer mol = new AtomContainer();
+		IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));
     	mol.addAtom(new Atom("C",new Point3d(0,3.0,0)));
     	mol.addAtom(new Atom("C",new Point3d(4.0,0,0)));
