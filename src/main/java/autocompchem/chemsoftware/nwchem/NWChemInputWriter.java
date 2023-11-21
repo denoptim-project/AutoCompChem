@@ -282,7 +282,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				IAtomContainer mol = (IAtomContainer) data.getValue();
 				for (IAtom atm : mol.atoms())
 				{
-					String atmId = atm.getSymbol();
+					String atmId = AtomUtils.getSymbolOrLabel(atm);
 					if (useTags)
 					{
 						// Convention is to use 1-based indexing here

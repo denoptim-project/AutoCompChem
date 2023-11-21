@@ -1,5 +1,6 @@
 package autocompchem.io;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.Gson;
@@ -24,6 +25,8 @@ import autocompchem.datacollections.NamedData.NamedDataSerializer;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.ParameterStorage.ParameterStorageDeserializer;
 import autocompchem.datacollections.ParameterStorage.ParameterStorageSerializer;
+import autocompchem.io.jsonableatomcontainer.AtomContainerSetDeserializer;
+import autocompchem.io.jsonableatomcontainer.AtomContainerSetSerializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerDeserializer;
 import autocompchem.io.jsonableatomcontainer.IAtomContainerSerializer;
 import autocompchem.perception.circumstance.CountTextMatches;
@@ -130,6 +133,8 @@ public class ACCJson
     	        		new CountTextMatchesSerializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerSerializer())
+    	        .registerTypeHierarchyAdapter(AtomContainerSet.class, 
+    	        		new AtomContainerSetSerializer())
     			.create();
     	
     	reader = new GsonBuilder()
@@ -163,6 +168,8 @@ public class ACCJson
     	        		new SetDirectiveComponentDeserializer())
     	        .registerTypeHierarchyAdapter(IAtomContainer.class, 
     	        		new IAtomContainerDeserializer())
+    	        .registerTypeHierarchyAdapter(AtomContainerSet.class, 
+    	        		new AtomContainerSetDeserializer())
     	        // JSON is case-specific but we want to allow case-insentitivity
     	        // for strings representing enums. These deseriualizers
     	        // are for enums that we want to be case-insentitive.

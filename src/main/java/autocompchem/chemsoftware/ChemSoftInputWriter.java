@@ -24,10 +24,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.Gson;
 
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
@@ -404,11 +406,10 @@ public abstract class ChemSoftInputWriter extends Worker
     @Override
     public void performTask()
     {
-    	if (inpGeom.size() == 1)
+    	if (inpGeom.size() < 2)
     	{
     		produceSingleJobInputFiles(inpGeom, outFile, outFileNameRoot);
-    	} else {
-    		
+    	} else {	
     		switch (multiGeomMode)
     		{
 			case INDEPENDENTJOBS:
@@ -488,7 +489,8 @@ public abstract class ChemSoftInputWriter extends Worker
      * consist of multiple steps to be performed by a computational chemistry 
      * software tool.
      * @param mols the set of geometries that pertain this single job. Note that
-     * in the vast majority of cases there will be only one geometry. This
+     * in the vast majority of cases there will be only one geometry, or zero, 
+     * in which case we do not alter mol-specific settings. This
      * corresponds to multi-geometry mode {@value MultiGeomMode#INDEPENDENTJOBS}.
      * However, jobs do use multiple input geometries within the same job
      * (e.g., transition state searches that start from the geometries of the
@@ -515,25 +517,31 @@ public abstract class ChemSoftInputWriter extends Worker
 		
 		// Add atom coordinates to the so-far molecule-agnostic job
 		setChemicalSystem(molSpecJob, mols);
+		// We keep a copy of the agnostic chemical system definition in the job 
+		// parameters
+		setChemicalSystemAsJobParam(molSpecJob, mols);
 		
 		// Add strings/pathnames that are molecular specific. e.g., pathnames or
 		// links that are explicitly defined in any part of any input file.
 		setSystemSpecificNames(molSpecJob);
 		
-		// WARNING: changes of charge and spin in multiple geometries
-		// must be reflected in the input of each geometry. Here we apply
-		// the properties of the first, just in case they have not being set
-		// otherwise.
-		Integer chargeFromMol = getChargeFromMol(mols.get(0));
-		if (chargeFromMol != null)
+		if (mols.size()>0)
 		{
-			setChargeIfUnset(molSpecJob, chargeFromMol+"", omitCharge);
-		}
-		Integer smFromMol = getSpinMultiplicityFromMol(mols.get(0));
-		if (smFromMol != null)
-		{
-			setSpinMultiplicityIfUnset(molSpecJob, smFromMol +"", omitSpinMult);
-		}
+			// WARNING: changes of charge and spin in multiple geometries
+			// must be reflected in the input of each geometry. Here we apply
+			// the properties of the first, just in case they have not being set
+			// otherwise.
+			Integer chargeFromMol = getChargeFromMol(mols.get(0));
+			if (chargeFromMol != null)
+			{
+				setChargeIfUnset(molSpecJob, chargeFromMol+"", omitCharge);
+			}
+			Integer smFromMol = getSpinMultiplicityFromMol(mols.get(0));
+			if (smFromMol != null)
+			{
+				setSpinMultiplicityIfUnset(molSpecJob, smFromMol +"", omitSpinMult);
+			}
+    	}
 		
 		// These calls take care also of the sub-jobs/directives
 		molSpecJob.processDirectives(mols, this.getMyJob());
@@ -560,6 +568,22 @@ public abstract class ChemSoftInputWriter extends Worker
 			Gson writer = ACCJson.getWriter();
 			IOtools.writeTXTAppend(jdFileOut, writer.toJson(cleanCCJ), true);
 		}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private void setChemicalSystemAsJobParam(CompChemJob job, 
+    		List<IAtomContainer> mols)
+    {
+    	if (mols==null || mols.size()==0)
+    		return;
+    	AtomContainerSet cSet = new AtomContainerSet();
+    	for (IAtomContainer iac : mols)
+    	{
+    		cSet.addAtomContainer(iac);
+    	}
+    	job.setParameter(ChemSoftConstants.PARGEOM, 
+    			NamedDataType.ATOMCONTAINERSET, cSet);
     }
  
 //------------------------------------------------------------------------------

@@ -1,0 +1,331 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "start"
+        },
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step:1 SP with DFT\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "basis",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "\"ao basis\"",
+              "isLoud": false
+            },
+            {
+              "reference": "type",
+              "value": "spherical",
+              "isLoud": false
+            }
+          ],
+          "dirData" : [
+            {
+              "reference": "basisdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nSMARTS [#6;!$([#6;X4]1[#6;X4][#6;X4][Ru]1);!$([#6;X4]1[#6;X4][Ru][#6;X4]1)] Name lanl2dz_ecp\nSMARTS [$([#6;X4]1[#6;X4][#6;X4][Ru]1),$([#6;X4]1[#6;X4][Ru][#6;X4]1)] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [#7,#8,#15,#16] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [Ru] Link ../data/basisset/gaussian/LANL2DZ_ECP_H_C-F_Si-Cl_Br_I_Ru.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ecp",
+          "dirData" : [
+            {
+              "reference": "ecpdata",
+              "accTaskParams": [
+                {
+                  "reference": "ATOMSPECIFICBASISSET",
+                  "value": "Element H Name lanl2dz_ecp\nSMARTS [#6;!$([#6;X4]1[#6;X4][#6;X4][Ru]1);!$([#6;X4]1[#6;X4][Ru][#6;X4]1)] Name lanl2dz_ecp\nSMARTS [$([#6;X4]1[#6;X4][#6;X4][Ru]1),$([#6;X4]1[#6;X4][Ru][#6;X4]1)] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [#7,#8,#15,#16] Link  ../data/basisset/gaussian/LANL2DZp_ECP_H_C-F_Si-Cl_Br_I.gbs\nSMARTS [Ru] Link ../data/basisset/gaussian/LANL2DZ_ECP_H_C-F_Si-Cl_Br_I_Ru.gbs"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEBASISSET"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name" : "dft",
+          "subDirectives": [
+            {
+              "name": "xc",
+              "keywords": [
+                {
+                  "reference": "functional",
+                  "value": "pbe0",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "convergence",
+              "keywords": [
+                {
+                  "reference": "energy",
+                  "value": "1e-6"
+                },
+                {
+                  "reference": "density",
+                  "value": "1e-5"
+                }
+              ]
+            },
+            {
+              "name": "grid",
+              "keywords": [
+                {
+                  "reference": "finess",
+                  "value": "fine",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "subDirectives": [
+            {
+              "name": "symmetry",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "ADD_GEOMETRY"
+                },
+                {
+                  "reference": "USEATOMTAGS"
+                }
+              ],
+              "reference": "Geometry"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "energy",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step2: geometry optimization with DFT - frozen core\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "constraints",
+          "subDirectives" : [
+            {
+              "name": "enable"
+            }
+          ],
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "freeze-core",
+              "isLoud": false
+            }
+          ],
+          "dirData": 
+          [
+            {
+              "reference": "fixed atoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATEATOMTUPLES"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[$([*]~[Ru]);!$([#6;X4]1[#6;X4][#6;X4][Ru]1)] prefix:fix atom\n[Ru]1[#6;X4][#6;X4][#6;X4]1 prefix:fix atom\n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "100",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CLEAR"
+            },
+            {
+              "name": "DEFAULT"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": "\"Step3: geometry optimization with DFT - frozen C-C bond\"",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+              }
+          ],
+          "subDirectives": [
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "reference": "zcoordconstraints",
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[$([#6]([#1])([#1])[Ru])][Ru] suffix:constant"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "constraints",
+          "keywords": [
+            {
+              "reference": "name",
+              "value": "freeze-core",
+              "isLoud": false
+            }
+          ],
+          "subDirectives" : [
+            {
+              "name": "disable"
+            }
+          ]
+        },
+        {
+          "name": "driver",
+          "subDirectives": [
+            {
+              "name": "MAXITER",
+              "keywords": [
+                {
+                  "reference": "maxiter",
+                  "value": "100",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "CLEAR"
+            },
+            {
+              "name": "DEFAULT"
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "keywords": [
+            {
+              "reference": "theory",
+              "value": "dft",
+              "isLoud": false
+            },
+            {
+              "reference": "tasktype",
+              "value": "optimize",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

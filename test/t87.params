@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 2
+TASK: PrepareInputNWChem
+INPUTGEOMETRIESFILE: ../t87-mol.sdf
+JOBDETAILSFILE: ../t87-jobDetails.json

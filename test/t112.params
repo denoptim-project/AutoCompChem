@@ -1,9 +1,9 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 4
-TASK: FixAndRestartNWChem
-INFILE: ../t112-nwc.out
-NewNwFile: restart-t112.nw
-NWCHEMERRORS: ../t112-err
-JOBDETAILSFILE: ../t112-jobDetails.json
+VERBOSITY: 2
+TASK: CureNWChemJob
+JOBDEFINITION: ../t112-jobDetails.json
+IC-LOGS: ../t112-nwc.out
+PATHNAMEOUTPUT: restart-t112.nw
+SITUATIONSDBROOT: ../data/knowledgebase/nwchem

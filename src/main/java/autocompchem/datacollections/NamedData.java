@@ -114,6 +114,7 @@ public class NamedData implements Cloneable
             		NamedDataType.PARAMETERSTORAGE,
             		NamedDataType.BASISSET,
             		NamedDataType.IATOMCONTAINER,
+            		NamedDataType.ATOMCONTAINERSET,
             		NamedDataType.CONSTRAINTSSET,
             		NamedDataType.ZMATRIX,
             		NamedDataType.ANNOTATEDATOMTUPLELIST,
@@ -663,6 +664,9 @@ public class NamedData implements Cloneable
 				break;
 			case IATOMCONTAINER:
 				joValue = context.deserialize(je, IAtomContainer.class);
+				break;
+			case ATOMCONTAINERSET:
+				joValue = context.deserialize(je, AtomContainerSet.class);
 				break;
 			case CONSTRAINTSSET:
 				joValue = context.deserialize(je, ConstraintsSet.class);

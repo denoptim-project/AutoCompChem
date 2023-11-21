@@ -529,24 +529,19 @@ public class JobEvaluator extends Worker
 				// but it can prepare a new input.
 				if (standaloneCureJob)
 				{
+
+					if (verbosity > 0)
+					{
+						// TODO log
+						System.out.println("Attempting to cure job. Reaction: " 
+								+ s.getReaction().getType() + " " 
+								+ s.getReaction().getObject());
+					}
 					ActionApplier.performAction(s.getReaction(), myJob, 
 							Arrays.asList(jobBeingEvaluated), 1);
 					
-					// Get geometry/ies for restart
-					List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
-							s.getReaction(), myJob);
-					
 					// Prepare generation of new input file
 					ParameterStorage makeInputPars = new ParameterStorage();
-					TaskID task = TaskID.UNSET;
-					switch (jobBeingEvaluated.getAppID())
-					{
-					//TODO-gg add apps
-					default:
-						task = TaskID.PREPAREINPUTGAUSSIAN;
-						break;
-					
-					}
 					
 					makeInputPars.setParameter(WorkerConstants.PARTASK, 
 							TaskID.PREPAREINPUT.toString());
@@ -557,8 +552,21 @@ public class JobEvaluator extends Worker
 					makeInputPars.setParameter(
 							ChemSoftConstants.PARJOBDETAILSOBJ, 
 							NamedDataType.JOB, jobBeingEvaluated);
-					makeInputPars.setParameter(ChemSoftConstants.PARGEOM, 
-							NamedDataType.UNDEFINED, iacs);
+					
+					//TODO-gg this was the wrong way to do this. We need to make
+					// the action control whether or not to update the geometry 
+					// and which geometry to use as the new one (last, initial, 
+					// before oscillation, lowest energy) it 
+					/*
+					if (jobBeingEvaluated instanceof CompChemJob)
+					{
+						// Get geometry/ies for restart
+						List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
+								s.getReaction(), myJob);
+						makeInputPars.setParameter(ChemSoftConstants.PARGEOM, 
+								NamedDataType.UNDEFINED, iacs);
+					}
+					*/
 					if (hasParameter(ChemSoftConstants.PAROUTFILE))
 					{
 						makeInputPars.setParameter(ChemSoftConstants.PAROUTFILE,
@@ -571,9 +579,9 @@ public class JobEvaluator extends Worker
 					 * - use the PREPAREINPUT task that is agnostic
 					 * - that will call the AspecificOutputAnalyzer via WorkerFactory.createInstance()
 					 * - AspecificOutputAnalyzer.makeInstance/jobToDoByInstance)
-					 * - ChemSoftOutputAnalyzerBuilder.makeInstance(outputFile) makes 
+					 * - ChemSoftOutputReaderBuilder.makeInstance(outputFile) makes 
 					 *   the instance based on the type detected in the output
-					 *  - The workerFactory initialises the worked soororuetky
+					 *  - The workerFactory initialises the worked
 					 *  - the performTask of the Worker (a concrete impl) 
 					 *  does the actual analysis of the output.
 					 */
@@ -677,19 +685,27 @@ public class JobEvaluator extends Worker
 		outputParser.setDataCollector(exposedByAnalzer);
 		outputParser.performTask();
 		
+		// Expose information from the analysis as part of the results of the
+		// task done by this worker. Some of the info is already embedded in the
+		// JOBOUTPUTDATA, but it is convenient to expose 
+		// it even further to simplify access to some pivotal bit of 
+		// information.
 		exposeOutputData(new NamedData(NORMALTERMKEY, NamedDataType.BOOLEAN, 
 				outputParser.getNormalTerminationFlag()));
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.JOBOUTPUTDATA));
-		// This is already in the JOBOUTPUTDATA but it is convenient to expose 
-		// it even further to simplify access to this pivotal bit of 
-		// information.
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.SOFTWAREID));
+		if (jobBeingEvaluated!=null 
+				&& jobBeingEvaluated.hasParameter(ChemSoftConstants.PARGEOM))
+		{
+			exposeOutputData(jobBeingEvaluated.getParameter(
+					ChemSoftConstants.PARGEOM));
+		}
 		
 		lastJobStepId = outputParser.getStepsFound()-1;
 		/*
-		This is done for any job type, so outside of this method
+		This is done for any job type, therefore it is done outside this method
 		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
 				outputParser.getStepsFound()));
 		*/
