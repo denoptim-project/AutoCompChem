@@ -444,7 +444,7 @@ public class IOtools
      * Write a ZMatrix to file with ACC's format
      * @param zmat the ZMatrix to write
      * @param file the destination file
-     * @param append set to <code>true</code> to append rather than ovewrite
+     * @param append set to <code>true</code> to append rather than overwrite
      */
 
     public static void writeZMatAppend(File file, ZMatrix zmat, boolean append)

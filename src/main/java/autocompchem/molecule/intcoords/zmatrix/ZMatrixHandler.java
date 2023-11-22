@@ -227,7 +227,17 @@ public class ZMatrixHandler extends Worker
             this.useTmpl = true;
             File tmplZMatFile = new File(
                       params.getParameter("TEMPLATEZMAT").getValue().toString());
-            this.tmplZMat = new ZMatrix(IOtools.readTXT(tmplZMatFile));
+            List<ZMatrix> templates = IOtools.readZMatrixFile(tmplZMatFile);
+            if (templates.size()==0)
+            {
+            	 Terminator.withMsgAndStatus("ERROR! Could not find a template "
+            	 		+ "ZMatrix in '" + tmplZMatFile + "'",-1);
+            } else if (templates.size()>1)
+            {
+                System.out.println(" Found " + templates.size() 
+                + " ZMatrix templates, but we'll use only the first one.");
+            }
+            this.tmplZMat = templates.get(0);
         }
 
         //Get the template ZMatrix
@@ -300,7 +310,7 @@ public class ZMatrixHandler extends Worker
             if (verbosity > 0)
             {
                 System.out.println("No 'OUTFILE' keyword, so using default "
-                                                   + "filename 'output.zmat'.");
+                		+ "filename 'output.zmat'.");
             }
             outFile = new File("output.zmat");
         }
@@ -312,12 +322,12 @@ public class ZMatrixHandler extends Worker
                 SDFIterator sdfItr = new SDFIterator(inFile);
                 while (sdfItr.hasNext())
                 {
-                    // Get the molecule
                     i++;
                     iac = sdfItr.next();
                     String molName = MolecularUtils.getNameOrID(iac);
                     System.out.println(" Working on mol ("+i+"): "+molName);
                     ZMatrix zmat = makeZMatrix();
+                    zmat.setTitle(molName);
                     IOtools.writeZMatAppend(outFile,zmat,true);
                 }
                 if (i==0 && verbosity > 1)
@@ -333,8 +343,8 @@ public class ZMatrixHandler extends Worker
         }
         else
         {
-            IOtools.writeTXTAppend(outFile,"No chemical entity in ZMatrix "
-                                                            + "handler!",false);
+            IOtools.writeTXTAppend(outFile,"No chemical entity in "
+            		+ this.getClass().getSimpleName() + "!",false);
         }
     }
 

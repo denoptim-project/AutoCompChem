@@ -1,6 +1,37 @@
 #!/bin/bash
 
-echo "Option under development"
-exit 0
+if [ ! -f t104.log ]; then
+  echo NOT Passed ERROR 0
+  exit -1
+fi
 
-#TODO: update all
+if [ ! -f t104-path.sdf ]; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "Generating results for scaling\\s*factor" t104.log)
+if [ 6 -ne "$n" ]; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "t104-mol.*moved.*by" t104-path.sdf)
+if [ 6 -ne "$n" ]; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "^  4  3" t104-path.sdf)
+if [ 6 -ne "$n" ]; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if grep -q -i 'Termination status: 0' t104.log; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

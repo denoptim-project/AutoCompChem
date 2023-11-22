@@ -1,6 +1,42 @@
 #!/bin/bash
 
-echo "Option under development"
-exit 0
+if [ ! -f t102.log ]; then
+  echo NOT Passed ERROR 0
+  exit -1
+fi
 
-#TODO: update all
+if [ ! -f t102-path.sdf ]; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "Generating results for scaling\\s*factor" t102.log)
+if [ 5 -ne "$n" ]; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "t102-mol.*moved.*by" t102-path.sdf)
+if [ 5 -ne "$n" ]; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "^123122" t102-path.sdf)
+if [ 5 -ne "$n" ]; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if ! grep " Si " t102-path.sdf | tail -n 1 | grep -q "1.17.*\\s*4.83.*\\s*0.35.*\\s*Si" ; then
+  echo NOT Passed ERROR 5
+  exit -1
+fi
+
+if grep -q -i 'Termination status: 0' t102.log; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

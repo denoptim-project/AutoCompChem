@@ -1,5 +1,4 @@
 VERBOSITY: 1
-#TASK: PrintZMATRIX
 TASK: ModifyGeometry
 INFILE: ../t102-mol.sdf
 ZMATRIXMOVE: ../t102-zmatrixMove

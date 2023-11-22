@@ -1,5 +1,45 @@
 #!/bin/bash
 
-  echo "Option under developmet"
-  exit 0
+if [ ! -f t108.log ]; then
+  echo NOT Passed ERROR 0
+  exit -1
+fi
 
+if [ ! -f t108-res.zmat ]; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "\$\$\$\$" t108-res.zmat)
+if [ 1 -ne "$n" ]; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if ! awk '{print $3}' t108-res.zmat | sort -n | head -n 1 | grep -q "\-0\.038" ; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if ! awk '{print $3}' t108-res.zmat | sort -n | tail -n 1 | grep -q "0\.17" ; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if ! awk '{print $5}' t108-res.zmat | sort -n | head -n 1 | grep -q "\-41\." ; then
+  echo NOT Passed ERROR 5
+  exit -1
+fi
+
+if ! awk '{print $5}' t108-res.zmat | sort -n | tail -n 1 | grep -q "11\." ; then
+  echo NOT Passed ERROR 6
+  exit -1
+fi
+
+if grep -q -i 'Termination status: 0' t108.log; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

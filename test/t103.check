@@ -1,6 +1,25 @@
 #!/bin/bash
 
-echo "Option under development"
-exit 0
+if [ ! -f t103.log ]; then
+  echo NOT Passed ERROR 0
+  exit -1
+fi
 
-#TODO: update all
+if [ ! -f t103.zmat ]; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+n=0;n=$(grep -c -i "^Du\\s" t103.zmat)
+if [ 2 -ne "$n" ]; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if grep -q -i 'Termination status: 0' t103.log; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

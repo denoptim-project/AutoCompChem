@@ -1,5 +1,5 @@
 VERBOSITY: 1
 TASK: PrintZMATRIX
-#TEMPLATEZMAT: ../t104.tmpl
+TEMPLATEZMAT: ../t105.tmpl
 INFILE: ../t105-mol.sdf
 OUTFILE: t105.zmat
