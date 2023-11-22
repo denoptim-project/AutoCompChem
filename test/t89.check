@@ -1,6 +1,4 @@
 #!/bin/bash
-
-echo "Option under development"
+echo "Skipped" #unfinished development
 exit 0
 
-#TODO: update all
