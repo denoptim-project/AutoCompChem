@@ -8,7 +8,6 @@ import autocompchem.chemsoftware.Directive;
  * Sorts directives according to NWChem conventions.
  */
 
-//TODO-gg refactor to replace version without number at the end
 public class NWChemDirectiveComparator implements Comparator<Directive> 
 {
 
