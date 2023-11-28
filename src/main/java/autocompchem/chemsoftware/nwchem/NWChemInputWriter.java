@@ -189,14 +189,8 @@ public class NWChemInputWriter extends ChemSoftInputWriter
                 {
             		ids.addAll(tuple.getAtomIDs());
                 }
-            	//
-            	//NB: we print the complementary list here!!!
-            	// TODO-gg change to make switch to complementary optional
-            	//
-            	List<String> ranges = StringUtils.makeStringForIndexes(
-            			NumberUtils.getComplementaryIndexes(ids, 
-            					tuples.get(0).getNumAtoms()), ":", 
-            			1); // From 0-based to 1-based
+            	List<String> ranges = StringUtils.makeStringForIndexes(ids, ":", 
+                			1); // From 0-based to 1-based
             	boolean first = true;
             	for (String range : ranges)
             	{
