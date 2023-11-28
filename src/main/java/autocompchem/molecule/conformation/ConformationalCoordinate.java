@@ -291,7 +291,7 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 //------------------------------------------------------------------------------
     
     @Override
-    protected String gerToStringOfFields()
+    protected String generateStringForSubClassFields()
     {
     	return "type:" + type + ", fold:" + fold + ", ";
     }

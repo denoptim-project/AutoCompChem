@@ -516,7 +516,7 @@ public class AnnotatedAtomTuple implements Cloneable
 		sb.append(this.getClass().getSimpleName()).append(" [atmIDs:[");
 		sb.append(StringUtils.mergeListToString(atmIDs, ",", true));
 		sb.append("], ");
-		String otherFields = gerToStringOfFields();
+		String otherFields = generateStringForSubClassFields();
 		if (!otherFields.isBlank())
 			sb.append(otherFields);
 		sb.append("valuelessAttributes:[").append(
@@ -533,7 +533,7 @@ public class AnnotatedAtomTuple implements Cloneable
 	 * representation of a subclass without having to overwrite the toString() 
 	 * method. The returned string must end with ", ".
 	 */
-	protected String gerToStringOfFields() {
+	protected String generateStringForSubClassFields() {
 		return "";
 	}
 	
