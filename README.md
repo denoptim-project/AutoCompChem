@@ -1,13 +1,23 @@
 ## AutoCompChem
 AutoCompChem (or ACC) is a collection of tools used to automatize computational chemistry tasks.
 
-## Installation
+## Installation from Conda
+From within any conda environment you can install AutoCompChem as follows
+```
+conda install -c denoptim-project autocompchem
+```
+Now the `autocompchem` command should be available. Try to run the following to start using it:
+```
+autocompchem -h
+```
+
+## Installation from Source
 1) Make sure you have [Maven](https://maven.apache.org/), which is used to build AutoCompChem. The following command should return the version of Maven
     ```
     mvn -version
     ```
 2) Make sure you have a version of JAVA that is &ge;11. To this end try the following command
-    ``` 
+    ```
     javac -version
     ```
 3) Download the latest release and unzip/untar-gz the resulting archive. Alternatively, clone this github repository.
@@ -23,11 +33,18 @@ AutoCompChem (or ACC) is a collection of tools used to automatize computational 
 6) If the above command terminates successfully, you are done. AutoCompChem is ready to be used.
 
 ## Usage
-Say you have installed AutoCompChem inside a folder that we'll refer to as the `$ACC_HOME` folder. This is how to launch any functionality of the tool by executing the Main class if the `$version` you have installed:
+If you have installed AutoCompChem with Conda, then you have the `autocompchem` command. The following will give you the usage instructions:
+```
+autocompchem -h
+```
 
-    java -jar $ACC_HOME/target/autocompchem-${version}-jar-with-dependencies.jar
+Otherwise, say you have installed AutoCompChem inside a folder that we'll refer to as the `$ACC_HOME` folder. This is how to launch any functionality of the tool by executing the Main class if the `$version` you have installed:
+
+    java -jar $ACC_HOME/target/autocompchem-${version}-jar-with-dependencies.jar -h
 
 Executing the above command will print the usage instructions.
+
+Examples of usage are available in the [test folder](test). There, each `*.params` files contains the keywords that control AutoCompChem. See the [users' manual](https://htmlpreview.github.io/?https://github.com/denoptim-project/AutoCompChem/blob/making_conda_package/doc/user_manual.html).
 
 
 ## Acknowledgments
