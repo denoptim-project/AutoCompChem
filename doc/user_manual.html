@@ -43,34 +43,18 @@ This tool kit for the Automation of Computational Chemistry
 (AutoCompChem) is developed with the aim of 
 increasing efficiency, effectiveness, and reproducibility of 
 computational tasks such as modeling and evaluation of chemical
- species.<br>
-In practice, AutoCompChem is the interface to the collection of
- methods and objects
-stored in the 
-<a href="../../uibkvant/doc/index.html">UiBkvant library</a>:
-a Java library meant to host methods
-and objects developed day by day to automatize tasks such as creation 
-of input files, 
-simple operations on molecular systems, 
-analysis of molecular geometries,
-and so on.<br>
-In the present document you can find information on how to use the various 
-tools made available by UiBkvant. Please refer to 
-<a href="../../uibkvant/doc/index.html">UiBkvant documentation</a> 
-for more details on UiBkvant classes.
-</p>
+ species.</p>
 
 <hr>
 <a id="Building"><h3>Building and Testing AutoCompChem</h3></a>
 <p>
-To compile AutoCompChem you just have to run the building script:
-</p><pre><code>./build_test.sh</code></pre>
-and follow the instructions. Java 1.7.0_07 or higher is required.<br>
-After the script has compiled AutoCompChem and link the libraries of CDK, guava 
-and UiBKvant into a single jar file, a list of test will be 
-executed. Each test is provided with input files and specific
-a script that evaluates the outcome and returns a <i>passed</i>/<i>not-passed</i> grade.
-
+To compile AutoCompChem you just have the <a href="https://docs.conda.io/projects/conda/en/stable/">conda</a> environment defined at <a href="environment.yml">environment.yml</a>. Once you have activated such environment with
+</p><pre><code>conda activate acc_devel</code></pre>
+you can move to the distribution folder:
+</p><pre><code>cd &lt;path_to_your_AutoCompChem_distribution_folder&gt;</code></pre>
+and start the building and testing script as follows:
+</p><pre><code>./test/run_tests.sh</code></pre>
+After a minute or so the building and testing should be done and should return a comforting message.
 
 <hr>
 <a id="Running"><h3>Running AutoCompChem</h3></a>
