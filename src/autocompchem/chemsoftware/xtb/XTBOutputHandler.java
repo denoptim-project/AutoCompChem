@@ -186,6 +186,11 @@ public class XTBOutputHandler extends ChemSoftOutputHandler
                     	{
                     		continue;
                     	}
+                    	if (line.contains("Molecule has no symmetry elements") 
+                    			|| line.contains("It seems to be the"))
+                    	{
+                    		continue;
+                    	}
                     	if (line.contains("reduced masses"))
                     	{
                     		break;
