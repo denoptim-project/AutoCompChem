@@ -10,7 +10,7 @@ AutoCompChem (or ACC) is a collection of tools used to automatize computational 
     ``` 
     javac -version
     ```
-3) Download the latest release and unzip/untar-gs the resulting archive. Alternatively, clone this github repository.
+3) Download the latest release and unzip/untar-gz the resulting archive. Alternatively, clone this github repository.
 
 4) move inside the resulting folder, which we'll call `$ACC_HOME`
     ```
