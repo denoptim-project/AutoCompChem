@@ -3,7 +3,7 @@
   <groupId>org.denoptim</groupId>
   <artifactId>autocompchem</artifactId>
 
-  <version>2.0</version>
+  <version>2.0.1</version>
   <!-- WARNING: the vesion must be changes also in doc/user_manual.html-->
 
   <name>autocompchem</name>
@@ -102,12 +102,6 @@
         <groupId>org.glassfish</groupId>
         <artifactId>jakarta.el</artifactId>
         <version>4.0.2</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
-    <dependency>
-        <groupId>net.sf.py4j</groupId>
-        <artifactId>py4j</artifactId>
-        <version>0.10.9.7</version>
     </dependency>
   </dependencies>
   
