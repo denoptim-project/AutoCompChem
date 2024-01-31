@@ -47,3 +47,9 @@
 - Mane circumstance use a user-provided python script to analyse any data resulting form analysis of job steps.
 
 - document assumption that a job is assumed to be the only job in a working directory. So, when job isarchived, we take any *.inp, *.log, etc. This also means that we cannot run test in parallel in the same work directory.
+
+- For paper: students need quick ways to jump between software packages to teste them out and find the most apptopriate tool for theyr needs. This is facilitated by portable agnostic tools (e.g., atom-specific basis set and constraint generator)
+
+- test ECP with Hf
+
+
