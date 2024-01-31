@@ -263,10 +263,10 @@ public class FileUtils
     public static List<File> find2(File root, Integer maxdepth, String pattern,
     		boolean collectFolders) throws IOException
     {
-    	//PathMatcher matcher = FileSystems.getDefault().getPathMatcher(
-    	//		"glob:"+pattern);
     	String absPattern = root.getAbsolutePath() + File.separator + pattern;
-    	//PathMatcher matcher = new MyPathMatcher(absPattern);
+    	
+    	// This replace is needed to escape the backslash in Windows
+    	absPattern = absPattern.replace("\\", "\\\\");
     	PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:"+absPattern);
     	
     	List<Path> paths = Files.find(root.toPath(), maxdepth,
