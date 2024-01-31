@@ -112,10 +112,6 @@ public class AtomContainerSetSerializerTest
     	
     	AtomContainerSet original = getTestJSONableIAtomContainer();
     	
-    	//TODO-gg del
-    	IOtools.writeAtomContainerSetToFile(new File("/tmp/acset.sdf"), original,
-    			"SDF", false);
-    	
     	String json = writer.toJson(original);
     	AtomContainerSet fromJson = reader.fromJson(json, 
     			AtomContainerSet.class);
