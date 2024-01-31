@@ -19,6 +19,7 @@ package autocompchem.chemsoftware;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
@@ -110,7 +111,8 @@ public class ChemSoftReaderWriterFactoryTest
       	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
       	
 
-      	// Simple log/output file not matched due to to short sample
+      	// Simple log/output file not matched due to too short sample:
+      	// we read too few lines to find the matching text
     	String logFilePath2 = tempDir.getAbsolutePath() + fileSeparator + "log2";
 		File logFile2 = new File(logFilePath2);
 		IOtools.writeTXTAppend(logFile2, NL + NL + NL + NL + query + " more"
@@ -120,7 +122,9 @@ public class ChemSoftReaderWriterFactoryTest
       	assertNull(csoa);
       	
      
-      	// Simple log/output file not matched due to wrong formatting
+      	// Simple log/output file not matched due to wrong formatting:
+      	// the output fingerprint wants to have the query as the only text in the row
+      	// but in logFile3 it is not (because of the " and more" string after the query)
     	String logFilePath3 = tempDir.getAbsolutePath() + fileSeparator + "log3";
 		File logFile3 = new File(logFilePath3);
 		IOtools.writeTXTAppend(logFile3, query + " and more"
@@ -138,21 +142,30 @@ public class ChemSoftReaderWriterFactoryTest
     	String logFilePath4 = dir.getAbsolutePath() + fileSeparator + "4.log";
 		IOtools.writeTXTAppend(new File(logFilePath4), NL + query2 + NL, false);
 
-    	analyzer.outputFingerprints.add(
-    			new FileFingerprint("./*/*.log", 2, "^" + query2+ "$"));
+    	analyzer.outputFingerprints.add(new FileFingerprint("."
+    			+ fileSeparator + "*" 
+    			+ fileSeparator + "*.log", 2, "^" + query2+ "$"));
       	csoa = b.makeOutputReaderInstance(dir);
-      	assertNull(csoa); // Log exists but is in wrong location
+      	assertNull(csoa); // Log exists but is in wrong location: ./4.log instead of ./*/*.log
       	
     	analyzer.outputFingerprints.add(
-    			new FileFingerprint("./*/*/*.out", 2, "^" + query2+ "$"));
+    			new FileFingerprint("." 
+    					+ fileSeparator + "*.out", 2, "^" + query2+ "$"));
       	csoa = b.makeOutputReaderInstance(dir);
-      	assertNull(csoa); // Log exists but has wrong name
+      	assertNull(csoa); // Log exists but has wrong name: *.log instead of *.out
       	
+    	analyzer.outputFingerprints.add(
+    			new FileFingerprint("." 
+    					+ fileSeparator + "*.log", 2, "^" + query2+ "$"));
       	csoa = b.makeOutputReaderInstance(dir);
-      	assertNull(csoa); //Log exists but we use wrong root
+      	assertNotNull(csoa); //Log exists and we find it, and is found by the TestOutputAnalyzer
+      	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
 
     	analyzer.outputFingerprints.add(
-    			new FileFingerprint("./*/*/*.log", 2, "^" + query2+ "$"));
+    			new FileFingerprint("." 
+    					+ fileSeparator + "*" 
+    					+ fileSeparator + "*" 
+    					+ fileSeparator + "*.log", 2, "^" + query2+ "$"));
       	csoa = b.makeOutputReaderInstance(tempDir);
       	assertEquals(TestOutputAnalyzer.IDVAL, csoa.inFile.getName());
     }   
