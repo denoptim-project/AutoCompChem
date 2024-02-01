@@ -274,8 +274,7 @@ public class NamedData implements Cloneable
 				lines.add(d.toString());
 			break;
 		case STRING:
-			lines.addAll(Arrays.asList(((String)value).split(
-					System.getProperty("line.separator"))));
+			lines.addAll(Arrays.asList(((String)value).split("\\r?\\n|\\r")));
 			break;
 		case TEXTBLOCK:
 			for (String l : (ArrayList<String>) value)

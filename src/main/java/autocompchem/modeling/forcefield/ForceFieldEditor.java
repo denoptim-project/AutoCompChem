@@ -206,7 +206,7 @@ public class ForceFieldEditor extends Worker
         if (params.contains("MOLFILES"))
         {
             String lst = params.getParameter("MOLFILES").getValue().toString();
-            String[] files = lst.split(System.getProperty("line.separator"));
+            String[] files = lst.split("\\r?\\n|\\r");
             for (int i=0; i<files.length; i++)
             {
                 FileUtils.foundAndPermissions(files[i],true,false,false);
@@ -218,7 +218,7 @@ public class ForceFieldEditor extends Worker
         if (params.contains("VAFILES"))
         {
             String lst = params.getParameter("VAFILES").getValue().toString();
-            String[] files = lst.split(System.getProperty("line.separator"));
+            String[] files = lst.split("\\r?\\n|\\r");
             for (int i=0; i<files.length; i++)
             {
                 FileUtils.foundAndPermissions(files[i],true,false,false);
@@ -262,7 +262,7 @@ public class ForceFieldEditor extends Worker
         if (params.contains("SMARTSTOATOMTYPEMAP"))
         {
             String[] lines = params.getParameter("SMARTSTOATOMTYPEMAP").
-              getValue().toString().split(System.getProperty("line.separator"));
+              getValue().toString().split("\\r?\\n|\\r");
             for (int i=0; i<lines.length; i++)
             {
                 String l = lines[i].trim();

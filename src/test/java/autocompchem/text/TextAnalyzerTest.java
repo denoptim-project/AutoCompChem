@@ -487,8 +487,7 @@ public class TextAnalyzerTest
 	    			"Key 1 (Nest 1-List"+iList+")");
 	    	
 	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
-	    			Arrays.asList(form.get(0).get(1).split(
-	    			System.getProperty("line.separator")))),
+	    			Arrays.asList(form.get(0).get(1).split("\\r?\\n|\\r"))),
 	    			":","#","$START","$END");
 
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 2-List"
@@ -501,8 +500,7 @@ public class TextAnalyzerTest
 	    			"Key 3 (Nest 2-List"+iList+")");
 	    	
 	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
-	    			Arrays.asList(form.get(2).get(1).split(
-	    			System.getProperty("line.separator")))),
+	    			Arrays.asList(form.get(2).get(1).split("\\r?\\n|\\r"))),
 	    			":","#","$START","$END");
 	    	
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 3-List"
@@ -574,8 +572,7 @@ public class TextAnalyzerTest
 	    	assertTrue(iN1>-1,"Locating nest N1");
 	    	
 	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
-	    			Arrays.asList(form.get(iN1).get(1).split(
-	    			System.getProperty("line.separator")))),
+	    			Arrays.asList(form.get(iN1).get(1).split("\\r?\\n|\\r"))),
 	    			":","#","$START","$END");
 	    	
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 2-List"
@@ -591,8 +588,7 @@ public class TextAnalyzerTest
 	    	assertTrue(iN2>-1,"Locating nest N2");
 	    	
 	    	form = TextAnalyzer.readKeyValue(new ArrayList<String>(
-	    			Arrays.asList(form.get(iN2).get(1).split(
-	    			System.getProperty("line.separator")))),
+	    			Arrays.asList(form.get(iN2).get(1).split("\\r?\\n|\\r"))),
 	    			":","#","$START","$END");
 	    	
 	    	assertEquals(3,form.size(),"Number of key:value pairs (Nest 3-List"
@@ -606,9 +602,8 @@ public class TextAnalyzerTest
 	    			iN3 = iAr;
 	    	}
 	    	assertTrue(iN3>-1,"Locating nest N3");
-	    	assertEquals(2,form.get(iN3).get(1).split(
-	    			System.getProperty("line.separator")).length,"Size of nest "
-	    			+ "(List" + iList + ")");
+	    	assertEquals(2,form.get(iN3).get(1).split("\\r?\\n|\\r").length,
+	    			"Size of nest (List" + iList + ")");
     	}
     	
     	// Here we mix all together
@@ -619,11 +614,9 @@ public class TextAnalyzerTest
     	assertEquals("key1",form.get(0).get(0),"Key1 extracted");
     	assertEquals("key5",form.get(4).get(0),"Key5 extracted");
     	assertEquals("value1",form.get(0).get(1),"Value of KEY1");
-    	assertEquals(2,form.get(2).get(1).split(
-    			System.getProperty("line.separator")).length,
+    	assertEquals(2,form.get(2).get(1).split("\\r?\\n|\\r").length,
     			"Size of multiline block (A)");
-    	assertEquals(8,form.get(3).get(1).split(
-    			System.getProperty("line.separator")).length,
+    	assertEquals(8,form.get(3).get(1).split("\\r?\\n|\\r").length,
     			"Size of multiline block (B)");
     }
     
@@ -638,14 +631,13 @@ public class TextAnalyzerTest
     	
     	assertTrue(pairs.containsKey("key1"),"First key");
     	assertTrue(pairs.containsKey("key5"),"Last key");
-    	assertEquals(2,pairs.get("key3").split(
-    			System.getProperty("line.separator")).length,
+    	assertEquals(2,pairs.get("key3").split("\\r?\\n|\\r").length,
     			"Size of multiline block (A)");
     	
     	String nestedBLock = pairs.get("key4");
     	TreeMap<String, String> nestedPairs = TextAnalyzer.readKeyValuePairs(
-    			new ArrayList<String>(Arrays.asList(nestedBLock.split(
-    					System.getProperty("line.separator")))),
+    			new ArrayList<String>(Arrays.asList(
+    					nestedBLock.split("\\r?\\n|\\r"))),
     			":","#","$START","$END");
     	assertEquals(3,nestedPairs.size(),
     			"Number of key:value pairs in nested.");
@@ -701,29 +693,29 @@ public class TextAnalyzerTest
     	assertEquals(8,form.size());
     	assertTrue(form.contains("A B C"),"ERR-1");
     	assertEquals(3,
-    			form.get(1).split(System.getProperty("line.separator")).length,
+    			form.get(1).split("\\r?\\n|\\r").length,
     			"ERR-2"); //MLB_1.1
     	assertEquals(3,
-    			form.get(2).split(System.getProperty("line.separator")).length,
+    			form.get(2).split("\\r?\\n|\\r").length,
     			"ERR-3"); //MLB_2.1
     	assertEquals(3,
-    			form.get(3).split(System.getProperty("line.separator")).length,
+    			form.get(3).split("\\r?\\n|\\r").length,
     			"ERR-4"); //MLB_3.1
     	assertEquals(3,
-    			form.get(4).split(System.getProperty("line.separator")).length,
+    			form.get(4).split("\\r?\\n|\\r").length,
     			"ERR-5"); //MLB_4.1
     	assertEquals(7,
-    			form.get(5).split(System.getProperty("line.separator")).length,
+    			form.get(5).split("\\r?\\n|\\r").length,
     			"ERR-6"); //MLB_5.1
     	assertTrue(form.get(5).contains("$START"),"ERR-7"); //MLB_5.1
     	assertTrue(form.get(5).contains("$END"),"ERR-8"); //MLB_5.1
     	assertEquals(6,
-    			form.get(6).split(System.getProperty("line.separator")).length,
+    			form.get(6).split("\\r?\\n|\\r").length,
     			"ERR-9"); //MLB_6.1
     	assertTrue(form.get(6).contains("$START"),"ERR-10"); //MLB_6.1
     	assertTrue(form.get(6).contains("$END"),"ERR-11"); //MLB_6.1
     	assertEquals(4,
-    			form.get(7).split(System.getProperty("line.separator")).length,
+    			form.get(7).split("\\r?\\n|\\r").length,
     			"ERR-12"); //MLB_7.1
     	assertTrue(form.get(7).contains("$START"),"ERR-13"); //MLB_7.1
     	assertTrue(form.get(7).contains("$END"),"ERR-14"); //MLB_7.1

@@ -241,7 +241,8 @@ public class BasisSetGenerator extends Worker
 
     public void setBSMatchingRules(String text)
     {
-        String[] arr = text.split(System.getProperty("line.separator"));
+        // NB: the REGEX makes this compatible with either new-line character
+        String[] arr = text.split("\\r?\\n|\\r");
         setBSMatchingRules(new ArrayList<String>(Arrays.asList(arr)));
     }
 

@@ -93,7 +93,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
             block = block.substring(System.getProperty(
                                                     "line.separator").length());
         }
-        String[] dataLines = block.split(System.getProperty("line.separator"));
+        // NB: the REGEX makes this compatible with either new-line character
+        String[] dataLines = block.split("\\r?\\n|\\r");
         
         dd.setValue(new TextBlock(Arrays.asList(dataLines)));
         

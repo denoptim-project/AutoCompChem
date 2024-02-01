@@ -996,8 +996,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	// task, even if the return value is a list.
     	
 		ArrayList<String> taskSpecificLines = new ArrayList<String>(
-				Arrays.asList(linesPack.get(0).split(
-						System.getProperty("line.separator"))));
+				Arrays.asList(linesPack.get(0).split("\\r?\\n|\\r")));
 		ParameterStorage ps = new ParameterStorage();
 		if (dirComp!=null)
 		{
@@ -1015,8 +1014,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 			taskSpecificLines = new ArrayList<String>(
 					Arrays.asList(ps.getParameter(
 							TaskID.GENERATECONSTRAINTS.toString()).getValue()
-							.toString().split(
-									System.getProperty("line.separator"))));
+							.toString().split("\\r?\\n|\\r")));
 			ps = new ParameterStorage();
 			String smarts = "";
             String atomIDs ="";

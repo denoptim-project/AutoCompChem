@@ -41,7 +41,8 @@ public class ParameterUtils
 
     public static String removeMultilineLabels(String parValue)
     {
-        String[] parts = parValue.split(System.getProperty("line.separator"));
+        // NB: the REGEX makes this compatible with either new-line character
+        String[] parts = parValue.split("\\r?\\n|\\r");
         StringBuilder sb = new StringBuilder();
         for (int i=0; i<parts.length; i++)
         {

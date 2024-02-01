@@ -169,7 +169,9 @@ public class MolecularMutator extends Worker
         {
             System.out.println(" Importing SMARTS queries ");
         }
-        String[] lines = allSamrts.split(System.getProperty("line.separator"));
+
+        // NB: the REGEX makes this compatible with either new-line character
+        String[] lines = allSamrts.split("\\r?\\n|\\r");
         for (int i=0; i<lines.length; i++)
         {
             String line = lines[i];
