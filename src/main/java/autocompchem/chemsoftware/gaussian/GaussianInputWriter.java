@@ -288,7 +288,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     protected ArrayList<String> getTextForInput(CompChemJob job)
     {
         ArrayList<String> lines= new ArrayList<String>();
-        if (job.getNumberOfSteps()>1)
+        if (job.getNumberOfSteps()>0)
         {
 	        for (int step = 0; step<job.getNumberOfSteps(); step++)
 	        {

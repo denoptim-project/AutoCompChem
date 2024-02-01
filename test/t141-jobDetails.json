@@ -1,4 +1,7 @@
 {
+  "jobType": "CompChemJob",
+  "steps": [
+    {
       "jobType": "CompChemJob",
       "directives": [
         {
@@ -104,4 +107,6 @@
           ]
         }
       ]
+    }
+  ]
 }
