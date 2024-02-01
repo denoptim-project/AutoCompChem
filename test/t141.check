@@ -1,0 +1,25 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "t141-mol.inp" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i GENECP "t141-mol.inp" ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "^ *2.40000000.*E+01 *1.93694486.*E-01$" "t141-mol.inp" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "HF-ECP * 3 *60" t141-mol.inp)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "^f potential$" "t141-mol.inp" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "^ *2 *1.7857698.*E+00 *-1.00467225.*E+01$" "t141-mol.inp")
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t141.log" ; then echo Passed ; exit 0 ; fi 
+
+not_passed $LINENO
+exit -1

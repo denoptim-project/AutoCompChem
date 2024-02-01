@@ -515,7 +515,7 @@ public abstract class ChemSoftInputWriter extends Worker
 		molSpecJob.setParameter(ChemSoftConstants.PAROUTFILEROOT, 
 				outFileNameRoot, true);
 		
-		// Add atom coordinates to the so-far possible molecule-agnostic job
+		// Add atom coordinates to the so-far possibly molecule-agnostic job
 		if (useAtomTags)
 			setChemicalSystem(molSpecJob, makeAtomContainersWithAtomTags(mols));
 		else
