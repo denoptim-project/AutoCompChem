@@ -32,8 +32,6 @@
 
 - thing like ZMatrixHandler and BasisSetGenerator and MolecularMeter should be constructable without WorkerFacory
 
-- remove OS dependency from t123
-
 - make singleton worker registry and task id registry
 
 - make task names and keywords work also with spaces and "usign the quotations"
