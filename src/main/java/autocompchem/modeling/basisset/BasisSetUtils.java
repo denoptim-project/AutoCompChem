@@ -246,6 +246,7 @@ public class BasisSetUtils
             else if (wrds.length == 2 && wrds[0].matches("\\w+\\.?") 
                                         && wrds[1].equals("0") && isECPSection)
             {
+            	// By convention we store the elemental symbol in upper case
                 String elSymbol = wrds[0].toUpperCase();
                 cbs = bs.getCenterBasisSetForElement(elSymbol);
                 if (verbosity > 2)
@@ -285,7 +286,9 @@ public class BasisSetUtils
                             cbs.addECPShell(ecps.clone());
                         }
 
-                        cbs = bs.getCenterBasisSetForElement(wrds[0]);
+                        // By convention we store the upper case symbols
+                        elSymbol = wrds[0].toUpperCase();
+                        cbs = bs.getCenterBasisSetForElement(elSymbol);
                         addIntECCP = false;
 
                         if (verbosity > 2)
