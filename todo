@@ -50,3 +50,4 @@
 
 - For paper: students need quick ways to jump between software packages to teste them out and find the most apptopriate tool for theyr needs. This is facilitated by portable agnostic tools (e.g., atom-specific basis set and constraint generator)
 
+- deal with nested compchemjobs that have only one step (see t140-jobDetails.json_nested)
