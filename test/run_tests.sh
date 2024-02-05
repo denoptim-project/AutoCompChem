@@ -261,26 +261,25 @@ function cliTesting() {
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenCliTests[@]} -eq 0 ]
     then
-        for i in $(seq 1 $(ls ../cli*.args | wc -l | awk '{print $1}'))
+        for i in $(seq 1 $(ls ../cli*.sh | wc -l | awk '{print $1}'))
         do
             chosenCliTests+=($i)
         done
     fi
     for i in ${chosenCliTests[@]}
     do
-        argsFile="../cli$i.args"
-        argsToACC="$(cat "$argsFile")"
+        argsFile="../cli$i.sh"
         if [ ! -f "$argsFile" ]
         then
             echo "Test CLI $i not found. Jumping to next test ID."
             continue
         fi
+
         echo " "
         echo "Running test CLI $i/${#chosenCliTests[@]}"
         log=cli$i.log
 
-#TODO: use running script rather than calling java directly
-        "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar"  $argsToACC > "$log" 2>&1
+        . ../cli$i.sh > "$log" 2>&1
 
         if $printFuncTestLog
         then
