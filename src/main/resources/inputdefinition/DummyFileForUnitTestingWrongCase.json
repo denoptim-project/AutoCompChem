@@ -1,0 +1,7 @@
+[
+  {
+    "key": "INFILE",
+    "casedKey": "inFiles",
+    "doc": "This is meant to trigger an error due to the key and casedKey unmatching their content."
+  }
+]

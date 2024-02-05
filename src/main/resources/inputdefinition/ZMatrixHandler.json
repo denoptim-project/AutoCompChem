@@ -1,34 +1,40 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the SDF or ACC Zmatrix file containing the chemical system to work with."
   },
   {
     "key": "INFILE2",
+    "casedKey": "inFile2",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname of the input file containing the second chemical entity to work with (SDF or ACC's ZMatrix) when working with multiple ZMatrixes."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the file where to print the ZMatrix."
   },
   {
     "key": "TEMPLATEZMAT",
+    "casedKey": "templateZMat",
     "type": "<String>",
     "doc": "Pathname to ACC's ZMatrix used as template when generating ZMatrix for other, consistent molecular systems."
   },
   {
     "key": "TORSIONONLY",
+    "casedKey": "torsionOnly",
     "type": "",
     "doc": "Requests to use only torsions as 3rd internal coordinate in ZMatrix."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."

@@ -1,48 +1,57 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the SDF file containing the chemical system to work with."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the file where to print the results."
   },
   {
     "key": "TARGETSMARTS",
+    "casedKey": "targetSMARTS",
     "type": "<String>",
     "doc": "Single or multi line argument providing the list of SMARTS that identify the atoms to be included in the analysis."
   },
   {
     "key": "CUTOFF",
+    "casedKey": "cutoff",
     "type": "<float>",
     "doc": "Specifies the value of the cutoff (default: 0.6 Å). Being rA and rB the v.d.w radii of two atoms A and B, and d the interatomic distance, an atom clash occurs if the overlap=(rA + rB - d - allowance) between atoms A and B is larger than a specific cutoff. The allowance is a value in angstrom that allows to specify that some atoms can came closer to each other that the sum of their van der Waals radii. "
   },
   {
     "key": "ALLOWANCE",
+    "casedKey": "allowance",
     "type": "<float>",
     "doc": "specifies the value of the allowance (default: 0.4). See CUTOFF."
   },
   {
     "key": "ALLOWANCE13",
+    "casedKey": "allowance13",
     "type": "<float>",
     "doc": "Specifies the value of the allowance between atoms in 1-3 relationship. See CUTOFF."
   },
   {
     "key": "ALLOWANCE14",
+    "casedKey": "allowance14",
     "type": "<float>",
     "doc": "Specifies the value of the allowance between atoms in 1-4 relationship. See CUTOFF."
   },
   {
     "key": "CUSTOMALLOWANCE",
+    "casedKey": "customAllowance",
     "type": "<String>",
     "doc": "Specifies the value of the allowance between specific pairs of atoms that defined by SMARTS strings. Custom allowances can be defined by single or multi line argument (one custom allowance per line) according to the following syntax: <String> <String> <float>, where the strings are SMARTS queries and the float is the pair-specific allowance. See CUTOFF."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."

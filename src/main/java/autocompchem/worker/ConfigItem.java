@@ -1,5 +1,16 @@
 package autocompchem.worker;
 
+import java.lang.reflect.Type;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
+import autocompchem.chemsoftware.DirComponentAddress;
+import autocompchem.run.jobediting.JobEditType;
+
 /*   
  *   Copyright (C) 2022  Marco Foscato 
  *
@@ -27,19 +38,60 @@ package autocompchem.worker;
 
 public class ConfigItem
 {
+	/**
+	 * The string that identified this item. This is used for comparing items,
+	 * which is done in case insensitive way.
+	 */
 	final String key;
+	
+	/**
+	 * A cool, nice looking, specially-formatted lower/upper-case version of 
+	 * the string that
+	 * identified this item. Even though, we compare item keys in case
+	 * insensitive ways, we like to work with strings that facilitate the
+	 * reading and interpretation of the keys.
+	 */
+	final String casedKey;
+	
+	/**
+	 * A String-like description of the JAVA type of the value expected as input
+	 * for this item.
+	 */
 	final String type;
+	
+	/**
+	 * Doc string to be reported in the help message that described this 
+	 * configuration item.
+	 */
 	final String doc;
+	
+	/**
+	 * Flag defining if this item is meant to configure stand alone instances
+	 * of this worker.
+	 */
 	private Boolean isForStandalone = false;
+	
+	/**
+	 * The name of the worker that is actually taking care of doing some
+	 * work, but that is not he main worker to which this configuration 
+	 * item applies. We use this to fetch documentation on configuration
+	 * items that are effective on sub-jobs.
+	 */
 	final String embeddedWorker;
+	
+	/**
+	 * A very short sentence defining what this configuration item pertains
+	 * to.
+	 */
 	final String tag;
 
 //------------------------------------------------------------------------------
 	  
-	public ConfigItem(String key, String type, String doc, 
+	public ConfigItem(String key, String type, String casedKey, String doc, 
 			boolean isForStandalone, String embeddedWorker, String tag)
 	{
 		this.key = key;
+		this.casedKey= casedKey;
 		this.type = type;
 		this.doc = doc;
 		this.isForStandalone = isForStandalone;
@@ -93,7 +145,7 @@ public class ConfigItem
 		// to enable usage of newline characters in the documentation string.
 		String[] words = doc.split("[^\\S\\r\\n]"); 
 		StringBuilder sbHeader = new StringBuilder();
-		sbHeader.append(" -> ").append(key).append(" ").append(type);
+		sbHeader.append(" -> ").append(casedKey).append(" ").append(type);
 		String indent = "        ";
 		sbHeader.append(System.getProperty("line.separator"));
 		
@@ -140,6 +192,79 @@ public class ConfigItem
 		if (isForStandalone==null)
 			return false;
 		return isForStandalone;
+	}
+	
+//------------------------------------------------------------------------------
+	
+	public static class ConfigItemTypeDeserializer 
+	implements JsonDeserializer<ConfigItem>
+	{
+		@Override
+		public ConfigItem deserialize(JsonElement json, 
+				Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException 
+		{
+  	        JsonObject jsonObject = json.getAsJsonObject();
+  	        
+  	        ConfigItem ci = context.deserialize(
+  	        		jsonObject.get("address"), DirComponentAddress.class);
+  	      	
+  	        String key = null;
+  	        if (jsonObject.has("key"))
+			{
+  	            key = jsonObject.get("key").getAsString();
+                if (!key.toUpperCase().equals(key))
+                {
+                	throw new JsonParseException(
+                			ConfigItem.class.getSimpleName()
+                			+ "'s key '" + key + "' is not all upper case.");
+                }
+			}
+            String casedKey = null;
+            if (jsonObject.has("casedKey"))
+            {
+                casedKey = jsonObject.get("casedKey").getAsString();
+                if (!key.equals(casedKey.toUpperCase()))
+                {
+                	throw new JsonParseException(
+                			ConfigItem.class.getSimpleName()
+                			+ "'s key '" + key + "' doues not correspond to "
+                					+ "casedKey '" + casedKey + "'.");
+                }
+            } else if (jsonObject.has("key")) {
+            	casedKey = key;
+            }
+            String type = null;
+            if (jsonObject.has("type"))
+            {
+                type = jsonObject.get("type").getAsString();
+            }
+            String doc = null;
+            if (jsonObject.has("doc"))
+            {
+                doc = jsonObject.get("doc").getAsString();
+            }
+            
+            String tag = null;
+            if (jsonObject.has("tag"))
+            {
+                tag = jsonObject.get("tag").getAsString();
+            }
+			boolean isForStandalone = false;
+			if (jsonObject.has("isForStandalone"))
+			{	
+				isForStandalone = context.deserialize(
+						jsonObject.get("isForStandalone"),
+						Boolean.class);
+			}
+            String embeddedWorker = null;
+            if (jsonObject.has("embeddedWorker"))
+            {
+                embeddedWorker = jsonObject.get("embeddedWorker").getAsString();
+            }
+			return new ConfigItem(key, type, casedKey, doc, isForStandalone, 
+					embeddedWorker, tag);
+		}
 	}
 
 //------------------------------------------------------------------------------

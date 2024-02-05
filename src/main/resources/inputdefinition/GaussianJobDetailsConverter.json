@@ -1,16 +1,19 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "doc": "The pathname to the file to convert. This is expected to be formatted according to the old (version < 2.0) format for job details files."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "doc": "The pathname of the file where we save the converted job details."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }

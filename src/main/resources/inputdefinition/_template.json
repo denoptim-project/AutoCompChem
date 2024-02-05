@@ -1,51 +1,61 @@
 [
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "",
+    "casedKey": "",
     "type": "<String>",
     "doc": ""
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }

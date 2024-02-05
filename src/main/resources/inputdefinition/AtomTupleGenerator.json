@@ -1,37 +1,44 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to a SDF file containing the chemical system for which atom tuples should be generated."
   },
   {
     "key": "RULENAMEROOT",
+    "casedKey": "ruleNameRoot",
     "type": "<String>",
     "doc": "String used to name the rules meant to find atom tuples. This sting helps making the log more understandable but does not affect the behavior of the algorithms."
   },
   {
     "key": "VALUEDKEYWORDS",
+    "casedKey": "valuedKeywords",
     "type": "<String>",
     "doc": "Provides a space-separated list of keywords that should be in interpreted as the keys of key:value pairs. The separator bewteen the key and the value can be ':' or '=' and does not need to be specified. If any ':' or '=' is given in the definition of the keyword it will be ignored and threated as part of the keyword. Any word following the separator will be interpreted as part of the value until a word is found that is recognized as a keyword. By default the following keywords are recognized and can be used without explicitly adding them as new VALUEDKEYWORDS:\n --> 'Prefix=<text with spaces>' to specify a text to be placed before the list of atom tupla.\n --> 'Suffix=<text with spaces>' to specify text to be placed after the list of atom tupla)."
   },
   {
     "key": "BOOLEANKEYWORDS",
+    "casedKey": "booleanKeywords",
     "type": "<String>",
     "doc": "Provides a space-separated list of keywords that should be in interpreted as the keywords without any value (i.e., 'mute' keywords or 'boolean' keywords). Since no value is expected, any word following the keyword will be analyzed independently on the preceeding boolean keyword. Moreover, if any ':' or '=' is given in the definition of the keyword it will be ignored and threated as part of the keyword. Default boolean keywords that are always recognized are:\n --> 'GetCurrentValue': requests the determination of the value of the internal coordinate defined by the tuple: distance, angle, dihedral angle for 4-tuples. This keyword is ignored for N-tuples with N different from 2, 3, or 4.\n --> 'OnlyBonded': limits to tuples of atoms connected to form a path visiting the tuple in the orded given in the tuple matching rule. For example, a SMARTS-based rule for tuple '[#1] [#6] [#7]' may be limited to match only substructures where the H atom is connected with any bond to the C atom, which is connected with any bond to the N atom.\n Default boolean keywords do not need to be specified in this parameter."
   },  
   {
     "key": "SMARTS",
+    "casedKey": "SMARTS",
     "type": "<String>",
     "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as a single SMARTS until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as SMARTS. The order of the SMARTS is retained."
   },
   {
     "key": "ATOMIDS",
+    "casedKey": "atomIDs",
     "type": "<String>",
     "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as an integer 0-based atom index until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as indexes. The order of the indexes i retained."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }

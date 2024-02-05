@@ -1,41 +1,49 @@
 [
   {
     "key": "INPFFFILE",
+    "casedKey": "inpFFFile",
     "type": "<String>",
     "doc": "The pathname to the initial force field."
   },
   {
     "key": "INFFFORMAT",
+    "casedKey": "inFFFormat",
     "type": "<String>",
     "doc": "The format of the initial force field file. Currently known formats: 'FFFILETNKFORMAT' (Tinker format)."
   },
   {
     "key": "MOLFILES",
+    "casedKey": "molFiles",
     "type": "<String>",
     "doc": "Pathname to the molecular structure file (SDF) defining the systems for which a force field is generated from the vibrational analysis."
   },
   {
     "key": "VAFILES",
+    "casedKey": "VAFiles",
     "type": "<String>",
     "doc": "Pathname to the vibrational analysis files (VibModule) providing force constants for the analyzed systems."
   },
   {
     "key": "INTCOORDBYSMARTS",
+    "casedKey": "intCoordBySMARTS",
     "type": "<String>",
     "doc": "Lines defining which force field energy terms are to be extracted from VibModule analysis. Each line defines a tuple (up to 4 strings) of SMARTS followed by a keyword defining the type of energy term among 'STR' (stretching), 'BND' (bending), 'OOP' (out-of-plane bending), and 'TOR' (torsion)."
   },
   {
     "key": "SMARTSTOATOMTYPEMAP",
+    "casedKey": "SMARTSToAtomTypeMap",
     "type": "<String>",
     "doc": "Lines defining the relation between single-atom SMARTS queries and atom types/classes. The syntax of each line must be: <String> type=<int> [class=<int>], where the first string is the SMARTS query, and the following integers define the atom type and, optionally, the class of the atom type."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "doc": "The pathname to the file where to print the new force field."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }

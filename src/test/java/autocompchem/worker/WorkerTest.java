@@ -1,6 +1,5 @@
 package autocompchem.worker;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -20,11 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonParseException;
+
 
 
 /**
@@ -35,11 +40,60 @@ import org.junit.jupiter.api.Test;
 
 public class WorkerTest 
 {
+//-----------------------------------------------------------------------------
+    
+    @Test
+    public void testGetKnownParameters_fromFile() throws Exception
+    {
+    	List<ConfigItem> knownInput = Worker.getKnownParameters(
+    			"inputdefinition/DummyFileForUnitTesting.json");
+    	
+    	assertEquals(2, knownInput.size());
+    	
+    	assertEquals(1, knownInput.stream()
+    			.filter(i -> i.key != null)
+    			.filter(i -> i.key.equals("INFILE"))
+    			.count());
+    	assertEquals(1, knownInput.stream()
+    			.filter(i -> i.key != null)
+    			.filter(i -> i.key.equals("OUTFILE"))
+    			.count());
+    	
+    	ConfigItem ci = knownInput.get(0);
+    	assertEquals(ci.key, "INFILE");
+    	assertEquals(ci.casedKey, "inFile");
+    	assertEquals(ci.type, "SomeType");
+    	assertTrue(ci.doc.contains("input"));
+    	assertEquals(3, ci.doc.split("\\n").length);
+    	assertEquals(ci.embeddedWorker, "SomeWorker");
+    	assertTrue(ci.tag.contains("ddaattaa"));
+    	assertTrue(ci.isForStandalone());
+    }
     
 //-----------------------------------------------------------------------------
     
     @Test
-    public void testGetKnownSettings() throws Exception
+    public void testGetKnownParameters_wrongCase() throws Exception
+    {
+        assertThrows(JsonParseException.class, 
+                () -> Worker.getKnownParameters(
+    			"inputdefinition/DummyFileForUnitTestingWrongCase.json"));
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Test
+    public void testGetKnownParameters_wrongKey() throws Exception
+    {
+        assertThrows(JsonParseException.class, 
+                () -> Worker.getKnownParameters(
+    			"inputdefinition/DummyFileForUnitTestingWrongKey.json"));
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Test
+    public void testGetKnownParameters() throws Exception
     {
     	DummyWorker2 w = new DummyWorker2();
     	

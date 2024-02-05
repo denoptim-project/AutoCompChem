@@ -1,48 +1,57 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the SDF file containing the chemical system to work with."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the file where to print the resulting chemical system."
   },
   {
     "key": "LINEARITIES",
+    "casedKey": "linearities",
     "type": "",
     "doc": "Makes the tool add/remove dummy atoms used to represent linear arrangements of atoms with internal coordinates. It is assumed that such dummy atom are explicitly bonded to only one other atom."
   },
   {
     "key": "PLANARITIES",
+    "casedKey": "planarities",
     "type": "",
     "doc": "Makes the tool add/remove dummy atoms used to heal planar systems of atoms in internal coordinates. It is assumed that such dummy atom are explicitly bonded to only one other atom."
   },
   {
     "key": "MULTIHAPTO",
+    "casedKey": "multiHapto",
     "type": "<String>",
     "doc": "Makes the tool add/remove dummy atoms used to describe multihapto systems. It is assumed that a dummy atom is places somewhere in the ligands (i.e., the centroid, usually) and connected to the other end of the multihapto connection, and all the atoms contributing to the metal-ligand bond. For instance, one dummy atom connected to the 5 carbon atoms of a cyclopentadienyl ligand and to the metal atom."
   },
   {
     "key": "DUSYMBOL",
+    "casedKey": "DuSymbol",
     "type": "<String>",
     "doc": "The symbol or label that identifies the dummy atoms to remove. Compatible with both LINEARITIES and MULTIHAPTO."
   },
   {
     "key": "SOURCEATOMS",
+    "casedKey": "sourceAtoms",
     "type": "<int> [<int> [<int> [...]]]",
     "doc": "List of atom indexes identifying source atoms where dummy atoms have to be added."
   },
   {
     "key": "TEMPLATE",
+    "casedKey": "template",
     "type": "<String>",
     "doc": "Pathname to a file containing a chemical system to be used as template when adding dummy atoms. Since the atom lists of the template and input structure are expected to be consistent, the dummy atoms of the template must be all at the end of the atom list."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."

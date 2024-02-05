@@ -1,17 +1,20 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "doc": "The pathname to the file to read as input."
   },
   {
     "key": "PARAM1",
+    "casedKey": "param1",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "Doc of parameter 1"
   },
   {
     "key": "PARAM2",
+    "casedKey": "param2",
     "type": "<String>",
     "doc": "Doc\nof\nparameter 2"
   },

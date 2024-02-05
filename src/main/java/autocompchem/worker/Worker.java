@@ -164,10 +164,22 @@ public abstract class Worker implements IOutputExposer
      */
     public List<ConfigItem> getKnownParameters()
     {
+        return getKnownParameters(getKnownInputDefinition());
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Reads the list on known parameters from JSON file.
+     * @param the JSON file containing the information to read in.
+     * @return the list of input settings.
+     */
+    protected static List<ConfigItem> getKnownParameters(String pathName)
+    {
     	Gson reader = ACCJson.getReader();
     	List<ConfigItem> knownParams = new ArrayList<ConfigItem>();
         InputStream ins = Worker.class.getClassLoader()
-        	 .getResourceAsStream(getKnownInputDefinition());
+        	 .getResourceAsStream(pathName);
         BufferedReader br = null;
         try
         {
@@ -177,7 +189,7 @@ public abstract class Worker implements IOutputExposer
         }
         catch (JsonSyntaxException jse)
         {
-        	throw new Error("Format of '" + getKnownInputDefinition() + "' is "
+        	throw new Error("Format of '" + pathName + "' is "
            		+ "corrupted. Please report this to the authors.", jse);
         }
         finally 

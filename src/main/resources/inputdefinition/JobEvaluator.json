@@ -1,41 +1,49 @@
 [
   {
     "key": "SITUATIONSDBROOT",
+    "casedKey": "situationsDBRoot",
     "type": "<String>",
     "doc": "The pathname to the root folder that collects all known situations, i.e., the database of known situations."
   },
   {
     "key": "IC-INPUT",
+    "casedKey": "IC-Input",
     "type": "<String>[:<String>[:<String>[...]]]",
     "doc": "List (separated by OS's path separator) of input files to be included as source of information, i.e., information channels. With 'input' we mean one or more input files of the job that is being evaluated."
   },
   {
     "key": "IC-LOGS",
+    "casedKey": "IC-Logs",
     "type": "<String>[:<String>[:<String>[...]]]",
     "doc": "List (separated by OS's path separator) of log files to be included as source of information, i.e., information channels. With 'log file' we mean one or more file containing the log produced by the job being evaluated."
   },
   {
     "key": "IC-OUTPUT",
+    "casedKey": "IC-Output",
     "type": "<String>[:<String>[:<String>[...]]]",
     "doc": "List (separated by OS's path separator) of output files to be used as source of information, i.e., information channels. With 'output' we mean one or more output file produced by the job being evaluated."
   },
   {
     "key": "IC-JOBDETAILS",
+    "casedKey": "IC-JobDetails",
     "type": "<String>[:<String>[:<String>[...]]]",
     "doc": "List (separated by OS's path separator) of job details file to be used as source of information, i.e., information channel. With 'job' we mean the job being evaluated."
   },
   {
     "key": "TOLERATEMISSINGIC",
+    "casedKey": "tolerateMissingIC",
     "type": "<boolean>",
     "doc": "Set the value to True to allow the evaluation to tolerate the lack of some information channels by considering any circumstance requiring such info channel as unverified. Default=False, i.e., does not tolerate lack of information channels."
   },
   {
     "key": "JOBDEFINITION",
+    "casedKey": "jobDefinition",
     "type": "<String>",
     "doc": "Pathname to the job details file defining the job being evaluated. If this is not given error-curating actions that alter the job being evaluated cannot be performed."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."

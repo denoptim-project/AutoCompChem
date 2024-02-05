@@ -1,34 +1,40 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to a SDF file containing the chemical system for which the basis set should be generated."
   },
   {
     "key": "ATOMSPECIFICBASISSET",
+    "casedKey": "atomSpecificBasisSet",
     "type": "<String>",
     "doc": "The collection of rules used to define the basis set."
   },
   {
     "key": "ALLOWPARTIALMATCH",
+    "casedKey": "allowPartialMatch",
     "type": "<boolean>",
     "doc": "Set the value to True to permit that some atoms are not matched by basis set assignation rules."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the file where to print the basis set."
   },
   {
     "key": "FORMAT",
+    "casedKey": "format",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The format for writing basis set. Possible values are 'Gaussian', or 'NWChem'."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."

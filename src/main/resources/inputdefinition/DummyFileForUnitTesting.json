@@ -1,0 +1,18 @@
+[
+  {
+    "key": "INFILE",
+    "casedKey": "inFile",
+    "type": "SomeType",
+    "doc": "The pathname to \nthe file to \nread as input.",
+    "isForStandalone": true,
+    "embeddedWorker": "SomeWorker",
+    "tag": "generation of ddaattaa"
+  },
+  {
+    "key": "OUTFILE",
+    "casedKey": "outFile",
+    "type": "<String>",
+    "doc": "The pathname to the file to write as output.",
+    "isForStandalone": true
+  }
+]

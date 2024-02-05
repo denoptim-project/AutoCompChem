@@ -1,23 +1,27 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the jobdetails file to convert."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the JSON file to create from the job details one."
   },
   {
     "key": "INPUTFORMAT",
+    "casedKey": "inputFormat",
     "type": "<String>",
     "doc": "Specifies how to interprete the input file. Acceptable values are 'CCJ' for a computational chemistry job, 'DIRECTIVES' for a firectives file (e.g., such as the job details for XTB jobs), 'GAUSSIANJD' for a job details file for Gaussian, and 'NWCHEMJD' for a job details file for NWChem. If not specified, we'll assume the input file is an AutoCompChem job details file defining a job."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }

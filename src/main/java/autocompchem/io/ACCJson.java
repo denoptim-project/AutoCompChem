@@ -66,6 +66,8 @@ import autocompchem.run.jobediting.SetDirectiveComponent;
 import autocompchem.run.jobediting.AddDirectiveComponent;
 import autocompchem.run.jobediting.AddDirectiveComponent.AddDirectiveComponentDeserializer;
 import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
+import autocompchem.worker.ConfigItem;
+import autocompchem.worker.ConfigItem.ConfigItemTypeDeserializer;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -183,6 +185,8 @@ public class ACCJson
     	        		new InfoChannelTypeDeserializer())
     	        .registerTypeHierarchyAdapter(ArchivingTaskType.class, 
     	        		new ArchivingTaskTypeDeserializer())
+    	        .registerTypeHierarchyAdapter(ConfigItem.class, 
+    	        		new ConfigItemTypeDeserializer())
     			.create();
     }
 

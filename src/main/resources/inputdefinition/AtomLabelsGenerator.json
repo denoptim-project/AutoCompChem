@@ -1,33 +1,39 @@
 [
   {
     "key": "INFILE",
+    "casedKey": "inFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the SDF file containing the chemical system to work with."
   },
   {
     "key": "OUTFILE",
+    "casedKey": "outFile",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the file where to print the results."
   },
   {
     "key": "LABELTYPE",
+    "casedKey": "labelType",
     "type": "<String>",
     "doc": "Specifies how to create atom labels. Available options are 'ElementBased' (e.g., 'C1', 'C2', 'H1', 'H2') and 'IndexBased' (e.g., 'C1', 'C2', 'H4', 'H4')."
   },
   {
     "key": "ZEROBASED",
+    "casedKey": "zeroBased",
     "type": "<boolean>",
     "doc": "Specifies whether to use 0-based (default) or 1-based indexing."
   },
   {
     "key": "SEPARATOR",
+    "casedKey": "separator",
     "type": "<String>",
     "doc": "Specifies a separator to use between labels when reporting the list of labels in output file and log."
   },
   {
     "key": "VERBOSITY",
+    "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }
