@@ -182,7 +182,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			case ("*"): // OrcaConstants.STARDIRNAME
+			case ("*"): // OrcaConstants.STARDIRNAME //TODO-gg
 			{
 				lines.addAll(getTextForCoordsBlock(d,true));
 				break;
@@ -442,54 +442,45 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		
 		for (DirectiveData dd : d.getAllDirectiveDataBlocks())
 		{
-			if (dd.getName().toUpperCase().equals(
-					ChemSoftConstants.DIRDATAGEOMETRY))
+			Object o = dd.getValue();
+			switch (dd.getType())
 			{
-				Object o = dd.getValue();
-				switch (dd.getType())
+			
+				//TODO: you can save atom-specific basis set into the atom
+			    // and retrieve then here. This because ORCA only accepts 
+			    // atom specific information into the coords/xyz directive.
+			
+				case IATOMCONTAINER:
 				{
-				
-					//TODO: you can save atom-specific basis set into the atom
-				    // and retrieve then here. This because ORCA only accepts 
-				    // atom specific information into the coords/xyz directive.
-				
-					case IATOMCONTAINER:
+					IAtomContainer mol = (IAtomContainer) o;
+					for (IAtom atm : mol.atoms())
 					{
-						IAtomContainer mol = (IAtomContainer) o;
-						for (IAtom atm : mol.atoms())
-						{
-							Point3d p3d = AtomUtils.getCoords3d(atm);
-							lines.add(OrcaConstants.INDENT 
-									+ String.format(Locale.ENGLISH," %3s",atm.getSymbol())
-									+ String.format(Locale.ENGLISH," %10.5f",p3d.x)
-									+ String.format(Locale.ENGLISH," %10.5f",p3d.y)
-									+ String.format(Locale.ENGLISH," %10.5f",p3d.z));
-						}
-						break;
+						Point3d p3d = AtomUtils.getCoords3d(atm);
+						lines.add(OrcaConstants.INDENT 
+								+ String.format(Locale.ENGLISH," %3s",atm.getSymbol())
+								+ String.format(Locale.ENGLISH," %10.5f",p3d.x)
+								+ String.format(Locale.ENGLISH," %10.5f",p3d.y)
+								+ String.format(Locale.ENGLISH," %10.5f",p3d.z));
 					}
-					
-					case ZMATRIX:
-					{
-						//TODO
-						Terminator.withMsgAndStatus("ERROR! Writing of "
-								+ "ZMatrix in Orca input file is not yet"
-								+ "implemented... sorry!",-1);
-						break;
-					}
-					
-					default:
-					{	
-						Terminator.withMsgAndStatus("ERROR! Unable to "
-								+ "understand type of geometry '" + 
-								dd.getType() + "' in OrcaInputWriter.",-1);
-						break;
-					}
+					break;
 				}
 				
-			} else {
-				for (String innerLine : dd.getLines())
+				case ZMATRIX:
 				{
-					lines.add(OrcaConstants.INDENT + innerLine);
+					//TODO
+					Terminator.withMsgAndStatus("ERROR! Writing of "
+							+ "ZMatrix in Orca input file is not yet"
+							+ "implemented... sorry!",-1);
+					break;
+				}
+				
+				default:
+				{	
+					for (String innerLine : dd.getLines())
+					{
+						lines.add(OrcaConstants.INDENT + innerLine);
+					}
+					break;
 				}
 			}
 		}

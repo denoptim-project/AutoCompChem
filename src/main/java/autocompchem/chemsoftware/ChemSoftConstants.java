@@ -223,15 +223,6 @@ public class ChemSoftConstants
 	public static final String PARNOSPIN = "NOSPIN";
 	
 	/**
-	 * Key for the parameter defining where and how and what geometry to add  
-	 * (i.e., what actual chemical system to consider). This is used inside
-	 * the DirectiveData object that will later contain the actual coordinates.
-	 * This string can be followed (space separated a specification of the
-	 * {@link CoordsType}.
-	 */
-	public static final String PARGEOMETRY = "ADD_GEOMETRY";
-	
-	/**
 	 * Possible values for how a molecular geometry can be reported
 	 */
 	public static enum CoordsType {XYZ, ZMAT};
@@ -249,14 +240,6 @@ public class ChemSoftConstants
 	 * fifth atom in the list, which is a carbon atom.
 	 */
 	public static final String PARUSEATMTAGS = "USEATOMTAGS";
-	
-	/**
-	 * Key for the parameter defining where to add filename that is dependent 
-	 * on the specifics of the molecular system calculated. This string can be 
-	 * followed (space separated by a string to be appended to the pathname 
-	 * root.
-	 */
-	public static final String PARGETFILENAMEROOT = "GET_FILENAME";
 
 	/**
 	 * Key for parameter defining if and what suffix append when
@@ -269,11 +252,6 @@ public class ChemSoftConstants
 	 * reporting the complete pathname in tasks {@link PARGETFILENAMEROOT}
 	 */
 	public static final String PARGETFILENAMEROOTQUOTE = "QUOTATION";
-
-	/**
-	 * Task requesting the generation of atom specific keywords.
-	 */
-	public static final String PARADDATOMSPECIFICKEYWORD = "ADDATOMSPECKEYWORDS";
 	
 	/**
 	 * Key for parameter defining the reference name of a keyword generated in
@@ -329,25 +307,29 @@ public class ChemSoftConstants
 	 */
 	public static final String PARANALYSISTASKS = "ANALYSISTASKS";
 
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */
 	public static final String PARPRINTLASTGEOM = "PRINTLASTGEOMETRY";
-	
+
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print the last geometry from each step of
 	 * a comp.chem job
 	 */
 	public static final String PARPRINTLASTGEOMEACH = 
 			"PRINTLASTGEOMETRYOFEACHSTEP";
-	
+
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */
 	public static final String PARPRINTALLGEOM = "PRINTALLGEOMETRIES";
 
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print vibrational modes
 	 */
@@ -370,11 +352,13 @@ public class ChemSoftConstants
 	 */
 	public static final String ANALYZEONLYFINALGEOM = "FINALGEOM";
 
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to calculate free energy
 	 */
 	public static final String PARGETENERGY = "GETFREEENERGY";
 
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting analysis of the kind of critical point
 	 * found on a potential energy surface (minimum vs. saddle point)
@@ -382,11 +366,14 @@ public class ChemSoftConstants
 	public static final String PARCRITICALPOINTKIND = 
 			"DETECTKINDOFCRITICALPOINT";
 
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting the generation of geometrical constraints.
 	 */
 	public static final String PARGEOMCONSTRAINTS = "GEOMCONTRAINTS";
 
+
+	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting the inclusion of additional internal
 	 * coordinates.

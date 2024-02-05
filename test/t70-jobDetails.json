@@ -32,7 +32,7 @@
       "accTaskParams": [
         {
           "reference": "TASK",
-          "value": "ADDATOMSPECKEYWORDS"
+          "value": "ADDATOMSPECIFICKEYWORDS"
         },
         {
           "reference": "KeywordName",

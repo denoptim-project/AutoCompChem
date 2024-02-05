@@ -1,5 +1,8 @@
 package autocompchem.worker;
 
+import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -20,7 +23,14 @@ package autocompchem.worker;
 import autocompchem.run.Terminator;
 
 /**
- * Collection of all registered tasks.
+ * Collection of all registered tasks. Each one may or may not have a dedicated 
+ * {@link Worker} that declares its capability to perform such task.
+ * 
+ * <p><b>WARNING:</b> although {@link TaskID}s can be created from string,
+ * you should always check for equality using their 
+ * <code>.equals()</code> method, not by string representation as the latter
+ * is altered to remove spaces and underscores, so you may not be comparing
+ * the strings you think to be comparing.</p>
  * 
  * @author Marco Foscato
  */
@@ -40,6 +50,27 @@ public enum TaskID
     COMPARETWOMOLECULES,     
     CONVERTZMATRIXTOSDF,
     CONVERTJOBDETAILS,
+    // generate atom-specific information
+    ADDATOMSPECIFICKEYWORDS,
+    
+    /**
+	 * Task about adding a filename that is dependent 
+	 * on the specifics of the molecular system calculated. This string can be 
+	 * followed (space separated by a string to be appended to the pathname 
+	 * root.
+	 */
+    ADDFILENAME,
+    
+	/**
+	 * Task about reporting a geometry. Defined where and how and what geometry 
+	 * (i.e., what actual chemical system to consider). This is used inside
+	 * the {@link DirectiveData} object that will later contain the actual 
+	 * coordinates.
+	 * This string can be followed (space separated a specification of the
+	 * {@link CoordsType}.
+	 */
+    ADDGEOMETRY,
+    
     // analyze data in the output/log
     ANALYSEOUTPUT,
     ANALYSEGAUSSIANOUTPUT, 
@@ -94,8 +125,10 @@ public enum TaskID
 //-----------------------------------------------------------------------------
 	
 	/**
-	 * Converts a plain string into a TaskID, or stops with error message.
-	 * @param task the string to be converted
+	 * Converts a plain string into a {@link TaskID} even if the plain string
+	 * contains spaces of "_" characters (NB: spaces and "_" are removed from 
+	 * the string), or stops with error message.
+	 * @param task the string to be converted. May contain spaces or "_".
 	 * @return the TaskID corresponding to the given string or exits with an 
 	 * error.
 	 */
@@ -104,6 +137,7 @@ public enum TaskID
 	{
     	TaskID taskID = TaskID.UNSET;
     	boolean found = false;
+    	task = task.trim().replaceAll("\\s+", "").replaceAll("_", "");
     	for (TaskID knownTaskID : TaskID.values())
     	{
     		if (knownTaskID.toString().toUpperCase().equals(task.toUpperCase()))

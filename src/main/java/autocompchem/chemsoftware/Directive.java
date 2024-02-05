@@ -1005,7 +1005,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 			ps.importParametersFromLines(taskSpecificLines);
 		}
 		
-		//TODO: much of this will eventually be removed or moved to a dedicated 
+		//TODO-gg: much of this will eventually be removed or moved to a dedicated 
 		// class for converting job details files
 		
 		//Another fix of the obsolete syntax
@@ -1103,22 +1103,18 @@ public class Directive implements IDirectiveComponent, Cloneable
         } else {
         	return;
         }
-    	
-    	// TODO-gg this mess is all because the tasks are not all in TaskID
-    	// TODO-gg Need to clean up this part!!!
-    	if (task.toUpperCase().equals(TaskID.GENERATEBASISSET.toString()))
-    	{
-    		task = BasisSetConstants.ATMSPECBS;
-    	}
         
-        switch (task.toUpperCase()) 
+    	//NB: this will exit with an error should the string not be good enough
+    	TaskID taskID = TaskID.getFromString(task);
+        switch (taskID) 
         {   
-	        case ChemSoftConstants.PARADDATOMSPECIFICKEYWORD:
+	        case ADDATOMSPECIFICKEYWORDS:
 	        {
 	        	if (!(dirComp instanceof Directive))
 	        	{
 	        		throw new IllegalArgumentException("Task " + task 
-	        				+ " can be performed only from within a Directive. "
+	        				+ " can be performed only from within a "
+	        				+ Directive.class.getSimpleName() + ". "
 	        				+ "Not from " + dirComp.getClass().getName() + ".");
 	        	}
 	        	Directive targetDir = (Directive) dirComp;
@@ -1128,6 +1124,8 @@ public class Directive implements IDirectiveComponent, Cloneable
         		
         		// Define atom pointers
         		ParameterStorage labMakerParams = params.clone();
+        		
+                //TODO-gg use WorkerConstant.TASK
         		labMakerParams.setParameter("TASK", 
                 		TaskID.GENERATEATOMLABELS.toString());
 				AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
@@ -1182,7 +1180,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	        	}
 	        	break;
 	        }
-            case ChemSoftConstants.PARGETFILENAMEROOT:
+            case ADDFILENAME:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	
@@ -1209,7 +1207,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            case ChemSoftConstants.PARGEOMETRY:
+            case ADDGEOMETRY:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	
@@ -1303,7 +1301,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             	
-            case BasisSetConstants.ATMSPECBS:
+            case GENERATEBASISSET:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	
@@ -1325,7 +1323,8 @@ public class Directive implements IDirectiveComponent, Cloneable
             	}
             	
                 ParameterStorage bsGenParams = new ParameterStorage();
-                bsGenParams.setParameter(params.getParameter(task));
+                bsGenParams.setParameter(params.getParameter(
+                		BasisSetConstants.ATMSPECBS));
                 
                 //TODO-gg this simplifies if we use TaskID as it should 
                 bsGenParams.setParameter("TASK", "GENERATEBASISSET");
@@ -1339,9 +1338,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            //TODO make this work on enum, and create TaskIDs for all other tasks
-            //case TaskID.GENERATECONSTRAINTS:
-            case "GENERATECONSTRAINTS":
+            case GENERATECONSTRAINTS:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
         	
@@ -1377,9 +1374,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 break;
             }
             
-          //TODO make this work on enum, and create TaskIDs for all other tasks
-            //case TaskID.GENERATECONFORMATIONALSPACE:
-            case "GENERATECONFORMATIONALSPACE":
+            case GENERATECONFORMATIONALSPACE:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
         	
@@ -1412,17 +1407,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            case ChemSoftConstants.PARADDINTCOORDS:
-            {
-            	//TODO: remove and use the add_geometry task instead
-            	Terminator.withMsgAndStatus("ERROR! handling of "
-        				+ "redundant internal coordinates not implemented "
-        				+ "yet... sorry!",-1);
-            	break;
-            }
-            
-            //TODO-gg use TaskID.GENERATEATOMLABELS
-            case "GENERATEATOMLABELS":
+            case GENERATEATOMLABELS:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	// WARNING: uses only the first molecule
@@ -1447,8 +1432,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-          //TODO-gg use TaskID.GENERATEATOMTUPLES
-            case "GENERATEATOMTUPLES":
+            case GENERATEATOMTUPLES:
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	// WARNING: uses only the first molecule
@@ -1495,8 +1479,11 @@ public class Directive implements IDirectiveComponent, Cloneable
     	if (! (dirComp instanceof IValueContainer))
     	{
     		throw new IllegalArgumentException("Task " + task 
-    				+ " can be performed only from within Keywords "
-    				+ "or DirectiveData. Not from " 
+    				+ " can be performed only from within "
+    				+ Keyword.class.getSimpleName()
+    				+ "or "
+    				+ DirectiveData.class.getSimpleName()
+    				+ ". Not from " 
     				+ dirComp.getClass().getName() + ".");
     	}
     }

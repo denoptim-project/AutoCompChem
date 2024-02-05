@@ -887,7 +887,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 					Terminator.withMsgAndStatus("ERROR! Unable to clone "
-							+ "directive: some value in not cloneable!", -1);
+							+ "directive: some value is not cloneable!", -1);
 				}
 			}
 	
@@ -900,15 +900,17 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			}
 			
 			ParameterStorage taskParams = dd.getTaskParams();
+			// TODO-gg why is this done only for NWChem?
 			hasAddGeometryTask = taskParams!=null 
 					&& taskParams.contains(ChemSoftConstants.JDACCTASK)
-					&& taskParams.getParameterValue(ChemSoftConstants.JDACCTASK)
-						.equals(ChemSoftConstants.PARGEOMETRY);
+					&& TaskID.getFromString(taskParams.getParameterValue(
+							ChemSoftConstants.JDACCTASK)).equals(
+									TaskID.ADDGEOMETRY);
 			if (dd.getValue()==null && !hasAddGeometryTask)
 			{
 				taskParams = new ParameterStorage();
 				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
-						ChemSoftConstants.PARGEOMETRY);
+						TaskID.ADDGEOMETRY.toString());
 				if (useAtomTags)
 					taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
 				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, 

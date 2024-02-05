@@ -49,13 +49,13 @@ public class ACCMain
     /**
      * The command line argument that triggers the printing of the help message.
      */
-	private static final Object CLIHELP = "--HELP";
+    private static final Object CLIHELP = "--HELP";
 
     /**
      * The short form of the command line argument that triggers the printing of
      *  the help message.
      */
-	private static final Object CLIHELPSHORT = "-H";
+    private static final Object CLIHELPSHORT = "-H";
 
 //------------------------------------------------------------------------------
     
@@ -74,7 +74,7 @@ public class ACCMain
         Job job = null;
         if (args.length < 1)
         {
-        	//TODO eventually here we will launch the gui.
+            //TODO eventually here we will launch the gui.
             printUsage();
             Terminator.withMsgAndStatus("ERROR! No input or command line "
                 + "argument given. " + NL
@@ -84,60 +84,60 @@ public class ACCMain
         }
         else if (args.length == 1)
         {
-        	String pathName = args[0];
-        	
-        	if (CLIHELP.equals(pathName.toUpperCase()) 
-        			|| CLIHELPSHORT.equals(pathName.toUpperCase()))
-        	{
-        		printUsage();
-        		Terminator.withMsgAndStatus("Normal termination", 0);
-        	}
-        	
+            String pathName = args[0];
+            
+            if (CLIHELP.equals(pathName.toUpperCase()) 
+                    || CLIHELPSHORT.equals(pathName.toUpperCase()))
+            {
+                printUsage();
+                Terminator.withMsgAndStatus("Normal termination", 0);
+            }
+            
             try {
-            	job = JobFactory.buildFromFile(new File(pathName));
+                job = JobFactory.buildFromFile(new File(pathName));
             } catch (Throwable t) {
-            	t.printStackTrace();
+                t.printStackTrace();
                 String msg = "ERROR! Exception returned while reading "
-                		+ "job settings from file '" + pathName + "'.";
+                        + "job settings from file '" + pathName + "'.";
                 Terminator.withMsgAndStatus(msg,-1);
             }
         }
         else if (args.length > 1)
         {
-        	job = parseCLIArgs(args);
-        	
-        	boolean requiresHelp = false;
-        	for (int i=0; i<args.length; i++)
-        	{
-        		if (CLIHELP.equals(args[i].toUpperCase()) 
-            			|| CLIHELPSHORT.equals(args[i].toUpperCase()))
-            	{
-        			requiresHelp = true;
-        			break;
-            	}
-        	}
-        	
-        	if (requiresHelp)
-        	{
-	        	if (job instanceof ACCJob)
-	        	{
-	        		Worker w = ((ACCJob) job).getUninitializedWorker();
-	        		System.out.println(w.getTaskSpecificHelp());
-	        	} else {
-	        		System.out.println("No help message available for " 
-	        				+ job.getClass().getName() + "jobs.");
-	        	}
-	        	Terminator.withMsgAndStatus("Exiting upon request to print "
-	        			+ "help message",0);
-        	}
+            job = parseCLIArgs(args);
+            
+            boolean requiresHelp = false;
+            for (int i=0; i<args.length; i++)
+            {
+                if (CLIHELP.equals(args[i].toUpperCase()) 
+                        || CLIHELPSHORT.equals(args[i].toUpperCase()))
+                {
+                    requiresHelp = true;
+                    break;
+                }
+            }
+            
+            if (requiresHelp)
+            {
+                if (job instanceof ACCJob)
+                {
+                    Worker w = ((ACCJob) job).getUninitializedWorker();
+                    System.out.println(w.getTaskSpecificHelp());
+                } else {
+                    System.out.println("No help message available for " 
+                            + job.getClass().getName() + "jobs.");
+                }
+                Terminator.withMsgAndStatus("Exiting upon request to print "
+                        + "help message",0);
+            }
         }
 
         // Do the task
         try {
             job.run();
         } catch (IllegalArgumentException iae) {
-        	Terminator.withMsgAndStatus("ERROR! Input led to illegal argument. "
-        			+ NL + "Hint: " + iae.getMessage(), -1);
+            Terminator.withMsgAndStatus("ERROR! Input led to illegal argument. "
+                    + NL + "Hint: " + iae.getMessage(), -1);
         } catch (Throwable t) {
             t.printStackTrace();
             String msg = t.getMessage();
@@ -164,7 +164,7 @@ public class ACCMain
 
 //------------------------------------------------------------------------------
     
-	/**
+    /**
      * Parses the vector of command line arguments.
      * @param args the vector of arguments to be parsed.
      * @return job the job set up from the parameters parsed from command line.
@@ -172,178 +172,182 @@ public class ACCMain
     
     protected static Job parseCLIArgs(String[] args)
     {
-    	Job job = null;
-    	
-    	ParameterStorage params = new ParameterStorage();
-    	params.setDefault();
-    	
-    	// First, look for the -t/--task or for -p/--params: 
-    	// either one must be there
-    	boolean foundTask = false;
-    	String task = null;
-    	boolean foundParams = false;
-    	File paramsFile = null;
-    	String cliString = "";
-    	for (int iarg=0; iarg<args.length; iarg++)
-    	{
-    		String arg = args[iarg];
-    		if (arg.equalsIgnoreCase("-t") || arg.equalsIgnoreCase("--task"))
-    		{	
-    			if (iarg+1 >= args.length)
-    			{
-    				Terminator.withMsgAndStatus("ERROR! Option -t (--task)"
-    						+ " seems to have no value. I expect to find "
-    						+ "something like '-t <taskID>', but I see "
-    						+ "only '" + arg + "'.",-1);
-    			}
-    			task = args[iarg+1];
-    			foundTask = true;
-    		}
-    		
-    		if (arg.equalsIgnoreCase("-p") || arg.equalsIgnoreCase("--params"))
-    		{	
-    			if (iarg+1 >= args.length)
-    			{
-    				Terminator.withMsgAndStatus("ERROR! Option -p (--params)"
-    						+ " seems to have no value. I expect to find "
-    						+ "something like '-p <pathname>', but I see "
-    						+ "only '" + arg + "'.",-1);
-    			}
-    			paramsFile = new File(args[iarg+1]);
-    			foundParams=true;
-    		}
-    		
-    		if (arg.equalsIgnoreCase("--"+ParameterConstants.STRINGFROMCLI))
-    		{	
-    			if (iarg+1 >= args.length)
-    			{
-    				Terminator.withMsgAndStatus("ERROR! Option " + arg
-    						+ " seems to have no value. I expect to find "
-    						+ "a string after '" + arg + "'.",-1);
-    			}
-    			cliString = args[iarg+1];
-    		}
-    	}
-    	
-    	// Check consistency between use of -t and -p
-    	if (foundTask && foundParams)
-    	{
-    		Terminator.withMsgAndStatus("ERROR! Found both -t/--task and "
-    				+ "-p/--params options. "
-    				+ "You can use only one of the two.",-1);
-    	}
-    	if (!foundTask && !foundParams)
-    	{
-    		Terminator.withMsgAndStatus("ERROR! Neither -t/--task nor "
-    				+ "-p/--params options found. "
-    				+ "You must use either -t/-p, or provide a single argument"
-    				+ " that is the pathname to an existing paremeters file.",
-    				-1);
-    	}
-    	
-    	if (foundTask)
-    	{
-			//NB: this will kill me with an error message in case 
-			// the given string does not correspond to a registered 
-			// task.
-			TaskID.getFromString(task);
-			params.setParameter(WorkerConstants.PARTASK, task);
-    	}
-    	
-    	if (foundParams)
-    	{
-    		//NB: this will kill me with an error if the file is not found
-			// or not readable.
-			FileUtils.foundAndPermissions(paramsFile, true, false, false);
-			
-			if (cliString.equals(""))
-			{
-				job = JobFactory.buildFromFile(paramsFile);
-			} else {
-				job = JobFactory.buildFromFile(paramsFile,cliString);
-			}
-    	}
-    	
-    	//Read-in all CLI arguments in parameter storage unit
-	    	
-    	//NB: the following block of code makes it so that we can only run
-    	// single step jobs when submitting via CLI interface using CLI 
-    	// arguments/options and -t/--task option
-		
-    	for (int iarg=0; iarg<args.length; iarg++)
-    	{
-    		String arg = args[iarg];
-    		
-    		//Skip -t/--task
-    		if (arg.equalsIgnoreCase("-t") 
-    				|| arg.equalsIgnoreCase("--task"))
-    		{
-    			iarg++;
-    			continue;
-    		}
-	    		
-    		//Read-in the option or the key:value pair
-    		arg = arg.replaceFirst("^-*", "");
-    		if ((iarg+1 >= args.length) || args[iarg+1].startsWith("-"))
-			{
-    			// A value-less parameter
-    	    	if (foundTask && !foundParams)
-    	    	{
-    	    		params.setParameter(arg);
-    	    	} else if (!foundTask && foundParams)
-    	    	{
-    	    		job.setParameter(arg);
-    	    	}
-			}
-    		else
-    		{
-    			// There is a value of some sort, and we read it in
-    			String value = "none";
-    			if (args[iarg+1].startsWith("\""))
-    			{
-        			value = args[iarg+1];
-        			for (int jarg=iarg+2; jarg<args.length; jarg++)
-        			{
-        				value = value + " " + args[jarg];
-        				iarg++;
-        				if (args[jarg].contains("\""))
-        				{
-        					break;
-        				}
-        			}
-        			iarg++; // this is the one of the very first word
-        			value = value.substring(1,value.lastIndexOf("\""));
-    			}
-    			else
-    			{
-    				value = args[iarg+1];
-    				iarg++;
-    			}
-    			
-    			if (foundTask && !foundParams)
-    	    	{
-    	    		params.setParameter(arg, value);
-    	    	} else if (!foundTask && foundParams)
-    	    	{
-    	    		job.setParameter(arg, value);
-    	    	}
-    		}
-	    }
-	    	
-    	if (foundTask && !foundParams)
-    	{
-	    	// Finally, pack all into a job
-	    	job = JobFactory.createJob(AppID.ACC);
-	    	job.setParameters(params);
-    	}
-    	
-    	if (job == null)
-    	{
-    		Terminator.withMsgAndStatus("ERROR! Could not parse command line "
-    				+ "arguments to make a job. Check your input.",-1);
-    	}
-    	
-    	return job;
+        Job job = null;
+        
+        ParameterStorage params = new ParameterStorage();
+        params.setDefault();
+        
+        // First, look for the -t/--task or for -p/--params: 
+        // either one must be there
+        boolean foundTask = false;
+        String task = null;
+        boolean foundParams = false;
+        File paramsFile = null;
+        String cliString = "";
+        for (int iarg=0; iarg<args.length; iarg++)
+        {
+            String arg = args[iarg];
+            if (arg.equalsIgnoreCase("-t") || arg.equalsIgnoreCase("--task"))
+            {    
+                if (iarg+1 >= args.length)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Option -t (--task)"
+                            + " seems to have no value. I expect to find "
+                            + "something like '-t <taskID>', but I see "
+                            + "only '" + arg + "'.",-1);
+                }
+                task = args[iarg+1];
+                foundTask = true;
+            }
+            
+            if (arg.equalsIgnoreCase("-p") || arg.equalsIgnoreCase("--params"))
+            {    
+                if (iarg+1 >= args.length)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Option -p (--params)"
+                            + " seems to have no value. I expect to find "
+                            + "something like '-p <pathname>', but I see "
+                            + "only '" + arg + "'.",-1);
+                }
+                paramsFile = new File(args[iarg+1]);
+                foundParams=true;
+            }
+            
+            if (arg.equalsIgnoreCase("--"+ParameterConstants.STRINGFROMCLI))
+            {    
+                if (iarg+1 >= args.length)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Option " + arg
+                            + " seems to have no value. I expect to find "
+                            + "a string after '" + arg + "'.",-1);
+                }
+                cliString = args[iarg+1];
+            }
+        }
+        
+        // Check consistency between use of -t and -p
+        if (foundTask && foundParams)
+        {
+            Terminator.withMsgAndStatus("ERROR! Found both -t/--task and "
+                    + "-p/--params options. "
+                    + "You can use only one of the two.",-1);
+        }
+        if (!foundTask && !foundParams)
+        {
+            Terminator.withMsgAndStatus("ERROR! Neither -t/--task nor "
+                    + "-p/--params options found. "
+                    + "You must use either -t/-p, or provide a single argument"
+                    + " that is the pathname to an existing paremeters file.",
+                    -1);
+        }
+        
+        if (foundTask)
+        {
+            //NB: this will kill me with an error message in case 
+            // the given string does not correspond to a registered 
+            // task.
+            TaskID taskId = TaskID.getFromString(task);
+            params.setParameter(WorkerConstants.PARTASK, taskId.toString());
+        }
+        
+        if (foundParams)
+        {
+            //NB: this will kill me with an error if the file is not found
+            // or not readable.
+            FileUtils.foundAndPermissions(paramsFile, true, false, false);
+            
+            if (cliString.equals(""))
+            {
+                job = JobFactory.buildFromFile(paramsFile);
+            } else {
+                job = JobFactory.buildFromFile(paramsFile,cliString);
+            }
+        }
+        
+        //Read-in all CLI arguments in parameter storage unit
+            
+        //NB: the following block of code makes it so that we can only run
+        // single step jobs when submitting via CLI interface using CLI 
+        // arguments/options and -t/--task option
+        
+        for (int iarg=0; iarg<args.length; iarg++)
+        {
+            String arg = args[iarg];
+            
+            //Skip -t/--task
+            if (arg.equalsIgnoreCase("-t") 
+                    || arg.equalsIgnoreCase("--task"))
+            {
+                iarg++;
+                continue;
+            }
+                
+            //Read-in the option or the key:value pair
+            arg = arg.replaceFirst("^-*", "");
+            if ((iarg+1 >= args.length) || args[iarg+1].startsWith("-"))
+            {
+                // A value-less parameter
+                if (foundTask && !foundParams)
+                {
+                    params.setParameter(arg);
+                } else if (!foundTask && foundParams)
+                {
+                    job.setParameter(arg);
+                }
+            }
+            else
+            {
+                // There is a value of some sort, and we read it in
+                String value = "none";
+                if (args[iarg+1].startsWith("\""))
+                {
+                    value = args[iarg+1];
+                    for (int jarg=iarg+2; jarg<args.length; jarg++)
+                    {
+                        value = value + " " + args[jarg];
+                        iarg++;
+                        if (args[jarg].contains("\""))
+                        {
+                            break;
+                        }
+                    }
+                    iarg++; // this is the one of the very first word
+                    value = value.substring(1,value.lastIndexOf("\""));
+                }
+                else
+                {
+                    value = args[iarg+1];
+                    iarg++;
+                }
+                
+                // NB: this must be consistent with the character replacement
+                // policy of any code reading Parameters. Therefore, any
+                // such replacement is done within the Parameter's storage class.
+                String paramKey = arg;
+                if (foundTask && !foundParams)
+                {
+                    params.setParameter(paramKey, value);
+                } else if (!foundTask && foundParams)
+                {
+                    job.setParameter(paramKey, value);
+                }
+            }
+        }
+            
+        if (foundTask && !foundParams)
+        {
+            // Finally, pack all into a job
+            job = JobFactory.createJob(AppID.ACC);
+            job.setParameters(params);
+        }
+        
+        if (job == null)
+        {
+            Terminator.withMsgAndStatus("ERROR! Could not parse command line "
+                    + "arguments to make a job. Check your input.",-1);
+        }
+        
+        return job;
     }
 
 //------------------------------------------------------------------------------
@@ -354,9 +358,9 @@ public class ACCMain
     
     private static void printInit()
     {
-    	
+        
         System.out.println(NL + NL 
-        		+ "**********************************************"
+                + "**********************************************"
                 + "*****************************"
                 + NL + "                              AutoCompChem"
                 + NL + "                              Version: " + version
@@ -372,50 +376,40 @@ public class ACCMain
     
     private static void printUsage()
     {
-    	String s = NL + " Alternative usage from the command line: " + NL
-    		+ NL + " java -jar AutoCompChem.jar <parameters_file>"
-    		+ NL + " java -jar AutoCompChem.jar -t/--task <task> [more args]"
-			+ NL + " java -jar AutoCompChem.jar -p/--params "
-					+ "<file> [more args]"
-			+ NL + NL + " Where:" + NL
-			+ NL + "  -t/--task and -p/--params indicate that these options"
-			+ " can be specified "
-			+ NL + "         using either a long (e.g., --task) or short "
-			+ "(e.g., -t) version." + NL
-			+ NL + "  <file> is the filename or pathname to a file "
-			+ "containing the job details." + NL
-			+ NL + "  <task> is any string among the following ones. "
-			+ "(case-insensitive).";
-    	
-    	String indent ="          -> ";
-    	for (TaskID t : TaskID.values())
-    	{
-    		switch (t) 
-    		{
-				case UNSET:
-				case DUMMYTASK: 
-					break;
-				default:
-					s = s + NL + indent + t;
-					break;
-			}
-    	}
-    	s = s + NL + NL 
-    			+ "  [more args] are optional arguments that depend on the "
-    			+ "task at hand. " + NL 
-    			+ "  See user manual for further instructions.";
+        String s = NL + " Alternative usage from the command line: " + NL
+            + NL + " java -jar AutoCompChem.jar <parameters_file>"
+            + NL + " java -jar AutoCompChem.jar -t/--task <task> [more args]"
+            + NL + " java -jar AutoCompChem.jar -p/--params "
+                    + "<file> [more args]"
+            + NL + NL + " Where:" + NL
+            + NL + "  -t/--task and -p/--params indicate that these options"
+            + " can be specified "
+            + NL + "         using either a long (e.g., --task) or short "
+            + "(e.g., -t) version." + NL
+            + NL + "  <file> is the filename or pathname to a file "
+            + "containing the job details." + NL
+            + NL + "  <task> is any string among the following ones. "
+            + "(case-insensitive).";
+        
+        String indent ="          -> ";
+        for (TaskID t : TaskID.values())
+        {
+            switch (t) 
+            {
+                case UNSET:
+                case DUMMYTASK: 
+                    break;
+                default:
+                    s = s + NL + indent + t;
+                    break;
+            }
+        }
+        s = s + NL + NL 
+                + "  [more args] are optional arguments that depend on the "
+                + "task at hand. " + NL 
+                + "  See user manual for further instructions.";
         System.out.println(s);
     }
-    
-//------------------------------------------------------------------------------
-    
-    /*
-    private static void printHelp() 
-    {
-    	//TODO implement help that prints options available based on the 
-    	// arguments already present in the CLI
-	}
-	*/
 
 //------------------------------------------------------------------------------
 }

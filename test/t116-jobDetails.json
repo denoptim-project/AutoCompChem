@@ -34,16 +34,21 @@
         },
         {
           "name": "coords",
-          "dirData": [
+          "subDirectives": [
             {
-              "accTaskParams": [
+              "name": "coords",
+              "dirData": [
                 {
-                  "reference": "TASK",
-                  "value": "ADD_GEOMETRY"
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "addGEOMETRY"
+                    }
+                  ],
+                  "reference": "DirDataGeometry",
+                  "type": "UNDEFINED"
                 }
-              ],
-              "reference": "DirDataGeometry",
-              "type": "UNDEFINED"
+              ]
             }
           ]
         },
@@ -75,7 +80,7 @@
                     },
                     {
                       "reference": "TASK",
-                      "value": "GET_FILENAME"
+                      "value": "ADD_FILENAME"
                     },
                     {
                       "reference": "QUOTATION",
@@ -149,7 +154,7 @@
                 },
                 {
                   "reference": "TASK",
-                  "value": "GET_FILENAME"
+                  "value": "ADD_FILENAME"
                 }
               ]
             }

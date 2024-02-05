@@ -79,7 +79,7 @@
               "accTaskParams": [
                 {
                   "reference": "TASK",
-                  "value": "ADD_GEOMETRY"
+                  "value": "addGEOMETRY"
                 }
               ],
               "reference": "geometry",

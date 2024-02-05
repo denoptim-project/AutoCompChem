@@ -41,6 +41,7 @@ import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.AppID;
 import autocompchem.text.TextBlock;
+import autocompchem.worker.TaskID;
 
 
 /**
@@ -166,7 +167,7 @@ public class DirectiveTest
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
 				+ ChemSoftConstants.JDLABACCTASK
 				+ ParameterConstants.SEPARATOR
-				+ ChemSoftConstants.PARGETFILENAMEROOT + NL
+				+ TaskID.ADDFILENAME + NL
 				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
@@ -209,7 +210,7 @@ public class DirectiveTest
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
 				+ ChemSoftConstants.JDLABACCTASK
 				+ ParameterConstants.SEPARATOR
-				+ ChemSoftConstants.PARGETFILENAMEROOT + NL
+				+ TaskID.ADDFILENAME + NL
 				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
@@ -228,7 +229,7 @@ public class DirectiveTest
     			new ArrayList<String>(Arrays.asList(
     					ChemSoftConstants.JDLABACCTASK
     					+ ParameterConstants.SEPARATOR
-    					+ ChemSoftConstants.PARGETFILENAMEROOT,
+    					+ TaskID.ADDFILENAME,
     					ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
     					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
 
@@ -244,8 +245,8 @@ public class DirectiveTest
     	d3.deleteComponent(d3.getAllDirectiveDataBlocks().get(0));
 
     	ParameterStorage taskParams = new ParameterStorage();
-    	taskParams.setParameter("TASK", 
-    			ChemSoftConstants.PARADDATOMSPECIFICKEYWORD);
+        //TODO-gg use WorkerConstant.TASK or make method setTask to ParameterStorage
+    	taskParams.setParameter("TASK", TaskID.ADDATOMSPECIFICKEYWORDS.toString());
     	taskParams.setParameter("KeywordName", "ATMSPECKW");
     	taskParams.setParameter("SMARTS", "[#6] options:~~@#BLA");
     	d3.setTaskParams(taskParams);
