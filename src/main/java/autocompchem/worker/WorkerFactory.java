@@ -182,7 +182,7 @@ public final class WorkerFactory
 			System.err.println("Registration of " + Worker.class.getSimpleName() 
 					+ " has failed because the given example object is not an "
 					+ "instance of "
-					+ ChemSoftOutputReader.class.getSimpleName() 
+					+ Worker.class.getSimpleName() 
 					+ ". Not registering task '" + taskId + "'");
 		}
 	}
