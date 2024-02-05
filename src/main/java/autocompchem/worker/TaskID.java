@@ -112,7 +112,14 @@ public enum TaskID
     PREPAREINPUTXTB,        
     PREPAREINPUTSPARTAN,  
     //
-    PRINTZMATRIX,            
+    PRINTZMATRIX,
+
+	//**
+	// * Key for parameter requesting the inclusion of additional internal
+	// * coordinates.
+	// */
+	//public static final String PARADDINTCOORDS = "ADDINTCOORDS";
+	
     PRUNEMOLECULES,           
     REMOVEDUMMYATOMS,         
     REORDERATOMLIST,          

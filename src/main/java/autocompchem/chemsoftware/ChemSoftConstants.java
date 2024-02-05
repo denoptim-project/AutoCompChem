@@ -281,20 +281,9 @@ public class ChemSoftConstants
 	public static final String PARCOORDTYPE = "COORDTYPE";
 	
 	/**
-	 * Name of directive that should be printed without its name, thus behaving 
-	 * as a silent container.
-	 */
-	public static final String UNNAMEDDIRECTIVE = "UNNAMEDDIRECTIVE";
-	
-	/**
 	 * Name of directive meant to contain the geometry and related information.
 	 */
 	public static final String DIRGEOMETRY = "GEOMETRY";
-	
-	/**
-	 * Name of directive data meant to contain the geometry
-	 */
-	public static final String DIRDATAGEOMETRY = "DIRDATAGEOMETRY";
 
 	/**
 	 * Key for parameter defining the pathname to an output from a comp.
@@ -307,14 +296,12 @@ public class ChemSoftConstants
 	 */
 	public static final String PARANALYSISTASKS = "ANALYSISTASKS";
 
-	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */
 	public static final String PARPRINTLASTGEOM = "PRINTLASTGEOMETRY";
 
-	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print the last geometry from each step of
 	 * a comp.chem job
@@ -322,14 +309,12 @@ public class ChemSoftConstants
 	public static final String PARPRINTLASTGEOMEACH = 
 			"PRINTLASTGEOMETRYOFEACHSTEP";
 
-	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */
 	public static final String PARPRINTALLGEOM = "PRINTALLGEOMETRIES";
 
-	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to print vibrational modes
 	 */
@@ -345,40 +330,18 @@ public class ChemSoftConstants
 	 * Key for parameter defining the tolerance value
 	 */
 	public static final String PARBONDLENGTHTOLETANCE = "TOLERANCE";
-	
-	/**
-	 * Key for parameters requesting to perform an analysis only on the very 
-	 * last geometry
-	 */
-	public static final String ANALYZEONLYFINALGEOM = "FINALGEOM";
 
-	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting to calculate free energy
 	 */
 	public static final String PARGETENERGY = "GETFREEENERGY";
 
-	//TODO-gg to TaskID
 	/**
 	 * Key for parameter requesting analysis of the kind of critical point
 	 * found on a potential energy surface (minimum vs. saddle point)
 	 */
 	public static final String PARCRITICALPOINTKIND = 
 			"DETECTKINDOFCRITICALPOINT";
-
-	//TODO-gg to TaskID
-	/**
-	 * Key for parameter requesting the generation of geometrical constraints.
-	 */
-	public static final String PARGEOMCONSTRAINTS = "GEOMCONTRAINTS";
-
-
-	//TODO-gg to TaskID
-	/**
-	 * Key for parameter requesting the inclusion of additional internal
-	 * coordinates.
-	 */
-	public static final String PARADDINTCOORDS = "ADDINTCOORDS";
 	
 	/**
 	 * Name of data storing any data from a job. This is the entire
