@@ -1,4 +1,4 @@
-Adn2mcompl_1_mview_WITH_WRONG_CHARGE_AND_SPIN
+Molecule
   CDK     1028131450
 
   3  2  0  0  0  0  0  0  0  0999 V2000
@@ -8,7 +8,4 @@ Adn2mcompl_1_mview_WITH_WRONG_CHARGE_AND_SPIN
   1  2  1  0  0  0  0 
   2  3  1  0  0  0  0 
 M  END
-> <cdk:Title>
-Adn2mcompl_1_mview
-
 $$$$
