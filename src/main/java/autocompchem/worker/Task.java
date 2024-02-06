@@ -190,7 +190,7 @@ public class Task implements Comparable<Task>
 	 * @param taskName the string to be formatted as an identifier
 	 * @return the string that can be used a identifier.
 	 */
-	private static String standardazeID(String taskName)
+	public static String standardazeID(String taskName)
 	{
 		return taskName.toUpperCase().trim().replaceAll("\\s+", "");
 	}
@@ -250,7 +250,7 @@ public class Task implements Comparable<Task>
 	{
 		return casedID;
 	}
-
+	
 //------------------------------------------------------------------------------
 	
 	@Override

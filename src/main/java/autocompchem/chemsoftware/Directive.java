@@ -1115,7 +1115,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	//NB: this will exit with an error should the string not be good enough
     	Task taskID = Task.getExisting(task, true);
         switch (taskID.ID) 
-        {   
+        {
 	        case "ADDATOMSPECIFICKEYWORDS":
 	        {
 	        	if (!(dirComp instanceof Directive))
@@ -1188,6 +1188,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	        	}
 	        	break;
 	        }
+	        
             case "ADDFILENAME":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1307,7 +1308,8 @@ public class Directive implements IDirectiveComponent, Cloneable
             	}
             	break;
             }
-            	
+
+            //TODO-gg replace with if matching Task from BasisSetGenerator
             case "GENERATEBASISSET":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1316,8 +1318,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		IAtomContainer mol = mols.get(0);
         		
             	//TODO verbosity/logging
-                System.out.println("ACC starts creating atom-specific "
-                		+ "Basis Set");
+                System.out.println("ACC starts " + task + " task.");
                 
             	//We require the component to be a DirectiveData
             	if (!dirComp.getComponentType().equals(
@@ -1329,21 +1330,16 @@ public class Directive implements IDirectiveComponent, Cloneable
             				+ " object", -1);
             	}
             	
-                ParameterStorage bsGenParams = new ParameterStorage();
-                bsGenParams.setParameter(params.getParameter(
-                		BasisSetConstants.ATMSPECBS));
-                //TODO- task from constant
-                bsGenParams.setParameter("TASK", task);
+                ParameterStorage bsGenParams = params.clone();
             	Worker w = WorkerFactory.createWorker(bsGenParams, masterJob);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
-                bsg.setAtmIdxAsId(true);
                 BasisSet bs = bsg.assignBasisSet(mol);
                 
                 ((IValueContainer) dirComp).setValue(bs);
             	break;
             }
-            
+           
             case "GENERATECONSTRAINTS":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);

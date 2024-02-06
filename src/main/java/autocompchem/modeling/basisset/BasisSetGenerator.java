@@ -81,17 +81,25 @@ public class BasisSetGenerator extends Worker
     /**
      * Storage of imported basis sets 
      */
-    private Map<String,BasisSet> importedBSs = new HashMap<String,BasisSet>();
-
-    /**
-     * Flag setting use of atom index as ID
-     */
-    private boolean atmIdxAsId = false;    
+    private Map<String,BasisSet> importedBSs = new HashMap<String,BasisSet>();  
 
     /**
      * Flag setting tolerance for partial matches
      */
     private boolean allowPartial = false;
+    
+    /**
+     * String defining the task of generating a basis set
+     */
+    public static final String GENERATEBASISSETTASKNAME = "generateBasisSet";
+    
+    /**
+     * Task about generation of basis set
+     */
+    private static final Task GENERATEBASISSETTASK;
+    static {
+    	GENERATEBASISSETTASK = Task.make(GENERATEBASISSETTASKNAME);
+    }
 
     /**
      * Verbosity level
@@ -112,7 +120,7 @@ public class BasisSetGenerator extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("generateBasisSet"))));
+             Arrays.asList(GENERATEBASISSETTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -132,7 +140,7 @@ public class BasisSetGenerator extends Worker
 //-----------------------------------------------------------------------------
 
     /**
-     * Initialise the worker according to the parameters loaded by constructor.
+     * Initialize the worker according to the parameters loaded by constructor.
      */
 
     @Override
@@ -191,19 +199,21 @@ public class BasisSetGenerator extends Worker
 
     /**
      * Performs any of the registered tasks according to how this worker
-     * has been initialised.
+     * has been initialized.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "GENERATEBASISSET":
-        	  assignBasisSetToAllMolsInFile();
-              break;
-          }
+    	if (task.equals(GENERATEBASISSETTASK))
+    	{
+    		assignBasisSetToAllMolsInFile();
+    	//} else if (task.equals(Task.getExisting(?)))
+        } else {
+        	Terminator.withMsgAndStatus("ERROR! Task '" + task + "' is not "
+        			+ "linked to any method in " 
+        			+ this.getClass().getSimpleName() + ".", -1);
+        }
 
         if (exposedOutputCollector != null)
         {
@@ -215,20 +225,6 @@ public class BasisSetGenerator extends Worker
 */
         }
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Sets the use of atom index (1-based position in the list of atoms) as
-     * ID of centers (i.e., atoms).
-     * @param atmIdxAsId the new value of the flag: if <code>true</code>
-     * makes the generator use atom indexes as IDs.
-     */
- 
-    public void setAtmIdxAsId(boolean atmIdxAsId)
-    {
-        this.atmIdxAsId = atmIdxAsId;
-    } 
 
 //------------------------------------------------------------------------------
 
