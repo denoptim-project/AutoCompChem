@@ -57,7 +57,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
@@ -107,9 +107,8 @@ public class Directive implements IDirectiveComponent, Cloneable
 
     public Directive()
     {
-        keywords = new ArrayList<Keyword>();
-        subDirectives = new ArrayList<Directive>();        
-        dirData = new ArrayList<DirectiveData>();
+        this("#noname", new ArrayList<Keyword>(), new ArrayList<Directive>(), 
+        		new ArrayList<DirectiveData>());
     }
 
 //-----------------------------------------------------------------------------
@@ -121,10 +120,8 @@ public class Directive implements IDirectiveComponent, Cloneable
 
     public Directive(String name)
     {
-        this.name = name;
-        keywords = new ArrayList<Keyword>();
-        subDirectives = new ArrayList<Directive>();
-        dirData = new ArrayList<DirectiveData>();
+        this(name, new ArrayList<Keyword>(), new ArrayList<Directive>(), 
+        		new ArrayList<DirectiveData>());
     }
 
 //-----------------------------------------------------------------------------
@@ -145,6 +142,16 @@ public class Directive implements IDirectiveComponent, Cloneable
         this.keywords = keywords;
         this.subDirectives = subDirectives;
         this.dirData = dirData;
+
+        // We define also the tasks that may have to be performed inside a 
+        // directive
+        // TODO-gg consider registering workers for each of them
+        Task.make("generateBasisSet");
+        Task.make("generateConstraints");
+        Task.make("generateAtomLabels");
+        Task.make("generateAtomTuples");
+        Task.make("addFileName");
+        Task.make("addGeometry");
     }
 
 //-----------------------------------------------------------------------------
@@ -973,10 +980,10 @@ public class Directive implements IDirectiveComponent, Cloneable
     			linesPack.set(iLine, lineMod);
     			fixObsoleteSytax=true;
     			if (lineMod.toUpperCase().contains(BasisSetConstants.ATMSPECBS))
-    				task = TaskID.GENERATEBASISSET.toString();
+    				task = Task.getExisting("generateBasisSet").casedID;
     			else if (lineMod.toUpperCase().contains(
-    					TaskID.GENERATECONSTRAINTS.toString()))
-    				task = TaskID.GENERATECONSTRAINTS.toString();
+    					Task.getExisting("generateConstraints").ID))
+    				task = Task.getExisting("generateConstraints").casedID;
     			numOfLinesWithTask++;
     		}
     	}
@@ -1009,11 +1016,11 @@ public class Directive implements IDirectiveComponent, Cloneable
 		// class for converting job details files
 		
 		//Another fix of the obsolete syntax
-		if (task.equals(TaskID.GENERATECONSTRAINTS.toString()))
+		if (task.toUpperCase().equals(Task.getExisting("generateConstraints").ID))
 		{
 			taskSpecificLines = new ArrayList<String>(
 					Arrays.asList(ps.getParameter(
-							TaskID.GENERATECONSTRAINTS.toString()).getValue()
+							Task.getExisting("generateConstraints").ID).getValue()
 							.toString().split("\\r?\\n|\\r")));
 			ps = new ParameterStorage();
 			String smarts = "";
@@ -1105,10 +1112,10 @@ public class Directive implements IDirectiveComponent, Cloneable
         }
         
     	//NB: this will exit with an error should the string not be good enough
-    	TaskID taskID = TaskID.getFromString(task);
-        switch (taskID) 
+    	Task taskID = Task.getExisting(task, true);
+        switch (taskID.ID) 
         {   
-	        case ADDATOMSPECIFICKEYWORDS:
+	        case "ADDATOMSPECIFICKEYWORDS":
 	        {
 	        	if (!(dirComp instanceof Directive))
 	        	{
@@ -1127,7 +1134,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		
                 //TODO-gg use WorkerConstant.TASK
         		labMakerParams.setParameter("TASK", 
-                		TaskID.GENERATEATOMLABELS.toString());
+        				Task.getExisting("generateAtomLabels").ID);
 				AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
             			WorkerFactory.createWorker(labMakerParams, masterJob);
         		List<String> pointers = labGenerator.generateAtomLabels(mol);
@@ -1138,7 +1145,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO-gg use WorkerConstant.TASK
                 cnstrParams.setParameter("TASK",
-                		TaskID.GENERATEATOMTUPLES.toString());
+                		Task.getExisting("generateAtomTuples").ID);
                 cnstrParams.setParameter("VALUEDKEYWORDS", 
                 		"options prefix suffix");
                 
@@ -1180,7 +1187,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	        	}
 	        	break;
 	        }
-            case ADDFILENAME:
+            case "ADDFILENAME":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	
@@ -1207,7 +1214,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            case ADDGEOMETRY:
+            case "ADDGEOMETRY":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	
@@ -1250,9 +1257,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                         	ParameterStorage cnstMakerTask = params.clone();
                         	cnstMakerTask.setParameter(
                         			WorkerConstants.PARTASK, 
-                        			//TODO-gg this is a better way to avoid to
-                        			// many locations where constants are defined.
-                        			TaskID.GENERATECONSTRAINTS.toString());
+                        			Task.getExisting("generateConstraints").ID);
+
                         	
                             ConstraintsGenerator cnstrg = (ConstraintsGenerator)
                             		WorkerFactory.createWorker(cnstMakerTask,
@@ -1301,7 +1307,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             	
-            case GENERATEBASISSET:
+            case "GENERATEBASISSET":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	
@@ -1325,9 +1331,8 @@ public class Directive implements IDirectiveComponent, Cloneable
                 ParameterStorage bsGenParams = new ParameterStorage();
                 bsGenParams.setParameter(params.getParameter(
                 		BasisSetConstants.ATMSPECBS));
-                
-                //TODO-gg this simplifies if we use TaskID as it should 
-                bsGenParams.setParameter("TASK", "GENERATEBASISSET");
+                //TODO- task from constant
+                bsGenParams.setParameter("TASK", task);
             	Worker w = WorkerFactory.createWorker(bsGenParams, masterJob);
                 BasisSetGenerator bsg = (BasisSetGenerator) w;
                 
@@ -1338,14 +1343,13 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            case GENERATECONSTRAINTS:
+            case "GENERATECONSTRAINTS":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
         	
             	// WARNING: uses only the first molecule
         		IAtomContainer mol = mols.get(0);
         		
-            	String s = TaskID.GENERATECONSTRAINTS.toString();
             	//TODO verbosity/logging
                 System.out.println("ACC starts creating geometric constraints");
                 
@@ -1353,8 +1357,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO: this should be avoided by using TASK instead of ACCTASK
                 //TODO-gg use WorkerConstant.TASK
-                cnstrParams.setParameter("TASK", 
-                		TaskID.GENERATECONSTRAINTS.toString());
+                cnstrParams.setParameter("TASK", task);
                 
             	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
@@ -1374,7 +1377,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 break;
             }
             
-            case GENERATECONFORMATIONALSPACE:
+            case "GENERATECONFORMATIONALSPACE":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
         	
@@ -1385,8 +1388,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO: this should be avoided by using TASK instead of ACCTASK
                 //TODO-gg use WorkerConstant.TASK
-                csGenParams.setParameter("TASK", 
-                		TaskID.GENERATECONFORMATIONALSPACE.toString());
+                csGenParams.setParameter("TASK", task);
                 
             	Worker w = WorkerFactory.createWorker(csGenParams, masterJob);
             	ConformationalSpaceGenerator csGen = 
@@ -1407,7 +1409,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            case GENERATEATOMLABELS:
+            case "GENERATEATOMLABELS":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	// WARNING: uses only the first molecule
@@ -1417,8 +1419,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO: this should be avoided by using TASK instead of ACCTASK
                 //TODO-gg use WorkerConstant.TASK
-                atmLabelsParams.setParameter("TASK", 
-                		TaskID.GENERATEATOMLABELS.toString());
+                atmLabelsParams.setParameter("TASK", task);
                 
             	Worker w = WorkerFactory.createWorker(atmLabelsParams, 
             			masterJob);
@@ -1432,7 +1433,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
-            case GENERATEATOMTUPLES:
+            case "GENERATEATOMTUPLES":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
             	// WARNING: uses only the first molecule
@@ -1442,8 +1443,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 //TODO: this should be avoided by using TASK instead of ACCTASK
                 //TODO-gg use WorkerConstant.TASK
-                atmTuplesParams.setParameter("TASK", 
-                		TaskID.GENERATEATOMTUPLES.toString());
+                atmTuplesParams.setParameter("TASK", task);
                 
             	Worker w = WorkerFactory.createWorker(atmTuplesParams, 
             			masterJob);

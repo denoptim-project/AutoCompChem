@@ -48,8 +48,8 @@ import autocompchem.run.Job;
  * <pre>
  * 	public static final Set&lt;TaskID&gt; capabilities = ...
  * </pre>
- * which is to be populated with any registered {@link TaskID}. If new task IDs
- * are needed they should be added to the {@link TaskID} registry.</li>
+ * which is to be populated with any registered {@link Task}. If new task IDs
+ * are needed they should be added to the {@link Task} registry.</li>
  * <li>Take care of exposing any output that should be made accessible from
  * outside the worker, i.e., typically from the {@link Job} that needed to
  * perform the task with the worker can deal with.</li>

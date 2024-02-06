@@ -63,7 +63,7 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -577,7 +577,7 @@ public class IOtools
 					params.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE,
 							file.getAbsolutePath());
 					params.setParameter(WorkerConstants.PARTASK,
-							TaskID.ANALYSEOUTPUT.toString());
+							Task.make("analyseOutput").casedID);
 					analyzer.setParameters(params);
 					analyzer.initialize();
 					NamedDataCollector allData = new NamedDataCollector();

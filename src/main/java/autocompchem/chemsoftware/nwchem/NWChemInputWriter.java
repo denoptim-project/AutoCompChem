@@ -61,7 +61,6 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**
@@ -903,14 +902,15 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			// TODO-gg why is this done only for NWChem?
 			hasAddGeometryTask = taskParams!=null 
 					&& taskParams.contains(ChemSoftConstants.JDACCTASK)
-					&& TaskID.getFromString(taskParams.getParameterValue(
-							ChemSoftConstants.JDACCTASK)).equals(
-									TaskID.ADDGEOMETRY);
+					&& Task.make(taskParams.getParameterValue(
+							ChemSoftConstants.JDACCTASK))
+					.equals(Task.make("addGeometry"));
 			if (dd.getValue()==null && !hasAddGeometryTask)
 			{
 				taskParams = new ParameterStorage();
+				//TODO-gg should probably make Task behave in jsonable parameter storage.
 				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
-						TaskID.ADDGEOMETRY.toString());
+						Task.make("addGeometry").ID);
 				if (useAtomTags)
 					taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
 				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, 

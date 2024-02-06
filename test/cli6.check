@@ -6,16 +6,16 @@ echo NOT Passed ERROR 1
 exit -1
 fi
 
-n=0;n=$(grep -c "VERBOSITY" cli6.log)
+n=0;n=$(grep -c -i "VERBOSITY" cli6.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 
-n=0;n=$(grep -c "MODIFYGEOMETRY" cli6.log)
+n=0;n=$(grep -c -i "MODIFYGEOMETRY" cli6.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c "CARTESIANMOVE" cli6.log)
+n=0;n=$(grep -c -i "CARTESIANMOVE" cli6.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
-n=0;n=$(grep -c "TEMPLATEZMAT" cli6.log)
+n=0;n=$(grep -c -i "TEMPLATEZMAT" cli6.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
 grep -q 'Termination status: 0' cli6.log

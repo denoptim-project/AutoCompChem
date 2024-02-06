@@ -19,7 +19,7 @@
     "doc": "Doc\nof\nparameter 2"
   },
   {
-    "embeddedWorker": "ZMatrixHandler",
+    "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
     "tag": "generation of ZMatrix"
   }
 ]

@@ -56,7 +56,7 @@
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   },
   {
-    "embeddedWorker": "ZMatrixHandler",
+    "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
     "tag": "generation of ZMatrix"
   }
 ]

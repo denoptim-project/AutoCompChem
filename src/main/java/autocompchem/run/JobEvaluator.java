@@ -49,7 +49,6 @@ import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
@@ -543,7 +542,7 @@ public class JobEvaluator extends Worker
 					ParameterStorage makeInputPars = new ParameterStorage();
 					
 					makeInputPars.setParameter(WorkerConstants.PARTASK, 
-							TaskID.PREPAREINPUT.toString());
+							Task.make("prepareInput").casedID);
 					makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
 							exposedOutputCollector.getNamedData(
 									ChemSoftConstants.SOFTWAREID)
@@ -615,7 +614,7 @@ public class JobEvaluator extends Worker
 				|| CURECOMPCHEMJOBTASKS.contains(task))
 		{
 			analysisParams.setParameter(WorkerConstants.PARTASK, 
-					TaskID.ANALYSEOUTPUT.toString());
+					Task.make("analyseOutput").casedID);
 			List<InfoChannel> logChannels = icDB.getChannelsOfType(
 					InfoChannelType.LOGFEED);
 			String msg = "";

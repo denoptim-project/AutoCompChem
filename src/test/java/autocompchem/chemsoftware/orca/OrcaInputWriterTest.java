@@ -46,7 +46,7 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -116,7 +116,7 @@ public class OrcaInputWriterTest
     	
     	ArrayList<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-        		+ TaskID.PREPAREINPUTORCA);
+    			+ Task.make("prepareInputOrca").casedID);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR + molFile.getAbsolutePath());
     	parLines.add(ChemSoftConstants.PAROUTFILEROOT
@@ -150,7 +150,7 @@ public class OrcaInputWriterTest
         
       	ArrayList<String> parLines2 = new ArrayList<String>();
     	parLines2.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-        		+ TaskID.PREPAREINPUTORCA);
+    			+ Task.make("prepareInputOrca").casedID);
     	parLines2.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR +  molFile.getAbsolutePath());
     	parLines2.add(ChemSoftConstants.PAROUTFILEROOT

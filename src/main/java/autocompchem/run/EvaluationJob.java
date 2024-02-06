@@ -21,7 +21,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 /**
@@ -44,7 +44,7 @@ public class EvaluationJob extends ACCJob
         setParallelizable(true);
         setNumberOfThreads(1);
         params.setParameter(WorkerConstants.PARTASK, 
-        		TaskID.EVALUATEJOB.toString());
+        		Task.make("evaluateJob").casedID);
 	}
     
 //------------------------------------------------------------------------------

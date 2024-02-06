@@ -44,7 +44,7 @@ import autocompchem.io.IOtools;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -87,7 +87,7 @@ public class GaussianInputWriterTest
     	
     	List<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-        		+ TaskID.PREPAREINPUTGAUSSIAN);
+    			+ Task.make("prepareInputGaussian").casedID);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR + molFile.getAbsolutePath());
     	parLines.add(ChemSoftConstants.PAROUTFILEROOT
@@ -211,7 +211,7 @@ public class GaussianInputWriterTest
     	dModRedundant.addKeyword(new Keyword("Basis", false, new ArrayList<String>(
     			Arrays.asList(ChemSoftConstants.JDLABACCTASK
     					+ ":"
-    					+ TaskID.GENERATECONSTRAINTS.toString(),
+    	    			+ Task.make("generateConstraints").casedID,
     					"SMARTS: [#7]",
     					"SMARTS: [$([#6](~[#1])(~[#1])~[#1])]",
     					"SMARTS: [#6] [#7] [#6] onlybonded",

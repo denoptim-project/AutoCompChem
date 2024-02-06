@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -92,7 +92,7 @@ public class JobFactoryTest
             FileWriter writer = new FileWriter(paramFile);
 
             writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-            		+ TaskID.DUMMYTASK + NL);
+            		+ Task.make("DUMMYTASK").casedID + NL);
             writer.write("key1" + ParameterConstants.SEPARATOR 
             		+ "value1" + NL);
             writer.write("key2" + ParameterConstants.SEPARATOR 
@@ -128,7 +128,7 @@ public class JobFactoryTest
             FileWriter writer = new FileWriter(paramFile);
 
             writer.write(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
-            		+ TaskID.EVALUATEJOB + NL);
+            		+ Task.make("EVALUATEJOB").casedID + NL);
             writer.write(MonitoringJob.DELAYPAR + ParameterConstants.SEPARATOR
             		+ "3" + NL);
             writer.write(MonitoringJob.DELAYUNITS 

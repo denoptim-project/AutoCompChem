@@ -27,9 +27,10 @@ import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
-import autocompchem.worker.TaskID;
+import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
+import autocompchem.worker.WorkerFactory;
 /**
  * Main for AtomCompChem (Automated Computational Chemist). The entry point
  * for both CLI and GUI based runs.
@@ -68,6 +69,8 @@ public class ACCMain
     {
         // Logging in message
         printInit();
+        
+        initializeRegistry();
         
         // Detect kind of run (command line arguments or parameter file)
         // and what is the job to be done
@@ -165,6 +168,23 @@ public class ACCMain
 //------------------------------------------------------------------------------
     
     /**
+     * Here we register the {@link Worker}s that we have at our service and 
+     * register also the {@link Task}s that they declare. This way we become 
+     * aware of what we can do. Only after this initialization we can decide if
+     * a request from the user is valid or not.
+     */
+    //TODO-gg search for andy instance of Worker in the java path.
+    private static void initializeRegistry() 
+    {
+    	WorkerFactory.getInstance();
+    	// TODO-gg logger
+    	System.out.println("#Tasks registered in AutoCompChem: " 
+    			+ Task.getRegisteredTasks().size());
+	}
+
+//------------------------------------------------------------------------------
+    
+	/**
      * Parses the vector of command line arguments.
      * @param args the vector of arguments to be parsed.
      * @return job the job set up from the parameters parsed from command line.
@@ -180,7 +200,7 @@ public class ACCMain
         // First, look for the -t/--task or for -p/--params: 
         // either one must be there
         boolean foundTask = false;
-        String task = null;
+        String taskStr = null;
         boolean foundParams = false;
         File paramsFile = null;
         String cliString = "";
@@ -196,7 +216,7 @@ public class ACCMain
                             + "something like '-t <taskID>', but I see "
                             + "only '" + arg + "'.",-1);
                 }
-                task = args[iarg+1];
+                taskStr = args[iarg+1];
                 foundTask = true;
             }
             
@@ -246,8 +266,8 @@ public class ACCMain
             //NB: this will kill me with an error message in case 
             // the given string does not correspond to a registered 
             // task.
-            TaskID taskId = TaskID.getFromString(task);
-            params.setParameter(WorkerConstants.PARTASK, taskId.toString());
+            Task taskObj = Task.getExisting(taskStr, true);
+            params.setParameter(WorkerConstants.PARTASK, taskObj.casedID);
         }
         
         if (foundParams)
@@ -392,15 +412,16 @@ public class ACCMain
             + "(case-insensitive).";
         
         String indent ="          -> ";
-        for (TaskID t : TaskID.values())
+        for (Task t : Task.getRegisteredTasks())
         {
-            switch (t) 
+            switch (t.ID) 
             {
-                case UNSET:
-                case DUMMYTASK: 
+                case "UNSET":
+                case "DUMMYTASK":
+                case "DUMMYTASK2": 
                     break;
                 default:
-                    s = s + NL + indent + t;
+                    s = s + NL + indent + t.casedID;
                     break;
             }
         }
