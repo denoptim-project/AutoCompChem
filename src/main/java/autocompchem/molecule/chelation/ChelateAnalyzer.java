@@ -203,7 +203,7 @@ public class ChelateAnalyzer extends Worker
     {
         switch (task.ID)
           {
-          case "ANALYSISCHELATES":
+          case "ANALYZECHELATES":
         	  analyzeChelates();
               break;
           }

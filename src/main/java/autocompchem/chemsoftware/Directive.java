@@ -152,6 +152,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         Task.make("generateAtomTuples");
         Task.make("addFileName");
         Task.make("addGeometry");
+        Task.make("addAtomSpecificKeywords");
     }
 
 //-----------------------------------------------------------------------------

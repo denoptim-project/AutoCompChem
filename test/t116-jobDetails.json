@@ -80,7 +80,7 @@
                     },
                     {
                       "reference": "TASK",
-                      "value": "ADD_FILENAME"
+                      "value": "addFilename"
                     },
                     {
                       "reference": "QUOTATION",
@@ -154,7 +154,7 @@
                 },
                 {
                   "reference": "TASK",
-                  "value": "ADD_FILENAME"
+                  "value": "addFilename"
                 }
               ]
             }
