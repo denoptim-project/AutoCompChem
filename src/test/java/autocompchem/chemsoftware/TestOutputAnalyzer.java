@@ -26,6 +26,7 @@ import java.util.Set;
 
 import autocompchem.files.FileFingerprint;
 import autocompchem.run.Job;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -63,9 +64,9 @@ class TestOutputAnalyzer extends ChemSoftOutputReader
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.ANALYSEOUTPUT)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("analyzeOutput"))));
     }
 
 //------------------------------------------------------------------------------

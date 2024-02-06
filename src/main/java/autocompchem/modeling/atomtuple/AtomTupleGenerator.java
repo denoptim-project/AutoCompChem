@@ -48,6 +48,7 @@ import autocompchem.smarts.SMARTS;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.ConfigItem;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -122,9 +123,9 @@ public class AtomTupleGenerator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.GENERATEATOMTUPLES)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("generateAtomTuples"))));
     }
 
 //------------------------------------------------------------------------------
@@ -207,9 +208,9 @@ public class AtomTupleGenerator extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
           {
-          case GENERATEATOMTUPLES:
+          case "GENERATEATOMTUPLES":
         	  createTuples();
               break;
           }

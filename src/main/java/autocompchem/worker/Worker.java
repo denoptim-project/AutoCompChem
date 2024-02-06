@@ -22,9 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,7 +71,7 @@ public abstract class Worker implements IOutputExposer
     /**
      * The specific task for this worker
      */
-    protected TaskID task = TaskID.UNSET;
+    protected Task task;
     
     /**
      * The job that this worker is charged with.
@@ -121,9 +118,10 @@ public abstract class Worker implements IOutputExposer
     public void setParameters(ParameterStorage params)
     {
     	this.params = params;
+//TODO-gg comment out: the task of a worker should not be publicly accessible
     	String taskStr = this.params.getParameter(WorkerConstants.PARTASK)
     			.getValueAsString();
-    	this.task = TaskID.getFromString(taskStr);
+    	this.task = Task.make(taskStr);
     }
 
 //------------------------------------------------------------------------------
@@ -280,7 +278,7 @@ public abstract class Worker implements IOutputExposer
     /**
      * Declaration of the capabilities of an implementation of {@link Worker}.
      */
-    public abstract Set<TaskID> getCapabilities();
+    public abstract Set<Task> getCapabilities();
     
 //------------------------------------------------------------------------------
     

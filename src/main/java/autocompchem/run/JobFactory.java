@@ -8,6 +8,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.text.TextBlockIndexed;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 
@@ -234,8 +235,8 @@ public class JobFactory
 
         if (locPar.contains(WorkerConstants.PARTASK))
         {
-        	TaskID task = TaskID.valueOf(locPar.getParameterValue(
-        			WorkerConstants.PARTASK).toUpperCase());
+        	Task task = Task.make(locPar.getParameterValue(
+        			WorkerConstants.PARTASK));
         	if (new JobEvaluator().getCapabilities().contains(task))
 	        {
 	        	if (locPar.contains(MonitoringJob.PERIODPAR) 

@@ -29,6 +29,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.files.FileFingerprint;
 import autocompchem.run.Job;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -97,8 +98,8 @@ class TestInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 	
 	@Override
-	public Set<TaskID> getCapabilities() {
-        return new HashSet<TaskID>();
+	public Set<Task> getCapabilities() {
+        return new HashSet<Task>();
 	}
 
 //------------------------------------------------------------------------------

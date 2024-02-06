@@ -50,6 +50,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -68,25 +69,25 @@ public class JobEvaluator extends Worker
 	/**
 	 * Tasks about evaluating jobs of computational chemistry software.
 	 */
-	public static final Set<TaskID> EVALCOMPCHEMJOBTASKS =
-			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.EVALUATEGAUSSIANOUTPUT,
-							TaskID.EVALUATENWCHEMOUTPUT
+	public static final Set<Task> EVALCOMPCHEMJOBTASKS =
+			Collections.unmodifiableSet(new HashSet<Task>(
+					Arrays.asList(Task.make("evaluateGaussianOutput"),
+							Task.make("evaluateNWChemOutput")
 	//TODO-gg add these, after checking them
 					/*
-					TaskID.EVALUATENWCHEMOUTPUT,
-					TaskID.EVALUATEORCAOUTPUT,
-					TaskID.EVALUATEXTBOUTPUT,
-					TaskID.EVALUATESPARTANOUTPUT,
+					Task.make("EVALUATENWCHEMOUTPUT,
+					Task.make("EVALUATEORCAOUTPUT,
+					Task.make("EVALUATEXTBOUTPUT,
+					Task.make("EVALUATESPARTANOUTPUT,
 					*/
 							)));
 	/**
 	 * Tasks about evaluating jobs of computational chemistry software.
 	 */
-	public static final Set<TaskID> CURECOMPCHEMJOBTASKS =
-			Collections.unmodifiableSet(new HashSet<TaskID>(
-					Arrays.asList(TaskID.CUREGAUSSIANJOB,
-							TaskID.CURENWCHEMJOB)));
+	public static final Set<Task> CURECOMPCHEMJOBTASKS =
+			Collections.unmodifiableSet(new HashSet<Task>(
+					Arrays.asList(Task.make("cureGaussianJob"),
+							Task.make("cureNWChemJob"))));
 	
 	/**
 	 * The string used to identify the kind of termination of the evaluated job.
@@ -160,11 +161,11 @@ public class JobEvaluator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-		Set<TaskID> tmpSet = new HashSet<TaskID>(EVALCOMPCHEMJOBTASKS);
+    public Set<Task> getCapabilities() {
+		Set<Task> tmpSet = new HashSet<Task>(EVALCOMPCHEMJOBTASKS);
 		tmpSet.addAll(CURECOMPCHEMJOBTASKS);
-		tmpSet.add(TaskID.EVALUATEJOB);
-		//TODO-gg tmpSet.add(TaskID.CUREJOB);
+		tmpSet.add(Task.make("evaluateJob"));
+		//TODO-gg tmpSet.add(Task.make("cureJob"));
 		return Collections.unmodifiableSet(tmpSet);
     }
 

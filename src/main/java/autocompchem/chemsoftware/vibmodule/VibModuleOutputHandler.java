@@ -52,6 +52,7 @@ import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -150,9 +151,9 @@ public class VibModuleOutputHandler extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.EXTRACTVIBMODULEFORCECONSTANTS)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("extractVibModuleForceConstants"))));
     }
 
 //------------------------------------------------------------------------------
@@ -270,9 +271,9 @@ public class VibModuleOutputHandler extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
           {
-          case EXTRACTVIBMODULEFORCECONSTANTS:
+          case "EXTRACTVIBMODULEFORCECONSTANTS":
         	  extractForceFieldParameters();
               break;
           }

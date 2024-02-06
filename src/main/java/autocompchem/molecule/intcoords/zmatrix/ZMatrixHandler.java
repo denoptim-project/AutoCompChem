@@ -50,6 +50,7 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -159,11 +160,11 @@ public class ZMatrixHandler extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-                Arrays.asList(TaskID.PRINTZMATRIX,
-                		TaskID.CONVERTZMATRIXTOSDF,
-                		TaskID.SUBTRACTZMATRICES)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+                Arrays.asList(Task.make("printZMatrix"),
+                		Task.make("convertZMatrixToSDF"),
+                		Task.make("subtractZMatrices"))));
     }
 
 //------------------------------------------------------------------------------
@@ -271,15 +272,15 @@ public class ZMatrixHandler extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
           {
-          case PRINTZMATRIX:
+          case "PRINTZMATRIX":
         	  printZMatrix();
               break;
-          case CONVERTZMATRIXTOSDF:
+          case "CONVERTZMATRIXTOSDF":
         	  convertZMatrixToSDF();
         	  break;
-          case SUBTRACTZMATRICES:
+          case "SUBTRACTZMATRICES":
         	  subtractZMatrices();
         	  break;
           }

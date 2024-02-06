@@ -1,6 +1,7 @@
 package autocompchem.worker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -46,22 +47,58 @@ public class WorkerFactoryTest
     @Test
     public void testGetNewWorkerInstance() throws Exception
     {
-    	// Trying to create a worker for a task that is not registered
+    	// Trying to create a worker that is not registered from its task
     	boolean triggered = false;
+		DummyWorker2 dw2 = new DummyWorker2();
+    	for (Task task : dw2.getCapabilities())
+    	{
+	    	try {
+	    		WorkerFactory.createWorker(task);
+	    	} catch (ClassNotFoundException e)
+	    	{
+	    		if (e.getMessage().contains("has not been registered"))
+	    			triggered = true;
+	    	}
+	    	assertTrue(triggered);
+    	}
+    	
+    	// Trying to create a worker for a task that is not registered
+    	triggered = false;
     	try {
-    		WorkerFactory.createWorker(TaskID.DUMMYTASK2);
+    		WorkerFactory.createWorker(DummyWorker2.class);
     	} catch (ClassNotFoundException e)
     	{
-    		if (e.getMessage().contains("has not been registered"))
+    		if (e.getMessage().contains("No registered worker with type"))
     			triggered = true;
     	}
     	assertTrue(triggered);
     	
     	// Now we register that type and try again
-    	WorkerFactory.getInstance().registerType(TaskID.DUMMYTASK2, 
-    			new DummyWorker2());
-    	Worker w = WorkerFactory.createWorker(TaskID.DUMMYTASK2);
+    	WorkerFactory.getInstance().registerType(new DummyWorker2());
+    	
+    	// Try again with task
+    	Worker w = null;
+    	triggered = false;
+    	for (Task task : dw2.getCapabilities())
+    	{
+	    	try {
+	    		w = WorkerFactory.createWorker(task);
+	    	} catch (Throwable e)
+	    	{
+	    		triggered = true;
+	    	}
+	    	assertFalse(triggered);
+	    	assertTrue(w instanceof DummyWorker2);
+    	}
+    	
+    	// and with task from scratch
+    	w = WorkerFactory.createWorker(Task.make("DUMMYTASK2", true));
     	assertTrue(w instanceof DummyWorker2);
+    	
+    	// Try again with class
+    	w = WorkerFactory.createWorker(DummyWorker2.class);
+    	assertTrue(w instanceof DummyWorker2);
+    	
     }
     
 //-----------------------------------------------------------------------------
@@ -71,11 +108,11 @@ public class WorkerFactoryTest
     {
     	Job job = JobFactory.createJob(AppID.ACC);
     	ParameterStorage params = new ParameterStorage();
-    	params.setParameter(WorkerConstants.PARTASK,TaskID.DUMMYTASK2.toString());
+    	params.setParameter(WorkerConstants.PARTASK,
+    			Task.make("DUMMYTASK2",true).toString());
     	job.setParameters(params);
     	
-    	WorkerFactory.getInstance().registerType(TaskID.DUMMYTASK2, 
-    			new DummyWorker2());
+    	WorkerFactory.getInstance().registerType(new DummyWorker2());
     	
     	Worker w = WorkerFactory.createWorker(job);
     	assertTrue(w instanceof DummyWorker2);

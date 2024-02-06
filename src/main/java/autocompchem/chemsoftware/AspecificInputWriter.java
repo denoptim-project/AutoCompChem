@@ -26,6 +26,7 @@ import java.util.Set;
 
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -51,9 +52,9 @@ public class AspecificInputWriter extends Worker
 //------------------------------------------------------------------------------
 
   	@Override
-	public Set<TaskID> getCapabilities() {
-		return Collections.unmodifiableSet(new HashSet<TaskID>(
-                        Arrays.asList(TaskID.PREPAREINPUT)));
+	public Set<Task> getCapabilities() {
+		return Collections.unmodifiableSet(new HashSet<Task>(
+                        Arrays.asList(Task.make("prepareInput"))));
 	}
 
 //------------------------------------------------------------------------------
@@ -63,8 +64,8 @@ public class AspecificInputWriter extends Worker
 	{
 		String taskStr = job.getParameter(WorkerConstants.PARTASK)
 				.getValueAsString();
-    	TaskID taskID = TaskID.getFromString(taskStr);
-    	if (taskID != TaskID.PREPAREINPUT)
+    	Task taskID = Task.make(taskStr);
+    	if (taskID != Task.make("PREPAREINPUT"))
     	{
 			//TODO-gg log
 			System.err.println("WARNING: attempt to make a " 

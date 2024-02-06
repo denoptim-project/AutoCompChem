@@ -39,6 +39,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -102,9 +103,9 @@ public class AtomLabelsGenerator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.GENERATEATOMLABELS)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("generateAtomLabels"))));
     }
 
 //------------------------------------------------------------------------------
@@ -184,9 +185,9 @@ public class AtomLabelsGenerator extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
         {
-            case GENERATEATOMLABELS:
+            case "GENERATEATOMLABELS":
                 generateAtomLabels();
                 break;
         }

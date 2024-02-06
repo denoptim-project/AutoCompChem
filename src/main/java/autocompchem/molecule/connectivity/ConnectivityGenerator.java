@@ -36,6 +36,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -82,12 +83,12 @@ public class ConnectivityGenerator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-                Arrays.asList(TaskID.RICALCULATECONNECTIVITY,
-                		TaskID.ADDBONDSFORSINGLEELEMENT,
-                		TaskID.IMPOSECONNECTIONTABLE,
-                		TaskID.CHECKBONDLENGTHS)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+                Arrays.asList(Task.make("ricalculateConnectivity"),
+                		Task.make("addBondsForSingleElement"),
+                		Task.make("imposeConnectionTable"),
+                		Task.make("checkBondLengths"))));
     }
 
 //------------------------------------------------------------------------------
@@ -181,18 +182,18 @@ public class ConnectivityGenerator extends Worker
       @Override
       public void performTask()
       {
-          switch (task)
+          switch (task.ID)
             {
-            case RICALCULATECONNECTIVITY:
+            case "RICALCULATECONNECTIVITY":
             	ricalculateConnectivity();
                 break;
-            case ADDBONDSFORSINGLEELEMENT:
+            case "ADDBONDSFORSINGLEELEMENT":
             	addBondsOnSingleElement();
                 break;
-            case IMPOSECONNECTIONTABLE:
+            case "IMPOSECONNECTIONTABLE":
             	imposeConnectionTable();
                 break;
-            case CHECKBONDLENGTHS:
+            case "CHECKBONDLENGTHS":
             	checkBondLengthsAgainstConnectivity();
             	break;
             }

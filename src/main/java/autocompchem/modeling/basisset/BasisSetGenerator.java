@@ -42,6 +42,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -111,9 +112,9 @@ public class BasisSetGenerator extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.GENERATEBASISSET)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("generateBasisSet"))));
     }
 
 //------------------------------------------------------------------------------
@@ -199,9 +200,9 @@ public class BasisSetGenerator extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
           {
-          case GENERATEBASISSET:
+          case "GENERATEBASISSET":
         	  assignBasisSetToAllMolsInFile();
               break;
           }

@@ -47,6 +47,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.ThreeDimensionalSpaceUtils;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -124,10 +125,10 @@ public class DummyObjectsHandler extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-                Arrays.asList(TaskID.ADDDUMMYATOMS,
-                		TaskID.REMOVEDUMMYATOMS)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+                Arrays.asList(Task.make("addDummyAtoms"),
+                		Task.make("removeDummyAtoms"))));
     }
 
 //------------------------------------------------------------------------------
@@ -234,12 +235,12 @@ public class DummyObjectsHandler extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
           {
-          case ADDDUMMYATOMS:
+          case "ADDDUMMYATOMS":
         	  addDummyAtoms();
               break;
-          case REMOVEDUMMYATOMS:
+          case "REMOVEDUMMYATOMS":
         	  removeDummyAtoms();
         	  break;
           }

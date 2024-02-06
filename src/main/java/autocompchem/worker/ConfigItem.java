@@ -117,10 +117,12 @@ public class ConfigItem
 			sb.append(System.getProperty("line.separator"));
 			Worker w;
 			try {
-				w = WorkerFactory.createWorker(embeddedWorker);
+				@SuppressWarnings("unchecked")
+				Class<? extends Worker> clazzWorker = 
+					(Class<? extends Worker>) Class.forName(embeddedWorker);
+				w = WorkerFactory.createWorker(clazzWorker);
 				sb.append(w.getEmbeddedTaskSpecificHelp());
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
+			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				sb.append(" Error fetching help msg for '" + embeddedWorker 
 						+ "'");

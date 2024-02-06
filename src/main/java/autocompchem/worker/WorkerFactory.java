@@ -63,17 +63,10 @@ import autocompchem.run.JobEvaluator;
 /**
  * Factory building {@link Worker}s. In this factory we chose the worker
  * type based on the tasks that each worker type declares in its implementation.
- * As such declaration of suitable tasks is meant to live only in one place
- * (i.e., in the subclass implementing that capability), and we want to have no
- * registry of task-to-worker relations, we need to screen the
- * subclasses for those providing the functionality to carry on a specific task.
- * To reach this end and make sure only certain, specific values of 
- * registered task/worker IDs are used, we use {@link TaskID} and 
- * {@link WorkerID} enums. This allows to loop over subclasses of the 
- * {@link Worker} class (i.e., listed in the {@link WorkerID}), and expect to find one
- * of the registered {@link TaskID}, in the worker own declaration of its
- * capabilities. The down side is the long switch/case statements collected all
- * in this factory.
+ * As such, declaration of suitable tasks is meant to live only in one place
+ * (i.e., in the subclass implementing that capability). However, here we keep
+ * a static registry of the {@link Task}-to-{@link Worker} relations, 
+ * so we can easily find a {@link Worker} for a specific {@link Task}.
  * 
  * @author Marco Foscato
  */
@@ -81,10 +74,10 @@ import autocompchem.run.JobEvaluator;
 public final class WorkerFactory
 {
 	/**
-	 * The collection of registered types of {@link Worker}.
+	 * The collection of registered types of {@link Worker} with the declared 
+	 * task.
 	 */
-	private static Map<TaskID, Worker> knownWorkers = 
-			new HashMap<TaskID, Worker>();
+	private static Map<Task, Worker> knownWorkers = new HashMap<Task, Worker>();
 
 	/**
 	 * Singleton instance of this class
@@ -151,39 +144,24 @@ public final class WorkerFactory
 //-----------------------------------------------------------------------------
 
 	/**
-	 * Registers a type of {@link Worker} using a concrete implementation as 
+	 * Registers any type of {@link Worker} using a concrete implementation as 
 	 * example. The given object will not be used for any task.
 	 */
-	private void registerType(Worker worker)
-	{
-		for (TaskID task : worker.getCapabilities())
-		{
-			knownWorkers.put(task, worker);
-		}
-	}
-	
-//-----------------------------------------------------------------------------
-
-	/**
-	 * Registers a type of worker for a given task. 
-	 * Note that there can be multiple 
-	 * tasks with the same worker, but only one worker for a specific task.
-	 * @param taskId the identifier of a task.
-	 * @param object an example instance of the worker. This is only used to
-	 * define the type of objects. We'll never use this instance directly.
-	 */
-	public synchronized void registerType(TaskID taskId, Object object)
+	public synchronized void registerType(Object object)
 	{
 		if (object instanceof Worker)
 		{
-			knownWorkers.put(taskId, (Worker) object);
+			Worker worker = (Worker) object;
+			for (Task task : worker.getCapabilities())
+			{
+				knownWorkers.put(task, (Worker) object);
+			}
 		} else {
 			//TODO-gg: log warning
 			System.err.println("Registration of " + Worker.class.getSimpleName() 
 					+ " has failed because the given example object is not an "
 					+ "instance of "
-					+ Worker.class.getSimpleName() 
-					+ ". Not registering task '" + taskId + "'");
+					+ Worker.class.getSimpleName() + ".");
 		}
 	}
 	
@@ -193,19 +171,18 @@ public final class WorkerFactory
      * Create a new {@link Worker} of a given class
      * @param className the simple name of the {@link Worker}'s class
      */
-	public static Worker createWorker(String className) 
-			throws InstantiationException
+	public static Worker createWorker(Class<? extends Worker> clazz) 
+			throws ClassNotFoundException
 	{
 		for (Worker exampleObj : knownWorkers.values())
 		{
-			if (exampleObj.getClass().getSimpleName().toUpperCase().equals(
-					className.toUpperCase()))
+			if (exampleObj.getClass().equals(clazz))
 			{
 				return exampleObj.makeInstance(null);
 			}
 		}
-		throw new InstantiationException("Could not make new instance of '" 
-                    + className + "'.");
+		throw new ClassNotFoundException("No registered worker with type '" 
+				+ clazz.getSimpleName() + "'.");
 	}
 	
 //-----------------------------------------------------------------------------
@@ -278,15 +255,13 @@ public final class WorkerFactory
     {
     	String taskStr = job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString();
-    	TaskID taskID = TaskID.getFromString(taskStr);
-    	
-    	Worker worker = createWorker(taskID, job);
+    	Task task = Task.make(taskStr);
+    	Worker worker = createWorker(task, job);
     	worker.setParameters(job.getParameters());
     	if (initializeIt)
     	{
     		worker.initialize();
     	}
-    	
     	return worker;
     }
     
@@ -300,7 +275,7 @@ public final class WorkerFactory
      * registered, so we cannot make any instance of {@link Worker}.
      */ 
 
-    public static Worker createWorker(TaskID task) throws ClassNotFoundException
+    public static Worker createWorker(Task task) throws ClassNotFoundException
     {
     	return createWorker(task, null);
     }
@@ -311,13 +286,13 @@ public final class WorkerFactory
      * Create a new {@link Worker} capable of performing the given task, which i
      * is defined by the given {@link Job}. 
      * @param task the task to be performed by the {@link Worker}.
-     * @param job the {@link Job} that to be done by the {@link Worker}.
+     * @param job the {@link Job} that has to be done by the {@link Worker}.
      * @return a suitable {@link Worker} for the task or <code>null</code>.
      * @throws ClassNotFoundException if no suitable {@link Worker} has been 
      * registered, so we cannot make any instance of {@link Worker}.
      */ 
 
-    private synchronized static Worker createWorker(TaskID task, Job job) 
+    private synchronized static Worker createWorker(Task task, Job job) 
     		throws ClassNotFoundException
     {
     	if (INSTANCE==null)

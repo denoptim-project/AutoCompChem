@@ -55,6 +55,7 @@ import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -81,9 +82,9 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.PREPAREINPUTORCA)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("prepareInputOrca"))));
     }
 
 //------------------------------------------------------------------------------

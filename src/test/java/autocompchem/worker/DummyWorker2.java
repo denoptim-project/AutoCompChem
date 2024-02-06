@@ -51,9 +51,9 @@ public class DummyWorker2 extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.DUMMYTASK2)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("dummyTask2", true))));
     }
 
 //------------------------------------------------------------------------------

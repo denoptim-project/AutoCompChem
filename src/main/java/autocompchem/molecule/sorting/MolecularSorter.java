@@ -33,6 +33,7 @@ import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.worker.Task;
 import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
@@ -66,9 +67,9 @@ public class MolecularSorter extends Worker
 //------------------------------------------------------------------------------
 
     @Override
-    public Set<TaskID> getCapabilities() {
-        return Collections.unmodifiableSet(new HashSet<TaskID>(
-             Arrays.asList(TaskID.SORTSDFMOLECULES)));
+    public Set<Task> getCapabilities() {
+        return Collections.unmodifiableSet(new HashSet<Task>(
+             Arrays.asList(Task.make("sortMolecules"))));
     }
 
 //------------------------------------------------------------------------------
@@ -126,9 +127,10 @@ public class MolecularSorter extends Worker
     @Override
     public void performTask()
     {
-        switch (task)
+        switch (task.ID)
           {
-          case SORTSDFMOLECULES:
+          case "SORTMOLECULES":
+        	  //TODO-gg remove SDF from method name
         	  writeSortedSDF(); //TODO; change keyword from distinguishing case where we wabt to write results or just calculate nad share output date
               break;
           }
