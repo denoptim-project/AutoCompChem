@@ -48,7 +48,6 @@ import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.ThreeDimensionalSpaceUtils;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

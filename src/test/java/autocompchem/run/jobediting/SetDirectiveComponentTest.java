@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -33,8 +31,6 @@ import com.google.gson.Gson;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveComponentType;
-import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.ACCJson;

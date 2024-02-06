@@ -20,7 +20,6 @@ package autocompchem.run;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.JsonDeserializationContext;
@@ -48,8 +46,6 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.jobediting.Action;
-import autocompchem.run.jobediting.ActionApplier;
-import autocompchem.text.TextBlockIndexed;
 
 
 /**

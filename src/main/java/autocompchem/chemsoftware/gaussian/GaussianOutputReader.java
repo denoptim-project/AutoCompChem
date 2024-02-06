@@ -17,7 +17,6 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputReader;
-import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
@@ -27,7 +26,6 @@ import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

@@ -28,9 +28,9 @@ import com.google.gson.Gson;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
+import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.AppID;
 
 public class SetJobParameterTest 
 {

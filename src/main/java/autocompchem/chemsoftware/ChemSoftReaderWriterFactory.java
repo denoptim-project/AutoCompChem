@@ -21,9 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +31,6 @@ import autocompchem.chemsoftware.orca.OrcaOutputReader;
 import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.files.FileFingerprint;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory;
 
 /**
  * A factory to create software-specific instances of 

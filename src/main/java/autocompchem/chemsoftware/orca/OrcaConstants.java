@@ -1,6 +1,6 @@
 package autocompchem.chemsoftware.orca;
 
-import java.util.HashMap;
+import autocompchem.chemsoftware.Directive;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 

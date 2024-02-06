@@ -1,6 +1,5 @@
 package autocompchem.worker;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
@@ -25,11 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.AppID;
 
 
 /**

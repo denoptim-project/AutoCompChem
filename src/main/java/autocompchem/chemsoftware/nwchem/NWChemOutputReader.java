@@ -18,10 +18,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputReader;
-import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
@@ -29,7 +27,6 @@ import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

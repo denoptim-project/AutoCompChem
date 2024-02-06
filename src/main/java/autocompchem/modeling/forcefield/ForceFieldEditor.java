@@ -40,7 +40,6 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;
 

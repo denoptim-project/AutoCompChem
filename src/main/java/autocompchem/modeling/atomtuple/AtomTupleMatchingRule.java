@@ -29,7 +29,6 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;

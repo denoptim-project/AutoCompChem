@@ -2,6 +2,14 @@ package autocompchem.modeling.atomtuple;
 
 
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -22,15 +30,8 @@ package autocompchem.modeling.atomtuple;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.File;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -47,9 +48,7 @@ import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
-import autocompchem.worker.ConfigItem;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 

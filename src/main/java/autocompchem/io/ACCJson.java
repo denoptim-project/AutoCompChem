@@ -54,6 +54,8 @@ import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionObjectDeserializer;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.Action.ActionTypeDeserializer;
+import autocompchem.run.jobediting.AddDirectiveComponent;
+import autocompchem.run.jobediting.AddDirectiveComponent.AddDirectiveComponentDeserializer;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskTypeDeserializer;
 import autocompchem.run.jobediting.IJobEditingTask;
@@ -63,8 +65,6 @@ import autocompchem.run.jobediting.IJobSettingsInheritTask.IJobSettingsInheritTa
 import autocompchem.run.jobediting.JobEditType;
 import autocompchem.run.jobediting.JobEditType.JobEditTypeDeserializer;
 import autocompchem.run.jobediting.SetDirectiveComponent;
-import autocompchem.run.jobediting.AddDirectiveComponent;
-import autocompchem.run.jobediting.AddDirectiveComponent.AddDirectiveComponentDeserializer;
 import autocompchem.run.jobediting.SetDirectiveComponent.SetDirectiveComponentDeserializer;
 import autocompchem.worker.ConfigItem;
 import autocompchem.worker.ConfigItem.ConfigItemTypeDeserializer;

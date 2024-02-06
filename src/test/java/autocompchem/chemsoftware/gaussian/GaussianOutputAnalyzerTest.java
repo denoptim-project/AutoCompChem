@@ -6,7 +6,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 
 public class GaussianOutputAnalyzerTest 

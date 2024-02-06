@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openscience.cdk.interfaces.IAtomContainer;
-
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.ChemSoftOutputReader;

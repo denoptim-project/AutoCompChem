@@ -22,7 +22,6 @@ import java.io.FileReader;
 
 import java.io.Reader;
 
-import autocompchem.files.FileUtils;
 import autocompchem.run.Terminator;
 
 /**

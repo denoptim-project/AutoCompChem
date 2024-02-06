@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
+import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.AppID;
 
 public class InheritJobParameterTest 
 {

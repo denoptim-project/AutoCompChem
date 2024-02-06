@@ -1,7 +1,7 @@
 package autocompchem.worker;
 
-import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
+import autocompchem.chemsoftware.DirectiveData;
 
 /*
  *   Copyright (C) 2016  Marco Foscato

@@ -34,8 +34,6 @@ import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
-import autocompchem.molecule.MolecularUtils;
-
 /**
  * Unit Test for atom utilities
  * 

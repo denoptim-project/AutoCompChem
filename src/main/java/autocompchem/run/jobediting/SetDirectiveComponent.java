@@ -1,7 +1,6 @@
 package autocompchem.run.jobediting;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
@@ -19,13 +18,7 @@ import autocompchem.chemsoftware.IValueContainer;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Job;
 import autocompchem.utils.NumberUtils;
-import jakarta.el.ELContext;
-import jakarta.el.ELException;
-import jakarta.el.ELResolver;
 import jakarta.el.ExpressionFactory;
-import jakarta.el.FunctionMapper;
-import jakarta.el.ValueExpression;
-import jakarta.el.VariableMapper;
 
 /**
  * Task setting a {@link IDirectiveComponent} somewhere in the 

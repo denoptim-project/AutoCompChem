@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +35,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirComponentAddress;
@@ -56,7 +54,6 @@ import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

@@ -37,9 +37,9 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.AppID;
 import autocompchem.text.TextBlock;
 import autocompchem.worker.TaskID;
 

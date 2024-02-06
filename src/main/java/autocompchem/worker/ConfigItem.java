@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.run.jobediting.JobEditType;
 
 /*   
  *   Copyright (C) 2022  Marco Foscato 

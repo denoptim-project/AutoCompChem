@@ -1,5 +1,7 @@
 package autocompchem.files;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /*   
  *   Copyright (C) 2023  Marco Foscato 
  *
@@ -18,7 +20,6 @@ package autocompchem.files;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 

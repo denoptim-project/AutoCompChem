@@ -25,20 +25,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
-import org.apache.xalan.xslt.EnvironmentCheck;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.DirComponentTypeAndName;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.ACCJson;
 import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.JobDetailsAsSource;
 import autocompchem.perception.infochannel.ShortTextAsSource;
 

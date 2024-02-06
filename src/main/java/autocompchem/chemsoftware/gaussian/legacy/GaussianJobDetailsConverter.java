@@ -1,5 +1,7 @@
 package autocompchem.chemsoftware.gaussian.legacy;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2023  Marco Foscato
  *
@@ -21,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.io.File;
 
 import com.google.gson.Gson;
 
@@ -30,7 +31,6 @@ import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /** 

@@ -23,7 +23,6 @@ import java.util.Map;
 
 import autocompchem.chemsoftware.AspecificInputWriter;
 import autocompchem.chemsoftware.AspecificOutputAnalyzer;
-import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.gaussian.GaussianOutputReader;
 import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;

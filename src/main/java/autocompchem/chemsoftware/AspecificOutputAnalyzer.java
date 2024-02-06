@@ -27,7 +27,6 @@ import java.util.Set;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

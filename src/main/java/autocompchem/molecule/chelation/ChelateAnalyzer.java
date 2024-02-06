@@ -41,7 +41,6 @@ import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

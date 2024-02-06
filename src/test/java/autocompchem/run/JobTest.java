@@ -1,8 +1,6 @@
 package autocompchem.run;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -31,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedData.NamedDataType;
 
 

@@ -1,5 +1,9 @@
 package autocompchem.chemsoftware;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,20 +22,14 @@ package autocompchem.chemsoftware;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
-import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
 import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
-import autocompchem.worker.Worker;
 
 
 /**

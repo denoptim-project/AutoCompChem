@@ -1,7 +1,5 @@
 package autocompchem.chemsoftware;
 
-import java.security.Key;
-
 /*
  *   Copyright (C) 2020  Marco Foscato
  *

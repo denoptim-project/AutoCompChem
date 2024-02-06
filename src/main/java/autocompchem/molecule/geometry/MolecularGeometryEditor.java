@@ -47,7 +47,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;

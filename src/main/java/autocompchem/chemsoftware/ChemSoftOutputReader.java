@@ -25,10 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +55,6 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

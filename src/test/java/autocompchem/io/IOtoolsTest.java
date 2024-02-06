@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.files.FileAnalyzer;
-import autocompchem.files.FileUtils;
 
 
 /**

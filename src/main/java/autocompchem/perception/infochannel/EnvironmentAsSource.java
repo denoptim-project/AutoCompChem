@@ -1,6 +1,5 @@
 package autocompchem.perception.infochannel;
 
-import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 

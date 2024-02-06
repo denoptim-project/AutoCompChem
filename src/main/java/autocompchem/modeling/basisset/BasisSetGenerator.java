@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.isomorphism.Mappings;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
@@ -43,7 +42,6 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 

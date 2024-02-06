@@ -4,8 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-
 import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
@@ -19,10 +17,7 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.io.ACCJson;
-import autocompchem.io.IOtools;
 
 
 public class AtomContainerSetSerializerTest 

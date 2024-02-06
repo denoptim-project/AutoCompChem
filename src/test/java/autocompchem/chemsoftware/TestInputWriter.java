@@ -19,18 +19,14 @@ package autocompchem.chemsoftware;
 
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.files.FileFingerprint;
 import autocompchem.run.Job;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

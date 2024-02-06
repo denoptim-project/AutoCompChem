@@ -27,7 +27,6 @@ import java.util.Set;
 import autocompchem.files.FileFingerprint;
 import autocompchem.run.Job;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

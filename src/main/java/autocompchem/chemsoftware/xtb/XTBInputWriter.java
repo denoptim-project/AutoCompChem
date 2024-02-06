@@ -43,7 +43,6 @@ import autocompchem.run.Terminator;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /**

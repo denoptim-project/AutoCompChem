@@ -9,7 +9,6 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.WorkerConstants;
 
 

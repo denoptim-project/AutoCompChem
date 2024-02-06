@@ -21,8 +21,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-import autocompchem.run.Terminator;
-
 
 /**
  * Object representing a basis set as a combination of center-specific basis 

@@ -1,5 +1,7 @@
 package autocompchem.molecule.connectivity;
 
+import java.io.File;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -23,7 +25,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.io.File;
 
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
@@ -37,7 +38,6 @@ import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
-import autocompchem.worker.TaskID;
 import autocompchem.worker.Worker;
 
 /** 
