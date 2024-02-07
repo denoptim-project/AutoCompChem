@@ -1155,6 +1155,17 @@ public class Job implements Runnable
     private void finalizeStatusAndNotifications(boolean notify) 
     {
     	completed = true;
+    	
+    	// Handling of exceptions
+    	for (Job step : steps)
+    	{
+            if (step.foundException())
+            {
+            	throw new Error(step.thrownExc);
+            }
+    	}
+    	
+    	// Notify observer of any request from this jobs
     	if (observer!=null && notify)
     	{
 	    	if (requestsAction())

@@ -150,8 +150,6 @@ public class SerialJobsRunner extends JobsRunner
      * @return <code>true</code> if any sub-job returned an exception
      */
 
-    // TODO: perhaps one day we'll read to exceptions
-    @SuppressWarnings("unused")
 	private boolean exceptionInSubJobs()
     {
         boolean found = false;
@@ -159,7 +157,14 @@ public class SerialJobsRunner extends JobsRunner
         {
             if (submittedJob.foundException())
             {
-            	found = false;
+            	if (verbosity > 0)
+            	{
+            		//TODO: logger
+            		System.out.println(
+            				submittedJob.thrownExc.getClass().getSimpleName()
+            				+ " thrown by job " + submittedJob.getId());
+            	}
+            	found = true;
                 break;
             }
         }
@@ -256,6 +261,7 @@ public class SerialJobsRunner extends JobsRunner
     	// Mark request to start as taken care of
     	requestedToStart = false;
     	
+    	// Submit the jobs via the executor
         Iterator<Job> it = todoJobs.iterator();
         int numSubmittedJobs = 0;
         while (it.hasNext())
@@ -283,6 +289,14 @@ public class SerialJobsRunner extends JobsRunner
 		        			+ ii + " - " + formatter.format(date));
 	        	}
 	        	
+	            //TODO-gg do this in parallel runner?
+	            // Check for errors
+	            if (exceptionInSubJobs())
+	            {
+	            	cancellAllRunningThreadsAndShutDown();
+	            	break;
+	            }
+	        	
 	            //Completion clause
 	            if (allSubJobsCompleted())
 	            {
@@ -308,17 +322,6 @@ public class SerialJobsRunner extends JobsRunner
 	            	cancellAllRunningThreadsAndShutDown();
 	                withinTime = false;
 	                break;
-	            }
-	            
-	            // Check for errors
-	            if (exceptionInSubJobs())
-	            {
-	            	if (verbosity > 0)
-	            	{
-	            		System.out.println("WARNING! Exception in sub job!");
-	            	}
-	            	cancellAllRunningThreadsAndShutDown();
-	            	break;
 	            }
 	
 	            // wait some time before checking again, 

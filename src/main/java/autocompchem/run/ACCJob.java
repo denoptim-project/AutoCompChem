@@ -96,8 +96,13 @@ public class ACCJob extends Job
 			throw new Error("Unable to make worker for " 
 					+ params.getParameterValue(WorkerConstants.PARTASK));
 		}
-        worker.performTask();
-
+		try {
+			worker.performTask();
+		} catch (Throwable t) {
+			hasException = true;
+			thrownExc = t;
+		}
+		
         date = new Date();
         if (getVerbosity() > 0)
         {
