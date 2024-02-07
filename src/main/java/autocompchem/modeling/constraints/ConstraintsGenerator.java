@@ -56,7 +56,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      * String defining the task of generating constraints
      */
     public static final String GENERATECONSTRAINTSTASKNAME = 
-    		"cenerateConstraints";
+    		"generateConstraints";
 
     /**
      * Task about generating constraints
