@@ -37,7 +37,9 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
@@ -456,52 +458,61 @@ public class MolecularGeometryEditor extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Apply the geometrical modification as defined by the constructor.
+     * Apply the geometric modification as defined by the constructor.
      */
 
     public void applyMove()
     {
         if (zmtMove!=null && zmtMove.getZAtomCount()>0)
         {
-                if (verbosity > 0)
-                {
-                    System.out.println(" Applying ZMatrix move");
-                }
-                try
-                {
-                    applyZMatrixMove();
-                }
-                catch (Throwable t)
-                {
-                    Terminator.withMsgAndStatus("ERROR! Exception while "
-                        + "altering the ZMatrix. You might need dummy "
-                        + "atoms to define an healthier ZMatrix. Cause of the "
-                        + "exception: " + t.getMessage(), -1);
-                }
+            if (verbosity > 0)
+            {
+                System.out.println(" Applying ZMatrix move");
+            }
+            try
+            {
+                applyZMatrixMove();
+            }
+            catch (Throwable t)
+            {
+                Terminator.withMsgAndStatus("ERROR! Exception while "
+                    + "altering the ZMatrix. You might need dummy "
+                    + "atoms to define an healthier ZMatrix. Cause of the "
+                    + "exception: " + t.getMessage(), -1);
+            }
         }
         else if (crtMove!=null && crtMove.size()>0)
         {
             if (verbosity > 0)
-                {
-                    System.out.println(" Applying Cartesian move");
-                }
-                applyCartesianMove();
-        }
-        else
             {
+                System.out.println(" Applying Cartesian move");
+            }
+            applyCartesianMove();
+        } else {
             Terminator.withMsgAndStatus("ERROR! Choose and provide either "
                     + "a Cartesian or a ZMatrix move.", -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : outMols)
+	    	{
+	    	    ii++;
+	    	    String molID = "step-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
    
-
 //------------------------------------------------------------------------------
 
     /**
-     * Apply the geometrical modification as defined by the constructor.
+     * Apply the geometric modification as defined by the constructor.
      */
 
-    public void applyCartesianMove()
+    private void applyCartesianMove()
     {
         // Consistency check
         if (inMol == null || inMol.getAtomCount() == 0)
@@ -1108,7 +1119,7 @@ public class MolecularGeometryEditor extends Worker
      * is preferable to redefine the ZMatrix, possibly adding dummy atoms
      */
 
-    public void applyZMatrixMove() throws Throwable
+    private void applyZMatrixMove() throws Throwable
     {
         // Consistency check
         if (inMol == null || inMol.getAtomCount() == 0)

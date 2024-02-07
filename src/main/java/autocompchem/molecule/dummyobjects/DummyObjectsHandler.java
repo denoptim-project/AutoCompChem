@@ -31,6 +31,7 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
@@ -39,6 +40,8 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -276,6 +279,7 @@ public class DummyObjectsHandler extends Worker
 
     private void addDummyAtoms()
     {
+    	AtomContainerSet output = new AtomContainerSet();
         int i = 0;
         try
         {
@@ -321,7 +325,10 @@ public class DummyObjectsHandler extends Worker
                     }
                 }
                 //Store result
-                IOtools.writeSDFAppend(outFile,mol,true);
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
             }
             sdfItr.close();
         }
@@ -331,6 +338,18 @@ public class DummyObjectsHandler extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -399,14 +418,14 @@ public class DummyObjectsHandler extends Worker
 
     private void removeDummyAtoms()
     {
-        int i = 0;
+
+        AtomContainerSet output = new AtomContainerSet();
         try 
         {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
             { 
                 //Get the molecule
-                i++;
                 boolean skipMol = false;
                 IAtomContainer mol = sdfItr.next();
                 String molName = MolecularUtils.getNameOrID(mol);
@@ -434,7 +453,10 @@ public class DummyObjectsHandler extends Worker
                 }
 
                 //Store result
-                IOtools.writeSDFAppend(outFile,mol,true);
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
 
             } //end loop over molecules
             sdfItr.close();
@@ -443,6 +465,18 @@ public class DummyObjectsHandler extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //-----------------------------------------------------------------------------

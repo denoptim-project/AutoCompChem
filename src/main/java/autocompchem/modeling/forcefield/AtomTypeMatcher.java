@@ -32,9 +32,12 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -65,9 +68,14 @@ public class AtomTypeMatcher extends Worker
     private File atMapFile;
 
     /**
-     * The name of the output file
+     * The name of the output file, if any
      */
     private File outFile;
+    
+    /**
+     * Storage or typed atom containers
+     */
+    private List<IAtomContainer> output = new ArrayList<IAtomContainer>();
 
     /**
      * List of atom type-matching smarts with string identifiers
@@ -77,6 +85,7 @@ public class AtomTypeMatcher extends Worker
     /**
      * Flag controlling no-output mode
      */
+    //TODO: obsolete: remove
     private boolean noOutput = false;
 
     /**
@@ -197,7 +206,7 @@ public class AtomTypeMatcher extends Worker
     {
     	if (task.equals(ASSIGNATOMTYPESTASK))
     	{
-      	  assignAtomTypesToAll();
+    		assignAtomTypesToAll();
     	} else {
     		dealWithTaskMistMatch();
         }
@@ -221,9 +230,11 @@ public class AtomTypeMatcher extends Worker
 
                 //Assign Atom Types
                 assignAtomTypes(mol);
+                output.add(mol);
 
                 //Write to output
-                writeOut(mol);
+                if (outFile!=null)
+                	writeOut(mol);
 
             } //end loop over molecules
             sdfItr.close();
@@ -231,6 +242,21 @@ public class AtomTypeMatcher extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (IAtomContainer iac : output)
+	    	{
+	    		ii++;
+	    		if (iac != null)
+	    		{
+	    			String molID = "mol-"+ii;
+	  		        exposeOutputData(new NamedData(molID, 
+	  		        		NamedDataType.IATOMCONTAINER, iac));
+	    		}
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------

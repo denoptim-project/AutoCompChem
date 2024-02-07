@@ -43,6 +43,8 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IIsotope;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -369,7 +371,7 @@ public class ZMatrixHandler extends Worker
         }
         else
         {
-            IOtools.writeTXTAppend(outFile,"No chemical entity in "
+            IOtools.writeTXTAppend(outFile, "No chemical entity in "
             		+ this.getClass().getSimpleName() + "!",false);
         }
     }
@@ -383,6 +385,7 @@ public class ZMatrixHandler extends Worker
 
     public void subtractZMatrices()
     {
+    	//TODO: enable input from feed instead of file
         if (null == outFile)
         {
             if (verbosity > 0)
@@ -481,7 +484,13 @@ public class ZMatrixHandler extends Worker
         {
             ZMatrix zmatRes = subtractZMatrices(firstZMats.get(i),
                                                 secondZMats.get(i));
-            IOtools.writeZMatAppend(outFile,zmatRes,true);
+            if (exposedOutputCollector != null)
+            {
+            	exposeOutputData(new NamedData("zmat-"+i, 
+    		      		NamedDataType.ZMATRIX, zmatRes));
+            }	
+            if (outFile!=null)
+            	IOtools.writeZMatAppend(outFile,zmatRes,true);
         }
     }
 
@@ -827,6 +836,7 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
 
     public void convertZMatrixToSDF()
     {
+    	//TODO: enable input from feed instead of file
         if (null == outFile)
         {
             if (verbosity > 0)
@@ -839,27 +849,33 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
         if (null != inFile)
         {
             List<ZMatrix> zmats = IOtools.readZMatrixFile(inFile);
-        int i = 0;
+            int i = 0;
             for (ZMatrix zmat : zmats)
             {
-        i++;
-        if (verbosity > 0)
-        {
-            System.out.println("Converting ZMatrix "+i);
-        }
-        try
-        {
-            IAtomContainer iac = convertZMatrixToIAC(zmat);
-            iac.setProperty(CDKConstants.TITLE,zmat.getTitle());
-            IOtools.writeSDFAppend(outFile,iac,true);
-        }
-        catch (Throwable t)
-        {
-            Terminator.withMsgAndStatus("ERROR! Exception while "
-            + "converting ZMatrix " + i + ". You might need dummy "
-            + "atoms to define an healthier ZMatrix. Cause of the "
-            + "exception: " + t.getMessage(), -1);
-        }
+		        i++;
+		        if (verbosity > 0)
+		        {
+		            System.out.println("Converting ZMatrix "+i);
+		        }
+		        try
+		        {
+		            IAtomContainer iac = convertZMatrixToIAC(zmat);
+		            iac.setProperty(CDKConstants.TITLE,zmat.getTitle());
+		            if (exposedOutputCollector != null)
+		            {
+		            	exposeOutputData(new NamedData("Mol-"+i, 
+		    		      		NamedDataType.IATOMCONTAINER, iac));
+		            }
+		            if (outFile != null)
+		            	IOtools.writeSDFAppend(outFile,iac,true);
+		        }
+		        catch (Throwable t)
+		        {
+		            Terminator.withMsgAndStatus("ERROR! Exception while "
+		            + "converting ZMatrix " + i + ". You might need dummy "
+		            + "atoms to define an healthier ZMatrix. Cause of the "
+		            + "exception: " + t.getMessage(), -1);
+		        }
             }
         }
         else

@@ -37,6 +37,8 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
@@ -281,8 +283,8 @@ public class AtomTupleGenerator extends Worker
 //------------------------------------------------------------------------------
 
     /**
-     * Define {@link AnnotatedAtomTuple}s for all structures found in the input 
-     * file. Uses tuple-defining rules available in this instance (i.e., either
+     * Define {@link AnnotatedAtomTuple}s for all structures found in the input.
+     * Uses tuple-defining rules available in this instance (i.e., either
      * created upon initialization or set by 
      * {@link #setAtomTupleMatchingRules(List)}.
      */
@@ -317,6 +319,21 @@ public class AtomTupleGenerator extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (List<AnnotatedAtomTuple> tuples : output)
+	    	{
+	    		ii++;
+	    		if (tuples != null)
+	    		{
+	    			String molID = "mol-"+ii;
+	  		        exposeOutputData(new NamedData(molID, 
+	  		        		NamedDataType.ANNOTATEDATOMTUPLELIST, tuples));
+	    		}
+	    	}
+    	}
     }
     
 //------------------------------------------------------------------------------

@@ -26,10 +26,13 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -173,6 +176,21 @@ public class ConstraintsGenerator extends AtomTupleGenerator
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (ConstraintsSet cs : output)
+	    	{
+	    		ii++;
+	    		if (cs != null)
+	    		{
+	    			String molID = "mol-"+ii;
+	  		        exposeOutputData(new NamedData(molID, 
+	  		        		NamedDataType.CONSTRAINTSSET, cs));
+	    		}
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------

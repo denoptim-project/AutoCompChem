@@ -33,9 +33,12 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -82,6 +85,11 @@ public class BasisSetGenerator extends Worker
      * Storage of imported basis sets 
      */
     private Map<String,BasisSet> importedBSs = new HashMap<String,BasisSet>();  
+    
+    /**
+     * Storage of generated basis sets
+     */
+    private List<BasisSet> output = new ArrayList<BasisSet>();
 
     /**
      * Flag setting tolerance for partial matches
@@ -267,10 +275,10 @@ public class BasisSetGenerator extends Worker
 
     public void assignBasisSetToAllMolsInFile()
     {
-        if (inFile.equals("noInFile"))
+        if (inFile==null)
         {
             Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-                + " Cannot generate basis set.",-1);
+                + "Cannot generate basis set.",-1);
         }
 
         try {
@@ -282,9 +290,11 @@ public class BasisSetGenerator extends Worker
 
                 //Assign Basis Set
                 BasisSet bs = assignBasisSet(mol);
+                output.add(bs);
 
                 //Write to output
-                BasisSetUtils.writeFormattedBS(bs, format, outFile);
+                if (outFile!=null)
+                	BasisSetUtils.writeFormattedBS(bs, format, outFile);
             } //end loop over molecules
             sdfItr.close();
         } catch (Throwable t) {
@@ -292,6 +302,21 @@ public class BasisSetGenerator extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (BasisSet bs : output)
+	    	{
+	    		ii++;
+	    		if (bs != null)
+	    		{
+	    			String molID = "mol-"+ii;
+	  		        exposeOutputData(new NamedData(molID, 
+	  		        		NamedDataType.BASISSET, bs));
+	    		}
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------

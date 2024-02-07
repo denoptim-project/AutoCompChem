@@ -28,9 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -175,6 +178,7 @@ public class MolecularPruner extends Worker
 
     public void pruneAll()
     {
+        AtomContainerSet output = new AtomContainerSet();
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
@@ -216,7 +220,10 @@ public class MolecularPruner extends Worker
                 }
 
                 //Store output
-                IOtools.writeSDFAppend(outFile,mol,true);
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
 
             } //end loop over molecules
             sdfItr.close();
@@ -225,6 +232,17 @@ public class MolecularPruner extends Worker
                 + "SDFIterator while reading " + inFile, -1);
         }
         
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //-----------------------------------------------------------------------------

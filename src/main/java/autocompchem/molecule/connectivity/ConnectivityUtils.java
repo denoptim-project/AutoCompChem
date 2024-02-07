@@ -66,8 +66,7 @@ public class ConnectivityUtils
 //------------------------------------------------------------------------------
 
     public ConnectivityUtils()
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -81,11 +80,11 @@ public class ConnectivityUtils
     /**
      * Add connections between atoms if distance is below sum of vdW radii
      * Does not remove existing bonds.
-     * @param mol the atom container under evaluation
+     * @param mol the atom container under evaluation (may be modified)
      * @param el the symbol of the central atom around which interatomic 
      * distances are evaluated
      * @param tolerance a new bond is added only when the distance between the 
-     * central atom and a neighbour is below the sum of their v.d.W. radii
+     * central atom and a neighbor is below the sum of their v.d.W. radii
      * minus the tolerance (as percentage). Values between 0.0 and 1.0 should 
      * be used. For atoms connected to atoms directly connected to the central
      * one the tolerance is increased by an extra factor.

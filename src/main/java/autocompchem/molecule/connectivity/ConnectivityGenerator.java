@@ -26,14 +26,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -285,6 +289,7 @@ public class ConnectivityGenerator extends Worker
           }
           IAtomContainer ref = refMols.get(0); 
           
+          List<Boolean> output = new ArrayList<Boolean>();
           try {
               SDFIterator sdfItr = new SDFIterator(inFile);
               int i = 0;
@@ -295,14 +300,28 @@ public class ConnectivityGenerator extends Worker
             		  System.out.println("Checking bond lengths in mol #"+i);
             	  
                   IAtomContainer mol = sdfItr.next();
-                  ConnectivityUtils.compareBondDistancesWithReference(mol, 
-                		  ref, tolerance, verbosity);
+                  boolean result = 
+                		  ConnectivityUtils.compareBondDistancesWithReference(
+                				  mol, ref, tolerance, verbosity);
+                  output.add(result);
               }
               sdfItr.close();
           } catch (Throwable t) {
               Terminator.withMsgAndStatus("ERROR! Exception returned by "
                   + "SDFIterator while reading " + inFile, -1);
           }
+          
+          if (exposedOutputCollector != null)
+          {
+        	  int ii = 0;
+  	    	  for (boolean isCompatible : output)
+  	    	  {
+  	    	      ii++;
+    			  String molID = "mol-"+ii;
+  		          exposeOutputData(new NamedData(molID, 
+  		        		NamedDataType.BOOLEAN, isCompatible));
+  	    	  }
+      	  }
       }
       
 //------------------------------------------------------------------------------
@@ -320,6 +339,7 @@ public class ConnectivityGenerator extends Worker
                                 + inFile);
         }
         
+        AtomContainerSet output = new AtomContainerSet();
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
@@ -335,13 +355,28 @@ public class ConnectivityGenerator extends Worker
                                                             verbosity);
 
                 //Store output
-                IOtools.writeSDFAppend(outFile,mol,true);
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
             }
             sdfItr.close();
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -358,6 +393,7 @@ public class ConnectivityGenerator extends Worker
             System.out.println(" ConnectivityGenerator starts to work on "  
                                 + inFile);
 
+        AtomContainerSet output = new AtomContainerSet();
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
@@ -369,13 +405,28 @@ public class ConnectivityGenerator extends Worker
                 ricalculateConnectivity(mol, tolerance);                
 
                 //Store output
-                IOtools.writeSDFAppend(outFile,mol,true);
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
             }
             sdfItr.close();
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -443,7 +494,8 @@ public class ConnectivityGenerator extends Worker
         List<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
         
         //TODO: what to do when there is more than one template?
-        
+
+        AtomContainerSet output = new AtomContainerSet();
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
@@ -453,7 +505,10 @@ public class ConnectivityGenerator extends Worker
                 ConnectivityUtils.importConnectivityFromReference(mol, 
                 		tmpl.get(0));
 
-                IOtools.writeSDFAppend(outFile,mol,true);
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
             }
             sdfItr.close();
         } catch (Throwable t) {
@@ -461,6 +516,18 @@ public class ConnectivityGenerator extends Worker
                 + "iterating over SDF file to impose connection tables."
                 + " I was reading file " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //------------------------------------------------------------------------------

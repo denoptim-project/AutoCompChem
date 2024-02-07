@@ -31,6 +31,8 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
@@ -249,14 +251,18 @@ public class MolecularComparator extends Worker
             }
         } else {
             if (verbosity > 0)
-            {
                 System.out.println(" Consistent connectivity");
-                if (!outFile.equals("") && outFile != null)
-                {
-                    IOtools.writeSDFAppend(outFile,inMol,false);
-                }
+            if (outFile != null)
+            {
+                IOtools.writeSDFAppend(outFile,inMol,false);
             }
         }
+        
+        if (exposedOutputCollector != null)
+        {
+	        exposeOutputData(new NamedData("Consistency", 
+	      		NamedDataType.BOOLEAN, consistentConnectivity));
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -491,10 +497,17 @@ public class MolecularComparator extends Worker
         System.out.println(summary);
         if (!outFile.equals("") && outFile != null)
         {
-            IOtools.writeTXTAppend(outFile,summary,false);
+            IOtools.writeTXTAppend(outFile, summary, false);
             System.out.println(" Results reported also in file " + outFile);
         }
-        
+        //TODO: return value/s with conclusion
+        /*
+        if (exposedOutputCollector != null)
+        {
+	        exposeOutputData(new NamedData(..., 
+	      		NamedDataType...., ...));
+    	}
+        */
     }
 
 //------------------------------------------------------------------------------
@@ -527,8 +540,11 @@ public class MolecularComparator extends Worker
         ComparatorOfGeometries cog = new ComparatorOfGeometries(verbosity);
         cog.compareGeometryBySuperposition(inMol,refMol);
 
-//TODO: print ourput?
-
+        if (exposedOutputCollector != null)
+        {
+	        exposeOutputData(new NamedData("AlignementScore", 
+	      		NamedDataType.DOUBLE, cog.getAlignementScore()));
+    	}
     }
 
 //------------------------------------------------------------------------------

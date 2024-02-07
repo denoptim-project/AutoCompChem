@@ -470,7 +470,7 @@ public class JobEvaluator extends Worker
 	public void performTask() 
 	{
 		/*
-		 //TODO-gg do somo sort of test of consistency bwteen task and worker
+		 //TODO-gg do some sort of test of consistency bwteen task and worker
     	if (!task.equals(EVALUATEJOBTASK))
     		dealWithTaskMistMatch();
     	*/

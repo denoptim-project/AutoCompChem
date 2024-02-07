@@ -33,9 +33,12 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
@@ -213,28 +216,28 @@ public class AtomLabelsGenerator extends Worker
     
     public void generateAtomLabels()
     {
-        if (inFile.equals("noInFile"))
+        if (inFile==null)
         {
             Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
                 + " Cannot generate atom labels.", -1);
         }
-
+        List<String> output = new ArrayList<String>();
         try {
             SDFIterator sdfItr = new SDFIterator(inFile);
             while (sdfItr.hasNext())
             {
                 IAtomContainer mol = sdfItr.next();
-                List<String> txt = generateAtomLabels(mol);
+                List<String> lst = generateAtomLabels(mol);
+                String txt = StringUtils.mergeListToString(lst, labelsSeparator);
+                output.add(txt);
                 if (verbosity > 1)
                 {
-                	System.out.println(StringUtils.mergeListToString(txt, 
-                			labelsSeparator));
+                	System.out.println(txt);
                 }
                 if (outFile!=null)
                 {
                 	IOtools.writeTXTAppend(outFile, 
-                			StringUtils.mergeListToString(txt, labelsSeparator)
-                				+ System.getProperty("line.separator"),
+                			txt + System.getProperty("line.separator"),
                 			true);
                 }
             } //end loop over molecules
@@ -244,6 +247,21 @@ public class AtomLabelsGenerator extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (String txt : output)
+	    	{
+	    		ii++;
+	    		if (txt != null)
+	    		{
+	    			String molID = "mol-"+ii;
+	  		        exposeOutputData(new NamedData(molID, 
+	  		        		NamedDataType.STRING, txt));
+	    		}
+	    	}
+    	}
     }
   
 //------------------------------------------------------------------------------

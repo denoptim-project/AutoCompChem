@@ -98,7 +98,8 @@ public class ComparatorOfGeometries
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty MolecularComparator and specify verbosity
+     * Constructor for an empty {@link ComparatorOfGeometries} and specify 
+     * verbosity.
      * @param verbosity the verbosity level
      */
 
@@ -171,7 +172,7 @@ public class ComparatorOfGeometries
         boolean ingnoreBondType = true;
         /* 
         Option added to convert all bonds to single bonds avoiding possible 
-        mismatch due to resonance formes and aromaticity notation.
+        mismatch due to resonance forms and aromaticity notation.
         */
 
         boolean ignoreStereType = true;
@@ -298,17 +299,6 @@ public class ComparatorOfGeometries
         allAtomMaps = im.getAllAtomMapping();
         allAtomMapsAsIdx = new ArrayList<Map<Integer,Integer>>();
 
-//TODO del
-/*
-System.out.println("All mappings from IM");
-for(Map<IAtom,IAtom> m : allAtomMaps)
-{
-    printAtomMap(m,inFromIM,refFromIM);
-}
-IOtools.writeSDFAppend("fromIM.sdf",refFromIM,true);
-IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
-*/
-
         if (verbosity > 2)
             System.out.println(" Initiating loop over the " + allAtomMaps.size()
                                         + " atom-atom maps");
@@ -330,10 +320,6 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
 
             //Get RMS deviation of itramolecular Distances
             locRMSDIAD = getRMSDevIntramolecularDistances(mapping);
-
-//Only for testing
-//System.out.println(" " + fid + " " + locRMSD);
-//writeTestFilesForQUATFIT(mapping, refFromIM, inFromIM);
 
             //Choose the value to be minimized over the mappings
             double localValue = 0.0d;
@@ -396,10 +382,6 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
             //Align according to the new atom map
             this.rmsd = alignMolsWithMapping(refMolAlgn, inMolAlgn, newMap);
             this.rmsDevIntAtmDist = getRMSDevIntramolecularDistances(newMap);
-
-//Only for testing
-//System.out.println(" " + fid + " " + this.rmsd);
-//writeTestFilesForQUATFIT(newMap, refFromIM, inFromIM);
         
             //Report
             if (verbosity > 2)
@@ -509,7 +491,7 @@ IOtools.writeSDFAppend("fromIM.sdf",inFromIM,true);
 //------------------------------------------------------------------------------
 
     /**
-     * Retrun numericla value representing the agreement of the two geometries.
+     * Retrun numerical value representing the agreement of the two geometries.
      * @return the score representing agreement between the geometries
      */
 

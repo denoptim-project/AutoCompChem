@@ -30,11 +30,14 @@ import java.util.Set;
 
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -70,7 +73,7 @@ public class MolecularMutator extends Worker
     /**
      * Flag indicating the output is to be written to file
      */
-    private boolean outToFile = false;
+    private boolean outToFile = false; //TODO-gg remove obsolete
 
     /**
      * Name of the output file
@@ -212,7 +215,7 @@ public class MolecularMutator extends Worker
       	  {
       		  mutateAll();
       	  } else {
-      		dealWithTaskMistMatch();
+      		  dealWithTaskMistMatch();
           }
       }
 
@@ -225,6 +228,7 @@ public class MolecularMutator extends Worker
 
     public void mutateAll()
     {
+        AtomContainerSet output = new AtomContainerSet();
         int i = 0;
         try 
         {
@@ -238,8 +242,8 @@ public class MolecularMutator extends Worker
                 }
                 IAtomContainer mol = sdfItr.next();
                 
-                Map<String,ArrayList<IAtom>> targets = 
-                                                   identifyMutatingCenters(mol);
+                Map<String,ArrayList<IAtom>> targets =
+                		identifyMutatingCenters(mol);
 
                 Map<IAtom,String> targetsMap = new HashMap<IAtom,String>();
                 for (String k : targets.keySet())
@@ -252,10 +256,10 @@ public class MolecularMutator extends Worker
 
                 mol = mutateContainer(mol,targetsMap, verbosity);
 
-                if (outToFile)
-                {
-                    IOtools.writeSDFAppend(outFile,mol,true);
-                }
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
             } 
             sdfItr.close();
         } catch (Throwable t) {
@@ -263,6 +267,18 @@ public class MolecularMutator extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
         }
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //-----------------------------------------------------------------------------

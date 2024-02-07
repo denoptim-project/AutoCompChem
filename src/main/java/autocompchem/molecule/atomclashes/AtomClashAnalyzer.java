@@ -32,6 +32,8 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -282,7 +284,7 @@ public class AtomClashAnalyzer extends Worker
     /**
      * Performs the analysis of the atom clashes according to the parameters
      * provided to the constructor: it assumes that the AtomClashAnalyzer is
-     * used in a standalone fashion (reading structures from files).
+     * used in a stand-alone fashion (reading structures from files).
      */
 
     public void analyzeVDWContacts()
@@ -315,7 +317,7 @@ public class AtomClashAnalyzer extends Worker
 
                     if (verbosity > 0)
                     {
-                        ArrayList<AtomClash> acs = results.get(i);
+                        List<AtomClash> acs = results.get(i);
                         System.out.println(" Found " + acs.size() 
                                                 + " atom clashes: ");
                         for (AtomClash ac : acs)
@@ -325,7 +327,7 @@ public class AtomClashAnalyzer extends Worker
                     if (makeout)
                     {
                         //store results in output SDF
-                        writeAtmClashToSDFFields(mol,i,outFile);
+                        writeAtmClashToSDFFields(mol, i, outFile);
                     }
                 }
 
@@ -342,6 +344,24 @@ public class AtomClashAnalyzer extends Worker
             System.out.println(" Found " + nacmols + " mols with one or more "
                                 + "atom clashes");
         }
+        
+        /*
+        //TODO-gg finish when the list of AtomClashes can be stored as named data
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (List<AtomClash> acs : results)
+	    	{
+	    		ii++;
+	    		if (acs != null)
+	    		{
+	    			String molID = "mol-"+ii;
+	  		        exposeOutputData(new NamedData(molID, 
+	  		        		NamedDataType.ATOMCLASH, acs));
+	    		}
+	    	}
+    	}
+    	*/
 
         //Set flag
         alreadyRun = true;
@@ -361,6 +381,8 @@ public class AtomClashAnalyzer extends Worker
      * clashes.
      */
 
+    //TODO-gg should make static analogue with return value
+    
     public boolean analyzeAtomClashes(IAtomContainer mol)
     {
         boolean foundAtomClash = false;

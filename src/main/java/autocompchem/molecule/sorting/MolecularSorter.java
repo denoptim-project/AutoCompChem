@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularUtils;
@@ -140,6 +142,7 @@ public class MolecularSorter extends Worker
     {
     	if (task.equals(SORTMOLECULESTASK))
     	{
+    		//TODO-gg rename method to show that writing is optional
     		writeSortedSDF();
     	} else {
     		dealWithTaskMistMatch();
@@ -176,11 +179,24 @@ public class MolecularSorter extends Worker
         //Sort
         Collections.sort(smols, new SortableMoleculeComparator());
 
-        //write output
-        for (int i=0; i<smols.size(); i++)
+        if (outFile!=null)
         {
-            IOtools.writeSDFAppend(outFile,smols.get(i).getIAtomContainer(), true);
+	        for (int i=0; i<smols.size(); i++)
+	        {
+	            IOtools.writeSDFAppend(outFile,smols.get(i).getIAtomContainer(), true);
+	        }
         }
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (SortableMolecule smol : smols)
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, smol.getIAtomContainer()));
+	    	}
+    	}
     }
 
 //-----------------------------------------------------------------------------

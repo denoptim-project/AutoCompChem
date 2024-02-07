@@ -242,14 +242,9 @@ public class ChelateAnalyzer extends Worker
 
                 //Perform analysis
                 analyzeChelation(mol);
+                
+                //TODO: deal with returned result and store in tmp ouput
 
-/*
-//TODO
-                if (makeout)
-                {
-                    //store results in output SDF
-                }
-*/
             } //end loop over molecules
             sdfItr.close();
         } catch (Throwable t) {
@@ -257,6 +252,9 @@ public class ChelateAnalyzer extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        //TODO: expose result once we'll be able to store ArrayList<Chelant>
+        // as named data
     }
 
 //-----------------------------------------------------------------------------
@@ -274,6 +272,7 @@ public class ChelateAnalyzer extends Worker
      * @param mol the molecule to analyze
      */
 
+    //TODO: make static analogue that return list of chelants
     public void analyzeChelation(IAtomContainer mol) 
     {
         ArrayList<Chelant> chelates = new ArrayList<Chelant>();

@@ -333,6 +333,11 @@ public class ForceFieldEditor extends Worker
     {
     	if (task.equals(PARAMETRIZEFORCEFIELDTASK))
     	{
+    		//TODO: to be finished
+    		System.out.println("WARNING! this method is still experimental "
+    				+ "and can produce unpredictable results.");
+    		System.err.println("WARNING! this method is still experimental "
+    				+ "and can produce unpredictable results.");
     		includeFFParamsFromVibModule();
     	} else {
     		dealWithTaskMistMatch();

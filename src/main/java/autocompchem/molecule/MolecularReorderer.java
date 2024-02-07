@@ -29,11 +29,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
@@ -127,18 +130,19 @@ public class MolecularReorderer extends Worker
     static {
     	REORDERATOMLISTTASK = Task.make(REORDERATOMLISTTASKNAME);
     }
-    /**
-     * String defining the task aligning atom lists to a reference list
-     */
-    public static final String ALIGNATOMLISTSTASKNAME = "alignAtomLists";
-
-    /**
-     * Task about aligning atom lists to a reference list
-     */
-    public static final Task ALIGNATOMLISTSTASK;
-    static {
-    	ALIGNATOMLISTSTASK = Task.make(ALIGNATOMLISTSTASKNAME);
-    }
+    
+//    /**
+//     * String defining the task aligning atom lists to a reference list
+//     */
+//    public static final String ALIGNATOMLISTSTASKNAME = "alignAtomLists";
+//
+//    /**
+//     * Task about aligning atom lists to a reference list
+//     */
+//    public static final Task ALIGNATOMLISTSTASK;
+//    static {
+//    	ALIGNATOMLISTSTASK = Task.make(ALIGNATOMLISTSTASKNAME);
+//    }
 
 
 //------------------------------------------------------------------------------
@@ -154,8 +158,9 @@ public class MolecularReorderer extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(REORDERATOMLISTTASK,
-                		ALIGNATOMLISTSTASK)));
+                Arrays.asList(REORDERATOMLISTTASK//,
+                		//ALIGNATOMLISTSTASK
+                		)));
     }
 
 //------------------------------------------------------------------------------
@@ -251,13 +256,13 @@ public class MolecularReorderer extends Worker
     	if (task.equals(REORDERATOMLISTTASK))
     	{
     		reorderAll();
-    	} else if (task.equals(ALIGNATOMLISTSTASK)) {
-    		//TODO
-    		System.out.println("WARNING!!! Method for aligning list is not"
-    				+ "fully functional. Results are unreliable!");
-    		System.err.println("WARNING!!! Method for aligning list is not"
-    				+ "fully functional. Results are unreliable!");
-    		alignAtomList();
+//    	} else if (task.equals(ALIGNATOMLISTSTASK)) {
+//    		//TODO
+//    		System.out.println("WARNING!!! Method for aligning list is not"
+//    				+ "fully functional. Results are unreliable!");
+//    		System.err.println("WARNING!!! Method for aligning list is not"
+//    				+ "fully functional. Results are unreliable!");
+//    		alignAtomList();
     	} else {
     		dealWithTaskMistMatch();
         }
@@ -352,6 +357,7 @@ public class MolecularReorderer extends Worker
     {
         int i = 0;
         allDone = false;
+        AtomContainerSet output = new AtomContainerSet();
         try 
         {
             SDFIterator sdfItr = new SDFIterator(inFile);
@@ -368,10 +374,10 @@ public class MolecularReorderer extends Worker
 
                 mol = reorderContainer(mol,sources);
 
-                if (outToFile)
-                {
-                    IOtools.writeSDFAppend(outFile,mol,true);
-                }
+                if (exposedOutputCollector != null)
+                	output.addAtomContainer(mol);
+                if (outFile!=null)
+                	IOtools.writeSDFAppend(outFile,mol,true);
             } //end loop over molecules
             sdfItr.close();
         } catch (Throwable t) {
@@ -380,6 +386,18 @@ public class MolecularReorderer extends Worker
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
         }
         allDone = true;
+        
+        if (exposedOutputCollector != null)
+        {
+        	int ii = 0;
+        	for (IAtomContainer iac : output.atomContainers())
+	    	{
+	    	    ii++;
+	    	    String molID = "mol-"+ii;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, iac));
+	    	}
+    	}
     }
 
 //-----------------------------------------------------------------------------
