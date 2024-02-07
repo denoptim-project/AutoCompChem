@@ -146,7 +146,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         // We define also the tasks that may have to be performed inside a 
         // directive
         // TODO-gg consider registering workers for each of them
-        Task.make("generateBasisSet");
+        //Task.make("generateBasisSet");
         Task.make("generateConstraints");
         Task.make("generateAtomLabels");
         Task.make("generateAtomTuples");
@@ -1133,8 +1133,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		// Define atom pointers
         		ParameterStorage labMakerParams = params.clone();
         		
-                //TODO-gg use WorkerConstant.TASK
-        		labMakerParams.setParameter("TASK", 
+        		labMakerParams.setParameter(WorkerConstants.PARTASK, 
         				Task.getExisting("generateAtomLabels").ID);
 				AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
             			WorkerFactory.createWorker(labMakerParams, masterJob);
@@ -1144,8 +1143,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		List<String> atmSpecValues = new ArrayList<String>();
                 ParameterStorage cnstrParams = params.clone();
                 
-                //TODO-gg use WorkerConstant.TASK
-                cnstrParams.setParameter("TASK",
+                cnstrParams.setParameter(WorkerConstants.PARTASK,
                 		Task.getExisting("generateAtomTuples").ID);
                 cnstrParams.setParameter("VALUEDKEYWORDS", 
                 		"options prefix suffix");
@@ -1257,8 +1255,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                         if (params.contains(ZMatrixConstants.SELECTORMODE))
                         {
                         	ParameterStorage cnstMakerTask = params.clone();
-                        	cnstMakerTask.setParameter(
-                        			WorkerConstants.PARTASK, 
+                        	cnstMakerTask.setParameter(WorkerConstants.PARTASK, 
                         			Task.getExisting("generateConstraints").ID);
 
                         	
@@ -1352,9 +1349,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 
                 ParameterStorage cnstrParams = params.clone();
                 
-                //TODO: this should be avoided by using TASK instead of ACCTASK
-                //TODO-gg use WorkerConstant.TASK
-                cnstrParams.setParameter("TASK", task);
+                cnstrParams.setParameter(WorkerConstants.PARTASK, task);
                 
             	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
             	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
@@ -1382,10 +1377,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		IAtomContainer mol = mols.get(0);
         		
                 ParameterStorage csGenParams = params.clone();
-                
-                //TODO: this should be avoided by using TASK instead of ACCTASK
-                //TODO-gg use WorkerConstant.TASK
-                csGenParams.setParameter("TASK", task);
+                csGenParams.setParameter(WorkerConstants.PARTASK, task);
                 
             	Worker w = WorkerFactory.createWorker(csGenParams, masterJob);
             	ConformationalSpaceGenerator csGen = 
@@ -1413,10 +1405,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		IAtomContainer mol = mols.get(0);
                 
                 ParameterStorage atmLabelsParams = params.clone();
-                
-                //TODO: this should be avoided by using TASK instead of ACCTASK
-                //TODO-gg use WorkerConstant.TASK
-                atmLabelsParams.setParameter("TASK", task);
+                atmLabelsParams.setParameter(WorkerConstants.PARTASK, task);
                 
             	Worker w = WorkerFactory.createWorker(atmLabelsParams, 
             			masterJob);
@@ -1437,10 +1426,7 @@ public class Directive implements IDirectiveComponent, Cloneable
         		IAtomContainer mol = mols.get(0);
                 
                 ParameterStorage atmTuplesParams = params.clone();
-                
-                //TODO: this should be avoided by using TASK instead of ACCTASK
-                //TODO-gg use WorkerConstant.TASK
-                atmTuplesParams.setParameter("TASK", task);
+                atmTuplesParams.setParameter(WorkerConstants.PARTASK, task);
                 
             	Worker w = WorkerFactory.createWorker(atmTuplesParams, 
             			masterJob);
