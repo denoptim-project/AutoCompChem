@@ -305,31 +305,19 @@ public class ZMatrixHandler extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "PRINTZMATRIX":
-        	  printZMatrix();
-              break;
-          case "CONVERTZMATRIXTOSDF":
-        	  convertZMatrixToSDF();
-        	  break;
-          case "SUBTRACTZMATRICES":
-        	  subtractZMatrices();
-        	  break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(PRINTZMATRIXTASK))
+    	{
+    		printZMatrix();
+    	} else if (task.equals(CONVERTZMATRIXTOSDFTASK)) {
+    		//TODO-gg rename method
+    		convertZMatrixToSDF();
+    	} else if (task.equals(SUBTRACTZMATRICESTASK)) {
+    		subtractZMatrices();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 

@@ -266,25 +266,14 @@ public class AtomClashAnalyzer extends Worker
        * has been initialised.
        */
 
-      @SuppressWarnings("incomplete-switch")
       @Override
       public void performTask()
       {
-          switch (task.ID)
-            {
-            case "ANALYZEVDWCLASHES":
-            	analyzeVDWContacts();
-                break;
-            }
-
-          if (exposedOutputCollector != null)
-          {
-  /*
-  //TODO
-              String refName = "";
-              exposeOutputData(new NamedData(refName,
-                    NamedDataType.DOUBLE, ));
-  */
+    	  if (task.equals(ANALYZEVDWCLASHESTASK))
+      	  {
+    		  analyzeVDWContacts();
+      	  } else {
+      		dealWithTaskMistMatch();
           }
       }
 

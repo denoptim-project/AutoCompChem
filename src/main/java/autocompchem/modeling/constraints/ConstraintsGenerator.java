@@ -123,25 +123,14 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      * has been initialized.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "GENERATECONSTRAINTS":
-        	  createConstrains();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(GENERATECONSTRAINTSTASK))
+    	{
+    		createConstrains();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 
@@ -154,7 +143,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 
     public void createConstrains()
     {
-        if (inFile.equals("noInFile"))
+        if (inFile.getName().equals("noInFile"))
         {
             Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
                 + " Cannot generate constraints.",-1);

@@ -236,34 +236,20 @@ public class ConnectivityGenerator extends Worker
        * has been initialised.
        */
 
-      @SuppressWarnings("incomplete-switch")
       @Override
       public void performTask()
       {
-          switch (task.ID)
-            {
-            case "RICALCULATECONNECTIVITY":
-            	ricalculateConnectivity();
-                break;
-            case "ADDBONDSFORSINGLEELEMENT":
-            	addBondsOnSingleElement();
-                break;
-            case "IMPOSECONNECTIONTABLE":
-            	imposeConnectionTable();
-                break;
-            case "CHECKBONDLENGTHS":
-            	checkBondLengthsAgainstConnectivity();
-            	break;
-            }
-
-          if (exposedOutputCollector != null)
-          {
-  /*
-  //TODO
-              String refName = "";
-              exposeOutputData(new NamedData(refName,
-                    NamedDataType.DOUBLE, ));
-  */
+      	  if (task.equals(RICALCULATECONNECTIVITYTASK))
+      	  {
+      		  ricalculateConnectivity();
+      	  } else if (task.equals(ADDBONDSFORSINGLEELEMENTTASK)) {
+      		  addBondsOnSingleElement();
+      	  } else if (task.equals(IMPOSECONNECTIONTABLETASK)) {
+      		  imposeConnectionTable();
+      	  } else if (task.equals(CHECKBONDLENGTHSTASK)) {
+      		  checkBondLengthsAgainstConnectivity();
+      	  } else {
+      		dealWithTaskMistMatch();
           }
       }
 

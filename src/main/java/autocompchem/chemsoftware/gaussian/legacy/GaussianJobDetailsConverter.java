@@ -137,6 +137,9 @@ public class GaussianJobDetailsConverter extends Worker
       @Override
       public void performTask()
       {
+    	  if (!task.equals(CONVERTJOBDETAILSTASK))
+    		  dealWithTaskMistMatch();
+      	
     	  GaussianJob gJob = new GaussianJob(inFile.getAbsolutePath());
     	  Job jJob = gJob.convertToCompChemJob();
     	  Gson writer = ACCJson.getWriter();

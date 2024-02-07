@@ -193,31 +193,18 @@ public class MolecularComparator extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "COMPARETWOMOLECULES":
-        	  runComparisonOfMoleculesBySuperposition();
-              break;
-          case "COMPARETWOGEOMETRIES":
-        	  compareTwoGeometries();
-              break;
-          case "COMPARETWOCONNECTIVITIES":
-        	  compareTwoConnectivities();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(COMPARETWOMOLECULESTASK))
+    	{
+    		runComparisonOfMoleculesBySuperposition();
+    	} else if (task.equals(COMPARETWOGEOMETRIESTASK)) {	
+    		compareTwoGeometries();
+    	} else if (task.equals(COMPARETWOCONNECTIVITIESTASK)) {
+    		compareTwoConnectivities();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 

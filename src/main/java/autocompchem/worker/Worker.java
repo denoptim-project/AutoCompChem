@@ -35,6 +35,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
 import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
+import autocompchem.run.Terminator;
 
 
 /**
@@ -328,6 +329,19 @@ public abstract class Worker implements IOutputExposer
 			System.out.println("WARNING! Worker trying to put data on a null "
 					+ "output collector");
 		}
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Trigges the reaction to a request to perform a {@link Task} that is not
+	 * among those declared by this implementation.
+	 */
+	protected void dealWithTaskMistMatch()
+	{
+    	Terminator.withMsgAndStatus("ERROR! Task '" + task + "' is not "
+    			+ "linked to any method in "
+    			+ this.getClass().getSimpleName() + ".", -1);
 	}
 	
 //------------------------------------------------------------------------------

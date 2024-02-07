@@ -210,25 +210,14 @@ public class ChelateAnalyzer extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "ANALYZECHELATES":
-        	  analyzeChelates();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(ANALYZECHELATESTASK))
+    	{
+    		analyzeChelates();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 

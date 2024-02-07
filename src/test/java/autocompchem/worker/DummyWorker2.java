@@ -102,6 +102,9 @@ public class DummyWorker2 extends Worker
 	@Override
 	public void performTask() 
 	{
+    	if (!task.equals(DUMMYTASK2TASK))
+    		dealWithTaskMistMatch();
+    	
 		// The only task here is reporting something in the output collector
 		exposeOutputData(inputCollector.getNamedData(DATAREF));
 		

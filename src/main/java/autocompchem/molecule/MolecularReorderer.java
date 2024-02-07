@@ -245,28 +245,21 @@ public class MolecularReorderer extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "REORDERATOMLIST":
-        	  reorderAll();
-              break;
-          case "ALIGNATOMLISTS":
-        	  alignAtomList();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(REORDERATOMLISTTASK))
+    	{
+    		reorderAll();
+    	} else if (task.equals(ALIGNATOMLISTSTASK)) {
+    		//TODO
+    		System.out.println("WARNING!!! Method for aligning list is not"
+    				+ "fully functional. Results are unreliable!");
+    		System.err.println("WARNING!!! Method for aligning list is not"
+    				+ "fully functional. Results are unreliable!");
+    		alignAtomList();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 

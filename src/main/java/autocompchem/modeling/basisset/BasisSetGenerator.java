@@ -210,19 +210,7 @@ public class BasisSetGenerator extends Worker
     		assignBasisSetToAllMolsInFile();
     	//} else if (task.equals(Task.getExisting(?)))
         } else {
-        	Terminator.withMsgAndStatus("ERROR! Task '" + task + "' is not "
-        			+ "linked to any method in " 
-        			+ this.getClass().getSimpleName() + ".", -1);
-        }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    		dealWithTaskMistMatch();
         }
     }
 

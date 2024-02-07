@@ -469,6 +469,12 @@ public class JobEvaluator extends Worker
 	@Override
 	public void performTask() 
 	{
+		/*
+		 //TODO-gg do somo sort of test of consistency bwteen task and worker
+    	if (!task.equals(EVALUATEJOBTASK))
+    		dealWithTaskMistMatch();
+    	*/
+	
 		// Pre-flight checks
 		if (sitsDB.getSituationCount()==0)
 		{

@@ -255,28 +255,16 @@ public class DummyObjectsHandler extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "ADDDUMMYATOMS":
-        	  addDummyAtoms();
-              break;
-          case "REMOVEDUMMYATOMS":
-        	  removeDummyAtoms();
-        	  break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(ADDDUMMYATOMSTASK))
+    	{
+    		addDummyAtoms();
+    	} else if (task.equals(REMOVEDUMMYATOMSTASK)){
+    		removeDummyAtoms();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 

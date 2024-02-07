@@ -328,25 +328,14 @@ public class ForceFieldEditor extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "PARAMETRIZEFORCEFIELD":
-        	  includeFFParamsFromVibModule();
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(PARAMETRIZEFORCEFIELDTASK))
+    	{
+    		includeFFParamsFromVibModule();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 

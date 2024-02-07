@@ -279,35 +279,15 @@ public class MolecularMeter extends Worker
      * has been initialised.
      */
     
-    @SuppressWarnings("incomplete-switch")
 	@Override
   	public void performTask() 
-    {	
-    	switch (task.ID)
-  		{
-  		case "MEASUREGEOMDESCRIPTORS":
-  			measureAllQuantities();
-  			break;
-  		}
-    	
-    	if (exposedOutputCollector != null)
+    {
+    	if (task.equals(MEASUREGEOMDESCRIPTORSTASK))
     	{
-	    	int i = 0;
-	    	for (Map<String,ArrayList<Double>> molDescr : results)
-	    	{
-	    		i++;
-	    		if (molDescr != null)
-	    		{
-	    			String molID = "mol-"+i;
-		    		for (String descRef : molDescr.keySet())
-		    		{
-		    			String reference = molID + "_" + descRef;
-		  		        exposeOutputData(new NamedData(reference, 
-		  		        		NamedDataType.DOUBLE, molDescr.get(descRef)));
-		    		}
-	    		}
-	    	}
-    	}
+    		measureAllQuantities();
+    	} else {
+    		dealWithTaskMistMatch();
+        }
   	}
   
 //------------------------------------------------------------------------------
@@ -691,12 +671,6 @@ public class MolecularMeter extends Worker
 
                 //Store output
                 results.add(resThisMol);
-/*
-                if (storeInSDF)
-                {
-                    //TODO: store as properties in SDF file
-                }
-*/
         
             } //end loop over molecules
 
@@ -705,6 +679,25 @@ public class MolecularMeter extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile, -1);
         }
+        
+        if (exposedOutputCollector != null)
+    	{
+	    	int ii = 0;
+	    	for (Map<String,ArrayList<Double>> molDescr : results)
+	    	{
+	    		ii++;
+	    		if (molDescr != null)
+	    		{
+	    			String molID = "mol-"+ii;
+		    		for (String descRef : molDescr.keySet())
+		    		{
+		    			String reference = molID + "_" + descRef;
+		  		        exposeOutputData(new NamedData(reference, 
+		  		        		NamedDataType.DOUBLE, molDescr.get(descRef)));
+		    		}
+	    		}
+	    	}
+    	}
 
         //Set flag
         alreadyRun = true;

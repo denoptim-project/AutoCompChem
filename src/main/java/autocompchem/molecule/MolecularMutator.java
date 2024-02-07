@@ -205,25 +205,14 @@ public class MolecularMutator extends Worker
        * has been initialised.
        */
 
-      @SuppressWarnings("incomplete-switch")
       @Override
       public void performTask()
       {
-          switch (task.ID)
-            {
-            case "MUTATEATOMS":
-            	mutateAll();
-                break;
-            }
-
-          if (exposedOutputCollector != null)
-          {
-  /*
-  //TODO
-              String refName = "";
-              exposeOutputData(new NamedData(refName,
-                    NamedDataType.DOUBLE, ));
-  */
+      	  if (task.equals(MUTATEATOMSTASK))
+      	  {
+      		  mutateAll();
+      	  } else {
+      		dealWithTaskMistMatch();
           }
       }
 

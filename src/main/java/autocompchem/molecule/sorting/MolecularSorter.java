@@ -135,26 +135,14 @@ public class MolecularSorter extends Worker
      * has been initialised.
      */
 
-    @SuppressWarnings("incomplete-switch")
     @Override
     public void performTask()
     {
-        switch (task.ID)
-          {
-          case "SORTMOLECULES":
-        	  //TODO-gg remove SDF from method name
-        	  writeSortedSDF(); //TODO; change keyword from distinguishing case where we wabt to write results or just calculate nad share output date
-              break;
-          }
-
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
+    	if (task.equals(SORTMOLECULESTASK))
+    	{
+    		writeSortedSDF();
+    	} else {
+    		dealWithTaskMistMatch();
         }
     }
 
