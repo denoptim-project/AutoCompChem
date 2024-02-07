@@ -38,14 +38,27 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 public class GaussianOutputReader extends ChemSoftOutputReader
-{
+{   
+	/**
+     * String defining the task of analyzing Gaussian output files
+     */
+    public static final String ANALYSEGAUSSIANOUTPUTTASKNAME = 
+    		"analyseGaussianOutput";
+
+    /**
+     * Task about analyzing Gaussian output files
+     */
+    public static final Task ANALYSEGAUSSIANOUTPUTTASK;
+    static {
+    	ANALYSEGAUSSIANOUTPUTTASK = Task.make(ANALYSEGAUSSIANOUTPUTTASKNAME);
+    }
     
 //------------------------------------------------------------------------------
 
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("analyseGaussianOutput"))));
+             Arrays.asList(ANALYSEGAUSSIANOUTPUTTASK)));
     }
 
 //------------------------------------------------------------------------------

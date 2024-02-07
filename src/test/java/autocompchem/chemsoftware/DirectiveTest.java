@@ -42,6 +42,7 @@ import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.text.TextBlock;
 import autocompchem.worker.Task;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -245,8 +246,8 @@ public class DirectiveTest
     	d3.deleteComponent(d3.getAllDirectiveDataBlocks().get(0));
 
     	ParameterStorage taskParams = new ParameterStorage();
-        //TODO-gg use WorkerConstant.TASK or make method setTask to ParameterStorage
-    	taskParams.setParameter("TASK", 
+    	taskParams.setParameter(WorkerConstants.PARTASK,
+    			//TODO-gg take task from worker
     			Task.make("addAtomSpecificKeywords").casedID);
     	taskParams.setParameter("KeywordName", "ATMSPECKW");
     	taskParams.setParameter("SMARTS", "[#6] options:~~@#BLA");

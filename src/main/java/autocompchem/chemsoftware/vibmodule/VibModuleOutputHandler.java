@@ -130,6 +130,21 @@ public class VibModuleOutputHandler extends Worker
      */
     private  ArrayList<ForceFieldParameter> vmFFPars = 
                                            new ArrayList<ForceFieldParameter>();
+    
+    /**
+     * String defining the task of extracting force constants
+     */
+    public static final String EXTRACTVIBMODULEFORCECONSTANTSTASKNAME = 
+    		"extractVibModuleForceConstants";
+
+    /**
+     * Task about extracting force constants
+     */
+    public static final Task EXTRACTVIBMODULEFORCECONSTANTSTASK;
+    static {
+    	EXTRACTVIBMODULEFORCECONSTANTSTASK = 
+    			Task.make(EXTRACTVIBMODULEFORCECONSTANTSTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
 
@@ -152,7 +167,7 @@ public class VibModuleOutputHandler extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("extractVibModuleForceConstants"))));
+             Arrays.asList(EXTRACTVIBMODULEFORCECONSTANTSTASK)));
     }
 
 //------------------------------------------------------------------------------

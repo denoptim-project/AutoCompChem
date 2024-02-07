@@ -136,6 +136,20 @@ public class ForceFieldEditor extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of parametrizing force field parameters
+     */
+    public static final String PARAMETRIZEFORCEFIELDTASKNAME = 
+    		"parametrizeForceField";
+
+    /**
+     * Task about parameterizing force field parameters
+     */
+    public static final Task PARAMETRIZEFORCEFIELDTASK;
+    static {
+    	PARAMETRIZEFORCEFIELDTASK = Task.make(PARAMETRIZEFORCEFIELDTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
     
@@ -150,7 +164,7 @@ public class ForceFieldEditor extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("parametrizeForceField"))));
+             Arrays.asList(PARAMETRIZEFORCEFIELDTASK)));
     }
 
 //------------------------------------------------------------------------------

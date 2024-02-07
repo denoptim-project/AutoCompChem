@@ -105,6 +105,20 @@ public class MolecularMeter extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of measuring geometric descriptors
+     */
+    public static final String MEASUREGEOMDESCRIPTORSTASKNAME = 
+    		"measureGeomDescriptors";
+
+    /**
+     * Task about measuring geometric descriptors
+     */
+    public static final Task MEASUREGEOMDESCRIPTORSTASK;
+    static {
+    	MEASUREGEOMDESCRIPTORSTASK = Task.make(MEASUREGEOMDESCRIPTORSTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
 
@@ -119,7 +133,7 @@ public class MolecularMeter extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("measureGeomDescriptors"))));
+             Arrays.asList(MEASUREGEOMDESCRIPTORSTASK)));
     }
 
 //------------------------------------------------------------------------------

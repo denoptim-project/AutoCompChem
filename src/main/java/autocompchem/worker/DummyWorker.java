@@ -41,6 +41,19 @@ public class DummyWorker extends Worker
 	
 	protected String infile = "empty";
 	
+    /**
+     * String defining the dummy task
+     */
+    public static final String DUMMYTASKTASKNAME = "DUMMYTASK";
+
+    /**
+     * Dummy task
+     */
+    public static final Task DUMMYTASKTASK;
+    static {
+    	DUMMYTASKTASK = Task.make(DUMMYTASKTASKNAME, true);
+    }
+	
 //-----------------------------------------------------------------------------
 
 	public DummyWorker()
@@ -51,7 +64,7 @@ public class DummyWorker extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("DUMMYTASK", true))));
+             Arrays.asList(DUMMYTASKTASK)));
     }
 
 //------------------------------------------------------------------------------

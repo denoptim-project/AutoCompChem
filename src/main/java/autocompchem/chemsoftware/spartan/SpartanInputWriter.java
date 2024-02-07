@@ -66,6 +66,18 @@ import autocompchem.worker.Worker;
 
 public class SpartanInputWriter extends ChemSoftInputWriter
 {
+    /**
+     * String defining the task of preparing input files for Spartan
+     */
+    public static final String PREPAREINPUTSPARTANTASKNAME = "PrepareInputSpartan";
+
+    /**
+     * Task about preparing input files for Spartan
+     */
+    public static final Task PREPAREINPUTSPARTANTASK;
+    static {
+    	PREPAREINPUTSPARTANTASK = Task.make(PREPAREINPUTSPARTANTASKNAME);
+    }
     
 //-----------------------------------------------------------------------------
 
@@ -82,7 +94,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("prepareInputSpartan"))));
+             Arrays.asList(PREPAREINPUTSPARTANTASK)));
     }
 
 //------------------------------------------------------------------------------

@@ -66,6 +66,43 @@ public class MolecularComparator extends Worker
     //Verbosity level
     private int verbosity = 1;
     
+    /**
+     * String defining the task of comparing to atom containers
+     */
+    public static final String COMPARETWOMOLECULESTASKNAME = "compareTwoMolecules";
+
+    /**
+     * Task about comparing to atom containers
+     */
+    public static final Task COMPARETWOMOLECULESTASK;
+    static {
+    	COMPARETWOMOLECULESTASK = Task.make(COMPARETWOMOLECULESTASKNAME);
+    }
+    /**
+     * String defining the task of comparing relative atom positions
+     */
+    public static final String COMPARETWOGEOMETRIESTASKNAME = "compareTwoGeometries";
+
+    /**
+     * Task about comparing relative atom positions
+     */
+    public static final Task COMPARETWOGEOMETRIESTASK;
+    static {
+    	COMPARETWOGEOMETRIESTASK = Task.make(COMPARETWOGEOMETRIESTASKNAME);
+    }
+    /**
+     * String defining the task of comparing connectivity tables
+     */
+    public static final String COMPARETWOCONNECTIVITIESTASKNAME = "compareTwoConnectivities";
+
+    /**
+     * Task about comparing connectivity tables
+     */
+    public static final Task COMPARETWOCONNECTIVITIESTASK;
+    static {
+    	COMPARETWOCONNECTIVITIESTASK = Task.make(COMPARETWOCONNECTIVITIESTASKNAME);
+    }
+    
 //------------------------------------------------------------------------------
     
     /**
@@ -79,9 +116,9 @@ public class MolecularComparator extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(Task.make("compareTwoMolecules"),
-                		Task.make("compareTwoGeometries"),
-                		Task.make("compareTwoConnectivities"))));
+                Arrays.asList(COMPARETWOMOLECULESTASK,
+                		COMPARETWOGEOMETRIESTASK,
+                		COMPARETWOCONNECTIVITIESTASK)));
     }
 
 //------------------------------------------------------------------------------

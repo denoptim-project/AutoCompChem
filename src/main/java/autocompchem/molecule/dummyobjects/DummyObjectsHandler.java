@@ -112,6 +112,31 @@ public class DummyObjectsHandler extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+    
+    /**
+     * String defining the task of adding dummy atoms
+     */
+    public static final String ADDDUMMYATOMSTASKNAME = "addDummyAtoms";
+
+    /**
+     * Task about adding dummy atoms
+     */
+    public static final Task ADDDUMMYATOMSTASK;
+    static {
+    	ADDDUMMYATOMSTASK = Task.make(ADDDUMMYATOMSTASKNAME);
+    }
+    /**
+     * String defining the task of removing dummy atoms
+     */
+    public static final String REMOVEDUMMYATOMSTASKNAME = "removeDummyAtoms";
+
+    /**
+     * Task about removing dummy atoms
+     */
+    public static final Task REMOVEDUMMYATOMSTASK;
+    static {
+    	REMOVEDUMMYATOMSTASK = Task.make(REMOVEDUMMYATOMSTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -126,8 +151,8 @@ public class DummyObjectsHandler extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(Task.make("addDummyAtoms"),
-                		Task.make("removeDummyAtoms"))));
+                Arrays.asList(ADDDUMMYATOMSTASK,
+                		REMOVEDUMMYATOMSTASK)));
     }
 
 //------------------------------------------------------------------------------

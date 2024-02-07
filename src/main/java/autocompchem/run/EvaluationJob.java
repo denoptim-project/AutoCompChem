@@ -44,7 +44,7 @@ public class EvaluationJob extends ACCJob
         setParallelizable(true);
         setNumberOfThreads(1);
         params.setParameter(WorkerConstants.PARTASK, 
-        		Task.make("evaluateJob").casedID);
+        		JobEvaluator.EVALUATEJOBTASK.casedID);
 	}
     
 //------------------------------------------------------------------------------

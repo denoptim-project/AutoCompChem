@@ -31,11 +31,11 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
+
 /**
  * Main for AtomCompChem (Automated Computational Chemist). The entry point
  * for both CLI and GUI based runs.
  *
- * @version 3 Aug 2020
  * @author Marco Foscato
  */
 

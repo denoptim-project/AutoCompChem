@@ -26,13 +26,25 @@ import autocompchem.worker.WorkerConstants;
 //TODO-gg refactor to agnostic
 public class AspecificInputWriter extends Worker
 {
-	
+    /**
+     * String defining the task of preparing input
+     */
+    public static final String PREPAREINPUTTASKNAME = "prepareInput";
+
+    /**
+     * Task about preparing input files
+     */
+    public static final Task PREPAREINPUTTASK;
+    static {
+    	PREPAREINPUTTASK = Task.make(PREPAREINPUTTASKNAME);
+    }
+    
 //------------------------------------------------------------------------------
 
   	@Override
 	public Set<Task> getCapabilities() {
 		return Collections.unmodifiableSet(new HashSet<Task>(
-                        Arrays.asList(Task.make("prepareInput"))));
+                        Arrays.asList(PREPAREINPUTTASK)));
 	}
 
 //------------------------------------------------------------------------------
@@ -42,8 +54,7 @@ public class AspecificInputWriter extends Worker
 	{
 		String taskStr = job.getParameter(WorkerConstants.PARTASK)
 				.getValueAsString();
-    	Task taskID = Task.make(taskStr);
-    	if (taskID != Task.make("PREPAREINPUT"))
+    	if (Task.make(taskStr) != PREPAREINPUTTASK)
     	{
 			//TODO-gg log
 			System.err.println("WARNING: attempt to make a " 

@@ -65,6 +65,18 @@ import autocompchem.worker.Worker;
 
 public class GaussianInputWriter extends ChemSoftInputWriter
 {
+    /**
+     * String defining the task of preparing input files for Gaussian
+     */
+    public static final String PREPAREINPUTGAUSSIANTASKNAME = "prepareInputGaussian";
+
+    /**
+     * Task about preparing input files for Gaussian
+     */
+    public static final Task PREPAREINPUTGAUSSIANTASK;
+    static {
+    	PREPAREINPUTGAUSSIANTASK = Task.make(PREPAREINPUTGAUSSIANTASKNAME);
+    }
     
 //-----------------------------------------------------------------------------
 
@@ -82,7 +94,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("prepareInputGaussian"))));
+             Arrays.asList(PREPAREINPUTGAUSSIANTASK)));
     }
 
 //------------------------------------------------------------------------------

@@ -132,6 +132,7 @@ public class SpartanOutputHandler extends Worker
 
     @Override
     public Set<Task> getCapabilities() {
+    	//TODO-gg change to analyzeSpartanOutput
         return Collections.unmodifiableSet(new HashSet<Task>(
                 Arrays.asList(Task.make("EXTRACTGEOMETRIESFROMSPARTANTREE"),
                 		Task.make("EXTRACTLASTGEOMETRYFROMSPARTANTREE"))));

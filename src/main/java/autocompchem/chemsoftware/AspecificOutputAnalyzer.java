@@ -41,13 +41,25 @@ import autocompchem.worker.Worker;
 
 public class AspecificOutputAnalyzer extends Worker
 {
+    /**
+     * String defining the task for analyzing any job output
+     */
+    public static final String ANALYSEOUTPUTTASKNAME = "analyseOutput";
+
+    /**
+     * Task about analyzing any job output
+     */
+    public static final Task ANALYSEOUTPUTTASK;
+    static {
+    	ANALYSEOUTPUTTASK = Task.make(ANALYSEOUTPUTTASKNAME);
+    }
 	
 //------------------------------------------------------------------------------
 
   	@Override
 	public Set<Task> getCapabilities() {
 		return Collections.unmodifiableSet(new HashSet<Task>(
-                        Arrays.asList(Task.make("analyseOutput"))));
+                        Arrays.asList(ANALYSEOUTPUTTASK)));
 	}
 
 //------------------------------------------------------------------------------

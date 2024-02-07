@@ -40,13 +40,24 @@ import autocompchem.worker.Worker;
  */
 public class OrcaOutputReader extends ChemSoftOutputReader
 {
-    
+    /**
+     * String defining the task of analyzing Orca output files
+     */
+    public static final String ANALYSEORCAOUTPUTTASKNAME = "analyseOrcaOutput";
+
+    /**
+     * Task about analyzing Orca output files
+     */
+    public static final Task ANALYSEORCAOUTPUTTASK;
+    static {
+    	ANALYSEORCAOUTPUTTASK = Task.make(ANALYSEORCAOUTPUTTASKNAME);
+    }
 //------------------------------------------------------------------------------
 
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("analyseOrcaOutput"))));
+             Arrays.asList(ANALYSEORCAOUTPUTTASK)));
     }
 
 //------------------------------------------------------------------------------

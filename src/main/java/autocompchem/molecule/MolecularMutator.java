@@ -91,6 +91,19 @@ public class MolecularMutator extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+    
+    /**
+     * String defining the task of mutating atoms
+     */
+    public static final String MUTATEATOMSTASKNAME = "mutateAtoms";
+
+    /**
+     * Task about mutating atoms
+     */
+    public static final Task MUTATEATOMSTASK;
+    static {
+    	MUTATEATOMSTASK = Task.make(MUTATEATOMSTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
     
@@ -100,12 +113,12 @@ public class MolecularMutator extends Worker
     public MolecularMutator()
     {}
 
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("mutateAtoms"))));
+             Arrays.asList(MUTATEATOMSTASK)));
     }
 
 //------------------------------------------------------------------------------

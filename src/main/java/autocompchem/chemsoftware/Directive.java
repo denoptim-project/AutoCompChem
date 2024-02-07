@@ -919,6 +919,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 				try {
 					performACCTask(mols, ps, dd, job, masterJob);
 				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 					throw new Error("Unable to perform ACC task.",e);
 				}
     		}	

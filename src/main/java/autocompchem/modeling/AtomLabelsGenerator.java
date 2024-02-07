@@ -89,6 +89,19 @@ public class AtomLabelsGenerator extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+    
+    /**
+     * String defining the task of generating atom labels
+     */
+    public static final String GENERATEATOMLABELSTASKNAME = "generateAtomLabels";
+
+    /**
+     * Task about generating atom labels
+     */
+    public static final Task GENERATEATOMLABELSTASK;
+    static {
+    	GENERATEATOMLABELSTASK = Task.make(GENERATEATOMLABELSTASKNAME);
+    }
 
 
 //-----------------------------------------------------------------------------
@@ -104,7 +117,7 @@ public class AtomLabelsGenerator extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("generateAtomLabels"))));
+             Arrays.asList(GENERATEATOMLABELSTASK)));
     }
 
 //------------------------------------------------------------------------------

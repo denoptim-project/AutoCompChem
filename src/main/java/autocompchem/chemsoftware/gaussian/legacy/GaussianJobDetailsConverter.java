@@ -48,6 +48,19 @@ public class GaussianJobDetailsConverter extends Worker
 
     //Reporting flag
     private int verbosity = 0;
+    
+    /**
+     * String defining the task of converting job details
+     */
+    public static final String CONVERTJOBDETAILSTASKNAME = "convertJobDetails";
+
+    /**
+     * Task about converting job details
+     */
+    public static final Task CONVERTJOBDETAILSTASK;
+    static {
+    	CONVERTJOBDETAILSTASK = Task.make(CONVERTJOBDETAILSTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
     
@@ -63,7 +76,7 @@ public class GaussianJobDetailsConverter extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("convertJobDetails"))));
+             Arrays.asList(CONVERTJOBDETAILSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -95,8 +108,8 @@ public class GaussianJobDetailsConverter extends Worker
         this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)
-            System.out.println(
-            		" Adding parameters to GaussianJobDetailsConverter");
+            System.out.println(" Adding parameters to " 
+            		+ this.getClass().getSimpleName());
 
         //Get and check the input file (which has to be an SDF file)
         String inFilePathname = params.getParameter("INFILE").getValueAsString();

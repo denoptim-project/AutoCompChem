@@ -31,6 +31,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.run.AppID;
 import autocompchem.run.Job;
+import autocompchem.worker.DummyWorker;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
@@ -92,7 +93,7 @@ public class ACCMainTest
         		+AppID.ACC+NL);
         sb.append(WorkerConstants.PARTASK
         		+ParameterConstants.SEPARATOR
-        		+Task.make("dummyTask").casedID+NL);
+        		+DummyWorker.DUMMYTASKTASK.casedID +NL);
         sb.append("CUSTOM_PAR"
         		+ParameterConstants.SEPARATOR
         		+"bla bla ribla"+NL);
@@ -111,7 +112,7 @@ public class ACCMainTest
     	Job job = ACCMain.parseCLIArgs(args);
     	
     	assertEquals(AppID.ACC,job.getAppID(),"Job APP");
-    	assertEquals(Task.make("dummyTask").casedID,job.getParameter(
+    	assertEquals(DummyWorker.DUMMYTASKTASK.casedID,job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString(),
     			"Task ID");
     	assertEquals("bla bla ribla",job.getParameter(

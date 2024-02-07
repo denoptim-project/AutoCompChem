@@ -114,6 +114,31 @@ public class MolecularReorderer extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+    
+    /**
+     * String defining the task of reordering atom list
+     */
+    public static final String REORDERATOMLISTTASKNAME = "reorderAtomList";
+
+    /**
+     * Task about reordering atom list
+     */
+    public static final Task REORDERATOMLISTTASK;
+    static {
+    	REORDERATOMLISTTASK = Task.make(REORDERATOMLISTTASKNAME);
+    }
+    /**
+     * String defining the task aligning atom lists to a reference list
+     */
+    public static final String ALIGNATOMLISTSTASKNAME = "alignAtomLists";
+
+    /**
+     * Task about aligning atom lists to a reference list
+     */
+    public static final Task ALIGNATOMLISTSTASK;
+    static {
+    	ALIGNATOMLISTSTASK = Task.make(ALIGNATOMLISTSTASKNAME);
+    }
 
 
 //------------------------------------------------------------------------------
@@ -129,8 +154,8 @@ public class MolecularReorderer extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(Task.make("reorderAtomList"),
-                		Task.make("alignAtomLists"))));
+                Arrays.asList(REORDERATOMLISTTASK,
+                		ALIGNATOMLISTSTASK)));
     }
 
 //------------------------------------------------------------------------------

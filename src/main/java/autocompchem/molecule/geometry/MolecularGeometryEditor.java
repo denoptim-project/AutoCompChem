@@ -191,6 +191,19 @@ public class MolecularGeometryEditor extends Worker
     private int verbosity = 0;
     
     private final String NL =System.getProperty("line.separator"); 
+    
+    /**
+     * String defining the task of altering a geometry
+     */
+    public static final String MODIFYGEOMETRYTASKNAME = "modifyGeometry";
+
+    /**
+     * Task about altering a geometry
+     */
+    public static final Task MODIFYGEOMETRYTASK;
+    static {
+    	MODIFYGEOMETRYTASK = Task.make(MODIFYGEOMETRYTASKNAME);
+    }
 
     
 //-----------------------------------------------------------------------------
@@ -206,7 +219,7 @@ public class MolecularGeometryEditor extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(Task.make("modifyGeometry"))));
+                Arrays.asList(MODIFYGEOMETRYTASK)));
     }
 
 //------------------------------------------------------------------------------

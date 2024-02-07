@@ -54,6 +54,23 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
      */
     private ArrayList<ConformationalSpace> output = 
     		new ArrayList<ConformationalSpace>();
+    
+    /**
+     * String defining the task of generating a definition of conformational 
+     * space
+     */
+    public static final String GENERATECONFORMATIONALSPACETASKNAME = 
+    		"generateConformationalSpace";
+
+    /**
+     * Task about generating a definition of conformational 
+     * space
+     */
+    public static final Task GENERATECONFORMATIONALSPACETASK;
+    static {
+    	GENERATECONFORMATIONALSPACETASK = 
+    			Task.make(GENERATECONFORMATIONALSPACETASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
 	
@@ -71,7 +88,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("generateConformationalSpace"))));
+             Arrays.asList(GENERATECONFORMATIONALSPACETASK)));
     }
 
 //------------------------------------------------------------------------------

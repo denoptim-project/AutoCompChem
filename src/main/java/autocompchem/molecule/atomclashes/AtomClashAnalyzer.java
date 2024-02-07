@@ -98,6 +98,19 @@ public class AtomClashAnalyzer extends Worker
 
     //Verbosity level
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of detecting atom clashes
+     */
+    public static final String ANALYZEVDWCLASHESTASKNAME = "analyzeVDWClashes";
+
+    /**
+     * Task about detecting atom clashes
+     */
+    public static final Task ANALYZEVDWCLASHESTASK;
+    static {
+    	ANALYZEVDWCLASHESTASK = Task.make(ANALYZEVDWCLASHESTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
     
@@ -112,7 +125,7 @@ public class AtomClashAnalyzer extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("analyzeVDWClashes"))));
+             Arrays.asList(ANALYZEVDWCLASHESTASK)));
     }
 
 //------------------------------------------------------------------------------

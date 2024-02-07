@@ -63,6 +63,33 @@ import autocompchem.worker.WorkerFactory;
 
 public class JobEvaluator extends Worker
 {
+	//TODO-gg use only the general tasks
+    /**
+     * String defining the task of evaluation any job output
+     */
+    public static final String EVALUATEJOBTASKNAME = "evaluateJob";
+
+    /**
+     * Task about evaluating any job output
+     */
+    public static final Task EVALUATEJOBTASK;
+    static {
+    	EVALUATEJOBTASK = Task.make(EVALUATEJOBTASKNAME);
+    }
+    
+    /**
+     * String defining the task of healing/fixing any job
+     */
+    public static final String CUREJOBTASKNAME = "cureJob";
+
+    /**
+     * Task about healing/fixing any job output
+     */
+    public static final Task CUREJOBTASK;
+    static {
+    	CUREJOBTASK = Task.make(CUREJOBTASKNAME);
+    }
+    
 	/**
 	 * Tasks about evaluating jobs of computational chemistry software.
 	 */

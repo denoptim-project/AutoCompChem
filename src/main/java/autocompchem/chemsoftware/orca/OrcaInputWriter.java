@@ -64,6 +64,18 @@ import autocompchem.worker.Worker;
 
 public class OrcaInputWriter extends ChemSoftInputWriter
 {
+    /**
+     * String defining the task of preparing input files for Orca
+     */
+    public static final String PREPAREINPUTORCATASKNAME = "prepareInputOrca";
+
+    /**
+     * Task about preparing input files for Orca
+     */
+    public static final Task PREPAREINPUTORCATASK;
+    static {
+    	PREPAREINPUTORCATASK = Task.make(PREPAREINPUTORCATASKNAME);
+    }
     
 //-----------------------------------------------------------------------------
 
@@ -81,7 +93,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("prepareInputOrca"))));
+             Arrays.asList(PREPAREINPUTORCATASK)));
     }
 
 //------------------------------------------------------------------------------

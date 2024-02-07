@@ -93,14 +93,14 @@ public class BasisSetGenerator extends Worker
      */
     public static final String GENERATEBASISSETTASKNAME = "generateBasisSet";
     
-    /**
+    /**v
      * Task about generation of basis set
      */
-    private static final Task GENERATEBASISSETTASK;
+    public static final Task GENERATEBASISSETTASK;
     static {
     	GENERATEBASISSETTASK = Task.make(GENERATEBASISSETTASKNAME);
     }
-
+    
     /**
      * Verbosity level
      */

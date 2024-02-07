@@ -39,13 +39,26 @@ import autocompchem.worker.Worker;
  */
 public class NWChemOutputReader extends ChemSoftOutputReader
 {
-	
+    /**
+     * String defining the task of analyzing NWChem output files
+     */
+    public static final String ANALYSENWCHEMOUTPUTTASKNAME = 
+    		"analyseNWChemOutput";
+
+    /**
+     * Task about analyzing NWChem output files
+     */
+    public static final Task ANALYSENWCHEMOUTPUTTASK;
+    static {
+    	ANALYSENWCHEMOUTPUTTASK = Task.make(ANALYSENWCHEMOUTPUTTASKNAME);
+    }
+    
 //------------------------------------------------------------------------------
 
     @Override
   	public Set<Task> getCapabilities() {
   		return Collections.unmodifiableSet(new HashSet<Task>(
-  				Arrays.asList(Task.make("analyseNWChemOutput"))));
+  				Arrays.asList(ANALYSENWCHEMOUTPUTTASK)));
   	}
 
 //------------------------------------------------------------------------------

@@ -44,24 +44,6 @@ import autocompchem.worker.Worker;
 /**
  * Pruner for molecules: deletes atoms or molecular fragments matching
  * a given SMARTS query.
- * Parameters needed by the MolecularComparator:
- * <ul>
- * <li> 
- * <b>INFILE</b> path or name of the SDF file containing the structure
- *            (only SDF files with ONE molecule are acceptable!)
- * </li>
- * <li>
- * <b>OUTFILE</b> path or name of the SDF file where results are to be 
- * written.
- * </li>
- * <li>
- * <b>SMARTS</b> list of SMARTS (strings blank space separated) defining
- * the atoms fragments to be deleted from the molecule 
- * </li>
- * <li>
- * <b>VERBOSITY</b>  verbosity level
- * </li>
- * </ul>
  * 
  * @author Marco Foscato
  */
@@ -78,6 +60,19 @@ public class MolecularPruner extends Worker
 
     //Verbosity level
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of pruning molecules
+     */
+    public static final String PRUNEMOLECULESTASKNAME = "pruneMolecules";
+
+    /**
+     * Task about pruning molecules
+     */
+    public static final Task PRUNEMOLECULESTASK;
+    static {
+    	PRUNEMOLECULESTASK = Task.make(PRUNEMOLECULESTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
     
@@ -92,7 +87,7 @@ public class MolecularPruner extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("pruneMolecules"))));
+             Arrays.asList(PRUNEMOLECULESTASK)));
     }
 
 //------------------------------------------------------------------------------

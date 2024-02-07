@@ -71,6 +71,64 @@ public class ConnectivityGenerator extends Worker
     private String targetEl = "";
     
     private File templatePathName;
+    
+    /**
+     * String defining the task of recalculating connectivity table
+     */
+    public static final String RICALCULATECONNECTIVITYTASKNAME = 
+    		"ricalculateConnectivity";
+
+    /**
+     * Task about recalculating connectivity table
+     */
+    public static final Task RICALCULATECONNECTIVITYTASK;
+    static {
+    	RICALCULATECONNECTIVITYTASK = 
+    			Task.make(RICALCULATECONNECTIVITYTASKNAME);
+    }
+    /**
+     * String defining the task of adding bonds on a specific element
+     */
+    public static final String ADDBONDSFORSINGLEELEMENTTASKNAME = 
+    		"addBondsForSingleElement";
+
+    /**
+     * Task about adding bonds on a specific element
+     */
+    public static final Task ADDBONDSFORSINGLEELEMENTTASK;
+    static {
+    	ADDBONDSFORSINGLEELEMENTTASK = 
+    			Task.make(ADDBONDSFORSINGLEELEMENTTASKNAME);
+    }
+    /**
+     * String defining the task of imposing a connectivity table to a set of 
+     * atoms
+     */
+    public static final String IMPOSECONNECTIONTABLETASKNAME = 
+    		"imposeConnectionTable";
+
+    /**
+     * Task about imposing a connectivity table to a set of 
+     * atoms
+     */
+    public static final Task IMPOSECONNECTIONTABLETASK;
+    static {
+    	IMPOSECONNECTIONTABLETASK = Task.make(IMPOSECONNECTIONTABLETASKNAME);
+    }
+    /**
+     * String defining the task of checking consistency between bond lengths 
+     * and connectivity table
+     */
+    public static final String CHECKBONDLENGTHSTASKNAME = "checkBondLengths";
+
+    /**
+     * Task about checking consistency between bond lengths 
+     * and connectivity table
+     */
+    public static final Task CHECKBONDLENGTHSTASK;
+    static {
+    	CHECKBONDLENGTHSTASK = Task.make(CHECKBONDLENGTHSTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
     
@@ -85,10 +143,10 @@ public class ConnectivityGenerator extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(Task.make("ricalculateConnectivity"),
-                		Task.make("addBondsForSingleElement"),
-                		Task.make("imposeConnectionTable"),
-                		Task.make("checkBondLengths"))));
+                Arrays.asList(RICALCULATECONNECTIVITYTASK,
+                		ADDBONDSFORSINGLEELEMENTTASK,
+                		IMPOSECONNECTIONTABLETASK, 
+                		CHECKBONDLENGTHSTASK)));
     }
 
 //------------------------------------------------------------------------------

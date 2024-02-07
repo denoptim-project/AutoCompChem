@@ -99,6 +99,19 @@ public class ChelateAnalyzer extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of analyzing chelation patterns
+     */
+    public static final String ANALYZECHELATESTASKNAME = "analyzeChelates";
+
+    /**
+     * Task about analyzing chelation patterns
+     */
+    public static final Task ANALYZECHELATESTASK;
+    static {
+    	ANALYZECHELATESTASK = Task.make(ANALYZECHELATESTASKNAME);
+    }
 
 //------------------------------------------------------------------------------
     /**
@@ -112,7 +125,7 @@ public class ChelateAnalyzer extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("analyzeChelates"))));
+             Arrays.asList(ANALYZECHELATESTASK)));
     }
 
 //------------------------------------------------------------------------------

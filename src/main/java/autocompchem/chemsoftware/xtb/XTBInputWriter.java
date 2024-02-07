@@ -53,7 +53,18 @@ import autocompchem.worker.Worker;
 
 public class XTBInputWriter extends ChemSoftInputWriter
 {
-    
+    /**
+     * String defining the task of preparing input files for XTB
+     */
+    public static final String PREPAREINPUTXTBTASKNAME = "prepareInputXTB";
+
+    /**
+     * Task about preparing input files for XTB
+     */
+    public static final Task PREPAREINPUTXTBTASK;
+    static {
+    	PREPAREINPUTXTBTASK = Task.make(PREPAREINPUTXTBTASKNAME);
+    }
 //-----------------------------------------------------------------------------
 
     /**
@@ -70,7 +81,7 @@ public class XTBInputWriter extends ChemSoftInputWriter
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("prepareInputXTB"))));
+             Arrays.asList(PREPAREINPUTXTBTASK)));
     }
 
 //------------------------------------------------------------------------------

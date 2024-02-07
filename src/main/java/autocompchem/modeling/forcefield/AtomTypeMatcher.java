@@ -88,6 +88,19 @@ public class AtomTypeMatcher extends Worker
      * Verbosity level
      */
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of assigning atom types
+     */
+    public static final String ASSIGNATOMTYPESTASKNAME = "assignAtomTypes";
+
+    /**
+     * Task about assigning atom types
+     */
+    public static final Task ASSIGNATOMTYPESTASK;
+    static {
+    	ASSIGNATOMTYPESTASK = Task.make(ASSIGNATOMTYPESTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
     
@@ -102,7 +115,7 @@ public class AtomTypeMatcher extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("assignAtomTypes"))));
+             Arrays.asList(ASSIGNATOMTYPESTASK)));
     }
 
 //------------------------------------------------------------------------------

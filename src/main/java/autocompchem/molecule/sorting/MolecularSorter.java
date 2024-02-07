@@ -54,6 +54,19 @@ public class MolecularSorter extends Worker
 
     //Verbosity level
     private int verbosity = 1;
+    
+    /**
+     * String defining the task of sorting molecules
+     */
+    public static final String SORTMOLECULESTASKNAME = "sortMolecules";
+
+    /**
+     * Task about sorting molecules
+     */
+    public static final Task SORTMOLECULESTASK;
+    static {
+    	SORTMOLECULESTASK = Task.make(SORTMOLECULESTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
     
@@ -68,7 +81,7 @@ public class MolecularSorter extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("sortMolecules"))));
+             Arrays.asList(SORTMOLECULESTASK)));
     }
 
 //------------------------------------------------------------------------------

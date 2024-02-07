@@ -34,13 +34,24 @@ import autocompchem.worker.Worker;
  */
 public class XTBOutputReader extends ChemSoftOutputReader
 {
-    
+    /**
+     * String defining the task of analyzing XTB output files
+     */
+    public static final String ANALYSEXTBOUTPUTTASKNAME = "analyseXTBOutput";
+
+    /**
+     * Task about analyzing XTB output files
+     */
+    public static final Task ANALYSEXTBOUTPUTTASK;
+    static {
+    	ANALYSEXTBOUTPUTTASK = Task.make(ANALYSEXTBOUTPUTTASKNAME);
+    }
 //------------------------------------------------------------------------------
 
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("analyseXTBOutput"))));
+             Arrays.asList(ANALYSEXTBOUTPUTTASK)));
     }
 
 //------------------------------------------------------------------------------

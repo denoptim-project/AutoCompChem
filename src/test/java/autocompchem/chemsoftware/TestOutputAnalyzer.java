@@ -45,7 +45,19 @@ class TestOutputAnalyzer extends ChemSoftOutputReader
 	
 	public Set<FileFingerprint> outputFingerprints = 
 			new HashSet<FileFingerprint>();
-	
+
+    /**
+     * String defining the test task
+     */
+    public static final String ANALYZEOUTPUTTASKNAME = "analyzeOutput";
+
+    /**
+     * Test task
+     */
+    public static final Task ANALYZEOUTPUTTASK;
+    static {
+    	ANALYZEOUTPUTTASK = Task.make(ANALYZEOUTPUTTASKNAME);
+    }
 //------------------------------------------------------------------------------
 
 	/**
@@ -65,7 +77,7 @@ class TestOutputAnalyzer extends ChemSoftOutputReader
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("analyzeOutput"))));
+             Arrays.asList(ANALYZEOUTPUTTASK)));
     }
 
 //------------------------------------------------------------------------------

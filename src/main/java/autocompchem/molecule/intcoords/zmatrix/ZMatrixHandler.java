@@ -147,6 +147,44 @@ public class ZMatrixHandler extends Worker
      * Verbosity level
      */
     private int verbosity = 0;
+    
+    /**
+     * String defining the task of generating and printing a ZMatrix
+     */
+    public static final String PRINTZMATRIXTASKNAME = "printZMatrix";
+
+    /**
+     * Task about  generating and printing a ZMatrix
+     */
+    public static final Task PRINTZMATRIXTASK;
+    static {
+    	PRINTZMATRIXTASK = Task.make(PRINTZMATRIXTASKNAME);
+    }
+    /**
+     * String defining the task converting a ZMatrix to connection table
+     */
+    public static final String CONVERTZMATRIXTOSDFTASKNAME = 
+    		"convertZMatrixToSDF";
+
+    /**
+     * Task about converting a ZMatrix to connection table
+     */
+    public static final Task CONVERTZMATRIXTOSDFTASK;
+    static {
+    	CONVERTZMATRIXTOSDFTASK = Task.make(CONVERTZMATRIXTOSDFTASKNAME);
+    }
+    /**
+     * String defining the task of calculating the difference between ZMatrices
+     */
+    public static final String SUBTRACTZMATRICESTASKNAME = "subtractZMatrices";
+
+    /**
+     * Task about calculating the difference between ZMatrices
+     */
+    public static final Task SUBTRACTZMATRICESTASK;
+    static {
+    	SUBTRACTZMATRICESTASK = Task.make(SUBTRACTZMATRICESTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
     
@@ -161,9 +199,9 @@ public class ZMatrixHandler extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(Task.make("printZMatrix"),
-                		Task.make("convertZMatrixToSDF"),
-                		Task.make("subtractZMatrices"))));
+                Arrays.asList(PRINTZMATRIXTASK,
+                		CONVERTZMATRIXTOSDFTASK,
+                		SUBTRACTZMATRICESTASK)));
     }
 
 //------------------------------------------------------------------------------

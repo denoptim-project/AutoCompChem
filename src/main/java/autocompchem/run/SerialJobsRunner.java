@@ -267,7 +267,6 @@ public class SerialJobsRunner extends JobsRunner
 		    numSubmittedJobs++;
         }
         
-        
         //Wait for completion
         int ii = 0;
         boolean withinTime = true;
@@ -299,7 +298,7 @@ public class SerialJobsRunner extends JobsRunner
 	            }
 	
 	            // Check wall time
-	            if(weRunOutOfTime())
+	            if (weRunOutOfTime())
 	            {
 	            	if (verbosity > 0)
 	            	{
@@ -309,6 +308,17 @@ public class SerialJobsRunner extends JobsRunner
 	            	cancellAllRunningThreadsAndShutDown();
 	                withinTime = false;
 	                break;
+	            }
+	            
+	            // Check for errors
+	            if (exceptionInSubJobs())
+	            {
+	            	if (verbosity > 0)
+	            	{
+	            		System.out.println("WARNING! Exception in sub job!");
+	            	}
+	            	cancellAllRunningThreadsAndShutDown();
+	            	break;
 	            }
 	
 	            // wait some time before checking again, 

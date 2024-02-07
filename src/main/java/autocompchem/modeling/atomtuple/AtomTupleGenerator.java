@@ -110,6 +110,18 @@ public class AtomTupleGenerator extends Worker
      */
 	protected AtomicInteger ruleID = new AtomicInteger(0);
 
+    /**
+     * String defining the task of generating tuples of atoms
+     */
+    public static final String GENERATEATOMTUPLESTASKNAME = "generateAtomTuples";
+
+    /**
+     * Task about generating tuples of atoms
+     */
+    public static final Task GENERATEATOMTUPLESTASK;
+    static {
+    	GENERATEATOMTUPLESTASK = Task.make(GENERATEATOMTUPLESTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
 	
@@ -124,7 +136,7 @@ public class AtomTupleGenerator extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("generateAtomTuples"))));
+             Arrays.asList(GENERATEATOMTUPLESTASK)));
     }
 
 //------------------------------------------------------------------------------

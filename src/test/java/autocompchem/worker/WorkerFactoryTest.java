@@ -90,7 +90,7 @@ public class WorkerFactoryTest
     	}
     	
     	// and with task from scratch
-    	w = WorkerFactory.createWorker(Task.make("DUMMYTASK2", true));
+    	w = WorkerFactory.createWorker(DummyWorker2.DUMMYTASK2TASK);
     	assertTrue(w instanceof DummyWorker2);
     	
     	// Try again with class
@@ -107,7 +107,7 @@ public class WorkerFactoryTest
     	Job job = JobFactory.createJob(AppID.ACC);
     	ParameterStorage params = new ParameterStorage();
     	params.setParameter(WorkerConstants.PARTASK,
-    			Task.make("DUMMYTASK2",true).toString());
+    			DummyWorker2.DUMMYTASK2TASK.casedID);
     	job.setParameters(params);
     	
     	WorkerFactory.getInstance().registerType(new DummyWorker2());

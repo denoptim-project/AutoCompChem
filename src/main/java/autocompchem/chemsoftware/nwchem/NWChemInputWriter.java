@@ -76,6 +76,20 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 	 */
     private boolean dirnamesInUppercase = true;
     
+    /**
+     * String defining the task of preparing input files for NWChem
+     */
+    public static final String PREPAREINPUTNWCHEMTASKNAME = 
+    		"prepareInputNWChem";
+
+    /**
+     * Task about preparing input files for NWChem
+     */
+    public static final Task PREPAREINPUTNWCHEMTASK;
+    static {
+    	PREPAREINPUTNWCHEMTASK = Task.make(PREPAREINPUTNWCHEMTASKNAME);
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -92,7 +106,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("prepareInputNWChem"))));
+             Arrays.asList(PREPAREINPUTNWCHEMTASK)));
     }
 
 //------------------------------------------------------------------------------

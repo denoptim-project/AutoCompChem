@@ -51,6 +51,20 @@ public class ConstraintsGenerator extends AtomTupleGenerator
      * Results
      */
     private ArrayList<ConstraintsSet> output = new ArrayList<ConstraintsSet>();
+    
+    /**
+     * String defining the task of generating constraints
+     */
+    public static final String GENERATECONSTRAINTSTASKNAME = 
+    		"cenerateConstraints";
+
+    /**
+     * Task about generating constraints
+     */
+    public static final Task GENERATECONSTRAINTSTASK;
+    static {
+    	GENERATECONSTRAINTSTASK = Task.make(GENERATECONSTRAINTSTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
 	
@@ -67,7 +81,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(Task.make("generateConstraints"))));
+             Arrays.asList(GENERATECONSTRAINTSTASK)));
     }
 
 //------------------------------------------------------------------------------
