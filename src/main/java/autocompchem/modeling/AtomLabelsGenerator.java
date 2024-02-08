@@ -243,7 +243,7 @@ public class AtomLabelsGenerator extends Worker
             Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
             		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
             		+ "an input file to read geometries from. "
-            		+ "Cannot generate atom labels.",-1);
+            		+ "Cannot generate atom labels.", -1);
         }
         
         List<TextBlock> output = new ArrayList<TextBlock>();

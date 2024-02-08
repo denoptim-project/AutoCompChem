@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.SDFIterator;
@@ -51,13 +52,6 @@ import autocompchem.worker.Worker;
 
 public class ConformationalSpaceGenerator extends AtomTupleGenerator
 {
-    
-    /**
-     * Results
-     */
-    private ArrayList<ConformationalSpace> output = 
-    		new ArrayList<ConformationalSpace>();
-    
     /**
      * String defining the task of generating a definition of conformational 
      * space
@@ -153,37 +147,39 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
 
     public void createConformationalSpaces()
     {
-        if (inFile==null)
+        if (inFile==null && inMols==null)
         {
-            Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-                + " Cannot generate conformational spaces.",-1);
+            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
+            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
+            		+ "an input file to read geometries from. "
+            		+ "Cannot generate conformational spaces.", -1);
         }
 
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
-
-                //Assign Constraints
-                ConformationalSpace cs = createConformationalSpace(mol);
-                
-                if (verbosity > 0)
-                {
-                	System.out.println("# " + MolecularUtils.getNameOrID(mol));
-                	cs.printAll();
-                }
-                output.add(cs);
-                
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
+        List<ConformationalSpace> output = 
+        		new ArrayList<ConformationalSpace>();
         
+        if (inFile!=null)
+        {
+	        try {
+	            SDFIterator sdfItr = new SDFIterator(inFile);
+	            while (sdfItr.hasNext())
+	            {
+	                IAtomContainer mol = sdfItr.next();
+	        		processOneAtomContainer(mol, output);
+	            }
+	            sdfItr.close();
+	        } catch (Throwable t) {
+	            t.printStackTrace();
+	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
+	                + "SDFIterator while reading " + inFile, -1);
+	        }
+        } else {
+        	for (IAtomContainer mol : inMols)
+        	{
+        		processOneAtomContainer(mol, output);
+        	}
+        }
+	    
         if (exposedOutputCollector != null)
     	{
 	    	int ii = 0;
@@ -193,13 +189,28 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
 	    		if (cs != null)
 	    		{
 	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(molID, 
+	  		        exposeOutputData(new NamedData(
+	  		        		GENERATECONFORMATIONALSPACETASK.ID + "_" + molID, 
 	  		        		NamedDataType.CONFORMATIONALSPACE, cs));
 	    		}
 	    	}
     	}
     }
-
+    
+//------------------------------------------------------------------------------
+    
+    private void processOneAtomContainer(IAtomContainer iac,
+    		List<ConformationalSpace> output)
+    {
+        ConformationalSpace cs = createConformationalSpace(iac);
+        if (verbosity > 0)
+        {
+        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
+        	cs.printAll();
+        }
+        output.add(cs);
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

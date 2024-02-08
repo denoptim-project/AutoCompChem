@@ -1425,7 +1425,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 break;
             }
             */
-            
+            /*
             case "GENERATECONFORMATIONALSPACE":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1454,6 +1454,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	((IValueContainer) dirComp).setValue(cs);
             	break;
             }
+            */
             
             /*
             case "GENERATEATOMLABELS":
