@@ -1392,6 +1392,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             }
             */
            
+            /*
             case "GENERATECONSTRAINTS":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1423,6 +1424,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	((IValueContainer) dirComp).setValue(cs);
                 break;
             }
+            */
             
             case "GENERATECONFORMATIONALSPACE":
             {
@@ -1474,6 +1476,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
+            /*
             case "GENERATEATOMTUPLES":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1494,6 +1497,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	((IValueContainer) dirComp).setValue(tuples);
             	break;
             }
+            */
                 
             //TODO: add here other atom/molecule specific option
             

@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.SDFIterator;
@@ -33,9 +34,11 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.modeling.basisset.BasisSetUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -48,8 +51,7 @@ import autocompchem.worker.Worker;
 
 
 public class ConstraintsGenerator extends AtomTupleGenerator
-{
-    
+{   
     /**
      * Results
      */
@@ -146,35 +148,34 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 
     public void createConstrains()
     {
-        if (inFile.getName().equals("noInFile"))
+        if (inFile==null && inMols==null)
         {
-            Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-                + " Cannot generate constraints.",-1);
+            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
+            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
+            		+ "an input file to read geometries from. "
+            		+ "Cannot generate constraints.",-1);
         }
 
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
-
-                //Assign Constraints
-                ConstraintsSet cs = createConstraints(mol);
-                
-                if (verbosity > 0)
-                {
-                	System.out.println("# " + MolecularUtils.getNameOrID(mol));
-                	cs.printAll();
-                }
-                output.add(cs);
-                
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
+        if (inFile!=null)
+        {
+	        try {
+	            SDFIterator sdfItr = new SDFIterator(inFile);
+	            while (sdfItr.hasNext())
+	            {
+	                IAtomContainer mol = sdfItr.next();
+	        		processOneAtomContainer(mol);
+	            } //end loop over molecules
+	            sdfItr.close();
+	        } catch (Throwable t) {
+	            t.printStackTrace();
+	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
+	                + "SDFIterator while reading " + inFile, -1);
+	        }
+        } else {
+        	for (IAtomContainer mol : inMols)
+        	{
+        		processOneAtomContainer(mol);
+        	}
         }
         
         if (exposedOutputCollector != null)
@@ -186,11 +187,26 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 	    		if (cs != null)
 	    		{
 	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(molID, 
+	  		        exposeOutputData(new NamedData(
+	  		        		GENERATECONSTRAINTSTASK.ID + "_" + molID, 
 	  		        		NamedDataType.CONSTRAINTSSET, cs));
 	    		}
 	    	}
     	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private void processOneAtomContainer(IAtomContainer iac)
+    {
+    	ConstraintsSet cs = createConstraints(iac);
+        output.add(cs);
+        
+        if (verbosity > 0)
+        {
+        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
+        	cs.printAll();
+        }
     }
 
 //------------------------------------------------------------------------------

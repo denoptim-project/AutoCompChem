@@ -46,6 +46,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -158,8 +159,6 @@ public class BasisSetGenerator extends Worker
      * Initialize the worker according to the parameters loaded by constructor.
      */
 
-    
-	@SuppressWarnings("unchecked")
 	@Override
     public void initialize()
     {
@@ -190,7 +189,7 @@ public class BasisSetGenerator extends Worker
             	System.out.println("WARNING: found both INFILE and "
             			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
             			+ ChemSoftConstants.PARGEOM + " as input for "
-            			+ "generation of basis set.");
+            			+ this.getClass().getSimpleName() + ".");
             	this.inFile = null;
             }
         }
@@ -310,17 +309,9 @@ public class BasisSetGenerator extends Worker
 	            SDFIterator sdfItr = new SDFIterator(inFile);
 	            while (sdfItr.hasNext())
 	            {
-	                //Get the molecule
 	                IAtomContainer mol = sdfItr.next();
-	
-	                //Assign Basis Set
-	                BasisSet bs = assignBasisSet(mol);
-	                output.add(bs);
-	
-	                //Write to output
-	                if (outFile!=null)
-	                	BasisSetUtils.writeFormattedBS(bs, format, outFile);
-	            } //end loop over molecules
+	        		processOneAtomContainer(mol);
+	            }
 	            sdfItr.close();
 	        } catch (Throwable t) {
 	            t.printStackTrace();
@@ -328,14 +319,9 @@ public class BasisSetGenerator extends Worker
 	                + "SDFIterator while reading " + inFile, -1);
 	        }
         } else {
-        	for (IAtomContainer iac : inMols)
+        	for (IAtomContainer mol : inMols)
         	{
-        		BasisSet bs = assignBasisSet(iac);
-                output.add(bs);
-
-                //Write to output
-                if (outFile!=null)
-                	BasisSetUtils.writeFormattedBS(bs, format, outFile);
+        		processOneAtomContainer(mol);
         	}
         }
         
@@ -354,6 +340,18 @@ public class BasisSetGenerator extends Worker
 	    		}
 	    	}
     	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private void processOneAtomContainer(IAtomContainer iac)
+    {
+		BasisSet bs = assignBasisSet(iac);
+        output.add(bs);
+
+        //Write to output
+        if (outFile!=null)
+        	BasisSetUtils.writeFormattedBS(bs, format, outFile);
     }
 
 //------------------------------------------------------------------------------
