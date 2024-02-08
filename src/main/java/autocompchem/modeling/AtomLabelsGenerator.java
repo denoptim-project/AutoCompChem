@@ -28,11 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -41,6 +43,7 @@ import autocompchem.io.SDFIterator;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -60,6 +63,11 @@ public class AtomLabelsGenerator extends Worker
      * The name of the input file (molecular structure files)
      */
     private File inFile;
+
+    /**
+     * The input molecules
+     */
+    protected List<IAtomContainer> inMols;
 
     /**
      * The name of the output file, if any
@@ -160,6 +168,20 @@ public class AtomLabelsGenerator extends Worker
             		params.getParameter("INFILE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
+        if (params.contains(ChemSoftConstants.PARGEOM))
+        {
+            this.inMols = (List<IAtomContainer>) params.getParameter(
+            		ChemSoftConstants.PARGEOM).getValue();
+            if (params.contains("INFILE"))
+            {
+            	//TODO: logging
+            	System.out.println("WARNING: found both INFILE and "
+            			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
+            			+ ChemSoftConstants.PARGEOM + " as input for "
+            			+ this.getClass().getSimpleName() + ".");
+            	this.inFile = null;
+            }
+        }
 
         // Name of output file
         if (params.contains("OUTFILE"))
@@ -172,7 +194,7 @@ public class AtomLabelsGenerator extends Worker
 
         if (params.contains("LABELTYPE"))
         {
-            this.mode = AtomLabelMode.valueOf(
+        	this.mode = EnumUtils.getEnumIgnoreCase(AtomLabelMode.class, 
             		params.getParameter("LABELTYPE").getValueAsString());
         }
         
@@ -216,52 +238,73 @@ public class AtomLabelsGenerator extends Worker
     
     public void generateAtomLabels()
     {
-        if (inFile==null)
+        if (inFile==null && inMols==null)
         {
-            Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-                + " Cannot generate atom labels.", -1);
+            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
+            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
+            		+ "an input file to read geometries from. "
+            		+ "Cannot generate atom labels.",-1);
         }
-        List<String> output = new ArrayList<String>();
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                IAtomContainer mol = sdfItr.next();
-                List<String> lst = generateAtomLabels(mol);
-                String txt = StringUtils.mergeListToString(lst, labelsSeparator);
-                output.add(txt);
-                if (verbosity > 1)
-                {
-                	System.out.println(txt);
-                }
-                if (outFile!=null)
-                {
-                	IOtools.writeTXTAppend(outFile, 
-                			txt + System.getProperty("line.separator"),
-                			true);
-                }
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
+        
+        List<TextBlock> output = new ArrayList<TextBlock>();
+        if (inFile!=null)
+        {
+	        try {
+	            SDFIterator sdfItr = new SDFIterator(inFile);
+	            while (sdfItr.hasNext())
+	            {
+	                IAtomContainer mol = sdfItr.next();
+	        		processOneAtomContainer(mol, output);
+	            }
+	            sdfItr.close();
+	        } catch (Throwable t) {
+	            t.printStackTrace();
+	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
+	                + "SDFIterator while reading " + inFile, -1);
+	        }
+        } else {
+        	for (IAtomContainer mol : inMols)
+        	{
+        		processOneAtomContainer(mol, output);
+        	}
+        } 
         
         if (exposedOutputCollector != null)
     	{
 	    	int ii = 0;
-	    	for (String txt : output)
+	    	for (TextBlock tb : output)
 	    	{
 	    		ii++;
-	    		if (txt != null)
+	    		if (tb != null)
 	    		{
 	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(molID, 
-	  		        		NamedDataType.STRING, txt));
+	  		        exposeOutputData(new NamedData(
+	  		        		GENERATEATOMLABELSTASK.ID + "_" + molID, 
+	  		        		NamedDataType.TEXTBLOCK, tb));
 	    		}
 	    	}
     	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private void processOneAtomContainer(IAtomContainer iac, 
+    		List<TextBlock> output)
+    {
+    	List<String> lst = generateAtomLabels(iac);
+        String txt = StringUtils.mergeListToString(lst, labelsSeparator);
+        TextBlock tb = new TextBlock(lst);
+        output.add(tb);
+        if (verbosity > 1)
+        {
+        	System.out.println(txt);
+        }
+        if (outFile!=null)
+        {
+        	IOtools.writeTXTAppend(outFile, 
+        			txt + System.getProperty("line.separator"),
+        			true);
+        }
     }
 
 //------------------------------------------------------------------------------

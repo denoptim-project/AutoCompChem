@@ -1157,7 +1157,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    	}
 	    	return;
 	    } catch (Throwable t) {
-	    	//TODO-gg change into error
+	    	//TODO-gg change into error or let the exception propacate without try-block
 	    	t.printStackTrace();
 	    	System.out.println(System.getProperty("line.separator")
 	    			+ "WARNING: Task '" + task + "' is not yet implemented in new ways!"
@@ -1455,6 +1455,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             
+            /*
             case "GENERATEATOMLABELS":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1475,6 +1476,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	((IValueContainer) dirComp).setValue(labels);
             	break;
             }
+            */
             
             /*
             case "GENERATEATOMTUPLES":
