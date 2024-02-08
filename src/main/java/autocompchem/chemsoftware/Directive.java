@@ -1157,7 +1157,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    	}
 	    	return;
 	    } catch (Throwable t) {
-	    	//TODO-gg change into error or let the exception propacate without try-block
+	    	//TODO-gg change into error or let the exception propagate without try-block
 	    	t.printStackTrace();
 	    	System.out.println(System.getProperty("line.separator")
 	    			+ "WARNING: Task '" + task + "' is not yet implemented in new ways!"
@@ -1306,13 +1306,21 @@ public class Directive implements IDirectiveComponent, Cloneable
                         ZMatrixHandler zmh = (ZMatrixHandler) w;
                         //TODO-gg make it use atom tags upon request
                         ZMatrix zmat = zmh.makeZMatrix();
+                        //TODO-gg this is something that may have to be done in 
+                        // more general terms as it depends on the ccomp.chem. 
+                        // software policy for dealing with multiple geometries.
+                        // In the worst case, we do not try to deal with 
+                        // geometries as done here but we let the jobdetails 
+                        // define multiple directives and acctasks each with a 
+                        // pointer to the geometry of the input to be used for 
+                        // that directive/task.
+                        
                         if (params.contains(ZMatrixConstants.SELECTORMODE))
                         {
                         	ParameterStorage cnstMakerTask = params.clone();
                         	cnstMakerTask.setParameter(WorkerConstants.PARTASK, 
                         			Task.getExisting("generateConstraints").ID);
 
-                        	
                             ConstraintsGenerator cnstrg = (ConstraintsGenerator)
                             		WorkerFactory.createWorker(cnstMakerTask,
                             				masterJob);

@@ -76,6 +76,10 @@
                       "value": "GENERATECONSTRAINTS"
                     },
                     {
+                      "reference": "VERBOSITY",
+                      "value": "1"
+                    },
+                    {
                       "reference": "SMARTS",
                       "value": "[#1] [Ru] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded suffix:constant"
                     }
