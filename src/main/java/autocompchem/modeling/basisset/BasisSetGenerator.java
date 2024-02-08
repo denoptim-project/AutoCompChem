@@ -30,8 +30,10 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -64,6 +66,11 @@ public class BasisSetGenerator extends Worker
      * The input file (molecular structure files)
      */
     private File inFile;
+    
+    /**
+     * The input molecules
+     */
+    private List<IAtomContainer> inMols;
 
     /**
      * The output file, if any
@@ -151,7 +158,9 @@ public class BasisSetGenerator extends Worker
      * Initialize the worker according to the parameters loaded by constructor.
      */
 
-    @Override
+    
+	@SuppressWarnings("unchecked")
+	@Override
     public void initialize()
     {
         // Define verbosity
@@ -170,6 +179,20 @@ public class BasisSetGenerator extends Worker
             this.inFile = new File(
             		params.getParameter("INFILE").getValue().toString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        }
+        if (params.contains(ChemSoftConstants.PARGEOM))
+        {
+            this.inMols = (List<IAtomContainer>) params.getParameter(
+            		ChemSoftConstants.PARGEOM).getValue();
+            if (params.contains("INFILE"))
+            {
+            	//TODO: logging
+            	System.out.println("WARNING: found both INFILE and "
+            			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
+            			+ ChemSoftConstants.PARGEOM + " as input for "
+            			+ "generation of basis set.");
+            	this.inFile = null;
+            }
         }
 
         // Read the atom type matching rules
@@ -215,8 +238,7 @@ public class BasisSetGenerator extends Worker
     {
     	if (task.equals(GENERATEBASISSETTASK))
     	{
-    		assignBasisSetToAllMolsInFile();
-    	//} else if (task.equals(Task.getExisting(?)))
+    		assignBasisSet();
         } else {
     		dealWithTaskMistMatch();
         }
@@ -269,38 +291,52 @@ public class BasisSetGenerator extends Worker
 
     /**
      * Assign basis set to all atoms in all structures found in the input and
-     * output according to the parameters given to constructor. This
-     * method is meant for working on structures taken from an input file.
+     * produce output according to the parameters given to constructor.
      */
 
-    public void assignBasisSetToAllMolsInFile()
+    public void assignBasisSet()
     {
-        if (inFile==null)
+        if (inFile==null && inMols==null)
         {
-            Terminator.withMsgAndStatus("ERROR! Missing input file parameter. "
-                + "Cannot generate basis set.",-1);
+            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
+            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
+            		+ "an input file to read geometries from. "
+            		+ "Cannot generate basis set.",-1);
         }
 
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
-
-                //Assign Basis Set
-                BasisSet bs = assignBasisSet(mol);
+        if (inFile!=null)
+        {
+	        try {
+	            SDFIterator sdfItr = new SDFIterator(inFile);
+	            while (sdfItr.hasNext())
+	            {
+	                //Get the molecule
+	                IAtomContainer mol = sdfItr.next();
+	
+	                //Assign Basis Set
+	                BasisSet bs = assignBasisSet(mol);
+	                output.add(bs);
+	
+	                //Write to output
+	                if (outFile!=null)
+	                	BasisSetUtils.writeFormattedBS(bs, format, outFile);
+	            } //end loop over molecules
+	            sdfItr.close();
+	        } catch (Throwable t) {
+	            t.printStackTrace();
+	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
+	                + "SDFIterator while reading " + inFile, -1);
+	        }
+        } else {
+        	for (IAtomContainer iac : inMols)
+        	{
+        		BasisSet bs = assignBasisSet(iac);
                 output.add(bs);
 
                 //Write to output
                 if (outFile!=null)
                 	BasisSetUtils.writeFormattedBS(bs, format, outFile);
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
+        	}
         }
         
         if (exposedOutputCollector != null)
@@ -312,7 +348,8 @@ public class BasisSetGenerator extends Worker
 	    		if (bs != null)
 	    		{
 	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(molID, 
+	  		        exposeOutputData(new NamedData(
+	  		        		GENERATEBASISSETTASK.ID + "_" + molID, 
 	  		        		NamedDataType.BASISSET, bs));
 	    		}
 	    	}

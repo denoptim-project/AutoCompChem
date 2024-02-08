@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -1134,12 +1135,30 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    	embeddedWorker.performTask();
 	    	
 	    	// Place the result of the embedded task in the dir component
-	    	((IValueContainer) dirComp).setValue(outputOfEmbedded.getNamedData(
-	    			Task.getExisting(task).ID).getValue());
-	    	
+	    	int matchingDataCount = 0;
+	    	String latstKey = "";
+	    	for (String key : outputOfEmbedded.getAllNamedData().keySet())
+	    	{
+	    		if (key.startsWith(Task.getExisting(task).ID))
+	    		{
+	    			matchingDataCount++;
+	    			latstKey=key;
+	    			((IValueContainer) dirComp).setValue(
+	    					outputOfEmbedded.getNamedData(key).getValue());
+	    		}
+	    	}
+	    	if (matchingDataCount>1)
+	    	{
+	    		//TODO: logger
+		    	System.out.println(System.getProperty("line.separator")
+		    			+ "WARNING! Multiple data produced by task " + task
+		    			+ ". Taking only the last value (" + latstKey + ")."
+		    			+ System.getProperty("line.separator"));
+	    	}
 	    	return;
 	    } catch (Throwable t) {
 	    	//TODO-gg change into error
+	    	t.printStackTrace();
 	    	System.out.println(System.getProperty("line.separator")
 	    			+ "WARNING: Task '" + task + "' is not yet implemented in new ways!"
 	    			+ System.getProperty("line.separator"));
@@ -1341,7 +1360,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
 
-            //TODO-gg replace with if matching Task from BasisSetGenerator
+            /*
             case "GENERATEBASISSET":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1371,6 +1390,7 @@ public class Directive implements IDirectiveComponent, Cloneable
                 ((IValueContainer) dirComp).setValue(bs);
             	break;
             }
+            */
            
             case "GENERATECONSTRAINTS":
             {

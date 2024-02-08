@@ -1,5 +1,10 @@
 package autocompchem.chemsoftware;
 
+import java.util.List;
+
+import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import autocompchem.datacollections.ParameterStorage;
 
 /*   
@@ -144,7 +149,8 @@ public class ChemSoftConstants
 	public static final String PARGEOMFILE = "INPUTGEOMETRIESFILE";
 	
 	/**
-	 * Key for parameter defining the molecular geometries
+	 * Key for parameter defining the molecular geometries as 
+	 * {@link List} of {@link IAtomContainer}s.
 	 */
 	public static final String PARGEOM = "INPUTGEOMETRIES";
 
