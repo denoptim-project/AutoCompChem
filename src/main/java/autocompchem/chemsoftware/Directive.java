@@ -1,9 +1,5 @@
 package autocompchem.chemsoftware;
 
-
-
-import java.lang.reflect.Type;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -21,13 +17,13 @@ import java.lang.reflect.Type;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -37,31 +33,23 @@ import com.google.gson.JsonSerializer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
-import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
-import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.BasisSetConstants;
-import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.conformation.ConformationalSpace;
-import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
-import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
-import autocompchem.text.TextBlock;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -1150,6 +1138,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    	if (matchingDataCount>1)
 	    	{
 	    		//TODO: logger
+	    		//TODO-gg deal with multiple geometries by using the index ion the parameters
 		    	System.out.println(System.getProperty("line.separator")
 		    			+ "WARNING! Multiple data produced by task " + task
 		    			+ ". Taking only the last value (" + latstKey + ")."
@@ -1170,6 +1159,30 @@ public class Directive implements IDirectiveComponent, Cloneable
         {
 	        case "ADDATOMSPECIFICKEYWORDS":
 	        {
+	        	
+	        	// Notes for developing worker
+	        	/*
+	        	 *  - these keyword's value is just a value, so the fact that the 
+	        	 *     value becomes a keyword is not a determining factor for 
+	        	 *     the generation of such value 
+	        	 *     => Putting the value in a keyword must not be among 
+	        	 *     the worker's tasks
+	        	 *     
+	        	 *  - these values are effectively annotated tuples (of length 1,
+	        	 *      i.e., with only one atom each) that are peculiar because 
+	        	 *      part of the value is an atom label that may need to be 
+	        	 *      generated according to a few parameters, i.e., those of 
+	        	 *      the AtomLabelGenerator => The worker should be mainly 
+	        	 *      based on AtomTupleGenerator, and call an 
+	        	 *      AtomLabelGenerator to get one of the bits that makes 
+	        	 *      the final value.
+	        	 * 
+	        	 *  - can we store atom labels as attribute of atom tuple? But 
+	        	 *      then, how do we format the tuple to generate the string 
+	        	 *      we want? Perhaps the prefix/suffix/attribute machinery
+	        	 *      can help already... test is in junit fashion (NOW_WE_ARE_HERE!)
+	        	 * 
+	        	 */
 	        	if (!(dirComp instanceof Directive))
 	        	{
 	        		throw new IllegalArgumentException("Task " + task 

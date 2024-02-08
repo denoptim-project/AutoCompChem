@@ -29,13 +29,12 @@ public class AnnotatedAtomTuple implements Cloneable
 	private List<Integer> atmIDs;
 	
     /**
-     * Map of keywords that take no value and are thus mapped 
-     * to the flag reporting if they are found or not.
+     * Attributes that have no value and that apply to this tuple.
      */
     private Set<String> valuelessAttributes;
     
     /**
-     * Map of keywords that take values and are thus mapped to their
+     * Attributes that take values and are thus mapped to the corresponding
      * value.
      */
     private Map<String,String> valuedAttributes;
@@ -137,7 +136,6 @@ public class AnnotatedAtomTuple implements Cloneable
 	 * @param mol the container collecting the atoms.
 	 * @param valuelessAttributes value-less attributes.
 	 * @param valuedAttributes map of attributes with their (String) value.
-  	 * @param ct defines the neighboring relation between atoms in the tuple.
 	 */
 	public AnnotatedAtomTuple(List<IAtom> atoms, IAtomContainer mol, 
 			Set<String> valuelessAttributes, 
@@ -235,8 +233,8 @@ public class AnnotatedAtomTuple implements Cloneable
 
     /**
      * @param key the name of the attribute to get. Case insensitive.
-     * @return <code>true</code> if the keyword was found, <code>false</code> if
-     * it was not found.
+     * @return <code>true</code> if the attribute/keyword was found, 
+     * <code>false</code> if it was not found.
      */
 
     public boolean hasValuelessAttribute(String key)
@@ -259,8 +257,8 @@ public class AnnotatedAtomTuple implements Cloneable
 
     /**
      * @param key the name of the attribute to get. Case insensitive.
-     * @return <code>true</code> if the keyword was found, <code>false</code> if
-     * it was not found.
+     * @return <code>true</code> if the attribute/keyword was found, 
+     * <code>false</code> if it was not found.
      */
 
     public boolean hasValueledAttribute(String key)
