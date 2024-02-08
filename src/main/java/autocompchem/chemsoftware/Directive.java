@@ -36,6 +36,9 @@ import com.google.gson.JsonSerializer;
 
 import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
+import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.AtomLabelsGenerator;
@@ -54,6 +57,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
@@ -1111,7 +1115,36 @@ public class Directive implements IDirectiveComponent, Cloneable
         } else {
         	return;
         }
-        
+    	
+    	// We collect data from the job that contains the present
+    	// directive into the parameters of the embedded job.
+    	ParameterStorage embeddeJobPars = params.clone();
+    	embeddeJobPars.setParameter(new NamedData(
+    			ChemSoftConstants.PARGEOM, mols));
+    	embeddeJobPars.setParameter(job.getParameter(
+    			ChemSoftConstants.PAROUTFILEROOT));
+    	
+    	//TODO-gg remove try block
+    	// We run the embedded job, specifying that we want to receive the 
+    	// resulting data.
+    	try {
+	    	Worker embeddedWorker = WorkerFactory.createWorker(embeddeJobPars, job);
+	    	NamedDataCollector outputOfEmbedded = new NamedDataCollector();
+	    	embeddedWorker.setDataCollector(outputOfEmbedded);
+	    	embeddedWorker.performTask();
+	    	
+	    	// Place the result of the embedded task in the dir component
+	    	((IValueContainer) dirComp).setValue(outputOfEmbedded.getNamedData(
+	    			Task.getExisting(task).ID).getValue());
+	    	
+	    	return;
+	    } catch (Throwable t) {
+	    	//TODO-gg change into error
+	    	System.out.println(System.getProperty("line.separator")
+	    			+ "WARNING: Task '" + task + "' is not yet implemented in new ways!"
+	    			+ System.getProperty("line.separator"));
+	    }
+    	
     	//NB: this will exit with an error should the string not be good enough
     	Task taskID = Task.getExisting(task, true);
         switch (taskID.ID) 
@@ -1187,6 +1220,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	        	break;
 	        }
 	        
+	        /*
             case "ADDFILENAME":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1213,6 +1247,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	((IValueContainer) dirComp).setValue(pathname);
             	break;
             }
+            */
             
             case "ADDGEOMETRY":
             {

@@ -41,7 +41,9 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
-//TODO-gg are parameters just Directives for ACC
+//TODO-gg are parameters just Directives for ACC. Maybe, but there is a difference 
+// in that the parameters of a job do not figure in the job input for software
+// other than ACC.
 
 /**
  * Storage of parameters, i.e., information that is collected in a list of 

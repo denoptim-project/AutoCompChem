@@ -1,0 +1,38 @@
+[
+  {
+    "key": "PATHAME",
+    "casedKey": "pathName",
+    "type": "<String>",
+    "doc": "A pathname to be used as input."
+  },
+  {
+    "key": "PATHNAMEROOT",
+    "casedKey": "pathNameRoot",
+    "type": "<String>",
+    "doc": "A string to be used as input (unless parameter pathName is present too)"
+  },
+  {
+    "key": "PREFIX",
+    "casedKey": "prefix",
+    "type": "<String>",
+    "doc": "A string to be added before the processed pathname (i.e., pre-pended with no separator)"
+  },
+  {
+    "key": "SUFFIX",
+    "casedKey": "suffix",
+    "type": "<String>",
+    "doc": "A string to be added after the processed pathname (i.e., appended with no separator)"
+  },
+  {
+    "key": "QUOTATION",
+    "casedKey": "quitation",
+    "type": "<String>",
+    "doc": "A string to be used as quotation to the processes pathname with prefic/suffix, if any. Can include one or more characters."
+  },
+  {
+    "key": "VERBOSITY",
+    "casedKey": "verbosity",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

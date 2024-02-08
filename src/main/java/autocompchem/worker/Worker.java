@@ -334,7 +334,7 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
 	
 	/**
-	 * Trigges the reaction to a request to perform a {@link Task} that is not
+	 * Triggers the reaction to a request to perform a {@link Task} that is not
 	 * among those declared by this implementation.
 	 */
 	protected void dealWithTaskMistMatch()

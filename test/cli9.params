@@ -8,7 +8,7 @@ $DIR_! $MT_calculation=NumFreq
 $DIR_* $MT_charge=0
 $DIR_* $MT_spin_multiplicity=1
 $DIR_* $MT_coordtype=xyzfile
-$DIR_* $MT_filename=$START$ACCTASK: addFilename
+$DIR_* $MT_filename=$START$ACCTASK: getpathname
 SUFFIX: .xyz
 $END
 ----NEW-STEP----

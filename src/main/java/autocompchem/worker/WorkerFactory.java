@@ -36,6 +36,7 @@ import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.PathnameEditor;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSetGenerator;
@@ -124,6 +125,7 @@ public final class WorkerFactory
         registerType(new SpartanOutputHandler());
         registerType(new VibModuleOutputHandler());
         registerType(new ZMatrixHandler());
+        registerType(new PathnameEditor());
 	}
 
 //-----------------------------------------------------------------------------

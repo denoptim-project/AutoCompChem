@@ -207,6 +207,7 @@ public class JobFactory
     	return job;
     }
 
+
 //------------------------------------------------------------------------------
 
     /**
@@ -221,6 +222,34 @@ public class JobFactory
         ParameterStorage locPar = new ParameterStorage();
         locPar.importParameters(tb);
         
+        Job job = createJob(locPar);
+        if (tb.getNestedBlocks().size() > 0)
+        {
+        	//NB: here they are called steps, but for a parallelized job they
+        	// are the independent jobs to be submitted in parallel
+            for (TextBlockIndexed intTb : tb.getNestedBlocks())
+            {
+                // Recursive exploration of nested structure of TextBlocks
+                Job subJob = createJob(intTb);
+                job.addStep(subJob);
+            }
+        }
+        
+        return job;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Create a job from the parameters defining it.
+     * Since {@link ParameterStorage} cannot be nested, this method does can
+     * only create a single job.
+     * @param params the collection of parameters defining the job.
+     * @return the job defined by the given parameters.
+     */ 
+
+    public static Job createJob(ParameterStorage locPar)
+    {
         Job job = new Job();
         
         AppID appId = AppID.ACC;
@@ -268,17 +297,6 @@ public class JobFactory
         }
         
         job.setParameters(locPar);
-        if (tb.getNestedBlocks().size() > 0)
-        {
-        	//NB: here they are called steps, but for a parallelized job they
-        	// are the independent jobs to be submitted in parallel
-            for (TextBlockIndexed intTb : tb.getNestedBlocks())
-            {
-                // Recursive exploration of nested structure of TextBlocks
-                Job subJob = createJob(intTb);
-                job.addStep(subJob);
-            }
-        }
 
         return job;
     }

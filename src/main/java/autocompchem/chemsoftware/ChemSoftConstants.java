@@ -185,6 +185,18 @@ public class ChemSoftConstants
 	public static final String PARHEADER = "HEADER";
 
 	/**
+	 * Key for parameter defining the pathname's root, i.e., a pathname without
+	 * extension that can be used a root pathname for generating pathnames
+	 * that are meant to be related. E.g., the string
+	 * <code>dir/filename</code> is pathname's root of files such 
+	 * <code>dir/filename.inp</code>, <code>dir/filename.log</code>,
+	 * <code>dir/filename_tmp1.out</code>, etc.
+	 */
+	public static final String PARPATHNAMEROOT = "PATHNAMEROOT";
+	
+	//TODO-gg PARPATHNAMEROOT should replace PAROUTFILEROOT in compchem job processing
+	
+	/**
 	 * Key for parameter defining the pathname's root for any output file (i.e.,
 	 * the input for the computational chemistry software).
 	 */

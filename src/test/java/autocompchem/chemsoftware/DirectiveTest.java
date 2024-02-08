@@ -37,6 +37,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.PathnameEditor;
 import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
@@ -211,7 +212,7 @@ public class DirectiveTest
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
 				+ ChemSoftConstants.JDLABACCTASK
 				+ ParameterConstants.SEPARATOR
-				+ Task.getExisting("addFileName").casedID + NL
+				+ PathnameEditor.GETPATHNAMETASK.casedID + NL
 				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
@@ -230,7 +231,7 @@ public class DirectiveTest
     			new ArrayList<String>(Arrays.asList(
     					ChemSoftConstants.JDLABACCTASK
     					+ ParameterConstants.SEPARATOR
-    					+ Task.getExisting("addFileName").casedID,
+    					+ PathnameEditor.GETPATHNAMETASK.casedID,
     					ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
     					+ ParameterConstants.SEPARATOR + "_job2.xyz"))));
 

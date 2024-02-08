@@ -9,7 +9,7 @@ $DIR_! $MT_calculation=NumFreq
 $DIR_* $MT_charge=0
 $DIR_* $MT_spin_multiplicity=1
 $DIR_* $MT_coordtype=xyzfile
-$DIR_* $MT_filename=$START$ACCTASK: addFilename
+$DIR_* $MT_filename=$START$ACCTASK: getPathname
 SUFFIX: .xyz
 $END
 ----NEW-STEP----
@@ -29,7 +29,7 @@ AtomIDS:$START 1
 12$END
 $END
 $DIR_geom $DIR_InHess $MT_hessSource=Read
-$DIR_geom $DIR_InHessName $MT_filename=$START$ACCTASK: ADDFILENAME
+$DIR_geom $DIR_InHessName $MT_filename=$START$ACCTASK: GETPATHNAME
 SUFFIX: .hess
 QUOTATION: "
 $END
