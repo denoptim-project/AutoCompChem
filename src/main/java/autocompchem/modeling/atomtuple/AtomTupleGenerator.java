@@ -35,9 +35,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.IValueContainer;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -380,8 +378,11 @@ public class AtomTupleGenerator extends Worker
         	System.out.println(StringUtils.mergeListToString(tuples, 
         			System.getProperty("line.separator")));
         }
-        AnnotatedAtomTupleList aatl= new AnnotatedAtomTupleList(tuples);
-        output.add(aatl);
+        if (tuples.size()>0)
+        {
+	        AnnotatedAtomTupleList aatl= new AnnotatedAtomTupleList(tuples);
+	        output.add(aatl);
+        }
     }
         
 //------------------------------------------------------------------------------

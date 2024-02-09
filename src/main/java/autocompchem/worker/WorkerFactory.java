@@ -38,6 +38,7 @@ import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.PathnameEditor;
 import autocompchem.modeling.AtomLabelsGenerator;
+import autocompchem.modeling.AtomSpecificStringGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
@@ -89,6 +90,8 @@ public final class WorkerFactory
 	
 	private WorkerFactory() 
 	{
+		//TODO-gg should look into class path instead of listing all here
+		
 		// Here we add all the workers those implemented in AudoCompChem      
         registerType(new AspecificInputWriter());      
         registerType(new AspecificOutputAnalyzer());
@@ -126,6 +129,7 @@ public final class WorkerFactory
         registerType(new VibModuleOutputHandler());
         registerType(new ZMatrixHandler());
         registerType(new PathnameEditor());
+        registerType(new AtomSpecificStringGenerator());
 	}
 
 //-----------------------------------------------------------------------------

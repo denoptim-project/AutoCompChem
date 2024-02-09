@@ -1,0 +1,28 @@
+[
+  {
+    "key": "IDSEPARATOR",
+    "casedKey": "idSeparator",
+    "type": "<String>",
+    "doc": "The separator to usebetween tuple item identifiers."
+  },
+  {
+    "key": "FIELDSEPARATOR",
+    "casedKey": "fieldSeparator",
+    "type": "<String>",
+    "doc": "The separator to use between prefix/suffix and tuple item identifiers"
+  },
+  {
+    "key": "VERBOSITY",
+    "casedKey": "verbosity",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  },
+  {
+    "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
+    "tag": "generation of annotated tuple of atom identifiers"
+  },
+  {
+    "embeddedWorker": "autocompchem.modeling.AtomLabelsGenerator",
+    "tag": "generation of atom labels"
+  }
+]
