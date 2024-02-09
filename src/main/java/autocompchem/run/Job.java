@@ -1183,6 +1183,14 @@ public class Job implements Runnable
     	{
     		parentJob.removeChild(this);
     	}
+    	
+    	// final check for throubles
+    	//TODO-gg activate
+    	if (hasException)
+    	{
+    		throw new Error("ERROR! " + thrownExc.getClass().getSimpleName()
+    				+ " thrown by job " + getId() + ".");
+    	}			
     }
 
 //------------------------------------------------------------------------------

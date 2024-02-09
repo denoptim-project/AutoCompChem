@@ -38,6 +38,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.PathnameEditor;
+import autocompchem.modeling.AtomSpecificStringGenerator;
 import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
@@ -248,11 +249,13 @@ public class DirectiveTest
 
     	ParameterStorage taskParams = new ParameterStorage();
     	taskParams.setParameter(WorkerConstants.PARTASK,
-    			//TODO-gg take task from worker
-    			Task.make("addAtomSpecificKeywords").casedID);
-    	taskParams.setParameter("KeywordName", "ATMSPECKW");
+    			AtomSpecificStringGenerator.GETATOMSPECIFICSTRINGTASK.ID);
     	taskParams.setParameter("SMARTS", "[#6] options:~~@#BLA");
-    	d3.setTaskParams(taskParams);
+    	taskParams.setParameter("VALUEDKEYWORDS", "options");
+    	
+    	Keyword kWithTask = new Keyword("ATMSPECKW", true, null);
+    	kWithTask.setTaskParams(taskParams);
+    	d3.addKeyword(kWithTask);
     	
     	IAtomContainer mol = chemBuilder.newAtomContainer();
     	mol.addAtom(new Atom("C",new Point3d(0,0,0.0)));

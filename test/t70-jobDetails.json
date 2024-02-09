@@ -27,32 +27,28 @@
         {
           "reference": "CONFSEXAMINED",
           "value": "10"
-        }
-      ],
-      "accTaskParams": [
-        {
-          "reference": "TASK",
-          "value": "ADDATOMSPECIFICKEYWORDS"
         },
         {
-          "reference": "KeywordName",
-          "value": "FFHINT"
-        },
-        {
-          "reference": "KwIsLoud",
-          "value": "true"
-        },
-        {
-          "reference": "LABELTYPE",
-          "value": "ElementBased"
-        },
-        {
-          "reference": "ZEROBASED",
-          "value": "false"
-        },
-        {
-          "reference": "SMARTS",
-          "value": "[Ru] suffix: ~~210"
+          "reference": "FFHINT",
+          "isLoud": true,
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "getAtomSpecificString"
+            },
+            {
+              "reference": "LABELTYPE",
+              "value": "ElementBased"
+            },
+            {
+              "reference": "ZEROBASED",
+              "value": "false"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "[Ru] getAtomLabels suffix: ~~210"
+            }
+          ]
         }
       ]
     },

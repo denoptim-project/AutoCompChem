@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -91,6 +93,18 @@ public class Directive implements IDirectiveComponent, Cloneable
      * Parameters defining task embedded in this directive.
      */
     private ParameterStorage accTaskParams;
+    
+    /**
+     * Tmp storage of components to be removed as a result of performing 
+     * system-specific ACC task actions.
+     */
+    private Set<IDirectiveComponent> toErase = new HashSet<IDirectiveComponent>();
+    
+    /**
+     * Tmp storage of components to be added as a result of performing 
+     * system-specific ACC task actions.
+     */
+    private Set<IDirectiveComponent> toAdd = new HashSet<IDirectiveComponent>();
 
 //-----------------------------------------------------------------------------
 
@@ -916,6 +930,16 @@ public class Directive implements IDirectiveComponent, Cloneable
 				}
     		}	
     	}
+    	
+    	// We add/remove components that may be added/removed as a result of 
+    	// system-specific ACC tasks.
+    	for (IDirectiveComponent idc : toErase)
+    		deleteComponent(idc);
+    	toErase.clear();
+    	for (IDirectiveComponent idc : toAdd)
+    		addComponent(idc);
+    	toAdd.clear();
+    	
     	for (Directive d : subDirectives)
     	{
     		//Recursion into nested directives
@@ -1124,26 +1148,60 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    	
 	    	// Place the result of the embedded task in the dir component
 	    	int matchingDataCount = 0;
-	    	String latstKey = "";
 	    	for (String key : outputOfEmbedded.getAllNamedData().keySet())
 	    	{
 	    		if (key.startsWith(Task.getExisting(task).ID))
 	    		{
 	    			matchingDataCount++;
-	    			latstKey=key;
-	    			((IValueContainer) dirComp).setValue(
-	    					outputOfEmbedded.getNamedData(key).getValue());
+	    			if (matchingDataCount<2)
+	    			{
+		    			((IValueContainer) dirComp).setValue(
+		    					outputOfEmbedded.getNamedData(key).getValue());
+	    			} else {
+	    				IDirectiveComponent newComp = null;
+	    				if (dirComp.getComponentType().equals(
+	    						DirectiveComponentType.KEYWORD))
+	    				{
+	    					newComp = ((Keyword) dirComp).clone();
+	    				} else if (dirComp.getComponentType().equals(
+	    						DirectiveComponentType.DIRECTIVEDATA))
+	    				{
+	    					newComp = ((DirectiveData) dirComp).clone();
+	    				}  else if (dirComp.getComponentType().equals(
+	    						DirectiveComponentType.DIRECTIVE))
+	    				{
+	    					newComp = ((DirectiveData) dirComp).clone();
+	    				}
+	    				((IValueContainer) newComp).setValue(
+		    					outputOfEmbedded.getNamedData(key).getValue());
+	    				toAdd.add(newComp);
+	    			}
 	    		}
 	    	}
+	    	if (matchingDataCount<1)
+	    	{
+	    		//TODO: logger
+		    	System.out.println(System.getProperty("line.separator")
+		    			+ "WARNING! Task " + task + " did not produce any "
+		    			+ "results. Removing instance of "
+		    			+ dirComp.getComponentType() + " "
+		    			+ dirComp.getName() + "."
+		    			+ System.getProperty("line.separator"));
+	    		//We'll remove it later to avoid concurrent modification
+	    		toErase.add(dirComp);
+	    	}
+	    	/*
 	    	if (matchingDataCount>1)
 	    	{
 	    		//TODO: logger
 	    		//TODO-gg deal with multiple geometries by using the index ion the parameters
+	    		//TODO-gg or consider replicating the dircomponent as many times as needed to host all the data
 		    	System.out.println(System.getProperty("line.separator")
 		    			+ "WARNING! Multiple data produced by task " + task
 		    			+ ". Taking only the last value (" + latstKey + ")."
 		    			+ System.getProperty("line.separator"));
 	    	}
+	    	*/
 	    	return;
 	    } catch (Throwable t) {
 	    	//TODO-gg change into error or let the exception propagate without try-block
@@ -1157,32 +1215,9 @@ public class Directive implements IDirectiveComponent, Cloneable
     	Task taskID = Task.getExisting(task, true);
         switch (taskID.ID) 
         {
+        /*
 	        case "ADDATOMSPECIFICKEYWORDS":
 	        {
-	        	
-	        	// Notes for developing worker
-	        	/*
-	        	 *  - these keyword's value is just a value, so the fact that the 
-	        	 *     value becomes a keyword is not a determining factor for 
-	        	 *     the generation of such value 
-	        	 *     => Putting the value in a keyword must not be among 
-	        	 *     the worker's tasks
-	        	 *     
-	        	 *  - these values are effectively annotated tuples (of length 1,
-	        	 *      i.e., with only one atom each) that are peculiar because 
-	        	 *      part of the value is an atom label that may need to be 
-	        	 *      generated according to a few parameters, i.e., those of 
-	        	 *      the AtomLabelGenerator => The worker should be mainly 
-	        	 *      based on AtomTupleGenerator, and call an 
-	        	 *      AtomLabelGenerator to get one of the bits that makes 
-	        	 *      the final value.
-	        	 * 
-	        	 *  - can we store atom labels as attribute of atom tuple? But 
-	        	 *      then, how do we format the tuple to generate the string 
-	        	 *      we want? Perhaps the prefix/suffix/attribute machinery
-	        	 *      can help already... test is in junit fashion (NOW_WE_ARE_HERE!)
-	        	 * 
-	        	 */
 	        	if (!(dirComp instanceof Directive))
 	        	{
 	        		throw new IllegalArgumentException("Task " + task 
@@ -1251,7 +1286,7 @@ public class Directive implements IDirectiveComponent, Cloneable
 	        	}
 	        	break;
 	        }
-	        
+	        */
 	        /*
             case "ADDFILENAME":
             {
