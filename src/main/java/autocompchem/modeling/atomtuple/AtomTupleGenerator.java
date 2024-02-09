@@ -35,10 +35,14 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.chemsoftware.IValueContainer;
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
+import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
@@ -50,6 +54,8 @@ import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -355,7 +361,19 @@ public class AtomTupleGenerator extends Worker
     private void processOneAtomContainer(IAtomContainer iac,
     		List<AnnotatedAtomTupleList> output)
     {
-        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules);
+        // If needed, generate atom labels
+    	List<String> labels = null;
+        for (AtomTupleMatchingRule r : rules)
+        {
+    		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
+    		{
+    			labels = generateAtomLabels(iac);
+    			break;
+    		}
+        }
+        
+        // Now generate the tuple, possibly passing the atom labels data
+        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels);
         if (verbosity > 0)
         {
         	System.out.println("# " + MolecularUtils.getNameOrID(iac));
@@ -364,6 +382,24 @@ public class AtomTupleGenerator extends Worker
         }
         AnnotatedAtomTupleList aatl= new AnnotatedAtomTupleList(tuples);
         output.add(aatl);
+    }
+        
+//------------------------------------------------------------------------------
+    
+    private List<String> generateAtomLabels(IAtomContainer iac)
+    {
+    	ParameterStorage labMakerParams = params.clone();
+		labMakerParams.setParameter(WorkerConstants.PARTASK, 
+				Task.getExisting("generateAtomLabels").ID);
+		AtomLabelsGenerator labGenerator = null;
+		try {
+			labGenerator = (AtomLabelsGenerator) 
+					WorkerFactory.createWorker(labMakerParams, myJob);
+		} catch (ClassNotFoundException e) {
+			// Cannot happen... unless there is very serious bug!
+			e.printStackTrace();
+		}
+		return labGenerator.generateAtomLabels(iac);
     }
     
 //------------------------------------------------------------------------------
@@ -376,7 +412,8 @@ public class AtomTupleGenerator extends Worker
      */
     public List<AnnotatedAtomTuple> createTuples(IAtomContainer mol)
     {
-    	return createTuples(mol, rules);
+    	//TODO-gg get rid of this method! it's obsolete
+    	return createTuples(mol, rules, null);
     }
 
 //------------------------------------------------------------------------------
@@ -386,10 +423,26 @@ public class AtomTupleGenerator extends Worker
      * set of tuple-defining rules.
      * @param mol the atom container for which we want to create atom tuples.
      * @param rules the tuple-defining rules to apply.
-     * @return the list of tuples
+     * @return the list of tuples.
      */
     public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
     		List<AtomTupleMatchingRule> rules)
+    {
+    	return createTuples(mol, rules, null);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Define annotated atom tuples for the given atom container using the given  
+     * set of tuple-defining rules.
+     * @param mol the atom container for which we want to create atom tuples.
+     * @param rules the tuple-defining rules to apply.
+     * @param labels atom labels. Ignored if <code>null</code>.
+     * @return the list of tuples.
+     */
+    public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
+    		List<AtomTupleMatchingRule> rules, List<String> labels)
     {
     	List<AnnotatedAtomTuple> result = new ArrayList<AnnotatedAtomTuple>();
     	
@@ -574,6 +627,17 @@ public class AtomTupleGenerator extends Worker
         			}
         			if (!isLinearlyConnected)
         				continue;
+        		}
+        		
+        		if (r.hasValuelessAttribute(
+        				AtomTupleConstants.KEYGETATOMLABELS))
+        		{
+        			List<String> atmLabels = new ArrayList<String>();
+        			for (IAtom atm : atoms)
+        			{
+        				atmLabels.add(labels.get(mol.indexOf(atm)));
+        			}
+        			tuple.setAtmLabels(atmLabels);
         		}
         		
         		if (r.hasValuelessAttribute(

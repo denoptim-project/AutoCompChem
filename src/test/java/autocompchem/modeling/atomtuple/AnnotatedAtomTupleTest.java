@@ -63,6 +63,7 @@ public class AnnotatedAtomTupleTest
     	ct.addNeighborningRelation(5, new ArrayList<Integer>(
     			Arrays.asList(6)));
     	AnnotatedAtomTuple aat = new AnnotatedAtomTuple(new int[] {1,2,3,4,5,6},
+    			new ArrayList<String>(Arrays.asList("F","r","i","u","l","i")),
     			booleanAttributes, valuedAttributes, ct, 12);
     	return aat;
     }
@@ -114,6 +115,10 @@ public class AnnotatedAtomTupleTest
     	c2 = getTestAnnotatedAtomTuple();
     	c2.setNumAtoms(3);
     	assertFalse(c1.equals(c2));
+
+    	c2 = getTestAnnotatedAtomTuple();
+    	c2.getAtmLabels().set(0, "different");
+    	assertFalse(c1.equals(c2));
     }
     
 //------------------------------------------------------------------------------
@@ -156,7 +161,6 @@ public class AnnotatedAtomTupleTest
 	    assertEquals(clone, fromJson);
     }
     
-
 //------------------------------------------------------------------------------
 
     @Test
@@ -234,7 +238,7 @@ public class AnnotatedAtomTupleTest
     	List<AnnotatedAtomTuple> tuples = AtomTupleGenerator.createTuples(
     			mol, rules);
     	
-    	assertEquals(1,tuples.size());
+    	assertEquals(1, tuples.size());
     	assertEquals(SUFFIX, tuples.get(0).getSuffix());
     	assertEquals(PREFIX, tuples.get(0).getPrefix());
     }

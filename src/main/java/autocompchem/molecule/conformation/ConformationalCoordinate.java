@@ -80,7 +80,8 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
   	
   	public ConformationalCoordinate(AnnotatedAtomTuple tuple)
   	{
-  		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
+  		super(tuple.getAtomIDs(), tuple.getAtmLabels(), 
+  				tuple.getValuelessAttribute(), 
   				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
 				tuple.getNumAtoms());
   		defineType();

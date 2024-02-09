@@ -1,0 +1,14 @@
+#
+# General purpose generation of annotated atom tuple
+#
+TASK: generateAtomTuples
+VERBOSITY: 2
+INFILE: ../t142-mol.sdf
+SMARTS:$START[#7] prefix:FFHINT: suffix=~~999
+[#17] getatomlabels prefix:FFHINT: suffix=~~999
+$END
+AtomIDS:$START 2 3 prefix:Bond: suffix=post
+4 6 getAtomLabels
+$END 
+labelType: elementbased 
+zeroBased: false 

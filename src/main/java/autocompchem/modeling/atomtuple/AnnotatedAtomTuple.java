@@ -1,5 +1,6 @@
 package autocompchem.modeling.atomtuple;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,13 @@ public class AnnotatedAtomTuple implements Cloneable
 	 * The 0-based atom indexes
 	 */
 	private List<Integer> atmIDs;
+	
+	/**
+	 * The atom labels. Have customizable syntax, so their meaning is not meant
+	 * to be general, but it if meaningful to those who requested labels 
+	 * according to a specific syntax.
+	 */
+	private List<String> atmLabels;
 	
     /**
      * Attributes that have no value and that apply to this tuple.
@@ -63,6 +71,7 @@ public class AnnotatedAtomTuple implements Cloneable
   	public AnnotatedAtomTuple(int[] ids)
   	{
   		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
+  				new ArrayList<String>(),
   				new HashSet<String>(), new HashMap<String, String>(), 
   				null, 0);
   	}
@@ -72,18 +81,20 @@ public class AnnotatedAtomTuple implements Cloneable
   	/**
   	 * Constructs a tuple of atoms with decorating attributes.
   	 * @param ids 0-based indexes defining the tuple of atoms.
+  	 * @param labels atom labels
   	 * @param valuelessAttributes value-less attributes.
   	 * @param valuedAttributes map of attributes with their (String) value.
   	 * @param ct defines the neighboring relation between atoms in the tuple.
   	 * @param numAtoms the number of atoms in the container from which the tuple
   	 * is extracted.
   	 */
-  	public AnnotatedAtomTuple(int[] ids, 
+  	public AnnotatedAtomTuple(int[] ids, List<String> labels,
   			Set<String> valuelessAttributes, 
   			Map<String, String> valuedAttributes,
   			NearestNeighborMap ct, int numAtoms)
   	{
   		this(Arrays.stream(ids).boxed().collect(Collectors.toList()), 
+  				labels,
   				valuelessAttributes, valuedAttributes, ct, numAtoms);
   	}
   	
@@ -92,18 +103,20 @@ public class AnnotatedAtomTuple implements Cloneable
 	/**
 	 * Constructs a tuple of atoms with decorating attributes.
 	 * @param ids 0-based indexes defining the tuple of atoms.
+  	 * @param labels atom labels
 	 * @param valuelessAttributes value-less attributes.
 	 * @param valuedAttributes map of attributes with their (String) value.
   	 * @param ct defines the neighboring relation between atoms in the tuple.
   	 * @param numAtoms the number of atoms in the container from which the tuple
   	 * is extracted.
 	 */
-	public AnnotatedAtomTuple(List<Integer> ids, 
+	public AnnotatedAtomTuple(List<Integer> ids, List<String> labels,
 			Set<String> valuelessAttributes, 
 			Map<String, String> valuedAttributes,
 			NearestNeighborMap ct, int numAtoms)
 	{
 		this.atmIDs = ids;
+		this.atmLabels = labels;
 		this.valuelessAttributes = valuelessAttributes;
 		this.valuedAttributes = valuedAttributes;
 		this.connectionTable = ct;
@@ -123,6 +136,7 @@ public class AnnotatedAtomTuple implements Cloneable
   		this(atoms.stream()
   					.map(a -> mol.indexOf(a))
   					.collect(Collectors.toList()), 
+  				new ArrayList<String>(),
   				new HashSet<String>(), new HashMap<String, String>(),
   				new NearestNeighborMap(atoms, mol),
   				mol.getAtomCount());
@@ -133,17 +147,20 @@ public class AnnotatedAtomTuple implements Cloneable
 	/**
 	 * Constructs a tuple of atoms with decorating attributes.
 	 * @param atoms ordered list of atoms from which to build the tuple.
+  	 * @param labels atom labels
 	 * @param mol the container collecting the atoms.
 	 * @param valuelessAttributes value-less attributes.
 	 * @param valuedAttributes map of attributes with their (String) value.
 	 */
-	public AnnotatedAtomTuple(List<IAtom> atoms, IAtomContainer mol, 
+	public AnnotatedAtomTuple(List<IAtom> atoms, List<String> labels,
+			IAtomContainer mol, 
 			Set<String> valuelessAttributes, 
 			Map<String, String> valuedAttributes)
 	{
   		this(atoms.stream()
   					.map(a -> mol.indexOf(a))
-  					.collect(Collectors.toList()), 
+  					.collect(Collectors.toList()),
+  				labels,
   				valuelessAttributes, valuedAttributes,
   				new NearestNeighborMap(atoms, mol),
   				mol.getAtomCount());
@@ -297,7 +314,7 @@ public class AnnotatedAtomTuple implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     *@return all the keys of attribute that are associated with a value in this 
+     * @return all the keys of attribute that are associated with a value in this 
      * tuple.
      */
 
@@ -315,6 +332,33 @@ public class AnnotatedAtomTuple implements Cloneable
     public Map<String,String> getValuedAttributes()
     {
     	return valuedAttributes;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Sets the labels of the atoms included in the tuple.
+     * @param labels the new value of the list of labels.
+     */
+    public void setAtmLabels(List<String> labels)
+    {
+    	if (labels.size()!=getNumberOfIDs())
+    	{
+    		throw new IllegalArgumentException("Attempt to set " + labels.size() 
+    			+ " to an " + this.getClass().getSimpleName() 
+    			+ " that contains " + getNumberOfIDs() + " items.");
+    	}
+    	atmLabels = labels;
+    }
+   
+//------------------------------------------------------------------------------
+   
+    /**
+     * @return the list of labels, if defines, or <code>null</code>.
+     */
+    public List<String> getAtmLabels()
+    {
+    	return atmLabels;
     }
     
 //------------------------------------------------------------------------------
@@ -413,6 +457,16 @@ public class AnnotatedAtomTuple implements Cloneable
   			ids[i] = atmIDs.get(i).intValue();
   		}
   		
+  		List<String> cLabels = null;
+  		if (atmLabels!=null)
+  		{
+  			cLabels = new ArrayList<String>();
+	  		for (String l : atmLabels)
+	  		{
+	  			cLabels.add(l);
+	  		}
+  		}
+  		
   		Set<String> clonedValuelessAtts = new HashSet<String>();
   		for (String key : valuelessAttributes)
   			clonedValuelessAtts.add(key);
@@ -425,7 +479,7 @@ public class AnnotatedAtomTuple implements Cloneable
   		if (connectionTable!=null)
   			ct = connectionTable.clone();
   		
-  		return new AnnotatedAtomTuple(ids, 
+  		return new AnnotatedAtomTuple(ids, cLabels,
   				clonedValuelessAtts, clonedValuedAtts, ct, numAtoms);
   	}
 
@@ -434,7 +488,7 @@ public class AnnotatedAtomTuple implements Cloneable
 	@Override
 	public boolean equals(Object o)
 	{
-    	if ( o== null)
+    	if (o== null)
     		return false;
     	
  	    if (o == this)
@@ -447,7 +501,25 @@ public class AnnotatedAtomTuple implements Cloneable
    	 
 	   	if (this.atmIDs.size() != other.atmIDs.size())
 	   		 return false;
+	   	
 
+	   	if ((this.atmLabels==null && other.atmLabels!=null)
+	   		|| (this.atmLabels!=null && other.atmLabels==null))
+	   	{
+	   		return false;
+	   	}
+	   	if (this.atmLabels!=null && other.atmLabels!=null)
+	   	{
+	   		if (this.atmLabels.size() != other.atmLabels.size())
+	   			return false;
+
+			for (int i=0; i<this.atmLabels.size(); i++)
+			{
+				if (!this.atmLabels.get(i).equals(other.atmLabels.get(i)))
+					return false;
+			}
+	   	}
+	   	
  	    if (this.numAtoms != other.numAtoms)
 	   		 return false;
 	   				 
@@ -496,6 +568,12 @@ public class AnnotatedAtomTuple implements Cloneable
 		sb.append(this.getClass().getSimpleName()).append(" [atmIDs:[");
 		sb.append(StringUtils.mergeListToString(atmIDs, ",", true));
 		sb.append("], ");
+		if (atmLabels!=null)
+		{
+			sb.append("[atmLabels:[");
+			sb.append(StringUtils.mergeListToString(atmLabels, ",", true));
+			sb.append("], ");
+		}
 		String otherFields = generateStringForSubClassFields();
 		if (!otherFields.isBlank())
 			sb.append(otherFields);

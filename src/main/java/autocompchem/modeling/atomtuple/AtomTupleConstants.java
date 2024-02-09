@@ -1,5 +1,7 @@
 package autocompchem.modeling.atomtuple;
 
+import autocompchem.modeling.AtomLabelsGenerator;
+
 /**
  * Constants useful in the manipulation of tuple of atoms.
  * @author Marco Foscato
@@ -32,6 +34,17 @@ public class AtomTupleConstants
     // at the resource inputdefinition/ConstraintsGenerator.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
 	public static final String KEYONLYBONDED = "ONLYBONDED";
+
+	/**
+	 * Key of value-less attribute of {@link AtomTupleMatchingRule} that 
+	 * require to append atom labels (from {@link AtomLabelsGenerator}) to
+	 * annotated tuples of atoms. The parameters of {@link AtomLabelsGenerator}
+	 * are used to generate the labels.
+	 */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/ConstraintsGenerator.json and
+	// inputdefinition/AtomTupleGenerator.jsonv
+	public static final String KEYGETATOMLABELS = "GETATOMLABELS";
 	
     /**
      * Keyword used to identify prefixes
@@ -66,5 +79,5 @@ public class AtomTupleConstants
     // at the resource inputdefinition/ConstraintsGenerator.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
     public static final String[] DEFAULTVALUELESSKEYS = {
-    		KEYONLYBONDED, KEYUSECURRENTVALUE};
+    		KEYONLYBONDED, KEYUSECURRENTVALUE, KEYGETATOMLABELS};
 }

@@ -79,7 +79,8 @@ public class Constraint extends AnnotatedAtomTuple
 	
 	public Constraint(AnnotatedAtomTuple tuple)
 	{
-		super(tuple.getAtomIDs(), tuple.getValuelessAttribute(), 
+		super(tuple.getAtomIDs(), tuple.getAtmLabels(), 
+				tuple.getValuelessAttribute(), 
 				tuple.getValuedAttributes(), tuple.getNeighboringRelations(),
 				tuple.getNumAtoms());
 		if (!hasValuelessAttribute(ConstraintDefinition.KEYNOINTCOORD))

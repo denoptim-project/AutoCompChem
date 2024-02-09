@@ -416,7 +416,7 @@ public class AtomTupleMatchingRule
 		for (String key : valuedAttributes.keySet())
 			myValued.put(key.toUpperCase(), valuedAttributes.get(key));
 		
-		return new AnnotatedAtomTuple(atoms, mol, myValueless, myValued);
+		return new AnnotatedAtomTuple(atoms, null, mol, myValueless, myValued);
   	}
 
 //------------------------------------------------------------------------------	
