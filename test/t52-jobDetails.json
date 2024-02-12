@@ -40,7 +40,7 @@
               "accTaskParams": [
                 {
                   "reference": "TASK",
-                  "value": "addGEOMETRY"
+                  "value": "getMolecularGeometry"
                 },
                 {
                   "reference": "COORDTYPE",
