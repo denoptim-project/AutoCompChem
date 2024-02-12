@@ -814,7 +814,7 @@ public class MolecularUtils
 			}
 		}
 	}
-
+	
 //------------------------------------------------------------------------------
 
 	/**
@@ -832,13 +832,37 @@ public class MolecularUtils
 	 */
 	public static IAtomContainer makeSimpleCopyWithAtomTags(IAtomContainer iac)
 	{
-		IAtomContainer iacWithTags = chemBuilder.newAtomContainer();
-		int iAtm = 0;
-		for (IAtom origAtm : iac.atoms())
+		List<String> labels = new ArrayList<String>();
+		for (int iAtm=0; iAtm<iac.getAtomCount(); iAtm++)
     	{
-    		iAtm++;
-    		String atomTag = AtomUtils.getSymbolOrLabel(origAtm) + iAtm;
-	    	IAtom atmWithTag = new PseudoAtom(atomTag);
+    		labels.add(AtomUtils.getSymbolOrLabel(iac.getAtom(iAtm))+(iAtm+1));
+    	}
+		return makeSimpleCopyWithAtomTags(iac, labels);
+	}
+		
+//------------------------------------------------------------------------------
+
+	/**
+	 * Makes a simplified copy of the given {@link IAtomContainer} considering
+	 * only the list of atoms as points in 3D, set of bonds,
+	 * and container title/name, 
+	 * without any further property of atoms, bonds, or of the container, and
+	 * sets the atom label to be the string found in the given list of labels.
+	 * All atoms are changed into {@link PseudoAtom}.
+	 * @param iac the original atom container to copy and decorate with atom 
+	 * tags.
+	 * @param labels the
+	 * @return the copy of the original container with the atom tags.
+	 */
+	public static IAtomContainer makeSimpleCopyWithAtomTags(IAtomContainer iac,
+			List<String> labels)
+	{
+		IAtomContainer iacWithTags = chemBuilder.newAtomContainer();
+		for (int iAtm=0; iAtm<iac.getAtomCount(); iAtm++)
+    	{
+    		IAtom origAtm = iac.getAtom(iAtm);
+    		String atomTag = labels.get(iAtm);
+    		IAtom atmWithTag = new PseudoAtom(atomTag);
 	    	Point3d p3d = AtomUtils.getCoords3d(origAtm);
 	    	atmWithTag.setPoint3d(new Point3d(p3d.x, p3d.y, p3d.z));
 	    	iacWithTags.addAtom(atmWithTag);

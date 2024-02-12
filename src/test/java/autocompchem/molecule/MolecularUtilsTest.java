@@ -22,6 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.vecmath.Point3d;
 
 import org.junit.jupiter.api.Test;
@@ -46,9 +50,9 @@ public class MolecularUtilsTest
 
 	private static IChemObjectBuilder chemBuilder = 
     		DefaultChemObjectBuilder.getInstance();
-	
+
 //------------------------------------------------------------------------------
-	
+
 	@Test
 	public void testMakeSimpleCopyWithAtomTags() throws Exception
 	{
@@ -71,6 +75,33 @@ public class MolecularUtilsTest
     		// hard-code the expected tag.
     		String expectedTag = AtomUtils.getSymbolOrLabel(origAtm)+(iAtm+1);
     		assertEquals(expectedTag, AtomUtils.getSymbolOrLabel(atm));
+    	}
+	}
+	
+//------------------------------------------------------------------------------
+	
+	@Test
+	public void testMakeSimpleCopyWithAtomTags2() throws Exception
+	{
+		IAtomContainer mol = chemBuilder.newAtomContainer();
+    	mol.addAtom(new Atom("H"));
+    	mol.addAtom(new Atom("C"));
+    	mol.addAtom(new Atom("O"));
+    	mol.addAtom(new Atom("Ru"));
+    	mol.addAtom(new PseudoAtom("Du"));
+    	mol.addAtom(new PseudoAtom("Xx")); 
+    	
+    	List<String> myLabels = new ArrayList<String>(Arrays.asList("F-0", 
+    			"CHH", "__", "@", "xX", ""));
+    	
+    	IAtomContainer tagged = MolecularUtils.makeSimpleCopyWithAtomTags(mol,
+    			myLabels);
+    	
+    	assertEquals(mol.getAtomCount(), tagged.getAtomCount());
+    	for (int iAtm=0; iAtm<mol.getAtomCount(); iAtm++)
+    	{
+    		IAtom atm = tagged.getAtom(iAtm);
+    		assertEquals(myLabels.get(iAtm), AtomUtils.getSymbolOrLabel(atm));
     	}
 	}
 	
