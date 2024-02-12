@@ -1,0 +1,16 @@
+[
+  {
+    "key": "COORDTYPE",
+    "casedKey": "coordType",
+    "type": "<String>",
+    "doc": "Specifies which type of coordinates to use for definign the arrangment of atoms. Acceptable values are 'XYZ' for Cartesian coordinates and 'ZMAT' for ZMatrix (internal coordinates)."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
+    "tag": "generation of ZMatrix"
+  }
+]

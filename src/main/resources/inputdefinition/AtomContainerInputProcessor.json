@@ -1,0 +1,26 @@
+[
+  {
+    "key": "INFILE",
+    "casedKey": "inFile",
+    "type": "<String>",
+    "doc": "The pathname to a molecular structure file containing the chemical systems to process."
+  },
+  {
+    "key": "INPUTGEOMETRIESFILE",
+    "casedKey": "inputGeometriesFile",
+    "type": "<String>",
+    "doc": "The pathname to a molecular structure file containing the chemical systems to process."
+  },
+  {
+    "key": "INPUTGEOMETRIES",
+    "casedKey": "inputGeometries",
+    "type": "List<IAtomContainer>",
+    "doc": "Parameter holding the CDK definition of chemical systems to process."
+  },
+  {
+    "key": "USEGEOMATINDEX",
+    "casedKey": "useGeomAtIndex",
+    "type": "<int>",
+    "doc": "Specifies which geometry to use by the index of that item in the given list of geometries."
+  }
+]

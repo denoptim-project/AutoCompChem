@@ -44,6 +44,7 @@ import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
 import autocompchem.modeling.forcefield.ForceFieldEditor;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularComparator;
 import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularMutator;
@@ -55,6 +56,7 @@ import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.connectivity.ConnectivityGenerator;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
+import autocompchem.molecule.geometry.MolecularGeometryHandler;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.ACCJob;
@@ -130,6 +132,8 @@ public final class WorkerFactory
         registerType(new ZMatrixHandler());
         registerType(new PathnameEditor());
         registerType(new AtomSpecificStringGenerator());
+        registerType(new MolecularGeometryHandler());
+        registerType(new AtomContainerInputProcessor());
 	}
 
 //-----------------------------------------------------------------------------

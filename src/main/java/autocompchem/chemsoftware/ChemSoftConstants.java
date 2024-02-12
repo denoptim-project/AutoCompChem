@@ -2,6 +2,7 @@ package autocompchem.chemsoftware;
 
 import java.util.List;
 
+import org.apache.jena.iri.impl.Force;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -147,6 +148,11 @@ public class ChemSoftConstants
 	 * Key for parameter defining the pathname to molecular geometries
 	 */
 	public static final String PARGEOMFILE = "INPUTGEOMETRIESFILE";
+	
+	/**
+	 * Key for parameter defining the pathname to any input file.
+	 */
+	public static final String PARINFILE = "INFILE";
 	
 	/**
 	 * Key for parameter defining the molecular geometries as 

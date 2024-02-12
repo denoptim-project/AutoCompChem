@@ -64,12 +64,12 @@ import autocompchem.worker.WorkerFactory;
 
 
 /**
- * Framework for workers that process molecular definition as input,
+ * General worker that processes molecular definition as input.
  * 
  * @author Marco Foscato
  */
 
-public abstract class AtomContainerInputProcessor extends Worker
+public class AtomContainerInputProcessor extends Worker
 {
     
     /**
@@ -119,12 +119,18 @@ public abstract class AtomContainerInputProcessor extends Worker
 
     @Override
     public String getKnownInputDefinition() {
-    	//TODO-gg
         return "inputdefinition/AtomContainerInputProcessor.json";
     }
     
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
+	@Override
+	public Worker makeInstance(Job job) {
+		return new AtomContainerInputProcessor();
+	}
+    
+//------------------------------------------------------------------------------
+	
     /**
      * Initialize the worker according to the parameters loaded by constructor.
      */
@@ -132,6 +138,12 @@ public abstract class AtomContainerInputProcessor extends Worker
 	@Override
     public void initialize()
     {
+		if (params.contains("VERBOSITY"))
+        {
+            verbosity = Integer.parseInt(params.getParameter("VERBOSITY")
+            		.getValueAsString());
+        }
+		
         if (params.contains(ChemSoftConstants.PARINFILE))
         {
             inFile = new File(params.getParameter(ChemSoftConstants.PARINFILE)
@@ -165,6 +177,14 @@ public abstract class AtomContainerInputProcessor extends Worker
         			ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
         }
     }
+	
+    
+//-----------------------------------------------------------------------------
+
+	@Override
+	public void performTask() {
+		processInput();
+	}
    
 //------------------------------------------------------------------------------
 
@@ -204,7 +224,7 @@ public abstract class AtomContainerInputProcessor extends Worker
 	            			continue;
 	            		}
 		            }
-	            	processOneAtomContainer(mol);
+	            	processOneAtomContainer(mol, i);
 	            	if (breakAfterThis)
 	            		break;
 	            }
@@ -227,32 +247,30 @@ public abstract class AtomContainerInputProcessor extends Worker
             			continue;
             		}
 	            }
-            	processOneAtomContainer(inMols.get(i));
+            	processOneAtomContainer(inMols.get(i), i);
             	if (breakAfterThis)
             		break;
             }
         }
-
-        if (exposedOutputCollector != null)
-    	{
-        	prepareOutputToExpose();
-    	}
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * Do whatever with one atom container and place the results in the output 
-     * data storage.
+     * Takes the atom container available in the input specified by the settings
+     * of this instance and places it in the
+     * {@link Worker#exposedOutputCollector}. 
+     * Subclasses should overwrite this method to do what they want with the 
+     * selected atom container and produce what they like as output data to be
+     * placed in the {@link Worker#exposedOutputCollector}. 
+     * @param iac the atom container to be processes
+     * @param i the index of this atom container. This is usually used for 
+     * logging purposes and creation of labels specific to the atom container.
      */
-    public abstract void processOneAtomContainer(IAtomContainer iac);
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Process the stored output to make it available external collectors.
-     */
-    public abstract void prepareOutputToExpose(); 
+    public void processOneAtomContainer(IAtomContainer iac, int i)
+    {
+		exposeOutputData(new NamedData(READIACSTASK.ID+i,iac));
+    }
     
 //-----------------------------------------------------------------------------
 

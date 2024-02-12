@@ -152,37 +152,7 @@ public class AtomSpecificStringGenerator extends Worker
 
 	@Override
     public void initialize()
-    {
-		/* TODO del
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValueAsString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
-        // Get and check the input file
-        if (params.contains("INFILE"))
-        {
-            this.inFile = new File(
-            		params.getParameter("INFILE").getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
-        }
-        if (params.contains(ChemSoftConstants.PARGEOM))
-        {
-            this.inMols = (List<IAtomContainer>) params.getParameter(
-            		ChemSoftConstants.PARGEOM).getValue();
-            if (params.contains("INFILE"))
-            {
-            	//TODO: logging
-            	System.out.println("WARNING: found both INFILE and "
-            			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
-            			+ ChemSoftConstants.PARGEOM + " as input for "
-            			+ this.getClass().getSimpleName() + ".");
-            	this.inFile = null;
-            }
-        }
-        */
-        
+    {   
         if (params.contains("IDSEPARATOR"))
         {
         	idSeparator = params.getParameter("IDSEPARATOR")
@@ -194,7 +164,6 @@ public class AtomSpecificStringGenerator extends Worker
         	fieldSeparator = params.getParameter("FIELDSEPARATOR")
         		.getValueAsString();
         }
-        
     }
     
 //-----------------------------------------------------------------------------

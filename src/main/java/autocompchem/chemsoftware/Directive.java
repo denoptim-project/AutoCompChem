@@ -39,9 +39,6 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.modeling.AtomLabelsGenerator;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
-import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.basisset.BasisSetConstants;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.constraints.ConstraintsSet;
@@ -1315,7 +1312,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	break;
             }
             */
-            
+            /*
             case "ADDGEOMETRY":
             {
             	ensureTaskIsInIValueContainer(task, dirComp);
@@ -1415,6 +1412,7 @@ public class Directive implements IDirectiveComponent, Cloneable
             	}
             	break;
             }
+            */
 
             /*
             case "GENERATEBASISSET":

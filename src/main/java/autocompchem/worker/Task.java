@@ -46,8 +46,8 @@ public class Task implements Comparable<Task>
 	public final String casedID;
 	
 	/**
-	 * Flag identifying an instance as meant for tests and, therefore, ignorable
-	 * in production tasks.
+	 * Flag identifying an instance as meant for tests and, therefore, it can
+	 * be ignored by production tasks.
 	 */
 	public final boolean testOnly;
 	

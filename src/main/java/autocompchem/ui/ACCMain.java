@@ -125,7 +125,9 @@ public class ACCMain
                 if (job instanceof ACCJob)
                 {
                     Worker w = ((ACCJob) job).getUninitializedWorker();
-                    System.out.println(w.getTaskSpecificHelp());
+                    String msg = w.getTaskSpecificHelp();
+                    //TODO-gg add verbodity here not as worker-specific parameter
+                    System.out.println(msg);
                 } else {
                     System.out.println("No help message available for " 
                             + job.getClass().getName() + "jobs.");

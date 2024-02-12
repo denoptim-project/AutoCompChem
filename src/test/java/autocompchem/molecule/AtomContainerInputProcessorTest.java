@@ -51,6 +51,7 @@ import autocompchem.worker.DummyWorker;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
+import autocompchem.worker.WorkerFactory;
 
 /**
  * Unit Test for {@link AtomContainerInputProcessor}.
@@ -63,8 +64,6 @@ public class AtomContainerInputProcessorTest
 
 	private static IChemObjectBuilder chemBuilder = 
     		DefaultChemObjectBuilder.getInstance();
-	
-	private static Task READTASK = Task.make("readAtomContainers", true);
 	
 //------------------------------------------------------------------------------
 	
@@ -95,17 +94,16 @@ public class AtomContainerInputProcessorTest
     	iacs.add(molC);
     	
     	ParameterStorage ps = new ParameterStorage();
-        ps.setParameter(WorkerConstants.PARTASK, READTASK.ID);        
+    	String taskId = AtomContainerInputProcessor.READIACSTASK.ID;
+        ps.setParameter(WorkerConstants.PARTASK, taskId);
+        ps.setParameter(new NamedData(ChemSoftConstants.PARGEOM, iacs));   
     	
     	NamedDataCollector results = new NamedDataCollector();
     	
-        // Reading all from param storage
-        ps.setParameter(new NamedData(ChemSoftConstants.PARGEOM, iacs));
-        IACInputTester tester = new IACInputTester();
-    	tester.setParameters(ps);
+        // Reading all from param storage        
+        Worker tester = WorkerFactory.createWorker(ps, null);
     	tester.setDataCollector(results);
-    	tester.initialize();
-    	tester.processInput();
+    	tester.performTask();
     	
     	assertEquals(3, results.size());
     	
@@ -113,52 +111,14 @@ public class AtomContainerInputProcessorTest
         ps.setParameter(ChemSoftConstants.PARMULTIGEOMID, "1");
         
         results.clear();
-    	tester = new IACInputTester();
-    	tester.setParameters(ps);
+        tester = WorkerFactory.createWorker(ps, null);
     	tester.setDataCollector(results);
-    	tester.initialize();
-    	tester.processInput();
+    	tester.performTask();
     	
     	assertEquals(1, results.size());
     	assertEquals(2, ((IAtomContainer)
-    			results.getNamedData(READTASK.ID+0).getValue()).getAtomCount());
-    	
+    			results.getNamedData(taskId+1).getValue()).getAtomCount());
 	}
-	
-//------------------------------------------------------------------------------
-
-	private class IACInputTester extends AtomContainerInputProcessor
-    {
-	    @Override
-	    public Set<Task> getCapabilities() {
-	        return Collections.unmodifiableSet(new HashSet<Task>(
-	                Arrays.asList(READTASK)));
-	    }
-
-		public IACInputTester() {}
-
-		@Override
-		public void performTask() {}
-
-		@Override
-		public Worker makeInstance(Job job) {
-			return new IACInputTester();
-		}
-
-		@Override
-		public void processOneAtomContainer(IAtomContainer iac) {
-			output.add(iac);
-		}
-
-		@Override
-		public void prepareOutputToExpose() {
-			for (int i=0; i<output.size(); i++)
-			{
-				IAtomContainer iac = (IAtomContainer) output.get(i);
-				exposeOutputData(new NamedData(READTASK.ID+i,iac));
-			}
-		}
-    }
 
 //------------------------------------------------------------------------------
 

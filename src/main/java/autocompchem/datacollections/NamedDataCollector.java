@@ -36,7 +36,7 @@ public class NamedDataCollector implements Cloneable
      * (i.e., key)
      */
 	
-    protected Map<String,NamedData> allData;
+    protected Map<String, NamedData> allData;
 
 //------------------------------------------------------------------------------
 
@@ -70,6 +70,18 @@ public class NamedDataCollector implements Cloneable
     public boolean isEmpty()
     {
         return allData.isEmpty();
+    }
+    
+
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the number of {@link NamedData} in this collector.
+     */
+
+    public int size()
+    {
+        return allData.size();
     }
 
 //------------------------------------------------------------------------------
