@@ -145,7 +145,7 @@ public class MolecularSorter extends Worker
     		//TODO-gg rename method to show that writing is optional
     		writeSortedSDF();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

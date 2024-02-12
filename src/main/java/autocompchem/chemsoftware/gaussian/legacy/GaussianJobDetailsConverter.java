@@ -138,7 +138,7 @@ public class GaussianJobDetailsConverter extends Worker
       public void performTask()
       {
     	  if (!task.equals(CONVERTJOBDETAILSTASK))
-    		  dealWithTaskMistMatch();
+    		  dealWithTaskMismatch();
       	
     	  GaussianJob gJob = new GaussianJob(inFile.getAbsolutePath());
     	  Job jJob = gJob.convertToCompChemJob();

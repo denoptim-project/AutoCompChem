@@ -180,7 +180,7 @@ public class AtomSpecificStringGenerator extends Worker
     	{
     		createAtomSpecificStrings();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

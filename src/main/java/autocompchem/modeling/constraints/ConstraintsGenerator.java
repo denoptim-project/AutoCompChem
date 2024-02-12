@@ -135,7 +135,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     	{
     		createConstrains();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

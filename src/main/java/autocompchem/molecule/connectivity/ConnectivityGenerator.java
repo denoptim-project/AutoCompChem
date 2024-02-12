@@ -253,7 +253,7 @@ public class ConnectivityGenerator extends Worker
       	  } else if (task.equals(CHECKBONDLENGTHSTASK)) {
       		  checkBondLengthsAgainstConnectivity();
       	  } else {
-      		dealWithTaskMistMatch();
+      		dealWithTaskMismatch();
           }
       }
 

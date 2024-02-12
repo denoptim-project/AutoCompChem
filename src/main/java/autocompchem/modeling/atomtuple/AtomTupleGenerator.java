@@ -238,7 +238,7 @@ public class AtomTupleGenerator extends Worker
     	{
     		createTuples();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

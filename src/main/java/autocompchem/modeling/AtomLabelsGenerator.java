@@ -225,7 +225,7 @@ public class AtomLabelsGenerator extends Worker
     	{
     		generateAtomLabels();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

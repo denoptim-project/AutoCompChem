@@ -340,7 +340,7 @@ public class ForceFieldEditor extends Worker
     				+ "and can produce unpredictable results.");
     		includeFFParamsFromVibModule();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

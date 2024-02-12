@@ -54,6 +54,7 @@ import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.MolecularUtils;
+import autocompchem.molecule.geometry.MolecularGeometryHandler;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
@@ -918,13 +919,13 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					&& taskParams.contains(ChemSoftConstants.JDACCTASK)
 					&& Task.make(taskParams.getParameterValue(
 							ChemSoftConstants.JDACCTASK))
-					.equals(Task.make("addGeometry"));
+					.equals(MolecularGeometryHandler.GETMOLECULARGEOMETRYTASK);
 			if (dd.getValue()==null && !hasAddGeometryTask)
 			{
 				taskParams = new ParameterStorage();
 				//TODO-gg should probably make Task behave in jsonable parameter storage.
 				taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
-						Task.make("addGeometry").ID);
+						MolecularGeometryHandler.GETMOLECULARGEOMETRYTASK.ID);
 				if (useAtomTags)
 					taskParams.setParameter(ChemSoftConstants.PARUSEATMTAGS, null);
 				taskParams.setParameter(ChemSoftConstants.PARMULTIGEOMID, 

@@ -206,7 +206,7 @@ public class MolecularComparator extends Worker
     	} else if (task.equals(COMPARETWOCONNECTIVITIESTASK)) {
     		compareTwoConnectivities();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

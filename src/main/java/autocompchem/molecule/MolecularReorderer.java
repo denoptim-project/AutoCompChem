@@ -264,7 +264,7 @@ public class MolecularReorderer extends Worker
 //    				+ "fully functional. Results are unreliable!");
 //    		alignAtomList();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

@@ -451,7 +451,7 @@ public class MolecularGeometryEditor extends Worker
     	{
     		applyMove();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

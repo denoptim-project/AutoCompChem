@@ -337,7 +337,7 @@ public abstract class Worker implements IOutputExposer
 	 * Triggers the reaction to a request to perform a {@link Task} that is not
 	 * among those declared by this implementation.
 	 */
-	protected void dealWithTaskMistMatch()
+	protected void dealWithTaskMismatch()
 	{
     	Terminator.withMsgAndStatus("ERROR! Task '" + task + "' is not "
     			+ "linked to any method in "

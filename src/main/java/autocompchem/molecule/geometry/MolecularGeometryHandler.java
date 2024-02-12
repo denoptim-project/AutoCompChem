@@ -149,7 +149,7 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
     	{
     		createMolGeometryDefinitions();
     	} else {
-    		dealWithTaskMistMatch(); //TODO-gg fix typo mismatch
+    		dealWithTaskMismatch();
         }
     }
 

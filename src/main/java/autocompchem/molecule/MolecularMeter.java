@@ -286,7 +286,7 @@ public class MolecularMeter extends Worker
     	{
     		measureAllQuantities();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
   	}
   

@@ -208,7 +208,7 @@ public class AtomTypeMatcher extends Worker
     	{
     		assignAtomTypesToAll();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

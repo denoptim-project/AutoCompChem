@@ -275,7 +275,7 @@ public class AtomClashAnalyzer extends Worker
       	  {
     		  analyzeVDWContacts();
       	  } else {
-      		dealWithTaskMistMatch();
+      		dealWithTaskMismatch();
           }
       }
 

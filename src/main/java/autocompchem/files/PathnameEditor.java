@@ -184,7 +184,7 @@ public class PathnameEditor extends Worker
     	{
     		getPathName();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

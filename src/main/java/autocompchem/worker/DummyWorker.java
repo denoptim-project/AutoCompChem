@@ -101,7 +101,7 @@ public class DummyWorker extends Worker
 	public void performTask() 
 	{
     	if (!task.equals(DUMMYTASKTASK))
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
     	
 		// The only task here is reporting something in the output collector
 		exposeOutputData(inputCollector.getNamedData(DATAREF));

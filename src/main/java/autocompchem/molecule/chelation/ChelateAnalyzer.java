@@ -217,7 +217,7 @@ public class ChelateAnalyzer extends Worker
     	{
     		analyzeChelates();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

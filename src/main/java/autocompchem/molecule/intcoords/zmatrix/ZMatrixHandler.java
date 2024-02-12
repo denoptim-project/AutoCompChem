@@ -319,7 +319,7 @@ public class ZMatrixHandler extends Worker
     	} else if (task.equals(SUBTRACTZMATRICESTASK)) {
     		subtractZMatrices();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

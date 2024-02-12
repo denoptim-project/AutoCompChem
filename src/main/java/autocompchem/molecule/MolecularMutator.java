@@ -215,7 +215,7 @@ public class MolecularMutator extends Worker
       	  {
       		  mutateAll();
       	  } else {
-      		  dealWithTaskMistMatch();
+      		  dealWithTaskMismatch();
           }
       }
 

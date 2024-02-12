@@ -135,7 +135,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     	{
     		createConformationalSpaces();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

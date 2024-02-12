@@ -267,7 +267,7 @@ public class DummyObjectsHandler extends Worker
     	} else if (task.equals(REMOVEDUMMYATOMSTASK)){
     		removeDummyAtoms();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

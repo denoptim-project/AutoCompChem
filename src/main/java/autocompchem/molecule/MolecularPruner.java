@@ -166,7 +166,7 @@ public class MolecularPruner extends Worker
     	{
     		pruneAll();
     	} else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 

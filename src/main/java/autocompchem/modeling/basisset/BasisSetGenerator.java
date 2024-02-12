@@ -239,7 +239,7 @@ public class BasisSetGenerator extends Worker
     	{
     		assignBasisSet();
         } else {
-    		dealWithTaskMistMatch();
+    		dealWithTaskMismatch();
         }
     }
 
