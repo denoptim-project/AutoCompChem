@@ -91,7 +91,7 @@
                   "value": "ZMAT"
                 },
                 {
-                  "reference": "SELECTORMODE",
+                  "reference": "selectorMode",
                   "value": "variables"
                 },
                 {
