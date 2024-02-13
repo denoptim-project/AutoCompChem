@@ -863,7 +863,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	{
     		try {
 				performACCTask(mols, accTaskParams, this, job, masterJob);
-			} catch (ClassNotFoundException e) {
+			} catch (Throwable e) {
 				throw new Error("Unable to perform ACC task.",e);
 			}
     	}
@@ -881,7 +881,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     			}
 	    		try {
 					performACCTask(mols, ps, k, job, masterJob);
-				} catch (ClassNotFoundException e) {
+				} catch (Throwable e) {
 					throw new Error("Unable to perform ACC task.",e);
 				}
     		}
@@ -914,7 +914,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     			}
 				try {
 					performACCTask(mols, ps, dd, job, masterJob);
-				} catch (ClassNotFoundException e) {
+				} catch (Throwable e) {
 					throw new Error("Unable to perform ACC task.",e);
 				}
     		}	
@@ -1099,11 +1099,12 @@ public class Directive implements IDirectiveComponent, Cloneable
      * this directive.
      * @throws ClassNotFoundException when a {@link Worker} could not be found 
      * to perform an embedded task.
+     * @throws CloneNotSupportedException 
      */
     
     private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
     		IDirectiveComponent dirComp, Job job, Job masterJob) 
-    				throws ClassNotFoundException
+    				throws ClassNotFoundException, CloneNotSupportedException
     {	
     	String task = "none";
     	if (params.contains(ChemSoftConstants.JDLABACCTASK))
@@ -1126,456 +1127,66 @@ public class Directive implements IDirectiveComponent, Cloneable
     	embeddeJobPars.setParameter(job.getParameter(
     			ChemSoftConstants.PAROUTFILEROOT));
     	
-    	//TODO-gg remove try block
     	// We run the embedded job, specifying that we want to receive the 
     	// resulting data.
-    	try {
-	    	Worker embeddedWorker = WorkerFactory.createWorker(embeddeJobPars, job);
-	    	NamedDataCollector outputOfEmbedded = new NamedDataCollector();
-	    	embeddedWorker.setDataCollector(outputOfEmbedded);
-	    	embeddedWorker.performTask();
-	    	
-	    	// Place the result of the embedded task in the dir component
-	    	int matchingDataCount = 0;
-	    	for (String key : outputOfEmbedded.getAllNamedData().keySet())
-	    	{
-	    		if (key.startsWith(Task.getExisting(task).ID))
-	    		{
-	    			matchingDataCount++;
-	    			if (matchingDataCount<2)
-	    			{
-		    			((IValueContainer) dirComp).setValue(
-		    					outputOfEmbedded.getNamedData(key).getValue());
-	    			} else {
-	    				IDirectiveComponent newComp = null;
-	    				if (dirComp.getComponentType().equals(
-	    						DirectiveComponentType.KEYWORD))
-	    				{
-	    					newComp = ((Keyword) dirComp).clone();
-	    				} else if (dirComp.getComponentType().equals(
-	    						DirectiveComponentType.DIRECTIVEDATA))
-	    				{
-	    					newComp = ((DirectiveData) dirComp).clone();
-	    				}  else if (dirComp.getComponentType().equals(
-	    						DirectiveComponentType.DIRECTIVE))
-	    				{
-	    					newComp = ((DirectiveData) dirComp).clone();
-	    				}
-	    				((IValueContainer) newComp).setValue(
-		    					outputOfEmbedded.getNamedData(key).getValue());
-	    				toAdd.add(newComp);
-	    			}
-	    		}
-	    	}
-	    	if (matchingDataCount<1)
-	    	{
-	    		//TODO: logger
-		    	System.out.println(System.getProperty("line.separator")
-		    			+ "WARNING! Task " + task + " did not produce any "
-		    			+ "results. Removing instance of "
-		    			+ dirComp.getComponentType() + " "
-		    			+ dirComp.getName() + "."
-		    			+ System.getProperty("line.separator"));
-	    		//We'll remove it later to avoid concurrent modification
-	    		toErase.add(dirComp);
-	    	}
-	    	/*
-	    	if (matchingDataCount>1)
-	    	{
-	    		//TODO: logger
-	    		//TODO-gg deal with multiple geometries by using the index ion the parameters
-	    		//TODO-gg or consider replicating the dircomponent as many times as needed to host all the data
-		    	System.out.println(System.getProperty("line.separator")
-		    			+ "WARNING! Multiple data produced by task " + task
-		    			+ ". Taking only the last value (" + latstKey + ")."
-		    			+ System.getProperty("line.separator"));
-	    	}
-	    	*/
-	    	return;
-	    } catch (Throwable t) {
-	    	//TODO-gg change into error or let the exception propagate without try-block
-	    	t.printStackTrace();
-	    	System.out.println(System.getProperty("line.separator")
-	    			+ "WARNING: Task '" + task + "' is not yet implemented in new ways!"
-	    			+ System.getProperty("line.separator"));
-	    }
+       	Worker embeddedWorker = WorkerFactory.createWorker(embeddeJobPars, job);
+    	NamedDataCollector outputOfEmbedded = new NamedDataCollector();
+    	embeddedWorker.setDataCollector(outputOfEmbedded);
+    	embeddedWorker.performTask();
     	
-    	//NB: this will exit with an error should the string not be good enough
-    	Task taskID = Task.getExisting(task, true);
-        switch (taskID.ID) 
-        {
-        /*
-	        case "ADDATOMSPECIFICKEYWORDS":
-	        {
-	        	if (!(dirComp instanceof Directive))
-	        	{
-	        		throw new IllegalArgumentException("Task " + task 
-	        				+ " can be performed only from within a "
-	        				+ Directive.class.getSimpleName() + ". "
-	        				+ "Not from " + dirComp.getClass().getName() + ".");
-	        	}
-	        	Directive targetDir = (Directive) dirComp;
-	        	
-	        	// WARNING: uses only the first molecule
-        		IAtomContainer mol = mols.get(0);
-        		
-        		// Define atom pointers
-        		ParameterStorage labMakerParams = params.clone();
-        		
-        		labMakerParams.setParameter(WorkerConstants.PARTASK, 
-        				Task.getExisting("generateAtomLabels").ID);
-				AtomLabelsGenerator labGenerator = (AtomLabelsGenerator) 
-            			WorkerFactory.createWorker(labMakerParams, masterJob);
-        		List<String> pointers = labGenerator.generateAtomLabels(mol);
-        		
-	        	// Identify specific atoms to work with
-        		List<String> atmSpecValues = new ArrayList<String>();
-                ParameterStorage cnstrParams = params.clone();
-                
-                cnstrParams.setParameter(WorkerConstants.PARTASK,
-                		Task.getExisting("generateAtomTuples").ID);
-                cnstrParams.setParameter("VALUEDKEYWORDS", 
-                		"options prefix suffix");
-                
-            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
-            	AtomTupleGenerator cnstrg = (AtomTupleGenerator) w;
-            	
-            	for (AnnotatedAtomTuple tuple : cnstrg.createTuples(mol))
-            	{
-            		for (Integer id : tuple.getAtomIDs())
-            		{
-            			String prefix = tuple.getValueOfAttribute("prefix");
-            			if (prefix==null)
-            				prefix = "";
-
-            			String suffix = tuple.getValueOfAttribute("suffix");
-            			if (suffix==null)
-            				suffix = "";
-            			
-	            		atmSpecValues.add(prefix + pointers.get(id) + suffix);
-            		}
-            	}
-	        	
-	        	// Make and append atom-specific keywords
-	        	String kwName = ""; 
-	        	boolean isLoud = false; // By default it's a "mute" keyword
-	        	if (params.contains(ChemSoftConstants.KEYWORDNAME))
-            	{
-            		kwName = params.getParameter(
-            				ChemSoftConstants.KEYWORDNAME).getValueAsString();
-            	}
-	        	if (params.contains(ChemSoftConstants.KWISLOUD))
-            	{
-            		isLoud = Boolean.parseBoolean(params.getParameter(
-            				ChemSoftConstants.KWISLOUD).getValueAsString());
-            	}
-	        	for (String value : atmSpecValues)
-	        	{
-	        		targetDir.addKeyword(new Keyword(kwName, isLoud, value));
-	        	}
-	        	break;
-	        }
-	        */
-	        /*
-            case "ADDFILENAME":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-            	
-            	String pathname = job.getParameter(
-            			ChemSoftConstants.PAROUTFILEROOT)
-            			.getValueAsString();
-            	
-            	if (params.contains(ChemSoftConstants.PARGETFILENAMEROOTSUFFIX))
-            	{
-            		String suffix = params.getParameter(
-            			ChemSoftConstants.PARGETFILENAMEROOTSUFFIX)
-            			.getValueAsString();
-            		pathname = pathname + suffix;
-            	}
-            	if (params.contains(ChemSoftConstants.PARGETFILENAMEROOTQUOTE))
-            	{
-            		String q = params.getParameter(
-                			ChemSoftConstants.PARGETFILENAMEROOTQUOTE)
-                			.getValueAsString();
-            		pathname = q + pathname + q;
-            	}
-            	
-            	((IValueContainer) dirComp).setValue(pathname);
-            	break;
-            }
-            */
-            /*
-            case "ADDGEOMETRY":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-            	
-            	CoordsType coordsType = CoordsType.XYZ;
-            	if (params.contains(ChemSoftConstants.PARCOORDTYPE))
-            	{
-            		String value = params.getParameter(
-            				ChemSoftConstants.PARCOORDTYPE)
-            				.getValueAsString();
-            	
-            		coordsType = CoordsType.valueOf(
-            			value.trim().toUpperCase());
-            	}
-            	int geometryId = 0;
-            	if (params.contains(ChemSoftConstants.PARMULTIGEOMID))
-            	{
-            		geometryId = Integer.parseInt(params.getParameter(
-            				ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
-            	}
-            	
-            	boolean useAtomTags = params.contains(ChemSoftConstants.PARUSEATMTAGS);
-            	
-            	switch (coordsType)
-            	{    
-                	case ZMAT:
-                	{
-                		ParameterStorage zmatMakerTask = new ParameterStorage();
-                		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
-                				"PRINTZMATRIX");
-                		zmatMakerTask.setParameter("MOL", 
-                				NamedDataType.IATOMCONTAINER, 
-                				mols.get(geometryId));
-                        Worker w = WorkerFactory.createWorker(zmatMakerTask,
-                        		masterJob);
-                        ZMatrixHandler zmh = (ZMatrixHandler) w;
-                        //TODO-gg make it use atom tags upon request
-                        ZMatrix zmat = zmh.makeZMatrix();
-                        //TODO-gg this is something that may have to be done in 
-                        // more general terms as it depends on the ccomp.chem. 
-                        // software policy for dealing with multiple geometries.
-                        // In the worst case, we do not try to deal with 
-                        // geometries as done here but we let the jobdetails 
-                        // define multiple directives and acctasks each with a 
-                        // pointer to the geometry of the input to be used for 
-                        // that directive/task.
-                        
-                        if (params.contains(ZMatrixConstants.SELECTORMODE))
-                        {
-                        	ParameterStorage cnstMakerTask = params.clone();
-                        	cnstMakerTask.setParameter(WorkerConstants.PARTASK, 
-                        			Task.getExisting("generateConstraints").ID);
-
-                            ConstraintsGenerator cnstrg = (ConstraintsGenerator)
-                            		WorkerFactory.createWorker(cnstMakerTask,
-                            				masterJob);
-                        	ConstraintsSet cs = new ConstraintsSet();
-                        	try {
-            					cs = cnstrg.createConstraints(mols.get(
-            							geometryId));
-            				} catch (Exception e) {
-            					e.printStackTrace();
-            					Terminator.withMsgAndStatus("ERROR! "
-            							+ "Unable to create constraints. "
-            							+ "Exception from the "
-            							+ "ConstraintGenerator.", -1);
-            				}
-                        	String mode = params.getParameterValue(
-                        			ZMatrixConstants.SELECTORMODE);
-                        	switch (mode.toUpperCase())
-                        	{
-                        	case ZMatrixConstants.SELECTORMODE_CONSTANT:
-                            	zmat.setConstants(cs);
-                        		break;
-
-                        	case ZMatrixConstants.SELECTORMODE_VARIABLES:
-                            	zmat.setVariables(cs);
-                        		break;
-                        	}
-                        }
-                        
-                		((IValueContainer) dirComp).setValue(zmat);
-                		break;
-                	}
-                	
-                	case XYZ:
-                	default:
-                	{
-                		IAtomContainer mol = mols.get(geometryId);
-                		if (useAtomTags)
-                		{
-                			mol = MolecularUtils.makeSimpleCopyWithAtomTags(mol);
-                		}
-                		((IValueContainer) dirComp).setValue(mol);
-                		break;
-                	}
-            	}
-            	break;
-            }
-            */
-
-            /*
-            case "GENERATEBASISSET":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-            	
-        		// WARNING: uses only the first molecule
-        		IAtomContainer mol = mols.get(0);
-        		
-            	//TODO verbosity/logging
-                System.out.println("ACC starts " + task + " task.");
-                
-            	//We require the component to be a DirectiveData
-            	if (!dirComp.getComponentType().equals(
-            			DirectiveComponentType.DIRECTIVEDATA))
-            	{
-            		Terminator.withMsgAndStatus("ERROR! Atom-specific "
-            				+ "basis set can only be defined with a "
-            				+ DirectiveData.class.getName() 
-            				+ " object", -1);
-            	}
-            	
-                ParameterStorage bsGenParams = params.clone();
-            	Worker w = WorkerFactory.createWorker(bsGenParams, masterJob);
-                BasisSetGenerator bsg = (BasisSetGenerator) w;
-                
-                BasisSet bs = bsg.assignBasisSet(mol);
-                
-                ((IValueContainer) dirComp).setValue(bs);
-            	break;
-            }
-            */
-           
-            /*
-            case "GENERATECONSTRAINTS":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-        	
-            	// WARNING: uses only the first molecule
-        		IAtomContainer mol = mols.get(0);
-        		
-            	//TODO verbosity/logging
-                System.out.println("ACC starts creating geometric constraints");
-                
-                ParameterStorage cnstrParams = params.clone();
-                
-                cnstrParams.setParameter(WorkerConstants.PARTASK, task);
-                
-            	Worker w = WorkerFactory.createWorker(cnstrParams, masterJob);
-            	ConstraintsGenerator cnstrg = (ConstraintsGenerator) w;
-            	
-            	ConstraintsSet cs = new ConstraintsSet();
-            	try {
-					cs = cnstrg.createConstraints(mol);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Terminator.withMsgAndStatus("ERROR! Unable to create "
-							+ "constraints. Exception from the "
-							+ "ConstraintGenerator.", -1);
-				}
-            	
-            	// Replace value of component that triggered this task
-            	((IValueContainer) dirComp).setValue(cs);
-                break;
-            }
-            */
-            /*
-            case "GENERATECONFORMATIONALSPACE":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-        	
-            	// WARNING: uses only the first molecule
-        		IAtomContainer mol = mols.get(0);
-        		
-                ParameterStorage csGenParams = params.clone();
-                csGenParams.setParameter(WorkerConstants.PARTASK, task);
-                
-            	Worker w = WorkerFactory.createWorker(csGenParams, masterJob);
-            	ConformationalSpaceGenerator csGen = 
-            			(ConformationalSpaceGenerator) w;
-            	
-            	ConformationalSpace cs = new ConformationalSpace();
-            	try {
-            		cs = csGen.createConformationalSpace(mol);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Terminator.withMsgAndStatus("ERROR! Unable to create "
-							+ "conformational space. Exception from the "
-							+ "ConformationalSpaceGenerator.", -1);
-				}
-            	
-            	// Replace value of component that triggered this task
-            	((IValueContainer) dirComp).setValue(cs);
-            	break;
-            }
-            */
-            
-            /*
-            case "GENERATEATOMLABELS":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-            	// WARNING: uses only the first molecule
-        		IAtomContainer mol = mols.get(0);
-                
-                ParameterStorage atmLabelsParams = params.clone();
-                atmLabelsParams.setParameter(WorkerConstants.PARTASK, task);
-                
-            	Worker w = WorkerFactory.createWorker(atmLabelsParams, 
-            			masterJob);
-            	AtomLabelsGenerator labelsGenerator = (AtomLabelsGenerator) w;
-            	
-            	TextBlock labels = new TextBlock(
-            			labelsGenerator.generateAtomLabels(mol));
-            	
-            	// Replace value of component that triggered this task
-            	((IValueContainer) dirComp).setValue(labels);
-            	break;
-            }
-            */
-            
-            /*
-            case "GENERATEATOMTUPLES":
-            {
-            	ensureTaskIsInIValueContainer(task, dirComp);
-            	// WARNING: uses only the first molecule
-        		IAtomContainer mol = mols.get(0);
-                
-                ParameterStorage atmTuplesParams = params.clone();
-                atmTuplesParams.setParameter(WorkerConstants.PARTASK, task);
-                
-            	Worker w = WorkerFactory.createWorker(atmTuplesParams, 
-            			masterJob);
-            	AtomTupleGenerator labelsGenerator = (AtomTupleGenerator) w;
-            	
-            	AnnotatedAtomTupleList tuples = new AnnotatedAtomTupleList(
-            			labelsGenerator.createTuples(mol));
-            	
-            	// Replace value of component that triggered this task
-            	((IValueContainer) dirComp).setValue(tuples);
-            	break;
-            }
-            */
-                
-            //TODO: add here other atom/molecule specific option
-            
-                
-            default:
-                String msg = "WARNING! Task '" + task + "' is not a "
-                       + "known task when performing ACC tasks from within "
-                       + "a directive in a comp.chem. job.";
-                
-                //TODO verbosity/logging
-                System.out.println(msg);
-                break;
-        }
-    }
-    
-//-----------------------------------------------------------------------------
-    
-    private void ensureTaskIsInIValueContainer(String task, 
-    		IDirectiveComponent dirComp)
-    {
-    	if (! (dirComp instanceof IValueContainer))
+    	// Place the result of the embedded task in the dir component
+    	int matchingDataCount = 0;
+    	for (String key : outputOfEmbedded.getAllNamedData().keySet())
     	{
-    		throw new IllegalArgumentException("Task " + task 
-    				+ " can be performed only from within "
-    				+ Keyword.class.getSimpleName()
-    				+ "or "
-    				+ DirectiveData.class.getSimpleName()
-    				+ ". Not from " 
-    				+ dirComp.getClass().getName() + ".");
+    		if (key.startsWith(Task.getExisting(task).ID))
+    		{
+    			matchingDataCount++;
+    			if (matchingDataCount<2)
+    			{
+	    			((IValueContainer) dirComp).setValue(
+	    					outputOfEmbedded.getNamedData(key).getValue());
+    			} else {
+    				IDirectiveComponent newComp = null;
+    				if (dirComp.getComponentType().equals(
+    						DirectiveComponentType.KEYWORD))
+    				{
+    					newComp = ((Keyword) dirComp).clone();
+    				} else if (dirComp.getComponentType().equals(
+    						DirectiveComponentType.DIRECTIVEDATA))
+    				{
+    					newComp = ((DirectiveData) dirComp).clone();
+    				}  else if (dirComp.getComponentType().equals(
+    						DirectiveComponentType.DIRECTIVE))
+    				{
+    					newComp = ((DirectiveData) dirComp).clone();
+    				}
+    				((IValueContainer) newComp).setValue(
+	    					outputOfEmbedded.getNamedData(key).getValue());
+    				toAdd.add(newComp);
+    			}
+    		}
+    	}
+    	if (matchingDataCount<1)
+    	{
+    		//TODO: logger
+	    	System.out.println(System.getProperty("line.separator")
+	    			+ "WARNING! Task " + task + " did not produce any "
+	    			+ "results. Removing instance of "
+	    			+ dirComp.getComponentType() + " "
+	    			+ dirComp.getName() + "."
+	    			+ System.getProperty("line.separator"));
+    		//We'll remove it later to avoid concurrent modification
+    		toErase.add(dirComp);
+    	}
+    	if (matchingDataCount>1)
+    	{
+    		//TODO: logger
+    		//TODO-gg deal with multiple geometries by using the index ion the parameters
+    		//TODO-gg or consider replicating the dircomponent as many times as needed to host all the data
+	    	System.out.println(System.getProperty("line.separator")
+	    			+ "WARNING! Multiple data produced by task " + task
+	    			+ ". Taking only the first value and ignoring the rest."
+	    			+ System.getProperty("line.separator"));
     	}
     }
     
