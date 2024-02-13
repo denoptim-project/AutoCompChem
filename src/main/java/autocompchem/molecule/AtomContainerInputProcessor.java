@@ -43,6 +43,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
@@ -56,6 +57,7 @@ import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.ListOfListsCombinations;
+import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -92,6 +94,16 @@ public class AtomContainerInputProcessor extends Worker
      * multiple geometries.
      */
     private Integer chosenGeomIdx;
+    
+    /**
+     * Definition of how to use multiple geometries
+     */
+    public enum MultiGeomMode {INDEPENDENTJOBS, ALLINONEJOB};
+    
+    /**
+     * Chosen mode of handling multiple geometries.
+     */
+    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
 
     /**
      * String defining the task of generating tuples of atoms
@@ -146,15 +158,15 @@ public class AtomContainerInputProcessor extends Worker
 		
         if (params.contains(ChemSoftConstants.PARINFILE))
         {
-            inFile = new File(params.getParameter(ChemSoftConstants.PARINFILE)
-            		.getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        	String value = params.getParameter(ChemSoftConstants.PARINFILE)
+            		.getValueAsString();
+        	processInputFileParameter(value);
         }
         if (params.contains(ChemSoftConstants.PARGEOMFILE))
         {
-            inFile = new File(params.getParameter(ChemSoftConstants.PARGEOMFILE)
-            		.getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        	String value = params.getParameter(ChemSoftConstants.PARGEOMFILE)
+            		.getValueAsString();
+        	processInputFileParameter(value);
         }
         if (params.contains(ChemSoftConstants.PARGEOM))
         {
@@ -163,7 +175,8 @@ public class AtomContainerInputProcessor extends Worker
             if (params.contains("INFILE"))
             {
             	//TODO: logging
-            	System.out.println("WARNING: found both INFILE and "
+            	System.out.println("WARNING: found both "
+            			+ ChemSoftConstants.PARINFILE + " and "
             			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
             			+ ChemSoftConstants.PARGEOM + " as input for "
             			+ this.getClass().getSimpleName() + ".");
@@ -171,13 +184,77 @@ public class AtomContainerInputProcessor extends Worker
             }
         }
         
+        if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
+        {
+            String value = params.getParameter(
+            		ChemSoftConstants.PARMULTIGEOMMODE).getValueAsString();
+            multiGeomMode = EnumUtils.getEnumIgnoreCase(
+            		MultiGeomMode.class, value);
+        }
+        
         if (params.contains(ChemSoftConstants.PARMULTIGEOMID))
         {
         	chosenGeomIdx = Integer.parseInt(params.getParameter(
         			ChemSoftConstants.PARMULTIGEOMID).getValueAsString());
+        	if (multiGeomMode!=MultiGeomMode.INDEPENDENTJOBS)
+        	{
+	        	multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
+	        	//TODO: logging
+	        	System.out.println("WARNING: found parameter "
+	        			+ ChemSoftConstants.PARMULTIGEOMID + ". Ignoring any "
+	        			+ "value given for "
+	        			+ ChemSoftConstants.PARMULTIGEOMMODE + " and setting "
+	        			+ "multiGeomMode to " + multiGeomMode + ".");
+        	}
         }
     }
 	
+//-----------------------------------------------------------------------------
+	
+
+	/**
+	 * NB: if we are reading a huge file, this code will cause problems, but
+	 * we can assume no huge file will be read here.
+	 */
+	private void processInputFileParameter(String value)
+	{
+        String[] words = value.trim().split("\\s+");
+        String pathname = words[0];
+        FileUtils.foundAndPermissions(pathname,true,false,false);
+        inFile = new File(pathname);
+        
+        List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inFile);
+        inMols = new ArrayList<IAtomContainer>();
+        if (words.length > 1)
+        {
+        	for (int iw=1; iw<words.length; iw++)
+        	{
+        		String idStr = words[iw];
+        		if (NumberUtils.isParsableToInt(idStr))
+        		{
+        			int id = Integer.parseInt(idStr);
+        			if (id>-1 && id < iacs.size())
+        			{
+        				this.inMols.add(iacs.get(iacs.size()-1));
+        			} else {
+                    	Terminator.withMsgAndStatus("ERROR! Found request "
+                    			+ "to take geometry " + id + " from '"
+                    			+ pathname + "' but found "+ iacs.size() 
+                    			+ " geometries. Check your input.",-1); 
+        			}
+        		} else if ("LAST".equals(idStr.toUpperCase())) {
+        			this.inMols.add(iacs.get(iacs.size()-1));
+        		} else {
+        			Terminator.withMsgAndStatus("ERROR! Unable to "
+                			+ "understand option '" + idStr + "' for "
+                			+ ChemSoftConstants.PARGEOMFILE 
+                			+ ". Check your input.",-1); 
+        		}
+        	}
+        } else {
+        	this.inMols = iacs;
+        }
+	}
     
 //-----------------------------------------------------------------------------
 
@@ -195,6 +272,7 @@ public class AtomContainerInputProcessor extends Worker
      */
     protected void processInput()
     {
+    	// We must ensure inMols != null when inFile is null
         if (inFile==null && inMols==null)
         {
             Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
@@ -204,17 +282,13 @@ public class AtomContainerInputProcessor extends Worker
             		+ this.getClass().getSimpleName() + ".", -1);
         }
 
-        boolean breakAfterThis = false;
-        if (inFile!=null)
-        {
-        	SDFIterator sdfItr = null;
-	        try {
-	        	sdfItr = new SDFIterator(inFile);
-	            int i = -1;
-	            while (sdfItr.hasNext())
+        switch (multiGeomMode)
+		{
+		case INDEPENDENTJOBS:
+			{
+		        boolean breakAfterThis = false;
+	        	for (int i=0; i<inMols.size(); i++)
 	            {
-	            	i++;
-	            	IAtomContainer mol = sdfItr.next();
 	            	if (chosenGeomIdx!=null)
 		            {
 	            		if (i==chosenGeomIdx)
@@ -224,34 +298,18 @@ public class AtomContainerInputProcessor extends Worker
 	            			continue;
 	            		}
 		            }
-	            	processOneAtomContainer(mol, i);
+	            	processOneAtomContainer(inMols.get(i), i);
 	            	if (breakAfterThis)
 	            		break;
 	            }
-	            sdfItr.close();
-	        } catch (Throwable t) {
-	            t.printStackTrace();
-	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-	                + sdfItr.getClass().getSimpleName() 
-	                + " while reading " + inFile, -1);
-	        }
-        } else {
-        	for (int i=0; i<inMols.size(); i++)
-            {
-            	if (chosenGeomIdx!=null)
-	            {
-            		if (i==chosenGeomIdx)
-            		{
-		        		breakAfterThis = true;
-            		} else {
-            			continue;
-            		}
-	            }
-            	processOneAtomContainer(inMols.get(i), i);
-            	if (breakAfterThis)
-            		break;
-            }
-        }
+			}
+			break;
+			
+		case ALLINONEJOB:
+			{
+				processAllAtomContainer(inMols);
+			}
+		}
     }
     
 //------------------------------------------------------------------------------
@@ -270,6 +328,27 @@ public class AtomContainerInputProcessor extends Worker
     public void processOneAtomContainer(IAtomContainer iac, int i)
     {
 		exposeOutputData(new NamedData(READIACSTASK.ID+i,iac));
+    }
+    
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Takes all the atom containers available in the input specified by the 
+     * settings of this instance and places them in the
+     * {@link Worker#exposedOutputCollector}.
+     * Subclasses should overwrite this method to do what they want with the 
+     * list of atom containers and produce what they like as output data to be
+     * placed in the {@link Worker#exposedOutputCollector}. 
+     * @param iacs the list of atom containers to be processes
+     */
+    public void processAllAtomContainer(List<IAtomContainer> iacs)
+    {
+    	for (int i=0; i<iacs.size(); i++)
+		{
+    		IAtomContainer iac = iacs.get(i);
+    		exposeOutputData(new NamedData(READIACSTASK.ID+i, iac));
+		}
     }
     
 //-----------------------------------------------------------------------------

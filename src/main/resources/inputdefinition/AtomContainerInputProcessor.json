@@ -2,25 +2,31 @@
   {
     "key": "INFILE",
     "casedKey": "inFile",
-    "type": "<String>",
-    "doc": "The pathname to a molecular structure file containing the chemical systems to process."
+    "type": "<String> [<int> ...] [<String>]",
+    "doc": "Shortcut for 'INPUTGEOMETRIESFILE'. The pathname to the file containing the geometries of the chemical system/s given as input. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input."
   },
   {
     "key": "INPUTGEOMETRIESFILE",
     "casedKey": "inputGeometriesFile",
-    "type": "<String>",
-    "doc": "The pathname to a molecular structure file containing the chemical systems to process."
+    "type": "<String> [<int> ...] [<String>]",
+    "doc": "The pathname to the file containing the geometries of the chemical system/s given as input. Optionally, a set of integers can be used to select which geometries from a multigeometry input (0-based idex). Optionally, the string 'last' can be used to retain only the last geometry from a multigeometry input."
   },
   {
     "key": "INPUTGEOMETRIES",
     "casedKey": "inputGeometries",
     "type": "List<IAtomContainer>",
-    "doc": "Parameter holding the CDK definition of chemical systems to process."
+    "doc": "Parameter holding the list of CDK definition of chemical systems to process."
+  },
+  {
+    "key": "MULTIGEOMMODE",
+    "casedKey": "multiGeomMode",
+    "type": "<String>",
+    "doc": "Defines how to interprete an input file containing multiple geometries. Possible values are IndependentJobs (to work on each geometry independently, e.g., creating an input file for each geometry) or AllInOneJob (to work with all geometries in the same job, e.g., placeing all geometries in a single input file)."
   },
   {
     "key": "USEGEOMATINDEX",
     "casedKey": "useGeomAtIndex",
     "type": "<int>",
-    "doc": "Specifies which geometry to use by the index of that item in the given list of geometries."
+    "doc": "Specifies which geometry to use by the index of that item in the given list of geometries. If this parameter is given, the value of MULTIGEOMMODE is ignored."
   }
 ]

@@ -46,6 +46,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.modeling.AtomSpecificStringGenerator;
+import autocompchem.molecule.AtomContainerInputProcessor.MultiGeomMode;
 import autocompchem.run.Job;
 import autocompchem.worker.DummyWorker;
 import autocompchem.worker.Task;
@@ -108,6 +109,37 @@ public class AtomContainerInputProcessorTest
     	assertEquals(3, results.size());
     	
         // Reading only a specific one from param storage
+        ps.setParameter(ChemSoftConstants.PARMULTIGEOMID, "1");
+        
+        results.clear();
+        tester = WorkerFactory.createWorker(ps, null);
+    	tester.setDataCollector(results);
+    	tester.performTask();
+    	
+    	assertEquals(1, results.size());
+    	assertEquals(2, ((IAtomContainer)
+    			results.getNamedData(taskId+1).getValue()).getAtomCount());
+    	
+
+    	// Use multigeom mode
+        ps.setParameter(ChemSoftConstants.PARMULTIGEOMMODE, 
+        		MultiGeomMode.ALLINONEJOB.toString());
+        ps.removeData(ChemSoftConstants.PARMULTIGEOMID);
+        
+        results.clear();
+        tester = WorkerFactory.createWorker(ps, null);
+    	tester.setDataCollector(results);
+    	tester.performTask();
+    	
+    	assertEquals(3, results.size());
+    	assertEquals(6, ((IAtomContainer)
+    			results.getNamedData(taskId+0).getValue()).getAtomCount());
+    	assertEquals(2, ((IAtomContainer)
+    			results.getNamedData(taskId+1).getValue()).getAtomCount());
+    	assertEquals(4, ((IAtomContainer)
+    			results.getNamedData(taskId+2).getValue()).getAtomCount());
+    	
+    	// Overwriting of multigeom mode
         ps.setParameter(ChemSoftConstants.PARMULTIGEOMID, "1");
         
         results.clear();

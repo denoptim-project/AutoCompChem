@@ -1189,7 +1189,7 @@ public class Job implements Runnable
     	if (hasException)
     	{
     		throw new Error("ERROR! " + thrownExc.getClass().getSimpleName()
-    				+ " thrown by job " + getId() + ".");
+    				+ " thrown by job " + getId() + ".", thrownExc);
     	}			
     }
 

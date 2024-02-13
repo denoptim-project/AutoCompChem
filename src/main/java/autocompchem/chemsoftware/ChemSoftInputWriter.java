@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -35,6 +36,7 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -47,21 +49,8 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-public abstract class ChemSoftInputWriter extends Worker
+public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 {
-    /**
-     * Molecular geometries input file. One or more geometries depending on the
-     * kind of computational chemistry job. 
-     */
-    private File inGeomFile;
-    
-    /**
-     * List of molecular systems considered as input. This can either be
-     * the list of molecules for which we want to make the input, or the list
-     * of geometries used to make a multi-geometry input file.
-     */
-    private List<IAtomContainer> inpGeom = new ArrayList<IAtomContainer>();
-
     /**
      * Definition of how to use multiple geometries
      */
@@ -170,10 +159,11 @@ public abstract class ChemSoftInputWriter extends Worker
      * collection of input parameters.
      */
 
-    @SuppressWarnings("unchecked")
 	@Override
     public void initialize()
     {
+    	super.initialize();
+    	
         if (params.contains(ChemSoftConstants.PARVERBOSITY))
         {
             String str = params.getParameter(
@@ -185,6 +175,7 @@ public abstract class ChemSoftInputWriter extends Worker
                 		+ "input writer.");
         }
 
+        /*
         if (params.contains(ChemSoftConstants.PARGEOMFILE))
         {
             String value = params.getParameter(
@@ -236,9 +227,12 @@ public abstract class ChemSoftInputWriter extends Worker
         {
             String value = params.getParameter(
             		ChemSoftConstants.PARMULTIGEOMMODE).getValueAsString();
-            this.multiGeomMode = MultiGeomMode.valueOf(value.toUpperCase());
+            this.multiGeomMode = EnumUtils.getEnumIgnoreCase(
+            		MultiGeomMode.class, value);
         }
+        */
         
+        //TODO-gg check: probably obsilete
         if (params.contains(ChemSoftConstants.PARUSEATMTAGS))
         {
         	this.useAtomTags = true;
@@ -260,12 +254,6 @@ public abstract class ChemSoftInputWriter extends Worker
                                         + " Check line '" + line + "'.",-1);
                 }
                 this.geomNames.add(parts[i]);
-            }
-            if (geomNames.size()!=inpGeom.size())
-            {
-            	Terminator.withMsgAndStatus("ERROR! Found " + inpGeom.size() 
-            		+ " geometries, but " + geomNames.size() + " names. Check "
-            		+ "your input.",-1); 
             }
         }
 
@@ -310,6 +298,7 @@ public abstract class ChemSoftInputWriter extends Worker
                     jdLines.split("\\r?\\n")));
             this.ccJob = new CompChemJob(lines);
         }
+        //TODO-gg add to documentation, but check if it is general enough
         else if (params.contains(ChemSoftConstants.PARHEADER))
         {
         	this.ccJob = new CompChemJob();
@@ -340,7 +329,7 @@ public abstract class ChemSoftInputWriter extends Worker
         			ChemSoftConstants.PAROUTFILE).getValueAsString());
             outFileNameRoot = FileUtils.getRootOfFileName(outFile);
         } else {
-        	if (inGeomFile==null)
+        	if (inFile==null)
         	{
         		outFileNameRoot = "accOutput";
                 if (verbosity > 0)
@@ -354,7 +343,7 @@ public abstract class ChemSoftInputWriter extends Worker
                 }
         	} else {
         		outFileNameRoot = FileUtils.getRootOfFileName(
-        				inGeomFile.getAbsolutePath());
+        				inFile.getAbsolutePath());
                 if (verbosity > 0)
                 {
                     System.out.println(" Neither '" 
@@ -406,70 +395,93 @@ public abstract class ChemSoftInputWriter extends Worker
     @Override
     public void performTask()
     {
-    	if (inpGeom.size() < 2)
+    	if (params.contains(ChemSoftConstants.PARJOBDETAILSOBJ))
     	{
-    		produceSingleJobInputFiles(inpGeom, outFile, outFileNameRoot);
-    	} else {	
-    		switch (multiGeomMode)
-    		{
-			case INDEPENDENTJOBS:
-				// We simply repeat the same operation for each geometry.
-				for (int molId = 0; molId<inpGeom.size(); molId++)
-		        {
-		            IAtomContainer mol = inpGeom.get(molId);
-		            
-		            String fileRootName = outFileNameRoot + "-" + molId;
-		            if (overwriteGeomNames)
-		            {
-		            	String geomName = geomNames.get(molId);
-		            	mol.setTitle(geomName);
-		            	fileRootName = outFileNameRoot + "-" + geomName;
-		            }
-		            
-		            if (verbosity > 0)
-		            {
-		                System.out.println(" Writing input file for molecule #" 
-		                        + (molId+1) + ": " 
-		                		+ MolecularUtils.getNameOrID(mol));
-		            }
-		            
-		            List<IAtomContainer> set = new ArrayList<IAtomContainer>();
-		            set.add(mol);
-		            produceSingleJobInputFiles(set, 
-		            		new File(fileRootName+inpExtrension),
-		            		fileRootName);
-		        }
-				break;
-				
-			case ALLINONEJOB:
-				// All geometries are included in a single input
-	            if (verbosity > 0)
-	            {
-	                System.out.println(" Writing input file for " 
-	                		+ inpGeom.size() + " geometries");
-	            }
-	            
-				if (overwriteGeomNames)
-	            {
-					for (int molId = 0; molId<inpGeom.size(); molId++)
-			        {
-		            	String geomName = geomNames.get(molId);
-		            	inpGeom.get(molId).setTitle(geomName);
-			        }
-	            }
-	            
-	            produceSingleJobInputFiles(inpGeom, 
-	            		new File(outFileNameRoot + inpExtrension),
-	            		outFileNameRoot);
-				break;
-				
-			default:
-				Terminator.withMsgAndStatus("ERROR! Multigeometry "
-						+ "mode '" + multiGeomMode + "' is not implemented. "
-						+ "Please, contact the authors.", -1);
-				break;
-    		}
+    		// Here we do not read atom containers because we are given a fully 
+    		// defined job details object, which is expected to contains all the
+    		// details to make the input files.
+    		// To this end, we set the list of input molecules to an empty list
+    		inMols = new ArrayList<IAtomContainer>();
+    		produceSingleJobInputFiles(inMols, outFile, outFileNameRoot);
+    	} else {
+    		// Here we read atom containers from whatever input we have, which
+    		// could be a file to be read in, or a colleciton of objects stored 
+    		// in the memory.
+    		processInput();
     	}
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+		String fileRootName = outFileNameRoot;
+		if (inMols!=null && inMols.size()>1)
+		{ 
+			fileRootName = fileRootName + "-" + i;
+		}
+        if (overwriteGeomNames)
+        {
+            if (geomNames.size()!=inMols.size())
+            {
+            	Terminator.withMsgAndStatus("ERROR! Found " + inMols.size() 
+            		+ " geometries, but " + geomNames.size() + " names. Check "
+            		+ "your input.",-1); 
+            }
+        	String geomName = geomNames.get(i);
+        	iac.setTitle(geomName);
+        	fileRootName = outFileNameRoot + "-" + geomName;
+        }
+        
+        if (verbosity > 0)
+        {
+            System.out.println(" Writing input file for molecule #" 
+                    + (i+1) + ": " 
+            		+ MolecularUtils.getNameOrID(iac));
+        }
+        
+        List<IAtomContainer> set = new ArrayList<IAtomContainer>();
+        set.add(iac);
+        produceSingleJobInputFiles(set, 
+        		new File(fileRootName+inpExtrension),
+        		fileRootName);
+        
+        if (exposedOutputCollector != null)
+        {
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
+	}
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processAllAtomContainer(List<IAtomContainer> iacs) 
+	{
+		// NB: do not use inMols, i.e., the field of the AtomContainer superclass
+	    if (verbosity > 0)
+	    {
+	        System.out.println(" Writing input file for " 
+	        		+ iacs.size() + " geometries");
+	    }
+	    
+		if (overwriteGeomNames)
+	    {
+			for (int molId = 0; molId<iacs.size(); molId++)
+	        {
+	        	String geomName = geomNames.get(molId);
+	        	iacs.get(molId).setTitle(geomName);
+	        }
+	    }
+	    
+	    produceSingleJobInputFiles(iacs, 
+	    		new File(outFileNameRoot + inpExtrension),
+	    		outFileNameRoot);
     	
         if (exposedOutputCollector != null)
         {
