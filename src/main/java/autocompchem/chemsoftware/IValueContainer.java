@@ -2,6 +2,7 @@ package autocompchem.chemsoftware;
 
 public interface IValueContainer extends IDirectiveComponent 
 {
+
 //-----------------------------------------------------------------------------
     
     /**
@@ -16,7 +17,14 @@ public interface IValueContainer extends IDirectiveComponent
      * @return the value of this container.
      */
     public Object getValue();
-
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Removes the value of this component
+     */
+    public void removeValue();
+    
 //-----------------------------------------------------------------------------
 
 }

@@ -1160,6 +1160,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     				{
     					newComp = ((DirectiveData) dirComp).clone();
     				}
+    				((IValueContainer) newComp).removeValue();
     				((IValueContainer) newComp).setValue(
 	    					outputOfEmbedded.getNamedData(key).getValue());
     				toAdd.add(newComp);
