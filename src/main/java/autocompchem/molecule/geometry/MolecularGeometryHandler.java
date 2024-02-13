@@ -208,9 +208,10 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
         		ParameterStorage zmatMakerTask = new ParameterStorage();
         		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
         				ZMatrixHandler.PRINTZMATRIXTASK.ID);
-        		zmatMakerTask.setParameter("MOL", //TODO-gg use ChemSoftConstants.PARGEOM
+        		zmatMakerTask.setParameter(ChemSoftConstants.PARGEOM,
         				NamedDataType.IATOMCONTAINER, 
-        				iacPossiblyLabelled);
+        				new ArrayList<IAtomContainer>(Arrays.asList(
+        						iacPossiblyLabelled)));
                 Worker w = null;
 				try {
 					w = WorkerFactory.createWorker(zmatMakerTask,myJob);

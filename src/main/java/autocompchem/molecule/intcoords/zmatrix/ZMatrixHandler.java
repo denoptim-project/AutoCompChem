@@ -43,6 +43,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IIsotope;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -252,10 +253,11 @@ public class ZMatrixHandler extends Worker
         }
 
         //Get the input molecule as an object
-        if (params.contains("MOL"))
+        if (params.contains(ChemSoftConstants.PARGEOM))
         {
-            this.iac = (IAtomContainer) 
-            		params.getParameter("MOL").getValue();
+        	List<IAtomContainer> inMols = (List<IAtomContainer>) 
+        			params.getParameter(ChemSoftConstants.PARGEOM).getValue();
+        	this.iac = inMols.get(0);
         }
         
         //Get and check the input file (which has to be an SDF file)
