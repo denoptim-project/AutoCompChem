@@ -4,5 +4,4 @@
 VERBOSITY: 2
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t87-mol.sdf
-USEATOMTAGS:
 JOBDETAILSFILE: ../t87-jobDetails.json

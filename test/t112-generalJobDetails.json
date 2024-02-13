@@ -125,10 +125,11 @@
                   "value": "getMolecularGeometry"
                 },
                 {
-                  "reference": "USEATOMTAGS"
+                  "reference": "labelType",
+                  "value": "atomicNumber"
                 }
               ],
-              "reference": "DirDataGeometry"
+              "reference": "geometry"
             }
           ]
         },

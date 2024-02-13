@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomRef;
+import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -82,7 +85,7 @@ public class AtomLabelsGenerator extends Worker
     /**
      * Policies for generating atom labels.
      */
-    public enum AtomLabelMode {ElementBased, IndexBased};
+    public enum AtomLabelMode {ElementBased, IndexBased, AtomicNumber};
     
     /**
      * Flag defining if we use 0- or 1-based indexing. 
@@ -192,10 +195,11 @@ public class AtomLabelsGenerator extends Worker
             FileUtils.mustNotExist(this.outFile);
         }
 
-        if (params.contains("LABELTYPE"))
+        if (params.contains(ChemSoftConstants.PARATMLABELTYPE))
         {
         	this.mode = EnumUtils.getEnumIgnoreCase(AtomLabelMode.class, 
-            		params.getParameter("LABELTYPE").getValueAsString());
+            		params.getParameter(ChemSoftConstants.PARATMLABELTYPE)
+            		.getValueAsString());
         }
         
         if (params.contains("SEPARATOR"))
@@ -328,6 +332,10 @@ public class AtomLabelsGenerator extends Worker
 		case IndexBased:
 			labels = generateIndexBasedLabels(mol, zeroBased);
 			break;
+			
+		case AtomicNumber:
+			labels = generateAtomicNumberLabels(mol);
+			break;
     	}
     	
     	return labels;
@@ -346,7 +354,7 @@ public class AtomLabelsGenerator extends Worker
      * By default we work with 0-based indexing.
      * @return the list of atom labels.
      */
-	private static List<String> generateElementBasedLabels(IAtomContainer iac,
+    public static List<String> generateElementBasedLabels(IAtomContainer iac,
 			boolean zeroBased) 
 	{
 		List<String> labels = new ArrayList<String>();
@@ -388,7 +396,7 @@ public class AtomLabelsGenerator extends Worker
      * By default we work with 0-based indexing.
      * @return the list of atom labels.
      */
-	private static List<String> generateIndexBasedLabels(IAtomContainer iac,
+	public static List<String> generateIndexBasedLabels(IAtomContainer iac,
 			boolean zeroBased) 
 	{
 		List<String> labels = new ArrayList<String>();
@@ -403,6 +411,28 @@ public class AtomLabelsGenerator extends Worker
             } else {
                 label = el + (i+1);
             }
+            atm.setProperty(AtomConstants.ATMLABEL, label);
+            labels.add(label);
+        }
+		return labels;
+	}
+	
+//------------------------------------------------------------------------------
+
+    /**
+     * Generate the atom labels using the {@link AtomLabelMode#AtomicNumber} 
+     * strategy, i.e., each
+     * atom is defined by its atomic number
+     * @param iac the container to work on.
+     * @return the list of atom labels.
+     */
+	public static List<String> generateAtomicNumberLabels(IAtomContainer iac)
+	{
+		List<String> labels = new ArrayList<String>();
+		for (int i=0; i<iac.getAtomCount(); i++)
+        {
+			IAtom atm = iac.getAtom(i);
+			String label = atm.getAtomicNumber().toString();
             atm.setProperty(AtomConstants.ATMLABEL, label);
             labels.add(label);
         }

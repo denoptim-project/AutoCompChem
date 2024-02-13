@@ -287,6 +287,7 @@ public class AtomUtils
      * and it has the given label.
      */
     
+    //TODO-gg fix typo
     public static boolean isPsaudoAtmWithLabel(IAtom atm, String lab)
     {
     	if (atm instanceof AtomRef)
@@ -317,7 +318,7 @@ public class AtomUtils
     	
         return false;
     }
-    
+
 //-----------------------------------------------------------------------------
     
     /**
@@ -354,7 +355,8 @@ public class AtomUtils
     	else 
     	{
     		Terminator.withMsgAndStatus("ERROR! Unexpected class in "
-    				+ "AtomUtils.isDummy() method. The IAtom which has "
+    				+ AtomUtils.class.getSimpleName()
+    				+ " method. The IAtom which has "
     				+ "triggered this is: " + atm.toString(), -1);
     	}
     	

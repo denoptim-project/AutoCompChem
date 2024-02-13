@@ -263,7 +263,13 @@ public class ChemSoftConstants
 	 * of the atom in the atom list. E.g., tag "C5" will be used for the 
 	 * fifth atom in the list, which is a carbon atom.
 	 */
+	//TODO-gg this is most likely obsolete: consider removing
 	public static final String PARUSEATMTAGS = "USEATOMTAGS";
+	
+	/**
+	 * Parameter specifying which type of atom label to use. 
+	 */
+	public static final String PARATMLABELTYPE = "LABELTYPE";
 
 	/**
 	 * Key for parameter defining if and what suffix append when

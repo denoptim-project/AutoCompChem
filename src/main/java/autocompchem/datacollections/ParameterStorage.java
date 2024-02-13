@@ -403,10 +403,10 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 				ndClone= nd.clone();
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
-				Terminator.withMsgAndStatus("ERROR! Counl not clone "
-						+ "ParameterStorage",-1);
+				Terminator.withMsgAndStatus("ERROR! Could not clone "
+						+ this.getClass().getSimpleName(), -1);
 			}
-			newPar.putNamedData(ndClone);
+			newPar.putNamedData(ndClone.getReference().toUpperCase(), ndClone);
     	}
     	return newPar;
     }  

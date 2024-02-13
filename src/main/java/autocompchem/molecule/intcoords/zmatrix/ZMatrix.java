@@ -139,7 +139,19 @@ public class ZMatrix implements Cloneable
             }
         }
     }
+    
+//------------------------------------------------------------------------------
 
+    /**
+     * Returns the list of centers (i.e., atoms)
+     * @return the list of centers.
+     */
+
+    public List<ZMatrixAtom> zatoms()
+    {
+        return zatoms;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -149,7 +161,7 @@ public class ZMatrix implements Cloneable
 
     public int getZAtomCount()
     {
-        return this.zatoms.size();
+        return zatoms.size();
     }
 
 //------------------------------------------------------------------------------
@@ -162,7 +174,7 @@ public class ZMatrix implements Cloneable
 
     public ZMatrixAtom getZAtom(int i)
     {
-        return this.zatoms.get(i);
+        return zatoms.get(i);
     }
 
 //------------------------------------------------------------------------------

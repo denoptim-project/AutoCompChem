@@ -33,25 +33,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetConstants;
-import autocompchem.modeling.constraints.ConstraintsGenerator;
-import autocompchem.modeling.constraints.ConstraintsSet;
-import autocompchem.molecule.MolecularUtils;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
-import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -899,6 +890,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	{
     		if (dd.hasACCTask())
     		{
+    			//TODO-gg clean code to avoid double call to getTaskParams
 	    		ParameterStorage ps;
     			if (dd.getTaskParams()!=null)
     			{

@@ -7,9 +7,6 @@
         {
           "reference": "MULTIGEOMNWCHEM",
           "value": "first_G second_G"
-        },
-        {
-          "reference": "USESAMETAGSFORMULTIGEOM"
         }
       ],
       "directives": [

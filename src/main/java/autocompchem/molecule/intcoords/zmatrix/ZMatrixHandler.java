@@ -109,6 +109,11 @@ public class ZMatrixHandler extends Worker
      * List of internal coordinates used in the Zmatrix
      */
     private List<InternalCoord> intCoords = new ArrayList<InternalCoord>();
+    
+    /**
+     * List of atom labels to use for identifying atoms
+     */
+    private List<String> atmLabels;
 
     /**
      * Property used to stamp visited bonds
@@ -290,7 +295,24 @@ public class ZMatrixHandler extends Worker
                              + "use only torsions AND a template ZMatrix.", -1);
             }
         }
-
+//        
+//        if (params.contains("ATOMLABELS"))
+//        {
+//        	String value = params.getParameter("ATOMLABELS").getValueAsString();
+//        	String[] parts = value.split();
+//            List<String> templates = IOtools.readZMatrixFile(tmplZMatFile);
+//            if (templates.size()==0)
+//            {
+//            	 Terminator.withMsgAndStatus("ERROR! Could not find a template "
+//            	 		+ "ZMatrix in '" + tmplZMatFile + "'",-1);
+//            } else if (templates.size()>1)
+//            {
+//                System.out.println(" Found " + templates.size() 
+//                + " ZMatrix templates, but we'll use only the first one.");
+//            }
+//            this.atmLabels = 
+//        }
+        
         //Get and check output file
         if (params.contains("OUTFILE"))
         {

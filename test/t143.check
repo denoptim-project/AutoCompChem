@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "t143.log" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t143-mol-0.nw" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]]*geometry[[:space:]]*$" t143-mol-0.nw)
+if [ 5 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]]*.*[[:space:]]*1.878.*[[:space:]][[:space:]]*-0.530.*[[:space:]][[:space:]]*0.000.*[[:space:]]*$" t143-mol-0.nw)
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]]*.*[[:space:]]*-2.004.*[[:space:]][[:space:]]*0.631.*[[:space:]][[:space:]]*-0.8.*[[:space:]]*$" t143-mol-0.nw)
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]][[:space:]]*6[[:space:]][[:space:]]*" t143-mol-0.nw)
+if [ 8 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]][[:space:]]*C1[[:space:]][[:space:]]*" t143-mol-0.nw)
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]][[:space:]]*H13[[:space:]][[:space:]]*" t143-mol-0.nw)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]][[:space:]]*C[[:space:]][[:space:]]*" t143-mol-0.nw)
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+
+
+if grep -q 'Termination status: 0' "t143.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

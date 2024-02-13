@@ -325,7 +325,6 @@ public abstract class Worker implements IOutputExposer
 		}
 		else
 		{
-			//TODO better
 			System.out.println("WARNING! Worker trying to put data on a null "
 					+ "output collector");
 		}

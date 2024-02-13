@@ -125,7 +125,8 @@
                   "value": "getMolecularGeometry"
                 },
                 {
-                  "reference": "USEATOMTAGS"
+                  "reference": "labelType",
+                  "value": "indexBased"
                 }
               ],
               "reference": "Geometry"
