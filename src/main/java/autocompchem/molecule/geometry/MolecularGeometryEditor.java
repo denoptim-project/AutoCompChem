@@ -43,6 +43,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;
 import autocompchem.io.IOtools;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
@@ -62,28 +63,8 @@ import autocompchem.worker.WorkerFactory;
  */
 
 
-public class MolecularGeometryEditor extends Worker
-{   
-    /**
-     * Flag indicating the input is from file
-     */
-    private boolean inpFromFile = false;
-
-    /**
-     * The molecular structure input file
-     */
-    private File inFile;
-
-    /**
-     * Molecular representation of the initial system
-     */
-    private IAtomContainer inMol;
-
-    /**
-     * Flag indicating the output is to be written to file
-     */
-    private boolean outToFile = false;
-
+public class MolecularGeometryEditor extends AtomContainerInputProcessor
+{
     /**
      * The output file
      */
@@ -93,11 +74,6 @@ public class MolecularGeometryEditor extends Worker
      * Format of the output file
      */
     private String outFormat = "SDF";
-
-    /**
-     * Molecular representation of the final systems
-     */
-    private List<IAtomContainer> outMols = new ArrayList<IAtomContainer>();
 
     /**
      * The SDF file with reference substructure
@@ -182,16 +158,6 @@ public class MolecularGeometryEditor extends Worker
      */
     private static double defMaxStep = 1.0;
     
-    /**
-     * Flag reporting that all tasks are done
-     */
-    private boolean allDone = false;
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
-    
     private final String NL =System.getProperty("line.separator"); 
     
     /**
@@ -247,40 +213,11 @@ public class MolecularGeometryEditor extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValue().toString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
-        if (verbosity > 0)
-        {
-            System.out.println(
-                              " Reading parameters in MolecularGeometryEditor");
-        }
-
-        //Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
-        {
-            inpFromFile = true;
-            this.inFile = new File(
-            		params.getParameter("INFILE").getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
-            List<IAtomContainer> inMols = IOtools.readSDF(inFile);
-            if (inMols.size() != 1)
-            {
-                Terminator.withMsgAndStatus("ERROR! MoleculeGeometryEditor "
-                        + "requires SDF files with only one structure. "
-                        + "Check file " + inFile, -1);
-            }
-            this.inMol = inMols.get(0);
-        }
-
+    	super.initialize();
+    	
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            outToFile = true;
             this.outFile = new File(
             		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
@@ -447,79 +384,67 @@ public class MolecularGeometryEditor extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+		AtomContainerSet result = null;
     	if (task.equals(MODIFYGEOMETRYTASK))
     	{
-    		applyMove();
+    		if (zmtMove!=null && zmtMove.getZAtomCount()>0)
+            {
+                if (verbosity > 0)
+                {
+                    System.out.println(" Applying ZMatrix move");
+                }
+                try
+                {
+                	result = applyZMatrixMove(iac);
+                }
+                catch (Throwable t)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Exception while "
+                        + "altering the ZMatrix. You might need dummy "
+                        + "atoms to define an healthy ZMatrix. Cause of the "
+                        + "exception: " + t.getMessage(), -1);
+                }
+            }
+            else if (crtMove!=null && crtMove.size()>0)
+            {
+                if (verbosity > 0)
+                {
+                    System.out.println(" Applying Cartesian move");
+                }
+                result = applyCartesianMove(iac);
+            } else {
+                Terminator.withMsgAndStatus("ERROR! Choose and provide either "
+                        + "a Cartesian or a ZMatrix move.", -1);
+            }
+    		
+    		if (exposedOutputCollector != null)
+            {
+	    	    String molID = "mol-"+i;
+		        exposeOutputData(new NamedData(task.ID + molID, 
+		        		NamedDataType.ATOMCONTAINERSET, result));
+        	}
     	} else {
     		dealWithTaskMismatch();
         }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Apply the geometric modification as defined by the constructor.
-     */
-
-    public void applyMove()
-    {
-        if (zmtMove!=null && zmtMove.getZAtomCount()>0)
-        {
-            if (verbosity > 0)
-            {
-                System.out.println(" Applying ZMatrix move");
-            }
-            try
-            {
-                applyZMatrixMove();
-            }
-            catch (Throwable t)
-            {
-                Terminator.withMsgAndStatus("ERROR! Exception while "
-                    + "altering the ZMatrix. You might need dummy "
-                    + "atoms to define an healthier ZMatrix. Cause of the "
-                    + "exception: " + t.getMessage(), -1);
-            }
-        }
-        else if (crtMove!=null && crtMove.size()>0)
-        {
-            if (verbosity > 0)
-            {
-                System.out.println(" Applying Cartesian move");
-            }
-            applyCartesianMove();
-        } else {
-            Terminator.withMsgAndStatus("ERROR! Choose and provide either "
-                    + "a Cartesian or a ZMatrix move.", -1);
-        }
-        
-        if (exposedOutputCollector != null)
-        {
-        	int ii = 0;
-        	for (IAtomContainer iac : outMols)
-	    	{
-	    	    ii++;
-	    	    String molID = "step-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
     }
    
 //------------------------------------------------------------------------------
 
     /**
      * Apply the geometric modification as defined by the constructor.
+     * @return 
      */
 
-    private void applyCartesianMove()
+    private AtomContainerSet applyCartesianMove(IAtomContainer iac)
     {
-        // Consistency check
-        if (inMol == null || inMol.getAtomCount() == 0)
-        {
-            Terminator.withMsgAndStatus("ERROR! No input molecule defined. "
-            + "Please, try using 'INFILE' to import a molecule from file.",-1);
-        }
         if (crtMove == null || crtMove.size() == 0)
         {
             Terminator.withMsgAndStatus("ERROR! No Cartesian move defined. "
@@ -527,11 +452,12 @@ public class MolecularGeometryEditor extends Worker
                 + "move.",-1);
         }
 
+        String outMolBasename = MolecularUtils.getNameOrID(iac);
+        
         // Identify the actual Cartesian move, possibly using reference 
         // substructure to identify the atom to be moved
         ArrayList<Point3d> actualMove = new ArrayList<Point3d>();
-        IAtomContainer actualMol = inMol;
-        for (int i=0; i<actualMol.getAtomCount(); i++)
+        for (int i=0; i<iac.getAtomCount(); i++)
         {
             actualMove.add(new Point3d());
         }
@@ -548,8 +474,7 @@ public class MolecularGeometryEditor extends Worker
                      + "size " + crtMove.size() + ") have different size. ",-1);
             }
             ComparatorOfGeometries mc = new ComparatorOfGeometries(verbosity-1);
-            Map<Integer,Integer> refToInAtmMap = mc.getAtomMapping(actualMol,
-                                                                        refMol);
+            Map<Integer,Integer> refToInAtmMap = mc.getAtomMapping(iac, refMol);
             for (Integer refAtId : refToInAtmMap.keySet())
             {
                 actualMove.set(refToInAtmMap.get(refAtId),crtMove.get(refAtId));
@@ -557,7 +482,7 @@ public class MolecularGeometryEditor extends Worker
 
             //Get the rototranslate actualMol as to make it consistent with the
             // reference's Cartesian move
-            actualMol = mc.getFirstMolAligned();
+            iac = mc.getFirstMolAligned();
         }
         else
         {
@@ -569,7 +494,7 @@ public class MolecularGeometryEditor extends Worker
         
         if (optimizeScalingFactors)
         {
-        	scaleFactors = optimizeScalingFactors(actualMol,actualMove,
+        	scaleFactors = optimizeScalingFactors(iac, actualMove,
         			numScalingFactors,
         			scalingFactorDistribution,
         			percOfNeg,
@@ -594,6 +519,7 @@ public class MolecularGeometryEditor extends Worker
         }
 
         // Produce the transformed geometry/ies
+    	AtomContainerSet results = new AtomContainerSet();
         for (int j=0; j<scaleFactors.size(); j++)
         {
             if (verbosity > 0)
@@ -603,31 +529,28 @@ public class MolecularGeometryEditor extends Worker
             }
 
             // Here we finally generate one new geometry
-            IAtomContainer outMol = getGeomFromCartesianMove(actualMol,
+            IAtomContainer outMol = getGeomFromCartesianMove(iac,
             		actualMove,scaleFactors.get(j));
-            String outMolName = MolecularUtils.getNameOrID(inMol);
-            outMolName = outMolName + " - moved by " + scaleFactors.get(j) 
-                                                        + "x(Cartesian_move)";
+            String outMolName = outMolBasename + " - moved by " 
+            		+ scaleFactors.get(j) + "x(Cartesian_move)";
             outMol.setProperty(CDKConstants.TITLE,outMolName);
-            outMols.add(outMol); 
+            results.addAtomContainer(outMol); 
         }
         
-        if (!outToFile && verbosity > 0)
+        if (outFile==null && verbosity > 0)
         {
             System.out.println(" ");
             System.out.println(" WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }
         
-        if (outToFile)
+        if (outFile!=null)
         {
-        	AtomContainerSet mols = new AtomContainerSet();
-        	for (IAtomContainer iac : outMols)
-        		mols.addAtomContainer(iac);
-            IOtools.writeAtomContainerSetToFile(outFile, mols, outFormat, false);
+            IOtools.writeAtomContainerSetToFile(outFile, results, outFormat, 
+            		false);
         }
         
-        allDone = true;
+        return results;
     }
     
 //-------------------------------------------------------------------------------
@@ -1119,14 +1042,8 @@ public class MolecularGeometryEditor extends Worker
      * is preferable to redefine the ZMatrix, possibly adding dummy atoms
      */
 
-    private void applyZMatrixMove() throws Throwable
+    private AtomContainerSet applyZMatrixMove(IAtomContainer iac) throws Throwable
     {
-        // Consistency check
-        if (inMol == null || inMol.getAtomCount() == 0)
-        {
-            Terminator.withMsgAndStatus("ERROR! No input molecule defined. "
-            + "Please, try using 'INFILE' to import a molecule from file.",-1);
-        }
         if (zmtMove == null || zmtMove.getZAtomCount() == 0)
         {
             Terminator.withMsgAndStatus("ERROR! No ZMatrix move defined. "
@@ -1134,9 +1051,12 @@ public class MolecularGeometryEditor extends Worker
                 + "modification as changes of internal coordinates.",-1);
         }
 
+        String outMolBasename = MolecularUtils.getNameOrID(iac);
+        
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
-        locPar.setParameter(WorkerConstants.PARTASK, "PRINTZMATRIX");
+        locPar.setParameter(WorkerConstants.PARTASK, 
+        		ZMatrixHandler.PRINTZMATRIXTASK.ID);
         Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix();
@@ -1152,7 +1072,7 @@ public class MolecularGeometryEditor extends Worker
 
         // Identify the actual move in terms of ZMatrix
         ZMatrix actualZMatMove = new ZMatrix();
-        if (inMol.getAtomCount() != zmtMove.getZAtomCount())
+        if (iac.getAtomCount() != zmtMove.getZAtomCount())
         {
             // TODO
             if (verbosity > -1)
@@ -1177,6 +1097,7 @@ public class MolecularGeometryEditor extends Worker
         }
 
         // Produce the transformed geometry/ies
+    	AtomContainerSet results = new AtomContainerSet();
         for (int j=0; j<scaleFactors.size(); j++)
         {
             if (verbosity > 0)
@@ -1190,31 +1111,29 @@ public class MolecularGeometryEditor extends Worker
                                                            scaleFactors.get(j));
 
             // Convert to Cartesian coordinates
-            IAtomContainer outMol = zmh.convertZMatrixToIAC(modZMat,inMol);
+            IAtomContainer outMol = zmh.convertZMatrixToIAC(modZMat, iac);
 
             // Prepare and print output to file
-            String outMolName = MolecularUtils.getNameOrID(inMol);
-            outMolName = outMolName + " - moved by " + scaleFactors.get(j) 
-                                                             + "x(ZMatrixMove)";
+            String outMolName = outMolBasename + " - moved by " 
+            		+ scaleFactors.get(j) + "x(ZMatrixMove)";
             outMol.setProperty(CDKConstants.TITLE,outMolName);
-            outMols.add(outMol);
-            if (outToFile)
-            {
-            	AtomContainerSet mols = new AtomContainerSet();
-            	for (IAtomContainer iac : outMols)
-            		mols.addAtomContainer(iac);
-                IOtools.writeAtomContainerSetToFile(outFile, mols, outFormat, 
-                		false);
-            }
+            results.addAtomContainer(outMol);
         }
         
-        if (!outToFile && verbosity > 0)
+        if (outFile==null && verbosity > 0)
         {
             System.out.println(" ");
             System.out.println(" WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }
-        allDone = true;
+        
+        if (outFile!=null)
+        {
+            IOtools.writeAtomContainerSetToFile(outFile, results, outFormat, 
+            		false);
+        }
+        
+        return results;
     }
  
 //------------------------------------------------------------------------------
