@@ -1,12 +1,5 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the SDF file containing the chemical system to work with."
-  },
-  {
     "key": "OUTFILE",
     "casedKey": "outFile",
     "type": "<String>",
@@ -20,10 +13,7 @@
     "doc": "List of SMARTS queries (space or new-line separated) defining the source atoms: the first atoms in the reordered system. Use of this option implies that for each continuously connected networks of atoms (e.g., typically a single molecule) there is at least one source atom. If no source atom is found for one or more networks the reordering cannot be performed according to the request of the user and the task is terminated with an error message. If more than one atom matches a single SMARTS query, and these candidate source atoms belong to the same network of covalently bonded atoms, the reorganization of the atoms list will start from the atom that, among the candidates, has the lowest index in the original list. If the matched atoms belong to different networks, then they are use each for reorganizing the network (i.e., molecule) they belong to. In case multiple SMARTS queries match atoms of the same molecule, the priority is given according to the order of SMARTS queries specified by the used in this option (i.e., decreasing priority is assumed)."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

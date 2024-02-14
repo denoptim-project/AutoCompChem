@@ -50,7 +50,8 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * Reorderer for atom lists. This tool allows to reorganize list atoms 
+ * Tool for changing the order of atoms in an atom container. 
+ * This tool allows to reorganize list atoms 
  * according to given criteria. If no optional setting is given the list of
  * atoms will be reorganized starting from the first atom and 
  * following the connectivity.
@@ -58,20 +59,8 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-public class MolecularReorderer extends Worker
+public class MolecularReorderer extends AtomContainerInputProcessor
 {
-	
-    /**
-     * Flag indicating the input is from file
-     */
-    @SuppressWarnings("unused")
-    private boolean inpFromFile = false;
-
-    /**
-     * Name of the input file
-     */
-    private File inFile;
-
     /**
      * Name of the reference file
      */
@@ -98,12 +87,6 @@ public class MolecularReorderer extends Worker
     private Map<String,String> smarts = new HashMap<String,String>();
 
     /**
-     * FLag reporting that all tasks are done
-     */
-    @SuppressWarnings("unused")
-        private boolean allDone = false;
-
-    /**
      * Name of the atom property used to stamp a visited atom
      */
     private static final String visitedFlag = "VISITEDBYREORDERER";
@@ -112,11 +95,6 @@ public class MolecularReorderer extends Worker
      * Name of the atom property used to record the orded of the visits
      */
     private static final String ordCounter = "ORDERLABEL";
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
     
     /**
      * String defining the task of reordering atom list
@@ -186,25 +164,8 @@ public class MolecularReorderer extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValue().toString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
-        if (verbosity > 0)
-            System.out.println(" Reading parameters in MolecularReorderer");
-
-        //Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
-        {
-            inpFromFile = true;
-            this.inFile =  new File(
-            		params.getParameter("INFILE").getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
-        }
-
+    	super.initialize();
+    	
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
@@ -253,9 +214,32 @@ public class MolecularReorderer extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(REORDERATOMLISTTASK))
     	{
-    		reorderAll();
+    		List<IAtom> sources = identifySourceAtoms(iac);
+
+            IAtomContainer reordered = reorderContainer(iac, sources);
+
+            if (outFile!=null)
+            {
+            	IOtools.writeSDFAppend(outFile, reordered, true);
+            }
+            
+            if (exposedOutputCollector != null)
+            {
+	    	    String molID = "mol-"+i;
+		        exposeOutputData(new NamedData(molID, 
+		      		NamedDataType.ATOMCONTAINERSET, reordered));
+            }
+            
 //    	} else if (task.equals(ALIGNATOMLISTSTASK)) {
 //    		//TODO
 //    		System.out.println("WARNING!!! Method for aligning list is not"
@@ -344,60 +328,6 @@ public class MolecularReorderer extends Worker
             Terminator.withMsgAndStatus("ERROR! Exception returned by "
                 + "SDFIterator while reading " + inFile + ": " + t, -1);
         }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Reorder all atom lists taken from the input file 
-     * according to the current settings.
-     */
-
-    public void reorderAll()
-    {
-        int i = 0;
-        allDone = false;
-        AtomContainerSet output = new AtomContainerSet();
-        try 
-        {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                i++;
-                if (verbosity > 1)
-                {
-                    System.out.println("Reordering atom container #" + i);
-                }
-                IAtomContainer mol = sdfItr.next();
-                
-                ArrayList<IAtom> sources = identifySourceAtoms(mol);
-
-                mol = reorderContainer(mol,sources);
-
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile + ": " + t, -1);
-        }
-        allDone = true;
-        
-        if (exposedOutputCollector != null)
-        {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
     }
 
 //-----------------------------------------------------------------------------
@@ -527,7 +457,7 @@ public class MolecularReorderer extends Worker
      */
 
     public IAtomContainer reorderContainer(IAtomContainer iac, 
-                                                       ArrayList<IAtom> sources)
+    		List<IAtom> sources)
     {
         //Try using source atoms to reorder the container
         int n=0;
@@ -550,7 +480,7 @@ public class MolecularReorderer extends Worker
             }
 
             //This comparator defined the priority that will be given to
-            //seed atoms during the explroation of the connectivity
+            //seed atoms during the exploration of the connectivity
             SeedAtomComparator priority = new SeedAtomComparator();
 
             // This method identifies the fragments/molecules in the container

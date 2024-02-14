@@ -655,10 +655,10 @@ if (doneB2.length() > maxlengtdone.length())
      */
 
     public static void exploreContinuoslyConnectedFromSource(IAtomContainer mol,
-                                                       ArrayList<IAtom> sources,
-                                                               String fragLabel,
-                                                              String orderLabel,
-                                                  Comparator<SeedAtom> priority)
+    		List<IAtom> sources,
+    		String fragLabel,
+    		String orderLabel,
+    		Comparator<SeedAtom> priority)
     {
         int fragLabValue = 0;
         for (IAtom atm : sources)
@@ -695,7 +695,7 @@ if (doneB2.length() > maxlengtdone.length())
      */
 
     public static void identifyContinuoslyConnected(IAtomContainer mol, 
-                                                                  String label)
+    		String label)
     {
         ArrayList<IAtom> atoms = new ArrayList<IAtom>();
         for (IAtom atm : mol.atoms())
@@ -772,8 +772,7 @@ if (doneB2.length() > maxlengtdone.length())
      * @return a list of fragments
      */
 
-    public static ArrayList<IAtomContainer> getConnectedFrags(
-                                                             IAtomContainer iac)
+    public static List<IAtomContainer> getConnectedFrags(IAtomContainer iac)
     {
         return getConnectedFrags(iac,1);
     }
@@ -786,12 +785,12 @@ if (doneB2.length() > maxlengtdone.length())
      * the same fragment.
      * @param iac the initial atom container
      * @param minSize the minimum size of fragments to consider
-     * @return a list of fragments (sorted from gibber to smaller according
+     * @return a list of fragments (sorted from bigger to smaller according
      * to AtomContainerComparator).
      */
 
-    public static ArrayList<IAtomContainer> getConnectedFrags(
-                                                IAtomContainer iac, int minSize)
+    public static List<IAtomContainer> getConnectedFrags(IAtomContainer iac, 
+    		int minSize)
     {
         //Label atoms with the original index in the original atom list
         for (int i=0; i<iac.getAtomCount(); i++)
@@ -848,7 +847,8 @@ if (doneB2.length() > maxlengtdone.length())
      * @return a map of fragments as lists of connected atoms
      */
 
-    public static Map<Integer,List<IAtom>> identifyConnectedFrags(IAtomContainer iac)
+    public static Map<Integer,List<IAtom>> identifyConnectedFrags(
+    		IAtomContainer iac)
     {
         String prop = "FRAGMENTERBYCONNMTRX";
         identifyContinuoslyConnected(iac,prop);
