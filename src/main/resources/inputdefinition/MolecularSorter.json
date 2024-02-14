@@ -1,12 +1,5 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the SDF file containing the chemical systems to work sort."
-  },
-  {
     "key": "OUTFILE",
     "casedKey": "outFile",
     "type": "<String>",
@@ -20,10 +13,7 @@
     "doc": "The name of the SDF property to use for sorting"
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.silent.AtomContainerSet;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -39,23 +41,19 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * MolecularSorter is a tool to sort molecules.
+ * Tool to sorting molecules.
  * 
  * @author Marco Foscato
  */
 
-public class MolecularSorter extends Worker
+public class MolecularSorter extends AtomContainerInputProcessor
 {
     
     //Filenames
-    private File inFile;
     private File outFile;
 
     //Property
-    private String prop;
-
-    //Verbosity level
-    private int verbosity = 1;
+    private String propertyName;
     
     /**
      * String defining the task of sorting molecules
@@ -109,25 +107,14 @@ public class MolecularSorter extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to MolecularSorter");
-
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(params.getParameter("INFILE").getValueAsString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-
-        //Get and check the output file name 
-        this.outFile = new File(params.getParameter("OUTFILE").getValueAsString());
+    	super.initialize();
+    	
+        this.outFile = new File(params.getParameter("OUTFILE")
+        		.getValueAsString());
         FileUtils.mustNotExist(this.outFile);
 
-        //Get SDF Property
-        this.prop = params.getParameter("SDFPROPERTY").getValue().toString();
-
+        this.propertyName = params.getParameter("SDFPROPERTY")
+        		.getValueAsString();
     }
 
 //-----------------------------------------------------------------------------
@@ -140,64 +127,75 @@ public class MolecularSorter extends Worker
     @Override
     public void performTask()
     {
-    	if (task.equals(SORTMOLECULESTASK))
-    	{
-    		//TODO-gg rename method to show that writing is optional
-    		writeSortedSDF();
-    	} else {
-    		dealWithTaskMismatch();
-        }
+    	multiGeomMode = MultiGeomMode.ALLINONEJOB;
+    	processInput();
     }
-
-
+    
 //------------------------------------------------------------------------------
 
-    /**
-     * Writes the sorted list into the output file
-     */
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+		throw new IllegalStateException(this.getClass().getSimpleName() 
+				+ " should not call this method.");
+    }
+    
+//------------------------------------------------------------------------------
 
-    public void writeSortedSDF()
-    {
-        //Get input
-        List<IAtomContainer> mols = IOtools.readSDF(inFile);
-        List<SortableMolecule> smols = new ArrayList<SortableMolecule>();
-        for (IAtomContainer mol : mols)
+	@Override
+	public void processAllAtomContainer(List<IAtomContainer> iacs) 
+	{
+        AtomContainerSet result = sort(iacs, propertyName);
+        
+        if (outFile!=null)
         {
-            if (!MolecularUtils.hasProperty(mol,prop))
+	        IOtools.writeAtomContainerSetToFile(outFile, result, 
+	        		"SDF", false);
+        }
+        
+        if (exposedOutputCollector != null)
+        {
+        	exposeOutputData(new NamedData(SORTMOLECULESTASK.ID, 
+		      		NamedDataType.ATOMCONTAINERSET, result));
+    	}
+    }
+	
+//-----------------------------------------------------------------------------
+	
+	/**
+	 * Sort the atom container by the value returned by 
+	 * {@link IAtomContainer#getProperties()}.
+	 * @param iacs the containers to sort.
+	 * @param propertyName the identifier of the property to use for sorting.
+	 * @return the sorted list of atom containers.
+	 */
+	public static AtomContainerSet sort(List<IAtomContainer> iacs, 
+			String propertyName)
+	{
+		List<SortableMolecule> smols = new ArrayList<SortableMolecule>();
+        for (IAtomContainer mol : iacs)
+        {
+            if (!MolecularUtils.hasProperty(mol, propertyName))
             {
                 String err = "Molecule " + MolecularUtils.getNameOrID(mol)
-                             + " has no field named '" + prop + "'.";
+                             + " has no field named '" + propertyName + "'.";
                 Terminator.withMsgAndStatus("ERROR! " + err, -1);
             }
 
-            SortableMolecule sm = new SortableMolecule(mol,mol.getProperty(
-                                                                         prop));
+            SortableMolecule sm = new SortableMolecule(mol, 
+            		mol.getProperty(propertyName));
             smols.add(sm);
         }
-        mols.clear();
 
-        //Sort
         Collections.sort(smols, new SortableMoleculeComparator());
 
-        if (outFile!=null)
-        {
-	        for (int i=0; i<smols.size(); i++)
-	        {
-	            IOtools.writeSDFAppend(outFile,smols.get(i).getIAtomContainer(), true);
-	        }
-        }
-        if (exposedOutputCollector != null)
-        {
-        	int ii = 0;
-        	for (SortableMolecule smol : smols)
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, smol.getIAtomContainer()));
-	    	}
+        AtomContainerSet result = new AtomContainerSet();
+        for (SortableMolecule smol : smols)
+    	{
+        	result.addAtomContainer(smol.getIAtomContainer());
     	}
-    }
+        return result;
+	}
 
 //-----------------------------------------------------------------------------
 

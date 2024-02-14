@@ -103,7 +103,7 @@ public class AtomContainerInputProcessor extends Worker
     /**
      * Chosen mode of handling multiple geometries.
      */
-    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
+    protected MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
 
     /**
      * String defining the task of generating tuples of atoms
