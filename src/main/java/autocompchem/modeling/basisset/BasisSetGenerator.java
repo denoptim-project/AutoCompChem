@@ -41,6 +41,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -52,27 +53,18 @@ import autocompchem.worker.Worker;
 
 
 /**
- * BasisSetGenerator implements the facility to generate basis sets for 
- * specific atom types according to a
- * given list of matching rules. The type of implemented rules and their
+ * A class implementing the facility to generate basis sets. In particular, 
+ * the generation of basis set for 
+ * specific atoms according to a
+ * given list of atom matching rules. 
+ * The type of implemented rules and their
  * syntax is defined in the {@link BSMatchingRule} documentation page.
  * @author Marco Foscato
  */
 
 
-public class BasisSetGenerator extends Worker
+public class BasisSetGenerator extends AtomContainerInputProcessor
 {
-    
-    /**
-     * The input file (molecular structure files)
-     */
-    private File inFile;
-    
-    /**
-     * The input molecules
-     */
-    private List<IAtomContainer> inMols;
-
     /**
      * The output file, if any
      */
@@ -116,13 +108,8 @@ public class BasisSetGenerator extends Worker
     static {
     	GENERATEBASISSETTASK = Task.make(GENERATEBASISSETTASKNAME);
     }
+
     
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
-
-
 //-----------------------------------------------------------------------------
     
     /**
@@ -162,38 +149,14 @@ public class BasisSetGenerator extends Worker
 	@Override
     public void initialize()
     {
-        // Define verbosity
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValue().toString();
-            this.verbosity = Integer.parseInt(v);
-        }
+		super.initialize();
 
         if (verbosity > 0)
-            System.out.println(" Adding parameters to BasisSetGenerator");
-
-        // Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
         {
-            this.inFile = new File(
-            		params.getParameter("INFILE").getValue().toString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
+        	System.out.println(" Adding parameters to " 
+        			+ this.getClass().getSimpleName());
         }
-        if (params.contains(ChemSoftConstants.PARGEOM))
-        {
-            this.inMols = (List<IAtomContainer>) params.getParameter(
-            		ChemSoftConstants.PARGEOM).getValue();
-            if (params.contains("INFILE"))
-            {
-            	//TODO: logging
-            	System.out.println("WARNING: found both INFILE and "
-            			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
-            			+ ChemSoftConstants.PARGEOM + " as input for "
-            			+ this.getClass().getSimpleName() + ".");
-            	this.inFile = null;
-            }
-        }
-
+        
         // Read the atom type matching rules
         setBSMatchingRules(params.getParameter(
                             BasisSetConstants.ATMSPECBS).getValue().toString());
@@ -235,13 +198,42 @@ public class BasisSetGenerator extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(GENERATEBASISSETTASK))
     	{
-    		assignBasisSet();
+    		assignBasisSetToOneAtomCOntainer(iac, i);
         } else {
     		dealWithTaskMismatch();
         }
     }
+    
+//------------------------------------------------------------------------------
+	
+	private void assignBasisSetToOneAtomCOntainer(IAtomContainer iac, int i)
+	{
+		BasisSet bs = assignBasisSet(iac);
+        output.add(bs);
+
+        if (outFile!=null)
+        {
+        	BasisSetUtils.writeFormattedBS(bs, format, outFile);
+        }
+        
+        if (exposedOutputCollector != null)
+    	{
+			String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(
+	        		GENERATEBASISSETTASK.ID + "_" + molID, 
+	        		NamedDataType.BASISSET, bs));
+    	}
+	}
 
 //------------------------------------------------------------------------------
 
@@ -284,74 +276,6 @@ public class BasisSetGenerator extends Worker
     public void addBSMatchingRule(BSMatchingRule bsr)
     {
     	this.rules.put(bsr.getRefName(), bsr);
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Assign basis set to all atoms in all structures found in the input and
-     * produce output according to the parameters given to constructor.
-     */
-
-    public void assignBasisSet()
-    {
-        if (inFile==null && inMols==null)
-        {
-            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
-            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
-            		+ "an input file to read geometries from. "
-            		+ "Cannot generate basis set.",-1);
-        }
-
-        if (inFile!=null)
-        {
-	        try {
-	            SDFIterator sdfItr = new SDFIterator(inFile);
-	            while (sdfItr.hasNext())
-	            {
-	                IAtomContainer mol = sdfItr.next();
-	        		processOneAtomContainer(mol);
-	            }
-	            sdfItr.close();
-	        } catch (Throwable t) {
-	            t.printStackTrace();
-	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-	                + "SDFIterator while reading " + inFile, -1);
-	        }
-        } else {
-        	for (IAtomContainer mol : inMols)
-        	{
-        		processOneAtomContainer(mol);
-        	}
-        }
-        
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (BasisSet bs : output)
-	    	{
-	    		ii++;
-	    		if (bs != null)
-	    		{
-	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(
-	  		        		GENERATEBASISSETTASK.ID + "_" + molID, 
-	  		        		NamedDataType.BASISSET, bs));
-	    		}
-	    	}
-    	}
-    }
-    
-//------------------------------------------------------------------------------
-    
-    private void processOneAtomContainer(IAtomContainer iac)
-    {
-		BasisSet bs = assignBasisSet(iac);
-        output.add(bs);
-
-        //Write to output
-        if (outFile!=null)
-        	BasisSetUtils.writeFormattedBS(bs, format, outFile);
     }
 
 //------------------------------------------------------------------------------

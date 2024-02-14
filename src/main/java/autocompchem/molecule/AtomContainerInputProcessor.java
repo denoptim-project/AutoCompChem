@@ -332,23 +332,17 @@ public class AtomContainerInputProcessor extends Worker
     
     
 //------------------------------------------------------------------------------
+
+  	/**
+  	 * Does nothing else than doing the same task on each container.
+  	 */
     
-    /**
-     * Takes all the atom containers available in the input specified by the 
-     * settings of this instance and places them in the
-     * {@link Worker#exposedOutputCollector}.
-     * Subclasses should overwrite this method to do what they want with the 
-     * list of atom containers and produce what they like as output data to be
-     * placed in the {@link Worker#exposedOutputCollector}. 
-     * @param iacs the list of atom containers to be processes
-     */
-    public void processAllAtomContainer(List<IAtomContainer> iacs)
-    {
-    	for (int i=0; i<iacs.size(); i++)
-		{
-    		IAtomContainer iac = iacs.get(i);
-    		exposeOutputData(new NamedData(READIACSTASK.ID+i, iac));
-		}
+  	public void processAllAtomContainer(List<IAtomContainer> iacs) 
+  	{   
+  		for (int molId = 0; molId<iacs.size(); molId++)
+          {
+  			processOneAtomContainer(iacs.get(molId), molId);
+  		}
     }
     
 //-----------------------------------------------------------------------------
