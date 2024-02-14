@@ -38,6 +38,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.basisset.BasisSet;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -53,16 +54,13 @@ import autocompchem.worker.Worker;
  */
 
 
-public class ConnectivityGenerator extends Worker
+public class ConnectivityGenerator extends AtomContainerInputProcessor
 {
-	
+    //TODO: document code
+    
     //Files we work with
-    private File inFile;
     private File outFile;
     private File refFile;
-
-    //Reporting flag
-    private int verbosity = 0;
 
     //Default bond order
     private String defBO = "SINGLE";
@@ -80,36 +78,36 @@ public class ConnectivityGenerator extends Worker
      * String defining the task of recalculating connectivity table
      */
     public static final String RICALCULATECONNECTIVITYTASKNAME = 
-    		"ricalculateConnectivity";
+            "ricalculateConnectivity";
 
     /**
      * Task about recalculating connectivity table
      */
     public static final Task RICALCULATECONNECTIVITYTASK;
     static {
-    	RICALCULATECONNECTIVITYTASK = 
-    			Task.make(RICALCULATECONNECTIVITYTASKNAME);
+        RICALCULATECONNECTIVITYTASK = 
+                Task.make(RICALCULATECONNECTIVITYTASKNAME);
     }
     /**
      * String defining the task of adding bonds on a specific element
      */
     public static final String ADDBONDSFORSINGLEELEMENTTASKNAME = 
-    		"addBondsForSingleElement";
+            "addBondsForSingleElement";
 
     /**
      * Task about adding bonds on a specific element
      */
     public static final Task ADDBONDSFORSINGLEELEMENTTASK;
     static {
-    	ADDBONDSFORSINGLEELEMENTTASK = 
-    			Task.make(ADDBONDSFORSINGLEELEMENTTASKNAME);
+        ADDBONDSFORSINGLEELEMENTTASK = 
+                Task.make(ADDBONDSFORSINGLEELEMENTTASKNAME);
     }
     /**
      * String defining the task of imposing a connectivity table to a set of 
      * atoms
      */
     public static final String IMPOSECONNECTIONTABLETASKNAME = 
-    		"imposeConnectionTable";
+            "imposeConnectionTable";
 
     /**
      * Task about imposing a connectivity table to a set of 
@@ -117,7 +115,7 @@ public class ConnectivityGenerator extends Worker
      */
     public static final Task IMPOSECONNECTIONTABLETASK;
     static {
-    	IMPOSECONNECTIONTABLETASK = Task.make(IMPOSECONNECTIONTABLETASKNAME);
+        IMPOSECONNECTIONTABLETASK = Task.make(IMPOSECONNECTIONTABLETASKNAME);
     }
     /**
      * String defining the task of checking consistency between bond lengths 
@@ -131,7 +129,7 @@ public class ConnectivityGenerator extends Worker
      */
     public static final Task CHECKBONDLENGTHSTASK;
     static {
-    	CHECKBONDLENGTHSTASK = Task.make(CHECKBONDLENGTHSTASKNAME);
+        CHECKBONDLENGTHSTASK = Task.make(CHECKBONDLENGTHSTASKNAME);
     }
 
 //------------------------------------------------------------------------------
@@ -148,9 +146,9 @@ public class ConnectivityGenerator extends Worker
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
                 Arrays.asList(RICALCULATECONNECTIVITYTASK,
-                		ADDBONDSFORSINGLEELEMENTTASK,
-                		IMPOSECONNECTIONTABLETASK, 
-                		CHECKBONDLENGTHSTASK)));
+                        ADDBONDSFORSINGLEELEMENTTASK,
+                        IMPOSECONNECTIONTABLETASK, 
+                        CHECKBONDLENGTHSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -176,19 +174,8 @@ public class ConnectivityGenerator extends Worker
     @Override
     public void initialize()
     {
-
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to ConnectivityGenerator");
-
-        //Get and check the input file (which has to be an SDF file)
-        String pathname = params.getParameter("INFILE").getValueAsString();
-        this.inFile = new File(pathname);
-        FileUtils.foundAndPermissions(pathname,true,false,false);
-
+        super.initialize();
+        
         //Define tolerance
         if (params.contains("TOLERANCE"))
         {
@@ -214,169 +201,124 @@ public class ConnectivityGenerator extends Worker
         
         if (params.contains("TEMPLATE"))
         {
-        	this.templatePathName = new File(
-        			params.getParameter("TEMPLATE").getValueAsString());
+            this.templatePathName = new File(
+                    params.getParameter("TEMPLATE").getValueAsString());
         }
         
         if (params.contains("REFERENCE"))
         {
-	        String str = params.getParameter("REFERENCE").getValueAsString();
-	        this.refFile = new File(str);
-	        FileUtils.foundAndPermissions(str,true,false,false);
+            String str = params.getParameter("REFERENCE").getValueAsString();
+            this.refFile = new File(str);
+            FileUtils.foundAndPermissions(str,true,false,false);
         }
 
         if (params.contains("OUTFILE"))
         {
-        	 String str = params.getParameter("OUTFILE").getValueAsString();
-	        this.outFile = new File(str);
-	        FileUtils.mustNotExist(this.outFile);
+             String str = params.getParameter("OUTFILE").getValueAsString();
+            this.outFile = new File(str);
+            FileUtils.mustNotExist(this.outFile);
         }
     }
     
 //-----------------------------------------------------------------------------
 
-      /**
-       * Performs any of the registered tasks according to how this worker
-       * has been initialised.
-       */
+    /**
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
+     */
 
-      @Override
-      public void performTask()
-      {
-      	  if (task.equals(RICALCULATECONNECTIVITYTASK))
-      	  {
-      		  ricalculateConnectivity();
-      	  } else if (task.equals(ADDBONDSFORSINGLEELEMENTTASK)) {
-      		  addBondsOnSingleElement();
-      	  } else if (task.equals(IMPOSECONNECTIONTABLETASK)) {
-      		  imposeConnectionTable();
-      	  } else if (task.equals(CHECKBONDLENGTHSTASK)) {
-      		  checkBondLengthsAgainstConnectivity();
-      	  } else {
-      		dealWithTaskMismatch();
-          }
-      }
+    @Override
+    public void performTask()
+    {
+        processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public void processOneAtomContainer(IAtomContainer iac, int i) 
+    {
+        if (task.equals(RICALCULATECONNECTIVITYTASK))
+          {
+            ricalculateConnectivity(iac, i);
+        } else if (task.equals(ADDBONDSFORSINGLEELEMENTTASK)) {
+            addBondsOnSingleElement(iac, i);
+        } else if (task.equals(IMPOSECONNECTIONTABLETASK)) {
+            imposeConnectionTable(iac, i);
+        } else if (task.equals(CHECKBONDLENGTHSTASK)) {
+            checkBondLengthsAgainstConnectivity(iac, i);
+        } else {
+              dealWithTaskMismatch();
+        }
+    }
 
 //------------------------------------------------------------------------------
 
-      /**
-       * Uses the connectivity of a given reference container to identify pairs 
-       * of connected atoms and checks whether the interatomic distances (i.e.,
-       * bond length) is consistent with that given in reference geometry. This
-       * method is useful to evaluate potential changes of connectivity 
-       * occurring after any molecular modeling that does not take into account 
-       * connectivity in its input (e.g., any quantum mechanical driven 
-       * molecular modeling engine).
-       */
+    /**
+     * Uses the connectivity of a given reference container to identify pairs 
+     * of connected atoms and checks whether the interatomic distances (i.e.,
+     * bond length) is consistent with that given in reference geometry. This
+     * method is useful to evaluate potential changes of connectivity 
+     * occurring after any molecular modeling that does not take into account 
+     * connectivity in its input (e.g., any quantum mechanical driven 
+     * molecular modeling engine).
+     */
 
-      public void checkBondLengthsAgainstConnectivity()
-      {
-          List<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
-          try 
-          { 
-        	  refMols = IOtools.readMultiMolFiles(refFile);
-          } catch (Throwable t) {
-              Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                      + "SDFIterator while reading " + refFile, -1);
-          }
+    public void checkBondLengthsAgainstConnectivity(IAtomContainer iac, int i)
+    {
+        List<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
+        try 
+        {
+            refMols = IOtools.readMultiMolFiles(refFile);
+        } catch (Throwable t) {
+            Terminator.withMsgAndStatus("ERROR! Exception returned while "
+                    + "reading " + refFile, -1);
+        }
           
-          //TODO: possibility of allowing one different reference for each entry
+        //TODO: possibility of allowing one different reference for each entry
 
-          if (refMols.size() > 1)
-          {
-        	  System.out.println("WARNING: multiple references found in '" 
-        			  + refFile + "'. We'll use only the first one.");
-          }
-          IAtomContainer ref = refMols.get(0); 
-          
-          List<Boolean> output = new ArrayList<Boolean>();
-          try {
-              SDFIterator sdfItr = new SDFIterator(inFile);
-              int i = 0;
-              while (sdfItr.hasNext())
-              {
-            	  i++;
-            	  if (verbosity > 0)
-            		  System.out.println("Checking bond lengths in mol #"+i);
-            	  
-                  IAtomContainer mol = sdfItr.next();
-                  boolean result = 
-                		  ConnectivityUtils.compareBondDistancesWithReference(
-                				  mol, ref, tolerance, verbosity);
-                  output.add(result);
-              }
-              sdfItr.close();
-          } catch (Throwable t) {
-              Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                  + "SDFIterator while reading " + inFile, -1);
-          }
-          
-          if (exposedOutputCollector != null)
-          {
-        	  int ii = 0;
-  	    	  for (boolean isCompatible : output)
-  	    	  {
-  	    	      ii++;
-    			  String molID = "mol-"+ii;
-  		          exposeOutputData(new NamedData(molID, 
-  		        		NamedDataType.BOOLEAN, isCompatible));
-  	    	  }
-      	  }
-      }
+        if (refMols.size() > 1)
+        {
+            System.out.println("WARNING: multiple references found in '" 
+                    + refFile + "'. We'll use only the first one.");
+        }
+        IAtomContainer ref = refMols.get(0); 
+         
+        boolean result = ConnectivityUtils.compareBondDistancesWithReference(
+                        iac, ref, tolerance, verbosity);
+        
+        if (exposedOutputCollector != null)
+        {
+            String molID = "mol-"+i;
+            exposeOutputData(new NamedData(molID,
+                    NamedDataType.BOOLEAN, result));
+        }
+    }
       
 //------------------------------------------------------------------------------
 
     /**
-     * Add bonds on all the target elements of all the molecules according to
+     * Add bonds on all the target elements of the given molecule according to
      * the relation between interatomic distance and sum of van der Waals radii.
      */
 
-    public void addBondsOnSingleElement()
-    {
-        if (verbosity > 1)
-        {
-            System.out.println(" ConnectivityGenerator starts to work on "
-                                + inFile);
-        }
-        
-        AtomContainerSet output = new AtomContainerSet();
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
+    public void addBondsOnSingleElement(IAtomContainer iac, int i)
+    {   
+        ConnectivityUtils.addConnectionsByVDWRadius(iac, 
+                targetEl, 
+                tolerance,
+                tolerance2ndShell, 
+                verbosity);
 
-                //Recalculate connectivity of molecule
-                ConnectivityUtils.addConnectionsByVDWRadius(mol, 
-                                                            targetEl, 
-                                                            tolerance,
-                                                            tolerance2ndShell, 
-                                                            verbosity);
-
-                //Store output
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-            }
-            sdfItr.close();
-        } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
+        if (outFile!=null)
+            IOtools.writeSDFAppend(outFile, iac, true);
         
         if (exposedOutputCollector != null)
         {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
+            String molID = "mol-"+i;
+            exposeOutputData(new NamedData(molID, 
+                  NamedDataType.ATOMCONTAINERSET, iac));
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -387,46 +329,19 @@ public class ConnectivityGenerator extends Worker
      * target element symbol)
      */
 
-    public void ricalculateConnectivity()
+    public void ricalculateConnectivity(IAtomContainer iac, int i)
     {
-        if (verbosity > 1)
-            System.out.println(" ConnectivityGenerator starts to work on "  
-                                + inFile);
-
-        AtomContainerSet output = new AtomContainerSet();
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
-
-                //Recalculate connectivity of molecule
-                ricalculateConnectivity(mol, tolerance);                
-
-                //Store output
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-            }
-            sdfItr.close();
-        } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
+        ricalculateConnectivity(iac, tolerance); 
+        
+        if (outFile!=null)
+            IOtools.writeSDFAppend(outFile, iac, true);
         
         if (exposedOutputCollector != null)
         {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
+            String molID = "mol-"+i;
+            exposeOutputData(new NamedData(molID, 
+                  NamedDataType.ATOMCONTAINERSET, iac));
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -486,48 +401,23 @@ public class ConnectivityGenerator extends Worker
      * molecules in the input.
      */
     
-    private void imposeConnectionTable()
+    private void imposeConnectionTable(IAtomContainer iac, int i)
     {
-        if (verbosity > 1)
-            System.out.println(" Imposing connectivity on file " + inFile);
-
-        List<IAtomContainer> tmpl = IOtools.readSDF(templatePathName);
+        List<IAtomContainer> tmpl = IOtools.readMultiMolFiles(templatePathName);
         
         //TODO: what to do when there is more than one template?
 
-        AtomContainerSet output = new AtomContainerSet();
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                IAtomContainer mol = sdfItr.next();
-                
-                ConnectivityUtils.importConnectivityFromReference(mol, 
-                		tmpl.get(0));
+        ConnectivityUtils.importConnectivityFromReference(iac, tmpl.get(0));
 
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-            }
-            sdfItr.close();
-        } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Exception returned while "
-                + "iterating over SDF file to impose connection tables."
-                + " I was reading file " + inFile, -1);
-        }
+        if (outFile!=null)
+            IOtools.writeSDFAppend(outFile, iac, true);
         
         if (exposedOutputCollector != null)
         {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
+            String molID = "mol-"+i;
+            exposeOutputData(new NamedData(molID, 
+                  NamedDataType.IATOMCONTAINER, iac));
+        }
     }
 
 //------------------------------------------------------------------------------
