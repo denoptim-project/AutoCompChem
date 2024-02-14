@@ -1,12 +1,5 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the SDF or ACC Zmatrix file containing the chemical system to work with."
-  },
-  {
     "key": "INFILE2",
     "casedKey": "inFile2",
     "type": "<String>",
@@ -33,10 +26,7 @@
     "doc": "Requests to use only torsions as 3rd internal coordinate in ZMatrix."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

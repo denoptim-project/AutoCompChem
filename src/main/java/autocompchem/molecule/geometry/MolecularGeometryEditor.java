@@ -1059,7 +1059,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         		ZMatrixHandler.PRINTZMATRIXTASK.ID);
         Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
-        ZMatrix inZMatMol = zmh.makeZMatrix();
+        ZMatrix inZMatMol = zmh.makeZMatrix(iac);
         if (verbosity > 1)
         {
             System.out.println(" Original ZMatrix: ");

@@ -6,9 +6,6 @@ echo NOT Passed ERROR 1
 exit -1
 fi
 
-n=0;n=$(grep -c -i "VERBOSITY" cli6.log)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
-
 n=0;n=$(grep -c -i "MODIFYGEOMETRY" cli6.log)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 

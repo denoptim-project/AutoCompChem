@@ -193,13 +193,9 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	    	{    
 	        	case ZMAT:
 	        	{
-	        		ParameterStorage zmatMakerTask = new ParameterStorage();
+	        		ParameterStorage zmatMakerTask = params.clone();
 	        		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
 	        				ZMatrixHandler.PRINTZMATRIXTASK.ID);
-	        		zmatMakerTask.setParameter(ChemSoftConstants.PARGEOM,
-	        				NamedDataType.IATOMCONTAINER, 
-	        				new ArrayList<IAtomContainer>(Arrays.asList(
-	        						iacPossiblyLabelled)));
 	                Worker w = null;
 					try {
 						w = WorkerFactory.createWorker(zmatMakerTask,myJob);
@@ -208,7 +204,7 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 						e1.printStackTrace();
 					}
 	                ZMatrixHandler zmh = (ZMatrixHandler) w;
-	                ZMatrix zmat = zmh.makeZMatrix();
+	                ZMatrix zmat = zmh.makeZMatrix(iacPossiblyLabelled);
 	                
 	                if (params.contains(ZMatrixConstants.SELECTORMODE))
 	                {

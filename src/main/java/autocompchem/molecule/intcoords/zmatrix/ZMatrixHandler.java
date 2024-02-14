@@ -43,16 +43,16 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IIsotope;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.SDFIterator;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -64,22 +64,12 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */ 
 
-public class ZMatrixHandler extends Worker
-{
+public class ZMatrixHandler extends AtomContainerInputProcessor
+{   
     /**
-     * The CDK representation of the chemical entity
+     * Additional ZMatrix input
      */
-    private IAtomContainer iac = new AtomContainer();
-
-    /**
-     * Name of the input file
-     */
-    private File inFile;
-
-    /**
-     * Name of the second input file
-     */
-    private File inFile2;
+    private ZMatrix zmat2;
 
     /**
      * Name of the output file
@@ -100,26 +90,11 @@ public class ZMatrixHandler extends Worker
      * Flag selection of third intrinsic coordinate
      */
     private boolean onlyTors = false;
-
-    /**
-     * The atom index map
-     */
-    private Map<Integer,Integer> idIacToZmat = new HashMap<Integer,Integer>();
-
-    /**
-     * List of internal coordinates used in the Zmatrix
-     */
-    private List<InternalCoord> intCoords = new ArrayList<InternalCoord>();
     
-    /**
-     * List of atom labels to use for identifying atoms
-     */
-    private List<String> atmLabels;
-
     /**
      * Property used to stamp visited bonds
      */
-    private final String DONEFLAG = "ZMHVISITED"; 
+    private final static String DONEFLAG = "ZMHVISITED"; 
 
     /**
      * Unique integer for naming distance-type internal coords
@@ -150,15 +125,11 @@ public class ZMatrixHandler extends Worker
      * Root for torsion-type IC names
      */
     private final String TORROOT = "tor";
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
     
     /**
      * String defining the task of generating and printing a ZMatrix
      */
+    //TODO-gg change to makeZMatrix or convertToZMatrix
     public static final String PRINTZMATRIXTASKNAME = "printZMatrix";
 
     /**
@@ -235,39 +206,8 @@ public class ZMatrixHandler extends Worker
     @Override
     public void initialize()
     {
-    	if (params.contains("VERBOSITY"))
-        {
-	        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-	        this.verbosity = Integer.parseInt(vStr);
-        }
+    	super.initialize();
     	
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to ZMatrixHandler");
-
-        //Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
-        {
-	        this.inFile = new File(
-	        		params.getParameter("INFILE").getValue().toString());
-	        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-        }
-
-        //Get the input molecule as an object
-        if (params.contains(ChemSoftConstants.PARGEOM))
-        {
-        	List<IAtomContainer> inMols = (List<IAtomContainer>) 
-        			params.getParameter(ChemSoftConstants.PARGEOM).getValue();
-        	this.iac = inMols.get(0);
-        }
-        
-        //Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE2"))
-        {
-            this.inFile2 = new File(
-            		params.getParameter("INFILE2").getValue().toString());
-            FileUtils.foundAndPermissions(this.inFile2,true,false,false);
-        }
-       
         //Get the template ZMatrix
         if (params.contains("TEMPLATEZMAT"))
         {
@@ -297,23 +237,6 @@ public class ZMatrixHandler extends Worker
                              + "use only torsions AND a template ZMatrix.", -1);
             }
         }
-//        
-//        if (params.contains("ATOMLABELS"))
-//        {
-//        	String value = params.getParameter("ATOMLABELS").getValueAsString();
-//        	String[] parts = value.split();
-//            List<String> templates = IOtools.readZMatrixFile(tmplZMatFile);
-//            if (templates.size()==0)
-//            {
-//            	 Terminator.withMsgAndStatus("ERROR! Could not find a template "
-//            	 		+ "ZMatrix in '" + tmplZMatFile + "'",-1);
-//            } else if (templates.size()>1)
-//            {
-//                System.out.println(" Found " + templates.size() 
-//                + " ZMatrix templates, but we'll use only the first one.");
-//            }
-//            this.atmLabels = 
-//        }
         
         //Get and check output file
         if (params.contains("OUTFILE"))
@@ -321,6 +244,65 @@ public class ZMatrixHandler extends Worker
             this.outFile = new File(
             		params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
+        }
+        
+        if (params.contains("INFILE2"))
+        {
+            File inFile2 = new File(
+            		params.getParameter("INFILE2").getValue().toString());
+            FileUtils.foundAndPermissions(inFile2,true,false,false);
+        	if (inFile.getName().endsWith(".zmat"))
+            {
+        		List<ZMatrix> lst = IOtools.readZMatrixFile(inFile);
+        		if (lst.size()>1)
+                {
+                	System.out.println("WARNING! Found " + lst.size() 
+                			+ " from INFILE2, but "
+                			+ "can use only one atom container. "
+                			+ "I'll use the first and ignore the rest.");
+                }
+        		zmat2 = lst.get(0);
+            } else {
+                try
+                {
+                	List<IAtomContainer> lst = IOtools.readMultiMolFiles(
+                			inFile2);
+            		if (lst.size()>1)
+                    {
+                    	System.out.println("WARNING! Found " + lst.size() 
+                    			+ " from INFILE2, but "
+                    			+ "can use only one atom container. "
+                    			+ "I'll use the first and ignore the rest.");
+                    }
+                	IAtomContainer mol = lst.get(0);
+                	String molName = MolecularUtils.getNameOrID(mol);
+                    zmat2 = makeZMatrix(mol, tmplZMat, verbosity);
+                    zmat2.setTitle(molName);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                    Terminator.withMsgAndStatus("ERROR! Exception returned "
+                        + " while reading " + inFile, -1);
+                }
+            }
+        }
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Process any molecular structure file as usual, but ignore zmat files
+     */
+    @Override
+    protected void processInputFileParameter(String value)
+    {
+    	String[] words = value.trim().split("\\s+");
+        String pathname = words[0];
+        FileUtils.foundAndPermissions(pathname,true,false,false);
+    	if (!pathname.endsWith(".zmat"))
+        {
+    		super.processInputFileParameter(pathname);
+        } else {
+        	this.inFile = new File(pathname);;
         }
     }
     
@@ -334,14 +316,25 @@ public class ZMatrixHandler extends Worker
     @Override
     public void performTask()
     {
-    	if (task.equals(PRINTZMATRIXTASK))
+    	if (task.equals(CONVERTZMATRIXTOSDFTASK)) 
     	{
-    		printZMatrix();
-    	} else if (task.equals(CONVERTZMATRIXTOSDFTASK)) {
     		//TODO-gg rename method
     		convertZMatrixToSDF();
+    	} else {
+    		processInput();
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+    	if (task.equals(PRINTZMATRIXTASK))
+    	{
+    		printZMatrix(iac, i);
     	} else if (task.equals(SUBTRACTZMATRICESTASK)) {
-    		subtractZMatrices();
+    		subtractZMatrices(iac, i);
     	} else {
     		dealWithTaskMismatch();
         }
@@ -355,49 +348,25 @@ public class ZMatrixHandler extends Worker
      * ZMatrix.
      */
    
-    public void printZMatrix()
+    public void printZMatrix(IAtomContainer iac, int i)
     {
-        if (null == outFile)
-        {
-            if (verbosity > 0)
-            {
-                System.out.println("No 'OUTFILE' keyword, so using default "
-                		+ "filename 'output.zmat'.");
-            }
-            outFile = new File("output.zmat");
-        }
-        if (iac.getAtomCount() == 0 && null != inFile)
-        {
-            try 
-            {
-                int i = 0;
-                SDFIterator sdfItr = new SDFIterator(inFile);
-                while (sdfItr.hasNext())
-                {
-                    i++;
-                    iac = sdfItr.next();
-                    String molName = MolecularUtils.getNameOrID(iac);
-                    System.out.println(" Working on mol ("+i+"): "+molName);
-                    ZMatrix zmat = makeZMatrix();
-                    zmat.setTitle(molName);
-                    IOtools.writeZMatAppend(outFile,zmat,true);
-                }
-                if (i==0 && verbosity > 1)
-                {
-                    System.out.println("No molecule found in "+inFile);
-                }
-                sdfItr.close();
-            } catch (Throwable t) {
-                t.printStackTrace();
-                Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                    + "SDFIterator while reading " + inFile, -1);
-            }
-        }
-        else
-        {
-            IOtools.writeTXTAppend(outFile, "No chemical entity in "
-            		+ this.getClass().getSimpleName() + "!",false);
-        }
+	    String molName = MolecularUtils.getNameOrID(iac);
+	    ZMatrix zmat = makeZMatrix(iac, tmplZMat, verbosity);
+	    zmat.setTitle(molName);
+	    
+	    if (verbosity>0)
+	    {
+	    	System.out.println(StringUtils.mergeListToString(
+	    			zmat.toLinesOfText(useTmpl, onlyTors), 
+	    			System.getProperty("line.separator")));
+	    }
+	    
+	    if (outFile!=null)
+	    {
+	    	IOtools.writeZMatAppend(outFile,zmat,true);
+	    }
+	    
+	    //TODO-gg expose?
     }
 
 //------------------------------------------------------------------------------
@@ -407,114 +376,22 @@ public class ZMatrixHandler extends Worker
      * Uses the parameters given to the constructor.
      */
 
-    public void subtractZMatrices()
+    public void subtractZMatrices(IAtomContainer iac, int i)
     {
-    	//TODO: enable input from feed instead of file
-        if (null == outFile)
+    	String molName1 = MolecularUtils.getNameOrID(iac);
+	    ZMatrix zmat1 = makeZMatrix(iac, tmplZMat, verbosity);
+	    zmat1.setTitle(molName1);
+	    
+        ZMatrix zmatRes = subtractZMatrices(zmat1, zmat2);
+        if (exposedOutputCollector != null)
         {
-            if (verbosity > 0)
-            {
-                System.out.println("No 'OUTFILE' keyword, so using default "
-                                                   + "filename 'output.zmat'.");
-            }
-            outFile = new File("output.zmat");
+        	exposeOutputData(new NamedData("zmat-"+i, 
+		      		NamedDataType.ZMATRIX, zmatRes));
         }
-
-        List<ZMatrix> firstZMats = new ArrayList<ZMatrix>();
-        List<ZMatrix> secondZMats = new ArrayList<ZMatrix>();
-        if (iac.getAtomCount() == 0 && null != inFile && null != inFile2)
+        
+        if (outFile!=null)
         {
-            if (inFile.getName().endsWith(".sdf"))
-            {
-                try
-                {
-                    int i = 0;
-                    SDFIterator sdfItr = new SDFIterator(inFile);
-                    while (sdfItr.hasNext())
-                    {
-                        // Get the molecule
-                        i++;
-                        iac = sdfItr.next();
-                        String molName = MolecularUtils.getNameOrID(iac);
-                        System.out.println(" Working on mol ("+i+"): "+molName);
-                        ZMatrix zmat = makeZMatrix();
-                        firstZMats.add(zmat);
-                    }
-                    sdfItr.close();
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                    Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                        + "SDFIterator while reading " + inFile, -1);
-                }
-            }
-            else if (inFile.getName().endsWith(".zmat"))
-            {
-                firstZMats = IOtools.readZMatrixFile(inFile);
-            }
-            else
-            {
-                Terminator.withMsgAndStatus("ERROR! Only .sdf or .zmat files "
-                                    + "can be read in by ZMatrix handler. "
-                                    + "Check file '" + inFile + "'.", -1);
-            }
-
-            if (inFile2.getName().endsWith(".sdf"))
-            {
-                try
-                {
-                    int i = 0;
-                    SDFIterator sdfItr = new SDFIterator(inFile2);
-                    while (sdfItr.hasNext())
-                    {
-                        // Get the molecule
-                        i++;
-                        iac = sdfItr.next();
-                        String molName = MolecularUtils.getNameOrID(iac);
-                        System.out.println(" Working on mol ("+i+"): "+molName);
-                        ZMatrix zmat = makeZMatrix();
-                        secondZMats.add(zmat);
-                    }
-                    sdfItr.close();
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                    Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                        + "SDFIterator while reading " + inFile, -1);
-                }
-            }
-            else if (inFile2.getName().endsWith(".zmat"))
-            {
-                secondZMats = IOtools.readZMatrixFile(inFile2);
-            }
-            else
-            {
-                Terminator.withMsgAndStatus("ERROR! Only .sdf or .zmat files "
-                                    + "can be read in by ZMatrix handler.", -1);
-            }
-
-            if (firstZMats.size() != secondZMats.size())
-            {
-                Terminator.withMsgAndStatus("ERROR! Different number of "
-                                        + "ZMatrices in '" + inFile 
-                                        + "' and '" + inFile2 + "'.", -1);
-            }
-        }
-        else
-        {
-            Terminator.withMsgAndStatus("ERROR! Not enough chemical entity in "
-                                                       + "ZMatrix handler!",-1);
-        }
-
-        for (int i=0; i<firstZMats.size(); i++)
-        {
-            ZMatrix zmatRes = subtractZMatrices(firstZMats.get(i),
-                                                secondZMats.get(i));
-            if (exposedOutputCollector != null)
-            {
-            	exposeOutputData(new NamedData("zmat-"+i, 
-    		      		NamedDataType.ZMATRIX, zmatRes));
-            }	
-            if (outFile!=null)
-            	IOtools.writeZMatAppend(outFile,zmatRes,true);
+        	IOtools.writeZMatAppend(outFile,zmatRes,true);
         }
     }
 
@@ -532,7 +409,7 @@ public class ZMatrixHandler extends Worker
         ZMatrix zmatRes = modifyZMatrix(zmatA, zmatB, -1.0);
         return zmatRes;
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -540,65 +417,35 @@ public class ZMatrixHandler extends Worker
      * @return the resulting ZMatrix
      */
 
-    public ZMatrix makeZMatrix()
+    public  ZMatrix makeZMatrix(IAtomContainer iac)
+    {
+    	return makeZMatrix(iac, tmplZMat, verbosity);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Creates the Z-Matrix and the corresponding atom index map.
+     * @return the resulting ZMatrix
+     */
+
+    public ZMatrix makeZMatrix(IAtomContainer iac, ZMatrix tmplZMat, 
+    		int verbosity)
     {
         ZMatrix zmat = new ZMatrix();
 
 //TODO: May need to reorder atoms OR change connectivity according to atm list
-        
-        if (iac.getAtomCount() == 0)
-        {
-            if (null != inFile)
-            {
-                try
-                {
-                    SDFIterator sdfItr = new SDFIterator(inFile);
-                    if (sdfItr.hasNext())
-                    {
-                        iac = sdfItr.next();
-                        if (sdfItr.hasNext())
-                        {
-                            Terminator.withMsgAndStatus("ERROR! Expecting only "
-                                + "one molecule in file '"+ inFile +"'.",-1);
-                        }
-                    }
-                    else
-                    {
-                        Terminator.withMsgAndStatus("ERROR! No molecule found "
-                                                             + "in "+inFile,-1);
-                    }
-                    sdfItr.close();
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                    Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                    + "SDFIterator while reading " + inFile, -1);
-                }
-            }
-            else
-            {
-                IOtools.writeTXTAppend(outFile,"No chemical entity in ZMatrix "
-                                                            + "handler!",false);
-            }
-        }
-        IAtomContainer mol = iac;
-
-
-//TODO: if atom order changes, change the map
-        for (int i=0; i<mol.getAtomCount(); i++)
-        {
-            idIacToZmat.put(i,i);
-        }
 
         // Ensure consistency with template
-        if (useTmpl && mol.getAtomCount() != tmplZMat.getZAtomCount())
+        if (tmplZMat!=null && iac.getAtomCount() != tmplZMat.getZAtomCount())
         {
             Terminator.withMsgAndStatus("ZMatrix template (" 
                 + tmplZMat.getZAtomCount() + ") and current molecule ("
-                + mol.getAtomCount() + ") have different size.",-1); 
+                + iac.getAtomCount() + ") have different size.",-1); 
         }
 
         // Fill the Z-matrix
-        for (int idC=0; idC<mol.getAtomCount(); idC++)
+        for (int idC=0; idC<iac.getAtomCount(); idC++)
         {
             if (verbosity > 2)
             {
@@ -624,18 +471,18 @@ public class ZMatrixHandler extends Worker
             InternalCoord icK = null;
 
             // The Current atom
-            IAtom atmC = mol.getAtom(idC);
+            IAtom atmC = iac.getAtom(idC);
 
             // First internal coordinate of atmC: distance from atmI
             if (idC>0)
             {
-                idI = chooseFirstRefAtom(atmC,mol);
-                atmI = mol.getAtom(idI);
+                idI = chooseFirstRefAtom(atmC,iac);
+                atmI = iac.getAtom(idI);
                 intCrdI = atmC.getPoint3d().distance(atmI.getPoint3d());
-                List<IAtom> bondedToAtmC = mol.getConnectedAtomsList(atmC);
+                List<IAtom> bondedToAtmC = iac.getConnectedAtomsList(atmC);
                 if (bondedToAtmC.contains(atmI))
                 {
-                    mol.getBond(atmC,atmI).setProperty(DONEFLAG,"T");
+                	iac.getBond(atmC,atmI).setProperty(DONEFLAG,"T");
                 }
                 else
                 {
@@ -643,27 +490,25 @@ public class ZMatrixHandler extends Worker
                 }
                 icI = new InternalCoord(getUnqDistName(),intCrdI,
                                 new ArrayList<Integer>(Arrays.asList(idC,idI)));
-                intCoords.add(icI);
             }
 
             // define the bond angle
             if (idC>1)
             {
-                idJ = chooseSecondRefAtom(atmC,atmI,mol);
-                atmJ = mol.getAtom(idJ);
+                idJ = chooseSecondRefAtom(atmC,atmI,iac);
+                atmJ = iac.getAtom(idJ);
                 intCrdJ = MolecularUtils.calculateBondAngle(atmC,atmI,atmJ);
                 icJ = new InternalCoord(getUnqAngName(),intCrdJ,
                             new ArrayList<Integer>(Arrays.asList(idC,idI,idJ)));
-                intCoords.add(icJ);
             }
 
             // decide on dihedral or second angle and get value
             ArrayList<Integer> arrK = new ArrayList<Integer>();
             if (idC>2)
             {
-                Object[] pair = chooseThirdRefAtom(atmC,atmI,atmJ,mol,zmat);
+                Object[] pair = chooseThirdRefAtom(atmC,atmI,atmJ,iac,zmat);
                 idK = (int) pair[0];
-                atmK = mol.getAtom(idK);
+                atmK = iac.getAtom(idK);
                 typK = (String) pair[1];
                 if (typK.equals("0"))
                 {
@@ -685,7 +530,6 @@ public class ZMatrixHandler extends Worker
                 }
 
                 icK = new InternalCoord(strNameK,intCrdK,arrK,typK);
-                intCoords.add(icK);
             }
 
             String zatmName = AtomUtils.getSymbolOrLabel(atmC);
@@ -697,12 +541,12 @@ public class ZMatrixHandler extends Worker
         }
 
         // Add bonds not visited
-        for (IBond b : mol.bonds())
+        for (IBond b : iac.bonds())
         {
             if (b.getProperty(DONEFLAG) == null)
             {
-                zmat.addPointerToBonded(mol.indexOf(b.getAtom(0)),
-                                        mol.indexOf(b.getAtom(1)));
+                zmat.addPointerToBonded(iac.indexOf(b.getAtom(0)),
+                		iac.indexOf(b.getAtom(1)));
             }
         }
 
@@ -786,13 +630,6 @@ public class ZMatrixHandler extends Worker
                         break;
 
                     case 4:
-//TODO del
-/*System.out.println("zmatIC.getValue(): "+zmatIC.getValue());
-System.out.println("tmpVal:            "+tmpVal);
-
-System.out.println("Math.sin(zmatIC.getValue()): "+Math.sin(Math.toRadians(zmatIC.getValue())));
-System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVal)));
-*/
                         double signChange = Math.sin(
                                              Math.toRadians(zmatIC.getValue())) 
                                             * Math.sin(Math.toRadians(tmpVal)); 
@@ -1795,18 +1632,6 @@ System.out.println("Math.sin(tmpVal):            "+Math.sin(Math.toRadians(tmpVa
     {
         String s = TORROOT + torCounter.getAndIncrement();
         return s;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return the list of internal coordinates defined in this ZMatrixHandler.
-     * @return the list of internal coordinates defined in this handler.
-     */
-
-    public List<InternalCoord> getIntCoords()
-    {
-        return intCoords;
     }
 
 //------------------------------------------------------------------------------

@@ -216,7 +216,7 @@ public class AtomContainerInputProcessor extends Worker
 	 * NB: if we are reading a huge file, this code will cause problems, but
 	 * we can assume no huge file will be read here.
 	 */
-	private void processInputFileParameter(String value)
+	protected void processInputFileParameter(String value)
 	{
         String[] words = value.trim().split("\\s+");
         String pathname = words[0];
