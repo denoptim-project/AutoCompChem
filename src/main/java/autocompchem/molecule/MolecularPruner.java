@@ -52,17 +52,13 @@ import autocompchem.worker.Worker;
  */
 
 
-public class MolecularPruner extends Worker
+public class MolecularPruner extends AtomContainerInputProcessor
 {   
     //Filenames
-    private File inFile;
     private File outFile;
 
     //List (with string identifier) of smarts
     private Map<String,String> smarts = new HashMap<String,String>();
-
-    //Verbosity level
-    private int verbosity = 1;
     
     /**
      * String defining the task of pruning molecules
@@ -116,19 +112,8 @@ public class MolecularPruner extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to MolecularPruner");
-
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(
-        		params.getParameter("INFILE").getValue().toString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-
+    	super.initialize();
+    	
         //Get and check output file
         this.outFile = new File(
         		params.getParameter("OUTFILE").getValue().toString());
@@ -149,7 +134,6 @@ public class MolecularPruner extends Worker
                 continue;
             this.smarts.put(Integer.toString(i),singleSmarts);
         }
-
     }
     
 //-----------------------------------------------------------------------------
@@ -162,9 +146,29 @@ public class MolecularPruner extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(PRUNEMOLECULESTASK))
     	{
-    		pruneAll();
+    		IAtomContainer pruned = prune(iac, smarts, verbosity);
+    		
+            if (outFile!=null)
+            {
+            	IOtools.writeSDFAppend(outFile, pruned, true);
+            }
+        
+		    if (exposedOutputCollector != null)
+		    {
+	    	    String molID = "mol-"+i;
+		        exposeOutputData(new NamedData(molID,
+		        		NamedDataType.IATOMCONTAINER, pruned));
+			}
     	} else {
     		dealWithTaskMismatch();
         }
@@ -176,73 +180,42 @@ public class MolecularPruner extends Worker
      * Prune: delete all matched atoms in all the molecules
      */
 
-    public void pruneAll()
-    {
-        AtomContainerSet output = new AtomContainerSet();
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
+    public static IAtomContainer prune(IAtomContainer iac, 
+    		Map<String,String> smarts, int verbosity)
+    {              
+        ManySMARTSQuery msq = new ManySMARTSQuery(iac, smarts, verbosity);
+        if (msq.hasProblems())
+        {
+            String cause = msq.getMessage();
+            Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+        }
+
+        List<IAtom> targets = new ArrayList<IAtom>();
+        for (String key : smarts.keySet())
+        {
+            if (msq.getNumMatchesOfQuery(key) == 0)
+                {
+                continue;
+            }
+            
+            MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
+            for (List<Integer> innerList : allMatches)
             {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
-
-                //Get target atoms                
-                ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
-                if (msq.hasProblems())
+                for (Integer iAtm : innerList)
                 {
-                    String cause = msq.getMessage();
-                    Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+                    IAtom targetAtm = iac.getAtom(iAtm);
+                    targets.add(targetAtm);
                 }
+            }
+        }
 
-                ArrayList<IAtom> targets = new ArrayList<IAtom>();
-                for (String key : smarts.keySet())
-                {
-                    if (msq.getNumMatchesOfQuery(key) == 0)
-                        {
-                        continue;
-                    }
-                    
-                    MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
-                    for (List<Integer> innerList : allMatches)
-                    {
-                        for (Integer iAtm : innerList)
-                        {
-                            IAtom targetAtm = mol.getAtom(iAtm);
-                            targets.add(targetAtm);
-                        }
-                    }
-                }
-
-                //Remove atoms
-                for (IAtom targetAtm : targets)
-                {
-                    mol.removeAtom(targetAtm);
-                }
-
-                //Store output
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
+        //Remove atoms
+        for (IAtom targetAtm : targets)
+        {
+            iac.removeAtom(targetAtm);
         }
         
-        if (exposedOutputCollector != null)
-        {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
+        return iac;
     }
 
 //-----------------------------------------------------------------------------

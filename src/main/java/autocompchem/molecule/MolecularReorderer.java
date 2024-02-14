@@ -344,8 +344,8 @@ public class MolecularReorderer extends AtomContainerInputProcessor
      * @return the list of source atoms
      */
 
-    public ArrayList<IAtom> identifySourceAtoms(IAtomContainer mol, 
-                                                   Map<String,String> tmpSmarts)
+    public List<IAtom> identifySourceAtoms(IAtomContainer mol,
+    		Map<String,String> tmpSmarts)
     {
         //make backup of SMARTS queries
         Map<String,String> bkpSmarts = new HashMap<String,String>();
@@ -358,7 +358,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         smarts = tmpSmarts;
 
         //spply standard method
-        ArrayList<IAtom> sources = identifySourceAtoms(mol);
+        List<IAtom> sources = identifySourceAtoms(mol);
 
         //restore
         smarts = bkpSmarts;
@@ -376,9 +376,9 @@ public class MolecularReorderer extends AtomContainerInputProcessor
      * @return the list of source atoms
      */
 
-    public ArrayList<IAtom> identifySourceAtoms(IAtomContainer mol)
+    public List<IAtom> identifySourceAtoms(IAtomContainer mol)
     {
-        ArrayList<IAtom> sources = new ArrayList<IAtom>();
+        List<IAtom> sources = new ArrayList<IAtom>();
 
         if (useSmarts)
         {
