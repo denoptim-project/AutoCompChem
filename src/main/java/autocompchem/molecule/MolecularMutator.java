@@ -57,24 +57,8 @@ import autocompchem.worker.Worker;
  */
 
 
-public class MolecularMutator extends Worker
-{   
-    /**
-     * Flag indicating the input is from file
-     */
-    @SuppressWarnings("unused")
-        private boolean inpFromFile = false;
-
-    /**
-     * Name of the input file
-     */
-    private File inFile;
-
-    /**
-     * Flag indicating the output is to be written to file
-     */
-    private boolean outToFile = false; //TODO-gg remove obsolete
-
+public class MolecularMutator extends AtomContainerInputProcessor
+{
     /**
      * Name of the output file
      */
@@ -89,11 +73,6 @@ public class MolecularMutator extends Worker
      * List (with string identifier) of new elemental symbols
      */
     private Map<String,String> newElms = new HashMap<String,String>();
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
     
     /**
      * String defining the task of mutating atoms
@@ -147,44 +126,19 @@ public class MolecularMutator extends Worker
     @Override
     public void initialize()
     {
-
-        //Define verbosity
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValue().toString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
-        if (verbosity > 0)
-        {
-            System.out.println(" Reading parameters in MolecularMutator");
-        }
-
-        //Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
-        {
-            inpFromFile = true;
-            this.inFile = new File(
-            		params.getParameter("INFILE").getValue().toString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
-        }
-
+    	super.initialize();
+    	
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            outToFile = true;
             this.outFile = new File(
-            		params.getParameter("OUTFILE").getValue().toString());
+            		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
         }
 
         //Get the list of SMARTS to be matched
-        String allSamrts = 
-                         params.getParameter("SMARTSMAP").getValue().toString();
-        if (verbosity > 0)
-        {
-            System.out.println(" Importing SMARTS queries ");
-        }
+        String allSamrts = params.getParameter("SMARTSMAP").getValueAsString();
+
 
         // NB: the REGEX makes this compatible with either new-line character
         String[] lines = allSamrts.split("\\r?\\n|\\r");
@@ -200,85 +154,51 @@ public class MolecularMutator extends Worker
         }
     }
     
-
 //-----------------------------------------------------------------------------
 
-      /**
-       * Performs any of the registered tasks according to how this worker
-       * has been initialised.
-       */
-
-      @Override
-      public void performTask()
-      {
-      	  if (task.equals(MUTATEATOMSTASK))
-      	  {
-      		  mutateAll();
-      	  } else {
-      		  dealWithTaskMismatch();
-          }
-      }
-
-//------------------------------------------------------------------------------
-
     /**
-     * Mutate all atom lists taken from the input file 
-     * according to the current settings.
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
      */
 
-    public void mutateAll()
+    @Override
+    public void performTask()
     {
-        AtomContainerSet output = new AtomContainerSet();
-        int i = 0;
-        try 
-        {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+      	if (task.equals(MUTATEATOMSTASK))
+      	{
+      		Map<String,List<IAtom>> targets = identifyMutatingCenters(iac);
+
+            Map<IAtom,String> targetsMap = new HashMap<IAtom,String>();
+            for (String k : targets.keySet())
             {
-                i++;
-                if (verbosity > 0)
+                for (IAtom atm : targets.get(k))
                 {
-                    System.out.println(" Mutating atom container #" + i);
+                    targetsMap.put(atm,newElms.get(k));
                 }
-                IAtomContainer mol = sdfItr.next();
-                
-                Map<String,ArrayList<IAtom>> targets =
-                		identifyMutatingCenters(mol);
+            }
 
-                Map<IAtom,String> targetsMap = new HashMap<IAtom,String>();
-                for (String k : targets.keySet())
-                {
-                    for (IAtom atm : targets.get(k))
-                    {
-                        targetsMap.put(atm,newElms.get(k));
-                    }
-                }
+            iac = mutateContainer(iac, targetsMap, verbosity);
 
-                mol = mutateContainer(mol,targetsMap, verbosity);
-
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-            } 
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile + ": " + t, -1);
-        }
-        
-        if (exposedOutputCollector != null)
-        {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
+            if (outFile!=null)
+            	IOtools.writeSDFAppend(outFile, iac, true);
+            
+            if (exposedOutputCollector != null)
+            {
+            	String molID = "mol-"+i;
 		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
-    	}
+		      		NamedDataType.IATOMCONTAINER, iac));
+            }
+      	} else {
+      		dealWithTaskMismatch();
+        }
     }
 
 //-----------------------------------------------------------------------------
@@ -293,9 +213,8 @@ public class MolecularMutator extends Worker
      * given SMARTS queries
      */
 
-    public Map<String,ArrayList<IAtom>> identifyMutatingCenters(
-                                                             IAtomContainer mol,
-                                                   Map<String,String> tmpSmarts)
+    public Map<String,List<IAtom>> identifyMutatingCenters(
+    		IAtomContainer mol, Map<String,String> tmpSmarts)
     {
         //make backup of SMARTS queries
         Map<String,String> bkpSmarts = new HashMap<String,String>();
@@ -307,8 +226,8 @@ public class MolecularMutator extends Worker
         //now overwrite the queries
         smarts = tmpSmarts;
 
-        //spply standard method
-        Map<String,ArrayList<IAtom>> targets = identifyMutatingCenters(mol);
+        //apply standard method
+        Map<String,List<IAtom>> targets = identifyMutatingCenters(mol);
 
         //restore
         smarts = bkpSmarts;
@@ -326,12 +245,10 @@ public class MolecularMutator extends Worker
      * loaded map of SMARTS queries
      */
 
-    public  Map<String,ArrayList<IAtom>> identifyMutatingCenters(
-                                                             IAtomContainer mol)
+    public  Map<String,List<IAtom>> identifyMutatingCenters(IAtomContainer mol)
     {
-        Map<String,ArrayList<IAtom>> targets = 
-                                         new HashMap<String,ArrayList<IAtom>>();
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+        Map<String,List<IAtom>> targets = new HashMap<String,List<IAtom>>();
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -424,7 +341,7 @@ public class MolecularMutator extends Worker
      */
 
     public static IAtomContainer mutateContainer(IAtomContainer iac, 
-                                    Map<IAtom,String> targetsMap, int verbosity)
+    		Map<IAtom,String> targetsMap, int verbosity)
     {
         IAtomContainer mutatedIAC = new AtomContainer();
         for (IAtom origAtm : iac.atoms())
