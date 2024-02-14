@@ -340,8 +340,13 @@ public class AtomContainerInputProcessor extends Worker
   	public void processAllAtomContainer(List<IAtomContainer> iacs) 
   	{   
   		for (int molId = 0; molId<iacs.size(); molId++)
-          {
-  			processOneAtomContainer(iacs.get(molId), molId);
+        {
+  			IAtomContainer iac = iacs.get(molId);
+  			if (verbosity > 0)
+  	        {
+  	        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
+  	        }
+  			processOneAtomContainer(iac, molId);
   		}
     }
     

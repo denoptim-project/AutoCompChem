@@ -1,12 +1,5 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to a SDF file containing the chemical system for which atom tuples should be generated."
-  },
-  {
     "key": "RULENAMEROOT",
     "casedKey": "ruleNameRoot",
     "type": "<String>",
@@ -37,9 +30,7 @@
     "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as an integer 0-based atom index until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as indexes. The order of the indexes i retained."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

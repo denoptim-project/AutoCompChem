@@ -42,6 +42,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -57,7 +58,8 @@ import autocompchem.worker.WorkerFactory;
 
 
 /**
- * Tool to generate list of atom pointers (i.e., tuple) decorated by attributes,
+ * Tool to generate lists (i.e., tuple) of atom pointers/identifiers 
+ * decorated by attributes,
  * i.e., {@link AnnotatedAtomTuple}.
  * The rules on which atoms to collect, and in which order, and on what 
  * attributes to associate with the tuple of pointers are all defined in 
@@ -66,19 +68,8 @@ import autocompchem.worker.WorkerFactory;
  * @author Marco Foscato
  */
 
-public class AtomTupleGenerator extends Worker
+public class AtomTupleGenerator extends AtomContainerInputProcessor
 {
-    
-    /**
-     * The input file (molecular structure files)
-     */
-    protected File inFile;
-
-    /**
-     * The input molecules
-     */
-    protected List<IAtomContainer> inMols;
-
     /**
      * List of atom-matching rules for definition of the tuples and of their 
      * attributes.
@@ -102,11 +93,6 @@ public class AtomTupleGenerator extends Worker
 	 */
 	protected List<String> valuelessKeywords = new ArrayList<String>();
     
-    /**
-     * Verbosity level
-     */
-    protected int verbosity = 0;
-
     /**
      * Unique identifier for rules
      */
@@ -164,33 +150,7 @@ public class AtomTupleGenerator extends Worker
 	@Override
     public void initialize()
     {
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValueAsString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
-        // Get and check the input file (which has to be an SDF file)
-        if (params.contains("INFILE"))
-        {
-            this.inFile = new File(
-            		params.getParameter("INFILE").getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
-        }
-        if (params.contains(ChemSoftConstants.PARGEOM))
-        {
-            this.inMols = (List<IAtomContainer>) params.getParameter(
-            		ChemSoftConstants.PARGEOM).getValue();
-            if (params.contains("INFILE"))
-            {
-            	//TODO: logging
-            	System.out.println("WARNING: found both INFILE and "
-            			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
-            			+ ChemSoftConstants.PARGEOM + " as input for "
-            			+ this.getClass().getSimpleName() + ".");
-            	this.inFile = null;
-            }
-        }
+		super.initialize();
         
         if (params.contains("RULENAMEROOT"))
         {
@@ -236,7 +196,7 @@ public class AtomTupleGenerator extends Worker
     {
     	if (task.equals(GENERATEATOMTUPLESTASK))
     	{
-    		createTuples();
+    		processInput();
     	} else {
     		dealWithTaskMismatch();
         }
@@ -293,72 +253,12 @@ public class AtomTupleGenerator extends Worker
     {
     	this.rules = rules;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Define {@link AnnotatedAtomTuple}s for all structures found in the input.
-     * Uses tuple-defining rules available in this instance (i.e., either
-     * created upon initialization or set by 
-     * {@link #setAtomTupleMatchingRules(List)}.
-     */
-    public void createTuples()
-    {
-        if (inFile==null && inMols==null)
-        {
-            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
-            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
-            		+ "an input file to read geometries from. "
-            		+ "Cannot generate atom tuple.",-1);
-        }
-
-        List<AnnotatedAtomTupleList> output = 
-        		new ArrayList<AnnotatedAtomTupleList>();
-        
-        if (inFile!=null)
-        {
-	        try {
-	            SDFIterator sdfItr = new SDFIterator(inFile);
-	            while (sdfItr.hasNext())
-	            {
-	                IAtomContainer mol = sdfItr.next();
-	        		processOneAtomContainer(mol, output);
-	            }
-	            sdfItr.close();
-	        } catch (Throwable t) {
-	            t.printStackTrace();
-	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-	                + "SDFIterator while reading " + inFile, -1);
-	        }
-        } else {
-        	for (IAtomContainer mol : inMols)
-        	{
-        		processOneAtomContainer(mol, output);
-        	}
-        } 
-
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (AnnotatedAtomTupleList tuples : output)
-	    	{
-	    		ii++;
-	    		if (tuples != null)
-	    		{
-	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(
-	  		        		GENERATEATOMTUPLESTASK.ID + "_" + molID, 
-	  		        		NamedDataType.ANNOTATEDATOMTUPLELIST, tuples));
-	    		}
-	    	}
-    	}
-    }
     
 //------------------------------------------------------------------------------
-    
-    private void processOneAtomContainer(IAtomContainer iac,
-    		List<AnnotatedAtomTupleList> output)
-    {
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
         // If needed, generate atom labels
     	List<String> labels = null;
         for (AtomTupleMatchingRule r : rules)
@@ -378,11 +278,20 @@ public class AtomTupleGenerator extends Worker
         	System.out.println(StringUtils.mergeListToString(tuples, 
         			System.getProperty("line.separator")));
         }
+        AnnotatedAtomTupleList aatl = new AnnotatedAtomTupleList();
         if (tuples.size()>0)
         {
-	        AnnotatedAtomTupleList aatl= new AnnotatedAtomTupleList(tuples);
-	        output.add(aatl);
+	        aatl= new AnnotatedAtomTupleList(tuples);
         }
+        output.add(aatl);
+        
+        if (exposedOutputCollector != null)
+    	{
+			String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(
+	        		GENERATEATOMTUPLESTASK.ID + "_" + molID, 
+	        		NamedDataType.ANNOTATEDATOMTUPLELIST, aatl));
+    	}
     }
         
 //------------------------------------------------------------------------------

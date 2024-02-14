@@ -53,11 +53,6 @@ import autocompchem.worker.Worker;
 public class ConstraintsGenerator extends AtomTupleGenerator
 {   
     /**
-     * Results
-     */
-    private ArrayList<ConstraintsSet> output = new ArrayList<ConstraintsSet>();
-    
-    /**
      * String defining the task of generating constraints
      */
     public static final String GENERATECONSTRAINTSTASKNAME = 
@@ -131,81 +126,32 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(GENERATECONSTRAINTSTASK))
     	{
-    		createConstrains();
+	    	ConstraintsSet cs = createConstraints(iac);
+	        
+	        if (verbosity > 0)
+	        {
+	        	cs.printAll();
+	        }
+	        
+	        if (exposedOutputCollector != null)
+	    	{
+    			String molID = "mol-"+i;
+  		        exposeOutputData(new NamedData(
+  		        		GENERATECONSTRAINTSTASK.ID + "_" + molID, 
+  		        		NamedDataType.CONSTRAINTSSET, cs));
+	    	}
     	} else {
     		dealWithTaskMismatch();
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Define constraints for all structures found in the structures
-     * from the input file.
-     */
-
-    public void createConstrains()
-    {
-        if (inFile==null && inMols==null)
-        {
-            Terminator.withMsgAndStatus("ERROR! Missing parameter defining the "
-            		+ "input geometries (" + ChemSoftConstants.PARGEOM + ") or "
-            		+ "an input file to read geometries from. "
-            		+ "Cannot generate constraints.",-1);
-        }
-
-        if (inFile!=null)
-        {
-	        try {
-	            SDFIterator sdfItr = new SDFIterator(inFile);
-	            while (sdfItr.hasNext())
-	            {
-	                IAtomContainer mol = sdfItr.next();
-	        		processOneAtomContainer(mol);
-	            } //end loop over molecules
-	            sdfItr.close();
-	        } catch (Throwable t) {
-	            t.printStackTrace();
-	            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-	                + "SDFIterator while reading " + inFile, -1);
-	        }
-        } else {
-        	for (IAtomContainer mol : inMols)
-        	{
-        		processOneAtomContainer(mol);
-        	}
-        }
-        
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (ConstraintsSet cs : output)
-	    	{
-	    		ii++;
-	    		if (cs != null)
-	    		{
-	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(
-	  		        		GENERATECONSTRAINTSTASK.ID + "_" + molID, 
-	  		        		NamedDataType.CONSTRAINTSSET, cs));
-	    		}
-	    	}
-    	}
-    }
-    
-//------------------------------------------------------------------------------
-    
-    private void processOneAtomContainer(IAtomContainer iac)
-    {
-    	ConstraintsSet cs = createConstraints(iac);
-        output.add(cs);
-        
-        if (verbosity > 0)
-        {
-        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
-        	cs.printAll();
         }
     }
 
