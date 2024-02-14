@@ -45,6 +45,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -54,20 +55,15 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * DummyObjectsHandler is a tool to handle dummy objects, such as, dummy atoms 
+ * Tool to handle dummy objects, such as, dummy atoms 
  * and bonds, within molecular representations. 
  * 
  * @author Marco Foscato
  */
 
 
-public class DummyObjectsHandler extends Worker
-{	
-    /**
-     * Pathname to file containing the input molecular systems
-     */
-    private File inFile;
-
+public class DummyObjectsHandler extends AtomContainerInputProcessor
+{
     /**
      * Pathname to output file
      */
@@ -110,11 +106,6 @@ public class DummyObjectsHandler extends Worker
 
     //Elemental symbol of dummy atoms to deal with
     private String elm = null;
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
     
     /**
      * String defining the task of adding dummy atoms
@@ -181,18 +172,7 @@ public class DummyObjectsHandler extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to DummyObjectsHandler");
-
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(
-        		params.getParameter("INFILE").getValueAsString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
+    	super.initialize();
 
         // Get options
         if (params.contains("LINEARITIES"))
@@ -245,9 +225,12 @@ public class DummyObjectsHandler extends Worker
         }
 
         //Get and check the output file name
-        this.outFile =  new File(
-        		params.getParameter("OUTFILE").getValueAsString());
-        FileUtils.mustNotExist(this.outFile);
+        if (params.contains("OUTFILE"))
+        {
+	        this.outFile =  new File(
+	        		params.getParameter("OUTFILE").getValueAsString());
+	        FileUtils.mustNotExist(this.outFile);
+        }
 
     }
 
@@ -261,11 +244,19 @@ public class DummyObjectsHandler extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(ADDDUMMYATOMSTASK))
     	{
-    		addDummyAtoms();
+    		addDummyAtoms(iac, i);
     	} else if (task.equals(REMOVEDUMMYATOMSTASK)){
-    		removeDummyAtoms();
+    		removeDummyAtoms(iac, i);
     	} else {
     		dealWithTaskMismatch();
         }
@@ -277,78 +268,46 @@ public class DummyObjectsHandler extends Worker
      * Add dummy atoms according to parameters given to constructor.
      */
 
-    private void addDummyAtoms()
+    private void addDummyAtoms(IAtomContainer iac, int i)
     {
-    	AtomContainerSet output = new AtomContainerSet();
-        int i = 0;
-        try
-        {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                i++;
-                IAtomContainer mol = sdfItr.next();
-                String molName = MolecularUtils.getNameOrID(mol);
+	    if (template != null)
+	    {
+	        copypasteDummyAtoms(iac,template);
+	    }
+	    else
+	    {
+	        if (doLinearities)
+	        {
+	            includeLinearities(iac);
+	        }
+	
+	        if (doPlanarities)
+	        {
+	            includePlanarities(iac);
+	        }
+	        if (doMultihapto)
+	        {
+	            //TODO:
+	            Terminator.withMsgAndStatus("ERROR! Code for adding dummy "
+	            		+ "atoms to multihapto systems is not implemented yet.",
+	            		-1);
+	        }
+	
+	        if (0 < activeSrcAtmIds.size())
+	        {
+	            addDummiedOnSources(iac, this.activeSrcAtmIds);
+	            this.activeSrcAtmIds.clear();
+	        }
+	    }
 
-                if (verbosity > 1)
-                {
-                    System.out.println("Adding dummy atoms on molecule #"+ i 
-                    		+ ": " + molName);
-                }
-
-                if (template != null)
-                {
-                    copypasteDummyAtoms(mol,template);
-                }
-                else
-                {
-                    if (doLinearities)
-                    {
-                        includeLinearities(mol);
-                    }
-    
-                    if (doPlanarities)
-                    {
-                        includePlanarities(mol);
-                    }
-                    if (doMultihapto)
-                    {
-                        //TODO:
-                        Terminator.withMsgAndStatus("ERROR! Code for adding dummy atoms to multihapto systems is not implemented yet.",-1);
-                    }
-
-                    if (0 < activeSrcAtmIds.size())
-                    {
-                        addDummiedOnSources(mol, this.activeSrcAtmIds);
-                        this.activeSrcAtmIds.clear();
-                    }
-                }
-                //Store result
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-            }
-            sdfItr.close();
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
+        if (outFile!=null)
+        	IOtools.writeSDFAppend(outFile, iac, true);
         
         if (exposedOutputCollector != null)
         {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
+    	    String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(molID, 
+	      		NamedDataType.ATOMCONTAINERSET, iac));
     	}
     }
 
@@ -362,7 +321,8 @@ public class DummyObjectsHandler extends Worker
      * @param tmpl the template
      */
 
-    private void copypasteDummyAtoms(IAtomContainer mol, IAtomContainer tmpl)
+    private static void copypasteDummyAtoms(IAtomContainer mol, 
+    		IAtomContainer tmpl)
     {
         for (IAtom du : tmpl.atoms())
         {
@@ -371,12 +331,6 @@ public class DummyObjectsHandler extends Worker
             if (!AtomUtils.isAccDummy(du) || nbrs.size()!=1)
             {
                 continue;
-            }
-
-            if (verbosity > 1)
-            {
-                System.out.println("Template-Du: " 
-                                          + MolecularUtils.getAtomRef(du,tmpl));
             }
 
             IAtom src = nbrs.get(0);
@@ -397,11 +351,6 @@ public class DummyObjectsHandler extends Worker
                     // When not possible fall back on general behaviour.
 
             IAtom srcInMol = mol.getAtom(srcId);
-            if (verbosity > 1)
-            {
-                System.out.println("Adding dummy on source atom: "
-                    + MolecularUtils.getAtomRef(srcInMol,mol));
-            }
             IAtom duAtm = getDummyInSafePlace(mol,srcInMol);
             mol.addAtom(duAtm);
             IBond dummyBnd = new Bond(duAtm,srcInMol);
@@ -416,30 +365,12 @@ public class DummyObjectsHandler extends Worker
      * parameters
      */
 
-    private void removeDummyAtoms()
+    private void removeDummyAtoms(IAtomContainer iac, int i)
     {
-
-        AtomContainerSet output = new AtomContainerSet();
-        try 
+        if (doLinearities)
         {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            { 
-                //Get the molecule
-                boolean skipMol = false;
-                IAtomContainer mol = sdfItr.next();
-                String molName = MolecularUtils.getNameOrID(mol);
-
-                if (verbosity > 1)
-                {
-                    System.out.println("Removing dummy atoms from " + molName);
-                }
-
-                //Do the task
-                if (doLinearities)
-                {
-                	removeSpecialDummyAtoms(mol,elm,DummyAtomType.LINEARITY);
-                }
+        	removeSpecialDummyAtoms(iac, elm, DummyAtomType.LINEARITY);
+        }
 /*
 //TODO: discriminate between linear an planar systems. Now, they are not distinguishable in DummyAtomHandler
                 if (doPlanarities)
@@ -447,35 +378,19 @@ public class DummyObjectsHandler extends Worker
                     
                 }
 */
-                if (doMultihapto)
-                {
-                	removeSpecialDummyAtoms(mol,elm,DummyAtomType.MULTIHAPTO);
-                }
-
-                //Store result
-                if (exposedOutputCollector != null)
-                	output.addAtomContainer(mol);
-                if (outFile!=null)
-                	IOtools.writeSDFAppend(outFile,mol,true);
-
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
+        if (doMultihapto)
+        {
+        	removeSpecialDummyAtoms(iac, elm, DummyAtomType.MULTIHAPTO);
         }
+
+        if (outFile!=null)
+        	IOtools.writeSDFAppend(outFile, iac, true);
         
         if (exposedOutputCollector != null)
         {
-        	int ii = 0;
-        	for (IAtomContainer iac : output.atomContainers())
-	    	{
-	    	    ii++;
-	    	    String molID = "mol-"+ii;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, iac));
-	    	}
+    	    String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(molID, 
+	      		NamedDataType.ATOMCONTAINERSET, iac));
     	}
     }
 
@@ -632,7 +547,7 @@ public class DummyObjectsHandler extends Worker
      * @param src the atom to which the dummy is meant to be bound
      */
 
-    private IAtom getDummyInSafePlace(IAtomContainer mol, IAtom src)
+    private static IAtom getDummyInSafePlace(IAtomContainer mol, IAtom src)
     {
         // Define forbidden zones: places where we cannot place the dummy atom 
         ArrayList<Vector3d> allForbiddenDirs = new ArrayList<Vector3d>();
@@ -1039,32 +954,6 @@ public class DummyObjectsHandler extends Worker
                 flg.add(false);
 
         return flg;
-    }
-
-//------------------------------------------------------------------------------
-    
-    /**
-     * Generates a vector of boolean flags. The size of the vector equals the 
-     * number of atoms in the <code>IAtomContainer</code>. 
-     * All flags are initialized to <code>false</code>.
-     * @param mol molecular object for which the vector of flags has to be 
-     * generated.
-     * @return a vector of flags.
-     */
-    private List<Boolean> getFlagsVector(IAtomContainer mol)
-    {
-        //create a vector with false entries
-        int atoms = mol.getAtomCount();
-        List<Boolean> flg = getFlagsVector(atoms);
-        return flg;
-    }
-
-//------------------------------------------------------------------------------
-
-    private int getSDFAtomNumber(IAtomContainer mol, IAtom atm)
-    {
-        int num = mol.indexOf(atm)+1;
-        return num;
     }
     
 //------------------------------------------------------------------------------    

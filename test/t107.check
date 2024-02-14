@@ -1,10 +1,4 @@
 #!/bin/bash
-n=$(grep "Adding dummy on source atom" t107.log -c)
-if [ "$n" != "15" ] ; then
-  echo NOT Passed 1
-  exit -1
-fi
-
 if [ ! -f t107-out.sdf ] ; then
   echo NOT Passed 2
   exit -1
