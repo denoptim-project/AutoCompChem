@@ -38,6 +38,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -54,14 +55,8 @@ import autocompchem.worker.Worker;
  */
 
 
-public class AtomTypeMatcher extends Worker
+public class AtomTypeMatcher extends AtomContainerInputProcessor
 {
-    
-    /**
-     * The name of the input file
-     */
-    private File inFile;
-
     /**
      * The name of the atom type map
      */
@@ -71,11 +66,6 @@ public class AtomTypeMatcher extends Worker
      * The name of the output file, if any
      */
     private File outFile;
-    
-    /**
-     * Storage or typed atom containers
-     */
-    private List<IAtomContainer> output = new ArrayList<IAtomContainer>();
 
     /**
      * List of atom type-matching smarts with string identifiers
@@ -150,18 +140,8 @@ public class AtomTypeMatcher extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to AtomTypeMatcher");
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(
-        		params.getParameter("INFILE").getValue().toString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-
+    	super.initialize();
+    	
         //File with atom types map
         this.atMapFile = new File(
         		params.getParameter( "ATOMTYPESMAP").getValue().toString());
@@ -204,60 +184,31 @@ public class AtomTypeMatcher extends Worker
     @Override
     public void performTask()
     {
-    	if (task.equals(ASSIGNATOMTYPESTASK))
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+		if (task.equals(ASSIGNATOMTYPESTASK))
     	{
-    		assignAtomTypesToAll();
+            assignAtomTypes(iac);
+
+            if (outFile!=null)
+            	writeOut(iac);
+            
+            if (exposedOutputCollector != null)
+        	{
+    	    			String molID = task.ID + "mol-"+i;
+    	  		        exposeOutputData(new NamedData(molID, 
+    	  		        		NamedDataType.IATOMCONTAINER, iac));
+        	}
     	} else {
     		dealWithTaskMismatch();
         }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Assign the atom given parameters and writes
-     * output according to the parameters given to constructor.
-     */
-
-    public void assignAtomTypesToAll()
-    {
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                IAtomContainer mol = sdfItr.next();
-
-                //Assign Atom Types
-                assignAtomTypes(mol);
-                output.add(mol);
-
-                //Write to output
-                if (outFile!=null)
-                	writeOut(mol);
-
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
-        
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (IAtomContainer iac : output)
-	    	{
-	    		ii++;
-	    		if (iac != null)
-	    		{
-	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(molID, 
-	  		        		NamedDataType.IATOMCONTAINER, iac));
-	    		}
-	    	}
-    	}
-    }
+	}
 
 //------------------------------------------------------------------------------
 
