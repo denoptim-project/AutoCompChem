@@ -298,7 +298,12 @@ public class AtomContainerInputProcessor extends Worker
 	            			continue;
 	            		}
 		            }
-	            	processOneAtomContainer(inMols.get(i), i);
+	            	IAtomContainer iac = inMols.get(i);
+	      			if (verbosity > 0)
+	      	        {
+	      	        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
+	      	        }
+	            	processOneAtomContainer(iac, i);
 	            	if (breakAfterThis)
 	            		break;
 	            }
