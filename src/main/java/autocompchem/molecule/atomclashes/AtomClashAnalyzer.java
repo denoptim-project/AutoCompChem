@@ -37,6 +37,7 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.SDFIterator;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -46,7 +47,7 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * AtomClashAnalyzer is a tool that analyzes interatomic distances and report
+ * Tool that analyzes interatomic distances and report
  * atom clashes. Being r<sub>A</sub> and r<sub>B</sub> the v.d.w radii of two
  * atoms, 
  * and <i>d</i> the interatomic distance,
@@ -63,43 +64,40 @@ import autocompchem.worker.Worker;
  */
 
 
-public class AtomClashAnalyzer extends Worker
+public class AtomClashAnalyzer extends AtomContainerInputProcessor
 {
-    
-    //Filenames
-    private File inFile;
+	/**
+	 * File where to print the results
+	 */
     private File outFile;
 
-    //
-    private boolean makeout = false;
-
-    //List target atoms
-    private Map<String,String> targetsmarts = new HashMap<String,String>();
+    /**
+     * List target atoms to consider when searching for clashes.
+     */
+    private Map<String,String> targetsmarts;
 
     //cutoff
     private double cutoff = 0.6;
 
-    //Allowance
+    /**
+     * General allowance
+     */
     private double allowance = 0.4;
+    
+    /**
+     * Allowance for atoms in 1-3 relation
+     */
     private double allowance13 = 0.0;
+    
+    /**
+     * Allowance for atoms in 1-4 relation
+     */
     private double allowance14 = 0.0;
-    private ArrayList<VDWAllowance> allowances = new ArrayList<VDWAllowance>();
 
-    //Results
-    private ArrayList<ArrayList<AtomClash>> results = 
-                                  new ArrayList<ArrayList<AtomClash>>();
-
-    //Work on selection of atoms
-    private boolean onlyTargetAtms = false;
-
-    //Status flag
-    private boolean alreadyRun = false;
-
-    //Run type
-    private boolean standalone = true;
-
-    //Verbosity level
-    private int verbosity = 1;
+    /**
+     * Custom allowances
+     */
+    private List<VDWAllowance> allowances = new ArrayList<VDWAllowance>();
     
     /**
      * String defining the task of detecting atom clashes
@@ -146,41 +144,26 @@ public class AtomClashAnalyzer extends Worker
 
 //-----------------------------------------------------------------------------
 
-      /**
-       * Initialise the worker according to the parameters loaded by constructor.
-       */
+    /**
+     * Initialise the worker according to the parameters loaded by constructor.
+     */
 
-      @Override
-      public void initialize()
-      {
-        standalone = true;
-
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to AtomClashAnalyzer");
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(
-        		params.getParameter("INFILE").getValue().toString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-
-        //Get optional parameter
-        //Get and check output file
+    @Override
+    public void initialize()
+    {
+    	super.initialize();
+    	  
         if (params.contains("OUTFILE"))
         {
             this.outFile = new File(
             		params.getParameter("OUTFILE").getValue().toString());
             FileUtils.mustNotExist(this.outFile);
-            this.makeout = true;
         }
 
         //Get the list of SMARTS to be matched
         if (params.contains("TARGETSMARTS"))
         {
-            onlyTargetAtms = true;
+        	this.targetsmarts = new HashMap<String,String>();
             String allSamrts = 
                 params.getParameter("TARGETSMARTS").getValue().toString();
             if (verbosity > 2)
@@ -263,134 +246,112 @@ public class AtomClashAnalyzer extends Worker
       
 //-----------------------------------------------------------------------------
 
-      /**
-       * Performs any of the registered tasks according to how this worker
-       * has been initialised.
-       */
-
-      @Override
-      public void performTask()
-      {
-    	  if (task.equals(ANALYZEVDWCLASHESTASK))
-      	  {
-    		  analyzeVDWContacts();
-      	  } else {
-      		dealWithTaskMismatch();
-          }
-      }
-
-//------------------------------------------------------------------------------
-
     /**
-     * Performs the analysis of the atom clashes according to the parameters
-     * provided to the constructor: it assumes that the AtomClashAnalyzer is
-     * used in a stand-alone fashion (reading structures from files).
+     * Performs any of the registered tasks according to how this worker
+     * has been initialised.
      */
 
-    public void analyzeVDWContacts()
+    @Override
+    public void performTask()
     {
-        int i = -1;
-        int nacmols = 0;
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                i++;
-                IAtomContainer mol = sdfItr.next();
-                String molName = MolecularUtils.getNameOrID(mol);
+    	processInput();
+    }
+      
+//------------------------------------------------------------------------------
 
-                //Get target atoms                
+  	@Override
+    public void processOneAtomContainer(IAtomContainer iac, int i) 
+    {
+  		if (task.equals(ANALYZEVDWCLASHESTASK))
+  		{
+  			List<AtomClash> clashes = analyzeAtomClashes(iac);
+  			if (clashes.size() > 0)
+            {
                 if (verbosity > 0)
                 {
-                    System.out.println(" Analysing atom clashes in molecule " 
-                                        + molName + " (" + i + ")");
+                    System.out.println(" Found " + clashes.size() 
+                                            + " atom clashes: ");
+                    for (AtomClash ac : clashes)
+                        System.out.println(ac);
                 }
 
-                //Perform analysis
-                boolean foundClash = analyzeAtomClashes(mol);
-
-                //In case of clashes
-                if (foundClash)
+                if (outFile!=null)
                 {
-                    nacmols++;
-
-                    if (verbosity > 0)
-                    {
-                        List<AtomClash> acs = results.get(i);
-                        System.out.println(" Found " + acs.size() 
-                                                + " atom clashes: ");
-                        for (AtomClash ac : acs)
-                            System.out.println(ac);
-                    }
-
-                    if (makeout)
-                    {
-                        //store results in output SDF
-                        writeAtmClashToSDFFields(mol, i, outFile);
-                    }
+                    //store results in output SDF
+                    writeAtmClashToSDFFields(iac, clashes, i, outFile);
                 }
-
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
-
-        if (verbosity > 0)
-        {
-            System.out.println(" Found " + nacmols + " mols with one or more "
-                                + "atom clashes");
-        }
-        
-        /*
-        //TODO-gg finish when the list of AtomClashes can be stored as named data
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (List<AtomClash> acs : results)
-	    	{
-	    		ii++;
-	    		if (acs != null)
-	    		{
-	    			String molID = "mol-"+ii;
-	  		        exposeOutputData(new NamedData(molID, 
-	  		        		NamedDataType.ATOMCLASH, acs));
-	    		}
-	    	}
-    	}
-    	*/
-
-        //Set flag
-        alreadyRun = true;
+            }
+  			//TODO-gg
+  			/*
+  			if (exposedOutputCollector != null)
+  	    	{
+  		    	int ii = 0;
+  		    	for (List<AtomClash> acs : results)
+  		    	{
+  		    		ii++;
+  		    		if (acs != null)
+  		    		{
+  		    			String molID = "mol-"+ii;
+  		  		        exposeOutputData(new NamedData(molID, 
+  		  		        		NamedDataType.ATOMCLASH, acs));
+  		    		}
+  		    	}
+  	    	}
+  			*/
+  		} else {
+  			dealWithTaskMismatch();
+  		}
     }
-
+  
 //-----------------------------------------------------------------------------
 
     /**
-     * Perform the analysis of atom clashes on a single molecule. The analysis
+     * Performs the analysis of atom clashes on a single molecule. The analysis
      * is performed according to the parameters provided to the constructor.
-     * Details such as the actual list of atom clashes and the atoms involved,
-     * are stored and can be obtained with the 
-     * {@link #getAllResults getAllResults} and 
-     * {@link #getSingleResults getSingleResults}.
      * @param mol the molecule to analyze
-     * @return <code>true</code> in the molecule contains one or more atom 
-     * clashes.
+     * @return the list of atom clashes.
      */
 
-    //TODO-gg should make static analogue with return value
-    
-    public boolean analyzeAtomClashes(IAtomContainer mol)
+    public List<AtomClash> analyzeAtomClashes(IAtomContainer mol)
     {
-        boolean foundAtomClash = false;
-        ArrayList<AtomClash> acList = new ArrayList<AtomClash>();
+    	return analyzeAtomClashes(mol, targetsmarts, allowances, cutoff, 
+    			allowance, allowance13, allowance14, verbosity);
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Performs the analysis of atom clashes on a single molecule. 
+     * Being rA and rB the v.d.w radii of two atoms A and B, and d the 
+     * interatomic distance, an atom clash occurs if the 
+     * overlap=(rA + rB - d - allowance) between atoms A and B is larger 
+     * than a specific cutoff. The allowance is a value in angstrom that allows 
+     * to specify that some atoms can came closer to each other that the sum of 
+     * their van der Waals radii.
+     * @param mol the molecule to analyze
+     * @param targetsmarts list of smarts to be included in the analysis
+     * @param allowances custom allowances
+     * @param cutoff
+     * @param allowance
+     * @param allowance13
+     * @param allowance14
+     * @param verbosity verbosity level
+     * @return the list of atom clashes
+     */
+    public static List<AtomClash> analyzeAtomClashes(IAtomContainer mol, 
+    		Map<String, String> targetsmarts, 
+    		List<VDWAllowance> allowances, 
+    		double cutoff,
+    		double allowance,
+    		double allowance13,
+    		double allowance14,
+    		int verbosity)
+    {
+        List<AtomClash> acList = new ArrayList<AtomClash>();
 
         //Identify target atoms
-        ArrayList<IAtom> targets = new ArrayList<IAtom>();
-        if (onlyTargetAtms)
+        List<IAtom> targets = new ArrayList<IAtom>();
+        if (targetsmarts!=null)
         {
             ManySMARTSQuery msq = new ManySMARTSQuery(mol,
                                                       targetsmarts,
@@ -435,8 +396,8 @@ public class AtomClashAnalyzer extends Worker
         }
         if (verbosity > 1)
         {
-            System.out.println(" Searching clashes among " 
-                                + targets.size() + " atoms");
+            System.out.println(" Searching clashes among " + targets.size() 
+            + " atoms");
         }
         if (verbosity > 3)
         {
@@ -578,42 +539,37 @@ public class AtomClashAnalyzer extends Worker
                 //Check for atom clash
                 if (overlap >= cutoff)
                 {
-                    foundAtomClash = true;
                     String refI = MolecularUtils.getAtomRef(atmI,mol);
                     String refJ = MolecularUtils.getAtomRef(atmJ,mol);
-                    AtomClash ac = new AtomClash(atmI,refI,atmJ,refJ,d,vdwsum,alw);
+                    AtomClash ac = new AtomClash(atmI, refI, atmJ, refJ, d,
+                    		vdwsum, alw);
                     acList.add(ac);
                 }
             }
         }
-
-        //store
-        results.add(acList);
-
-        return foundAtomClash;
+        return acList;
     }
 
 //-----------------------------------------------------------------------------
 
     /**
-     * Writes infomration on atom clashes in SDF fields. The output file can
+     * Writes information on atom clashes in SDF fields. The output file can
      * be new of existing, in which case the molecule will be appended at the
      * end.
      * @param mol the molecular system
+     * @param clashes the list of atom clashes to consider
      * @param i index of record in the results storage
      * @param file the output SDF file
      */
 
-    public void writeAtmClashToSDFFields(IAtomContainer mol, int i, 
-                                         File file)
+    public void writeAtmClashToSDFFields(IAtomContainer mol, 
+    		List<AtomClash> clashes, int i, File file)
     {
-        ArrayList<AtomClash> acs = results.get(i);
-        
         //find closes
         @SuppressWarnings("unused")
                 AtomClash worstac;
         double worstoverlap = 0.0;
-        for (AtomClash ac : acs)
+        for (AtomClash ac : clashes)
         {
             if (ac.getOverlap() > worstoverlap)
             {
@@ -623,134 +579,13 @@ public class AtomClashAnalyzer extends Worker
         }
 
         //prepare fields
-        mol.setProperty("WorstOverlap",worstoverlap);
-        mol.setProperty("AtomClashes",acs);
+        mol.setProperty("WorstOverlap", worstoverlap);
+        mol.setProperty("AtomClashes", clashes);
 
         //write
         IOtools.writeSDFAppend(file,mol,true);
     }
 
 //-----------------------------------------------------------------------------
-
-    /**
-     * Return the results for all molecules.
-     * @return a double-layer list with all the results (inner layer) 
-     * for all molecules (outer list)
-     */
-
-    public ArrayList<ArrayList<AtomClash>> getAllResults()
-    {
-        if (!alreadyRun && standalone)
-            this.analyzeVDWContacts();
-
-        return results;
-    }
-
-//-----------------------------------------------------------------------------
     
-    /**
-     * Return the results for a single molecule.
-     * The molecule is identified by the position (0-n) in the input.
-     * @param molID the index of the molecule for which the result is required
-     * @return the list of atom clashes in the given molecule
-     */
-
-    public ArrayList<AtomClash> getSingleResults(int molID)
-    {
-        if (!alreadyRun && standalone)
-            this.analyzeVDWContacts();
-
-        ArrayList<AtomClash> ac = results.get(molID);
-        return ac;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the SMARTS queries used to identify the target atoms.
-     * @param targetsmarts a map is used to provide pairs of key:values
-     * where the keys are just reference names to identify the SMARTS
-     * and the values are the actual SMARTS queries.
-     */
-
-    public void setTargetAtomsSMARTS(Map<String,String> targetsmarts)
-    {
-        this.targetsmarts = targetsmarts;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the cutoff value
-     * @param cutoff the cutoff value to impose
-     */
-
-    public void setCutoff(double cutoff)
-    {
-        this.cutoff = cutoff;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the general allowance
-     * @param allowance the value to impose to the general allowance
-     */
-
-    public void setAllowance(double allowance)
-    {
-        this.allowance = allowance;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the allowance for atoms in 1-3 relationship
-     * @param allowance13 the value to impose to the allowance for atoms in
-     * 1-3 relation
-     */
-
-    public void setAllowance13(double allowance13)
-    {
-        this.allowance13 = allowance13;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the allowance for atoms in 1-4 relationship
-     * @param allowance14 the value to impose to the allowance for atoms in 
-     * 1-4 relation
-     */
-
-    public void setAllowance14(double allowance14)
-    {
-        this.allowance14 = allowance14;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the list of custom allowance
-     * @param allowances list of curtom allowances 
-     */
-
-    public void setCustomAllowances(ArrayList<VDWAllowance> allowances)
-    {
-        this.allowances = allowances;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the verbosity level
-     * @param level the verbosity level
-     */
-
-    public void setVerbosity(int level)
-    {
-        this.verbosity = level;
-    }
-
-//-----------------------------------------------------------------------------
 }

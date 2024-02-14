@@ -254,7 +254,6 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-
     	if (task.equals(GENERATEATOMTUPLESTASK))
     	{
 	        // If needed, generate atom labels

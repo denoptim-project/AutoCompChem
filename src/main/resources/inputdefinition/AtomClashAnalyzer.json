@@ -1,12 +1,5 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the SDF file containing the chemical system to work with."
-  },
-  {
     "key": "OUTFILE",
     "casedKey": "outFile",
     "type": "<String>",
@@ -50,10 +43,7 @@
     "doc": "Specifies the value of the allowance between specific pairs of atoms that defined by SMARTS strings. Custom allowances can be defined by single or multi line argument (one custom allowance per line) according to the following syntax: <String> <String> <float>, where the strings are SMARTS queries and the float is the pair-specific allowance. See CUTOFF."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

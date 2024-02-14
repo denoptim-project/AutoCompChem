@@ -1,12 +1,12 @@
 #!/bin/bash
 
-grep -q 'Found 32 mols with one or more atom clashes' t36.log
-if [ $? != 0 ] ; then
+n=0; n=$(grep "^AtomClash " -c t36.log)
+if [[ $n != 88 ]] ; then
   echo NOT Passed 1
   exit -1
 fi
 
-n=$(grep "\$\$\$\$" t36-out.sdf -c)
+n=0; n=$(grep "\$\$\$\$" t36-out.sdf -c)
 if [[ $n != 32 ]] ; then
   echo NOT Passed 2
   exit -1
