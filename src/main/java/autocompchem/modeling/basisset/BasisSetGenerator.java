@@ -87,11 +87,6 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
     private Map<String,BasisSet> importedBSs = new HashMap<String,BasisSet>();  
     
     /**
-     * Storage of generated basis sets
-     */
-    private List<BasisSet> output = new ArrayList<BasisSet>();
-
-    /**
      * Flag setting tolerance for partial matches
      */
     private boolean allowPartial = false;
@@ -219,7 +214,6 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
 	private void assignBasisSetToOneAtomCOntainer(IAtomContainer iac, int i)
 	{
 		BasisSet bs = assignBasisSet(iac);
-        output.add(bs);
 
         if (outFile!=null)
         {

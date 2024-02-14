@@ -154,22 +154,6 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
     @Override
     public void performTask()
     {
-    	if (task.equals(GETMOLECULARGEOMETRYTASK))
-    	{
-    		createMolGeometryDefinitions();
-    	} else {
-    		dealWithTaskMismatch();
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Create list of molecular geometry definitions with the settings available
-     *  in this instance.
-     */
-    public void createMolGeometryDefinitions()
-    {
     	processInput();
     }
     
@@ -178,108 +162,114 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-		IAtomContainer iacPossiblyLabelled = iac;
-		
-		if (useAtomTags)
-		{
-			ParameterStorage labelsParams = params.clone();
-			labelsParams.setParameter(WorkerConstants.PARTASK, 
-    				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
-			labelsParams.setParameter(ChemSoftConstants.PARGEOM,
-    				NamedDataType.IATOMCONTAINER, 
-    				new ArrayList<IAtomContainer>(Arrays.asList(iac)));
-			AtomLabelsGenerator labGenerator = null;
-			try {
-				labGenerator = (AtomLabelsGenerator) 
-	    			WorkerFactory.createWorker(labelsParams, myJob);
-			} catch (Throwable t) {
-				//Cannot happen!
-				t.printStackTrace();
-			}
-			List<String> atomTags = labGenerator.generateAtomLabels(iac);
-			iacPossiblyLabelled = MolecularUtils.makeSimpleCopyWithAtomTags(iac, 
-					atomTags);
-		}
-		
-		switch (coordsType)
-    	{    
-        	case ZMAT:
-        	{
-        		ParameterStorage zmatMakerTask = new ParameterStorage();
-        		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
-        				ZMatrixHandler.PRINTZMATRIXTASK.ID);
-        		zmatMakerTask.setParameter(ChemSoftConstants.PARGEOM,
-        				NamedDataType.IATOMCONTAINER, 
-        				new ArrayList<IAtomContainer>(Arrays.asList(
-        						iacPossiblyLabelled)));
-                Worker w = null;
+		if (task.equals(GETMOLECULARGEOMETRYTASK))
+    	{
+			Object output = null;
+			IAtomContainer iacPossiblyLabelled = iac;
+			
+			if (useAtomTags)
+			{
+				ParameterStorage labelsParams = params.clone();
+				labelsParams.setParameter(WorkerConstants.PARTASK, 
+	    				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
+				labelsParams.setParameter(ChemSoftConstants.PARGEOM,
+	    				NamedDataType.IATOMCONTAINER, 
+	    				new ArrayList<IAtomContainer>(Arrays.asList(iac)));
+				AtomLabelsGenerator labGenerator = null;
 				try {
-					w = WorkerFactory.createWorker(zmatMakerTask,myJob);
-				} catch (ClassNotFoundException e1) {
+					labGenerator = (AtomLabelsGenerator) 
+		    			WorkerFactory.createWorker(labelsParams, myJob);
+				} catch (Throwable t) {
 					//Cannot happen!
-					e1.printStackTrace();
+					t.printStackTrace();
 				}
-                ZMatrixHandler zmh = (ZMatrixHandler) w;
-                ZMatrix zmat = zmh.makeZMatrix();
-                
-                if (params.contains(ZMatrixConstants.SELECTORMODE))
-                {
-                	ParameterStorage cnstMakerTask = params.clone();
-                	cnstMakerTask.setParameter(WorkerConstants.PARTASK, 
-                			ConstraintsGenerator.GENERATECONSTRAINTSTASK.ID);
-
-                    ConstraintsGenerator cnstrg = null;
+				List<String> atomTags = labGenerator.generateAtomLabels(iac);
+				iacPossiblyLabelled = MolecularUtils.makeSimpleCopyWithAtomTags(
+						iac, 
+						atomTags);
+			}
+			
+			switch (coordsType)
+	    	{    
+	        	case ZMAT:
+	        	{
+	        		ParameterStorage zmatMakerTask = new ParameterStorage();
+	        		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
+	        				ZMatrixHandler.PRINTZMATRIXTASK.ID);
+	        		zmatMakerTask.setParameter(ChemSoftConstants.PARGEOM,
+	        				NamedDataType.IATOMCONTAINER, 
+	        				new ArrayList<IAtomContainer>(Arrays.asList(
+	        						iacPossiblyLabelled)));
+	                Worker w = null;
 					try {
-						cnstrg = (ConstraintsGenerator)
-								WorkerFactory.createWorker(cnstMakerTask, myJob);
+						w = WorkerFactory.createWorker(zmatMakerTask,myJob);
 					} catch (ClassNotFoundException e1) {
 						//Cannot happen!
 						e1.printStackTrace();
 					}
-                	ConstraintsSet cs = new ConstraintsSet();
-                	try {
-    					cs = cnstrg.createConstraints(iac);
-    				} catch (Exception e) {
-    					e.printStackTrace();
-    					Terminator.withMsgAndStatus("ERROR! "
-    							+ "Unable to create constraints. "
-    							+ "Exception from the "
-    							+ ConstraintsGenerator.class.getSimpleName() 
-    							+ ".", -1);
-    				}
-                	String mode = params.getParameterValue(
-                			ZMatrixConstants.SELECTORMODE);
-                	switch (mode.toUpperCase())
-                	{
-                	case ZMatrixConstants.SELECTORMODE_CONSTANT:
-                    	zmat.setConstants(cs);
-                		break;
-
-                	case ZMatrixConstants.SELECTORMODE_VARIABLES:
-                    	zmat.setVariables(cs);
-                		break;
-                	}
-                }
-                
-        		output.add(zmat);
-        		break;
-        	}
-        	
-        	case XYZ:
-        	default:
-        	{
-        		output.add(iacPossiblyLabelled);
-        		break;
-        	}
-    	}
-		
-		if (exposedOutputCollector != null)
-    	{
-			// NB: we always take the last because that is the one we just add
-			exposeOutputData(new NamedData(task.ID+i, 
-					output.get(output.size()-1)));
-			//TODO-gg check if this consisntent with what done in other workers!
-    	}
+	                ZMatrixHandler zmh = (ZMatrixHandler) w;
+	                ZMatrix zmat = zmh.makeZMatrix();
+	                
+	                if (params.contains(ZMatrixConstants.SELECTORMODE))
+	                {
+	                	ParameterStorage cnstMakerTask = params.clone();
+	                	cnstMakerTask.setParameter(WorkerConstants.PARTASK, 
+	                			ConstraintsGenerator.GENERATECONSTRAINTSTASK.ID);
+	
+	                    ConstraintsGenerator cnstrg = null;
+						try {
+							cnstrg = (ConstraintsGenerator)
+									WorkerFactory.createWorker(cnstMakerTask, 
+											myJob);
+						} catch (ClassNotFoundException e1) {
+							//Cannot happen!
+							e1.printStackTrace();
+						}
+	                	ConstraintsSet cs = new ConstraintsSet();
+	                	try {
+	    					cs = cnstrg.createConstraints(iac);
+	    				} catch (Exception e) {
+	    					e.printStackTrace();
+	    					Terminator.withMsgAndStatus("ERROR! "
+	    							+ "Unable to create constraints. "
+	    							+ "Exception from the "
+	    							+ ConstraintsGenerator.class.getSimpleName() 
+	    							+ ".", -1);
+	    				}
+	                	String mode = params.getParameterValue(
+	                			ZMatrixConstants.SELECTORMODE);
+	                	switch (mode.toUpperCase())
+	                	{
+	                	case ZMatrixConstants.SELECTORMODE_CONSTANT:
+	                    	zmat.setConstants(cs);
+	                		break;
+	
+	                	case ZMatrixConstants.SELECTORMODE_VARIABLES:
+	                    	zmat.setVariables(cs);
+	                		break;
+	                	}
+	                }
+	                
+	                output = zmat;
+	        		break;
+	        	}
+	        	
+	        	case XYZ:
+	        	default:
+	        	{
+	        		output = iacPossiblyLabelled;
+	        		break;
+	        	}
+	    	}
+			
+			if (exposedOutputCollector != null)
+	    	{
+				// TODO-gg verify consistency of NamedData reference: should it be task+molId+"-"+i ?
+				exposeOutputData(new NamedData(task.ID+i, output));
+	    	}
+    	} else {
+    		dealWithTaskMismatch();
+        }
 	}
     
 //-----------------------------------------------------------------------------

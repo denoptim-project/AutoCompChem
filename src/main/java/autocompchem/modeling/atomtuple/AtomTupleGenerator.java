@@ -194,12 +194,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     @Override
     public void performTask()
     {
-    	if (task.equals(GENERATEATOMTUPLESTASK))
-    	{
-    		processInput();
-    	} else {
-    		dealWithTaskMismatch();
-        }
+    	processInput();
     }
 
 //------------------------------------------------------------------------------
@@ -259,39 +254,43 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-        // If needed, generate atom labels
-    	List<String> labels = null;
-        for (AtomTupleMatchingRule r : rules)
-        {
-    		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
-    		{
-    			labels = generateAtomLabels(iac);
-    			break;
-    		}
-        }
-        
-        // Now generate the tuple, possibly passing the atom labels data
-        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels);
-        if (verbosity > 0)
-        {
-        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
-        	System.out.println(StringUtils.mergeListToString(tuples, 
-        			System.getProperty("line.separator")));
-        }
-        AnnotatedAtomTupleList aatl = new AnnotatedAtomTupleList();
-        if (tuples.size()>0)
-        {
-	        aatl= new AnnotatedAtomTupleList(tuples);
-        }
-        output.add(aatl);
-        
-        if (exposedOutputCollector != null)
+
+    	if (task.equals(GENERATEATOMTUPLESTASK))
     	{
-			String molID = "mol-"+i;
-	        exposeOutputData(new NamedData(
-	        		GENERATEATOMTUPLESTASK.ID + "_" + molID, 
-	        		NamedDataType.ANNOTATEDATOMTUPLELIST, aatl));
-    	}
+	        // If needed, generate atom labels
+	    	List<String> labels = null;
+	        for (AtomTupleMatchingRule r : rules)
+	        {
+	    		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
+	    		{
+	    			labels = generateAtomLabels(iac);
+	    			break;
+	    		}
+	        }
+	        
+	        // Now generate the tuple, possibly passing the atom labels data
+	        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels);
+	        if (verbosity > 0)
+	        {
+	        	System.out.println(StringUtils.mergeListToString(tuples, 
+	        			System.getProperty("line.separator")));
+	        }
+	        AnnotatedAtomTupleList aatl = new AnnotatedAtomTupleList();
+	        if (tuples.size()>0)
+	        {
+		        aatl= new AnnotatedAtomTupleList(tuples);
+	        }
+	        
+	        if (exposedOutputCollector != null)
+	    	{
+				String molID = "mol-"+i;
+		        exposeOutputData(new NamedData(
+		        		GENERATEATOMTUPLESTASK.ID + "_" + molID, 
+		        		NamedDataType.ANNOTATEDATOMTUPLELIST, aatl));
+	    	}
+		} else {
+			dealWithTaskMismatch();
+	    }
     }
         
 //------------------------------------------------------------------------------
@@ -300,7 +299,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     {
     	ParameterStorage labMakerParams = params.clone();
 		labMakerParams.setParameter(WorkerConstants.PARTASK, 
-				Task.getExisting("generateAtomLabels").ID);
+				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
 		AtomLabelsGenerator labGenerator = null;
 		try {
 			labGenerator = (AtomLabelsGenerator) 

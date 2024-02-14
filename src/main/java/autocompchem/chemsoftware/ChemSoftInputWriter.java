@@ -405,7 +405,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     		produceSingleJobInputFiles(inMols, outFile, outFileNameRoot);
     	} else {
     		// Here we read atom containers from whatever input we have, which
-    		// could be a file to be read in, or a colleciton of objects stored 
+    		// could be a file to be read in, or a collection of objects stored 
     		// in the memory.
     		processInput();
     	}
@@ -460,6 +460,13 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     
 //------------------------------------------------------------------------------
 
+	/**
+	 * This worker is special in that the manipulation of multiple atom 
+	 * containers may imply that all such atom containers contribute to the
+	 * production of single output rather than producing an independent output
+	 * each.
+	 */
+	
 	@Override
 	public void processAllAtomContainer(List<IAtomContainer> iacs) 
 	{
