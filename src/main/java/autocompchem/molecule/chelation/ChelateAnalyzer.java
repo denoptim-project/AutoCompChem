@@ -34,8 +34,11 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.SDFIterator;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
@@ -44,7 +47,7 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * ChelateAnalyzer is a tool for the characterization of chelating systems.
+ * Tool for the characterization of chelating systems.
  * Chelates are identified by remotion of the target atom and 
  * evaluation of the remaining connectivity.
  * 
@@ -52,53 +55,17 @@ import autocompchem.worker.Worker;
  */
 
 
-public class ChelateAnalyzer extends Worker
-{   
-    /**
-     * Name of the input file
-     */
-    private File inFile;
-
+public class ChelateAnalyzer extends AtomContainerInputProcessor
+{
     /**
      * Name of the output file
      */
     private File outFile;
 
     /**
-     * Flag controlling the production of an output file
-     */
-    private boolean makeout = false;
-
-    /**
      * List of named SMARTS queries used to identify the chelating systems 
      */
-    private Map<String,String> targetsmarts = new HashMap<String,String>();
-
-    /**
-     * Containers for the results
-     */
-    private ArrayList<ArrayList<Chelant>> results = 
-    		new ArrayList<ArrayList<Chelant>>();
-
-    /**
-     * Flag defining to work on a selection of atoms
-     */
-    private boolean onlyTargetAtms = false;
-
-    /**
-     * Flag recording previous run
-     */
-    private boolean alreadyRun = false;
-
-    /**
-     * Flag recording the type of run
-     */
-    private boolean standalone = true;
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 1;
+    private Map<String,String> targetsmarts;
     
     /**
      * String defining the task of analyzing chelation patterns
@@ -151,19 +118,7 @@ public class ChelateAnalyzer extends Worker
     @Override
     public void initialize()
     {
-        standalone = true;
-
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to ChelateAnalyzer");
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(
-        		params.getParameter("INFILE").getValueAsString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
+    	super.initialize();
 
         //Get optional parameter
         //Get and check output file
@@ -172,13 +127,12 @@ public class ChelateAnalyzer extends Worker
             this.outFile = new File(
             		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
-            this.makeout = true;
         }
 
         //Get the list of SMARTS to be matched
         if (params.contains("TARGETSMARTS"))
         {
-            onlyTargetAtms = true;
+        	this.targetsmarts = new HashMap<String,String>();
             String allSamrts = 
                 params.getParameter("TARGETSMARTS").getValue().toString();
             if (verbosity > 2)
@@ -213,48 +167,45 @@ public class ChelateAnalyzer extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(ANALYZECHELATESTASK))
     	{
-    		analyzeChelates();
+    		List<Chelant> chelants = analyzeChelation(iac);
+    		
+            //Report
+            if (verbosity > 0)
+            {
+                String record = " Ligands: " + chelants.size() + " Denticity: ";
+                for (Chelant c : chelants)
+                {
+                    record = record + c.getDenticity() + " ";
+                }
+                System.out.println(record);
+            }
+            
+    		//TODO-gg expose output
+            /*
+            if (exposedOutputCollector != null)
+	    	{
+				String molID = "mol-"+i;
+				for (int j=0; j<chelants.size(); j++)
+				{
+			        exposeOutputData(new NamedData(
+			        		ANALYZECHELATESTASK.ID + "_" + molID + "-" + j, 
+			        		NamedDataType.CHELANT, chelants.get(j)));
+				}
+	    	}
+            */
     	} else {
     		dealWithTaskMismatch();
         }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Performs the analysis of the chelation motif according to the parameters
-     * provided to the constructor: it assumes that the ChelateAnalyzer is
-     * used in a stand alone fashion (reading structures from files).
-     */
-
-    public void analyzeChelates()
-    {
-        int i = -1;
-        try {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                //Get the molecule
-                i++;
-                IAtomContainer mol = sdfItr.next();
-
-                //Perform analysis
-                analyzeChelation(mol);
-                
-                //TODO: deal with returned result and store in tmp ouput
-
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
-        }
-        
-        //TODO: expose result once we'll be able to store ArrayList<Chelant>
-        // as named data
     }
 
 //-----------------------------------------------------------------------------
@@ -263,25 +214,27 @@ public class ChelateAnalyzer extends Worker
      * Perform the analysis of the chelation system
      * according to the parameters provided to the constructor. If no target 
      * atom is given, all D-block elements are considered as the chelated
-     * objects
-     * The characterization of the chelation systems is reported to standard 
-     * output depending on the verbosity level are stored as object so
-     * it can be obtained with the 
-     * {@link #getAllResults getAllResults} and 
-     * {@link #getSingleResults getSingleResults}.
+     * objects.
      * @param mol the molecule to analyze
      */
+    public List<Chelant> analyzeChelation(IAtomContainer mol) 
+    {
+    	return analyzeChelation(mol, targetsmarts, verbosity);
+    }
+    
+//-----------------------------------------------------------------------------
 
-    //TODO: make static analogue that return list of chelants
-    public void analyzeChelation(IAtomContainer mol) 
+    /**
+     * 
+     * @param mol
+     * @param targetsmarts
+     * @param verbosity
+     * @return
+     */
+    public static List<Chelant> analyzeChelation(IAtomContainer mol, 
+    		Map<String,String> targetsmarts, int verbosity) 
     {
         ArrayList<Chelant> chelates = new ArrayList<Chelant>();
-
-        if (verbosity > 0)
-        {
-            System.out.println(" Analysis of chelation in "
-                                         + MolecularUtils.getNameOrID(mol));
-        }
 
         //We modify a copy of the molecule
         IAtomContainer wMol = new AtomContainer();
@@ -293,10 +246,10 @@ public class ChelateAnalyzer extends Worker
         }
 
         //Identify target atoms
-        ArrayList<IAtom> targets = new ArrayList<IAtom>();
-        ArrayList<IBond> bndsToTrg = new ArrayList<IBond>();
+        List<IAtom> targets = new ArrayList<IAtom>();
+        List<IBond> bndsToTrg = new ArrayList<IBond>();
         String chelCntrLabed = "CHELATEDTRGID";
-        if (onlyTargetAtms)
+        if (targetsmarts!=null)
         {
 //TODO
             Terminator.withMsgAndStatus("ERROR! Use of SMARTS in "
@@ -483,65 +436,9 @@ public class ChelateAnalyzer extends Worker
 
         }
 
-        //Report
-        if (verbosity > 0)
-        {
-            String record = " Ligands: " + chelates.size() + " Denticity: ";
-            for (Chelant c : chelates)
-            {
-                record = record + c.getDenticity() + " ";
-            }
-            System.out.println(record);
-        }
-
-        //store
-        results.add(chelates);
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Return the results for all molecules.
-     * @return the results for all input molecules
-     */
-
-    public ArrayList<ArrayList<Chelant>> getAllResults()
-    {
-        if (!alreadyRun && standalone)
-            this.analyzeChelates();
-
-        return results;
+        return chelates;
     }
 
 //-----------------------------------------------------------------------------
     
-    /**
-     * Return the results for a single molecule.
-     * The molecule is identified by the position (0-n) in the input.
-     * @param molID the index of the molecule for which the result is required
-     * @return the results for the given molecule
-     */
-
-    public ArrayList<Chelant> getSingleResults(int molID)
-    {
-        if (!alreadyRun && standalone)
-            this.analyzeChelates();
-
-        ArrayList<Chelant> ac = results.get(molID);
-        return ac;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Sets the verbosity level
-     * @param level the verbosity level
-     */
-
-    public void setVerbosity(int level)
-    {
-        this.verbosity = level;
-    }
-
-//-----------------------------------------------------------------------------
 }
