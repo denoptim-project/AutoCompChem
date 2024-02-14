@@ -46,6 +46,7 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
+import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -72,18 +73,8 @@ import autocompchem.worker.WorkerFactory;
  * @author Marco Foscato
  */
 
-public class AtomSpecificStringGenerator extends Worker
+public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 {
-    
-    /**
-     * The input file (molecular structure files)
-     */
-    protected File inFile;
-
-    /**
-     * The input molecules
-     */
-    protected List<IAtomContainer> inMols;
     
     /**
      * Separator used to report the identifiers in the tuple
@@ -94,11 +85,6 @@ public class AtomSpecificStringGenerator extends Worker
      * Separator between prefix/suffix and items
      */
     private String fieldSeparator = "";
-    
-    /**
-     * Verbosity level
-     */
-    protected int verbosity = 0;
 
     /**
      * String defining the task of generating tuples of atoms
@@ -153,6 +139,8 @@ public class AtomSpecificStringGenerator extends Worker
 	@Override
     public void initialize()
     {   
+		super.initialize();
+		
         if (params.contains("IDSEPARATOR"))
         {
         	idSeparator = params.getParameter("IDSEPARATOR")
@@ -176,78 +164,69 @@ public class AtomSpecificStringGenerator extends Worker
     @Override
     public void performTask()
     {
-    	if (task.equals(GETATOMSPECIFICSTRINGTASK))
-    	{
-    		createAtomSpecificStrings();
-    	} else {
-    		dealWithTaskMismatch();
-        }
+    	processInput();
     }
-
+    
 //------------------------------------------------------------------------------
 
-    /**
-     * Create list of atom specific strings for all structures found in the 
-     * input. Uses the settings available in this instance (e.g., settings 
-     * created upon initialization)
-     */
-    public void createAtomSpecificStrings()
-    {
-    	// Adjust parameters to configure AtomTupleGenerator
-        ParameterStorage tupleGenParams = params.clone();
-        tupleGenParams.setParameter(WorkerConstants.PARTASK,
-        		AtomTupleGenerator.GENERATEATOMTUPLESTASK.ID);
-        
-        // Run tuple generator
-        Worker embeddedWorker = null;
-		try {
-			embeddedWorker = WorkerFactory.createWorker(tupleGenParams, myJob);
-		} catch (ClassNotFoundException e) {
-			// Cannot happen... unless there is a bug
-			e.printStackTrace();
-		}
-    	NamedDataCollector outputOfEmbedded = new NamedDataCollector();
-    	embeddedWorker.setDataCollector(outputOfEmbedded);
-    	embeddedWorker.performTask();
-    	
-        List<TextBlock> output = new ArrayList<TextBlock>();
-        
-    	// Get atom-specific strings (i.e., annotated atom tuples)
-    	for (String key : outputOfEmbedded.getAllNamedData().keySet())
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
+    	if (task.equals(GETATOMSPECIFICSTRINGTASK))
     	{
-    		// As safety measure, ignore unexpected output
-    		if (key.startsWith(AtomTupleGenerator.GENERATEATOMTUPLESTASK.ID))
-    		{
-    			// We get one list per input molecule
-    			AnnotatedAtomTupleList tuples = 
-    					(AnnotatedAtomTupleList) outputOfEmbedded.getNamedData(
-    							key).getValue();
-    			TextBlock tb = new TextBlock();
-    			for (AnnotatedAtomTuple tuple : tuples)
-    			{
-    	        	tb.add(convertTupleToAtomSpecString(tuple));
-    			}
-                output.add(tb);
-    		}
-    	}
-
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (TextBlock tb : output)
+	    	// Adjust parameters to configure AtomTupleGenerator
+	        ParameterStorage tupleGenParams = params.clone();
+	        tupleGenParams.setParameter(WorkerConstants.PARTASK,
+	        		AtomTupleGenerator.GENERATEATOMTUPLESTASK.ID);
+	        
+	        // Run tuple generator
+	        Worker embeddedWorker = null;
+			try {
+				embeddedWorker = WorkerFactory.createWorker(tupleGenParams, 
+						myJob);
+			} catch (ClassNotFoundException e) {
+				// Cannot happen... unless there is a bug
+				e.printStackTrace();
+			}
+	    	NamedDataCollector outputOfEmbedded = new NamedDataCollector();
+	    	embeddedWorker.setDataCollector(outputOfEmbedded);
+	    	embeddedWorker.performTask();
+	    	
+	    	TextBlock atomStringsForThisMol = new TextBlock();;
+	        
+	    	// Get atom-specific strings (i.e., annotated atom tuples)
+	    	for (String key : outputOfEmbedded.getAllNamedData().keySet())
 	    	{
-	    		ii++;
+	    		// As safety measure, ignore unexpected output, but there should
+	    		// be only one named data matching.
+	    		if (key.startsWith(AtomTupleGenerator.GENERATEATOMTUPLESTASK.ID))
+	    		{
+	    			AnnotatedAtomTupleList tuples = (AnnotatedAtomTupleList) 
+	    					outputOfEmbedded.getNamedData(key).getValue();
+	    			//TODO-gg whay are we not using the AnnotatedAtomTupleList?
+	    			for (AnnotatedAtomTuple tuple : tuples)
+	    			{
+	    				atomStringsForThisMol.add(convertTupleToAtomSpecString(
+	    						tuple));
+	    			}
+	    		}
+	    	}
+	
+	        if (exposedOutputCollector != null)
+	    	{
 	    		int jj = 0;
-	    		for (String one : tb)
+	    		for (String one : atomStringsForThisMol)
 	    		{
 	    			jj++;
 	  		        exposeOutputData(new NamedData(
-	  		        		GETATOMSPECIFICSTRINGTASK.ID + "_mol-" + ii 
+	  		        		GETATOMSPECIFICSTRINGTASK.ID + "_mol-" + i 
 	  		        			+ "_hit-" + jj, 
 	  		        		NamedDataType.STRING, one));
 	    		}
 	    	}
-    	}
+		} else {
+			dealWithTaskMismatch();
+	    }
     }
     
 //------------------------------------------------------------------------------

@@ -12,17 +12,15 @@
     "doc": "The separator to use between prefix/suffix and tuple item identifiers"
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
-  },
-  {
     "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
     "tag": "generation of annotated tuple of atom identifiers"
   },
   {
     "embeddedWorker": "autocompchem.modeling.AtomLabelsGenerator",
     "tag": "generation of atom labels"
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]
