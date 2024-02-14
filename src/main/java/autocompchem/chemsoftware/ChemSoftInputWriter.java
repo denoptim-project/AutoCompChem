@@ -52,16 +52,6 @@ import autocompchem.worker.Worker;
 public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 {
     /**
-     * Definition of how to use multiple geometries
-     */
-    private enum MultiGeomMode {INDEPENDENTJOBS, ALLINONEJOB};
-    
-    /**
-     * Chosen mode of handling multiple geometries.
-     */
-    private MultiGeomMode multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
-
-    /**
      * Flag requesting to overwrite geometry names
      */
     private boolean overwriteGeomNames = false;
