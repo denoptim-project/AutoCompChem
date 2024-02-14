@@ -52,17 +52,12 @@ import autocompchem.worker.Worker;
  */
 
 
-public class MolecularMeter extends Worker
+public class MolecularMeter extends AtomContainerInputProcessor
 {
     /**
      * Unique counter for naming quantities
      */
     private final AtomicInteger CRDID = new AtomicInteger(0);
-
-    /**
-     * The file containing the molecules to analyse
-     */
-    private File inFile;
 
     /**
      * Map of the SMARTS queries used to define the quantities to measure
@@ -72,8 +67,8 @@ public class MolecularMeter extends Worker
     /**
      * Map of the atom indexes used to define the quantities to measure
      */
-    private Map<String,ArrayList<Integer>> atmIds = 
-                                       new HashMap<String,ArrayList<Integer>>();
+    private Map<String,List<Integer>> atmIds = 
+    		new HashMap<String,List<Integer>>();
 
     /**
      * Map defining the type of quantity definition 
@@ -83,7 +78,7 @@ public class MolecularMeter extends Worker
     /**
      * List of the named descriptors in the order requested by the user
      */
-    private ArrayList<String> sortedKeys = new ArrayList<String>();
+    private List<String> sortedKeys = new ArrayList<String>();
 
     /**
      * Flag: consider only bonded atoms
@@ -91,20 +86,9 @@ public class MolecularMeter extends Worker
     private boolean onlyBonded = false;
 
     /**
-     * Storage of results (per molecule)
-     */
-    private ArrayList<Map<String,ArrayList<Double>>> results = 
-                                new ArrayList<Map<String,ArrayList<Double>>>();
-
-    /**
      * Flag notifying that the meter has run 
      */
     private boolean alreadyRun = false;
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 1;
     
     /**
      * String defining the task of measuring geometric descriptors
@@ -157,20 +141,8 @@ public class MolecularMeter extends Worker
     
 	@Override
 	public void initialize() 
-	{    	
-        //Define verbosity
-        String vStr = params.getParameterOrDefault("VERBOSITY",
-        		NamedDataType.STRING, "1").getValueAsString();
-        this.verbosity = Integer.parseInt(vStr);
-
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to MolecularMeter");
-
-
-        //Get and check the input file (which has to be an SDF file)
-        String pathname = params.getParameter("INFILE").getValue().toString();
-        this.inFile = new File(pathname);
-        FileUtils.foundAndPermissions(pathname,true,false,false);
+	{
+		super.initialize();
 
         //Get SMARTS based definition of quantities
         if (params.contains("SMARTS"))
@@ -282,9 +254,29 @@ public class MolecularMeter extends Worker
 	@Override
   	public void performTask() 
     {
+		processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(MEASUREGEOMDESCRIPTORSTASK))
     	{
-    		measureAllQuantities();
+    		Map<String,List<Double>> descriptors = measureAllQuantities(iac,
+    				smarts, sortedKeys, atmIds, onlyBonded, i, verbosity);
+    		
+            if (exposedOutputCollector != null)
+        	{
+    			String molID = "mol-"+i;
+	    		for (String descRef : descriptors.keySet())
+	    		{
+	    			String reference = molID + "_" + descRef;
+	  		        exposeOutputData(new NamedData(reference, 
+	  		        		NamedDataType.DOUBLE, descriptors.get(descRef)));
+	    		}
+        	}
     	} else {
     		dealWithTaskMismatch();
         }
@@ -292,458 +284,339 @@ public class MolecularMeter extends Worker
   
 //------------------------------------------------------------------------------
 
-    /**
-     * Measure all the quantities required according to the information
-     * provided to the constructor. The values of the measured quantities are
-     * reported in the log (if verbosity lever higher than 0) or recovered 
-     * from this MolecularMeter with the method {@link #getAllResults} and
-     * {@link #getSingleResults getSingleResults}.
-     */
-
-    public void measureAllQuantities()
+    public static Map<String,List<Double>> measureAllQuantities(
+    		IAtomContainer mol, Map<String,String> smarts, 
+    		List<String> sortedKeys, Map<String,List<Integer>> atmIds,
+    		boolean onlyBonded, int i, int verbosity)
     {
-        int i = 0;
-        try {
-            List<IAtomContainer> mols = IOtools.readMultiMolFiles(inFile);
-            for (IAtomContainer mol : mols) 
+    	String molName = MolecularUtils.getNameOrID(mol);
+        Map<String,List<List<IAtom>>> allQuantities =
+                      new HashMap<String,List<List<IAtom>>>();
+        if (smarts.keySet().size() > 0)
+        {
+            if (verbosity > 1)
             {
-                // Get the molecule
-                i++;
-                boolean skipMol = true;
-                String molName = MolecularUtils.getNameOrID(mol);
-                if (verbosity > 0)
-                {
-                    System.out.println(" Analyzing molecule " + i);
-                }
+                System.out.println(" Matching SMARTS queries");
+            }
+            ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
+            if (msq.hasProblems())
+            {
+                String cause = msq.getMessage();
+                Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+            }
 
-                // Get target atoms                
-                Map<String,ArrayList<ArrayList<IAtom>>> allQuantities =
-                              new HashMap<String,ArrayList<ArrayList<IAtom>>>();
-                if (smarts.keySet().size() > 0)
+            Map<String,List<IAtom>> targetGroups = 
+            		new HashMap<String,List<IAtom>>();
+            for (String key : smarts.keySet())
+            {
+                ArrayList<IAtom> atomsMatched = new ArrayList<IAtom>();
+                if (msq.getNumMatchesOfQuery(key) == 0)
                 {
-                    if (verbosity > 1)
+                    System.out.println("WARNING! No match for SMARTS "
+                                           + "query " + smarts.get(key)
+                                           + " in molecule " + i + ".");
+                    break;
+                }
+                MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
+                for (List<Integer> innerList : allMatches)
+                {
+                    for (Integer iAtm : innerList)
                     {
-                        System.out.println(" Matching SMARTS queries");
+                        IAtom targetAtm = mol.getAtom(iAtm);
+                        atomsMatched.add(targetAtm);
                     }
-                    ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,
-                                                                     verbosity);
-                    if (msq.hasProblems())
+                }
+                targetGroups.put(key,atomsMatched);
+            }
+
+            // Collect matches that belong to same quantity
+            for (String key : sortedKeys)
+            {
+                List<String> groups = new ArrayList<String>();
+                for (String k2 : targetGroups.keySet())
+                {
+                    if (k2.toUpperCase().startsWith(key.toUpperCase()))
                     {
-                        String cause = msq.getMessage();
-                        Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+                        groups.add(k2);
                     }
-    
-                    Map<String,ArrayList<IAtom>> targetGroups = 
-                                         new HashMap<String,ArrayList<IAtom>>();
-                    for (String key : smarts.keySet())
+                }
+                List<List<IAtom>> atmsForQuantity =
+                                new ArrayList<List<IAtom>>();
+                for (int ig = 0; ig<groups.size(); ig++)
+                {
+                    String k2qry = key + "_" + Integer.toString(ig);
+                    atmsForQuantity.add(targetGroups.get(k2qry));
+                }
+                allQuantities.put(key,atmsForQuantity);
+            }
+        }
+
+        if (atmIds.keySet().size() > 0)
+        {
+            if (verbosity > 1)
+            {
+                System.out.println(" Matching atoms from indexes");
+            }
+            for (String key : atmIds.keySet())
+            {
+                List<List<IAtom>> atmsForQuantity = new ArrayList<List<IAtom>>();
+                for (Integer id : atmIds.get(key))
+                {
+                    ArrayList<IAtom> altAtms = new ArrayList<IAtom>();
+                    //
+                    // WARNING! Change from 1- to 0-based indexing
+                    //
+                    altAtms.add(mol.getAtom(id-1)); 
+                    atmsForQuantity.add(altAtms);
+                }
+                allQuantities.put(key,atmsForQuantity);
+            }
+        }
+
+        Map<String,List<Double>> resThisMol = new HashMap<String,List<Double>>();
+
+        for (String key : sortedKeys)
+        {
+            if (!allQuantities.containsKey(key))
+            {
+                if (verbosity > 1)
+                {
+                    System.out.println(" No quantity '" + key 
+                    		+ "' found.");
+                }
+                continue;
+            }
+
+            List<List<IAtom>> atmsForQuantity = allQuantities.get(key);
+            if (key.toUpperCase().startsWith("DIST"))
+            {
+            	if (atmsForQuantity.size() != 2)
+            	{
+            		if (verbosity > 0)
                     {
-                        ArrayList<IAtom> atomsMatched = new ArrayList<IAtom>();
-                        if (msq.getNumMatchesOfQuery(key) == 0)
+                        System.out.println(" Not enough matches for "
+                        		+ "quantity '" + key + "'. Found only " 
+                        		+ atmsForQuantity.size() + " set.");
+                    }
+            		continue;
+            	}
+            	
+                //Measure distance A-B
+                List<Double> distances = new ArrayList<Double>();
+                for (IAtom atmA : atmsForQuantity.get(0))
+                {
+                    for (IAtom atmB : atmsForQuantity.get(1))
+                    {
+                        if (atmA.equals(atmB))
+                            continue;
+
+                        if (onlyBonded)
                         {
-                            System.out.println("WARNING! No match for SMARTS "
-                                                   + "query " + smarts.get(key)
-                                                   + " in molecule " + i + ".");
-                            break;
-                        }
-                        else
-                        {
-                            skipMol = false;
-                        }
-                        MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
-                        for (List<Integer> innerList : allMatches)
-                        {
-                            for (Integer iAtm : innerList)
+                            if (!mol.getConnectedAtomsList(atmA).contains(atmB))
                             {
-                                IAtom targetAtm = mol.getAtom(iAtm);
-                                atomsMatched.add(targetAtm);
+                                continue;
                             }
                         }
-                        targetGroups.put(key,atomsMatched);
-                    }
 
-                    // Collect matches that belong to same quantity
-                    for (String key : sortedKeys)
-                    {
-                        ArrayList<String> groups = new ArrayList<String>();
-                        for (String k2 : targetGroups.keySet())
+                        double res = MolecularUtils.calculateInteratomicDistance(
+                                                                  atmA,
+                                                                  atmB);
+
+                        //Report value
+                        if (verbosity > 0)
                         {
-                            if (k2.toUpperCase().startsWith(key.toUpperCase()))
+                            String strRes = "Mol." + i + " " 
+                                + molName + " "
+                                + " Dst."
+                                + key + " "
+                                + MolecularUtils.getAtomRef(atmA,mol) 
+                                + ":"
+                                + MolecularUtils.getAtomRef(atmB,mol) 
+                                + " = "
+                                + res;
+                            System.out.println(strRes);
+                        }
+                        distances.add(res);
+                    }
+                }
+
+                //Store results for this molecule
+                resThisMol.put(key,distances);
+
+            } 
+            else if (key.toUpperCase().startsWith("ANG"))
+            {
+            	if (atmsForQuantity.size() != 3)
+            	{
+            		if (verbosity > 0)
+                    {
+                        System.out.println(" Not enough matches for "
+                        		+ "quantity '" + key + "'. Found only " 
+                        		+ atmsForQuantity.size() + " set.");
+                    }
+            		continue;
+            	}
+            	
+                //Measure angle A-B-C
+                List<Double> angles = new ArrayList<Double>();
+                for (IAtom atmA : atmsForQuantity.get(0))
+                {
+                    for (IAtom atmB : atmsForQuantity.get(1))
+                    {
+                        if (atmA.equals(atmB))
+                            continue;
+
+                        if (onlyBonded)
+                        {
+                            if (!mol.getConnectedAtomsList(
+                            		atmA).contains(atmB))
                             {
-                                groups.add(k2);
+                                continue;
                             }
                         }
-                        ArrayList<ArrayList<IAtom>> atmsForQuantity =
-                                        new ArrayList<ArrayList<IAtom>>();
-                        for (int ig = 0; ig<groups.size(); ig++)
+
+                        for (IAtom atmC : atmsForQuantity.get(2))
                         {
-                            String k2qry = key + "_" + Integer.toString(ig);
-                            atmsForQuantity.add(targetGroups.get(k2qry));
-                        }
-                        allQuantities.put(key,atmsForQuantity);
-                    }
-                }
+                            if (atmB.equals(atmC))
+                                continue;
 
-                if (atmIds.keySet().size() > 0)
-                {
-                    if (verbosity > 1)
-                    {
-                        System.out.println(" Matching atoms from indexes");
-                    }
-                    skipMol = false;
-                    for (String key : atmIds.keySet())
-                    {
-                        ArrayList<ArrayList<IAtom>> atmsForQuantity =
-                                              new ArrayList<ArrayList<IAtom>>();
-                        for (Integer id : atmIds.get(key))
-                        {
-                            ArrayList<IAtom> altAtms = new ArrayList<IAtom>();
-                            //
-                            // WARNING! Change from 1- to 0-based indexing
-                            //
-                            altAtms.add(mol.getAtom(id-1)); 
-                            atmsForQuantity.add(altAtms);
-                        }
-                        allQuantities.put(key,atmsForQuantity);
-                    }
-                }
-    
-                //In case of no match
-                if (skipMol)
-                {
-                    results.add(null);
-                    continue;
-                }
+                            if (atmA.equals(atmC))
+                                continue;
 
-                //Prepare storage of results
-                Map<String,ArrayList<Double>> resThisMol = 
-                                        new HashMap<String,ArrayList<Double>>();
-
-                //Measure all quantities
-                for (String key : sortedKeys)
-                {
-                    if (!allQuantities.containsKey(key))
-                    {
-                        if (verbosity > 1)
-                        {
-                            System.out.println(" No quantity '" + key 
-                                                                  + "' found.");
-                        }
-                        continue;
-                    }
-
-                    ArrayList<ArrayList<IAtom>> atmsForQuantity = 
-                                                         allQuantities.get(key);
-                    if (key.toUpperCase().startsWith("DIST"))
-                    {
-                    	if (atmsForQuantity.size() != 2)
-                    	{
-                    		if (verbosity > 0)
+                            if (onlyBonded)
                             {
-                                System.out.println(" Not enough matches for "
-                                		+ "quantity '" + key + "'. Found only " 
-                                		+ atmsForQuantity.size() + " set.");
+                                if (!mol.getConnectedAtomsList(
+                                		atmB).contains(atmC))
+                                {
+                                    continue;
+                                }
                             }
-                    		continue;
-                    	}
-                    	
-                        //Measure distance A-B
-                        ArrayList<Double> distances = new ArrayList<Double>();
-                        for (IAtom atmA : atmsForQuantity.get(0))
-                        {
-                            for (IAtom atmB : atmsForQuantity.get(1))
+                        
+                            double res = MolecularUtils.calculateBondAngle(
+                            		atmA, atmB, atmC);
+                            
+                            //Report value
+                            if (verbosity > 0)
                             {
-                                if (atmA.equals(atmB))
+                                String strRes = "Mol." + i + " " 
+                                    + molName + " " + " Ang."
+                                        + key + " "
+                            + MolecularUtils.getAtomRef(atmA,mol) + ":"
+                            + MolecularUtils.getAtomRef(atmB,mol) + ":"
+                            + MolecularUtils.getAtomRef(atmC,mol) +" = "
+                                    + res;
+                                System.out.println(strRes);
+                            }
+                            angles.add(res);
+                        }
+                    }
+                }
+
+                //Store results for this molecule
+                resThisMol.put(key,angles);
+            } 
+            else if (key.toUpperCase().startsWith("DIH"))
+            {
+            	if (atmsForQuantity.size() != 4)
+            	{
+            		if (verbosity > 0)
+                    {
+                        System.out.println(" Not enough matches for "
+                        		+ "quantity '" + key + "'. Found only " 
+                        		+ atmsForQuantity.size() + " set.");
+                    }
+            		continue;
+            	}
+            	
+                //Measure dihedral angle A-B-C-D
+                List<Double> dihedrals = new ArrayList<Double>();
+                for (IAtom atmA : atmsForQuantity.get(0))
+                {
+                    for (IAtom atmB : atmsForQuantity.get(1))
+                    {
+                        if (atmA.equals(atmB))
+                            continue;
+
+                        if (onlyBonded)
+                        {
+                            if (!mol.getConnectedAtomsList(
+                            		atmA).contains(atmB))
+                            {
+                                continue;
+                            }
+                        }
+                        
+                        for (IAtom atmC : atmsForQuantity.get(2))
+                        {
+                            if (atmB.equals(atmC))
+                                continue;
+
+                            if (atmA.equals(atmC))
+                                continue;
+
+                            if (onlyBonded)
+                            {
+                                if (!mol.getConnectedAtomsList(
+                                		atmB).contains(atmC))
+                                {
+                                    continue;
+                                }
+                            }
+
+                            for (IAtom atmD : atmsForQuantity.get(3))
+                            {
+                                if (atmC.equals(atmD))
+                                    continue;
+                                if (atmB.equals(atmD))
+                                    continue;
+                                if (atmA.equals(atmD))
                                     continue;
 
                                 if (onlyBonded)
                                 {
-                                    if (
-                                !mol.getConnectedAtomsList(atmA).contains(atmB))
-                                    {
-                                        continue;
+                                    if (!mol.getConnectedAtomsList(
+                                    		atmC).contains(atmD))
+                                    {                                   
+                                        continue;                       
                                     }
                                 }
 
                                 double res = 
-                                   MolecularUtils.calculateInteratomicDistance(
-                                                                          atmA,
-                                                                          atmB);
+                                		MolecularUtils.calculateTorsionAngle(
+                                				atmA, atmB, atmC, atmD);
 
                                 //Report value
                                 if (verbosity > 0)
                                 {
-                                    String strRes = "Mol." + i + " " 
-                                        + molName + " "
-                                        + " Dst."
-                                        + key + " "
-                                        + MolecularUtils.getAtomRef(atmA,mol) 
-                                        + ":"
-                                        + MolecularUtils.getAtomRef(atmB,mol) 
-                                        + " = "
+                                    String strRes = "Mol." + i + " "
+                                        + molName + " " + " Dih."
+                                        + key +" "
+                            + MolecularUtils.getAtomRef(atmA,mol) + ":"
+                            + MolecularUtils.getAtomRef(atmB,mol) + ":"
+                            + MolecularUtils.getAtomRef(atmC,mol) + ":"
+                            + MolecularUtils.getAtomRef(atmD,mol) +" = "
                                         + res;
                                     System.out.println(strRes);
                                 }
-                                distances.add(res);
+                                dihedrals.add(res);
                             }
                         }
-
-                        //Store results for this molecule
-                        resThisMol.put(key,distances);
-
-                    } 
-                    else if (key.toUpperCase().startsWith("ANG"))
-                    {
-                    	if (atmsForQuantity.size() != 3)
-                    	{
-                    		if (verbosity > 0)
-                            {
-                                System.out.println(" Not enough matches for "
-                                		+ "quantity '" + key + "'. Found only " 
-                                		+ atmsForQuantity.size() + " set.");
-                            }
-                    		continue;
-                    	}
-                    	
-                        //Measure angle A-B-C
-                        ArrayList<Double> angles = new ArrayList<Double>();
-                        for (IAtom atmA : atmsForQuantity.get(0))
-                        {
-                            for (IAtom atmB : atmsForQuantity.get(1))
-                            {
-                                if (atmA.equals(atmB))
-                                    continue;
-
-                                if (onlyBonded)
-                                {
-                                    if (!mol.getConnectedAtomsList(
-                                    		atmA).contains(atmB))
-                                    {
-                                        continue;
-                                    }
-                                }
-
-                                for (IAtom atmC : atmsForQuantity.get(2))
-                                {
-                                    if (atmB.equals(atmC))
-                                        continue;
-
-                                    if (atmA.equals(atmC))
-                                        continue;
-
-                                    if (onlyBonded)
-                                    {
-                                        if (!mol.getConnectedAtomsList(
-                                        		atmB).contains(atmC))
-                                        {
-                                            continue;
-                                        }
-                                    }
-                                
-                                    double res = 
-                                            MolecularUtils.calculateBondAngle(
-                                                                        atmA,
-                                                                        atmB,
-                                                                        atmC);
-                                    //Report value
-                                    if (verbosity > 0)
-                                    {
-                                        String strRes = "Mol." + i + " " 
-                                            + molName + " " + " Ang."
-                                                + key + " "
-                                    + MolecularUtils.getAtomRef(atmA,mol) + ":"
-                                    + MolecularUtils.getAtomRef(atmB,mol) + ":"
-                                    + MolecularUtils.getAtomRef(atmC,mol) +" = "
-                                            + res;
-                                        System.out.println(strRes);
-                                    }
-                                    angles.add(res);
-                                }
-                            }
-                        }
-
-                        //Store results for this molecule
-                        resThisMol.put(key,angles);
-
-                    } 
-                    else if (key.toUpperCase().startsWith("DIH"))
-                    {
-                    	if (atmsForQuantity.size() != 4)
-                    	{
-                    		if (verbosity > 0)
-                            {
-                                System.out.println(" Not enough matches for "
-                                		+ "quantity '" + key + "'. Found only " 
-                                		+ atmsForQuantity.size() + " set.");
-                            }
-                    		continue;
-                    	}
-                    	
-                        //Measure dihedral angle A-B-C-D
-                        ArrayList<Double> dihedrals = new ArrayList<Double>();
-                        for (IAtom atmA : atmsForQuantity.get(0))
-                        {
-                            for (IAtom atmB : atmsForQuantity.get(1))
-                            {
-                                if (atmA.equals(atmB))
-                                    continue;
-
-                                if (onlyBonded)
-                                {
-                                    if (!mol.getConnectedAtomsList(
-                                    		atmA).contains(atmB))
-                                    {
-                                        continue;
-                                    }
-                                }
-                                
-                                for (IAtom atmC : atmsForQuantity.get(2))
-                                {
-                                    if (atmB.equals(atmC))
-                                        continue;
-
-                                    if (atmA.equals(atmC))
-                                        continue;
-
-                                    if (onlyBonded)
-                                    {
-                                        if (!mol.getConnectedAtomsList(
-                                        		atmB).contains(atmC))
-                                        {
-                                            continue;
-                                        }
-                                    }
-
-                                    for (IAtom atmD : atmsForQuantity.get(3))
-                                    {
-                                        if (atmC.equals(atmD))
-                                            continue;
-                                        if (atmB.equals(atmD))
-                                            continue;
-                                        if (atmA.equals(atmD))
-                                            continue;
-
-                                        if (onlyBonded)
-                                        {
-                                            if (!mol.getConnectedAtomsList(
-                                            		atmC).contains(atmD))
-                                            {                                   
-                                                continue;                       
-                                            }
-                                        }
-
-                                        double res =
-                                        MolecularUtils.calculateTorsionAngle(
-                                                                        atmA,
-                                                                        atmB,
-                                                                        atmC,
-                                                                        atmD);
-
-                                        //Report value
-                                        if (verbosity > 0)
-                                        {
-                                            String strRes = "Mol." + i + " "
-                                                + molName + " " + " Dih."
-                                                + key +" "
-                                    + MolecularUtils.getAtomRef(atmA,mol) + ":"
-                                    + MolecularUtils.getAtomRef(atmB,mol) + ":"
-                                    + MolecularUtils.getAtomRef(atmC,mol) + ":"
-                                    + MolecularUtils.getAtomRef(atmD,mol) +" = "
-                                                + res;
-                                            System.out.println(strRes);
-                                        }
-                                        dihedrals.add(res);
-                                    }
-                                }
-                            }
-                        }
-
-                        //Store results for this molecule
-                        resThisMol.put(key,dihedrals);
-
-                    } 
-                    else 
-                    {
-                        Terminator.withMsgAndStatus("ERROR! What do you mean "
-                          + "with '" + key + "'? Unable to identify the type "
-                          + "of quantity to measure.",-1);
                     }
                 }
 
-                //Store output
-                results.add(resThisMol);
-        
-            } //end loop over molecules
+                //Store results for this molecule
+                resThisMol.put(key,dihedrals);
 
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile, -1);
+            } 
+            else 
+            {
+                Terminator.withMsgAndStatus("ERROR! What do you mean "
+                  + "with '" + key + "'? Unable to identify the type "
+                  + "of quantity to measure.",-1);
+            }
         }
-        
-        if (exposedOutputCollector != null)
-    	{
-	    	int ii = 0;
-	    	for (Map<String,ArrayList<Double>> molDescr : results)
-	    	{
-	    		ii++;
-	    		if (molDescr != null)
-	    		{
-	    			String molID = "mol-"+ii;
-		    		for (String descRef : molDescr.keySet())
-		    		{
-		    			String reference = molID + "_" + descRef;
-		  		        exposeOutputData(new NamedData(reference, 
-		  		        		NamedDataType.DOUBLE, molDescr.get(descRef)));
-		    		}
-	    		}
-	    	}
-    	}
 
-        //Set flag
-        alreadyRun = true;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Return the results for all measured quantities. Vectors of values
-     * are returned per each molecule in the form of 
-     * a map using as keys the strings identifying the quantities
-     * (plus an index to avoid duplicate) as
-     * provided via the SMARTS parameter when constructing the object.
-     * @return the results for all measured quantities
-     */
-
-    public ArrayList<Map<String,ArrayList<Double>>> getAllResults()
-    {
-        if (!alreadyRun)
-            this.measureAllQuantities();
-
-        return results;
-    }
-
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Return the results for a single molecule and a single quantity. 
-     * The molecule is identified by the position (0-n) in the input.
-     * The quantity is identified by
-     * its position (0-n) in the list of quantities provided to the constructor 
-     * by means of the SMARTS parameter. Note that the result for a single 
-     * quantity can consist in more than one value, thus a vector is returned.
-     * @param molID the index of the molecule for which the result is required
-     * @param quantityID the index of the required quantity
-     * @return the results for a single molecule and a single quantity
-     */
-
-    public ArrayList<Double> getSingleResults(int molID, int quantityID)
-    {
-        if (!alreadyRun)
-            this.measureAllQuantities();
-
-        Map<String,ArrayList<Double>> resThisMol = results.get(molID);
-        ArrayList<Double> res = resThisMol.get(sortedKeys.get(quantityID));
-        return res;
+        return resThisMol;
     }
 
 //-----------------------------------------------------------------------------

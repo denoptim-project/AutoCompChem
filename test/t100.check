@@ -10,8 +10,8 @@ if [ $? != 0 ] ; then
   echo NOT Passed 2
   exit -1
 fi
-grep -q ' Analyzing molecule 5' t100.log
-if [ $? != 0 ] ; then
+n=0; n=$(grep -c '^# ' t100.log)
+if [ 5 != "$n" ] ; then
   echo NOT Passed 3
   exit -1
 fi

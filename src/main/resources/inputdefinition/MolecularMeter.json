@@ -1,12 +1,5 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the SDF file containing the chemical system to work with."
-  },
-  {
     "key": "SMARTS",
     "casedKey": "SMARTS",
     "type": "<String>",
@@ -25,10 +18,7 @@
     "doc": "If the value is 'True', only the tuples corresponding to chains of bonded atoms will be considered as measurable quantities. For example, is 3 SMARTS are given, we'll measure only the angles that correspond to triplets of atoms A-B-C where A and B are bonded and B and C are bonded."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

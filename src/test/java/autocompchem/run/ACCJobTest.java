@@ -33,9 +33,11 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
+import autocompchem.molecule.MolecularMeter;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -47,7 +49,6 @@ import autocompchem.worker.WorkerConstants;
 
 public class ACCJobTest 
 {
-
     private final String SEP = System.getProperty("file.separator");
     private final ByteArrayOutputStream outRec = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
@@ -74,8 +75,10 @@ public class ACCJobTest
         	params.setParameter(ParameterConstants.RUNNABLEAPPIDKEY,
         			AppID.ACC.toString());
         	params.setParameter(WorkerConstants.PARTASK, 
-        			"MeasureGeomDescriptors");
-        	params.setParameter("INFILE", sdfFile.getAbsolutePath());
+        			MolecularMeter.MEASUREGEOMDESCRIPTORSTASK.ID);
+        	params.setParameter(ChemSoftConstants.PARINFILE,
+        			sdfFile.getAbsolutePath());
+        	params.setParameter(ChemSoftConstants.PARVERBOSITY, "1");
         	params.setParameter("ATOMINDEXES", label + " 1 2");
         	
         	// Prepare structure
