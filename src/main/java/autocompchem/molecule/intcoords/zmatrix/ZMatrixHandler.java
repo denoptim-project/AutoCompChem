@@ -130,28 +130,27 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     /**
      * String defining the task of generating and printing a ZMatrix
      */
-    //TODO-gg change to makeZMatrix or convertToZMatrix
-    public static final String PRINTZMATRIXTASKNAME = "printZMatrix";
+    public static final String CONVERTTOZMATNAME = "convertToZMatrix";
 
     /**
      * Task about  generating and printing a ZMatrix
      */
-    public static final Task PRINTZMATRIXTASK;
+    public static final Task CONVERTTOZMATTASK;
     static {
-    	PRINTZMATRIXTASK = Task.make(PRINTZMATRIXTASKNAME);
+    	CONVERTTOZMATTASK = Task.make(CONVERTTOZMATNAME);
     }
     /**
      * String defining the task converting a ZMatrix to connection table
      */
-    public static final String CONVERTZMATRIXTOSDFTASKNAME = 
-    		"convertZMatrixToSDF";
+    public static final String CONVERTFROMZMATTASKNAME = 
+    		"convertFromZMatrix";
 
     /**
      * Task about converting a ZMatrix to connection table
      */
-    public static final Task CONVERTZMATRIXTOSDFTASK;
+    public static final Task CONVERTFROMZMATTASK;
     static {
-    	CONVERTZMATRIXTOSDFTASK = Task.make(CONVERTZMATRIXTOSDFTASKNAME);
+    	CONVERTFROMZMATTASK = Task.make(CONVERTFROMZMATTASKNAME);
     }
     /**
      * String defining the task of calculating the difference between ZMatrices
@@ -179,8 +178,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(PRINTZMATRIXTASK,
-                		CONVERTZMATRIXTOSDFTASK,
+                Arrays.asList(CONVERTTOZMATTASK,
+                		CONVERTFROMZMATTASK,
                 		SUBTRACTZMATRICESTASK)));
     }
 
@@ -319,7 +318,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     {
     	// Exclude reading of standard molecular structures for tasks that expect 
     	// a ZMatrix as main input
-    	if (task.equals(CONVERTZMATRIXTOSDFTASK)
+    	if (task.equals(CONVERTFROMZMATTASK)
     			|| task.equals(SUBTRACTZMATRICESTASK))
     	{
     		processZMatrixInput();
@@ -334,7 +333,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
 		// NB: tasks use only ZMatrix input
-    	if (task.equals(PRINTZMATRIXTASK))
+    	if (task.equals(CONVERTTOZMATTASK))
     	{
     		printZMatrix(iac, i);
     	} else {
@@ -705,8 +704,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     
     private void processOneZMatrix(ZMatrix zmat, int i)
     {
-
-    	if (task.equals(CONVERTZMATRIXTOSDFTASK)) 
+    	if (task.equals(CONVERTFROMZMATTASK)) 
     	{
     		try
             {
@@ -785,7 +783,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      */
 
     public IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
-                                         IAtomContainer oldMol) throws Throwable
+    		IAtomContainer oldMol) throws Throwable
     {
         //TODO del code meant to stepwise debug
         boolean debug = false;

@@ -1056,7 +1056,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         // Get the ZMatrix of the molecule to work with
         ParameterStorage locPar = params.clone();
         locPar.setParameter(WorkerConstants.PARTASK, 
-        		ZMatrixHandler.PRINTZMATRIXTASK.ID);
+        		ZMatrixHandler.CONVERTTOZMATTASK.ID);
         Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix(iac);

@@ -204,7 +204,7 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	        	{
 	        		ParameterStorage zmatMakerTask = params.clone();
 	        		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
-	        				ZMatrixHandler.PRINTZMATRIXTASK.ID);
+	        				ZMatrixHandler.CONVERTTOZMATTASK.ID);
 	                Worker w = null;
 					try {
 						w = WorkerFactory.createWorker(zmatMakerTask,myJob);

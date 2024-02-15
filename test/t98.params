@@ -1,5 +1,5 @@
 VERBOSITY: 1
-TASK: PrintZMATRIX
+TASK: convertToZMATRIX
 INFILE: ../t98-mol.sdf
 TEMPLATEZMAT: ../t98.tmpl
 OUTFILE: t98-mol.zmat

@@ -1,4 +1,4 @@
 VERBOSITY: 1
-TASK: ConvertZMatrixToSDF
+TASK: ConvertFromZMatrix
 INFILE: ../t101.zmat
 OUTFILE: t101.sdf

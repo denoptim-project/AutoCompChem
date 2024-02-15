@@ -1,5 +1,5 @@
 VERBOSITY: 1
-TASK: PrintZMATRIX
+TASK: convertToZMATRIX
 #TORSIONONLY: any string, doesn't matter what
 #TEMPLATEZMAT: ../t104.tmpl
 INFILE: ../t103-mol.sdf
