@@ -43,6 +43,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IIsotope;
 
 import autocompchem.atom.AtomUtils;
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -251,9 +252,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             File inFile2 = new File(
             		params.getParameter("INFILE2").getValue().toString());
             FileUtils.foundAndPermissions(inFile2,true,false,false);
-        	if (inFile.getName().endsWith(".zmat"))
+        	if (inFile2.getName().endsWith(".zmat"))
             {
-        		List<ZMatrix> lst = IOtools.readZMatrixFile(inFile);
+        		List<ZMatrix> lst = IOtools.readZMatrixFile(inFile2);
         		if (lst.size()>1)
                 {
                 	System.out.println("WARNING! Found " + lst.size() 
@@ -281,7 +282,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 } catch (Throwable t) {
                     t.printStackTrace();
                     Terminator.withMsgAndStatus("ERROR! Exception returned "
-                        + " while reading " + inFile, -1);
+                        + " while reading " + inFile2, -1);
                 }
             }
         }
@@ -316,10 +317,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     @Override
     public void performTask()
     {
-    	if (task.equals(CONVERTZMATRIXTOSDFTASK)) 
+    	// Exclude reading of standard molecular structures for tasks that expect 
+    	// a ZMatrix as main input
+    	if (task.equals(CONVERTZMATRIXTOSDFTASK)
+    			|| task.equals(SUBTRACTZMATRICESTASK))
     	{
-    		//TODO-gg rename method
-    		convertZMatrixToSDF();
+    		processZMatrixInput();
     	} else {
     		processInput();
     	}
@@ -330,11 +333,10 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
+		// NB: tasks use only ZMatrix input
     	if (task.equals(PRINTZMATRIXTASK))
     	{
     		printZMatrix(iac, i);
-    	} else if (task.equals(SUBTRACTZMATRICESTASK)) {
-    		subtractZMatrices(iac, i);
     	} else {
     		dealWithTaskMismatch();
         }
@@ -367,32 +369,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 	    }
 	    
 	    //TODO-gg expose?
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Calculates and prints the difference between pairs of ZMatrices. 
-     * Uses the parameters given to the constructor.
-     */
-
-    public void subtractZMatrices(IAtomContainer iac, int i)
-    {
-    	String molName1 = MolecularUtils.getNameOrID(iac);
-	    ZMatrix zmat1 = makeZMatrix(iac, tmplZMat, verbosity);
-	    zmat1.setTitle(molName1);
-	    
-        ZMatrix zmatRes = subtractZMatrices(zmat1, zmat2);
-        if (exposedOutputCollector != null)
-        {
-        	exposeOutputData(new NamedData("zmat-"+i, 
-		      		NamedDataType.ZMATRIX, zmatRes));
-        }
-        
-        if (outFile!=null)
-        {
-        	IOtools.writeZMatAppend(outFile,zmatRes,true);
-        }
     }
 
 //------------------------------------------------------------------------------
@@ -687,66 +663,101 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         }
         return modZMat;
     } 
+    
+//------------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
-
-    /**
-     * Convert ZMatrix from file and writes it into an SDF. All settings and
-     * input from constructor
-     */
-
-    public void convertZMatrixToSDF()
+    private void processZMatrixInput()
     {
     	//TODO: enable input from feed instead of file
-        if (null == outFile)
-        {
-            if (verbosity > 0)
-            {
-                System.out.println("No 'OUTFILE' keyword, so using default "
-                                                    + "filename 'output.sdf'.");
-            }
-            outFile = new File("output.sdf");
-        }
         if (null != inFile)
         {
             List<ZMatrix> zmats = IOtools.readZMatrixFile(inFile);
-            int i = 0;
-            for (ZMatrix zmat : zmats)
+	        boolean breakAfterThis = false;
+            for (int i=0; i<zmats.size(); i++)
             {
-		        i++;
-		        if (verbosity > 0)
-		        {
-		            System.out.println("Converting ZMatrix "+i);
-		        }
-		        try
-		        {
-		            IAtomContainer iac = convertZMatrixToIAC(zmat);
-		            iac.setProperty(CDKConstants.TITLE,zmat.getTitle());
-		            if (exposedOutputCollector != null)
-		            {
-		            	exposeOutputData(new NamedData("Mol-"+i, 
-		    		      		NamedDataType.IATOMCONTAINER, iac));
-		            }
-		            if (outFile != null)
-		            	IOtools.writeSDFAppend(outFile,iac,true);
-		        }
-		        catch (Throwable t)
-		        {
-		            Terminator.withMsgAndStatus("ERROR! Exception while "
-		            + "converting ZMatrix " + i + ". You might need dummy "
-		            + "atoms to define an healthier ZMatrix. Cause of the "
-		            + "exception: " + t.getMessage(), -1);
-		        }
+            	if (chosenGeomIdx!=null)
+	            {
+            		if (i==chosenGeomIdx)
+            		{
+		        		breakAfterThis = true;
+            		} else {
+            			continue;
+            		}
+	            }
+            	ZMatrix zmat = zmats.get(i);
+      			if (verbosity > 0)
+      	        {
+      	        	System.out.println("# " + zmat.getTitle());
+      	        }
+            	processOneZMatrix(zmat, i);
+            	if (breakAfterThis)
+            		break;
             }
-        }
-        else
-        {
+        } else {
             Terminator.withMsgAndStatus("ERROR! Expecting an input ZMatrix "
-                                     + "file. Please use 'INFILE' keyord.", -1);
+            		+ "file. Please use '" + ChemSoftConstants.PARINFILE 
+            		+ "' keyord to provide a pathname to your ZMatrix input.",
+            		-1);
         }
     }
+    
+//------------------------------------------------------------------------------
+    
+    private void processOneZMatrix(ZMatrix zmat, int i)
+    {
 
-//----------------------------------------------------------------------------
+    	if (task.equals(CONVERTZMATRIXTOSDFTASK)) 
+    	{
+    		try
+            {
+                IAtomContainer iac = convertZMatrixToIAC(zmat);
+                iac.setProperty(CDKConstants.TITLE,zmat.getTitle());
+
+                if (outFile != null)
+                {
+                	IOtools.writeSDFAppend(outFile, iac, true);
+                }
+                
+                if (verbosity>1)
+                {
+                	System.out.println(zmat.toLinesOfText(false, onlyTors));
+                }
+                
+                if (exposedOutputCollector != null)
+                {
+                	exposeOutputData(new NamedData(task.ID + "mol-"+i, 
+        		      		NamedDataType.IATOMCONTAINER, iac));
+                }
+            }
+            catch (Throwable t)
+            {
+                Terminator.withMsgAndStatus("ERROR! Exception while "
+                + "converting ZMatrix " + i + ". You might need dummy "
+                + "atoms to define an healthier ZMatrix. Cause of the "
+                + "exception: " + t.getMessage(), -1);
+            }
+    	} else if (task.equals(SUBTRACTZMATRICESTASK)) {
+            ZMatrix zmatRes = subtractZMatrices(zmat, zmat2);
+
+            if (outFile!=null)
+            {
+            	IOtools.writeZMatAppend(outFile, zmatRes, true);
+            }
+            
+            if (verbosity>1)
+            {
+            	System.out.println(zmatRes.toLinesOfText(false, onlyTors));
+            }
+            
+            if (exposedOutputCollector != null)
+            {
+            	exposeOutputData(new NamedData("zmat-"+i,
+    		      		NamedDataType.ZMATRIX, zmatRes));
+            }
+        }
+    }
+    
+//------------------------------------------------------------------------------
 
     /**
      * Convert ZMatrix into chemical object with Cartesian coordinates

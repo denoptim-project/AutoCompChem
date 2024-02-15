@@ -93,7 +93,7 @@ public class AtomContainerInputProcessor extends Worker
      * The index of the chosen geometry to work with when input consists of 
      * multiple geometries.
      */
-    private Integer chosenGeomIdx;
+    protected Integer chosenGeomIdx;
     
     /**
      * Definition of how to use multiple geometries
@@ -108,8 +108,7 @@ public class AtomContainerInputProcessor extends Worker
     /**
      * String defining the task of generating tuples of atoms
      */
-    public static final String READIACSTASKNAME = 
-    		"readAtomContainers";
+    public static final String READIACSTASKNAME = "readAtomContainers";
 
     /**
      * Task about generating tuples of atoms
