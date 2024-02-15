@@ -3,4 +3,3 @@ TASK: CompareTwoMolecules
 INFILE: ../t17mol.sdf
 REFERENCE: ../t17ref.sdf
 ROTATEDOUT: t17_rot.sdf
-OUTFILE: t17_results

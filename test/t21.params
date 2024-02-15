@@ -5,4 +5,3 @@ VERBOSITY: 4
 TASK: CompareTwoConnectivities
 INFILE: ../t21mol.sdf
 REFERENCE: ../t21ref.sdf
-OUTFILE: t21results.sdf

@@ -6,4 +6,3 @@ TASK: CompareTwoGeometries
 TARGETATOMSQUERY: [Ti]
 INFILE: ../t25mol.sdf
 REFERENCE: ../t25ref.sdf
-OUTFILE: t25results.txt

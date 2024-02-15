@@ -1,38 +1,38 @@
 #!/bin/bash
 
-if [ ! -f t19results.txt ]
+if [ ! -f t19.log ]
 then 
-echo NOT Passed
+echo NOT Passed 1
 exit -1
 fi
 
-grep -q 'MAD= 2.8419274659623' t19results.txt
+grep -q 'MAD= 2.8419274659623' t19.log
 if [ $? != 0 ] ; then 
-echo NOT Passed
+echo NOT Passed 2
 exit -1
 fi
 
 grep -q 'T-4             0.000           36.490          15.000          27.981' t19.log
 if [ $? != 0 ] ; then 
-echo NOT Passed
+echo NOT Passed 3
 exit -1
 fi
 
 grep -q 'SP-4            36.490          0.000           35.000          15.000' t19.log
 if [ $? != 0 ] ; then 
-echo NOT Passed
+echo NOT Passed 4
 exit -1
 fi
 
 grep -q 'TBPY-a-4        15.000          35.000          0.000           20.000' t19.log
 if [ $? != 0 ] ; then 
-echo NOT Passed
+echo NOT Passed 5
 exit -1
 fi
 
 grep -q 'OC-2eq-4        27.981          15.000          20.000          0.000' t19.log
 if [ $? != 0 ] ; then 
-echo NOT Passed
+echo NOT Passed 6
 exit -1
 fi
 
@@ -41,6 +41,6 @@ if [ $? == 0 ] ; then
 echo Passed
 exit 0
 else
-echo NOT Passed
+echo NOT Passed 7
 exit -1
 fi

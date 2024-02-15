@@ -1,16 +1,16 @@
 #!/bin/bash
 
-grep -q "MoleculeComparator requires SDF files with only one structu" t21.log
+grep -i -q "WARNING.*reference.*first" t21.log
 if [ $? != 0 ] ; then
-echo NOT Passed
+echo NOT Passed 1
 exit -1
 fi
 
-grep -q 'Termination status: -1' t21.log
+grep -q 'Termination status: 0' t21.log
 if [ $? == 0 ] ; then 
-echo Passed
+echo Passed 
 exit 0
 else
-echo NOT Passed
+echo NOT Passed 2
 exit -1
 fi

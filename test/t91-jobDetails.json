@@ -24,6 +24,10 @@
                 {
                   "reference": "TASK",
                   "value": "GENERATEBASISSET"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
                 }
               ]
             }
@@ -55,6 +59,25 @@
               "value": "angstrom"
             }
           ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMolecularGeometry"
+                },
+                {
+                  "reference": "labelType",
+                  "value": "IndexBased"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ],
+              "reference": "geometry"
+            }
+          ],
           "subDirectives": [
             {
               "name": "SYMMETRY",
@@ -76,12 +99,82 @@
                       "value": "GENERATECONSTRAINTS"
                     },
                     {
-                      "reference": "VERBOSITY",
+                      "reference": "verbosity",
                       "value": "1"
                     },
                     {
                       "reference": "SMARTS",
                       "value": "[#1] [Ru] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded suffix:constant"
+                    },
+                    {
+                      "reference": "useGeomAtIndex",
+                      "value": "0"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "units",
+              "value": "angstrom"
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMolecularGeometry"
+                },
+                {
+                  "reference": "labelType",
+                  "value": "IndexBased"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "1"
+                }
+              ],
+              "reference": "geometry"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "verbosity",
+                      "value": "1"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[#1] [Ru] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded suffix:constant"
+                    },
+                    {
+                      "reference": "useGeomAtIndex",
+                      "value": "1"
                     }
                   ],
                   "reference": "zcoordconstraints"
@@ -125,6 +218,10 @@
                 {
                   "reference": "TASK",
                   "value": "GENERATEBASISSET"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
                 }
               ]
             }
@@ -155,6 +252,10 @@
                 {
                   "reference": "TASK",
                   "value": "GENERATEBASISSET"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
                 }
               ]
             }
@@ -185,6 +286,10 @@
                 {
                   "reference": "TASK",
                   "value": "GENERATEBASISSET"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
                 }
               ]
             }

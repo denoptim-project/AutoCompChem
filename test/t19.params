@@ -6,4 +6,3 @@ TASK: CompareTwoGeometries
 TARGETATOMSQUERY: [Ru]
 INFILE: ../t19mol.sdf
 REFERENCE: ../t19ref.sdf
-OUTFILE: t19results.txt

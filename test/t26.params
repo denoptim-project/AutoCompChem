@@ -6,4 +6,3 @@ TASK: CompareTwoGeometries
 TARGETATOMSQUERY: [Ru]
 INFILE: ../t26mol.sdf
 REFERENCE: ../t26ref.sdf
-OUTFILE: t26results.txt

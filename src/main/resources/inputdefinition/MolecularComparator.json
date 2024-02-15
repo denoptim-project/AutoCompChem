@@ -1,24 +1,10 @@
 [
   {
-    "key": "INFILE",
-    "casedKey": "inFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the (SDF) file with the chemical system to work with."
-  },
-  {
     "key": "REFERENCE",
     "casedKey": "reference",
     "type": "<String>",
     "isForStandalone": true,
     "doc": "The pathname to the file with the reference chemical system. Only SDF files with ONE molecule are acceptable."
-  },
-  {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "isForStandalone": true,
-    "doc": "The pathname to the file where to print results."
   },
   {
     "key": "ROTATEDOUT",
@@ -33,10 +19,7 @@
     "doc": "SMARTS query identifying the atoms on which the analysis will focus."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }
 ]

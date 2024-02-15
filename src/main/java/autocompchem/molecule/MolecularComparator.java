@@ -53,25 +53,24 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-public class MolecularComparator extends Worker
+public class MolecularComparator extends AtomContainerInputProcessor
 {
-    
+    /**
+     * To atom container we conmpare to, i.e., our reference
+     */
+	private IAtomContainer referenceMol;
+	
     //Filenames
-    private File inFile;
-    private File refFile;
     private File rotatedFile;
-    private File outFile;
 
     //SMARTS query identifying target atoms
     private String targetAtoms;
-
-    //Verbosity level
-    private int verbosity = 1;
     
     /**
      * String defining the task of comparing to atom containers
      */
-    public static final String COMPARETWOMOLECULESTASKNAME = "compareTwoMolecules";
+    public static final String COMPARETWOMOLECULESTASKNAME = 
+    		"compareTwoMolecules";
 
     /**
      * Task about comparing to atom containers
@@ -83,7 +82,8 @@ public class MolecularComparator extends Worker
     /**
      * String defining the task of comparing relative atom positions
      */
-    public static final String COMPARETWOGEOMETRIESTASKNAME = "compareTwoGeometries";
+    public static final String COMPARETWOGEOMETRIESTASKNAME = 
+    		"compareTwoGeometries";
 
     /**
      * Task about comparing relative atom positions
@@ -95,7 +95,8 @@ public class MolecularComparator extends Worker
     /**
      * String defining the task of comparing connectivity tables
      */
-    public static final String COMPARETWOCONNECTIVITIESTASKNAME = "compareTwoConnectivities";
+    public static final String COMPARETWOCONNECTIVITIESTASKNAME = 
+    		"compareTwoConnectivities";
 
     /**
      * Task about comparing connectivity tables
@@ -146,31 +147,23 @@ public class MolecularComparator extends Worker
     @Override
     public void initialize()
     {
-        //Define verbosity
-        String vStr = params.getParameter("VERBOSITY").getValue().toString();
-        this.verbosity = Integer.parseInt(vStr);
+    	super.initialize();
 
-        if (verbosity > 0)
-            System.out.println(" Adding parameters to MolecularComparator");
-
-        //Get and check the input file (which has to be an SDF file)
-        this.inFile = new File(
-        		params.getParameter("INFILE").getValueAsString());
-        FileUtils.foundAndPermissions(this.inFile,true,false,false);
-
-        //Get and check the reference file (which has to be an SDF file)
-        this.refFile = new File(
-        		params.getParameter("REFERENCE").getValueAsString());
-        FileUtils.foundAndPermissions(this.refFile,true,false,false);
-
-        //Get and check output file
-        if (params.contains("OUTFILE"))
+        //Get and check the reference file
+    	if (params.contains("REFERENCE"))
         {
-            this.outFile =  new File(
-            		params.getParameter("OUTFILE").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
+	        File refFile = new File(
+	        		params.getParameter("REFERENCE").getValueAsString());
+	        FileUtils.foundAndPermissions(refFile,true,false,false);
+	        List<IAtomContainer> lst = IOtools.readMultiMolFiles(refFile);
+	        if (lst.size()>1)
+            {
+                System.out.println("WARNING: Found " + lst.size() 
+                + " reference molecules, but we'll use only the first one.");
+            }
+	        referenceMol = lst.get(0);
         }
-
+    	
         //Get and check optional file for rotated output
         if (params.contains("ROTATEDOUT")) 
         {
@@ -185,7 +178,6 @@ public class MolecularComparator extends Worker
             this.targetAtoms =
                   params.getParameter("TARGETATOMSQUERY").getValue().toString();
         }
-
     }
 
 //-----------------------------------------------------------------------------
@@ -198,13 +190,21 @@ public class MolecularComparator extends Worker
     @Override
     public void performTask()
     {
+    	processInput();
+    }
+    
+//------------------------------------------------------------------------------
+
+	@Override
+	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	{
     	if (task.equals(COMPARETWOMOLECULESTASK))
     	{
-    		runComparisonOfMoleculesBySuperposition();
+    		runComparisonOfMoleculesBySuperposition(iac, i);
     	} else if (task.equals(COMPARETWOGEOMETRIESTASK)) {	
-    		compareTwoGeometries();
+    		compareTwoGeometries(iac, i);
     	} else if (task.equals(COMPARETWOCONNECTIVITIESTASK)) {
-    		compareTwoConnectivities();
+    		compareTwoConnectivities(iac, i);
     	} else {
     		dealWithTaskMismatch();
         }
@@ -216,51 +216,33 @@ public class MolecularComparator extends Worker
      * Run comparison of two connectivity matrices as from the parameters given
      * in construction of this comparator
      */
-
-    public void compareTwoConnectivities()
+//TODO-gg make private
+    public void compareTwoConnectivities(IAtomContainer iac, int i)
     {
-        //Get the molecules
-        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
-        if (inMols.size() != 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
-                + "SDF files with only one structure. Check file "
-                + inFile ,-1);
-        }
-        IAtomContainer inMol = inMols.get(0);
-
-        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
-        if (refMols.size() != 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
-                + "SDF files with only one structure. Check file "
-                + refFile ,-1);
-        }
-        IAtomContainer refMol = refMols.get(0);
-
         ConnectivityUtils cu = new ConnectivityUtils();
-        boolean consistentConnectivity = cu.compareWithReference(inMol,refMol);
+        boolean consistentConnectivity = cu.compareWithReference(iac, 
+        		referenceMol);
+        
         if (!consistentConnectivity)
         {
             if (verbosity > 0)
             {
                 System.out.println(" Inconsistent adjacency between molecules "
-                                 + MolecularUtils.getNameOrID(inMol)
+                                 + MolecularUtils.getNameOrID(iac)
                                  + " and "
-                                 + MolecularUtils.getNameOrID(refMol));
+                                 + MolecularUtils.getNameOrID(referenceMol));
             }
         } else {
             if (verbosity > 0)
-                System.out.println(" Consistent connectivity");
-            if (outFile != null)
             {
-                IOtools.writeSDFAppend(outFile,inMol,false);
+            	System.out.println(" Consistent connectivity");
             }
         }
         
         if (exposedOutputCollector != null)
         {
-	        exposeOutputData(new NamedData("Consistency", 
+    	    String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(task.ID + molID,
 	      		NamedDataType.BOOLEAN, consistentConnectivity));
     	}
     }
@@ -272,27 +254,8 @@ public class MolecularComparator extends Worker
      * construction of this comparator
      */
 
-    public void compareTwoGeometries()
+    public void compareTwoGeometries(IAtomContainer iac, int i)
     {
-        //Get the molecules
-        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
-        if (inMols.size() != 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
-                + "SDF files with only one structure. Check file "
-                + inFile ,-1);
-        }
-        IAtomContainer inMol = inMols.get(0);
-
-        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
-        if (refMols.size() != 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
-                + "SDF files with only one structure. Check file "
-                + refFile ,-1);
-        }
-        IAtomContainer refMol = refMols.get(0);
-
         //Get the atoms
         if (targetAtoms.equals("") || targetAtoms == null)
         {
@@ -306,15 +269,16 @@ public class MolecularComparator extends Worker
 
         //Get the atoms of which geometry have to be compared
         Map<String,String> SMARTSAllInOne = new HashMap<String,String>();
-        SMARTSAllInOne.put("center",targetAtoms);
+        SMARTSAllInOne.put("center", targetAtoms);
 
         //For First molecule
         if (verbosity > 2)
         {    
             System.out.println(" Trying to identify the target atom in '"
-                + MolecularUtils.getNameOrID(inMol) + "'.");
+                + MolecularUtils.getNameOrID(iac) + "'.");
         }    
-        ManySMARTSQuery msq = new ManySMARTSQuery(inMol,SMARTSAllInOne,verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(iac, SMARTSAllInOne,
+        		verbosity);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -332,7 +296,7 @@ public class MolecularComparator extends Worker
         if (msq.getTotalMatches() < 1) {
             Terminator.withMsgAndStatus("ERROR! Unable to find the central "
                 + "atom '" + targetAtoms + "' in molecule " 
-                + MolecularUtils.getNameOrID(inMol) + ".", -1);
+                + MolecularUtils.getNameOrID(iac) + ".", -1);
         } 
         else if (msq.getTotalMatches() > 1) 
         {
@@ -342,15 +306,16 @@ public class MolecularComparator extends Worker
         }
 
         int centerID =  msq.getMatchingIdxsOfSMARTS("center").get(0).get(0);
-        IAtom inAtm = inMol.getAtom(centerID);
+        IAtom inAtm = iac.getAtom(centerID);
 
         //For second molecule
         if (verbosity > 2)
         {
             System.out.println(" Trying to identify the target atom in '"
-                + MolecularUtils.getNameOrID(refMol) + "'.");
+                + MolecularUtils.getNameOrID(referenceMol) + "'.");
         }
-        ManySMARTSQuery msqR = new ManySMARTSQuery(refMol,SMARTSAllInOne,verbosity);
+        ManySMARTSQuery msqR = new ManySMARTSQuery(referenceMol,
+        		SMARTSAllInOne, verbosity);
         if (msqR.hasProblems())
         {
             String cause = msqR.getMessage();
@@ -368,7 +333,7 @@ public class MolecularComparator extends Worker
         if (msqR.getTotalMatches() < 1) {
             Terminator.withMsgAndStatus("ERROR! Unable to find the central "
                 + "atom '" + targetAtoms + "' in molecule "
-                + MolecularUtils.getNameOrID(refMol) + ".", -1);
+                + MolecularUtils.getNameOrID(referenceMol) + ".", -1);
         } 
         else if (msqR.getTotalMatches() > 1) 
         {
@@ -377,10 +342,16 @@ public class MolecularComparator extends Worker
                 + "identify the central atom to be analysed",-1);
         }
         int centerIDR = msqR.getMatchingIdxsOfSMARTS("center").get(0).get(0);
-        IAtom refAtm = refMol.getAtom(centerIDR);
+        IAtom refAtm = referenceMol.getAtom(centerIDR);
 
-        //RunComparison
-        compareTwoGeometries(inAtm, inMol, refAtm, refMol);
+        double mad = compareTwoGeometries(inAtm, iac, refAtm, referenceMol);
+        
+        if (exposedOutputCollector != null)
+        {
+    	    String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(task.ID + molID, 
+	      		NamedDataType.DOUBLE, mad));
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -392,9 +363,10 @@ public class MolecularComparator extends Worker
      * @param molA the first molecule
      * @param atmR atom in the reference molecule (reference geometry)
      * @param molR the reference molecule
+     * @return the mean absolute deviation of the two atom geometries.
      */
 
-    public void compareTwoGeometries(IAtom atmA, IAtomContainer molA, 
+    public double compareTwoGeometries(IAtom atmA, IAtomContainer molA, 
                                      IAtom atmR, IAtomContainer molR)
     {
         //Make geometries for the two atoms
@@ -405,14 +377,16 @@ public class MolecularComparator extends Worker
             System.out.println("Generating CoordinationGeometry 'gA'");
             for (int ia=0; ia<lsA.size(); ia++)
             {
-                System.out.println(" " + ia + " atom " + MolecularUtils.getAtomRef(lsA.get(ia),molA));
+                System.out.println(" " + ia + " atom " 
+                		+ MolecularUtils.getAtomRef(lsA.get(ia),molA));
             }
             System.out.println("Generating CoordinationGeometry 'gB'");
             for (int ir=0; ir<lsR.size(); ir++)
             {
-                System.out.println(" " + ir + " atom " + MolecularUtils.getAtomRef(lsR.get(ir),molR));
+                System.out.println(" " + ir + " atom " 
+                		+ MolecularUtils.getAtomRef(lsR.get(ir),molR));
             }        
-        }        
+        }
         CoordinationGeometry gA = new CoordinationGeometry("gA", atmA, 
                                               molA.getConnectedAtomsList(atmA));
         CoordinationGeometry gR = new CoordinationGeometry("gR", atmR, 
@@ -452,10 +426,10 @@ public class MolecularComparator extends Worker
         //Compare both against reference geometries with same CN
         
         // TODO: check why we get null if CoordinationGeometryReferences is accessed as static
-        CoordinationGeometryReferences cgRefs = new
-                                               CoordinationGeometryReferences();
+        CoordinationGeometryReferences cgRefs = 
+        		new CoordinationGeometryReferences();
         List<CoordinationGeometry> allReference = 
-                                          cgRefs.getReferenceGeometryForCN(cnA);
+        		cgRefs.getReferenceGeometryForCN(cnA);
         for (CoordinationGeometry gRef : allReference)
         {
             double madA =
@@ -473,11 +447,6 @@ public class MolecularComparator extends Worker
             report = report + String.format(Locale.ENGLISH," MAD_ref;" + nStd + " %1.2f",madR);
             double diff = (madA - madR);
             report = report + String.format(Locale.ENGLISH," D-MAD(" + nStd + ")= %1.2f",diff);
-//            System.out.println("->" + gRef.getName() + ": MadA = " + madA
-//                                + " MadR = " +madR);
-//            System.out.println("D-MAD("+ gRef.getName() + ") = " + (madA-madR));
-            
-//   summary = summary + " D-MAD("+ gRef.getName() + ")= " + (madA-madR);
             summary = summary + report;
         }
 
@@ -491,23 +460,14 @@ public class MolecularComparator extends Worker
             }
         }
 
-        //Report results
-        System.out.println(" ");
-        System.out.println(" Comparison on two geometries: ");
-        System.out.println(summary);
-        if (!outFile.equals("") && outFile != null)
+        if (verbosity > 0)
         {
-            IOtools.writeTXTAppend(outFile, summary, false);
-            System.out.println(" Results reported also in file " + outFile);
+	        System.out.println(" ");
+	        System.out.println(" Comparison on two geometries: ");
+	        System.out.println(summary);
         }
-        //TODO: return value/s with conclusion
-        /*
-        if (exposedOutputCollector != null)
-        {
-	        exposeOutputData(new NamedData(..., 
-	      		NamedDataType...., ...));
-    	}
-        */
+        
+        return mad;
     }
 
 //------------------------------------------------------------------------------
@@ -517,32 +477,15 @@ public class MolecularComparator extends Worker
      * of the comparator
      */
 
-    public void runComparisonOfMoleculesBySuperposition()
+    public void runComparisonOfMoleculesBySuperposition(IAtomContainer iac, int i)
     {
-        List<IAtomContainer> inMols = IOtools.readSDF(inFile);
-        if (inMols.size() != 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
-                + "SDF files with only one structure. Check file "
-                + inFile ,-1);
-        }
-        IAtomContainer inMol = inMols.get(0);
-
-        List<IAtomContainer> refMols = IOtools.readSDF(refFile);
-        if (refMols.size() != 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! MoleculeComparator requires "
-                + "SDF files with only one structure. Check file "
-                + refFile ,-1);
-        }
-        IAtomContainer refMol = refMols.get(0);
-
         ComparatorOfGeometries cog = new ComparatorOfGeometries(verbosity);
-        cog.compareGeometryBySuperposition(inMol,refMol);
+        cog.compareGeometryBySuperposition(iac, referenceMol);
 
         if (exposedOutputCollector != null)
         {
-	        exposeOutputData(new NamedData("AlignementScore", 
+    	    String molID = "mol-"+i;
+	        exposeOutputData(new NamedData(task.ID + molID, 
 	      		NamedDataType.DOUBLE, cog.getAlignementScore()));
     	}
     }
