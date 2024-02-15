@@ -864,7 +864,8 @@ public class Directive implements IDirectiveComponent, Cloneable
     		try {
 				performACCTask(mols, accTaskParams, this, job, masterJob);
 			} catch (Throwable e) {
-				throw new Error("Unable to perform ACC task.",e);
+				Task t = getTask(accTaskParams);
+				throw new Error("Unable to perform ACC task '" + t + "'.",e);
 			}
     	}
     	
@@ -882,7 +883,8 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    		try {
 					performACCTask(mols, ps, k, job, masterJob);
 				} catch (Throwable e) {
-					throw new Error("Unable to perform ACC task.",e);
+					Task t = getTask(ps);
+					throw new Error("Unable to perform ACC task '" + t + "'.", e);
 				}
     		}
     	}
@@ -915,7 +917,8 @@ public class Directive implements IDirectiveComponent, Cloneable
 				try {
 					performACCTask(mols, ps, dd, job, masterJob);
 				} catch (Throwable e) {
-					throw new Error("Unable to perform ACC task.",e);
+					Task t = getTask(ps);
+					throw new Error("Unable to perform ACC task '" + t + "'.", e);
 				}
     		}	
     	}
@@ -1084,6 +1087,30 @@ public class Directive implements IDirectiveComponent, Cloneable
     	return ps;
     }
     
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Utility to extract the task from a set of parameters.
+     * @param ps the collection of parameters to analyze
+     * @return the task defined by the given parameters or null is none was 
+     * found.
+     */
+    private static Task getTask(ParameterStorage ps)
+    {
+    	Task task = null;
+		if (ps.contains(ChemSoftConstants.JDLABACCTASK))
+	    {
+			task = Task.make(ps.getParameter(
+	        		ChemSoftConstants.JDLABACCTASK).getValueAsString());
+	    } else if (ps.contains(ChemSoftConstants.JDACCTASK))
+	    {
+			task = Task.make(ps.getParameter(
+	        		ChemSoftConstants.JDACCTASK).getValueAsString());
+	    }
+    	return task;
+    }
+    
 //-----------------------------------------------------------------------------
 
     /**
@@ -1106,16 +1133,9 @@ public class Directive implements IDirectiveComponent, Cloneable
     		IDirectiveComponent dirComp, Job job, Job masterJob) 
     				throws ClassNotFoundException, CloneNotSupportedException
     {	
-    	String task = "none";
-    	if (params.contains(ChemSoftConstants.JDLABACCTASK))
-        {
-    		task = params.getParameter(
-            		ChemSoftConstants.JDLABACCTASK).getValueAsString();
-        } else if (params.contains(ChemSoftConstants.JDACCTASK))
-        {
-    		task = params.getParameter(
-            		ChemSoftConstants.JDACCTASK).getValueAsString();
-        } else {
+    	Task task = getTask(params);
+    	if (task==null)
+    	{
         	return;
         }
     	
@@ -1138,7 +1158,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	int matchingDataCount = 0;
     	for (String key : outputOfEmbedded.getAllNamedData().keySet())
     	{
-    		if (key.startsWith(Task.getExisting(task).ID))
+    		if (key.startsWith(task.ID))
     		{
     			matchingDataCount++;
     			if (matchingDataCount<2)

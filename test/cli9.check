@@ -5,12 +5,11 @@ function not_passed() {
   exit -1
 }
 
-echo Skipped: reactivate once done with new woerkers
-exit 0
-
 if [ ! -f "cli9.log" ] ; then not_passed $LINENO ; fi
 
-if ! grep -q -i "'wrong_task_identifier' does not match" "cli9.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i "Unable to perform ACC task 'wrong_task_identifier'" "cli9.log" ; then not_passed $LINENO ; fi
+
+if ! grep -q -i "Type of Worker has not been registered.*for task 'wrong_task_identifier'" "cli9.log" ; then not_passed $LINENO ; fi
 
 if ! grep -q 'Termination status: 0' "cli9.log" ; then echo Passed ; exit 0 ; fi
 
