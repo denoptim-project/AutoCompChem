@@ -38,6 +38,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
@@ -129,25 +130,13 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @param dirData the list of data blocks.
      */
 
-    public Directive(String name, ArrayList<Keyword> keywords, 
-                                       ArrayList<Directive> subDirectives,
-                                         ArrayList<DirectiveData> dirData)
+    public Directive(String name, List<Keyword> keywords,
+    		List<Directive> subDirectives, List<DirectiveData> dirData)
     {
         this.name = name;
         this.keywords = keywords;
         this.subDirectives = subDirectives;
         this.dirData = dirData;
-
-        // We define also the tasks that may have to be performed inside a 
-        // directive
-        // TODO-gg consider registering workers for each of them
-        //Task.make("generateBasisSet");
-        Task.make("generateConstraints");
-        Task.make("generateAtomLabels");
-        Task.make("generateAtomTuples");
-        Task.make("addFileName");
-        Task.make("addGeometry");
-        Task.make("addAtomSpecificKeywords");
     }
 
 //-----------------------------------------------------------------------------
@@ -892,12 +881,9 @@ public class Directive implements IDirectiveComponent, Cloneable
     	{
     		if (dd.hasACCTask())
     		{
-    			//TODO-gg clean code to avoid double call to getTaskParams
-	    		ParameterStorage ps;
-    			if (dd.getTaskParams()!=null)
+	    		ParameterStorage ps = dd.getTaskParams();
+    			if (ps==null)
     			{
-    				ps = dd.getTaskParams();
-    			} else {
 	    			// This is legacy code: deals with cases where the parameters 
 	    			//defining the task are still listed in the 'value' of dd
 	    			ArrayList<String> lines = dd.getLines();
@@ -1022,15 +1008,17 @@ public class Directive implements IDirectiveComponent, Cloneable
 			ps.importParametersFromLines(taskSpecificLines);
 		}
 		
-		//TODO-gg: much of this will eventually be removed or moved to a dedicated 
+		//TODO: much of this will eventually be removed or moved to a dedicated 
 		// class for converting job details files
 		
 		//Another fix of the obsolete syntax
-		if (task.toUpperCase().equals(Task.getExisting("generateConstraints").ID))
+		if (task.toUpperCase().equals(
+				ConstraintsGenerator.GENERATECONSTRAINTSTASK.ID))
 		{
 			taskSpecificLines = new ArrayList<String>(
 					Arrays.asList(ps.getParameter(
-							Task.getExisting("generateConstraints").ID).getValue()
+							ConstraintsGenerator.GENERATECONSTRAINTSTASK.ID)
+							.getValue()
 							.toString().split("\\r?\\n|\\r")));
 			ps = new ParameterStorage();
 			String smarts = "";
@@ -1198,16 +1186,6 @@ public class Directive implements IDirectiveComponent, Cloneable
 	    			+ System.getProperty("line.separator"));
     		//We'll remove it later to avoid concurrent modification
     		toErase.add(dirComp);
-    	}
-    	if (matchingDataCount>1)
-    	{
-    		//TODO: logger
-    		//TODO-gg deal with multiple geometries by using the index ion the parameters
-    		//TODO-gg or consider replicating the dircomponent as many times as needed to host all the data
-	    	System.out.println(System.getProperty("line.separator")
-	    			+ "WARNING! Multiple data produced by task " + task
-	    			+ ". Taking only the first value and ignoring the rest."
-	    			+ System.getProperty("line.separator"));
     	}
     }
     

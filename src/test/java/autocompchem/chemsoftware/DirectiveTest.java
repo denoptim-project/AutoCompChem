@@ -43,6 +43,7 @@ import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.text.TextBlock;
+import autocompchem.worker.DummyWorker;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
@@ -170,7 +171,7 @@ public class DirectiveTest
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
 				+ ChemSoftConstants.JDLABACCTASK
 				+ ParameterConstants.SEPARATOR
-				+ Task.getExisting("addFileName").casedID + NL
+				+ DummyWorker.DUMMYTASKTASK.casedID+ NL
 				+ ChemSoftConstants.PARGETFILENAMEROOTSUFFIX 
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
@@ -181,7 +182,8 @@ public class DirectiveTest
     	d.addSubDirective(embedded);
     	
     	ParameterStorage taskParams = new ParameterStorage();
-    	taskParams.setParameter("TASK", "DummyTask");
+    	taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
+    			DummyWorker.DUMMYTASKTASK.ID);
     	taskParams.setParameter("Value1", NamedDataType.INTEGER, 1);
     	taskParams.setParameter("Value2", NamedDataType.DOUBLE, 1.23);
     	taskParams.setParameter("Value3", "abc");
