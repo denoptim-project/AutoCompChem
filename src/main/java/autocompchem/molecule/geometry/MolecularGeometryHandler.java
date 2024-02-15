@@ -70,24 +70,33 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
      * {@link AtomLabelsGenerator}.
      */
     private boolean useAtomTags = false;
-    
-    /**
-     * Verbosity level
-     */
-    protected int verbosity = 0;
 
     /**
-     * String defining the task of generating tuples of atoms
+     * String defining the task of generating the definition of a geometry
      */
     public static final String GETMOLECULARGEOMETRYTASKNAME = 
     		"getMolecularGeometry";
 
     /**
-     * Task about generating tuples of atoms
+     * Task about generating the definition of the geometry
      */
     public static final Task GETMOLECULARGEOMETRYTASK;
     static {
     	GETMOLECULARGEOMETRYTASK = Task.make(GETMOLECULARGEOMETRYTASKNAME);
+    }
+    
+    /**
+     * String defining the task of getting the identifier of the geometry
+     */
+    public static final String GETMOLECULENAMETASKNAME = 
+    		"getMoleculeName";
+
+    /**
+     * Task about getting the identifier of the geometry
+     */
+    public static final Task GETMOLECULENAMETASK;
+    static {
+    	GETMOLECULENAMETASK = Task.make(GETMOLECULENAMETASKNAME);
     }
 
 //-----------------------------------------------------------------------------
@@ -103,7 +112,7 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(GETMOLECULARGEOMETRYTASK)));
+             Arrays.asList(GETMOLECULARGEOMETRYTASK, GETMOLECULENAMETASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -260,8 +269,13 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 			
 			if (exposedOutputCollector != null)
 	    	{
-				// TODO-gg verify consistency of NamedData reference: should it be task+molId+"-"+i ?
-				exposeOutputData(new NamedData(task.ID+i, output));
+				exposeOutputData(new NamedData(task.ID+"mol-"+i, output));
+	    	}
+    	} else if (task.equals(GETMOLECULENAMETASK)) {
+    		String name = MolecularUtils.getNameOrID(iac, "mol-"+i);
+			if (exposedOutputCollector != null)
+	    	{
+				exposeOutputData(new NamedData(task.ID+"mol-"+i, name));
 	    	}
     	} else {
     		dealWithTaskMismatch();

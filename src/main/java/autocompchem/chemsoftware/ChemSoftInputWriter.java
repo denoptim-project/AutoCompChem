@@ -222,7 +222,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         }
         */
         
-        //TODO-gg check: probably obsilete
+        //TODO-gg check: probably obsolete
         if (params.contains(ChemSoftConstants.PARUSEATMTAGS))
         {
         	this.useAtomTags = true;
