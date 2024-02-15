@@ -246,6 +246,13 @@ public abstract class Worker implements IOutputExposer
     {
     	for (ConfigItem ci : getKnownParameters())
     	{
+    		// TODO make items dependend on task (optionally) so that they 
+    		// are not displayed where not relevant (see the help of -t getmoleculename)
+    		// TODO make items link to source's constant names, so we can check that 
+    		// the declared ID is indeed what the code expects
+    		// TODO remove duplicates from embedded workers (see the help of -t getmoleculename)
+    		// TODO make only the outernmost worker produce the string, the 
+    		// embedded ones should give the list of config items so that we can check for duplicates
     		if (ci.isForStandalone() && ignoreNonStandalone)
     		{
 	    		continue;
