@@ -210,7 +210,7 @@ function functionalityTesting() {
         parFile="../t$i.params"
         if [ ! -f "$parFile" ]
         then
-            echo "Test t$i not found. Jumping to next test ID."
+            #echo "Test t$i not found. Jumping to next test ID."
             continue
         fi
         echo " "
