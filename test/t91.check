@@ -19,7 +19,7 @@ n=0;n=$(grep -i -c "SYMMETRY * c1" t91-mol.nw)
 if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
 n=0;n=$(grep -c -i " ANGLE .* constant" t91-mol.nw)
-if [ $n -ne 6 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+if [ $n -ne 4 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
 n=0;n=$(grep -c "library * lanl2dz_ecp" t91-mol.nw)
 if [ $n -ne 6 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi

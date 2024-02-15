@@ -57,6 +57,20 @@
             {
               "reference": "units",
               "value": "angstrom"
+            },
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ]
             }
           ],
           "dirData": [
@@ -123,6 +137,20 @@
             {
               "reference": "units",
               "value": "angstrom"
+            },
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "1"
+                }
+              ]
             }
           ],
           "dirData": [
@@ -351,6 +379,56 @@
         {
           "name": "geometry",
           "keywords": [
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "S6",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "1"
+                }
+              ]
+            },
             {
               "reference": "adjust",
               "value": "adjust",

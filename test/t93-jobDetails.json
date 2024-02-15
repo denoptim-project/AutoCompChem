@@ -3,12 +3,6 @@
   "steps": [
     {
       "jobType": "CompChemJob",
-      "params": [
-        {
-          "reference": "MULTIGEOMNWCHEM",
-          "value": "first_G second_G"
-        }
-      ],
       "directives": [
         {
           "name": "ecp",
@@ -30,6 +24,10 @@
                 {
                   "reference": "TASK",
                   "value": "GENERATEBASISSET"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
                 }
               ]
             }
@@ -59,6 +57,39 @@
             {
               "reference": "units",
               "value": "angstrom"
+            },
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMolecularGeometry"
+                },
+                {
+                  "reference": "labelType",
+                  "value": "IndexBased"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ],
+              "reference": "geometry"
             }
           ],
           "subDirectives": [
@@ -84,6 +115,86 @@
                     {
                       "reference": "SMARTS",
                       "value": "[#1] [Ru] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded suffix:constant"
+                    },
+                    {
+                      "reference": "useGeomAtIndex",
+                      "value": "0"
+                    }
+                  ],
+                  "reference": "zcoordconstraints"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "units",
+              "value": "angstrom"
+            },
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "1"
+                }
+              ]
+            }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMolecularGeometry"
+                },
+                {
+                  "reference": "labelType",
+                  "value": "IndexBased"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "1"
+                }
+              ],
+              "reference": "geometry"
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "c1",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "ZCOORD",
+              "dirData": [
+                {
+                  "accTaskParams": [
+                    {
+                      "reference": "TASK",
+                      "value": "GENERATECONSTRAINTS"
+                    },
+                    {
+                      "reference": "SMARTS",
+                      "value": "[#1] [Ru] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [#1] onlybonded suffix:constant\n[$([#6]~[#7])] [Ru] [$([#6](~[Ru])~[#6])] onlybonded suffix:constant"
+                    },
+                    {
+                      "reference": "useGeomAtIndex",
+                      "value": "1"
                     }
                   ],
                   "reference": "zcoordconstraints"
@@ -127,6 +238,10 @@
                 {
                   "reference": "TASK",
                   "value": "GENERATEBASISSET"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
                 }
               ]
             }
@@ -248,6 +363,56 @@
         {
           "name": "geometry",
           "keywords": [
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ]
+            },
+            {
+              "reference": "adjust",
+              "value": "adjust",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SYMMETRY",
+              "keywords": [
+                {
+                  "reference": "pointgroup",
+                  "value": "S6",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "geometry",
+          "keywords": [
+            {
+              "reference": "geomname",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMoleculeName"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "1"
+                }
+              ]
+            },
             {
               "reference": "adjust",
               "value": "adjust",

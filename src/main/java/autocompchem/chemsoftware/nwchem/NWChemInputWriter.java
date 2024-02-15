@@ -37,8 +37,11 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftInputWriter;
 import autocompchem.chemsoftware.CompChemJob;
+import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
+import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
@@ -877,6 +880,52 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 		if (innermostJob.getDirective(NWChemConstants.RESTARTDIR)!=null)
 			return;
 		
+		DirComponentAddress addressToGeomDir = new DirComponentAddress();
+		addressToGeomDir.addStep(NWChemConstants.GEOMDIR,
+				DirectiveComponentType.DIRECTIVE);
+		
+		List<IDirectiveComponent> allGeomDirs = 
+				innermostJob.getDirectiveComponents(addressToGeomDir);
+		if (allGeomDirs.size()>0)
+		{
+			// We have geometry directives. In it there are many alternative 
+			// ways to define a geometry, so we assume that any such way is 
+			// present and we do not do anything. 
+			return;
+		} else {
+			// No directive 'geometry'. Make as many as needed to host the input
+			// structures.
+			for (int i=0; i<iacs.size(); i++)
+			{
+				IAtomContainer mol = iacs.get(i);
+				Directive newGeomDir = new Directive(formatCase(
+						NWChemConstants.GEOMDIR));
+				DirectiveData dd = new DirectiveData(formatCase(
+						NWChemConstants.GEOMDIR));
+				dd.setValue(mol);
+				newGeomDir.addDirectiveData(dd);
+
+				String geomName = MolecularUtils.getNameIDOrNull(mol);
+				if (geomName!=null)
+				{
+					newGeomDir.addKeyword(new Keyword(
+							NWChemConstants.GEOMNAMEKW, false, geomName));
+				}
+				
+				innermostJob.addDirective(newGeomDir);
+			}
+		}
+		
+		
+		// Old approach tries to do too much and gets in clash with the 
+		// flexibility of the job details:
+		// - if we have multiple geometry directives in the job details,
+		// then this will take one and remove the others.
+		// - it does not consider the multiple alternative ways to define 
+		// geometries (Cartesian, Load, ZMAtrix), so it risks to add a geometry
+		// where there already is one defined in a nother way.
+		
+		/*
 		Directive origiGeomDir = innermostJob.getDirective(
 				NWChemConstants.GEOMDIR);
 		if (origiGeomDir==null)
@@ -884,6 +933,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			origiGeomDir = new Directive(formatCase(NWChemConstants.GEOMDIR));
 			innermostJob.addDirective(origiGeomDir);
 		}
+		
 		boolean removeOriginalDir = false;
 		boolean hasAddGeometryTask = false;
 		boolean usingOriginalDir = false;
@@ -955,11 +1005,15 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 		
 		if (hasAddGeometryTask)
 			return;
+		*/
 		
 		if (innermostJob==ccj)
 			// Need this to handle simple jobs with single step that is the 
 			// outermost job. In that case there is no parent and no steps
 			return;
+		
+		// Still, part of the old, too-specific approach
+		/*
 		
 		// Redo any multiplication of directive and specification of geometry
 		// name in each step that follow the initial one.
@@ -978,11 +1032,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 			{
 				continue;
 				// Do not add empty 'geometry' directives
-				/*
-				origiGeomDirStep = new Directive(formatCase(
-						NWChemConstants.GEOMDIR));
-				stepJob.addDirective(origiGeomDirStep);
-				*/
+				//
+				//origiGeomDirStep = new Directive(formatCase(
+				//		NWChemConstants.GEOMDIR));
+				//stepJob.addDirective(origiGeomDirStep);
+				//
 			}
 			removeOriginalDir = false;
 			for (int id=0; id<iacs.size(); id++)
@@ -1023,6 +1077,7 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 				stepJob.removeDirective(origiGeomDirStep);
 			}
 		}
+		*/
 	}
 
 //------------------------------------------------------------------------------

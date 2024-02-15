@@ -86,6 +86,21 @@
                 }
               ]
             }
+          ],
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMolecularGeometry"
+                },
+                {
+                  "reference": "useGeomAtIndex",
+                  "value": "0"
+                }
+              ],
+              "reference": "geometry"
+            }
           ]
         },
         {
@@ -132,7 +147,7 @@
               "isLoud": false
             }
           ],
-          "dirData": 
+          "dirData":
           [
             {
               "reference": "fixed atoms",
