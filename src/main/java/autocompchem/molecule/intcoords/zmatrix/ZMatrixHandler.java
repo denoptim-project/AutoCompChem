@@ -335,7 +335,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 		// NB: tasks use only ZMatrix input
     	if (task.equals(CONVERTTOZMATTASK))
     	{
-    		printZMatrix(iac, i);
+    		makeZMatrix(iac, i);
     	} else {
     		dealWithTaskMismatch();
         }
@@ -344,12 +344,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Prints the ZMatrix of the loaded chemical system/s, if any.
+     * Creates the ZMatrix of the loaded chemical system/s, if any.
      * This method will NOT try to reorder the atom list as to make a proper
      * ZMatrix.
      */
    
-    public void printZMatrix(IAtomContainer iac, int i)
+    public void makeZMatrix(IAtomContainer iac, int i)
     {
 	    String molName = MolecularUtils.getNameOrID(iac);
 	    ZMatrix zmat = makeZMatrix(iac, tmplZMat, verbosity);
@@ -367,7 +367,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 	    	IOtools.writeZMatAppend(outFile,zmat,true);
 	    }
 	    
-	    //TODO-gg expose?
+        if (exposedOutputCollector != null)
+        {
+        	exposeOutputData(new NamedData(task.ID + "mol-"+i, 
+		      		NamedDataType.ZMATRIX, zmat));
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -785,19 +789,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     public IAtomContainer convertZMatrixToIAC(ZMatrix zmat, 
     		IAtomContainer oldMol) throws Throwable
     {
-        //TODO del code meant to stepwise debug
-        boolean debug = false;
-
         IAtomContainer mol = new AtomContainer();
         for (int i=0; i<zmat.getZAtomCount(); i++)
         {
-            //TODO del
-            if (debug)
-            {
-                System.out.println("-----------------------------------------");
-                System.out.println("Atom "+i);
-            }
-
             ZMatrixAtom zatm = zmat.getZAtom(i);
             String el = zatm.getName();
             Point3d pt = new Point3d();
@@ -871,13 +865,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                     IAtom atmJ = mol.getAtom(zatm.getIdRef(1));
                     IAtom atmK = mol.getAtom(zatm.getIdRef(2));
 
-                    //TODO del
-                    if (debug)
-                    {
-                        System.out.println("Atm-I: "+atmI);
-                        System.out.println("Atm-J: "+atmJ);
-                        System.out.println("Atm-K: "+atmK);
-                    }
                     Point3d pI = atmI.getPoint3d();
                     Point3d pJ = atmJ.getPoint3d();
                     Point3d pK = atmK.getPoint3d();
@@ -895,16 +882,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 
                     if ("0".equals(type))
                     {
-                        //TODO del
-                        if (debug)
-                        {
-                            System.out.println("------ IN TORSION ------");
-                            System.out.println("sinA: "+sinA);
-                            System.out.println("cosA: "+cosA);
-                            System.out.println("sinB: "+sinB);
-                            System.out.println("cosB: "+cosB);
-                        }
-
                         // 3rd IC is dihedral angle
                         double dotProdIJIK = dIJ.x*dJK.x 
                                            + dIJ.y*dJK.y 
@@ -918,19 +895,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                         Point3d du = new Point3d(dt.y*dIJ.z - dt.z*dIJ.y,
                                                  dt.z*dIJ.x - dt.x*dIJ.z,
                                                  dt.x*dIJ.y - dt.y*dIJ.x);
-
-                        //TODO del
-                        if (debug)
-                        {
-                            System.out.println("dIJ: "+dIJ.x+" "+dIJ.y+" "+dIJ.z);
-                            System.out.println("dJK: "+dJK.x+" "+dJK.y+" "+dJK.z);
-                            System.out.println("rIJ: "+rIJ);
-                            System.out.println("rJK: "+rJK);
-                            System.out.println("dotProdIJIK: "+dotProdIJIK);
-                            System.out.println("compl: "+compl);
-                            System.out.println("dt: "+dt.x+" "+dt.y+" "+dt.z);
-                            System.out.println("du: "+du.x+" "+du.y+" "+du.z);
-                        }
 
                         if (Math.abs(dotProdIJIK) >= 1.0-t)
                         {
@@ -947,25 +911,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                                 (du.y*sinA*cosB + dt.y*sinA*sinB - dIJ.y*cosA),
                                          pI.z + icI.getValue()*
                                 (du.z*sinA*cosB + dt.z*sinA*sinB - dIJ.z*cosA));
-
-                        //TODO del
-                        if (debug)
-                        {                     
-                            System.out.println("bond: "+icI.getValue());
-                            System.out.println("pI.x: "+pI.x);
-                            System.out.println("pI.y: "+pI.y);
-                            System.out.println("pI.z: "+pI.z);
-                            System.out.println("--------- END torsion ------ ");
-                        }
                     }
                     else
                     {
-                        //TODO del
-                        if (debug)
-                        {       
-                            System.out.println("--------- IN ANGLE --------- ");
-                        }
-
                         // 4rd IC is angle
                         double rIK = pI.distance(pK);
                         Point3d dIK= new Point3d(pI.x-pK.x,pI.y-pK.y,pI.z-pK.z);                        dIK.scale(1.0/rIK);
@@ -978,18 +926,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                                              -dIJ.z*dIK.z;
                         double compl = Math.max(1.0-Math.pow(dotProdIJIK,2),t);
 
-                        //TODO del
-                        if (debug)
-                        {       
-                            System.out.println("dIJ: "+dIJ.x+" "+dIJ.y+" "+dIJ.z);
-                            System.out.println("dIK: "+dIK.x+" "+dIK.y+" "+dIK.z);
-                            System.out.println("rIJ: "+rIJ);
-                            System.out.println("rIK: "+rIK);
-                            System.out.println("dotProdIJIK: "+dotProdIJIK);
-                            System.out.println("compl: "+compl);
-                            System.out.println("dt: "+dt.x+" "+dt.y+" "+dt.z);
-                        }
-
                         if (Math.abs(dotProdIJIK) >= 1.0-t)
                         {
                             throw new Throwable("Linearity in definition of "
@@ -1001,23 +937,15 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                         double a = (-1.0)*(cosB + dotProdIJIK*cosA)/compl;
                         double b = (cosA + dotProdIJIK*cosB)/compl;
                         double c = (1.0 + a*cosB - b*cosA)/compl;
-
-                        if (debug)
-                        {
-                            System.out.println("chiral: "+type);
-                            System.out.println("a: "+a);
-                            System.out.println("b: "+b);
-                            System.out.println("c(pre-check): "+c);
-                        }
-
+                        
                         if (c >= t)
                         {
                             c = Math.sqrt(c)*sign;
                         }
                         else if (c < -t)
                         {
-//TODO: decide when tothrow the exception and when to accept a negligible c
-// Thorugh exception only if high accuracy is requested
+//TODO: decide when to throw the exception and when to accept a negligible c
+// Throw exception only if high accuracy is requested
 /*
                             throw new Throwable("Generating linearity with "
                                     + "atom (0-based) " + i + ". Need a "
@@ -1040,35 +968,15 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                             c = 0.0;
                         }
 
-                        if (debug)
-                        {
-                            System.out.println("c(post-check): "+c);
-                            System.out.println("bond: "+icI.getValue());
-                            System.out.println("pI.x: "+pI.x);
-                            System.out.println("pI.y: "+pI.y);
-                            System.out.println("pI.z: "+pI.z);
-                        }
-
                         pt = new Point3d(pI.x + icI.getValue()*
                                                   (a*dIK.x - b*dIJ.x + c*dt.x),
                                          pI.y + icI.getValue()*
                                                   (a*dIK.y - b*dIJ.y + c*dt.y),
                                          pI.z + icI.getValue()*
                                                   (a*dIK.z - b*dIJ.z + c*dt.z));
-                        if (debug)
-                        {
-                            System.out.println("--------- END angle ------- ");
-                        }
                         break;
                     }
                 }
-            }
-            if (debug)
-            {
-                System.out.println("pt.x: "+pt.x);
-                System.out.println("pt.y: "+pt.y);
-                System.out.println("pt.z: "+pt.z);
-                IOtools.pause();
             }
 
             IAtom atm = new Atom(el,pt);
