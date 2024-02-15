@@ -36,7 +36,7 @@ if [ "$n" != 2 ] ; then
   exit -1
 fi
 
-n=0;n=$(grep -c 'Converting ZMatrix' t101.log)
+n=0;n=$(grep -c '^# Molecule: mol_' t101.log)
 if [ "$n" != 2 ] ; then
   echo NOT Passed 7
   exit -1
