@@ -36,7 +36,7 @@ if [ "$n" != 2 ] ; then
   exit -1
 fi
 
-n=0;n=$(grep -c 'Working on mol ' t98.log)
+n=0;n=$(grep -c '^# mol_' t98.log)
 if [ "$n" != 2 ] ; then
   echo NOT Passed 7
   exit -1
