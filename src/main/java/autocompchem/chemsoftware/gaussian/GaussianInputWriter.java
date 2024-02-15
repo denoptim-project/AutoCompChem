@@ -68,7 +68,8 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     /**
      * String defining the task of preparing input files for Gaussian
      */
-    public static final String PREPAREINPUTGAUSSIANTASKNAME = "prepareInputGaussian";
+    public static final String PREPAREINPUTGAUSSIANTASKNAME = 
+    		"prepareInputGaussian";
 
     /**
      * Task about preparing input files for Gaussian
@@ -360,17 +361,6 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		}
     	} // No default link0 section
     	
-
-    	// 
-    	// Convert header into route section
-    	//
-    	Directive textHeader = step.getDirective(ChemSoftConstants.PARHEADER);
-    	if (textHeader!=null)
-    	{
-    		lines.add(textHeader.getFirstDirectiveData(ChemSoftConstants.PARHEADER)
-    				.getValueAsString());
-    	}
-    	
     	//
     	// Building lines of Route section
     	//
@@ -459,8 +449,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     					+ "expected. Check your input!");
     		}
     	} else {
-    		if (textHeader==null)
-    			lines.add("#P");
+    		lines.add("#P");
     	}
 		lines.add(""); // Empty line terminating route section
 		

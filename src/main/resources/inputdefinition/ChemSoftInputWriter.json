@@ -55,13 +55,6 @@
     "doc": "Prevents the specification the spin multiplicity of the system, if possible. This is often used when inheriting the spin multiplicity information from a previous job."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "isForStandalone": true,
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
-  },
-  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }

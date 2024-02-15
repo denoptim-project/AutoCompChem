@@ -187,14 +187,6 @@ public class ChemSoftConstants
 	 * of the computational chemistry job and a {@link CompChemJob} instance.
 	 */
 	public static final String PARJOBDETAILSOBJ = "PARJOBDETAILSOBJ";
-	
-	/**
-	 * Key for parameter providing the entire header of the job. A header is
-	 * expected to contain all details of a computational chemistry job, though
-	 * in a string-like fashion, i.e., without dividing the information into
-	 * directives, keywords, and data.
-	 */
-	public static final String PARHEADER = "HEADER";
 
 	/**
 	 * Key for parameter defining the pathname's root, i.e., a pathname without
@@ -256,15 +248,6 @@ public class ChemSoftConstants
 	 * multiple geometries.
 	 */
 	public static final String PARMULTIGEOMID = "USEGEOMATINDEX";
-			
-	/**
-	 * Parameter requiring to print atom tags when reporting a geometry.
-	 * Atom tags are built from the elemental symbol and the 1-based index
-	 * of the atom in the atom list. E.g., tag "C5" will be used for the 
-	 * fifth atom in the list, which is a carbon atom.
-	 */
-	//TODO-gg this is most likely obsolete: consider removing
-	public static final String PARUSEATMTAGS = "USEATOMTAGS";
 	
 	/**
 	 * Parameter specifying which type of atom label to use. 
@@ -296,7 +279,6 @@ public class ChemSoftConstants
 	 *  still be non-blank).
 	 */
 	public static final String KWISLOUD = "KWISLOUD";
-	
 
 	/**
 	 * Key for parameter defining which type of pointer to use. Either "index" 

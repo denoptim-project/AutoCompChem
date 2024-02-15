@@ -60,11 +60,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * Geometry names
      */
     protected List<String> geomNames = new ArrayList<String>();
-    
-    /**
-     * Flag controlling if we use atom tags or not.
-     */
-    protected boolean useAtomTags = false;
 
     /**
      * Pathname root for output files (input for comp.chem. software).
@@ -222,12 +217,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         }
         */
         
-        //TODO-gg check: probably obsolete
-        if (params.contains(ChemSoftConstants.PARUSEATMTAGS))
-        {
-        	this.useAtomTags = true;
-        }
-        
         if (params.contains(ChemSoftConstants.PARGEOMNAMES))
         {
             this.overwriteGeomNames = true;
@@ -287,18 +276,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             List<String> lines = new ArrayList<String>(Arrays.asList(
                     jdLines.split("\\r?\\n")));
             this.ccJob = new CompChemJob(lines);
-        }
-        //TODO-gg add to documentation, but check if it is general enough
-        else if (params.contains(ChemSoftConstants.PARHEADER))
-        {
-        	this.ccJob = new CompChemJob();
-        	Directive header = new Directive(ChemSoftConstants.PARHEADER);
-        	DirectiveData ddHeader = new DirectiveData(
-        			ChemSoftConstants.PARHEADER);
-        	ddHeader.setValue(params.getParameter(
-                    ChemSoftConstants.PARHEADER).getValueAsString());
-        	header.addDirectiveData(ddHeader);
-        	this.ccJob.addDirective(header);
         }
         else 
         {
@@ -525,10 +502,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 				outFileNameRoot, true);
 		
 		// Add atom coordinates to the so-far possibly molecule-agnostic job
-		if (useAtomTags)
-			setChemicalSystem(molSpecJob, makeAtomContainersWithAtomTags(mols));
-		else
-			setChemicalSystem(molSpecJob, mols);
+		setChemicalSystem(molSpecJob, mols);
 		
 		// We keep a copy of the agnostic chemical system definition in the job 
 		// parameters
