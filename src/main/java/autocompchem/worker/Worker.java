@@ -46,7 +46,7 @@ import autocompchem.run.Terminator;
  * as starting point for all other workers. 
  * Subclasses of this class need to respect these constraints:
  * <ul>
- * <li>The subclass name must be registered among the {@link WorkerID},</li>
+ * <li>The subclass name must be registered in the {@link WorkerFactory},</li>
  * <li>The subclass needs to include the following field;
  * <pre>
  * 	public static final Set&lt;TaskID&gt; capabilities = ...
@@ -114,14 +114,16 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
     
     /**
-     * Setup the parameters used to initialize this worker.
+     * Setup the parameters used to initialize this worker. If the parameters
+     * include the {@link WorkerConstants#PARTASK} parameter, then the task 
+     * assigned to this worker upon instantiation with 
+     * {@link WorkerFactory} is overwritten.
      * @param params the collection of parameters.
      */
     
     public void setParameters(ParameterStorage params)
     {
     	this.params = params;
-//TODO-gg comment out: the task of a worker should not be publicly accessible
     	String taskStr = this.params.getParameter(WorkerConstants.PARTASK)
     			.getValueAsString();
     	this.task = Task.make(taskStr);
