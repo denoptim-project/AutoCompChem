@@ -1,0 +1,25 @@
+[
+  {
+    "key": "OUTFILE",
+    "casedKey": "outFile",
+    "type": "<String>",
+    "isForStandalone": true,
+    "doc": "The pathname to the file where to print the ZMatrix."
+  },
+  {
+    "key": "TEMPLATEZMAT",
+    "casedKey": "templateZMat",
+    "type": "<String>",
+    "doc": "Pathname to ACC's ZMatrix used as template when generating ZMatrix for other, consistent molecular systems."
+  },
+  {
+    "key": "TORSIONONLY",
+    "casedKey": "torsionOnly",
+    "type": "",
+    "doc": "Requests to use only torsions as 3rd internal coordinate in ZMatrix."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  }
+]

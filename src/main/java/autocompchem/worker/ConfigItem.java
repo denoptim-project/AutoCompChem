@@ -1,6 +1,8 @@
 package autocompchem.worker;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -79,15 +81,46 @@ public class ConfigItem
 	final String embeddedWorker;
 	
 	/**
+	 * The specific task of the embedded worker. This may be empty, in which 
+	 * case it indicated to produce the documentation for the worker class
+	 * rather than its task-specific version.
+	 */
+	final String task;
+	
+	
+	/**
 	 * A very short sentence defining what this configuration item pertains
 	 * to.
 	 */
 	final String tag;
-
+	
+	/**
+	 * The list of keys of an embedded worker's configuration items to ignore  
+	 * when producing documentation strings. Should be not empty only when 
+	 * this item defines an embedded worker. The content should correspond to 
+	 * configuration items that are ignored by the embedded worker, i.e.,
+	 * the source code should remove them to the set of parameters given to
+	 * the embedded worker. <b>This consistency is not checked automatically!<b>
+	 */
+	//TODO-gg check consistency
+	final List<String> ignorableItems;
+	
+	/**
+	 * The list of further embedded workers of an embedded worker's 
+	 * configuration items to ignore when 
+	 * producing documentation strings. Should be not empty only when 
+	 * this item defines an embedded worker. The content corresponds to workers
+	 * that are documented already by being embedded elsewhere, so adding them
+	 * here allows to avoid duplication of their documentation.
+	 */
+	final List<String> ignorableWorkers;
+	
 //------------------------------------------------------------------------------
 	  
 	public ConfigItem(String key, String type, String casedKey, String doc, 
-			boolean isForStandalone, String embeddedWorker, String tag)
+			boolean isForStandalone, String embeddedWorker, String tag,
+			String task,
+			List<String> ignorableItems, List<String> ignorableWorkers)
 	{
 		this.key = key;
 		this.casedKey= casedKey;
@@ -96,6 +129,9 @@ public class ConfigItem
 		this.isForStandalone = isForStandalone;
 		this.embeddedWorker = embeddedWorker;
 		this.tag = tag;
+		this.task = task;
+		this.ignorableItems = ignorableItems;
+		this.ignorableWorkers = ignorableWorkers;
 	}
 //------------------------------------------------------------------------------
   
@@ -112,7 +148,35 @@ public class ConfigItem
 			// When we have the embeddedWorker it means this configuration item 
 			// is a container for items that control the embedded worker.
 			StringBuilder sb = new StringBuilder();
-			sb.append(" Settings pertaining ").append(tag).append(": ");
+			
+			// Make sure the opening sentence fits the maxLineLength
+			String openingSentence = " Settings pertaining " + tag + ": ";
+			int previousRowsLength = 0;
+			int maxLineLength = 76;
+			String[] words = openingSentence.split("[^\\S\\r\\n]"); 
+			for (int i=0; i<words.length; i++) 
+			{
+				int currentRowLength = sb.length() - (previousRowsLength);
+				int possibleLength = currentRowLength + words[i].length();
+				
+				if (possibleLength < maxLineLength)
+				{
+					sb.append(words[i]);
+					currentRowLength = possibleLength;
+				} else {
+					previousRowsLength = previousRowsLength + currentRowLength;
+					sb.append(System.getProperty("line.separator"));
+					sb.append(" ").append(words[i]);
+				}
+				if (words[i].matches(".*[\\r\\n]+"))
+				{
+					previousRowsLength = previousRowsLength + currentRowLength;
+					sb.append(" ");
+				} else {
+					sb.append(" ");
+				}
+			}
+			
 			sb.append(System.getProperty("line.separator"));
 			Worker w;
 			try {
@@ -120,7 +184,16 @@ public class ConfigItem
 				Class<? extends Worker> clazzWorker = 
 					(Class<? extends Worker>) Class.forName(embeddedWorker);
 				w = WorkerFactory.createWorker(clazzWorker);
-				sb.append(w.getEmbeddedTaskSpecificHelp());
+				if (task!=null && !task.isBlank())
+				{
+					w.task = Task.make(task);
+				}
+				for (ConfigItem ci : w.getKnownParameters(ignorableItems, 
+						ignorableWorkers))
+				{
+		    		sb.append(System.getProperty("line.separator"));
+		    		sb.append(ci.getStringForHelpMsg());
+				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				sb.append(" Error fetching help msg for '" + embeddedWorker 
@@ -263,8 +336,25 @@ public class ConfigItem
             {
                 embeddedWorker = jsonObject.get("embeddedWorker").getAsString();
             }
+            String task = "";
+            if (jsonObject.has("task"))
+            {
+            	task = jsonObject.get("task").getAsString();
+            }
+            List<String> ignorableItems = new ArrayList<String>();
+            if (jsonObject.has("ignorableItems"))
+            {
+            	ignorableItems = context.deserialize(
+                		jsonObject.get("ignorableItems"),List.class);
+            }
+            List<String> ignorableWorkers = new ArrayList<String>();
+            if (jsonObject.has("ignorableWorkers"))
+            {
+            	ignorableWorkers = context.deserialize(
+                		jsonObject.get("ignorableWorkers"),List.class);
+            }
 			return new ConfigItem(key, type, casedKey, doc, isForStandalone, 
-					embeddedWorker, tag);
+					embeddedWorker, tag, task, ignorableItems, ignorableWorkers);
 		}
 	}
 

@@ -167,7 +167,19 @@ public abstract class Worker implements IOutputExposer
      */
     public List<ConfigItem> getKnownParameters()
     {
-        return getKnownParameters(getKnownInputDefinition());
+    	String pathnameForWorker = getKnownInputDefinition();
+    	if (task!=null)
+    	{
+	    	String pathnameForTask = pathnameForWorker.replace(".json", 
+	    			"_" + task + ".json");
+	    	List<ConfigItem> taskSpecificList = getKnownParameters(
+	    			pathnameForTask, true);
+	    	if (taskSpecificList.size()>0)
+	    	{
+	    		return taskSpecificList;
+	    	}
+    	}
+        return getKnownParameters(pathnameForWorker, false);
     }
     
 //------------------------------------------------------------------------------
@@ -179,10 +191,34 @@ public abstract class Worker implements IOutputExposer
      */
     protected static List<ConfigItem> getKnownParameters(String pathName)
     {
+    	return getKnownParameters(pathName, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Reads the list on known parameters from JSON file.
+     * @param the JSON file containing the information to read in.
+     * @param tolerant use <code>true</code> to ignore the error triggered by
+     * file not found.
+     * @return the list of input settings.
+     */
+    protected static List<ConfigItem> getKnownParameters(String pathName,
+    		boolean tolerant)
+    {
     	Gson reader = ACCJson.getReader();
     	List<ConfigItem> knownParams = new ArrayList<ConfigItem>();
         InputStream ins = Worker.class.getClassLoader()
         	 .getResourceAsStream(pathName);
+        if (ins==null)
+        {
+        	if (tolerant)
+        	{
+        		return knownParams;
+        	} else {
+        		throw new Error("Resource file '" + pathName + "' not found!");
+        	}
+        }
         BufferedReader br = null;
         try
         {
@@ -210,6 +246,41 @@ public abstract class Worker implements IOutputExposer
     }
     
 //------------------------------------------------------------------------------
+
+    /**
+     * Reads the list on known parameters that a worker can take as 
+     * input settings, and removes any that matches the given identifiers.
+     * @param ignorableItems list of item keys (case insensitive)
+     * @param ignorableItems list of worker class canonical name (case 
+     * insensitive)
+     * @return the sub list of input settings that excludes the ones to be
+     * ignored.
+     */
+    public List<ConfigItem> getKnownParameters(List<String> ignorableItems, 
+    		List<String> ignorableWorkers)
+    {
+    	List<ConfigItem> retained = new ArrayList<ConfigItem>();
+		for (ConfigItem ci : getKnownParameters())
+    	{					
+			if (ci.key!=null && !ci.key.isBlank()
+					&& !ignorableItems.stream().anyMatch(
+							ci.key::equalsIgnoreCase))
+			{
+				retained.add(ci);
+				continue;
+			}
+			
+			if (ci.embeddedWorker!=null && !ci.embeddedWorker.isBlank()
+					&& !ignorableWorkers.stream().anyMatch(
+							ci.embeddedWorker::equalsIgnoreCase))
+			{
+				retained.add(ci);
+			}
+		}
+    	return retained;
+    }
+    
+//------------------------------------------------------------------------------
     
     /**
      * Creates a string defining all configuration items related to the task
@@ -225,38 +296,21 @@ public abstract class Worker implements IOutputExposer
     }
 
 //------------------------------------------------------------------------------
-
-    /**
-     * Creates a string defining the configuration items that are compatible to 
-     * running this worker from within another worker (i.e., non stand alone).
-     * The string is formatted to print
-     * CLI's help messages.
-     */
-    public String getEmbeddedTaskSpecificHelp()
-    {
-    	StringBuilder sb = new StringBuilder();
-    	return getFormattedHelpString(sb, true);
-    }
-    
-//------------------------------------------------------------------------------
     
     /**
      * Creates a string defining all configuration items related to the task
      * this worker is expected to perform when run from within another worker.
      * The string is formatted to print CLI's help messages.
+     * This will produce a result that depends on the task configured for this
+     * worker.
      */
     private String getFormattedHelpString(StringBuilder sb, 
     		boolean ignoreNonStandalone)
     {
     	for (ConfigItem ci : getKnownParameters())
     	{
-    		// TODO make items dependend on task (optionally) so that they 
-    		// are not displayed where not relevant (see the help of -t getmoleculename)
     		// TODO make items link to source's constant names, so we can check that 
     		// the declared ID is indeed what the code expects
-    		// TODO remove duplicates from embedded workers (see the help of -t getmoleculename)
-    		// TODO make only the outernmost worker produce the string, the 
-    		// embedded ones should give the list of config items so that we can check for duplicates
     		if (ci.isForStandalone() && ignoreNonStandalone)
     		{
 	    		continue;

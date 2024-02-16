@@ -22,9 +22,9 @@
   {
     "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
     "tag": "generation of ZMatrix",
+    "task": "convertToZMatrix",
     "ignorableItems": [
-      "outFile",
-      "inFile2"
+      "outFile"
     ],
     "ignorableWorkers": [
       "autocompchem.molecule.AtomContainerInputProcessor"
