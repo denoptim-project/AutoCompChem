@@ -37,9 +37,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-//TODO-gg remane to reader
-
-public class AspecificOutputAnalyzer extends Worker
+public class AspecificOutputReader extends Worker
 {
     /**
      * String defining the task for analyzing any job output
@@ -73,7 +71,7 @@ public class AspecificOutputAnalyzer extends Worker
 			System.err.println("WARNING: cannot detect the type of "
 					+ "output to analyze. Make sure the parameter '" 
 					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
-			return new AspecificOutputAnalyzer();
+			return new AspecificOutputReader();
 		}
 		
 		String fileName = job.getParameter(
@@ -97,7 +95,7 @@ public class AspecificOutputAnalyzer extends Worker
 					+ ChemSoftConstants.PARJOBOUTPUTFILE 
 					+ "' but does not exist.", -1);
 		}
-		return new AspecificOutputAnalyzer();
+		return new AspecificOutputReader();
 	}
 
 //------------------------------------------------------------------------------
@@ -114,7 +112,7 @@ public class AspecificOutputAnalyzer extends Worker
 
 	@Override
 	public String getKnownInputDefinition() {
-		return "inputdefinition/ChemSoftOutputHandler.json";
+		return "inputdefinition/ChemSoftOutputReader.json";
 	}
 
 //-----------------------------------------------------------------------------

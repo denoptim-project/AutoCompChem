@@ -1,0 +1,18 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli11.log" ] ; then 
+  echo "NOT Passed: missing log"
+  exit -1
+fi
+
+if grep -q -i "NOT Passed" "cli11.log" ; then 
+  echo "NOT Passed: problems printing help for task '$(tail -n 2 cli11.log | head -n 1 | awk '{print $2}')'"
+  exit -1
+fi
+echo Passed 
+exit 0

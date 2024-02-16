@@ -98,7 +98,7 @@ public class VibModuleOutputHandler extends Worker
      * Storage of options associated with SMARTS queries
      */
     private Map<String,ArrayList<String>> smartsOpts =
-                                        new HashMap<String,ArrayList<String>>();
+    		new HashMap<String,ArrayList<String>>();
 
     /**
      * Label used to identify single-atom smarts in the smarts reference name
@@ -140,11 +140,15 @@ public class VibModuleOutputHandler extends Worker
     /**
      * Task about extracting force constants
      */
+
+	//TODO-gg reactivate once  based on OrcaOuputReader
+    /*
     public static final Task EXTRACTVIBMODULEFORCECONSTANTSTASK;
     static {
     	EXTRACTVIBMODULEFORCECONSTANTSTASK = 
     			Task.make(EXTRACTVIBMODULEFORCECONSTANTSTASKNAME);
     }
+    */
 
 //------------------------------------------------------------------------------
 
@@ -167,7 +171,10 @@ public class VibModuleOutputHandler extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(EXTRACTVIBMODULEFORCECONSTANTSTASK)));
+
+            	//TODO-gg reactivate once  based on OrcaOuputReader
+//             Arrays.asList(EXTRACTVIBMODULEFORCECONSTANTSTASK)
+        		));
     }
 
 //------------------------------------------------------------------------------

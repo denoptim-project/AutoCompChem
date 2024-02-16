@@ -52,6 +52,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
     static {
     	ANALYSEORCAOUTPUTTASK = Task.make(ANALYSEORCAOUTPUTTASKNAME);
     }
+    
 //------------------------------------------------------------------------------
 
     @Override

@@ -65,7 +65,7 @@ public class JobEvaluator extends Worker
 {
 	//TODO-gg use only the general tasks
     /**
-     * String defining the task of evaluation any job output
+     * String defining the task of evaluating any job output
      */
     public static final String EVALUATEJOBTASKNAME = "evaluateJob";
 
@@ -87,7 +87,9 @@ public class JobEvaluator extends Worker
      */
     public static final Task CUREJOBTASK;
     static {
-    	CUREJOBTASK = Task.make(CUREJOBTASKNAME);
+    	//TODO-gg this should not be a test task: replace with this
+    	//CUREJOBTASK = Task.make(CUREJOBTASKNAME);
+    	CUREJOBTASK = Task.make(CUREJOBTASKNAME, true);
     }
     
 	/**
@@ -111,7 +113,8 @@ public class JobEvaluator extends Worker
 	public static final Set<Task> CURECOMPCHEMJOBTASKS =
 			Collections.unmodifiableSet(new HashSet<Task>(
 					Arrays.asList(Task.make("cureGaussianJob"),
-							Task.make("cureNWChemJob"))));
+							Task.make("cureNWChemJob"),
+							CUREJOBTASK)));
 	
 	/**
 	 * The string used to identify the kind of termination of the evaluated job.
