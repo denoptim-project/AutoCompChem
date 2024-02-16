@@ -3,7 +3,7 @@
     "key": "COORDTYPE",
     "casedKey": "coordType",
     "type": "<String>",
-    "doc": "Specifies which type of coordinates to use for definign the arrangment of atoms. Acceptable values are 'XYZ' for Cartesian coordinates and 'ZMAT' for ZMatrix (internal coordinates)."
+    "doc": "Specifies which type of coordinates to use for defining the arrangment of atoms. Acceptable values are 'XYZ' for Cartesian coordinates and 'ZMAT' for ZMatrix (internal coordinates)."
   },
   {
     "embeddedWorker": "autocompchem.modeling.AtomLabelsGenerator",
