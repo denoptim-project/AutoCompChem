@@ -91,9 +91,7 @@ public final class WorkerFactory
 //-----------------------------------------------------------------------------
 	
 	private WorkerFactory() 
-	{
-		//TODO-gg should look into class path instead of listing all here
-		
+	{	
 		// Here we add all the workers those implemented in AudoCompChem      
         registerType(new AspecificInputWriter());      
         registerType(new AspecificOutputAnalyzer());
@@ -166,8 +164,7 @@ public final class WorkerFactory
 				knownWorkers.put(task, (Worker) object);
 			}
 		} else {
-			//TODO-gg: log warning
-			System.err.println("Registration of " + Worker.class.getSimpleName() 
+			throw new Error("Registration of " + Worker.class.getSimpleName() 
 					+ " has failed because the given example object is not an "
 					+ "instance of "
 					+ Worker.class.getSimpleName() + ".");
