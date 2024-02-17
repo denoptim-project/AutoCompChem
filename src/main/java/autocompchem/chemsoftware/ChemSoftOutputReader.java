@@ -653,6 +653,7 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			
 	        			geomsToExpose.add(acs);
 	        			
+	        			//NB: this code is repeated twice in this class: make a method
 	        			if (format.equals("XYZSDF") || format.equals("SDFXYZ"))
 	        			{
 	        				String pathnameBase = FileUtils.getPathToPatent(
@@ -1103,13 +1104,34 @@ public abstract class ChemSoftOutputReader extends Worker
 						break;
 					}
 					
-					if (verbosity > 1)
-					{
-						System.out.println("Writing overal last geometry to "
-								+ "file '" + outFile+"'");
-					}
-					IOtools.writeAtomContainerToFile(outFile, lastGeom,
-        					format, true);
+					//NB: this code is repeated twice in this class: make a method
+					if (format.equals("XYZSDF") || format.equals("SDFXYZ"))
+        			{
+        				String pathnameBase = FileUtils.getPathToPatent(
+        						outFile.getAbsolutePath()) 
+        						+ File.separator
+        						+ FileUtils.getRootOfFileName(outFile);
+        				File outXYZ = new File(pathnameBase + ".xyz");
+        				File outSDF = new File(pathnameBase + ".sdf");
+	        			if (verbosity > 1)
+	        			{
+	        				System.out.println("Writing overal last geometry "
+	        						+ "to files '" 
+	        						+ outXYZ + "' and '" + outSDF + "'.");
+	        			}
+	        			IOtools.writeAtomContainerToFile(outXYZ, lastGeom,
+	        					"XYZ", true);
+	        			IOtools.writeAtomContainerToFile(outSDF, lastGeom,
+	        					"SDF", true);
+        			} else {
+						if (verbosity > 1)
+						{
+							System.out.println("Writing overal last geometry to "
+									+ "file '" + outFile+"'");
+						}
+						IOtools.writeAtomContainerToFile(outFile, lastGeom,
+	        					format, true);
+        			}
 					lastGeomToExpose = lastGeom;
 					break;
 				}
