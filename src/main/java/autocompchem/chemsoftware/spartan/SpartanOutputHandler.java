@@ -59,6 +59,9 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
+//TODO-gg delete this class: replaced by SpartanOutputReader
+
+@Deprecated
 public class SpartanOutputHandler extends Worker
 {
 
@@ -248,7 +251,7 @@ public class SpartanOutputHandler extends Worker
         if (params.contains("OUTFILE"))
         {
             this.outFile = 
-                         params.getParameter("OUTFILE").getValue().toString();
+                         params.getParameter("OUTFILE").getValueAsString();
             FileUtils.mustNotExist(this.outFile);
         } 
         else
@@ -259,8 +262,7 @@ public class SpartanOutputHandler extends Worker
         //Get and check the output file
         if (params.contains("OUTFORMAT"))
         {
-            this.outFormat =
-                         params.getParameter("OUTFORMAT").getValue().toString();
+            this.outFormat = params.getParameter("OUTFORMAT").getValueAsString();
         }
 
     }

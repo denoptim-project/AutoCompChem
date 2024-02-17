@@ -236,12 +236,17 @@ public class SpartanConstants
     public final static String OUTPUTFILENAME = "output";
 
     /**
+     * String defining normal termination in output/log file
+     */
+    public final static String LOGNORMALTERM = "Successful completion";
+    
+    /**
      * Name of the status file
      */
     public final static String STATUSFILENAME = "status.html";
 
     /**
-     * String defining notmal termination in status file
+     * String defining normal termination in status file
      */
     public final static String NORMALCOMPLSTATUS = "COMPLETED";
 

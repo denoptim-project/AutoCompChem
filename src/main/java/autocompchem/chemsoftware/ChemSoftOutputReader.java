@@ -192,20 +192,28 @@ public abstract class ChemSoftOutputReader extends Worker
 
         //Get and check the input file (which is an output from a comp.chem. 
         // software)
-        String inFileName = params.getParameter(
-        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
-        FileUtils.foundAndPermissions(inFileName,true,false,false);
-        this.inFile = new File(inFileName);
-
+        if (params.contains(ChemSoftConstants.PARJOBOUTPUTFILE))
+        {
+	        String inFileName = params.getParameter(
+	        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
+	        FileUtils.foundAndPermissions(inFileName,true,false,false);
+	        this.inFile = new File(inFileName);
+        } else {
+        	Terminator.withMsgAndStatus("ERROR! No definition of the ouput to "
+        			+ "analyse. Please provide a value for '"
+        			+ ChemSoftConstants.PARJOBOUTPUTFILE + "'.", -1);
+        }
+        
         //Get and check the output filename
         if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
         {
             outFileRootName = params.getParameter(
             		ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
-        } 
-        else
-        {
-        	outFileRootName = FileUtils.getRootOfFileName(inFileName);
+        } else {
+        	if (inFile!=null)
+        	{
+        		outFileRootName = FileUtils.getRootOfFileName(inFile.getName());
+        	}
         }
 
         if (params.contains(ChemSoftConstants.PARPRINTLASTGEOMEACH))
@@ -443,7 +451,7 @@ public abstract class ChemSoftOutputReader extends Worker
     	// overwritten by subclasses
         
     	analyzeFiles();
-
+    	
         if (exposedOutputCollector != null)
         {
         	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
@@ -464,6 +472,18 @@ public abstract class ChemSoftOutputReader extends Worker
 //------------------------------------------------------------------------------
 
     /**
+     * This method allows to alter how to define the log file to
+     * read and interpret.
+     * @return the log file
+     */
+    protected File getLogPathName()
+    {
+    	return inFile;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Reads the output files and parses all data that can be found
      * on each step/job.
      */
@@ -471,24 +491,25 @@ public abstract class ChemSoftOutputReader extends Worker
     private void analyzeFiles()
     {	
         //Read and parse log files (typically called "output file")
+    	File logFile = getLogPathName();
     	LogReader logReader = null;
     	try {
     		// This encapsulated any perception-related parsing of strings
-    		logReader = new LogReader(new FileReader(inFile));
+    		logReader = new LogReader(new FileReader(logFile));
     		// This encapsulated any software-specificity in the log format
 			readLogFile(logReader);
 		} catch (FileNotFoundException fnf) {
         	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
-        			+ inFile.getAbsolutePath(),-1);
+        			+ logFile.getAbsolutePath(),-1);
         } catch (IOException ioex) {
 			ioex.printStackTrace();
         	Terminator.withMsgAndStatus("ERROR! While reading file '" 
-        			+ inFile.getAbsolutePath() + "'. Details: "
+        			+ logFile.getAbsolutePath() + "'. Details: "
         			+ ioex.getMessage(),-1);
         } catch (Exception e) {
 			e.printStackTrace();
 			Terminator.withMsgAndStatus("ERROR! Unable to parse data from "
-					+ "file '" + inFile + "'. Cause: " + e.getCause() 
+					+ "file '" + logFile + "'. Cause: " + e.getCause() 
 					+ ". Message: " + e.getMessage(), -1);
         } finally {
             try {
@@ -511,7 +532,7 @@ public abstract class ChemSoftOutputReader extends Worker
         
         if (verbosity > -1)
         {
-        	System.out.println("Log file '" + inFile + "' contains " 
+        	System.out.println("Log file '" + logFile + "' contains " 
         			+ numSteps + " steps.");
         	System.out.println("The overall run did " + strForlog 
         			+ "terminate normally!");
@@ -567,7 +588,7 @@ public abstract class ChemSoftOutputReader extends Worker
 	    					Terminator.withMsgAndStatus("ERROR! Number of "
 	    							+ "atom in template structure does "
 	    							+ "not correspond to number of atom "
-	    							+ "in file '" + inFile + "' (" 
+	    							+ "in file '" + logFile + "' (" 
 	    							+ connectivityTemplate.getAtomCount() 
 	    							+ " vs. "
 	    							+ acs.getAtomContainer(0).getAtomCount()
