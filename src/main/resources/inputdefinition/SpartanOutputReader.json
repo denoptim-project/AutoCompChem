@@ -1,0 +1,12 @@
+[
+  {
+    "key": "MODELID",
+    "casedKey": "modelID",
+    "type": "<String>",
+    "doc": "Specifies the identifier of the molecular model to choose when multiple models are available."
+  },
+  {
+    "embeddedWorker": "autocompchem.chemsoftware.AspecificOutputReader",
+    "tag": "define settings of the output to analyze."
+  }
+]

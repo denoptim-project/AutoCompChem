@@ -80,7 +80,7 @@ public abstract class ChemSoftOutputReader extends Worker
     /**
      * Verbosity level
      */
-    private int verbosity = 1;
+    protected int verbosity = 1;
 
     /**
      * Number steps/jobs/tasks found in job under analysis
@@ -91,6 +91,11 @@ public abstract class ChemSoftOutputReader extends Worker
      * Flag recording normal termination of job under analysis
      */
     protected boolean normalTerminated = false;
+
+    /**
+     * Flag recording whether we have read the log or not
+     */
+    protected boolean logHasBeenRead = false;
     
     /**
      * Data structure holding all data parsed from the job output files
@@ -480,6 +485,20 @@ public abstract class ChemSoftOutputReader extends Worker
     {
     	return inFile;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * This method allows to alter how to behave when the log/output file 
+     * defined by {@link #getLogPathName()} is not found. The default is
+     * to throw {@link FileNotFoundException}.
+     * @throws FileNotFoundException
+     */
+    protected void reactToMissingLogFile(File logFile) 
+    		throws FileNotFoundException
+    {
+    	throw new FileNotFoundException("File Not Found: "+logFile);
+    }
 
 //------------------------------------------------------------------------------
 
@@ -494,10 +513,16 @@ public abstract class ChemSoftOutputReader extends Worker
     	File logFile = getLogPathName();
     	LogReader logReader = null;
     	try {
+    		if (logFile!=null && logFile.exists())
+    		{
     		// This encapsulated any perception-related parsing of strings
     		logReader = new LogReader(new FileReader(logFile));
     		// This encapsulated any software-specificity in the log format
 			readLogFile(logReader);
+			logHasBeenRead = true;
+    		} else {
+    			reactToMissingLogFile(logFile);
+    		}
 		} catch (FileNotFoundException fnf) {
         	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
         			+ logFile.getAbsolutePath(),-1);
@@ -509,7 +534,7 @@ public abstract class ChemSoftOutputReader extends Worker
         } catch (Exception e) {
 			e.printStackTrace();
 			Terminator.withMsgAndStatus("ERROR! Unable to parse data from "
-					+ "file '" + logFile + "'. Cause: " + e.getCause() 
+					+ "file '" + inFile + "'. Cause: " + e.getCause() 
 					+ ". Message: " + e.getMessage(), -1);
         } finally {
             try {
@@ -530,7 +555,8 @@ public abstract class ChemSoftOutputReader extends Worker
         
         numSteps = stepsData.size();
         
-        if (verbosity > -1)
+        // We may have nullified the ref to logFile, if it does not exist.
+        if (logHasBeenRead && verbosity > -1)
         {
         	System.out.println("Log file '" + logFile + "' contains " 
         			+ numSteps + " steps.");
@@ -588,7 +614,7 @@ public abstract class ChemSoftOutputReader extends Worker
 	    					Terminator.withMsgAndStatus("ERROR! Number of "
 	    							+ "atom in template structure does "
 	    							+ "not correspond to number of atom "
-	    							+ "in file '" + logFile + "' (" 
+	    							+ "in file '" + inFile + "' (" 
 	    							+ connectivityTemplate.getAtomCount() 
 	    							+ " vs. "
 	    							+ acs.getAtomContainer(0).getAtomCount()

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.vecmath.Point3d;
 
@@ -96,6 +97,12 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     {
     	super.initialize();
     	
+    	if (params.contains(ChemSoftConstants.PARMODELID))
+        {
+    		selectedMolID = params.getParameter(
+            		ChemSoftConstants.PARMODELID).getValueAsString();
+        }
+    	
     	if (!inFile.isDirectory())
     	{
     		Terminator.withMsgAndStatus("ERROR! " 
@@ -104,28 +111,78 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     				+ " to be a pathname to a Spartan directory, but '"
     				+ inFile + "' is not.", -1);
     	}
-    	List<File> allFIles = FileUtils.find(inFile, "", true);
-		modelIDs = new ArrayList<String>(); 
-		allFIles.stream()
-			.filter(f -> f.isDirectory())
-			.forEach(d -> modelIDs.add(d.getName()));
-		if (modelIDs.size()==1)
-		{
-			selectedMolID = modelIDs.get(0);
-		}
+    	
+    	if (selectedMolID==null)
+    	{
+	    	List<File> allFIles = FileUtils.find(inFile, "", true);
+			modelIDs = new ArrayList<String>(); 
+			allFIles.stream()
+				.filter(f -> f.isDirectory())
+				.forEach(d -> modelIDs.add(d.getName()));
+			if (modelIDs.size()==1)
+			{
+				selectedMolID = modelIDs.get(0);
+			}
+    	}
     }
+
+//------------------------------------------------------------------------------
+
+      @Override
+      public String getKnownInputDefinition() {
+          return "inputdefinition/SpartanOutputReader.json";
+      }
     
 //------------------------------------------------------------------------------
 
     /**
-     * We override how to define the file to read and interprete as log.
+     * We override how to define the file to read and interpret as log.
      * This because in Spartan the log contains little information on geometries
      * @return the log file
      */
     protected File getLogPathName()
     {
-    	return new File(inFile.getAbsoluteFile() + File.separator 
-    			+ SpartanConstants.STATUSFILENAME);
+    	if (inFile.isDirectory())
+    	{
+    		// Search for Spartan model/molecule-specific data
+    		List<File> allFiles = FileUtils.find(inFile, "", true);
+    		List<File> allDirectories = allFiles.stream()
+    			.filter(f -> f.isDirectory())
+    			.collect(Collectors.toList());
+    		if (allDirectories.size()==1)
+    		{
+    	    	return new File(inFile.getAbsoluteFile() + File.separator 
+    	    			+ allDirectories.get(0).getName() + File.separator 
+    	    			+ SpartanConstants.OUTPUTFILENAME);
+    		}
+    		if (verbosity > -1)
+            {
+            	System.out.println("Sprtan ouput file '" + inFile + "' is a "
+            			+ "directory containing multiple models.");
+            }
+	    	return null;
+    	} else {
+    		return inFile;
+    	}
+    }    
+//------------------------------------------------------------------------------
+
+    /**
+     * We override the behavior on missing log file because Spartan produced
+     * structured data that one may call "output", but that does not contain
+     * any log to read. 
+     * @return the log file
+     */
+    protected void reactToMissingLogFile(File logFile)
+    {
+    	if (verbosity > -1)
+        {
+    		if (logFile!=null)
+    			System.out.println("Log file '" + logFile + "' not found. ");
+        	System.out.println("Interpreting '" + inFile + "' as a data folder.");
+        }
+    	
+    	parseSpartanDir();
     }
     
 //------------------------------------------------------------------------------
@@ -153,15 +210,22 @@ public class SpartanOutputReader extends ChemSoftOutputReader
         		normalTerminated = true;
         	}
         }
-        
+    	
+    	parseSpartanDir();
+    }
+   
+//-----------------------------------------------------------------------------
+    
+    private void parseSpartanDir()
+    {   
     	if (selectedMolID!=null)
     	{
-    		parseSpartanDir(selectedMolID);
+    		parseModelDir(selectedMolID);
     	} else {
     		 Terminator.withMsgAndStatus("ERROR! Handling of Spartan output "
     		 		+ "including multiple models is not yet implemented.", -1);
     		 
-    		//TODO: we can do this only if we make the analysis tasks work on
+    		//TODO: we could do this only if we make the analysis tasks work on
     		// any NamedData that starts with the expected constant but also 
     		// include in the key the molID
     		/*
@@ -189,7 +253,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
      * Spartan directory to read.
      */
     
-    private void parseSpartanDir(String molID)
+    private void parseModelDir(String molID)
     {
         String sprtArchFile = inFile + File.separator + molID + File.separator
         		+ SpartanConstants.ARCHIVEFILENAME;

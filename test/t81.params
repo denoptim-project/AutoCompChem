@@ -2,8 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 1
-TASK: ExtractLastGeometryFromSpartanTree
-INFILE: ../t81.Conf.mol.spardir
-MOLNAME: Conformer.2
-OUTFILE: t81_conf2
-OUTFORMAT: XYZ
+TASK: analyseSpartanOutput
+jobOutputFile: ../t81.Conf.mol.spardir
+PRINTLASTGEOMETRY: XYZ t81_conf2.xyz
+modelID: Conformer.2

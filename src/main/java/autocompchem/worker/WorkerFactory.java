@@ -31,7 +31,6 @@ import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
 import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.chemsoftware.orca.OrcaOutputReader;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
-import autocompchem.chemsoftware.spartan.SpartanOutputHandler;
 import autocompchem.chemsoftware.spartan.SpartanOutputReader;
 import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
