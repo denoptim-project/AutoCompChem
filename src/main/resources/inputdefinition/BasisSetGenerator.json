@@ -3,7 +3,7 @@
     "key": "ATOMSPECIFICBASISSET",
     "casedKey": "atomSpecificBasisSet",
     "type": "<String>",
-    "doc": "The collection of rules used to define the basis set."
+    "doc": "The collection of rules used to define the basis set. The expected format is the following: one rule per line (i.e., newline separated rules). Each rule must have the following syntax:\nRuleType key BasisSource Basis\nwhere:\n - RuleType is either  \"SMARTS\" or  \"ELEMENT\"\n - Key is the actual SMARTS string of element symbol\n - BasisSource define the type of source of the basis set; sources can of two types: links to text files (use keyword \"LINK\"), or names of basis sets (use keyword  \"NAME\" in the format recognized by quantum chemistry packages (e.g., cc-pVDZ, LANL2DZ)\n - Basis the actual pathname or basis set name."
   },
   {
     "key": "ALLOWPARTIALMATCH",

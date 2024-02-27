@@ -41,7 +41,9 @@ import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveComponentType;
 import autocompchem.chemsoftware.DirectiveData;
+import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.chemsoftware.Keyword;
+import autocompchem.chemsoftware.gaussian.GaussianConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.basisset.CenterBasisSet;
@@ -51,8 +53,11 @@ import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -64,6 +69,23 @@ import autocompchem.worker.Worker;
 
 public class OrcaInputWriter extends ChemSoftInputWriter
 {
+	/**
+	 * Known basis-set defining directive names (or "keywords" using Orca user's
+	 * manual language) that can be used to give basis set-related data.
+	 */
+	public enum BSKEYWORDS {NEWGTO, NEWAUX, 
+		NEWECP, 
+		NEWAUXJGTO, ADDAUXJGTO, 
+		NEWAUXCGTO, ADDAUXCGTO, 
+		NEWAUXJKGTO, ADDAUXJKGTO, 
+		NEWCABSGTO, ADDCABSGTO
+	}
+	
+	/**
+	 * Property name to sotre the list of basis set components for an atom.
+	 */
+	private final String ATMSPECBSPROP = "ATMSPECBSPROPDATA";
+	
     /**
      * String defining the task of preparing input files for Orca
      */
@@ -115,7 +137,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
      * @return the list of lines for the input file
      */
     
-    private ArrayList<String> getTextForInput(Directive d, boolean outmost)
+    private List<String> getTextForInput(Directive d, boolean outmost)
     {	
     	ArrayList<String> lines = new ArrayList<String>();
     	
@@ -217,8 +239,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			//TODO-gg: remove?!
-			/*
 			case ("BASIS"): // OrcaConstants.BASISSETDIRNAME
 			{
 			    // NB: here we deal with any basis set information that is not 
@@ -228,7 +248,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				lines.addAll(getTextForBasisSetDirective(d));
 				break;
 			}
-			*/
 			
 			default:
 			{
@@ -274,7 +293,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 
 //------------------------------------------------------------------------------
     
-    private ArrayList<String> getTextForConstraintsBlock(Directive d)
+    private List<String> getTextForConstraintsBlock(Directive d)
     {
     	ArrayList<String> lines = new ArrayList<String>();
     	lines.add(d.getName());
@@ -423,7 +442,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     
 //------------------------------------------------------------------------------
     
-    private ArrayList<String> getTextForCoordsBlock(Directive d, 
+    private List<String> getTextForCoordsBlock(Directive d, 
     		boolean useStar)
     {
     	ArrayList<String> lines = new ArrayList<String>();
@@ -455,11 +474,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			Object o = dd.getValue();
 			switch (dd.getType())
 			{
-			
-				//TODO: you can save atom-specific basis set into the atom
-			    // and retrieve then here. This because ORCA only accepts 
-			    // atom specific information into the coords/xyz directive.
-			
 				case IATOMCONTAINER:
 				{
 					IAtomContainer mol = (IAtomContainer) o;
@@ -471,16 +485,30 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 								+ String.format(Locale.ENGLISH," %10.5f",p3d.x)
 								+ String.format(Locale.ENGLISH," %10.5f",p3d.y)
 								+ String.format(Locale.ENGLISH," %10.5f",p3d.z));
+						Object bsProps = atm.getProperty(ATMSPECBSPROP);
+						if (bsProps != null)
+						{
+							@SuppressWarnings("unchecked")
+							List<Directive> bsDirs = (List<Directive>) bsProps;
+							for (Directive bsDir : bsDirs)
+							{
+								for (String bsl : getTextForInput(bsDir, false))
+									lines.add(OrcaConstants.INDENT 
+											+ OrcaConstants.INDENT + bsl);
+							}
+						}
 					}
 					break;
 				}
 				
 				case ZMATRIX:
 				{
-					//TODO
+					//TODO-gg
 					Terminator.withMsgAndStatus("ERROR! Writing of "
 							+ "ZMatrix in Orca input file is not yet"
 							+ "implemented... sorry!",-1);
+					//TODO-gg
+					//write atom-spec basis set
 					break;
 				}
 				
@@ -505,6 +533,124 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			lines.add("end");
 		}
     	return lines;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private List<String> getTextForBasisSetDirective(Directive d)
+    {
+    	List<String> lines = new ArrayList<String>();
+		String header = "%basis";
+		
+		for (Keyword k : d.getAllKeywords())
+		{
+			header = header + " " + k.toString(" ");
+		}
+		
+		for (Directive sd1 : d.getAllSubDirectives())
+		{
+			for (String innerLine : getTextForInput(sd1,false))
+			{
+				lines.add(OrcaConstants.INDENT + innerLine);
+			}
+		}
+		
+    	for (DirectiveData dd : d.getAllDirectiveDataBlocks())
+    	{
+    		if (dd.getType().equals(NamedDataType.BASISSET))
+    		{
+    			// We skip this as we have converted the BS into directives
+    			// during the preProcessing of the job
+    			/*
+    			BasisSet bs = (BasisSet) dd.getValue();
+    			
+				String bsName = "UNDEFINED: use any string among these "
+						+ "as "
+						+ "directive name (case-insensitive): " 
+						+ StringUtils.mergeListToString(Arrays.asList(
+								BSKEYWORDS.values()), ",");
+				if (isBSKeyword(dd.getName()))
+				{
+					bsName = dd.getName();
+				}
+				
+				for (CenterBasisSet cbs : bs.getAllCenterBSs())
+				{
+					// Center-specific basis are defined in %coords
+					if (cbs.getCenterIndex()!=null)
+						continue;
+					
+					String elSymbol = cbs.getElement();
+					if (elSymbol==null)
+						elSymbol = cbs.getCenterTag();
+					if (elSymbol==null || elSymbol.isBlank())
+					{
+						Terminator.withMsgAndStatus("Found " 
+								+ cbs.getClass().getSimpleName() + " that has "
+								+ "neither elemental symbol nor atom tag. This "
+								+ "should never happen. Please, report this "
+								+ "bug.", -1);
+					}
+					lines.add(OrcaConstants.INDENT + bsName + " " + elSymbol);
+					
+					if (cbs.getShells().size() > 0)
+					{
+						for (String innerLine : getBSShellsLines(cbs))
+							lines.add(OrcaConstants.INDENT + innerLine);
+					}
+					
+					if (cbs.getNamedComponents().size() > 0)
+					{
+						if (cbs.getNamedComponents().size()>1)
+						{
+							Terminator.withMsgAndStatus("Unable to "
+									+ "deal "
+									+ "with multiple basis set "
+									+ "components "
+									+ "for a single center. If this is "
+									+ "really what you need, please "
+									+ "contact the authors.", -1);
+						}
+						lines.add(OrcaConstants.INDENT + 
+								cbs.getNamedComponents().get(0));
+					}
+					
+					if (cbs.getECPShells().size() > 0)
+					{
+						// Unless we meant to do something specific with ECP
+						// we add a newECP so that we do not inherit undesired
+						// ECP from elsewhere.
+						if (!bsName.toUpperCase().contains("ECP"))
+							bsName = "NewECP";
+						lines.add(bsName + " " + elSymbol);
+						for (String innerLine : getECPShellsLines(cbs))
+							lines.add(OrcaConstants.INDENT + innerLine);
+					}
+				}
+				*/
+    		} else {
+				for (String innerLine : dd.getLines())
+				{
+					lines.add(OrcaConstants.INDENT + innerLine);
+				}
+    		}
+    	}
+    	
+    	// It is possible to have "%basis" that do not produce any content 
+    	// because their content has been moved into the %coords directive. That
+    	// is the case for atom-specific basis set.
+    	// Here we avoid to print empty "%basis" directives
+    	if (lines.size()<1)
+    	{
+    		if (d.getAllKeywords().size()!=0)
+    		{
+				lines.add(0, header);
+    		}
+    	} else {
+    		lines.add(0, header);
+    		lines.add("end");
+    	}
+		return lines;
     }
 
 //------------------------------------------------------------------------------
@@ -731,7 +877,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 //------------------------------------------------------------------------------
 	
 	/**
-	 * Does nay pre-processing of a single job step. This is meant for any task
+	 * Does any pre-processing of a single job step. This is meant for any task
 	 * that needs to be done within a job step as to alter the directive to 
 	 * adhere to Orca's idiosyncrasies, such as the handling of atom-specific
 	 * basis set inside the directive defining coordinates. 
@@ -745,67 +891,243 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		}
 		// NB: sysDefDir may still be null! Later we do check for null.
 		
-		// mode info on basis set, if needed
-		Directive basisSetDir = step.getDirective(OrcaConstants.BASISSETDIRNAME);
-		if (basisSetDir != null) 
+		// move info on basis set, if needed
+		DirComponentAddress address = new DirComponentAddress();
+		address.addStep(OrcaConstants.BASISSETDIRNAME, 
+				DirectiveComponentType.DIRECTIVE);
+		Set<Directive> dsToRemove = new HashSet<Directive>();
+		for (IDirectiveComponent dc : step.getDirectiveComponents(address))
 		{
-			Set<DirectiveData> ddsToRemove = new HashSet<DirectiveData>();
-			for (DirectiveData dd : basisSetDir.getAllDirectiveDataBlocks())
+			if (!dc.getComponentType().equals(DirectiveComponentType.DIRECTIVE))
+				continue;
+			Directive basisSetDir = (Directive) dc;
+			if (basisSetDir != null) 
 			{
-				
-				if (dd.getType() != NamedDataType.BASISSET)
-					continue;
-				
-				BasisSet bs = (BasisSet) dd.getValue();
-				if (bs.hasIndexSpecificComponents())
+				for (DirectiveData dd : basisSetDir.getAllDirectiveDataBlocks())
 				{
-					if (sysDefDir == null)
+					
+					if (dd.getType() != NamedDataType.BASISSET)
+						continue;
+					
+					BasisSet bs = (BasisSet) dd.getValue();
+					
+					String bsName = "UNDEFINED: use any string among these "
+							+ "as "
+							+ "directive name (case-insensitive): " 
+							+ StringUtils.mergeListToString(Arrays.asList(
+									BSKEYWORDS.values()), ",");
+					if (isBSKeyword(dd.getName()))
 					{
-						Terminator.withMsgAndStatus("ERROR! Neither '"
-							+ OrcaConstants.COORDSDIRNAME + "' nor '"
-							+ OrcaConstants.STARDIRNAME + "' directive found. "
-							+ "Cannot project atom specific info onto the"
-							+ "definition of the system. Yet, the following "
-							+ "contains atom-specific information: " + NL
-							+ dd, -1);
+						bsName = dd.getName();
 					}
 					
-					//TODO-gg: place info into COORDS directive
-					
-				} else {
-					// Convert basis set into directive for Orca
-					// Note that there are more than NewGTO and NewECP, but 
-					// their use is most probably not highly relevant for
-					// the scope of ACC applications. 
-					for (CenterBasisSet cbs : bs.centerBSs)
+					// NB: this is a peculiarity of ORCA: any atom specific basis 
+					// set must be defined in the %coords directive. Here we 
+					// deal with this.
+					// Other, basis set info that is not specific to one or more
+					// centers is given in the %basis directive. And this is
+					// done in the usual getTextForBasisSetDirective 
+					List<Directive> systemDefSubDirs = new ArrayList<Directive>();
+					if (bs.hasIndexSpecificComponents())
 					{
-						Directive bsComponentDir = new Directive("NewGTO " 
-								+ cbs.getElement());
-						bsComponentDir.addDirectiveData(
-								new DirectiveData("shells", 
-										getBSShellsLines(cbs)));
-						basisSetDir.addSubDirective(bsComponentDir);
+						if (sysDefDir == null)
+						{
+							Terminator.withMsgAndStatus("ERROR! Neither '"
+								+ OrcaConstants.COORDSDIRNAME + "' nor '"
+								+ OrcaConstants.STARDIRNAME + "' directive found. "
+								+ "Cannot project atom specific info onto the"
+								+ "definition of the system. Yet, the following "
+								+ "contains atom-specific information: " + NL
+								+ dd, -1);
+						}
+						
+						if (verbosity>0)
+						{
+							//TODO: use logger
+							System.out.println("WARNING: "
+									+ "An index-specific basis set found in this "
+									+ "job. Altering the '" + sysDefDir.getName() 
+									+ "' directive, which, we assume, contains a "
+									+ "sub-directive named '" 
+									+ OrcaConstants.COORDSDIRNAME + "' with the "
+									+ "list of atoms/centers to which we associate "
+									+ "a basis set.");
+						}
+						systemDefSubDirs = sysDefDir.getDirectives(
+								OrcaConstants.COORDSDIRNAME);
+						if (systemDefSubDirs.size()==0)
+						{
+							Terminator.withMsgAndStatus("WARNING: "
+									+ "An index-specific basis set found in "
+									+ "this "
+									+ "job, but no directive named '" 
+									+ OrcaConstants.COORDSDIRNAME + "' is found "
+									+ "within the main '"
+									+ OrcaConstants.COORDSDIRNAME + "' or '"
+									+ OrcaConstants.STARDIRNAME + "' directive.", 
+									-1);
+						}
+					}
+						
+					for (CenterBasisSet cbs : bs.getAllCenterBSs())
+					{
+						int idx = -1;
+						String elSymbol = "";
+						boolean stomSpecific = false;
+						if (cbs.getCenterIndex()!=null)
+						{
+							idx = cbs.getCenterIndex();
+							stomSpecific = true;
+						} else {
+							elSymbol = cbs.getElement();
+						}
+						
+						if (cbs.getShells().size() > 0)
+						{
+							Directive bsComponentDir = new Directive(bsName);
+							bsComponentDir.addDirectiveData(
+									new DirectiveData("shells", 
+											getBSShellsLines(cbs)));
+							if (stomSpecific)
+							{
+								appendAtomSpecBS(bsComponentDir, idx, 
+										systemDefSubDirs);
+							} else {
+								bsComponentDir.setName(bsName + " " + elSymbol);
+								basisSetDir.addSubDirective(bsComponentDir);
+							}
+						}
+						
+						if (cbs.getNamedComponents().size() > 0)
+						{
+							if (cbs.getNamedComponents().size()>1)
+							{
+								Terminator.withMsgAndStatus("Unable to "
+										+ "deal "
+										+ "with multiple basis set "
+										+ "components "
+										+ "for a single center. If this is "
+										+ "really what you need, please "
+										+ "contact the authors.", -1);
+							}
+							Directive bsComponentDir = new Directive(bsName);
+							bsComponentDir.addDirectiveData(
+									new DirectiveData("shells", 
+											Arrays.asList(
+											"\"" 
+											+ cbs.getNamedComponents().get(0) 
+											+ "\"")));
+							if (stomSpecific)
+							{
+								appendAtomSpecBS(bsComponentDir, idx, 
+										systemDefSubDirs);
+							} else {
+								bsComponentDir.setName(bsName + " " + elSymbol);
+								basisSetDir.addSubDirective(bsComponentDir);
+							}
+						}
 						
 						if (cbs.getECPShells().size() > 0)
 						{
-							Directive epcComponentDir = new Directive("NewECP " 
-									+ cbs.getElement());
+							// Unless we meant to do something specific with ECP
+							// we add a newECP so that we do not inherit undesired
+							// ECP from elsewhere.
+							String dirName = bsName;
+							if (!dirName.toUpperCase().contains("ECP"))
+							{
+								dirName = "NewECP";
+								String center = "";
+								if (stomSpecific)
+								{
+									center = "center " + idx;
+								} else {
+									center = "element " + elSymbol;
+								}
+								
+								//TODO: logger
+								System.out.println("WARNING: found ECP shells "
+										+ "in basis set for " + center 
+										+ " (" + dd.getClass().getSimpleName() 
+										+ " named '" + dd.getName() + "'). "
+										+ "Assuming this is meant as a "
+										+ dirName + " section.");
+							}
+							Directive epcComponentDir = new Directive(dirName);
 							epcComponentDir.addDirectiveData(
 									new DirectiveData("shells", 
 											getECPShellsLines(cbs)));
-							basisSetDir.addSubDirective(epcComponentDir);
+							if (stomSpecific)
+							{
+								appendAtomSpecBS(epcComponentDir, idx, 
+										systemDefSubDirs);
+							} else {
+								epcComponentDir.setName(bsName + " " + elSymbol);
+								basisSetDir.addSubDirective(epcComponentDir);
+							}
 						}
 					}
 				}
-				ddsToRemove.add(dd);
 			}
-			// Now remove all directive data: they have been converted as to
-			// move the info into either sub-dirs or into the COORDS directive.
-			for (DirectiveData dd : ddsToRemove)
-				basisSetDir.deleteComponent(dd);
 		}
 	}
 
+//------------------------------------------------------------------------------
+
+	@SuppressWarnings("unchecked")
+	private void appendAtomSpecBS(Directive bsDir, int idx, 
+			List<Directive> systemDefSubDirs) 
+	{
+		for (Directive systemDefSubDir : systemDefSubDirs)
+		{
+			DirectiveData ddSysDef = systemDefSubDir
+					.getAllDirectiveDataBlocks().get(0);
+			
+			switch (ddSysDef.getType())
+			{
+				case IATOMCONTAINER:
+				{
+					IAtomContainer iac = (IAtomContainer) ddSysDef.getValue();
+					IAtom atm = iac.getAtom(idx);
+					if (atm.getProperty(ATMSPECBSPROP)==null)
+						atm.setProperty(ATMSPECBSPROP, new ArrayList<Directive>());
+					((List<Directive>) atm.getProperty(ATMSPECBSPROP)).add(bsDir);
+					break;
+				}
+				
+				case ZMATRIX:
+				{
+					ZMatrix iac = (ZMatrix) ddSysDef.getValue();
+					ZMatrixAtom atm = iac.getZAtom(idx);
+					if (atm.getProperty(ATMSPECBSPROP)==null)
+						atm.setProperty(ATMSPECBSPROP, new ArrayList<Directive>());
+					((List<Directive>) atm.getProperty(ATMSPECBSPROP)).add(bsDir);
+					break;
+				}
+				
+				default:
+					throw new IllegalStateException("Attempt to alter the "
+							+ "value of " 
+							+ "a " + DirectiveData.class.getName() 
+							+ " of type '" 
+							+ ddSysDef.getType() + "' is not implemented. "
+							+ "Report this to the authors");
+			}
+		}
+		
+	}
+
+//------------------------------------------------------------------------------
+	
+	private boolean isBSKeyword(String s)
+	{
+	    for (BSKEYWORDS k : BSKEYWORDS.values()) {
+	        if (k.name().equalsIgnoreCase(s)) {
+	        	return true;
+	        }
+	    }
+	    return false;
+	}
+	
 //------------------------------------------------------------------------------
 	
 	private List<String> getBSShellsLines(CenterBasisSet cbs) 

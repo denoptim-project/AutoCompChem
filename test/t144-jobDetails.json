@@ -1,0 +1,184 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "!",
+      "keywords": [
+        {
+          "reference": "WF",
+          "value": "RHF",
+          "isLoud": false
+        },
+        {
+          "reference": "method",
+          "value": "STEOM-DLPNO-CCSD",
+          "isLoud": false
+        },
+        {
+          "reference": "solvent",
+          "value": "CPCM(acetonitrile)",
+          "isLoud": false
+        },
+        {
+          "reference": "RIapprox",
+          "value": "RIJCOSX",
+          "isLoud": false
+        },
+        {
+          "reference": "ConvergencePNO",
+          "value": "TightPNO",
+          "isLoud": false
+        },
+        {
+          "reference": "ConvergenceSCF",
+          "value": "TightSCF",
+          "isLoud": false
+        },
+        {
+          "reference": "ReportBasisSet",
+          "value": "PrintBasis",
+          "isLoud": false
+        }
+      ]
+    },
+    {
+      "name": "coords",
+      "subDirectives": [
+        {
+          "name": "CTyp",
+          "keywords": [
+            {
+              "reference": "coordtype",
+              "value": "xyz",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Units",
+          "keywords": [
+            {
+              "reference": "units",
+              "value": "angs",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "coords",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getMolecularGeometry"
+                }
+              ],
+              "reference": "DirDataGeometry",
+              "type": "UNDEFINED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "maxcore",
+      "keywords": [
+        {
+          "reference": "value",
+          "value": "125000",
+          "isLoud": false
+        }
+      ]
+    },
+    {
+      "name": "mdci",
+      "subDirectives": [
+        {
+          "name": "NRoots",
+          "keywords": [
+            {
+              "reference": "value",
+              "value": "25",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "DoDbfilter",
+          "keywords": [
+            {
+              "reference": "value",
+              "value": "true",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "DoSolv",
+          "keywords": [
+            {
+              "reference": "value",
+              "value": "true",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "basis",
+      "dirData": [
+        {
+          "reference": "NewGTO",
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "SMARTS [$([#1]-[#6;X4]1-[#6;X4]-[#7;X3]~[#6;X3]~[#7;X3]1),$([#1]-[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]),$([#1]-[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]),$([#1]-[#6;X3]~[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru])] name def2-SVP\nSMARTS [!$([#1]-[#6;X4]1-[#6;X4]-[#7;X3]~[#6;X3]~[#7;X3]1);!$([#1]-[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]);!$([#1]-[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]);!$([#1]-[#6;X3]~[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]);!$([Ru]);!$([#7])] name def2-TZVPP\nSMARTS [Ru] link ../data/basisset/gaussian/Ru__LANL2DZ_ECP.gbs\nElement N link ../data/basisset/gaussian/def2-TZVPD_N_O.gbs"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "basis",
+      "dirData": [
+        {
+          "reference": "NewAUXCGTO",
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "SMARTS [$([#1]-[#6;X4]1-[#6;X4]-[#7;X3]~[#6;X3]~[#7;X3]1),$([#1]-[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]),$([#1]-[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]),$([#1]-[#6;X3]~[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru])] name def2-SVP/C\nSMARTS [!$([#1]-[#6;X4]1-[#6;X4]-[#7;X3]~[#6;X3]~[#7;X3]1);!$([#1]-[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]);!$([#1]-[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]);!$([#1]-[#6;X3]~[#6;X3]~[#6;X3]~[#6;X3]-[#6;X3]([#1])~[Ru]);!$([Ru])] name def2-TZVPP/C\nSMARTS [Ru] name def2-TZVPP/C"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "basis",
+      "dirData": [
+        {
+          "reference": "NewAUXJGTO",
+          "accTaskParams": [
+            {
+              "reference": "ATOMSPECIFICBASISSET",
+              "value": "Element H name def2/J\nElement O name def2/J\nElement C name def2/J\nElement N name def2/J\nElement Cl name def2/J\nElement Ru name def2/J"
+            },
+            {
+              "reference": "TASK",
+              "value": "GENERATEBASISSET"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,8 @@ package autocompchem.molecule.intcoords.zmatrix;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Terminator;
@@ -68,6 +70,11 @@ public class ZMatrixAtom implements Cloneable
      * Third internal coordinate: either a bond angle or a torsion angle
      */
     protected InternalCoord icK; 
+    
+    /**
+     * Storage of properties for this center
+     */
+    private Map<Object, Object> properties = new HashMap<Object, Object>();
 
 
 //------------------------------------------------------------------------------
@@ -608,6 +615,30 @@ public class ZMatrixAtom implements Cloneable
   		
   	   	return true;
   	}
+
+//------------------------------------------------------------------------------
+
+	public Map<Object, Object> getProperties() {
+		return properties;
+	}
+
+//------------------------------------------------------------------------------
+
+	public Object getProperty(Object key) {
+		return properties.get(key);
+	}
+
+//------------------------------------------------------------------------------
+
+	public void setProperties(Map<Object, Object> properties) {
+		this.properties = properties;
+	}
+
+//------------------------------------------------------------------------------
+
+	public void setProperty(Object key, Object value) {
+		this.properties.put(key,  value);
+	}
   	
 //------------------------------------------------------------------------------
 

@@ -209,8 +209,8 @@ public class BasisSet
      * Checks whether there is any center that is defined as an index (i.e.,
      * atom index in the list of atoms).
      * @return <code>true</code> if any of the centers is identified by atom 
-     * index. Returned <code>false</code> if al centers are defined by elemental
-     * symbol.
+     * index. Returned <code>false</code> if all centers are defined by 
+     * elemental symbol.
      */
 
     public boolean hasIndexSpecificComponents()
