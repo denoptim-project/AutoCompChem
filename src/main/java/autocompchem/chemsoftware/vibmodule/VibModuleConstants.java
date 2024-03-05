@@ -25,6 +25,12 @@ package autocompchem.chemsoftware.vibmodule;
 
 public class VibModuleConstants
 {
+	/**
+	 * Key of parameter providing SMARTS to identify the force field paramerters
+	 * to extracts
+	 */
+	public final static String PARINTCOORDBYSMARTS = "INTCOORDBYSMARTS";
+	
     /**
      * String defining normal termination in status file
      */
@@ -80,6 +86,11 @@ public class VibModuleConstants
      * Name of bond torsion type of internal coordinate
      */
     public final static String TYPTOR = "TOR";
+
+    /**
+     * Name of parameter data
+     */
+    public final static String PARAMDATA = "FF-PARAM";
 
    /**
     * String representing a bond in VibModule output file

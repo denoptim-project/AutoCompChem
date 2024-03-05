@@ -113,24 +113,24 @@ public abstract class ChemSoftOutputReader extends Worker
      * List of analysis to perform on the overall job. This might be
      * something like getting the overall last geometry,
      */
-    private ArrayList<AnalysisTask> analysisGlobalTasks = 
+    protected ArrayList<AnalysisTask> analysisGlobalTasks = 
     		new ArrayList<AnalysisTask>();
     
     /**
      * List analysis to perform on each step
      */
-    private Map<Integer,ArrayList<AnalysisTask>> analysisTasks = 
+    protected Map<Integer,ArrayList<AnalysisTask>> analysisTasks = 
     		new TreeMap<Integer, ArrayList<AnalysisTask>>();
 
     /**
      * Template for connectivity
      */
-    private IAtomContainer connectivityTemplate;
+    protected IAtomContainer connectivityTemplate;
 
     /**
      * Flag controlling definition of connectivity from template
      */
-    private boolean useTemplateConnectivity = false;
+    protected boolean useTemplateConnectivity = false;
     
     /**
      * Tolerance on the variation of interatomic distance of bonded atom pairs.
@@ -150,7 +150,7 @@ public abstract class ChemSoftOutputReader extends Worker
      * Collection of lines matching the text-based queries associated with 
      * perception and involving the parsing of comp. chem. software log.
      */
-    private Map<TxtQuery,List<String>> perceptionTQMatches = 
+    protected Map<TxtQuery,List<String>> perceptionTQMatches = 
     		new HashMap<TxtQuery,List<String>>();
     
 	/**
@@ -507,7 +507,7 @@ public abstract class ChemSoftOutputReader extends Worker
      * on each step/job.
      */
 
-    private void analyzeFiles()
+    protected void analyzeFiles()
     {	
         //Read and parse log files (typically called "output file")
     	File logFile = getLogPathName();
@@ -596,7 +596,8 @@ public abstract class ChemSoftOutputReader extends Worker
         	NamedDataCollector stepData = stepsData.get(stepId);
         	resultsString.append(NL + "Step " + stepId + ":" + NL);
         	
-        	//TODO-gg move outside of loop over analysis: do it as long as a templateconnectivity has been given.
+        	//TODO-gg move outside of loop over analysis: do it as long as a 
+        	// templateconnectivity has been given.
             // We inherit connectivity here so all analysis of geometries can
             // make use of the connectivity
     		if (useTemplateConnectivity)
@@ -1069,11 +1070,12 @@ public abstract class ChemSoftOutputReader extends Worker
         	} // loop over analysis tasks
         } // loop over steps
      	
-        if (verbosity > 0)
+        String results = resultsString.toString();
+        if (verbosity > 0 && results!=null && !results.isBlank())
         {
         	System.out.println("");
         	System.out.println("Summary of the results:");
-            System.out.println(resultsString.toString());
+            System.out.println(results);
         }
         
         // Prepare collector of final analysis results

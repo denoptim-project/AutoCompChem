@@ -65,6 +65,12 @@ public class AspecificOutputReader extends Worker
 	@Override
 	public Worker makeInstance(Job job) 
 	{
+		if (job==null)
+		{
+			// This happens when requesting the generation of help message
+			return new AspecificOutputReader();
+		}
+		
 		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
 		{
 			//TODO-gg log

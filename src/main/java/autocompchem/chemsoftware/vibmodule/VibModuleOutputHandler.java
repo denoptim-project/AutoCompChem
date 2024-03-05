@@ -61,6 +61,8 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
+//TODO-gg remove class
+@Deprecated
 public class VibModuleOutputHandler extends Worker
 {
 

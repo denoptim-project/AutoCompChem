@@ -7,6 +7,12 @@
   },
   {
     "embeddedWorker": "autocompchem.chemsoftware.AspecificOutputReader",
-    "tag": "define settings of the output to analyze."
+    "tag": "define settings of the output to analyze.",
+    "ignorableItems": [
+      "rootPathnameOutput",
+      "printVibModes",
+      "getFreeEnergy",
+      "detectKindOfCriticalPoint"
+    ]
   }
 ]

@@ -32,7 +32,7 @@ import autocompchem.chemsoftware.orca.OrcaInputWriter;
 import autocompchem.chemsoftware.orca.OrcaOutputReader;
 import autocompchem.chemsoftware.spartan.SpartanInputWriter;
 import autocompchem.chemsoftware.spartan.SpartanOutputReader;
-import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.chemsoftware.vibmodule.VibModuleOutputReader;
 import autocompchem.chemsoftware.xtb.XTBInputWriter;
 import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.datacollections.ParameterStorage;
@@ -126,7 +126,7 @@ public final class WorkerFactory
         registerType(new XTBOutputReader());
         registerType(new SpartanInputWriter());
         registerType(new SpartanOutputReader());
-        registerType(new VibModuleOutputHandler());
+        registerType(new VibModuleOutputReader());
         registerType(new ZMatrixHandler());
         registerType(new PathnameEditor());
         registerType(new AtomSpecificStringGenerator());

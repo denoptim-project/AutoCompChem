@@ -1,10 +1,10 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 0
+VERBOSITY: 1
 TASK: ExtractVibModuleForceConstants
-MOLFILE: ../t88.sdf
-VMFILE: ../t88.vmout
+TEMPLATECONNECTIVITY: ../t88.sdf
+JOBOUTPUTFILE: ../t88.vmout
 #INTCOORDBYSMARTS: [c] [P] STR
 $STARTINTCOORDBYSMARTS: [Pd] [P] STR
 [C] [$([#8]=[#6])] STR
