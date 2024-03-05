@@ -561,73 +561,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     		{
     			// We skip this as we have converted the BS into directives
     			// during the preProcessing of the job
-    			/*
-    			BasisSet bs = (BasisSet) dd.getValue();
-    			
-				String bsName = "UNDEFINED: use any string among these "
-						+ "as "
-						+ "directive name (case-insensitive): " 
-						+ StringUtils.mergeListToString(Arrays.asList(
-								BSKEYWORDS.values()), ",");
-				if (isBSKeyword(dd.getName()))
-				{
-					bsName = dd.getName();
-				}
-				
-				for (CenterBasisSet cbs : bs.getAllCenterBSs())
-				{
-					// Center-specific basis are defined in %coords
-					if (cbs.getCenterIndex()!=null)
-						continue;
-					
-					String elSymbol = cbs.getElement();
-					if (elSymbol==null)
-						elSymbol = cbs.getCenterTag();
-					if (elSymbol==null || elSymbol.isBlank())
-					{
-						Terminator.withMsgAndStatus("Found " 
-								+ cbs.getClass().getSimpleName() + " that has "
-								+ "neither elemental symbol nor atom tag. This "
-								+ "should never happen. Please, report this "
-								+ "bug.", -1);
-					}
-					lines.add(OrcaConstants.INDENT + bsName + " " + elSymbol);
-					
-					if (cbs.getShells().size() > 0)
-					{
-						for (String innerLine : getBSShellsLines(cbs))
-							lines.add(OrcaConstants.INDENT + innerLine);
-					}
-					
-					if (cbs.getNamedComponents().size() > 0)
-					{
-						if (cbs.getNamedComponents().size()>1)
-						{
-							Terminator.withMsgAndStatus("Unable to "
-									+ "deal "
-									+ "with multiple basis set "
-									+ "components "
-									+ "for a single center. If this is "
-									+ "really what you need, please "
-									+ "contact the authors.", -1);
-						}
-						lines.add(OrcaConstants.INDENT + 
-								cbs.getNamedComponents().get(0));
-					}
-					
-					if (cbs.getECPShells().size() > 0)
-					{
-						// Unless we meant to do something specific with ECP
-						// we add a newECP so that we do not inherit undesired
-						// ECP from elsewhere.
-						if (!bsName.toUpperCase().contains("ECP"))
-							bsName = "NewECP";
-						lines.add(bsName + " " + elSymbol);
-						for (String innerLine : getECPShellsLines(cbs))
-							lines.add(OrcaConstants.INDENT + innerLine);
-					}
-				}
-				*/
     		} else {
 				for (String innerLine : dd.getLines())
 				{
@@ -916,9 +849,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 							+ "directive name (case-insensitive): " 
 							+ StringUtils.mergeListToString(Arrays.asList(
 									BSKEYWORDS.values()), ",");
+					boolean notAnyBSKey = true;
 					if (isBSKeyword(dd.getName()))
 					{
 						bsName = dd.getName();
+						notAnyBSKey = false;
 					}
 					
 					// NB: this is a peculiarity of ORCA: any atom specific basis 
@@ -973,27 +908,32 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					{
 						int idx = -1;
 						String elSymbol = "";
-						boolean stomSpecific = false;
+						boolean atomSpecific = false;
 						if (cbs.getCenterIndex()!=null)
 						{
 							idx = cbs.getCenterIndex();
-							stomSpecific = true;
+							atomSpecific = true;
 						} else {
 							elSymbol = cbs.getElement();
 						}
 						
 						if (cbs.getShells().size() > 0)
 						{
-							Directive bsComponentDir = new Directive(bsName);
+							String dirName = bsName;
+							if (!atomSpecific && notAnyBSKey)
+							{
+								dirName = "NewGTO";
+							}
+							Directive bsComponentDir = new Directive(dirName);
 							bsComponentDir.addDirectiveData(
 									new DirectiveData("shells", 
 											getBSShellsLines(cbs)));
-							if (stomSpecific)
+							if (atomSpecific)
 							{
 								appendAtomSpecBS(bsComponentDir, idx, 
 										systemDefSubDirs);
 							} else {
-								bsComponentDir.setName(bsName + " " + elSymbol);
+								bsComponentDir.setName(dirName + " " + elSymbol);
 								basisSetDir.addSubDirective(bsComponentDir);
 							}
 						}
@@ -1010,19 +950,26 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 										+ "really what you need, please "
 										+ "contact the authors.", -1);
 							}
-							Directive bsComponentDir = new Directive(bsName);
+
+							String dirName = bsName;
+							if (!atomSpecific && notAnyBSKey)
+							{
+								dirName = "NewGTO";
+							}
+							
+							Directive bsComponentDir = new Directive(dirName);
 							bsComponentDir.addDirectiveData(
 									new DirectiveData("shells", 
 											Arrays.asList(
 											"\"" 
 											+ cbs.getNamedComponents().get(0) 
 											+ "\"")));
-							if (stomSpecific)
+							if (atomSpecific)
 							{
 								appendAtomSpecBS(bsComponentDir, idx, 
 										systemDefSubDirs);
 							} else {
-								bsComponentDir.setName(bsName + " " + elSymbol);
+								bsComponentDir.setName(dirName + " " + elSymbol);
 								basisSetDir.addSubDirective(bsComponentDir);
 							}
 						}
@@ -1033,11 +980,16 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 							// we add a newECP so that we do not inherit undesired
 							// ECP from elsewhere.
 							String dirName = bsName;
-							if (!dirName.toUpperCase().contains("ECP"))
+							if (!atomSpecific && notAnyBSKey)
 							{
 								dirName = "NewECP";
+							}
+							if (!bsName.toUpperCase().contains("ECP"))
+							{
+								
+								dirName = "NewECP";
 								String center = "";
-								if (stomSpecific)
+								if (atomSpecific)
 								{
 									center = "center " + idx;
 								} else {
@@ -1056,12 +1008,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 							epcComponentDir.addDirectiveData(
 									new DirectiveData("shells", 
 											getECPShellsLines(cbs)));
-							if (stomSpecific)
+							if (atomSpecific)
 							{
 								appendAtomSpecBS(epcComponentDir, idx, 
 										systemDefSubDirs);
 							} else {
-								epcComponentDir.setName(bsName + " " + elSymbol);
+								epcComponentDir.setName(dirName + " " + elSymbol);
 								basisSetDir.addSubDirective(epcComponentDir);
 							}
 						}

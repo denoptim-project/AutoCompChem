@@ -112,7 +112,6 @@
         {
           "reference": "BASIS",
           "type": "UNDEFINED",
-          "value": "Type is not JSON-able",
           "accTaskParams": [
             {
               "reference": "ATOMSPECIFICBASISSET",
