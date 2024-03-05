@@ -107,7 +107,8 @@ public final class WorkerFactory
         registerType(new ConstraintsGenerator());
         registerType(new GaussianJobDetailsConverter());
         registerType(new DummyObjectsHandler());
-        registerType(new ForceFieldEditor());
+        // unfinished development
+        //registerType(new ForceFieldEditor());
         registerType(new GaussianInputWriter());
         registerType(new GaussianOutputReader());
         registerType(new JobEvaluator());

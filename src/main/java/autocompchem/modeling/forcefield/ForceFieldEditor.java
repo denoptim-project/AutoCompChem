@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.openscience.cdk.AtomType;
 
 import autocompchem.chemsoftware.tinker.TinkerForceFieldHandler;
-import autocompchem.chemsoftware.vibmodule.VibModuleOutputHandler;
+import autocompchem.chemsoftware.vibmodule.VibModuleOutputReader;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
@@ -439,7 +439,7 @@ public class ForceFieldEditor extends Worker
 						throw new Error("Unable to make worker "
 								+ "VibModuleOutputHandler");
 					}
-                	VibModuleOutputHandler vmoh = (VibModuleOutputHandler) w;
+                	VibModuleOutputReader vmoh = (VibModuleOutputReader) w;
                 	
                 	/*
                 	//TODO del
@@ -450,7 +450,8 @@ public class ForceFieldEditor extends Worker
                                                                      smartsOpts,
                                                                      verbosity);
                     */
-                    ffParStats.addAllFFParams(vmoh.getFFParams());
+                    //TODO-gg reactivate 
+                	//ffParStats.addAllFFParams(vmoh.getFFParams());
                 }
                 break;
 
