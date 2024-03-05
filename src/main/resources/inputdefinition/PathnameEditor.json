@@ -1,6 +1,6 @@
 [
   {
-    "key": "PATHAME",
+    "key": "PATHNAME",
     "casedKey": "pathName",
     "type": "<String>",
     "doc": "A pathname to be used as input."
@@ -25,7 +25,7 @@
   },
   {
     "key": "QUOTATION",
-    "casedKey": "quitation",
+    "casedKey": "quotation",
     "type": "<String>",
     "doc": "A string to be used as quotation to the processes pathname with prefic/suffix, if any. Can include one or more characters."
   },

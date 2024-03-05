@@ -282,7 +282,7 @@ public class ConfigItem
                 {
                 	throw new JsonParseException(
                 			ConfigItem.class.getSimpleName()
-                			+ "'s key '" + key + "' doues not correspond to "
+                			+ "'s key '" + key + "' does not correspond to "
                 					+ "casedKey '" + casedKey + "'.");
                 }
             } else if (jsonObject.has("key")) {
