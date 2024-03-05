@@ -292,7 +292,7 @@ public abstract class Worker implements IOutputExposer
     	StringBuilder sb = new StringBuilder();
     	sb.append("Settings available for task '" + task + "':");
     	sb.append(System.getProperty("line.separator"));
-    	return getFormattedHelpString(sb, false);
+    	return getFormattedHelpString(sb);
     }
 
 //------------------------------------------------------------------------------
@@ -304,17 +304,12 @@ public abstract class Worker implements IOutputExposer
      * This will produce a result that depends on the task configured for this
      * worker.
      */
-    private String getFormattedHelpString(StringBuilder sb, 
-    		boolean ignoreNonStandalone)
+    private String getFormattedHelpString(StringBuilder sb)
     {
     	for (ConfigItem ci : getKnownParameters())
     	{
     		// TODO make items link to source's constant names, so we can check that 
     		// the declared ID is indeed what the code expects
-    		if (ci.isForStandalone() && ignoreNonStandalone)
-    		{
-	    		continue;
-    		}
     		sb.append(System.getProperty("line.separator"));
     		sb.append(ci.getStringForHelpMsg());
     	}

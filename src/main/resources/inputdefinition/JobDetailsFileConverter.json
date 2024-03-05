@@ -3,14 +3,12 @@
     "key": "INFILE",
     "casedKey": "inFile",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to the jobdetails file to convert."
   },
   {
     "key": "OUTFILE",
     "casedKey": "outFile",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to the JSON file to create from the job details one."
   },
   {

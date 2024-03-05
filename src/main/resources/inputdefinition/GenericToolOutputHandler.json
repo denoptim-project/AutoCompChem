@@ -3,7 +3,6 @@
     "key": "INFILE",
     "casedKey": "inFile",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to the output file to analyze. This is the input for any task analyzing the output of a generic application."
   },
   {
@@ -16,7 +15,6 @@
     "key": "VERBOSITY",
     "casedKey": "verbosity",
     "type": "<int>",
-    "isForStandalone": true,
     "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
   }
 ]

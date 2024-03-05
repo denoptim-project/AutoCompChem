@@ -3,7 +3,6 @@
     "key": "OUTFILE",
     "casedKey": "outFile",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to the file where to print the resulting chemical system."
   },
   {

@@ -67,7 +67,6 @@ public class WorkerTest
     	assertEquals(3, ci.doc.split("\\n").length);
     	assertEquals(ci.embeddedWorker, "SomeWorker");
     	assertTrue(ci.tag.contains("ddaattaa"));
-    	assertTrue(ci.isForStandalone());
     }
     
 //-----------------------------------------------------------------------------
@@ -110,9 +109,6 @@ public class WorkerTest
     	assertEquals("The pathname to the file to read as input.", ci.doc);
     	ci = knownInput.get(2);
     	assertEquals(3, ci.doc.split("\\n").length);
-    	
-    	ConfigItem ci_standalone = knownInput.get(1);
-    	assertTrue(ci_standalone.isForStandalone());
     }
 
 //------------------------------------------------------------------------------

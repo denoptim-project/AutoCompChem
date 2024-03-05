@@ -9,7 +9,6 @@
     "key": "PARAM1",
     "casedKey": "param1",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "Doc of parameter 1"
   },
   {

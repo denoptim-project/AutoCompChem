@@ -9,7 +9,6 @@
     "key": "JOBDETAILSFILE",
     "casedKey": "jobDetailsFile",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to a file defining the details of the job for which we are going to generate the input file/s."
   },
   {

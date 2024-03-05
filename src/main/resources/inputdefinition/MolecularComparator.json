@@ -3,7 +3,6 @@
     "key": "REFERENCE",
     "casedKey": "reference",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to the file with the reference chemical system. Only SDF files with ONE molecule are acceptable."
   },
   {

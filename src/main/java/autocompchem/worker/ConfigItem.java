@@ -67,12 +67,6 @@ public class ConfigItem
 	final String doc;
 	
 	/**
-	 * Flag defining if this item is meant to configure stand alone instances
-	 * of this worker.
-	 */
-	private Boolean isForStandalone = false;
-	
-	/**
 	 * The name of the worker that is actually taking care of doing some
 	 * work, but that is not he main worker to which this configuration 
 	 * item applies. We use this to fetch documentation on configuration
@@ -118,7 +112,7 @@ public class ConfigItem
 //------------------------------------------------------------------------------
 	  
 	public ConfigItem(String key, String type, String casedKey, String doc, 
-			boolean isForStandalone, String embeddedWorker, String tag,
+			String embeddedWorker, String tag,
 			String task,
 			List<String> ignorableItems, List<String> ignorableWorkers)
 	{
@@ -126,7 +120,6 @@ public class ConfigItem
 		this.casedKey= casedKey;
 		this.type = type;
 		this.doc = doc;
-		this.isForStandalone = isForStandalone;
 		this.embeddedWorker = embeddedWorker;
 		this.tag = tag;
 		this.task = task;
@@ -257,19 +250,6 @@ public class ConfigItem
 	
 //------------------------------------------------------------------------------
 	
-	/**
-	 * @return <code>true<code> if this item is meant to configure stand alone 
-	 * instances of this worker.
-	 */
-	public boolean isForStandalone()
-	{
-		if (isForStandalone==null)
-			return false;
-		return isForStandalone;
-	}
-	
-//------------------------------------------------------------------------------
-	
 	public static class ConfigItemTypeDeserializer 
 	implements JsonDeserializer<ConfigItem>
 	{
@@ -324,13 +304,6 @@ public class ConfigItem
             {
                 tag = jsonObject.get("tag").getAsString();
             }
-			boolean isForStandalone = false;
-			if (jsonObject.has("isForStandalone"))
-			{	
-				isForStandalone = context.deserialize(
-						jsonObject.get("isForStandalone"),
-						Boolean.class);
-			}
             String embeddedWorker = null;
             if (jsonObject.has("embeddedWorker"))
             {
@@ -353,7 +326,7 @@ public class ConfigItem
             	ignorableWorkers = context.deserialize(
                 		jsonObject.get("ignorableWorkers"),List.class);
             }
-			return new ConfigItem(key, type, casedKey, doc, isForStandalone, 
+			return new ConfigItem(key, type, casedKey, doc,  
 					embeddedWorker, tag, task, ignorableItems, ignorableWorkers);
 		}
 	}

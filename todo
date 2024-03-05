@@ -1,4 +1,4 @@
-#
+
 # TO DO LIST
 #
 
@@ -31,3 +31,6 @@
 - For paper: students need quick ways to jump between software packages to teste them out and find the most apptopriate tool for theyr needs. This is facilitated by portable agnostic tools (e.g., atom-specific basis set and constraint generator)
 
 - t91 seems to trigger an error if we set the VERBOSITY (uppercase) instead of verbosity in(lowercase) in line 98 Iwithin the GenerateConstraints task
+
+- verbosity as general parameter instead of task specific?
+

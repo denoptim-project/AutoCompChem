@@ -3,7 +3,6 @@
     "key": "OUTFILE",
     "casedKey": "outFile",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "The pathname to the SDF file where to store the resulting chemical system with connectivity."
   },
   {
@@ -34,7 +33,6 @@
     "key": "REFERENCE",
     "casedKey": "reference",
     "type": "<String>",
-    "isForStandalone": true,
     "doc": "Pathname to an SDF file defining a connectivity table that should be used as reference for bond lengths. Prints a warning if the bond lengths in the input chemical system differ from the value in the reference geometry by more than the tolerance."
   },
   {
