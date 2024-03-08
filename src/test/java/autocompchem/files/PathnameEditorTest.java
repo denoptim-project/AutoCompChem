@@ -45,13 +45,14 @@ import autocompchem.worker.WorkerFactory;
 
 public class PathnameEditorTest 
 {
-    
+	final String SEP = File.separator;
+	
 //------------------------------------------------------------------------------
 
     @Test
     public void testGetPathName() throws Exception
     {
-    	String input = "this/is/my/pathname";
+    	String input = "this"+SEP+"is"+SEP+"my"+SEP+"pathname";
     	
     	ParameterStorage ps = new ParameterStorage();
     	ps.setParameter(WorkerConstants.PARTASK, 
@@ -78,7 +79,7 @@ public class PathnameEditorTest
     @Test
     public void testInstanceCreation() throws Exception
     {
-    	String input = "this/is/my/pathname";
+    	String input = "this"+SEP+"is"+SEP+"my"+SEP+"pathname";
     	
     	ParameterStorage ps = new ParameterStorage();
     	ps.setParameter(WorkerConstants.PARTASK, 
