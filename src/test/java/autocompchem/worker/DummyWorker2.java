@@ -25,7 +25,6 @@ import java.util.Set;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.ParameterConstants;
 import autocompchem.run.Job;
 
 
@@ -55,6 +54,7 @@ public class DummyWorker2 extends Worker
     static {
     	DUMMYTASK2TASK = Task.make(DUMMYTASK2TASKNAME, true);
     }
+	
 	
 //-----------------------------------------------------------------------------
 
@@ -108,10 +108,10 @@ public class DummyWorker2 extends Worker
 		// The only task here is reporting something in the output collector
 		exposeOutputData(inputCollector.getNamedData(DATAREF));
 		
-		if (params.contains(ParameterConstants.VERBOSITY)) 
+		if (params.contains("VERBOSITY")) 
 		{
-			if (Integer.parseInt(params.getParameter(
-					ParameterConstants.VERBOSITY).getValue().toString()) > 2) {
+			if (Integer.parseInt(params.getParameter("VERBOSITY").getValue()
+					.toString()) > 2) {
 				// In some tests we might want to check that the input has been 
 				// read
 				// properly, so we echo the content of the param. storage

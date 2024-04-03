@@ -47,6 +47,12 @@ import autocompchem.run.Terminator;
 
 public class ConnectivityUtils
 {
+
+    /**
+     * The verbosity level
+     */
+    private int verbosity = 0;
+
     /**
      * Recursion counter
      */
@@ -55,6 +61,19 @@ public class ConnectivityUtils
     //String for debugging
     static String maxlengtdone = "";
     static String maxlengtdone2 = "";
+
+
+//------------------------------------------------------------------------------
+
+    public ConnectivityUtils()
+    {}
+
+//------------------------------------------------------------------------------
+
+    public ConnectivityUtils(int verbosity)
+    {
+        this.verbosity = verbosity;
+    }
 
 //------------------------------------------------------------------------------
 
@@ -216,12 +235,10 @@ public class ConnectivityUtils
      * connectivity matrices.
      * @param mol the atom container under evaluation
      * @param ref the reference atom container 
-     * @param verbosity the amount of log to write
      * @return <code>true</code> if the two connectivity matrices are equal
      */
 
-    public static boolean compareWithReference(IAtomContainer mol, 
-    		IAtomContainer ref, int verbosity)
+    public boolean compareWithReference(IAtomContainer mol, IAtomContainer ref)
     {
         if (mol.getAtomCount() == ref.getAtomCount()) 
         {
@@ -235,9 +252,8 @@ public class ConnectivityUtils
                         {
                             List<IAtom> emptyDoneMol = new ArrayList<IAtom>();
                             List<IAtom> emptyDoneRef = new ArrayList<IAtom>();
-                            boolean compTrees = exploreConnectivity(0, mol, 
-                            		sMol, emptyDoneMol, ref, sRef, 
-                            		emptyDoneRef);
+                            boolean compTrees = exploreConnectivity(mol, sMol, 
+                                        emptyDoneMol, ref, sRef, emptyDoneRef);
                             if (compTrees)
                             {
                                 return true;
@@ -412,7 +428,7 @@ public class ConnectivityUtils
      * @return <code>true</code> if the two atoms are compatible
      */
 
-    private static boolean compatibleAtoms(IAtomContainer molA, IAtom atmA, 
+    private boolean compatibleAtoms(IAtomContainer molA, IAtom atmA, 
                                     IAtomContainer molB, IAtom atmB)
     {
         boolean result = false;
@@ -466,7 +482,7 @@ public class ConnectivityUtils
      * Method for exploring the connectivity recursively
      */
 
-    private static boolean exploreConnectivity(int recNum,
+    private boolean exploreConnectivity(
                         IAtomContainer mol, IAtom seedMol, List<IAtom> doneMol, 
                         IAtomContainer ref, IAtom seedRef, List<IAtom> doneRef)
     {
@@ -550,9 +566,10 @@ if (doneB.length() > maxlengtdone.length())
                 //Try to go on with another recursion = evaluate unvisited branches
                 if (mol.getConnectedBondsCount(tMol) > 1)
                 {
-                    boolean branchOntMolIsCompatible = exploreConnectivity(
-                    		recNum+1, mol, tMol, childDoneMol, ref, tRef, 
-                    		childDoneRef);
+                    recNum++;
+                    boolean branchOntMolIsCompatible = exploreConnectivity(mol,
+                                tMol, childDoneMol, ref, tRef, childDoneRef);
+                    recNum--;
 /*
 System.out.println(recFlag+"finished a branch on "+MolecularUtils.getAtomRef(seedRef,ref)+": "+branchOntMolIsCompatible);
 String doneB2= "";

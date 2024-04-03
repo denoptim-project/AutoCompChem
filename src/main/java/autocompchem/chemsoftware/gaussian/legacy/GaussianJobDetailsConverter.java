@@ -45,6 +45,9 @@ public class GaussianJobDetailsConverter extends Worker
     //Files we work with
     private File inFile;
     private File outFile;
+
+    //Reporting flag
+    private int verbosity = 0;
     
     /**
      * String defining the task of converting job details
@@ -96,9 +99,13 @@ public class GaussianJobDetailsConverter extends Worker
      * Initialize the worker according to the parameters loaded by constructor.
      */
 
+    @Override
     public void initialize()
     {
-    	super.initialize();
+
+        //Define verbosity
+        String vStr = params.getParameter("VERBOSITY").getValue().toString();
+        this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)
             System.out.println(" Adding parameters to " 

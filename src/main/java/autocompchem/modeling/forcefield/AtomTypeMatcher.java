@@ -82,6 +82,11 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
      * The format for output
      */
     private String outForm;
+
+    /**
+     * Verbosity level
+     */
+    private int verbosity = 1;
     
     /**
      * String defining the task of assigning atom types

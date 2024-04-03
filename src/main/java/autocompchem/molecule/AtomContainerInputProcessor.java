@@ -146,9 +146,15 @@ public class AtomContainerInputProcessor extends Worker
      * Initialize the worker according to the parameters loaded by constructor.
      */
 
+	@Override
     public void initialize()
     {
-    	super.initialize();
+		if (params.contains("VERBOSITY"))
+        {
+            verbosity = Integer.parseInt(params.getParameter("VERBOSITY")
+            		.getValueAsString());
+        }
+		
         if (params.contains(ChemSoftConstants.PARINFILE))
         {
         	String value = params.getParameter(ChemSoftConstants.PARINFILE)

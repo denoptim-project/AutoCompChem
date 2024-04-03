@@ -41,6 +41,11 @@ public class ScoreCollector
      */
     private Map<SCPair,Double> scores;
 
+    /**
+     * Verbosity level
+     */
+    private int verbosity = 0;
+
 //--------------------------------------------------------------------------
 
     /**
@@ -49,6 +54,18 @@ public class ScoreCollector
     public ScoreCollector()
     {
         scores = new HashMap<SCPair,Double>();
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Set the verbosity level to the given number
+     * @param l the given verbosity level
+     */
+
+    public void setVerbosity(int l)
+    {
+        this.verbosity = l;
     }
 
 //--------------------------------------------------------------------------

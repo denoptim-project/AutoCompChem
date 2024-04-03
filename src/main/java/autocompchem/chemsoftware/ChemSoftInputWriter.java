@@ -100,6 +100,11 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * The computational chemistry job we want to prepare the input for.
      */
     protected CompChemJob ccJob;
+
+    /** 
+     * Verbosity level
+     */
+    protected int verbosity = 0;
     
     /**
      * Default extension of the chem.soft. input file
@@ -144,6 +149,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * collection of input parameters.
      */
 
+	@Override
     public void initialize()
     {
     	super.initialize();
