@@ -265,11 +265,12 @@ public class SpartanInputWriter extends ChemSoftInputWriter
                 StringBuilder sb = new StringBuilder();
                 sb.append(String.format(Locale.ENGLISH, "%3d", 
                 		atm.getAtomicNumber())).append(" ");
-                sb.append(String.format(Locale.ENGLISH, " %13.8f", p3d.x));
-                sb.append(" ");
-                sb.append(String.format(Locale.ENGLISH, " %13.8f", p3d.y));
-                sb.append(" ");
-                sb.append(String.format(Locale.ENGLISH, " %13.8f", p3d.z));
+                sb.append(String.format(Locale.ENGLISH, " " 
+						+ precision, p3d.x));
+                sb.append(String.format(Locale.ENGLISH, " " 
+						+ precision, p3d.y));
+                sb.append(String.format(Locale.ENGLISH, " " 
+						+ precision, p3d.z));
                 lines.add(sb.toString());
             }
             lines.add(SpartanConstants.XYZEND);

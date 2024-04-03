@@ -556,12 +556,13 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	
 		    		    		String el = AtomUtils.getSymbolOrLabel(atm);
 		    					lines.add(String.format(Locale.ENGLISH,"%s", el)
-		    							+ String.format(Locale.ENGLISH," %17.12f",
-		    									p3d.x)
-		    							+ String.format(Locale.ENGLISH," %17.12f",
-		    									p3d.y)
-		    							+ String.format(Locale.ENGLISH," %17.12f",
-		    									p3d.z));
+
+										+ String.format(Locale.ENGLISH, " " 
+												+ precision, p3d.x)
+										+ String.format(Locale.ENGLISH, " " 
+												+ precision, p3d.y)
+										+ String.format(Locale.ENGLISH, " " 
+												+ precision, p3d.z));
 		    				}
 		    				break;
 		    			

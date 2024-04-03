@@ -82,7 +82,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 	}
 	
 	/**
-	 * Property name to sotre the list of basis set components for an atom.
+	 * Property name to store the list of basis set components for an atom.
 	 */
 	private final String ATMSPECBSPROP = "ATMSPECBSPROPDATA";
 	
@@ -481,10 +481,14 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 					{
 						Point3d p3d = AtomUtils.getCoords3d(atm);
 						lines.add(OrcaConstants.INDENT 
-								+ String.format(Locale.ENGLISH," %3s",atm.getSymbol())
-								+ String.format(Locale.ENGLISH," %10.5f",p3d.x)
-								+ String.format(Locale.ENGLISH," %10.5f",p3d.y)
-								+ String.format(Locale.ENGLISH," %10.5f",p3d.z));
+								+ String.format(Locale.ENGLISH, " %3s", 
+										atm.getSymbol())
+								+ String.format(Locale.ENGLISH, " " 
+										+ precision, p3d.x)
+								+ String.format(Locale.ENGLISH, " " 
+										+ precision, p3d.y)
+								+ String.format(Locale.ENGLISH, " " 
+										+ precision, p3d.z));
 						Object bsProps = atm.getProperty(ATMSPECBSPROP);
 						if (bsProps != null)
 						{

@@ -1,0 +1,6 @@
+# Create Orca input file with atom-specific basis set
+VERBOSITY: 5
+TASK: PrepareInputORCA
+InputGeometriesFile: ../t145-mol.xyz
+JOBDETAILSFILE: ../t145-jobDetails.json
+CartesianCoordsFormat: %2.4E

@@ -171,6 +171,11 @@ public class ChemSoftConstants
 	public static final String PARGEOMNAMES = "MULTIGEOMNAMES";
 	
 	/**
+	 * Key of parameter defining the format for reporting Cartesian coordinates.
+	 */
+	public static final String PARPRECISION = "CARTESIANCOORDSFORMAT";
+	
+	/**
 	 * Key for parameter defining the pathname to the file defining the details
 	 * of the computational chemistry job.
 	 */

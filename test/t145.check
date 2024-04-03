@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t145-mol.inp" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "[[:space:]].*[0-9]E+00[[:space:]].*[0-9]E+00[[:space:]].*[0-9]E+00" t145-mol.inp )
+if [ 4 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "[[:space:]].*[0-9]E+00[[:space:]].*[0-9]E+00[[:space:]].*[0-9]E-01" t145-mol.inp )
+if [ 5 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "[[:space:]].*[0-9]E+03[[:space:]].*[0-9]E+00[[:space:]].*[0-9]E.*" t145-mol.inp )
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t145.log" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t145.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

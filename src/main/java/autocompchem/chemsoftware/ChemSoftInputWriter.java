@@ -116,6 +116,11 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      */
     protected final String NL = System.getProperty("line.separator");
     
+    /**
+     * Format for writing Cartesian coordinates 
+     */
+    protected String precision = "%10.8f";
+    
 
 //-----------------------------------------------------------------------------
 
@@ -152,6 +157,20 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             if (verbosity > 0)
                 System.out.println(" Adding parameters to chemical software "
                 		+ "input writer.");
+        }
+        
+        if (params.contains(ChemSoftConstants.PARPRECISION))
+        {
+        	precision = params.getParameter(
+                    ChemSoftConstants.PARPRECISION).getValueAsString();
+        	try {
+        		String.format(precision, -123456.12345);
+        	} catch (Throwable t) {
+				t.printStackTrace();
+				Terminator.withMsgAndStatus("ERROR! Could not use string '"
+						+ precision + "' as a floating point format definition"
+						+ ". Please, check your input.", -1); 
+        	}
         }
 
         /*
