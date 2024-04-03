@@ -221,7 +221,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
     {
         ConnectivityUtils cu = new ConnectivityUtils();
         boolean consistentConnectivity = cu.compareWithReference(iac, 
-        		referenceMol);
+        		referenceMol, verbosity);
         
         if (!consistentConnectivity)
         {

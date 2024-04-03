@@ -122,16 +122,10 @@ public class PathnameEditor extends Worker
     
 //-----------------------------------------------------------------------------
 
-	@Override
-	public void initialize() {
-		
-        // Define verbosity
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValueAsString();
-            this.verbosity = Integer.parseInt(v);
-        }
-
+	public void initialize() 
+	{
+    	super.initialize();
+    	
         // Multiple ways to define the input pathname are here processes from
         // the lowest priority to the highest. This here we implicitly define
         // the priority order.

@@ -228,21 +228,9 @@ public class JobEvaluator extends Worker
     
 //-----------------------------------------------------------------------------
 	
-	@Override
 	public void initialize() 
 	{   	
-		if (hasParameter(ParameterConstants.VERBOSITY)) 
-		{
-			String vStr= params.getParameter(
-					ParameterConstants.VERBOSITY).getValueAsString();
-			if (!NumberUtils.isNumber(vStr))
-			{
-				Terminator.withMsgAndStatus("ERROR! Value '" + vStr + "' "
-						+ "cannot be converted to an integer. Check parameter "
-						+ ParameterConstants.VERBOSITY, -1);
-			}
-			verbosity = Integer.parseInt(vStr);
-		}
+    	super.initialize();
 		
 		if (hasParameter(ParameterConstants.TOLERATEMISSINGIC))
 		{

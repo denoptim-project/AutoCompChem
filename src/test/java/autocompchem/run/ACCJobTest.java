@@ -78,7 +78,7 @@ public class ACCJobTest
         			MolecularMeter.MEASUREGEOMDESCRIPTORSTASK.ID);
         	params.setParameter(ChemSoftConstants.PARINFILE,
         			sdfFile.getAbsolutePath());
-        	params.setParameter(ChemSoftConstants.PARVERBOSITY, "1");
+        	params.setParameter(ChemSoftConstants.PARVERBOSITY, "7");
         	params.setParameter("ATOMINDEXES", label + " 1 2");
         	
         	// Prepare structure

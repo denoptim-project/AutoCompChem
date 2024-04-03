@@ -78,11 +78,6 @@ public abstract class ChemSoftOutputReader extends Worker
     private String outFileRootName;
 
     /**
-     * Verbosity level
-     */
-    protected int verbosity = 1;
-
-    /**
      * Number steps/jobs/tasks found in job under analysis
      */
     private int numSteps = 0;
@@ -178,18 +173,9 @@ public abstract class ChemSoftOutputReader extends Worker
      * constructor.
      */
 
-    @Override
     public void initialize()
     {
-    	//TODO: should be clean up previous initializations? I guess so.
-    	//we could change the params and re-initialize this class.
-    	
-        //Define verbosity
-    	if (params.contains(ChemSoftConstants.PARVERBOSITY))
-    	{
-	        String vStr = params.getParameter("VERBOSITY").getValueAsString();
-	        this.verbosity = Integer.parseInt(vStr);
-    	} 
+    	super.initialize();
 
         if (verbosity > 0)
             System.out.println("Adding parameters to "

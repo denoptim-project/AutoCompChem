@@ -55,6 +55,7 @@ public class SMARTSQueryHandler
     /**
      * Verbosity level
      */
+    //TODO-gg use logger
     private int verbosity = 0;
     
 //------------------------------------------------------------------------------

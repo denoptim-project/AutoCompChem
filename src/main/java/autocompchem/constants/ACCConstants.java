@@ -89,11 +89,6 @@ public class ACCConstants
     public final static double JOULEPERMOLETOCALPERMOL = 4.184;
 
     /**
-     * Reference name for verbosity level parameter
-     */
-    public final static String VERBOSITYPAR = "VERBOSITY";
-
-    /**
      * Atom property used to store atom tags
      */
     public final static String ATMTAGPROP = "ATMTAGPROP";
@@ -106,6 +101,11 @@ public class ACCConstants
     /**
      * Threshold for comparing {@link Double} numbers
      */
-	public static final double DOUBLEPRECISION = 0.00000000000001;
+	public final static double DOUBLEPRECISION = 0.00000000000001;
 
+	/**
+	 * Logger charged to produce main log, which is always meant to STDOUT.
+	 */
+	public final static String MAINLOGGER = "MAINLOGGER";
+	
 }

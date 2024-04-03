@@ -141,7 +141,6 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
      * Initialize the worker according to the parameters loaded by constructor.
      */
 
-	@Override
     public void initialize()
     {
 		super.initialize();

@@ -71,6 +71,7 @@ import autocompchem.smarts.MatchingIdxs;
  * @author Marco Foscato
  */
 
+//TODO-gg to worker?
 
 public class BondReviser
 {
@@ -95,8 +96,7 @@ public class BondReviser
      */
 
     public BondReviser() 
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 

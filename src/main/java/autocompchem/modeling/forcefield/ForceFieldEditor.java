@@ -131,11 +131,6 @@ public class ForceFieldEditor extends Worker
      * Loaded force field parameters set
      */
     private ForceFieldParamsSet ff = new ForceFieldParamsSet();
-
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 1;
     
     /**
      * String defining the task of parametrizing force field parameters
@@ -186,15 +181,9 @@ public class ForceFieldEditor extends Worker
      * Initialise the worker according to the parameters loaded by constructor.
      */
 
-    @Override
     public void initialize()
     {
-        //Define verbosity
-        if (params.contains("VERBOSITY"))
-        {
-            String v = params.getParameter("VERBOSITY").getValue().toString();
-            this.verbosity = Integer.parseInt(v);
-        }
+    	super.initialize();
         if (verbosity > 0)
         {
             System.out.println(" Adding parameters to ForceFieldEditor");
