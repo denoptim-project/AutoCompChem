@@ -22,41 +22,41 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
+import autocompchem.log.LogUtils;
 import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 
 
 /**
  * A worker is anything that can perform any task or job. 
  * This abstract class serves 
  * as starting point for all other workers. 
- * Subclasses of this class need to respect these constraints:
- * <ul>
- * <li>The subclass name must be registered in the {@link WorkerFactory},</li>
- * <li>The subclass needs to include the following field;
- * <pre>
- * 	public static final Set&lt;TaskID&gt; capabilities = ...
- * </pre>
- * which is to be populated with any registered {@link Task}. If new task IDs
- * are needed they should be added to the {@link Task} registry.</li>
- * <li>Take care of exposing any output that should be made accessible from
- * outside the worker, i.e., typically from the {@link Job} that needed to
- * perform the task with the worker can deal with.</li>
- * </ul>
+ * The subclass must be registered in the {@link WorkerFactory} for the latter
+ * to be able to construct a worker based on a job requiring its capabilities.
  *
  * @author Marco Foscato
  */
@@ -102,12 +102,21 @@ public abstract class Worker implements IOutputExposer
      */
     protected int verbosity = 0;
     
+    /**
+     * Logger for debugging purposes.
+     */
+    protected Logger logger;
+    
+    /**
+     * Logger for reporting results to STDOUT.
+     */
+    protected Logger stdOutLogger;
+    
 //------------------------------------------------------------------------------
 
     /**
      * Constructor for an empty worker..
      */
-
     protected Worker()
     {}
     
@@ -120,7 +129,6 @@ public abstract class Worker implements IOutputExposer
      * {@link WorkerFactory} is overwritten.
      * @param params the collection of parameters.
      */
-    
     public void setParameters(ParameterStorage params)
     {
     	this.params = params;
@@ -137,7 +145,6 @@ public abstract class Worker implements IOutputExposer
      * @return <code>true</code> if the parameter exists, of <code>false</code>
      * if it is not set or if the parameter storage is null.
      */
-
     public boolean hasParameter(String refName)
     {
     	if (params != null)
@@ -317,13 +324,35 @@ public abstract class Worker implements IOutputExposer
     }
     
 //------------------------------------------------------------------------------
-
-    /**
-     * Initialize this worker according to the given parameters. 
-     * This method is overwritten by subclasses.
-     */
     
-    public abstract void initialize();
+    /**
+     * Initializes this worker based on the parameters that were given upon 
+     * construction.
+     */
+    public void initialize()
+    {	
+    	logger = LogManager.getLogger(this.getClass());
+    	stdOutLogger = LogManager.getLogger(ACCConstants.MAINLOGGER);
+        if (params.contains(ParameterConstants.VERBOSITY))
+        {
+            String str = params.getParameter(
+                    ChemSoftConstants.PARVERBOSITY).getValueAsString();
+            if (!NumberUtils.isNumber(str))
+			{
+				Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "
+						+ "cannot be converted to an integer. Check parameter "
+						+ ParameterConstants.VERBOSITY, -1);
+			}
+            Configurator.setAllLevels(stdOutLogger.getName(), 
+            		LogUtils.verbosityToLevel(Integer.parseInt(str)));
+            
+            //TODO-gg remove verbosity
+            verbosity = Integer.parseInt(str) - 4;
+            
+            stdOutLogger.log(Level.INFO, "Adding parameters to "
+            		+ this.getClass().getSimpleName() + ".");
+        }
+    }
     
 //------------------------------------------------------------------------------
 
@@ -331,7 +360,6 @@ public abstract class Worker implements IOutputExposer
      * Performs a specific task. 
      * This method is overwritten by subclasses.
      */
-    
     public abstract void performTask();
     
 //------------------------------------------------------------------------------
@@ -365,7 +393,6 @@ public abstract class Worker implements IOutputExposer
 	 * is to be collected.
 	 * @param collector the collector data structure.
 	 */
-    
     public void setDataCollector(NamedDataCollector collector)
     {
     	this.exposedOutputCollector = collector;

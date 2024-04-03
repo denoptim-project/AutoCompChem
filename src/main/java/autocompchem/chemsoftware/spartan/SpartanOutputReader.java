@@ -92,7 +92,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
      * This override is to process  the input to detect the model name
      * when there is only one model to analyze.
      */
-    @Override
+
     public void initialize()
     {
     	super.initialize();

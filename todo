@@ -32,5 +32,3 @@
 
 - t91 seems to trigger an error if we set the VERBOSITY (uppercase) instead of verbosity in(lowercase) in line 98 Iwithin the GenerateConstraints task
 
-- verbosity as general parameter instead of task specific?
-

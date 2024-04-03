@@ -103,6 +103,16 @@
         <artifactId>jakarta.el</artifactId>
         <version>4.0.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.23.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.23.0</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
     <dependency>
         <groupId>net.sf.py4j</groupId>
