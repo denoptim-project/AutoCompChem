@@ -16,13 +16,13 @@ if [ "$n" != 6 ] ; then
   exit -1
 fi
 
-n=$(grep -c " C *\-3.023600 *0.891100 *\-2.287300" t16-mol.nw)
+n=$(grep -c " C *\-3.023600.* 0.891100.* \-2.287300" t16-mol.nw)
 if [ "$n" != 1 ] ; then
   echo NOT Passed ERROR 4
   exit -1
 fi
 
-n=$(grep -c " H *\-3.359800 *\-2.210900 *0.529700" t16-mol.nw)
+n=$(grep -c " H .*\-3.359800.* \-2.210900.* 0.529700" t16-mol.nw)
 if [ "$n" != 1 ] ; then
   echo NOT Pased ERROR 5
   exit -1

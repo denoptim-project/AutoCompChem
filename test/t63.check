@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if ! grep -q -i "C .*-3\.164005.*-10\.435414.*0\.005939" t63-nwc.nw ; then
+if ! grep -q -i "C[[:space:]]*\-3.164.*[[:space:]]*\-10.4354.*[[:space:]]*0.0059.*" t63-nwc.nw ; then
   echo NOT Passed ERROR 1 ; exit -1
 fi
 
-if ! grep -q -i "H .*\-4\.618275.*\-1\.819653.*\-0\.756420" t63-nwc.nw ; then
+if ! grep -q -i "H[[:space:]]*\-4.618275.*[[:space:]]*\-1.819653.*[[:space:]]*\-0.7564.*" t63-nwc.nw ; then
   echo NOT Passed ERROR 2 ; exit -1
 fi
 

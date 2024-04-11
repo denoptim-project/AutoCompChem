@@ -38,10 +38,10 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 n=0;n=$(grep -c "^%coords$" t116-mol-1.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^ * C .* 1.033.* -0.072.* 0.082.*$" t116-mol-1.inp)
+n=0;n=$(grep -c "^ * C[[:space:]]*1.033.*[[:space:]]\-0.072.*[[:space:]]0.082.*$" t116-mol-1.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^ *H * 4.98.* 0.284.* 2.359.*$" t116-mol-1.inp)
+n=0;n=$(grep -c "^ *H[[:space:]]*4.98.*[[:space:]]0.284.*[[:space:]]2.359.*$" t116-mol-1.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 11 ; exit -1 ; fi
 
 n=0;n=$(grep -c "{ C 0 1 2 12 C }" t116-mol-1.inp)
