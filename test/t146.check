@@ -27,6 +27,11 @@ if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 n=0; n=$(grep -c "^[[:space:]]*trisNuclei =/68-65/{" t146-mol.inp )
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
+n=0; n=$(grep -c "^[[:space:]]*quaterNuclei = 27 5 {" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "^[[:space:]]*quaterNuclei = 69 66 {" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
 if [ ! -f "t146.log" ] ; then not_passed $LINENO ; fi
 
 if grep -q 'Termination status: 0' "t146.log" ; then echo Passed ; exit 0 ; fi

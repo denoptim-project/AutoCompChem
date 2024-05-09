@@ -127,6 +127,40 @@
               ]
             }
           ]
+        },
+        {
+          "name": "quater",
+          "dirData": [
+            {
+              "reference": "selectedAtoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getAtomSpecificString"
+                },
+                {
+                  "reference": "LABELTYPE",
+                  "value": "IndexOnly"
+                },
+                {
+                  "reference": "fieldSeparator",
+                  "value": " "
+                },
+                {
+                  "reference": "idSeparator",
+                  "value": " "
+                },
+                {
+                  "reference": "ZEROBASED",
+                  "value": "false"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[$([#1][#6;X3]([#6])~[Ru])] [#6] OnlyBonded getAtomLabels prefix: quaterNuclei = suffix: { shift }\n[$([#1][#6;X4]([#6;H3])([#6;H3])[#8])]  [#6] getAtomLabels OnlyBonded prefix: quaterNuclei = suffix: { shift }"
+                }
+              ]
+            }
+          ]
         }
       ]
     }

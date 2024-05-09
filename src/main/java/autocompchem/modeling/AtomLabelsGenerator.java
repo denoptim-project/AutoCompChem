@@ -75,7 +75,8 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
     /**
      * Policies for generating atom labels.
      */
-    public enum AtomLabelMode {ElementBased, IndexBased, AtomicNumber};
+    public enum AtomLabelMode {ElementBased, IndexBased, AtomicNumber, 
+    	IndexOnly};
     
     /**
      * Flag defining if we use 0- or 1-based indexing. 
@@ -244,6 +245,10 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
 				labels = generateIndexBasedLabels(mol, zeroBased);
 				break;
 				
+			case IndexOnly:
+				labels = generateIndexOnlyLabels(mol, zeroBased);
+				break;
+				
 			case AtomicNumber:
 				labels = generateAtomicNumberLabels(mol);
 				break;
@@ -321,6 +326,39 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
                 label = el + i;
             } else {
                 label = el + (i+1);
+            }
+            atm.setProperty(AtomConstants.ATMLABEL, label);
+            labels.add(label);
+        }
+		return labels;
+	}
+	
+//------------------------------------------------------------------------------
+
+    /**
+     * Generate the atom labels using the {@link AtomLabelMode#IndexOnly} 
+     * strategy, i.e., each
+     * atom is indexed based on its elemental symbol. 
+     * For example, molecule CCOOH
+     * will generate labels "0", "1", "2", "3", and "4".
+     * @param iac the container to work on.
+     * @param zeroBased use <code>false</code> to use 1-based indexing. 
+     * By default we work with 0-based indexing.
+     * @return the list of atom labels.
+     */
+	public static List<String> generateIndexOnlyLabels(IAtomContainer iac,
+			boolean zeroBased) 
+	{
+		List<String> labels = new ArrayList<String>();
+		for (int i=0; i<iac.getAtomCount(); i++)
+        {
+			IAtom atm = iac.getAtom(i);
+            String label = "notSet";
+            if (zeroBased)
+            {
+                label = "" + i;
+            } else {
+                label = "" + (i+1);
             }
             atm.setProperty(AtomConstants.ATMLABEL, label);
             labels.add(label);
