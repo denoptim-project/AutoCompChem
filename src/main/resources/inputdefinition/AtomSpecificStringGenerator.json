@@ -3,13 +3,13 @@
     "key": "IDSEPARATOR",
     "casedKey": "idSeparator",
     "type": "<String>",
-    "doc": "The separator to usebetween tuple item identifiers."
+    "doc": "The separator to use between identifiers of tuple's items."
   },
   {
     "key": "FIELDSEPARATOR",
     "casedKey": "fieldSeparator",
     "type": "<String>",
-    "doc": "The separator to use between prefix/suffix and tuple item identifiers"
+    "doc": "The separator to use between prefix/suffix and identifiers of tuple's items."
   },
   {
     "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
