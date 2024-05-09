@@ -3,7 +3,7 @@
     "key": "RULENAMEROOT",
     "casedKey": "ruleNameRoot",
     "type": "<String>",
-    "doc": "String used to name the rules meant to find atom tuples. This sting helps making the log more understandable but does not affect the behavior of the algorithms."
+    "doc": "String used to name the rules meant to find atom tuples. This string helps making the log more understandable but does not affect the behavior of the algorithms."
   },
   {
     "key": "VALUEDKEYWORDS",
