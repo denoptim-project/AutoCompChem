@@ -13,11 +13,22 @@
   },
   {
     "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
-    "tag": "generation of annotated tuple of atom identifiers"
+    "tag": "generation of annotated tuple of atom identifiers",
+    "ignorableWorkers": [
+      "autocompchem.modeling.AtomLabelsGenerator",
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
   },
   {
     "embeddedWorker": "autocompchem.modeling.AtomLabelsGenerator",
-    "tag": "generation of atom labels"
+    "tag": "generation of atom labels",
+    "ignorableItems": [
+      "outFile",
+      "separator"
+    ],
+    "ignorableWorkers": [
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",

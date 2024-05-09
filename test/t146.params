@@ -1,0 +1,4 @@
+# Create Orca input file with atom-specific basis set
+TASK: PrepareInputORCA
+InputGeometriesFile: ../t146-mol.sdf
+JOBDETAILSFILE: ../t146-jobDetails.json

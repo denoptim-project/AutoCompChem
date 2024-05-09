@@ -81,7 +81,7 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
      * Flag defining if we use 0- or 1-based indexing. 
      * By default, we use 0-based.
      */
-    private boolean zeroBased = false;
+    private boolean zeroBased = true;
     
     /**
      * Separator used when reporting the list of atom labels to log or output 

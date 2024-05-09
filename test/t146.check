@@ -1,0 +1,34 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t146-mol.inp" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*Nuclei = H1 {" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+# The default atom identifier is 0-based index, irrespectively on the presence
+# of label-formatting keywords which are not active here, because of the
+# absence of the 'getAtomLabels' keyword
+n=0; n=$(grep -c "^[[:space:]]*Nuclei = 68 {" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*bisNuclei =^H26@C4^{" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "^[[:space:]]*bisNuclei =^68@65^{" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*trisNuclei =/1-6/{" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "^[[:space:]]*trisNuclei =/68-65/{" t146-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t146.log" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t146.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

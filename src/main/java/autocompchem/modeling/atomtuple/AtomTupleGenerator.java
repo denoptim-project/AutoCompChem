@@ -318,6 +318,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
      * @param mol the atom container for which we want to create atom tuples.
      * @return the list of tuples
      */
+    @Deprecated
     public List<AnnotatedAtomTuple> createTuples(IAtomContainer mol)
     {
     	//TODO-gg get rid of this method! it's obsolete
