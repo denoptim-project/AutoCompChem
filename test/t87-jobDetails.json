@@ -127,6 +127,10 @@
                 {
                   "reference": "labelType",
                   "value": "indexBased"
+                },
+                {
+                  "reference": "ZEROBASED",
+                  "value": "false"
                 }
               ],
               "reference": "Geometry"
