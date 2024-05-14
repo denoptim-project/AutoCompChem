@@ -11,20 +11,20 @@
 		</Console>
 		<Console name="ConsoleWithTime" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+				pattern="%d{HH:mm:ss.SSS} [%t] %logger{36} - %msg%n" />
 		</Console>
 	</Appenders>
 	<Loggers>
 	    <Root level="OFF">
-	        <AppenderRef ref="ConsoleNoTime"/>
+	        <AppenderRef ref="ConsoleMsg"/>
 	    </Root>
 	    <!-- Make sure the name of the logger below is equal to the value of
-	         ACCConstants.MAINLOGGER-->
-		<logger name="MAINLOGGER" level="OFF" additivity="false">
-			<AppenderRef ref="ConsoleMsg" />
-		</logger>
-		<logger name="autocompchem" level="OFF" additivity="false">
-			<AppenderRef ref="ConsoleWithTime" />
-		</logger>
+	         ACCConstants.MAINOUTPUTLOGGER-->
+	    <logger name="MAINOUTPUTLOGGER" level="OFF" additivity="false">
+		<AppenderRef ref="ConsoleMsg" />
+	    </logger>
+	    <logger name="autocompchem" level="OFF" additivity="false">
+		<AppenderRef ref="ConsoleWithTime" />
+	    </logger>
     </Loggers>
 </Configuration>

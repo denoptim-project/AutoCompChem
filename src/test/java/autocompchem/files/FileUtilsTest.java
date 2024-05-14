@@ -21,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -194,6 +197,31 @@ sub2_abc/subsub2_abc
 //------------------------------------------------------------------------------
     
     @Test
+    public void testReplaceString() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+	
+		File testFile = new File(tempDir.getAbsolutePath() + fileSeparator + 
+				"fileToBeEdited");
+		List<String> originalText = new ArrayList<String>();
+		originalText.add("Line one");
+		originalText.add("Line two with PatteRN to edit");
+		originalText.add("Line three");
+		originalText.add("Line four with PatteeeeeeRN to edit");
+		IOtools.writeTXTAppend(testFile, originalText, true);
+		
+		String newString = "my new string";
+		
+		FileUtils.replaceString(testFile, 
+				Pattern.compile("[PpQq].tt.*[A-Z]N to edit"),
+				newString);
+		
+		assertEquals(2,FileAnalyzer.count(testFile, newString));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
     public void testGetPathToPatent() throws Exception
     {
         String a = "/path/to/me";
@@ -210,5 +238,7 @@ sub2_abc/subsub2_abc
         assertEquals(".",FileUtils.getPathToPatent(a),
         		"Only file name without path");
     }
-
+    
+//------------------------------------------------------------------------------
+    
 }

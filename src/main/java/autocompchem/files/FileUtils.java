@@ -26,8 +26,10 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 
 /**
@@ -444,6 +446,25 @@ public class FileUtils
             }
         }
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Replace a REGEX-defined pattern with a string into a text file.
+     * Corresponds to the 'sed' command in Unix.
+     * @param file the text file to work on.
+     * @param regex the REGEX defining the patters to replace
+     * @param newString the new string to replace the pattern with.
+     */
+	public static void replaceString(File file, Pattern regex, String newString) 
+	{
+        List<String> contents = IOtools.readTXT(file);
+        for (int i=0; i<contents.size(); i++)
+        {
+        	contents.set(i, regex.matcher(contents.get(i)).replaceAll(newString));
+        }
+        IOtools.writeTXTAppend(file, contents, false);
+	}
 
 //------------------------------------------------------------------------------
 

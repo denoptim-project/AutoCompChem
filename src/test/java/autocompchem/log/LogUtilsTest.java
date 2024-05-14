@@ -22,20 +22,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.google.gson.Gson;
+
 import autocompchem.files.FileAnalyzer;
+import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
+import autocompchem.io.IOtools;
 
 
 /**
@@ -46,18 +56,11 @@ import autocompchem.files.FileAnalyzer;
 
 public class LogUtilsTest 
 {
-    //TODO-gg del
-	public static final String LOG4J2CONFIGFILEPATHNAME = "log4j2.xml";
-	
-//------------------------------------------------------------------------------
 
-    //TODO-gg del
-	@BeforeAll
-	public static void configureDefaults()
-	{
-		System.setProperty("log4j.configurationFile",
-				LOG4J2CONFIGFILEPATHNAME);
-	}
+	private static String fileSeparator = System.getProperty("file.separator");
+	
+    @TempDir 
+    File tempDir;
     
 //------------------------------------------------------------------------------
 
@@ -69,32 +72,61 @@ public class LogUtilsTest
     	assertEquals(Level.ALL, LogUtils.verbosityToLevel(7));
     	assertEquals(Level.INFO, LogUtils.verbosityToLevel(4));
     }   
-    
-//------------------------------------------------------------------------------
 
-    //TODO-gg del
+  //------------------------------------------------------------------------------
+
     @Test
-    public void testDefaultLogConfig() throws Exception
+    public void testLogFormat() throws Exception
     {
-    	assertEquals(LOG4J2CONFIGFILEPATHNAME, 
-    			System.getProperty("log4j.configurationFile"));
-    	Logger logger = LogManager.getLogger(LogUtils.class);
-    	Logger output = LogManager.getLogger("OUTPUT");
-    	Logger other = LogManager.getLogger();
+    	// Define location of log time
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+		File myLogFile = new File(tempDir.getAbsolutePath() + fileSeparator 
+				+ "myLogFile.log");
     	
-    	LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-    	Configuration config = ctx.getConfiguration();
-    	LoggerConfig loggerConfig = config.getLoggerConfig("OUTPUT"); 
-    	loggerConfig.setLevel(Level.TRACE);
-    	ctx.updateLoggers();
+    	// Keep track of the configuration found before running this test
+    	String standardConfigFile = System.getProperty(
+    			"log4j.configurationFile");
+    	if (standardConfigFile==null)
+    		standardConfigFile = "log4j2.xml";
     	
+    	// Make a specific configuration file meant only for this tests
+		ClassLoader classLoader = getClass().getClassLoader();
+		File tmplConfigFile = new File(classLoader.getResource(
+				"log4j2_config-A.xml").getFile());
+		File myConfigFile = new File(tempDir.getAbsolutePath() + fileSeparator
+				+ "myConfigFile.xml");
+		IOtools.writeTXTAppend(myConfigFile, 
+				IOtools.readTXT(tmplConfigFile), false);
+		FileUtils.replaceString(myConfigFile, 
+				Pattern.compile("STRINGTOCHANGE"),
+				myLogFile.getAbsolutePath());
+		
+        // Set tmp configuration file
+        System.setProperty("log4j.configurationFile", 
+        		myConfigFile.getAbsolutePath());
+        
+        // Make a logger according to the tmp configuration file
+    	Logger loggerForTest = LogManager.getLogger();
+
+    	// Write some log
     	for (int i=-1; i<9; i++)
     	{
     		Level level = LogUtils.verbosityToLevel(i);
-    		logger.log(level, "L:My " + level + " message");
-    		output.log(level, "O:My " + level + " message");
-    		other.log(level, "R:My " + level + " message");
+    		loggerForTest.log(level, i +" L:My " + level + " message " + i);	
     	}
+    	
+    	// Test content of log file
+    	assertTrue(myLogFile.exists());
+    	List<List<Integer>> analysis = FileAnalyzer.count(myLogFile, 
+    			new ArrayList<String>(Arrays.asList(
+    					"BuiltForTest*", "*OFF*", "*INFO*")));
+    	List<Integer> counts = analysis.get(analysis.size()-1);
+    	assertEquals(5, counts.get(0)); //BuiltForTest
+    	assertEquals(2, counts.get(1)); //OFF
+    	assertEquals(0, counts.get(2)); //INFO
+    	
+        // Reset the configuration to what it was before this test
+        System.setProperty("log4j.configurationFile", standardConfigFile);
     }
     
 //------------------------------------------------------------------------------

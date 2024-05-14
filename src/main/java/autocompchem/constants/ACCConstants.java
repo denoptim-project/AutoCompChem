@@ -106,6 +106,6 @@ public class ACCConstants
 	/**
 	 * Logger charged to produce main log, which is always meant to STDOUT.
 	 */
-	public final static String MAINLOGGER = "MAINLOGGER";
+	public final static String MAINOUTPUTLOGGER = "MAINOUTPUTLOGGER";
 	
 }

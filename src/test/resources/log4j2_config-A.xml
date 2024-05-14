@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+            <File name="AppenderToFile" fileName="STRINGTOCHANGE">
+                <PatternLayout pattern="BuiltForTest %-5level - %msg%n"/>
+            </File>
+	</Appenders>
+	<Loggers>
+	    <Root level="WARN">
+	        <AppenderRef ref="AppenderToFile"/>
+	    </Root>
+    </Loggers>
+</Configuration>

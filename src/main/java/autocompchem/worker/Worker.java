@@ -332,7 +332,7 @@ public abstract class Worker implements IOutputExposer
     public void initialize()
     {	
     	logger = LogManager.getLogger(this.getClass());
-    	stdOutLogger = LogManager.getLogger(ACCConstants.MAINLOGGER);
+    	stdOutLogger = LogManager.getLogger(ACCConstants.MAINOUTPUTLOGGER);
         if (params.contains(ParameterConstants.VERBOSITY))
         {
             String str = params.getParameter(
