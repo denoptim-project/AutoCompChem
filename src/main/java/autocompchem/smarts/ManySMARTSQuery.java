@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.isomorphism.Mappings;
 import org.openscience.cdk.isomorphism.Pattern;
@@ -51,29 +53,43 @@ public class ManySMARTSQuery
     //Problems
     private boolean problems = false;
     private String message = "";
+    
 
 //------------------------------------------------------------------------------
 
-    /**
+    /**      
      * Constructs a new ManySMARTSQuery specifying all the parameters needed
      * @param mol the target molecule
      * @param smarts map of SMARTS (with reference names as keys)
      * @param verbosity level of verbosity
      */
 
+    @Deprecated
     public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, int verbosity)
     {
+    	this(mol, smarts, LogManager.getLogger());
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructs a new ManySMARTSQuery specifying all the parameters needed.
+     * @param mol the target molecule.
+     * @param smarts map of SMARTS (with reference names as keys).
+     * @param logger the tool to use for logging.
+     */
+
+    public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, 
+    		Logger logger)
+    {
         totNum = 0;
-    	for (String smartsRef : smarts.keySet()) {
+    	for (String smartsRef : smarts.keySet()) 
+    	{
             String oneSmarts = smarts.get(smartsRef);
 
-            if (verbosity >= 3)
-            {
-                System.out.println("Attempt to match query '" 
-                                        + smartsRef + "'.");
-                System.out.println("SMARTS: " + oneSmarts);
-            }
-
+            logger.trace("Attempt to match query '" + smartsRef + "': " 
+            		+ oneSmarts);
+            
             Pattern sp = SmartsPattern.create(oneSmarts);
             
             // This is required as from CDK-2.3 (or lower, anyway > 1.4.14)
@@ -88,11 +104,8 @@ public class ManySMARTSQuery
                 numMatches.put(smartsRef, num);
                 
                 totNum = totNum + num;
-                if (verbosity >= 2)
-                {
-                    System.out.println("Matches for query '" + smartsRef
-                        + "': " + num + " => Atoms: " + getStringFor(listOfIds));
-                }
+                logger.trace("Matches for query '" + smartsRef + "': " + num 
+                		+ " => Atoms: " + getStringFor(listOfIds));
             }
         }
     }

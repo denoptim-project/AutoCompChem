@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -41,6 +43,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -120,12 +123,10 @@ public class MolecularPruner extends AtomContainerInputProcessor
         FileUtils.mustNotExist(this.outFile);
 
         //Get the list of SMARTS to be matched
-        String allSamrts = 
-                params.getParameter("SMARTS").getValue().toString();
-        if (verbosity > 0)
-        {
-            System.out.println(" Importing SMARTS queries ");
-        }
+        String allSamrts = params.getParameter("SMARTS").getValue().toString();
+        
+        logger.debug(" Importing SMARTS queries ");
+        
         String[] parts = allSamrts.split("\\s+");
         for (int i=0; i<parts.length; i++)
         {
@@ -156,7 +157,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
 	{
     	if (task.equals(PRUNEMOLECULESTASK))
     	{
-    		IAtomContainer pruned = prune(iac, smarts, verbosity);
+    		IAtomContainer pruned = prune(iac, smarts, stdOutLogger);
     		
             if (outFile!=null)
             {
@@ -178,23 +179,29 @@ public class MolecularPruner extends AtomContainerInputProcessor
 
     /**
      * Prune: delete all matched atoms in all the molecules
+     * @param iac the atom container to be pruned.
+     * @param smarts the map of named SMARTS used to identify the atoms to 
+     * remove from the container.
+     * @param logger the tool to use for logging.
+     * @return the modified atom container that is a a reference to the one
+     * given as parameter.
      */
-
+	
     public static IAtomContainer prune(IAtomContainer iac, 
-    		Map<String,String> smarts, int verbosity)
-    {              
-        ManySMARTSQuery msq = new ManySMARTSQuery(iac, smarts, verbosity);
+    		Map<String,String> smarts, Logger logger)
+    {           
+        ManySMARTSQuery msq = new ManySMARTSQuery(iac, smarts, logger);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
-            Terminator.withMsgAndStatus("ERROR! " +cause,-1);
+            Terminator.withMsgAndStatus("ERROR! " + cause, -1);
         }
 
         List<IAtom> targets = new ArrayList<IAtom>();
         for (String key : smarts.keySet())
         {
             if (msq.getNumMatchesOfQuery(key) == 0)
-                {
+            {
                 continue;
             }
             
@@ -208,11 +215,15 @@ public class MolecularPruner extends AtomContainerInputProcessor
                 }
             }
         }
-
-        //Remove atoms
+        
+        List<String> labels = new ArrayList<String>();
+        targets.stream().forEach(a -> labels.add(AtomUtils.getSymbolOrLabel(a)));
+        logger.info("Removing atoms " + StringUtils.mergeListToString(labels, 
+        		",", true));
+    	
         for (IAtom targetAtm : targets)
         {
-            iac.removeAtom(targetAtm);
+        	iac.removeAtom(targetAtm);
         }
         
         return iac;

@@ -292,10 +292,7 @@ public class AtomContainerInputProcessor extends Worker
 	            		}
 		            }
 	            	IAtomContainer iac = inMols.get(i);
-	      			if (verbosity > 0)
-	      	        {
-	      	        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
-	      	        }
+	      			logger.info("#" + i + " " + MolecularUtils.getNameOrID(iac));
 	            	processOneAtomContainer(iac, i);
 	            	if (breakAfterThis)
 	            		break;
@@ -340,11 +337,8 @@ public class AtomContainerInputProcessor extends Worker
   		for (int molId = 0; molId<iacs.size(); molId++)
         {
   			IAtomContainer iac = iacs.get(molId);
-  			if (verbosity > 0)
-  	        {
-  	        	System.out.println("# " + MolecularUtils.getNameOrID(iac));
-  	        }
-  			processOneAtomContainer(iac, molId);
+  			logger.info("#" + molId + " " + MolecularUtils.getNameOrID(iac));
+        	processOneAtomContainer(iac, molId);
   		}
     }
     
