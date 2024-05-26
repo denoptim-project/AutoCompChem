@@ -1,7 +1,5 @@
 package autocompchem.log;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -20,41 +18,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.xml.XmlConfigurationFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.Isolated;
-import org.junit.jupiter.api.parallel.ResourceLock;
-import org.junit.jupiter.api.parallel.Resources;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-
-import com.google.gson.Gson;
 
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
-import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 
 
@@ -87,21 +76,26 @@ public class LogUtilsTest
 //------------------------------------------------------------------------------
 
     @Test
-    @ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
     public void testLogFormat() throws Exception
     {
     	// Define location of log time
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 		File myLogFile = new File(tempDir.getAbsolutePath() + fileSeparator 
 				+ "myLogFile.log");
-    	
-    	// Keep track of the configuration found before running this test
-    	String standardConfigFile = System.getProperty(
-    			"log4j.configurationFile");
-    	if (standardConfigFile==null)
-    		standardConfigFile = "log4j2.xml";
-    	
-    	// Make a specific configuration file meant only for this tests
+		
+		// Keep the original configuration. NB: using 'false' does not work
+		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!                                                                !!
+		// !!   The initial configuration changes between when we run this   !!
+		// !!   in Eclipse and when we run it in the maven workflow.         !!
+		// !!                                                                !!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//
+		LoggerContext initContex = (LoggerContext) LogManager.getContext(true);
+    	Configuration initConfig = initContex.getConfiguration();
+
+    	// Make a specific XML configuration file meant only for this tests
 		ClassLoader classLoader = getClass().getClassLoader();
 		File tmplConfigFile = new File(classLoader.getResource(
 				"log4j2_config-A.xml").getFile());
@@ -113,14 +107,15 @@ public class LogUtilsTest
 				Pattern.compile("STRINGTOCHANGE"),
 				myLogFile.getAbsolutePath());
 		
-        // Set tmp configuration file
-        System.setProperty("log4j.configurationFile", 
-        		myConfigFile.getAbsolutePath());
+		// Read the customized XML file into a configuration object
+		ConfigurationSource source = new ConfigurationSource(
+				new FileInputStream(myConfigFile), myConfigFile);
+		XmlConfiguration config = new XmlConfiguration(initContex, source);
+		
+		// Deploy the customized configuration
+		Configurator.reconfigure(config);
 
         // Make a logger according to the latest configuration
-        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        ctx.reconfigure();
-        ctx.updateLoggers();
     	Logger loggerForTest = LogManager.getLogger();
 
     	// Write some log
@@ -140,8 +135,110 @@ public class LogUtilsTest
     	assertEquals(2, counts.get(1)); //OFF
     	assertEquals(0, counts.get(2)); //INFO
     	
-        // Reset the configuration to what it was before this test
-        System.setProperty("log4j.configurationFile", standardConfigFile);
+		// Restore initial configuration
+		Configurator.reconfigure(initConfig);
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testRollingLog() throws Exception
+    {
+    	// Define location of log time
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+		File myLogFile = new File(tempDir.getAbsolutePath() + fileSeparator 
+				+ "myRollingLog.log");
+		
+		// Keep the original configuration. NB: using 'false' does not work
+		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!                                                                !!
+		// !!   The initial configuration changes between when we run this   !!
+		// !!   in Eclipse and when we run it in the maven workflow.         !!
+		// !!                                                                !!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//
+		LoggerContext initContex = (LoggerContext) LogManager.getContext(true);
+    	Configuration initConfig = initContex.getConfiguration();
+		
+    	// Make a specific XML configuration file meant only for this tests
+		ClassLoader classLoader = getClass().getClassLoader();
+		File tmplConfigFile = new File(classLoader.getResource(
+				"log4j2_config-RollingFileAppender.xml").getFile());
+		File myConfigFile = new File(tempDir.getAbsolutePath() + fileSeparator
+				+ "myConfigFileForRollingLog.xml");
+		IOtools.writeTXTAppend(myConfigFile, 
+				IOtools.readTXT(tmplConfigFile), false);
+		FileUtils.replaceString(myConfigFile, 
+				Pattern.compile("STRINGTOCHANGE"),
+				myLogFile.getAbsolutePath());
+		
+		// Read the customized XML file into a configuration object
+		ConfigurationSource source = new ConfigurationSource(
+				new FileInputStream(myConfigFile), myConfigFile);
+		XmlConfiguration config = new XmlConfiguration(initContex, source);
+		
+		// Deploy the customized configuration
+		Configurator.reconfigure(config);
+		
+        // Make a logger according to the latest configuration
+        Logger loggerForTest = LogManager.getLogger();
+        
+    	// Write some log
+    	for (int i=0; i<1000; i++)
+    	{
+    		loggerForTest.log(Level.WARN, "Log entry number " + i);
+    	}
+    	
+    	// Test existence of log latest files
+    	assertTrue(myLogFile.exists());
+    	
+    	// Ensure the given (3, see xml file) number of rolled over files exists
+    	// NB: the naming strategy is defined in the xml file
+    	File rolledOverLog1 = new File(myLogFile.getAbsolutePath() + "-1");
+    	assertTrue(rolledOverLog1.exists());
+    	File rolledOverLog2 = new File(myLogFile.getAbsolutePath() + "-2");
+    	assertTrue(rolledOverLog2.exists());
+    	File rolledOverLog3 = new File(myLogFile.getAbsolutePath() + "-3");
+    	assertTrue(rolledOverLog3.exists());
+    	File rolledOverLog4 = new File(myLogFile.getAbsolutePath() + "-4");
+    	assertFalse(rolledOverLog4.exists());
+    	
+    	List<List<Integer>> analysis = FileAnalyzer.count(myLogFile, 
+    			new ArrayList<String>(Arrays.asList(
+    					"* Log entry number 999", "Roller WARN*")));
+    	List<Integer> counts = analysis.get(analysis.size()-1);
+    	assertEquals(1, counts.get(0));
+    	assertTrue(counts.get(1) > 5);
+
+		// Restore initial configuration
+		Configurator.reconfigure(initConfig);
+    }
+
+
+//------------------------------------------------------------------------------
+
+    private void printContextDetails(LoggerContext ctx) throws Exception
+    {
+    	System.out.println("----------------------------------------------");
+     	Configuration config = ctx.getConfiguration();
+      	System.out.println("ConfigClass: "+config.getClass().getCanonicalName());
+      	System.out.println("Config: "+config.toString());
+      	
+      	for (String appenderName : config.getAppenders().keySet())
+      	{
+      		Appender appender = config.getAppender(appenderName);
+      		System.out.println("Appender "+appender.getName());
+      		try {
+          		Method m = appender.getClass().getDeclaredMethod("getFileName", null);
+          		if (m!=null)
+          		{
+          			System.out.println("  FileName:"+m.invoke(appender, null));
+          		}
+      		} catch (Throwable t) {
+      			//Nothing
+      		}
+      	}
     }
     
 //------------------------------------------------------------------------------
