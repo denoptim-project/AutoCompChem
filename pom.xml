@@ -105,11 +105,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>2.23.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>2.23.0</version>
     </dependency>
@@ -169,16 +164,14 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M3</version>
       </plugin>
-        <!-- Maven Assembly Plugin -->
+<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
           <configuration>
-            <!-- get all project dependencies -->
             <descriptorRefs>
                 <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
-            <!-- MainClass in mainfest make a executable jar -->
             <archive>
               <manifest>
                 <mainClass>autocompchem.ui.ACCMain</mainClass>
@@ -188,13 +181,65 @@
           <executions>
             <execution>
               <id>make-assembly</id>
-                <!-- bind to the packaging phase -->
-                <phase>package</phase>
-                <goals>
-                    <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+-->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.5.3</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.logging.log4j</groupId>
+              <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
+              <version>0.1.0</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>shade-jar-with-dependencies</id>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <filters>
+		          <filter>
+		            <artifact>*</artifact>
+		            <excludes>
+		              <exclude>module-info.class</exclude>
+		              <exclude>header.txt</exclude>
+		              <exclude>log4j.properties</exclude>
+		              <exclude>META-INF/DEPENDENCIES</exclude>
+		              <exclude>META-INF/MANIFEST.MF</exclude>
+		            </excludes>
+		          </filter>
+		        </filters>
+                <transformers>
+                  <transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                    <manifestEntries>  
+                      <Main-Class>autocompchem.ui.ACCMain</Main-Class>
+                    </manifestEntries>
+                  </transformer>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                    <addHeader>false</addHeader>
+                  </transformer>
+                </transformers>
+                <shadedArtifactAttached>true</shadedArtifactAttached>
+                <!--  you might want to check the dependency-reduced pom from time to time -->
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+                <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
     </plugins>
   </build>
