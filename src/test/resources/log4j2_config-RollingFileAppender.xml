@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30">
+    <Appenders>
+        <RollingFile name="RollerToFile"
+            fileName="STRINGTOCHANGE"
+            filePattern="STRINGTOCHANGE-%i">
+            <PatternLayout pattern="Roller %-5level - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1KB" />
+            </Policies>
+            <DefaultRolloverStrategy max="3" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="ALL">
+            <AppenderRef ref="RollerToFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -22,23 +22,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.xml.XmlConfigurationFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
 
 import com.google.gson.Gson;
 
@@ -54,6 +64,7 @@ import autocompchem.io.IOtools;
  * @author Marco Foscato
  */
 
+@Isolated
 public class LogUtilsTest 
 {
 
@@ -73,9 +84,10 @@ public class LogUtilsTest
     	assertEquals(Level.INFO, LogUtils.verbosityToLevel(4));
     }   
 
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     @Test
+    @ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
     public void testLogFormat() throws Exception
     {
     	// Define location of log time
@@ -104,8 +116,11 @@ public class LogUtilsTest
         // Set tmp configuration file
         System.setProperty("log4j.configurationFile", 
         		myConfigFile.getAbsolutePath());
-        
-        // Make a logger according to the tmp configuration file
+
+        // Make a logger according to the latest configuration
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        ctx.reconfigure();
+        ctx.updateLoggers();
     	Logger loggerForTest = LogManager.getLogger();
 
     	// Write some log
