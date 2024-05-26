@@ -75,8 +75,12 @@ public class LogUtilsTest
 
 //------------------------------------------------------------------------------
 
+    /*
+     * src/test/resources/log4j2_config-A.xml
+     */
+    
     @Test
-    public void testLogFormat() throws Exception
+    public void testLogFormatA() throws Exception
     {
     	// Define location of log time
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -134,6 +138,79 @@ public class LogUtilsTest
     	assertEquals(5, counts.get(0)); //BuiltForTest
     	assertEquals(2, counts.get(1)); //OFF
     	assertEquals(0, counts.get(2)); //INFO
+    	
+		// Restore initial configuration
+		Configurator.reconfigure(initConfig);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /*
+     * Testing of src/test/resources/log4j2_config-B.xml
+     * This is mosly a repetition of the previous method, but the assertions
+     * change!
+     */
+    
+    @Test
+    public void testLogFormatB() throws Exception
+    {
+    	// Define location of log time
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+		File myLogFile = new File(tempDir.getAbsolutePath() + fileSeparator 
+				+ "myLogFileB.log");
+		
+		// Keep the original configuration. NB: using 'false' does not work
+		//
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!                                                                !!
+		// !!   The initial configuration changes between when we run this   !!
+		// !!   in Eclipse and when we run it in the maven workflow.         !!
+		// !!                                                                !!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//
+		LoggerContext initContex = (LoggerContext) LogManager.getContext(true);
+    	Configuration initConfig = initContex.getConfiguration();
+
+    	// Make a specific XML configuration file meant only for this tests
+		ClassLoader classLoader = getClass().getClassLoader();
+		File tmplConfigFile = new File(classLoader.getResource(
+				"log4j2_config-B.xml").getFile());
+		File myConfigFile = new File(tempDir.getAbsolutePath() + fileSeparator
+				+ "myConfigFileB.xml");
+		IOtools.writeTXTAppend(myConfigFile, 
+				IOtools.readTXT(tmplConfigFile), false);
+		FileUtils.replaceString(myConfigFile, 
+				Pattern.compile("STRINGTOCHANGE"),
+				myLogFile.getAbsolutePath());
+		
+		// Read the customized XML file into a configuration object
+		ConfigurationSource source = new ConfigurationSource(
+				new FileInputStream(myConfigFile), myConfigFile);
+		XmlConfiguration config = new XmlConfiguration(initContex, source);
+		
+		// Deploy the customized configuration
+		Configurator.reconfigure(config);
+
+        // Make a logger according to the latest configuration
+    	Logger loggerForTest = LogManager.getLogger();
+
+    	// Write some log
+    	for (int i=-1; i<9; i++)
+    	{
+    		Level level = LogUtils.verbosityToLevel(i);
+    		loggerForTest.log(level, i +" L:BBB " + level + " message " + i);	
+    	}
+    	
+    	// Test content of log file
+    	assertTrue(myLogFile.exists());
+    	List<List<Integer>> analysis = FileAnalyzer.count(myLogFile, 
+    			new ArrayList<String>(Arrays.asList(
+    					"default pattern*", "pattern for info*", 
+    					"pattern for debug*")));
+    	List<Integer> counts = analysis.get(analysis.size()-1);
+    	assertEquals(5, counts.get(0)); //BuiltForTest
+    	assertEquals(1, counts.get(1)); //OFF
+    	assertEquals(1, counts.get(2)); //INFO
     	
 		// Restore initial configuration
 		Configurator.reconfigure(initConfig);

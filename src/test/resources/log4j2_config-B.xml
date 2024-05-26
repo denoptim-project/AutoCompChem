@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <File name="AppenderToFile" fileName="STRINGTOCHANGE">
+      <PatternLayout>
+        <LevelPatternSelector defaultPattern="default pattern %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %msg%n">
+          <PatternMatch key="INFO" pattern="pattern for info %msg%n" />
+          <PatternMatch key="DEBUG" pattern="pattern for debug %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger %msg%n" />
+          <PatternMatch key="TRACE" pattern="pattern for trace %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger %msg%n" />
+        </LevelPatternSelector>
+      </PatternLayout>
+    </File>
+  </Appenders>
+  <Loggers>
+    <Root level="DEBUG">
+      <AppenderRef ref="AppenderToFile"/>
+    </Root>
+  </Loggers>
+</Configuration>
