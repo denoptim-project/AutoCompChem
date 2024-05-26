@@ -17,7 +17,9 @@ package autocompchem.run;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Date;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Terminator has the power to kill the execution of a running job
@@ -28,35 +30,29 @@ import java.util.Date;
 public class Terminator
 {
 	private static final String NL = System.getProperty("line.separator");
+    
+    /*
+     * The logger of this class
+     */
+    private static Logger logger = LogManager.getLogger(
+    		"autocompchem.run.Terminator");
 	
 //------------------------------------------------------------------------------
 
     /**
-     * Terminate execution with error message and specify exit status
-     * @param message message to be printed in <code>stdout</code> and 
-     * <code>stderr</code>
+     * Terminate execution with error message and specify exit status.
+     * @param message the final message to be printed when closing the log.
      * @param exitStatus exit status
      */
 
     public static void withMsgAndStatus(String message, int exitStatus)
     {
-        Date date = new Date();
-        String line = NL + NL + "**********************************************"
-                + "*****************************"
-                + NL + " " + date.toString() + NL + NL
-                + " Termination status: " + exitStatus + NL
-                + " Final message: " + message + NL + NL
-                + " Thanks for using AutoCompChem." + NL
-                + " Mandi! ;) " + NL;
-
-        System.out.println(line);
-        
-//TODO add check if stdout and stderr are not the same
-        if (exitStatus != 0)
-        {
-            System.err.println(line);
-        }
-
+        String line = "**********************************************"
+                + "***************************** " + NL
+                + "Termination status: " + exitStatus + NL
+                + "Final message: " + message + NL + NL
+                + "Thanks for using AutoCompChem. Mandi! ;) ";
+        logger.info(line);
         System.exit(exitStatus);
     }
 

@@ -282,10 +282,6 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 
     public void setDefault()
     {
-        //Set default parameter
-    	NamedData vl = new NamedData(ParameterConstants.VERBOSITY, 
-    			NamedDataType.INTEGER,"0");
-        allData.put(ParameterConstants.VERBOSITY,vl);
     }
 
 //------------------------------------------------------------------------------

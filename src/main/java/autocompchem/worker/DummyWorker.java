@@ -86,6 +86,7 @@ public class DummyWorker extends Worker
 	@Override
 	public void initialize() 
 	{
+		super.initialize();
 		inputCollector = new NamedDataCollector();
 		
 		// These dummy data are used only for testing
@@ -103,19 +104,18 @@ public class DummyWorker extends Worker
     	if (!task.equals(DUMMYTASKTASK))
     		dealWithTaskMismatch();
     	
-		// The only task here is reporting something in the output collector
+		// The only task here is reporting something 
 		exposeOutputData(inputCollector.getNamedData(DATAREF));
+
+		// NB: here we assume that the logging level is INFO
+		logger.warn("fake warning");
+		logger.error("fake error");
+		logger.info("fake info");
+		logger.debug("fake debug");
+		logger.trace("fake trace");
 		
-		if (params.contains("VERBOSITY")) 
-		{
-			if (Integer.parseInt(params.getParameter("VERBOSITY").getValue()
-					.toString()) > 2) {
-				// In some tests we might want to check that the input has been 
-				// read
-				// properly, so we echo the content of the param. storage
-				System.out.println(params.toLinesJobDetails());
-			} 
-		}
+		stdOutLogger.info("Parameters for dummy task: " 
+				+ params.toLinesJobDetails());
 	}
 	
 //-----------------------------------------------------------------------------	

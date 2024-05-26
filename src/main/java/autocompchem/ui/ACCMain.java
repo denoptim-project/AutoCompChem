@@ -1,8 +1,6 @@
 package autocompchem.ui;
 
 
-import java.io.File;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -19,6 +17,12 @@ import java.io.File;
  *   You should have received a copy of the GNU Affero General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+import java.io.File;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -58,6 +62,12 @@ public class ACCMain
      *  the help message.
      */
     private static final Object CLIHELPSHORT = "-H";
+    
+    /*
+     * The logger of this class
+     */
+    private static Logger logger = LogManager.getLogger(
+    		"autocompchem.ui.ACCMain");
 
 //------------------------------------------------------------------------------
     
@@ -127,10 +137,9 @@ public class ACCMain
                 {
                     Worker w = ((ACCJob) job).getUninitializedWorker();
                     String msg = w.getTaskSpecificHelp();
-                    //TODO-gg add verbodity here not as worker-specific parameter
-                    System.out.println(msg);
+                    logger.info(msg);
                 } else {
-                    System.out.println("No help message available for " 
+                	logger.warn("No help message available for " 
                             + job.getClass().getName() + "jobs.");
                 }
                 Terminator.withMsgAndStatus("Exiting upon request to print "
@@ -165,7 +174,7 @@ public class ACCMain
         }
         
         // Exit
-        Terminator.withMsgAndStatus("Normal Termination",0);
+        Terminator.withMsgAndStatus("Normal Termination", 0);
     }
 
 //------------------------------------------------------------------------------
@@ -180,8 +189,7 @@ public class ACCMain
     private static void initializeRegistry() 
     {
     	WorkerFactory.getInstance();
-    	// TODO-gg logger
-    	System.out.println("#Tasks registered in AutoCompChem: " 
+    	logger.debug("#Tasks registered in AutoCompChem: " 
     			+ Task.getRegisteredTasks().size());
 	}
 
@@ -381,8 +389,7 @@ public class ACCMain
     
     private static void printInit()
     {
-        
-        System.out.println(NL + NL 
+    	logger.info(NL
                 + "**********************************************"
                 + "*****************************"
                 + NL + "                              AutoCompChem"
@@ -432,7 +439,7 @@ public class ACCMain
                 + "  [more args] are optional arguments that depend on the "
                 + "task at hand. " + NL 
                 + "  See user manual for further instructions.";
-        System.out.println(s);
+        logger.info(s);
     }
 
 //------------------------------------------------------------------------------

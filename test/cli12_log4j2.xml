@@ -3,15 +3,14 @@
 	<Appenders>
 		<Console name="ConsoleMsg" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%msg%n" />
+				pattern="TEST-CLI12 %msg%n" />
 		</Console>
-		<Console name="ConsoleNoTime" target="SYSTEM_OUT">
-			<PatternLayout
-				pattern="%logger{36} - %msg%n" />
-		</Console>
+                <File name="AppenderToFile" fileName="cli12_output">
+                  <PatternLayout pattern="%msg%n"/>
+                </File>
 		<Console name="ConsoleWithTime" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %n%msg%n" />
+				pattern="TEST-CLI12-wStamp %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %n%msg%n" />
 		</Console>
 	</Appenders>
 	<Loggers>
@@ -21,10 +20,9 @@
 	    <!-- Make sure the name of the logger below is equal to the value of
 	         ACCConstants.MAINOUTPUTLOGGER-->
 	    <logger name="MAINOUTPUTLOGGER" level="INFO" additivity="false">
-		<AppenderRef ref="ConsoleMsg" />
+		<AppenderRef ref="AppenderToFile" />
 	    </logger>
-	    <logger name="autocompchem" level="INFO" additivity="false">
-                <!-- INFO is assumed in DUmmyWorker for testing-->
+	    <logger name="autocompchem" level="OFF" additivity="false">
 		<AppenderRef ref="ConsoleWithTime" />
 	    </logger>
     </Loggers>

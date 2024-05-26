@@ -332,6 +332,9 @@ public abstract class Worker implements IOutputExposer
     public void initialize()
     {	
     	logger = LogManager.getLogger(this.getClass());
+        logger.debug("Reading parameters in " 
+        		+ this.getClass().getSimpleName() + ".");
+        
     	stdOutLogger = LogManager.getLogger(ACCConstants.MAINOUTPUTLOGGER);
         if (params.contains(ParameterConstants.VERBOSITY))
         {
@@ -348,9 +351,6 @@ public abstract class Worker implements IOutputExposer
             
             //TODO-gg remove verbosity
             verbosity = Integer.parseInt(str) - 4;
-            
-            stdOutLogger.log(Level.INFO, "Adding parameters to "
-            		+ this.getClass().getSimpleName() + ".");
         }
     }
     

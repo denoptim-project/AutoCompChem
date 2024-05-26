@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ ! -f cli1.log ] ; then
-echo NOT Passed ERROR 1
-exit -1
+  echo NOT Passed ERROR 1
+  exit -1
 fi
 
 n=0;n=$(grep -c " O:opt-o" cli1.log )
@@ -14,11 +14,28 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 n=0;n=$(grep -c " L:many words in one opt," cli1.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
-grep -q 'Termination status: 0' cli1.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+n=0;n=$(grep -c "fake error" cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -c "fake warning" cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -c "fake info" cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -c "fake debug" cli1.log )
+if [ $n -ne 0 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -c "Mandi!" cli1.log )
+if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+
+n=0;n=$(grep -c "AutoCompChem" cli1.log )
+if [ $n -ne 2 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' cli1.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 4
-exit -1
+  echo NOT Passed ERROR 99
+  exit -1
 fi
