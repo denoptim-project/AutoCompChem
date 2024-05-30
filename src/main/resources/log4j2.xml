@@ -5,6 +5,8 @@
       <PatternLayout>
         <LevelPatternSelector defaultPattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %msg%n">
           <PatternMatch key="INFO" pattern="%msg%n"/>
+          <PatternMatch key="DEBUG" pattern="%msg%n"/>
+          <PatternMatch key="TRACE" pattern="%msg%n"/>
         </LevelPatternSelector>
       </PatternLayout>
     </Console>

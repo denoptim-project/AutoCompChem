@@ -125,7 +125,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
         //Get the list of SMARTS to be matched
         String allSamrts = params.getParameter("SMARTS").getValue().toString();
         
-        logger.debug(" Importing SMARTS queries ");
+        logger.debug("Importing SMARTS queries ");
         
         String[] parts = allSamrts.split("\\s+");
         for (int i=0; i<parts.length; i++)
@@ -220,9 +220,9 @@ public class MolecularPruner extends AtomContainerInputProcessor
         {
             List<String> labels = new ArrayList<String>();
             targets.stream()
-            	.forEach(a -> labels.add(AtomUtils.getSymbolOrLabel(a)));
+            	.forEach(a -> labels.add(MolecularUtils.getAtomRef(a, iac)));
         	logger.info("Removing atoms " 
-            		+ StringUtils.mergeListToString(labels, ",", true));
+            		+ StringUtils.mergeListToString(labels, ", ", true));
         }
         
         for (IAtom targetAtm : targets)

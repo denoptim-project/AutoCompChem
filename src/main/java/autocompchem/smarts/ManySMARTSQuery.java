@@ -87,7 +87,7 @@ public class ManySMARTSQuery
     	{
             String oneSmarts = smarts.get(smartsRef);
 
-            logger.trace("Attempt to match query '" + smartsRef + "': " 
+            logger.debug("Attempt to match query '" + smartsRef + "': " 
             		+ oneSmarts);
             
             Pattern sp = SmartsPattern.create(oneSmarts);
@@ -104,7 +104,7 @@ public class ManySMARTSQuery
                 numMatches.put(smartsRef, num);
                 
                 totNum = totNum + num;
-                logger.trace("Matches for query '" + smartsRef + "': " + num 
+                logger.debug("Matches for query '" + smartsRef + "': " + num 
                 		+ " => Atoms: " + getStringFor(listOfIds));
             }
         }
