@@ -32,7 +32,6 @@ import autocompchem.io.IOtools;
 import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.worker.DummyWorker;
-import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 /**

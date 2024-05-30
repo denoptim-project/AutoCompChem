@@ -157,7 +157,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
 	{
     	if (task.equals(PRUNEMOLECULESTASK))
     	{
-    		IAtomContainer pruned = prune(iac, smarts, stdOutLogger);
+    		IAtomContainer pruned = prune(iac, smarts, logger);
     		
             if (outFile!=null)
             {
@@ -216,11 +216,15 @@ public class MolecularPruner extends AtomContainerInputProcessor
             }
         }
         
-        List<String> labels = new ArrayList<String>();
-        targets.stream().forEach(a -> labels.add(AtomUtils.getSymbolOrLabel(a)));
-        logger.info("Removing atoms " + StringUtils.mergeListToString(labels, 
-        		",", true));
-    	
+        if (logger!=null)
+        {
+            List<String> labels = new ArrayList<String>();
+            targets.stream()
+            	.forEach(a -> labels.add(AtomUtils.getSymbolOrLabel(a)));
+        	logger.info("Removing atoms " 
+            		+ StringUtils.mergeListToString(labels, ",", true));
+        }
+        
         for (IAtom targetAtm : targets)
         {
         	iac.removeAtom(targetAtm);

@@ -114,7 +114,7 @@ public class DummyWorker extends Worker
 		logger.debug("fake debug");
 		logger.trace("fake trace");
 		
-		stdOutLogger.info("Parameters for dummy task: " 
+		logger.info("Parameters for dummy task: " 
 				+ params.toLinesJobDetails());
 	}
 	

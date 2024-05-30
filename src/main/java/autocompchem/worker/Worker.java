@@ -103,11 +103,6 @@ public abstract class Worker implements IOutputExposer
      */
     protected Logger logger;
     
-    /**
-     * Logger for reporting results to STDOUT.
-     */
-    protected Logger stdOutLogger;
-    
 //------------------------------------------------------------------------------
 
     /**
@@ -331,7 +326,6 @@ public abstract class Worker implements IOutputExposer
         logger.debug("Reading parameters in " 
         		+ this.getClass().getSimpleName() + ".");
         
-    	stdOutLogger = LogManager.getLogger(ACCConstants.MAINOUTPUTLOGGER);
         if (params.contains(ParameterConstants.VERBOSITY))
         {
             String str = params.getParameter(
@@ -342,7 +336,7 @@ public abstract class Worker implements IOutputExposer
 						+ "cannot be converted to an integer. Check parameter "
 						+ ParameterConstants.VERBOSITY, -1);
 			}
-            Configurator.setAllLevels(stdOutLogger.getName(), 
+            Configurator.setAllLevels(logger.getName(), 
             		LogUtils.verbosityToLevel(Integer.parseInt(str)));
             
             //TODO-gg remove verbosity

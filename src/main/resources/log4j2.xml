@@ -1,31 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
-	<Appenders>
-		<Console name="ConsoleMsg" target="SYSTEM_OUT">
-			<PatternLayout
-				pattern="%msg%n" />
-		</Console>
-		<Console name="ConsoleNoTime" target="SYSTEM_OUT">
-			<PatternLayout
-				pattern="%logger{36} - %msg%n" />
-		</Console>
-		<Console name="ConsoleWithTime" target="SYSTEM_OUT">
-			<PatternLayout
-				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %n%msg%n" />
-		</Console>
-	</Appenders>
-	<Loggers>
-	    <Root level="OFF">
-	        <AppenderRef ref="ConsoleMsg"/>
-	    </Root>
-	    <!-- Make sure the name of the logger below is equal to the value of
-	         ACCConstants.MAINOUTPUTLOGGER-->
-	    <logger name="MAINOUTPUTLOGGER" level="INFO" additivity="false">
-		<AppenderRef ref="ConsoleMsg" />
-	    </logger>
-	    <logger name="autocompchem" level="INFO" additivity="false">
-                <!-- INFO is assumed in DUmmyWorker for testing-->
-		<AppenderRef ref="ConsoleWithTime" />
-	    </logger>
-    </Loggers>
+  <Appenders>
+    <Console name="ConsoleLevelSpecific" target="SYSTEM_OUT">
+      <PatternLayout>
+        <LevelPatternSelector defaultPattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %msg%n">
+          <PatternMatch key="INFO" pattern="%msg%n"/>
+        </LevelPatternSelector>
+      </PatternLayout>
+    </Console>
+    <Console name="ConsoleUndecorated" target="SYSTEM_OUT">
+      <PatternLayout pattern="%msg%n" />
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="ConsoleLevelSpecific"/>
+    </Root>
+    <logger name="autocompchem.ui.ACCMain" level="INFO" additivity="false">
+      <AppenderRef ref="ConsoleUndecorated" />
+    </logger>
+    <logger name="autocompchem.run.Terminator" level="INFO" additivity="false">
+      <AppenderRef ref="ConsoleUndecorated" />
+    </logger>
+  </Loggers>
 </Configuration>

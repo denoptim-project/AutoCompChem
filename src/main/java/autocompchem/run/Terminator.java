@@ -1,5 +1,8 @@
 package autocompchem.run;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -20,6 +23,8 @@ package autocompchem.run;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import autocompchem.utils.TimeUtils;
 
 /**
  * Terminator has the power to kill the execution of a running job
@@ -47,11 +52,11 @@ public class Terminator
 
     public static void withMsgAndStatus(String message, int exitStatus)
     {
-        String line = "**********************************************"
-                + "***************************** " + NL
+        String line = TimeUtils.getTimestampLine() + NL
                 + "Termination status: " + exitStatus + NL
-                + "Final message: " + message + NL + NL
-                + "Thanks for using AutoCompChem. Mandi! ;) ";
+                + "Final message: " + message + NL 
+                + "Thanks for using AutoCompChem." + NL
+                + "Mandi! ;) ";
         logger.info(line);
         System.exit(exitStatus);
     }

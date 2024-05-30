@@ -88,7 +88,7 @@ public class LogUtilsTest
 		ClassLoader classLoader = getClass().getClassLoader();
 		
 		/*
-		 * 
+		 * Simple file appender
 		 */
 		File tmplConfigFile = new File(classLoader.getResource(
 				"log4j2_config-A.xml").getFile());

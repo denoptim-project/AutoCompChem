@@ -32,6 +32,7 @@ import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
+import autocompchem.utils.TimeUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -46,8 +47,8 @@ import autocompchem.worker.WorkerFactory;
 
 public class ACCMain
 {
-    //Software version number //TODO: move to logging class
-    private static final String version = "2.0";
+    //Software version number
+    private static final String version = "3.0.0";
     
     // System.spec line separator
     private static final String NL = System.getProperty("line.separator");
@@ -389,11 +390,9 @@ public class ACCMain
     
     private static void printInit()
     {
-    	logger.info(NL
-                + "**********************************************"
-                + "*****************************"
-                + NL + "                              AutoCompChem"
-                + NL + "                              Version: " + version
+    	logger.info(TimeUtils.getTimestampLine()
+                + NL + "                                AutoCompChem"
+                + NL + "                               Version: " + version
                 + NL + "**********************************************"
                 + "*****************************" + NL);
     }
@@ -406,7 +405,7 @@ public class ACCMain
     
     private static void printUsage()
     {
-        String s = NL + " Alternative usage from the command line: " + NL
+        String s = "Alternative usage from the command line: " + NL
             + NL + " java -jar AutoCompChem.jar <parameters_file>"
             + NL + " java -jar AutoCompChem.jar -t/--task <task> [more args]"
             + NL + " java -jar AutoCompChem.jar -p/--params "
@@ -438,7 +437,9 @@ public class ACCMain
         s = s + NL + NL 
                 + "  [more args] are optional arguments that depend on the "
                 + "task at hand. " + NL 
-                + "  See user manual for further instructions.";
+                + "  To see documentation on task-specific options, run the "
+                + "follofing:" + NL
+                + "    -t <task_you_are_interested_in> -h " + NL;
         logger.info(s);
     }
 
