@@ -21,17 +21,21 @@ package autocompchem.ui;
 
 import java.io.File;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
+import autocompchem.log.LogUtils;
 import autocompchem.run.ACCJob;
 import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
+import autocompchem.utils.NumberUtils;
 import autocompchem.utils.TimeUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -78,7 +82,7 @@ public class ACCMain
      */
     
     public static void main(String[] args)
-    {
+    {   
         // Logging in message
         printInit();
         
@@ -209,7 +213,7 @@ public class ACCMain
         ParameterStorage params = new ParameterStorage();
         params.setDefault();
         
-        // First, look for the -t/--task or for -p/--params: 
+        // First, look for the -t/--task, -p/--params, and -v/--verbosity:
         // either one must be there
         boolean foundTask = false;
         String taskStr = null;
@@ -243,6 +247,27 @@ public class ACCMain
                 }
                 paramsFile = new File(args[iarg+1]);
                 foundParams=true;
+            }
+            
+            if (arg.equalsIgnoreCase("-v") || arg.equalsIgnoreCase("--verbosity"))
+            {    
+                if (iarg+1 >= args.length)
+                {
+                    Terminator.withMsgAndStatus("ERROR! Option -v (--verbosity)"
+                            + " seems to have no value. I expect to find an "
+                            + "integer, but I see "
+                            + "only '" + arg + "'.",-1);
+                }
+                String verbosity = args[iarg+1];
+                if (!NumberUtils.isNumber(verbosity))
+    			{
+    				Terminator.withMsgAndStatus("ERROR! Value '" + verbosity 
+    						+ "' cannot be converted to an integer. "
+    						+ "Check parameter "
+    						+ ParameterConstants.VERBOSITY, -1);
+    			}
+                Configurator.setAllLevels(LogManager.getRootLogger().getName(),
+                		LogUtils.verbosityToLevel(Integer.parseInt(verbosity)));
             }
             
             if (arg.equalsIgnoreCase("--"+ParameterConstants.STRINGFROMCLI))

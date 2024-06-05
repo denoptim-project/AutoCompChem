@@ -34,7 +34,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
@@ -99,7 +98,7 @@ public abstract class Worker implements IOutputExposer
     protected int verbosity = 0;
     
     /**
-     * Logger for debugging purposes.
+     * Logger
      */
     protected Logger logger;
     
@@ -336,10 +335,8 @@ public abstract class Worker implements IOutputExposer
 						+ "cannot be converted to an integer. Check parameter "
 						+ ParameterConstants.VERBOSITY, -1);
 			}
-            Configurator.setAllLevels(logger.getName(), 
+            Configurator.setLevel(logger.getName(), 
             		LogUtils.verbosityToLevel(Integer.parseInt(str)));
-            
-            //TODO-gg remove verbosity
             verbosity = Integer.parseInt(str) - 4;
         }
     }

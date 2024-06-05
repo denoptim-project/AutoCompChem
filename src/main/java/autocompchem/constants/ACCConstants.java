@@ -102,10 +102,5 @@ public class ACCConstants
      * Threshold for comparing {@link Double} numbers
      */
 	public final static double DOUBLEPRECISION = 0.00000000000001;
-
-	/**
-	 * Logger charged to produce main log, which is always meant to STDOUT.
-	 */
-	public final static String MAINOUTPUTLOGGER = "MAINOUTPUTLOGGER";
 	
 }

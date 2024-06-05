@@ -40,7 +40,7 @@ public class TimeUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Returns a string with a time stamp useful for logging
+     * Returns a string with a time stamp in a line filled with asteriscs.
      */
 
     public static String getTimestampLine()
@@ -50,6 +50,20 @@ public class TimeUtils
         		  "dd-MM-yyyy HH:mm:ss.SSS");
     	return "************************* " + date.format(formatter)
                + " *************************";
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns a string with a time stamp 
+     */
+
+    public static String getTimestamp()
+    {
+     	LocalDateTime date = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+          		  "dd-MM-yyyy HH:mm:ss.SSS");
+      	return date.format(formatter);
     }
 
 //------------------------------------------------------------------------------

@@ -1,8 +1,6 @@
 JOBSTART
-VERBOSITY: 1
 JOBSTART
 TASK: PrepareInputORCA
-VERBOSITY: 1
 InputGeometriesFile: STRINGFROMCLI.sdf
 JOBDETAILS: $START$DIR_! $MT_model=XTB2
 $DIR_! $MT_calculation=NumFreq
@@ -16,7 +14,6 @@ $END
 $DIR_! $MT_model=XTB2
 $DIR_! $MT_calculation=Opt
 $DIR_geom $DIR_constraints $DATA_constraints=$START$ACCTASK: GenerateConstraints
-VERBOSITY: 1
 VALUEDKEYWORDS: value
 SMARTS:$START[#8]
 [$([#6](~[#1])(~[#1])~[#1])]
@@ -39,7 +36,6 @@ $DIR_* $MT_coordtype=xyzfile
 $END
 JOBEND
 JOBSTART
-VERBOSITY: 2
 TASK: AnalyseORCAOutput
 JobOutputFile: STRINGFROMCLI.log
 ROOTPATHNAMEOUTPUT: STRINGFROMCLI

@@ -155,7 +155,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             this.verbosity = Integer.parseInt(str);
 
             if (verbosity > 0)
-                System.out.println(" Adding parameters to chemical software "
+                System.out.println("Adding parameters to chemical software "
                 		+ "input writer.");
         }
         

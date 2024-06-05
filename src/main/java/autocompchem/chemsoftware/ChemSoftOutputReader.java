@@ -45,6 +45,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileFingerprint;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.log.LogUtils;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.vibrations.NormalModeSet;
@@ -177,8 +178,7 @@ public abstract class ChemSoftOutputReader extends Worker
     {
     	super.initialize();
 
-        if (verbosity > 0)
-            System.out.println("Adding parameters to "
+        logger.debug("Adding parameters to "
             		+ this.getClass().getSimpleName());
 
         //Get and check the input file (which is an output from a comp.chem. 
@@ -418,14 +418,12 @@ public abstract class ChemSoftOutputReader extends Worker
         	analysisAllTasks.addAll(tasks);
         }
         
-        if (verbosity > 2)
+        String msg = "Settings from parameter storage";
+        for (AnalysisTask a : analysisAllTasks) 
         {
-        	System.out.println("Settings from parameter storage");
-	        for (AnalysisTask a : analysisAllTasks) 
-	        {
-	        	System.out.println("-->"+a.toString());
-	        }
+        	msg = msg + "-->"+a.toString() + NL;
         }
+        logger.debug(msg);
     }
     
 //------------------------------------------------------------------------------
@@ -542,11 +540,11 @@ public abstract class ChemSoftOutputReader extends Worker
         numSteps = stepsData.size();
         
         // We may have nullified the ref to logFile, if it does not exist.
-        if (logHasBeenRead && verbosity > -1)
+        if (logHasBeenRead)
         {
-        	System.out.println("Log file '" + logFile + "' contains " 
+        	logger.info("Log file '" + logFile + "' contains " 
         			+ numSteps + " steps.");
-        	System.out.println("The overall run did " + strForlog 
+        	logger.info("The overall run did " + strForlog 
         			+ "terminate normally!");
         }
         
@@ -634,11 +632,8 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGEOMETRIES))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No geometries found in "
+	        				logger.debug("No geometries found in "
 		        						+ "step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			String format = "XYZ";
@@ -656,11 +651,8 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			
 	        			if (acs.getAtomContainerCount()==0)
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("Empty list of geometry in "
+	        				logger.debug("Empty list of geometry in "
 		        						+ "step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			
@@ -675,25 +667,19 @@ public abstract class ChemSoftOutputReader extends Worker
 	        						+ FileUtils.getRootOfFileName(outFile);
 	        				File outXYZ = new File(pathnameBase + ".xyz");
 	        				File outSDF = new File(pathnameBase + ".sdf");
-		        			if (verbosity > 1)
-		        			{
-		        				System.out.println("Writing all geometries ("
+		        			logger.debug("Writing all geometries ("
 		        						+ acs.getAtomContainerCount() + ") of "
 		        						+ "step " + stepId + " to files '" 
 		        						+ outXYZ + "' and '" + outSDF + "'.");
-		        			}
 		        			IOtools.writeAtomContainerSetToFile(outXYZ, acs,
 		        					"XYZ", true);
 		        			IOtools.writeAtomContainerSetToFile(outSDF, acs,
 		        					"SDF", true);
 	        			} else {
-		        			if (verbosity > 1)
-		        			{
-		        				System.out.println("Writing all geometries ("
+		        			logger.debug("Writing all geometries ("
 		        						+ acs.getAtomContainerCount() + ") of "
 		        						+ "step " + stepId + " to file '" 
 		        						+ outFile+"'");
-		        			}
 		        			IOtools.writeAtomContainerSetToFile(outFile, acs,
 		        					format, true);
 	        			}
@@ -709,11 +695,8 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGEOMETRIES))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No geometry found in step "
-		        						+ stepId + ".");
-		        			}
+	        				logger.debug("No geometry found in step " 
+	        						+ stepId + ".");
 	        				break;
 	        			}
 	        			String format = "XYZ";
@@ -731,11 +714,8 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			
 	        			if (acs.getAtomContainerCount() == 0)
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("Empty list of geometries "
+	        				logger.debug("Empty list of geometries "
 		        						+ "in step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			
@@ -752,22 +732,17 @@ public abstract class ChemSoftOutputReader extends Worker
 	        						+ FileUtils.getRootOfFileName(outFile);
 	        				File outXYZ = new File(pathnameBase + ".xyz");
 	        				File outSDF = new File(pathnameBase + ".sdf");
-		        			if (verbosity > 1){
-		        				System.out.println("Writing last geometry of "
+		        			logger.debug("Writing last geometry of "
 		        						+ "step " + stepId + " to files '" 
 		        						+ outXYZ + "' and '" + outSDF + "'");
-		        			}
 		        			IOtools.writeAtomContainerToFile(outXYZ, mol,
 		        					"XYZ", true);
 		        			IOtools.writeAtomContainerToFile(outSDF, mol,
 		        					"SDF", true);
 	        			} else {
-		        			if (verbosity > 1)
-		        			{
-		        				System.out.println("Writing last geometry of "
+		        			logger.debug("Writing last geometry of "
 		        						+ "step " + stepId + " to file '" 
 		        						+ outFileName + "'");
-		        			}
 		        			IOtools.writeAtomContainerToFile(outFile, mol,
 		        					format, true);
 	        			}
@@ -785,11 +760,8 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAVIBFREQ))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No frequencies found in "
+	        				logger.debug("No frequencies found in "
 		        						+ "step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			Double smallest = 0.0;
@@ -847,22 +819,16 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATASCFENERGIES))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No SCF converged energy "
+	        				logger.debug("No SCF converged energy "
 		        						+ "found in step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			ListOfDoubles l = (ListOfDoubles) stepData.getNamedData(
 	        					ChemSoftConstants.JOBDATASCFENERGIES).getValue();
 	        			if (l.size()==0)
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("Zero SCF converged energy "
+	        				logger.debug("Zero SCF converged energy "
 		        						+ "found in step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			Double energy = l.get(l.size()-1);
@@ -878,23 +844,17 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAVIBFREQ))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No frequencies found in "
+	        				logger.debug("No frequencies found in "
 		        						+ "step " + stepId 
 		        						+ ". Skipping " + at +".");
-		        			}
 	        				break;
 	        			}
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No Gibbs free energy found"
+	        				logger.debug("No Gibbs free energy found"
 		        						+ " in step " + stepId 
 		        						+ ". Skipping " + at + ".");
-		        			}
 	        				break;
 	        			}
 	        			
@@ -950,13 +910,10 @@ public abstract class ChemSoftOutputReader extends Worker
 		        			qhVibS = qhVibS / ACCConstants.HARTREETOJOULEPERMOLE;
 		        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
 	
-		        			if (verbosity > 1)
-		        			{
-		        				System.out.println("Quasi-harmonic approx "
+		        			logger.debug("Quasi-harmonic approx "
 		        						+ "changes vibrational entropy from "
 		        						+ vibS + " (a.u.) to " + qhVibS 
 		        						+ " (a.u.).");
-		        			}
 	        			
 		        			gibbsFreeEnergy = gibbsFreeEnergy + vibS*temp 
 		        					- qhVibS*temp;
@@ -977,11 +934,8 @@ public abstract class ChemSoftOutputReader extends Worker
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAVIBMODES))
 	        			{
-	        				if (verbosity > 1)
-		        			{
-		        				System.out.println("No normal modes found in "
+	        				logger.debug("No normal modes found in "
 		        						+ "step " + stepId + ".");
-		        			}
 	        				break;
 	        			}
 	        			NormalModeSet nms = 
@@ -1012,28 +966,25 @@ public abstract class ChemSoftOutputReader extends Worker
 	        				}
 	        			}
 	        			StringBuilder sb = new StringBuilder();
-	        			if (verbosity > 1)
-	        			{ 
-	        				if (all)
-	        				{
-	        					System.out.print("Exporting all normal modes");
-	        				} else {
-	        					System.out.print("Exporting normal modes ");
-	        				}
-	        			}
+	        			String msg = "";
+        				if (all)
+        				{
+        					msg = "Exporting all normal modes";
+        				} else {
+        					msg = "Exporting normal modes ";
+        				}
 	        			for (Integer id : idxs)
 	        			{
-	        				if (verbosity>1 && !all)
+	        				if (!all)
 		        			{ 
-	        					System.out.print(id + "  ");
+	        					msg = msg + id + "  ";
 		        			}
 	        				sb.append("# Normal mode #").append(id).append(NL);
 	        				sb.append(nms.get(id).toLines());
 	        			}
-	        			if (verbosity > 1)
-	        			{ 
-        					System.out.println("to file '" + outFile + "'");
-	        			}
+	        			msg = msg + "to file '" + outFile + "'";
+	        			logger.debug(msg);
+	        			
 	        			IOtools.writeTXTAppend(outFile, sb.toString(), true);
 	        			
 	        			resultsString.append("-> #vibrational Modes ").append(
@@ -1057,11 +1008,9 @@ public abstract class ChemSoftOutputReader extends Worker
         } // loop over steps
      	
         String results = resultsString.toString();
-        if (verbosity > 0 && results!=null && !results.isBlank())
+        if (results!=null && !results.isBlank())
         {
-        	System.out.println("");
-        	System.out.println("Summary of the results:");
-            System.out.println(results);
+        	logger.info("Summary of the results:" + NL + results);
         }
         
         // Prepare collector of final analysis results
@@ -1108,13 +1057,10 @@ public abstract class ChemSoftOutputReader extends Worker
 					
 					if (lastGeom == null || lastGeom.isEmpty())
 					{
-						if (verbosity > 1)
-		    			{
-		    				System.out.println("WARNING! Empty list of "
+						logger.warn("WARNING! Empty list of "
 		    						+ "geometries from this job. "
 		    						+ "I cannot find the last "
 		    						+ "geometry ");
-		    			}
 						break;
 					}
 					
@@ -1127,22 +1073,16 @@ public abstract class ChemSoftOutputReader extends Worker
         						+ FileUtils.getRootOfFileName(outFile);
         				File outXYZ = new File(pathnameBase + ".xyz");
         				File outSDF = new File(pathnameBase + ".sdf");
-	        			if (verbosity > 1)
-	        			{
-	        				System.out.println("Writing overal last geometry "
+	        			logger.debug("Writing overall last geometry "
 	        						+ "to files '" 
 	        						+ outXYZ + "' and '" + outSDF + "'.");
-	        			}
 	        			IOtools.writeAtomContainerToFile(outXYZ, lastGeom,
 	        					"XYZ", true);
 	        			IOtools.writeAtomContainerToFile(outSDF, lastGeom,
 	        					"SDF", true);
         			} else {
-						if (verbosity > 1)
-						{
-							System.out.println("Writing overal last geometry to "
+						logger.debug("Writing overal last geometry to "
 									+ "file '" + outFile+"'");
-						}
 						IOtools.writeAtomContainerToFile(outFile, lastGeom,
 	        					format, true);
         			}
@@ -1194,11 +1134,10 @@ public abstract class ChemSoftOutputReader extends Worker
 	        		NamedDataType.UNDEFINED, geomsToExpose));
         }
         
-        if (verbosity > 0 && !finalResultsString.toString().isBlank())
+        if (!finalResultsString.toString().isBlank())
         {
-        	System.out.println("");
-        	System.out.println("Summary of final results:");
-            System.out.println(finalResultsString.toString());
+        	logger.info(NL + "Summary of final results: " 
+        			+ finalResultsString.toString());
         }
     }
     

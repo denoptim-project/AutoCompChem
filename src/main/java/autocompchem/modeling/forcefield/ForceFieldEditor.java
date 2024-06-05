@@ -186,7 +186,7 @@ public class ForceFieldEditor extends Worker
     	super.initialize();
         if (verbosity > 0)
         {
-            System.out.println(" Adding parameters to ForceFieldEditor");
+            System.out.println("Adding parameters to ForceFieldEditor");
         }
 
         //Get and check initial force field file

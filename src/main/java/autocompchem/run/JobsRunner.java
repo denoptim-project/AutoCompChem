@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import autocompchem.run.jobediting.Action;
 
 
@@ -57,11 +60,6 @@ public abstract class JobsRunner
      * Placeholder for exception throws by a job
      */
     protected Throwable thrownBySubJob;
-    
-    /**
-     * Verbosity level: amount of logging from this class.
-     */
-    protected int verbosity = 0;
 
 	/**
 	 * The time when we started running
@@ -107,16 +105,15 @@ public abstract class JobsRunner
 	 */
 	public static final String WAITTIMEPARAM = "WAITSTEP";
 	
-	/**
-	 * Utility to bake time stamps
-	 */
-	protected Date date = new Date();
+    /**
+     *  System-specific line separator
+     */
+    protected static final String NL = System.getProperty("line.separator");
 	
-	/**
-	 * Utility to format timestamps
-	 */
-	protected SimpleDateFormat formatter = 
-			new SimpleDateFormat("HH:mm:ss.SSS ");
+    /**
+     * Logger
+     */
+    protected Logger logger;
 	
 //------------------------------------------------------------------------------
 
@@ -128,6 +125,7 @@ public abstract class JobsRunner
 
     public JobsRunner(List<Job> todoJobs, Job master)
     {
+    	logger = LogManager.getLogger(this.getClass());
     	this.master = master;
         this.todoJobs = todoJobs;
         
@@ -165,17 +163,6 @@ public abstract class JobsRunner
     {
         this.waitingStep = 1000*waitingStep;
     }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Set the level of detail for logging
-     */
-    
-    public void setVerbosity(int level)
-    {
-    	this.verbosity = level;
-    }
 
 //------------------------------------------------------------------------------
 
@@ -201,12 +188,9 @@ public abstract class JobsRunner
 
         if (millis > walltimeMillis)
         {
-        	if (verbosity > 0)
-            {
-	            System.out.println("Walltime reached for " 
-	            		+ this.getClass().getSimpleName() + ".");
-	            System.out.println("Killing remaining workflow.");
-            }
+        	logger.error("Walltime reached for " 
+        			+ this.getClass().getSimpleName() 
+        			+ ". Killing remaining workflow.");
             res = true;
         }
         return res;

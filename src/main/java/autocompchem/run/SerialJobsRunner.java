@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.utils.TimeUtils;
 import autocompchem.run.jobediting.ActionApplier;
 
 
@@ -157,13 +158,8 @@ public class SerialJobsRunner extends JobsRunner
         {
             if (submittedJob.foundException())
             {
-            	if (verbosity > 0)
-            	{
-            		//TODO: logger
-            		System.out.println(
-            				submittedJob.thrownExc.getClass().getSimpleName()
+            	logger.warn(submittedJob.thrownExc.getClass().getSimpleName()
             				+ " thrown by job " + submittedJob.getId());
-            	}
             	found = true;
                 break;
             }
@@ -282,12 +278,8 @@ public class SerialJobsRunner extends JobsRunner
         	{
 	        	ii++;
 	        	
-	        	if (verbosity > 2)
-		        {
-		        	date = new Date();
-		        	System.out.println("Waiting for serialized workflow - Step " 
-		        			+ ii + " - " + formatter.format(date));
-	        	}
+	        	logger.trace("Waiting for serialized workflow- Step " 
+		        			+ ii + " - " + TimeUtils.getTimestamp());
 	        	
 	            //TODO-gg do this in parallel runner?
 	            // Check for errors
@@ -300,12 +292,9 @@ public class SerialJobsRunner extends JobsRunner
 	            //Completion clause
 	            if (allSubJobsCompleted())
 	            {
-	            	if (verbosity > 0)
-	                {
-	                    System.out.println("All " + numSubmittedJobs
+	            	logger.info("All " + numSubmittedJobs
 	                    		+ " steps are completed. Serialized workflow "
 	                    		+ "completed.");
-	                }
 	            	if (!requestedToStart)
 	            		shutDownExecutionService();
 	                break;
@@ -314,11 +303,8 @@ public class SerialJobsRunner extends JobsRunner
 	            // Check wall time
 	            if (weRunOutOfTime())
 	            {
-	            	if (verbosity > 0)
-	            	{
-	            		System.out.println("WARNING! Wall time reached: "
+	            	logger.warn("WARNING! Wall time reached: "
 	            				+ "interrupting serial workflow.");
-	            	}
 	            	cancellAllRunningThreadsAndShutDown();
 	                withinTime = false;
 	                break;

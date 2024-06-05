@@ -358,7 +358,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         String molName = MolecularUtils.getNameOrID(mol);
         int nAtms = mol.getAtomCount();
         if (verbosity > 1)
-            System.out.println(" Recalculating connectivity for " + molName);
+            System.out.println("Recalculating connectivity for " + molName);
 
         for (int i=0; i<nAtms; i++)
         {
@@ -377,7 +377,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
                 {
                     if (verbosity > 2)
                     {
-                        System.out.println(" Adding bond between atom '" 
+                        System.out.println("Adding bond between atom '" 
                                                 + MolecularUtils.getAtomRef(a,mol)
                                                 + "' and '"
                                                 + MolecularUtils.getAtomRef(b,mol)

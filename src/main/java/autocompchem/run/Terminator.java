@@ -1,8 +1,5 @@
 package autocompchem.run;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -52,12 +49,17 @@ public class Terminator
 
     public static void withMsgAndStatus(String message, int exitStatus)
     {
-        String line = TimeUtils.getTimestampLine() + NL
+        String msg = TimeUtils.getTimestampLine() + NL
                 + "Termination status: " + exitStatus + NL
                 + "Final message: " + message + NL 
                 + "Thanks for using AutoCompChem." + NL
                 + "Mandi! ;) ";
-        logger.info(line);
+        if (exitStatus != 0)
+        {
+        	logger.fatal(msg);
+        } else {
+        	logger.info(msg);
+        }
         System.exit(exitStatus);
     }
 

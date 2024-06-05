@@ -1,9 +1,5 @@
 package autocompchem.smarts;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -20,6 +16,10 @@ import java.util.Iterator;
  *   You should have received a copy of the GNU Affero General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import java.util.List;
 import java.util.Map;
@@ -42,16 +42,34 @@ import autocompchem.molecule.MolecularUtils;
 
 public class ManySMARTSQuery
 {
+    /**
+     * Logger
+     */
+    protected static Logger logger = LogManager.getLogger(ManySMARTSQuery.class);
 
-    //Container
+    /**
+     * Container for matches
+     */
     private Map<String,Mappings> allMatches = new HashMap<String,Mappings>();
     
-    //Counts
+    /**
+     * total number of matches
+     */
     private int totNum;
+    
+    /**
+     * Matches per smarts key
+     */
     private Map<String,Integer> numMatches = new HashMap<String,Integer>();
 
-    //Problems
+    /**
+     * flag that is true if we encountered a problem
+     */
     private boolean problems = false;
+    
+    /**
+     * Text that may be useful to understand any problem encountered.
+     */
     private String message = "";
     
 
@@ -67,7 +85,7 @@ public class ManySMARTSQuery
     @Deprecated
     public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, int verbosity)
     {
-    	this(mol, smarts, LogManager.getLogger());
+    	this(mol, smarts);
     }
 
 //------------------------------------------------------------------------------
@@ -76,12 +94,10 @@ public class ManySMARTSQuery
      * Constructs a new ManySMARTSQuery specifying all the parameters needed.
      * @param mol the target molecule.
      * @param smarts map of SMARTS (with reference names as keys).
-     * @param logger the tool to use for logging.
      */
 
-    public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, 
-    		Logger logger)
-    {
+    public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts)
+    {	
         totNum = 0;
     	for (String smartsRef : smarts.keySet()) 
     	{

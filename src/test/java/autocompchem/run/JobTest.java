@@ -98,7 +98,6 @@ public class JobTest
 
             // Nest 4 shell jobs in an undefined job
             Job job = JobFactory.createJob(AppID.ACC);
-            job.setVerbosity(0);
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
                                                                     newFile+1));
             job.addStep(new ShellJob(shellFlvr,script.getAbsolutePath(),
@@ -179,7 +178,6 @@ public class JobTest
             // Nest 4 shell jobs in an undefined job
             int nThreads = 2; //NB: do no change
             Job job = JobFactory.createJob(AppID.ACC,nThreads);
-            job.setVerbosity(0);
             Job subJob1 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+1);
             subJob1.setParallelizable(true);

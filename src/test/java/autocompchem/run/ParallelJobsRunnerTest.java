@@ -411,7 +411,6 @@ public class ParallelJobsRunnerTest
         // The main job
         Job main = JobFactory.createJob(AppID.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
-        main.setVerbosity(0);
         main.addStep(monitoringJob);
         main.addStep(productionJob);
         

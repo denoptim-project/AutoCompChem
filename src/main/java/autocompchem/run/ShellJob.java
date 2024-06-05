@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +34,7 @@ import com.google.gson.JsonSerializer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.utils.StringUtils;
+import autocompchem.utils.TimeUtils;
 
 /**
  * A shell job is work to be done by the shell. The shell command can be executed
@@ -114,7 +114,6 @@ public class ShellJob extends Job
         this.command.add(interpreter);
         this.command.add(script);
         this.command.add(args);
-        this.setVerbosity(verbosity);
     }
     
 //------------------------------------------------------------------------------
@@ -140,7 +139,6 @@ public class ShellJob extends Job
         this.command.add(script);
         this.command.add(args);
         this.customUserDir = customUserDir;
-        this.setVerbosity(verbosity);
     }
 
 //------------------------------------------------------------------------------
@@ -251,13 +249,9 @@ public class ShellJob extends Job
     		}
     	}
     	
-        Date date = new Date();
-        if (getVerbosity() > 0)
-        {
-            System.out.println(" " + date.toString());
-            System.out.println("Running " + appID + " Job: " + this.toString() 
-                            + " Thread: " + Thread.currentThread().getName());
-        }
+        logger.info("Running " + appID + " Job: " + this.toString() 
+                + " Thread: " + Thread.currentThread().getName()
+        		+ " " + TimeUtils.getTimestamp());
         
         String commandAsString = StringUtils.mergeListToString(command, " ");
 
@@ -322,10 +316,8 @@ public class ShellJob extends Job
             }
         }
 
-        if (getVerbosity() > 0)
-        {
-            System.out.println("Done with " + appID + " Job " + this.toString());
-        }
+        logger.info("Done with " + appID + " Job " + this.toString() + " " 
+        		+ TimeUtils.getTimestamp());
     }
     
 //------------------------------------------------------------------------------

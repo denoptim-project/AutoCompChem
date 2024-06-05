@@ -147,7 +147,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
 
         if (verbosity > 0)
         {
-        	System.out.println(" Adding parameters to " 
+        	System.out.println("Adding parameters to " 
         			+ this.getClass().getSimpleName());
         }
         

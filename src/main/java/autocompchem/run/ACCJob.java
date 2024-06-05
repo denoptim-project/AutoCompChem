@@ -17,9 +17,8 @@ package autocompchem.run;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Date;
-
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.utils.TimeUtils;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
@@ -71,10 +70,7 @@ public class ACCJob extends Job
     	if (!hasParameter(WorkerConstants.PARTASK))
     	{
     		// ...if none, then this job is just a container for other jobs
-    		if (getVerbosity() > 0)
-            {
-                System.out.println("Running job container " + this.toString());
-            }
+    		logger.info("Running job container " + this.toString());
     		return;
     	}
 
@@ -82,12 +78,8 @@ public class ACCJob extends Job
         String task = this.params.getParameter(WorkerConstants.PARTASK)
         		.getValue().toString();
         
-        Date date = new Date();
-        if (getVerbosity() > 0)
-        {
-            System.out.println(" AutoCompChem is initiating the ACC task '" 
-                            + task + "' - " + date.toString());
-        }
+        logger.debug("AutoCompChem is initiating the ACC task '" 
+                            + task + "' - " + TimeUtils.getTimestamp());
 
         Worker worker = null;
 		try {
@@ -103,12 +95,8 @@ public class ACCJob extends Job
 			thrownExc = t;
 		}
 		
-        date = new Date();
-        if (getVerbosity() > 0)
-        {
-            System.out.println("Done with ACC job (" + task	+ ") - " 
-            		+ date.toString());
-        }
+        logger.debug("Done with ACC job (" + task	+ ") - " 
+        		+ TimeUtils.getTimestamp());
     }
     
 //------------------------------------------------------------------------------

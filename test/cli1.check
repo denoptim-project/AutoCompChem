@@ -14,16 +14,16 @@ if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 n=0;n=$(grep -c " L:many words in one opt," cli1.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
-n=0;n=$(grep -c "fake error" cli1.log )
+n=0;n=$(grep -c "Scanning.*ERROR" cli1.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 
-n=0;n=$(grep -c "fake warning" cli1.log )
+n=0;n=$(grep -c "Scanning.*WARN" cli1.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
-n=0;n=$(grep -c "fake info" cli1.log )
+n=0;n=$(grep -c "Scanning.*INFO" cli1.log )
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
-n=0;n=$(grep -c "fake debug" cli1.log )
+n=0;n=$(grep -c "Scanning.*DEBUG" cli1.log )
 if [ $n -ne 0 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 
 n=0;n=$(grep -c "Mandi!" cli1.log )

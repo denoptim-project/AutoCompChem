@@ -29,6 +29,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -38,14 +42,17 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
+import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.chemsoftware.Directive;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.log.LogUtils;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.jobediting.Action;
+import autocompchem.utils.NumberUtils;
 
 
 /**
@@ -194,9 +201,9 @@ public class Job implements Runnable
     public NamedDataCollector exposedOutput = new NamedDataCollector();
     
     /**
-     * Verbosity level: amount of logging from this jobs
+     * Logger
      */
-    private int verbosity = 0;
+    protected Logger logger;
     
 	/**
 	 * The string used to identify the data holding a action requested by a
@@ -236,6 +243,7 @@ public class Job implements Runnable
      */
     protected Job()
     {
+    	logger = LogManager.getLogger(this.getClass());
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = AppID.UNDEFINED;
@@ -264,6 +272,20 @@ public class Job implements Runnable
     public void setParameters(ParameterStorage params)
     {
         this.params = params;
+
+        if (params.contains(ParameterConstants.VERBOSITY))
+        {
+            String str = params.getParameter(
+                    ChemSoftConstants.PARVERBOSITY).getValueAsString();
+            if (!NumberUtils.isNumber(str))
+			{
+				Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "
+						+ "cannot be converted to an integer. Check parameter "
+						+ ParameterConstants.VERBOSITY, -1);
+			}
+            Configurator.setLevel(logger.getName(), 
+            		LogUtils.verbosityToLevel(Integer.parseInt(str)));
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -588,28 +610,6 @@ public class Job implements Runnable
         exposedOutput.putNamedData(
         		new NamedData("ERR", NamedDataType.FILE, stderr));
     }
-
-//------------------------------------------------------------------------------   
-
-    /**
-     * Set the level of detail for logging
-     */
-    
-    public void setVerbosity(int level)
-    {
-    	this.verbosity = level;
-    }
-
-//------------------------------------------------------------------------------   
-
-    /**
-     * Get the level of detail for logging
-     */
-    
-    public int getVerbosity()
-    {
-    	return verbosity;
-    }
     
 //------------------------------------------------------------------------------
     
@@ -711,8 +711,7 @@ public class Job implements Runnable
         if (i > steps.size())
         {
             Terminator.withMsgAndStatus("ERROR! Trying to get step number " + i
-                                    + " in a job that has only " + steps.size()
-                                                                + " steps.",-1);
+            		+ " in a job that has only " + steps.size() + " steps.",-1);
         }
         return steps.get(i);
     }
@@ -849,12 +848,8 @@ public class Job implements Runnable
     				+ " or extend " + Job.class.getName() + ".");
     	}
     	
-    	//TODO use logger
-    	if (verbosity > 0)
-    	{
-    		System.out.println(System.getProperty("line.separator") 
+    	logger.info(System.getProperty("line.separator") 
     				+ "Initiating " + appID + " Job " + getId());
-    	}
     	
         // First do the work of this very Job
         runThisJobSubClassSpecific();
@@ -913,7 +908,6 @@ public class Job implements Runnable
         	serialRun.setWaitingStep(Long.parseLong(
         			params.getParameterValue(JobsRunner.WAITTIMEPARAM)));
         }
-        serialRun.setVerbosity(verbosity);
         serialRun.start();
     }
 
@@ -937,7 +931,6 @@ public class Job implements Runnable
         	parallRun.setWaitingStep(Long.parseLong(
         			params.getParameterValue(JobsRunner.WAITTIMEPARAM)));
         }
-        parallRun.setVerbosity(verbosity);
         parallRun.start();
     }
     
@@ -1238,7 +1231,6 @@ public class Job implements Runnable
 			   && this.redirectOutErr == other.redirectOutErr
 			   && Objects.equals(this.stdout, other.stdout)
 			   && Objects.equals(this.stderr, other.stderr)
-			   && this.verbosity == other.verbosity
 			   && Objects.equals(this.params, other.params)
 			   && Objects.equals(this.steps, other.steps)
 			   && Objects.equals(this.exposedOutput, other.exposedOutput);

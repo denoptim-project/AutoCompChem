@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtom;
@@ -157,7 +158,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
 	{
     	if (task.equals(PRUNEMOLECULESTASK))
     	{
-    		IAtomContainer pruned = prune(iac, smarts, logger);
+    		IAtomContainer pruned = prune(iac, smarts);
     		
             if (outFile!=null)
             {
@@ -182,15 +183,14 @@ public class MolecularPruner extends AtomContainerInputProcessor
      * @param iac the atom container to be pruned.
      * @param smarts the map of named SMARTS used to identify the atoms to 
      * remove from the container.
-     * @param logger the tool to use for logging.
      * @return the modified atom container that is a a reference to the one
      * given as parameter.
      */
 	
     public static IAtomContainer prune(IAtomContainer iac, 
-    		Map<String,String> smarts, Logger logger)
+    		Map<String,String> smarts)
     {           
-        ManySMARTSQuery msq = new ManySMARTSQuery(iac, smarts, logger);
+        ManySMARTSQuery msq = new ManySMARTSQuery(iac, smarts);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -215,15 +215,13 @@ public class MolecularPruner extends AtomContainerInputProcessor
                 }
             }
         }
-        
-        if (logger!=null)
-        {
-            List<String> labels = new ArrayList<String>();
-            targets.stream()
-            	.forEach(a -> labels.add(MolecularUtils.getAtomRef(a, iac)));
-        	logger.info("Removing atoms " 
-            		+ StringUtils.mergeListToString(labels, ", ", true));
-        }
+
+    	Logger logger = LogManager.getLogger();
+        List<String> labels = new ArrayList<String>();
+        targets.stream()
+        	.forEach(a -> labels.add(MolecularUtils.getAtomRef(a, iac)));
+    	logger.info("Removing atoms " 
+        		+ StringUtils.mergeListToString(labels, ", ", true));
         
         for (IAtom targetAtm : targets)
         {

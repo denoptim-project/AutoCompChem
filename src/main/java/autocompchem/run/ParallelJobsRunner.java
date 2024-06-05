@@ -2,7 +2,6 @@ package autocompchem.run;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.utils.TimeUtils;
 import autocompchem.run.jobediting.ActionApplier;
 
 
@@ -475,45 +475,33 @@ public class ParallelJobsRunner extends JobsRunner
         	{
 	        	ii++;
 	        	
-	        	if (verbosity > 2)
-		        {
-		        	date = new Date();
-		        	System.out.println("Waiting for parallel jobs - Step " 
-		        			+ ii + " - " + formatter.format(date));
-	        	}
+	        	logger.trace("Waiting for parallel jobs - Step " 
+		        			+ ii + " - " + TimeUtils.getTimestamp());
 	        	
 	            //Completion clause
 	            if (allSubJobsCompleted())
 	            {
-	            	if (verbosity > 0)
-	                {
-	                    System.out.println("All " + numSubmittedJobs
+	            	logger.info("All " + numSubmittedJobs
 	                    		+ " sub-jobs are completed. Parallelized "
 	                    		+ "jobs done.");
-	                }
 	            	if (!requestedToStart)
 	            		shutDownExecutionService();
 	                break;
 	            } else {
-	            	if (verbosity > 0)
-	            	{
-	            		System.out.println("Checking completion of parallel "
-	            				+ "jobs:");
-		            	for (Job j : submittedJobs.keySet())
-		            		System.out.println(j + " " +j.isCompleted());
-		            	for (Job j : submittedMonitorJobs.keySet())
-		            		System.out.println(j + " " +j.isCompleted());
-	            	}
+	            	String msg = "Checking completion of parallel "
+            				+ "jobs:" + NL;
+	            	for (Job j : submittedJobs.keySet())
+	            		msg = msg + j + " " +j.isCompleted() + NL;
+	            	for (Job j : submittedMonitorJobs.keySet())
+	            		msg = msg + j + " " +j.isCompleted() + NL;
+	            	logger.debug(msg);
 	            }
 	
 	            // Check wall time
 	            if(weRunOutOfTime())
 	            {
-	            	if (verbosity > 0)
-	            	{
-	            		System.out.println("WARNING! Wall time reached: some "
+	            	logger.warn("WARNING! Wall time reached: some "
 	            				+ "jobs are being interrupted");
-	            	}
 	            	cancellAllRunningThreadsAndShutDown();
 	                withinTime = false;
 	                break;
@@ -565,11 +553,8 @@ public class ParallelJobsRunner extends JobsRunner
 					switch (action.getType())
     				{
 					case REDO:
-						if (verbosity > 0)
-						{
-							System.out.println("KILLING ALL sub-jobs upon "
+						logger.warn("KILLING ALL sub-jobs upon "
 									+ "job's request to re-run parallel batch.");
-						}
 						synchronized (lock)
 		            	{
 							cancellAllRunningThreadsAndShutDown();
@@ -582,11 +567,8 @@ public class ParallelJobsRunner extends JobsRunner
 						
 					case STOP:
 					case SKIP:
-						if (verbosity > 0)
-						{
-							System.out.println("KILLING ALL sub-jobs upon "
+						logger.warn("KILLING ALL sub-jobs upon "
 									+ "job's request.");
-						}
 						synchronized (lock)
 		            	{
 							cancellAllRunningThreadsAndShutDown();
@@ -612,13 +594,10 @@ public class ParallelJobsRunner extends JobsRunner
 						
 						case STOP:
 						case SKIP:
-							if (verbosity > 0)
-							{
-								System.out.println("KILLING job " 
+							logger.warn("KILLING job " 
 										+ focusJob.getId()
 										+ " upon request from " 
 										+ jobRequestingAction.getId());
-							}
 							synchronized (lock)
 			            	{
 								cancelOneRunningThread(focusJob);

@@ -17,13 +17,8 @@
 	    <Root level="OFF">
 	        <AppenderRef ref="ConsoleMsg"/>
 	    </Root>
-	    <!-- Make sure the name of the logger below is equal to the value of
-	         ACCConstants.MAINOUTPUTLOGGER-->
-	    <logger name="MAINOUTPUTLOGGER" level="INFO" additivity="false">
+	    <logger name="autocompchem.worker.DummyWorker" level="INFO" additivity="false">
 		<AppenderRef ref="AppenderToFile" />
-	    </logger>
-	    <logger name="autocompchem" level="OFF" additivity="false">
-		<AppenderRef ref="ConsoleWithTime" />
 	    </logger>
     </Loggers>
 </Configuration>

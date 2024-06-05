@@ -25,6 +25,7 @@ import java.util.Set;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.log.LogUtils;
 import autocompchem.run.Job;
 
 
@@ -108,11 +109,8 @@ public class DummyWorker extends Worker
 		exposeOutputData(inputCollector.getNamedData(DATAREF));
 
 		// NB: here we assume that the logging level is INFO
-		logger.warn("fake warning");
-		logger.error("fake error");
-		logger.info("fake info");
-		logger.debug("fake debug");
-		logger.trace("fake trace");
+		
+		LogUtils.scanLogLevels(logger);
 		
 		logger.info("Parameters for dummy task: " 
 				+ params.toLinesJobDetails());

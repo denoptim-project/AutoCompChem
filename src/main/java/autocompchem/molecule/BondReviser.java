@@ -145,7 +145,7 @@ public class BondReviser
         this.verbosity = Integer.parseInt(vStr);
 
         if (verbosity > 0)
-            System.out.println(" Adding parameters to BondReviser");
+            System.out.println("Adding parameters to BondReviser");
 
 
         //Get and check the input file (which has to be an SDF file)
@@ -163,7 +163,7 @@ public class BondReviser
                 params.getParameter("SMARTS").getValue().toString();
         if (verbosity > 0)
         {
-            System.out.println(" Importing SMARTS queries ");
+            System.out.println("Importing SMARTS queries ");
         }
         String[] parts = allSamrts.split("\\s+");
         for (int i=0; i<parts.length; i++)

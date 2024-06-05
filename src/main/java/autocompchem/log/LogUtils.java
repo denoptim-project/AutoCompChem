@@ -1,6 +1,7 @@
 package autocompchem.log;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Utilities for logging.
@@ -10,6 +11,11 @@ public class LogUtils {
 
 //------------------------------------------------------------------------------
 
+	/**
+	 * Converts an integer to a {@link Level}.
+	 * @param verbosity the integer to be converted.
+	 * @return the level.
+	 */
 	public static Level verbosityToLevel(int verbosity)
 	{
         switch (verbosity)
@@ -36,6 +42,19 @@ public class LogUtils {
                 else
                     return Level.OFF;
         }
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Asks a logger to log a message for each logging level.
+	 * @param logger the logger to work with.
+	 */
+	public static void scanLogLevels(Logger logger)
+	{
+		for (Level l : Level.values())
+			logger.log(l, "Scanning logger " + logger.getName() + " - level '" 
+					+ l + "'");
 	}
 	
 //------------------------------------------------------------------------------

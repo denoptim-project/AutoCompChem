@@ -3,10 +3,13 @@ package autocompchem.run;
 import java.io.File;
 import java.util.List;
 
+import org.apache.logging.log4j.core.config.Configurator;
+
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
+import autocompchem.log.LogUtils;
 import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
@@ -279,8 +282,10 @@ public class JobFactory
         
         if (locPar.contains(ParameterConstants.VERBOSITY))
         {
-        	job.setVerbosity(Integer.parseInt(locPar.getParameter(
-        			ParameterConstants.VERBOSITY).getValueAsString()));
+        	Configurator.setLevel(job.logger.getName(),
+            		LogUtils.verbosityToLevel(Integer.parseInt(
+            				locPar.getParameter(ParameterConstants.VERBOSITY)
+            					.getValueAsString())));
         }
         
         if (locPar.contains(ParameterConstants.PARALLELIZE))
