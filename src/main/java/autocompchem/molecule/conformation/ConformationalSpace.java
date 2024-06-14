@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * The conformational space as the ordered list of non-redundant conformational
@@ -114,20 +116,25 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
 //-----------------------------------------------------------------------------
 
   	/**
-  	 * Prints all the conformational coordinates into stdout.
+  	 * Prepares an {@value Level.INFO} message with all the conformational 
+  	 * coordinates defining this conformational space and sends it to the given 
+  	 * logger.
   	 */
   	
-  	public void printAll() 
+  	public void printAll(Logger logger) 
   	{
+  		String NL = System.getProperty("line.separator");
   		String numConformers = "is TOO LARGE TO COMPUTE!";
-  		if (getSize()>0)
-  			numConformers = "= " + getSize();
-  		System.out.println("Conformational space is defined by " + this.size()
-  				+ " coordinates (#Conformers " + numConformers + "):");
+  		int size = getSize(); 
+  		if (size>0)
+  			numConformers = "= " + size;
+  		String msg = "Conformational space is defined by " + this.size()
+  				+ " coordinates (#Conformers " + numConformers + "):" + NL;
   		for (ConformationalCoordinate c : this)
   		{
-  			System.out.println(" -> "+c);
+  			 msg = msg + " -> " + c + NL;
   		}
+  		logger.info(msg);
   	}
 
 //------------------------------------------------------------------------------

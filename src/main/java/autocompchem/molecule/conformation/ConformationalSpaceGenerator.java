@@ -142,8 +142,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     	{
     		ConformationalSpace cs = createConformationalSpace(iac);
             
-    		if (verbosity > 0)
-	        	cs.printAll();
+    		cs.printAll(logger);
             
             if (exposedOutputCollector != null)
         	{

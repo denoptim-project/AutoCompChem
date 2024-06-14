@@ -98,14 +98,14 @@ public abstract class Worker implements IOutputExposer
     protected int verbosity = 0;
     
     /**
-     * Logger
+     * Class specific logger.
      */
-    protected Logger logger;
+    protected Logger logger = LogManager.getLogger(this.getClass());
     
     /**
      * System-specific newline characters
      */
-    protected final String NL = System.getProperty("line-separator");
+    protected final String NL = System.getProperty("line.separator");
     
 //------------------------------------------------------------------------------
 
@@ -326,8 +326,7 @@ public abstract class Worker implements IOutputExposer
      */
     public void initialize()
     {	
-    	logger = LogManager.getLogger(this.getClass());
-        logger.debug("Reading parameters in " 
+        logger.debug("Initializing in " 
         		+ this.getClass().getSimpleName() + ".");
         
         logger.debug("Adding parameters to " + this.getClass());
