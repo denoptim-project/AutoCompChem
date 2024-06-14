@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: convertToZMATRIX
 INFILE: ../t97-mol.sdf
 OUTFILE: t97-mol.zmat

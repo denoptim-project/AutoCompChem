@@ -1,6 +1,6 @@
 JOBSTART
 APP: ACC
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: ../t122-mol.sdf
 $STARTSMARTS:
@@ -11,7 +11,7 @@ JOBEND
 this is a comment because it is outside of any block defining a job
 
 JOBSTART
-VERBOSITY: 2
+VERBOSITY: 6
 APP: ACC
 TASK: PruneMolecules
 INFILE: ../t122-mol.sdf
@@ -21,7 +21,7 @@ JOBEND
 
 JOBSTART
 APP: ACC
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: t122-pruned.sdf
 $STARTSMARTS:
@@ -30,7 +30,7 @@ dist [#7] [Ru]
 $END
 JOBSTART
 APP: ACC
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: t122-pruned.sdf
 $STARTSMARTS:
@@ -40,7 +40,7 @@ $END
 JOBEND
 JOBSTART
 APP: ACC
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: t122-pruned.sdf
 $STARTSMARTS:
@@ -51,7 +51,7 @@ JOBEND
 JOBEND
 
 JOBSTART
-VERBOSITY: 2
+VERBOSITY: 6
 APP: ACC
 TASK: PruneMolecules
 INFILE: t122-pruned.sdf

@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t92-mol.sdf
 MULTIGEOMMODE: allInOneJob

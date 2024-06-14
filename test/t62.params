@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: AnalyseOutput
 JOBOUTPUTFILE: ../t62-nwc.out
 PRINTLASTGEOMETRY:  xyz t62-lastgeom

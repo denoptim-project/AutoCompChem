@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: AnalyzeVDWClashes
 INFILE: ../t36.sdf
 ALLOWANCE13: 1.0

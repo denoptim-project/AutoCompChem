@@ -27,6 +27,8 @@ import java.util.TreeMap;
 
 import javax.vecmath.Point3d;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.geometry.alignment.KabschAlignment;
@@ -38,6 +40,7 @@ import org.openscience.cdk.smsd.interfaces.Algorithm;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.io.IOtools;
+import autocompchem.molecule.BondReviser;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Terminator;
 
@@ -47,6 +50,7 @@ import autocompchem.run.Terminator;
  * @author Marco Foscato
  */
 
+//TODO-gg make a Worker
 
 public class ComparatorOfGeometries
 {
@@ -84,6 +88,10 @@ public class ComparatorOfGeometries
      * Verbosity level
      */
     private int verbosity = 1;
+    
+
+	//TODO-gg remove once this is a Worker
+	Logger logger = LogManager.getLogger(ComparatorOfGeometries.class);
 
 //------------------------------------------------------------------------------
 
@@ -555,14 +563,14 @@ public class ComparatorOfGeometries
         //store seeds
         if (lstA.contains(sA))
         {
-            System.out.println(" WARNING! LstA already contains qA = "  
+            logger.warn("WARNING! LstA already contains qA = "  
                                 + MolecularUtils.getAtomRef(sA,molA));
         }
         lstA.add(sA);
 
         if (lstB.contains(sB))
         {
-            System.out.println(" WARNING! LstB already contains qB = " 
+            logger.warn("WARNING! LstB already contains qB = " 
                                 + MolecularUtils.getAtomRef(sB,molB));
         }
         lstB.add(sB);
@@ -673,7 +681,7 @@ public class ComparatorOfGeometries
                 //Store it in the list
                 if (alreadyFound)
                 {
-                    System.out.println("WARNING! More than one atom satisfy "
+                    logger.warn("WARNING! More than one atom satisfy "
                                                         + "the condition!");
                     System.out.println("Atoms that map " 
                                         + MolecularUtils.getAtomRef(qA,molA));
@@ -861,7 +869,7 @@ public class ComparatorOfGeometries
         }
         if (!fountGoodPairOfSeeds)
         {
-            System.out.println(" WARNING! Cannot improve the atom-atom map.");
+            logger.warn("WARNING! Cannot improve the atom-atom map.");
             return null;
 // If we cannot improve the atom-atom map then we keep that one we already have
 //            Terminator.withMsgAndStatus("ERROR! Atom mapping in reference and "
@@ -876,7 +884,7 @@ public class ComparatorOfGeometries
         //Check correctness of sizes
         if (lstRef.size() == 0 || lstRef.size() != lstFit.size())  
         {
-            System.out.println(" WARNING! Cannot improve the atom-atom map.");
+            logger.warn("WARNING! Cannot improve the atom-atom map.");
             return null;
 // If we cannot improve the atom-atom map then we keep that one we already have
 //            Terminator.withMsgAndStatus("ERROR! Atom mapping in reference and "

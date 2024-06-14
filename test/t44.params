@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: RemoveDummyAtoms
 MULTIHAPTO: n
 INFILE: ../t44-mol.sdf

@@ -1,5 +1,5 @@
 JOBSTART
-VERBOSITY: 1
+VERBOSITY: 5
 parallelize: 3
 JOBSTART
 APP: SHELL
@@ -8,7 +8,7 @@ EXE: /bin/bash
 SCRIPT: ../t123.sh
 JOBEND
 JOBSTART
-VERBOSITY: 2
+VERBOSITY: 6
 APP: ACC
 parallelize: 1
 TASK: PruneMolecules
@@ -17,7 +17,7 @@ OUTFILE: t123-pruned.sdf
 SMARTS:  [#6]~[#7]
 JOBEND
 JOBSTART
-VERBOSITY: 2
+VERBOSITY: 6
 APP: ACC
 parallelize: 1
 TASK: PruneMolecules
@@ -29,7 +29,7 @@ JOBEND
 
 JOBSTART
 APP: ACC
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: t123-pruned-2.sdf
 $STARTSMARTS:

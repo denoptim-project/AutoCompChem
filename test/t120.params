@@ -1,4 +1,4 @@
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: ImposeConnectionTable
 INFILE: ../t120-mol.sdf
 TEMPLATE: ../t120-tmpl.sdf

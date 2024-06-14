@@ -15,7 +15,7 @@ if ! grep -q "contains 7 steps." t1.log ; then
   exit -1
 fi
 
-if ! grep -q "Known situation is e0010-QCNoLowerPoint" t1.log ; then
+if ! grep -q "Situation perceived = e0010-QCNoLowerPoint" t1.log ; then
   echo NOT Passed ERROR 4
   exit -1
 fi

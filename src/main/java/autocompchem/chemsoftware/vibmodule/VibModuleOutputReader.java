@@ -128,6 +128,8 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
     			EXTRACTVIBMODULEFORCECONSTANTSTASKNAME);
     }
     
+    private final String NL = System.getProperty("line.separator");
+    
 //------------------------------------------------------------------------------
 
     @Override
@@ -196,10 +198,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
          List<String> sortedMasterNames = getSortedSMARTSRefNames(smarts);
 
          Map<String,List<String>> map = new HashMap<String,List<String>>();
-         if (verbosity > 1)
-         {
-             System.out.println(" Importing options for IC-identifying SMARTS");
-         }
+         logger.debug(" Importing options for IC-identifying SMARTS");
          String[] lines = allLines.split("\\r?\\n");
          int ii=-1;
          for (int i=0; i<lines.length; i++)
@@ -267,10 +266,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
     private Map<String,String> getNamedICSMARTS(String allLines)
     {
         Map<String,String> map = new HashMap<String,String>();
-        if (verbosity > 1)
-        {
-            System.out.println(" Importing SMARTS to identify ICs");
-        }
+        logger.debug(" Importing SMARTS to identify ICs");
         String[] lines = allLines.split("\\r?\\n");
         int ii = -1;
         for (int i=0; i<lines.length; i++)
@@ -403,22 +399,21 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
             }
         }
         
-        if (verbosity>0)
+        StringBuilder sb = new StringBuilder();
+        for (String key : vmICcounter.keySet())
         {
-	        for (String key : vmICcounter.keySet())
-	        {
-	        	if (key.equals(VibModuleConstants.PARAMDATA))
-	        		continue;
-	        	System.out.println(" Found " + vmICcounter.get(key) 
-	        		+ " ICs of type " + key);  
-	        }
-	        System.out.println(" Total number of parsed parameters: " 
-	        		+ vmICcounter.get(VibModuleConstants.PARAMDATA));
-	        System.out.println(" Total internal coordinates: " 
-	        		+ vmICcounter.size());
-	        System.out.println(" Total force field parameters: " 
-	        		+ vmFFKs.size());
+        	if (key.equals(VibModuleConstants.PARAMDATA))
+        		continue;
+        	sb.append(" Found ").append(vmICcounter.get(key))
+        		.append("ICs of type ").append(key);  
         }
+        sb.append(" Total number of parsed parameters: " 
+        		+ vmICcounter.get(VibModuleConstants.PARAMDATA) + NL);
+        sb.append(" Total internal coordinates: " 
+        		+ vmICcounter.size() + NL);
+        sb.append(" Total force field parameters: " 
+        		+ vmFFKs.size() + NL);
+	    logger.info(sb.toString());
     }
     
 //------------------------------------------------------------------------------
@@ -495,10 +490,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 vmICs.add(ic);
                 increaseCountOfICs(VibModuleConstants.TYPSTR);
 
-                if (verbosity > 1)
-                {
-                    System.out.println("Found IC: "+ic);
-                }
+                logger.debug("Found IC: "+ic);
                 break;
             }
 
@@ -537,10 +529,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 vmICs.add(ic);
                 increaseCountOfICs(VibModuleConstants.TYPBND);
 
-                if (verbosity > 1)
-                {
-                    System.out.println("Found IC: "+ic);
-                }
+                logger.debug("Found IC: "+ic);
                 break;
             }
             case VibModuleConstants.TYPOOP:
@@ -572,10 +561,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 vmICs.add(ic);
                 increaseCountOfICs(VibModuleConstants.TYPOOP);
 
-                if (verbosity > 1)
-                {
-                    System.out.println("Found IC: "+ic);
-                }
+                logger.debug("Found IC: "+ic);
                 break;
             }
             case VibModuleConstants.TYPTOR:
@@ -625,10 +611,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                         increaseCountOfICs("Generated-" 
                         		+ VibModuleConstants.TYPTOR);
 
-                        if (verbosity > 1)
-                        {
-                            System.out.println("Found IC: "+ic);
-                        }
+                        logger.debug("Found IC: "+ic);
                     }
                 }
                 break;
@@ -722,7 +705,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                     skipRule = true;
                     if (verbosity > 0)
                     {
-                        System.out.println("WARNING! No match for SMARTS query "
+                        logger.warn("WARNING! No match for SMARTS query "
                          + smarts.get(key) + " in molecule "
                          + MolecularUtils.getNameOrID(mol) + ". Skipping "
                          + "Int. Coord. definition '" + icRuleName + "'.");
@@ -751,12 +734,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
 
         // Identify the tuples of atom indeces that correspond to the selected
         // types of force field terms
-        if (verbosity > 0)
-        {
-            System.out.println(" IC matched by SMARTS queries:");
-        }
         Map<String,ArrayList<InternalCoord>> selectedICs = 
                                  new HashMap<String,ArrayList<InternalCoord>>();
+        String msg = "IC matched by SMARTS queries:" + NL;
         for (String rulKey : allIcMatched.keySet())
         {
             //OOPs are dealt with elsewhere
@@ -805,30 +785,34 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                                         continue;
                                     }
 
-                                    processSingleCombinationOfIDs(rulKey, 
-                                                                    selectedICs,
-                                                         new ArrayList<Integer>(
+                                    msg = msg + processSingleCombinationOfIDs(
+                                    		rulKey,
+                                    		selectedICs,
+                                    		new ArrayList<Integer>(
                                                Arrays.asList(idA,idB,idC,idD)));
                                 }
                             }
                             else
                             {
-                                processSingleCombinationOfIDs(rulKey, 
-                                                                    selectedICs,
-                                                         new ArrayList<Integer>(
-                                                   Arrays.asList(idA,idB,idC)));
+                            	msg = msg + processSingleCombinationOfIDs(
+                            			rulKey, 
+                            			selectedICs,
+                            			new ArrayList<Integer>(
+                            					Arrays.asList(idA,idB,idC)));
                             }
                         }
                     }
                     else
                     {
-                        processSingleCombinationOfIDs(rulKey, selectedICs,
-                                                         new ArrayList<Integer>(
-                                                       Arrays.asList(idA,idB)));
+                    	msg = msg + processSingleCombinationOfIDs(rulKey, 
+                    			selectedICs,
+                    			new ArrayList<Integer>(Arrays.asList(idA,idB)));
                     }
                 }
             }
         }
+        logger.info(msg);
+        
         for (String rulKey : allIcMatched.keySet())
         {
             //only for OOPs
@@ -888,9 +872,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
             }
             else
             {
-                String msg = "Rules meant for out-of-plane must match 4 atoms. "
-                		+ "Check rule '" + rulKey + "'.";
-                Terminator.withMsgAndStatus("ERROR! " + msg,-1);
+                Terminator.withMsgAndStatus("ERROR! Rules meant for "
+                		+ "out-of-plane must match 4 atoms. " + NL 
+                		+ "Check rule '" + rulKey + "'.", -1);
             }
         }
 
@@ -915,12 +899,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                         int icIndex = Integer.parseInt(icff.getName()) - 1;
                         double fk = vmFFKs.get(icIndex);
                         type = ic.getType();
-                        if (verbosity > 1) 
-                        {
-                             System.out.println(" Force constant for "  
-                                + type + " term " + ic.getIDs() 
-                                + " taken from VibModule IC " + (icIndex+1));
-                        }
+                        logger.debug(" Force constant for "  
+                            + type + " term " + ic.getIDs() 
+                            + " taken from VibModule IC " + (icIndex+1));
                         saFrcKst.add(fk);
                         saEqVal.add(icff.getValue());
                         usedVals++;
@@ -930,35 +911,29 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
 
             if (usedVals == 0)
             {
-                if (verbosity > 0)
-                {
-                    System.out.println(" WARNING: no internal coord. found in "
-                                   + "vibrational analysis with data for term '"
-                                   + termName + "="
-                                   + getAllSmartsWithRef(termName) + "'. ");
-                }
+                logger.warn("WARNING: no internal coord. found in "
+                               + "vibrational analysis with data for term '"
+                               + termName + "="
+                               + getAllSmartsWithRef(termName) + "'. ");
                 continue;
             }
 
-            if (verbosity > 1)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.append(" Term '").append(termName).append("' \n");
-                sb.append(String.format(Locale.ENGLISH,
-                		"  Min.     K: %f Eq. %f \n",
-                                                 saFrcKst.min(),saEqVal.min()));
-                sb.append(String.format(Locale.ENGLISH,
-                		"  Max.     K: %f Eq. %f \n",
-                                                 saFrcKst.max(),saEqVal.max()));
-                sb.append(String.format(Locale.ENGLISH,
-                		"  Mean     K: %f Eq. %f \n",
-                                               saFrcKst.mean(),saEqVal.mean()));
-                sb.append(String.format(Locale.ENGLISH,
-                		"  Std.Dev. K: %f Eq. %f \n",
-                                        saFrcKst.populationStandardDeviation(),
-                                        saEqVal.populationStandardDeviation()));
-                System.out.println(sb.toString());
-            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(" Term '").append(termName).append("' \n");
+            sb.append(String.format(Locale.ENGLISH,
+            		"  Min.     K: %f Eq. %f \n",
+                                             saFrcKst.min(),saEqVal.min()));
+            sb.append(String.format(Locale.ENGLISH,
+            		"  Max.     K: %f Eq. %f \n",
+                                             saFrcKst.max(),saEqVal.max()));
+            sb.append(String.format(Locale.ENGLISH,
+            		"  Mean     K: %f Eq. %f \n",
+                                           saFrcKst.mean(),saEqVal.mean()));
+            sb.append(String.format(Locale.ENGLISH,
+            		"  Std.Dev. K: %f Eq. %f \n",
+                                    saFrcKst.populationStandardDeviation(),
+                                    saEqVal.populationStandardDeviation()));
+            logger.info(sb.toString());
             
             //Assemble the FF parameter
             ForceFieldParameter ffPar = new ForceFieldParameter(termName,type);
@@ -983,15 +958,12 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         }
         
         //Print summary of results
-        if (verbosity > -1)
+        String summary = " FF-Parameters extracted:" + NL;
+        for (ForceFieldParameter ffPar : vmFFPars)
         {
-            System.out.println(" FF-Parameters extracted:");
-            for (ForceFieldParameter ffPar : vmFFPars)
-            {
-                System.out.println(" -> " + ffPar.toSimpleString());
-            }
-            System.out.println(" ");
+        	summary = summary + " -> " + ffPar.toSimpleString() + NL;
         }
+        logger.info(summary);
     }
 
   //------------------------------------------------------------------------------
@@ -1005,12 +977,14 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
        * @param selectedICs map of selected int. coords. grouped according to
        * the name of the matching rule
        * @param tupla the tupla of atom indexes
+       * @return a string for logging purposes
        */
 
-      private void processSingleCombinationOfIDs(String name, 
+      private String processSingleCombinationOfIDs(String name, 
                                  Map<String,ArrayList<InternalCoord>> selectedICs,
                                                          ArrayList<Integer> tupla)
       {
+    	  String msg = "";
           boolean alreadyUsed = false;
           String icType = smartsOpts.get(name).get(0);
           for (Map.Entry<String,ArrayList<InternalCoord>> entry : 
@@ -1032,12 +1006,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
           if (!alreadyUsed)
           {
               InternalCoord newIc = new InternalCoord("noname",0.0,tupla,icType);
-              if (verbosity > 0)
-              {
-                  System.out.println(" -> " + icType + "-type IC defined by "
+              msg = " -> " + icType + "-type IC defined by "
                                      + tupla.size() + "-tupla " + tupla
-                                     + " matched rule '" + name + "'.");
-              }
+                                     + " matched rule '" + name + "'.";
               if (selectedICs.containsKey(name))
               {
                   selectedICs.get(name).add(newIc);
@@ -1051,22 +1022,18 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
           }
           else
           {
-              if (verbosity > 1)
-              {
-                  System.out.println(" " + tupla.size() + "-tupla " + tupla 
-                                              + " matches rule '" + name + "'"
-                                              + " but is already used by another"
-                                              + " IC.");
-              }
+              msg = " " + tupla.size() + "-tupla " + tupla 
+                          + " matches rule '" + name + "'"
+                          + " but is already used by another"
+                          + " IC.";
           }
-      }
-
-    
+          return msg + NL;
+      }    
 
   //------------------------------------------------------------------------------
 
       /**
-       * get the smarts combination corrsponding to the reference name
+       * get the smarts combination corresponding to the reference name
        */
 
       private String getAllSmartsWithRef(String refName)

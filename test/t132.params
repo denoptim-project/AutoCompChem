@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: CheckBondLengths
 INFILE: ../t132-mol.sdf
 REFERENCE: ../t132-ref.sdf

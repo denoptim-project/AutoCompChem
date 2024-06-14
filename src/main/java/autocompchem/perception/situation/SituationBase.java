@@ -27,8 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.molecule.BondReviser;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
@@ -69,6 +73,11 @@ public class SituationBase
     private Map<InfoChannelType,Set<TxtQuery>> txtQueriesByICT = 
     		new HashMap<InfoChannelType,Set<TxtQuery>>();
     
+    /**
+     * Logging tool
+     */
+    private Logger logger = LogManager.getLogger(SituationBase.class);
+    
 
 //------------------------------------------------------------------------------
 
@@ -102,7 +111,7 @@ public class SituationBase
 				this.addSituation(s);
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("WARNING! Unable to make a known Situation "
+				logger.warn("WARNING! Unable to make a known Situation "
 						+ "from file '" + f.getAbsolutePath() + "'. I ignore "
 						+ "such file, but I keep going on.");
 			}

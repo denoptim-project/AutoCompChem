@@ -155,11 +155,8 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     	    			+ allDirectories.get(0).getName() + File.separator 
     	    			+ SpartanConstants.OUTPUTFILENAME);
     		}
-    		if (verbosity > -1)
-            {
-            	System.out.println("Sprtan ouput file '" + inFile + "' is a "
+    		logger.info("Sprtan ouput file '" + inFile + "' is a "
             			+ "directory containing multiple models.");
-            }
 	    	return null;
     	} else {
     		return inFile;
@@ -175,12 +172,9 @@ public class SpartanOutputReader extends ChemSoftOutputReader
      */
     protected void reactToMissingLogFile(File logFile)
     {
-    	if (verbosity > -1)
-        {
-    		if (logFile!=null)
-    			System.out.println("Log file '" + logFile + "' not found. ");
-        	System.out.println("Interpreting '" + inFile + "' as a data folder.");
-        }
+		if (logFile!=null)
+			logger.info("Log file '" + logFile + "' not found. "
+					+ "Interpreting '" + inFile + "' as a data folder.");
     	
     	parseSpartanDir();
     }
@@ -331,7 +325,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 	            }
 	            catch (Throwable t)
 	            {
-	                System.out.println("WARNING! Could not read connectivity "
+	                logger.warn("WARNING! Could not read connectivity "
 	                                          + "from line '" + line + "'. ");
 	                break;
 	            }

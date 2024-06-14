@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 # Creation of simple input file for Orca
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputORCA
 InputGeometriesFile: ../t138-mol.xyz
 JOBDETAILSFILE: ../t138-jobDetails.json

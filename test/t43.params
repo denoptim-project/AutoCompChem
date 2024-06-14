@@ -1,6 +1,6 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: AnalyzeChelates
 INFILE: ../t43-mol.sdf

@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: CureGaussianJob
 SITUATIONSDBROOT: ../data/knowledgebase/gaussian
 IC-LOGS: ../t11-mol.out

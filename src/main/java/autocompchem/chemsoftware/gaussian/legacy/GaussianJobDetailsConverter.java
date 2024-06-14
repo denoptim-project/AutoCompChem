@@ -100,10 +100,6 @@ public class GaussianJobDetailsConverter extends Worker
     {
     	super.initialize();
 
-        if (verbosity > 0)
-            System.out.println("Adding parameters to " 
-            		+ this.getClass().getSimpleName());
-
         //Get and check the input file (which has to be an SDF file)
         String inFilePathname = params.getParameter("INFILE").getValueAsString();
         this.inFile = new File(inFilePathname);

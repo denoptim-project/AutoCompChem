@@ -242,7 +242,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             
 //    	} else if (task.equals(ALIGNATOMLISTSTASK)) {
 //    		//TODO
-//    		System.out.println("WARNING!!! Method for aligning list is not"
+//    		logger.warn("WARNING!!! Method for aligning list is not"
 //    				+ "fully functional. Results are unreliable!");
 //    		System.err.println("WARNING!!! Method for aligning list is not"
 //    				+ "fully functional. Results are unreliable!");
@@ -297,7 +297,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
                 {
                     System.out.println("Mapped atoms: "+refToInAtmMap.size());
                     System.out.println("Atom List:    "+mol.getAtomCount());
-                    System.out.println("WARNING: some atoms were not matched!");
+                    logger.warn("WARNING: some atoms were not matched!");
                     Terminator.withMsgAndStatus("ERROR! Atom map is shorter "
                         + "than atom list. Cannot align atom list.",-1);
                 }

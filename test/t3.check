@@ -9,7 +9,7 @@ fi
 n=0;n=$(grep -c "AnnotatedAtomTuple" t3.log)
 if [ $n -ne 35 ] ; then echo NOT Passes ERROR 2 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^# " t3.log)
+n=0;n=$(grep -c "^#" t3.log)
 if [ $n -ne 3 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
 n=0;n=$(grep -c "BOOLKEY1" t3.log)

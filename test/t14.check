@@ -15,7 +15,7 @@ if ! grep -q "contains 3 steps." t14.log ; then
   exit -1
 fi
 
-if ! grep -q "Known situation is e003.0-DIISConvergenceFailure" t14.log ; then
+if ! grep -q "Situation perceived = e003.0-DIISConvergenceFailure" t14.log ; then
   echo NOT Passed ERROR 4
   exit -1
 fi

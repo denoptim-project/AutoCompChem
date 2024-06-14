@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: AnalyzeVDWClashes
 INFILE: ../t31-mol.sdf
 CUTOFF: 0.60

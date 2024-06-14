@@ -2,7 +2,7 @@
 # General purpose generation of annotated atom tuple
 #
 TASK: GENERATEATOMTUPLES
-VERBOSITY: 1
+VERBOSITY: 5
 INFILE: ../t3-mol.sdf
 RULENAMEROOT: textAtmMatchingRule
 ValuedKeywords: key0 key=1 key:2

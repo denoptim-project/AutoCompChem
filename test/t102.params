@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: ModifyGeometry
 INFILE: ../t102-mol.sdf
 ZMATRIXMOVE: ../t102-zmatrixMove

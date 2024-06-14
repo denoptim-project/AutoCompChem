@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: GenerateBasisSet
 INFILE: ../t77-mol.sdf
 OUTFILE: t77.gbs

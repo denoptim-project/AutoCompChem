@@ -102,6 +102,11 @@ public abstract class Worker implements IOutputExposer
      */
     protected Logger logger;
     
+    /**
+     * System-specific newline characters
+     */
+    protected final String NL = System.getProperty("line-separator");
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -325,6 +330,8 @@ public abstract class Worker implements IOutputExposer
         logger.debug("Reading parameters in " 
         		+ this.getClass().getSimpleName() + ".");
         
+        logger.debug("Adding parameters to " + this.getClass());
+        
         if (params.contains(ParameterConstants.VERBOSITY))
         {
             String str = params.getParameter(
@@ -399,7 +406,7 @@ public abstract class Worker implements IOutputExposer
 		}
 		else
 		{
-			System.out.println("WARNING! Worker trying to put data on a null "
+			logger.warn("WARNING! Worker trying to put data on a null "
 					+ "output collector");
 		}
 	}

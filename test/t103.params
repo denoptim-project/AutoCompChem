@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: convertToZMATRIX
 #TORSIONONLY: any string, doesn't matter what
 #TEMPLATEZMAT: ../t104.tmpl

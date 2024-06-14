@@ -3,7 +3,7 @@
 #
 # ZMatrix with selection of variables
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputGaussian
 INPUTGEOMETRIESFILE: ../t50-mol.sdf
 JOBDETAILSFILE: ../t50-jobDetails.json

@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: CureNWChemJob
 JOBDEFINITION: ../t112-jobDetails.json
 IC-LOGS: ../t112-nwc.out

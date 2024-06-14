@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputNWChem
 InputGeometriesFile: ../t143-mol.sdf
 JOBDETAILSFILE: ../t143-jobDetails.json

@@ -279,7 +279,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 
         if (refMols.size() > 1)
         {
-            System.out.println("WARNING: multiple references found in '" 
+            logger.warn("WARNING: multiple references found in '" 
                     + refFile + "'. We'll use only the first one.");
         }
         IAtomContainer ref = refMols.get(0); 

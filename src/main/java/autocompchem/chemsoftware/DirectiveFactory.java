@@ -22,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 
@@ -106,7 +109,8 @@ public class DirectiveFactory
                 	}
                 }
             } else {
-            	System.out.println("WARNING! The following line is not part or "
+            	Logger logger = LogManager.getLogger(DirectiveFactory.class);
+            	logger.warn("WARNING! The following line is not part or "
             			+ "any definition of Directive, but is found while "
             			+ "parsing text into Directives. Ignoring line '" 
             			+ line + "'.");

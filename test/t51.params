@@ -3,7 +3,7 @@
 #
 # ZMatrix with selection of constants
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputGaussian
 INPUTGEOMETRIESFILE: ../t51-mol.sdf
 JOBDETAILSFILE: ../t51-jobDetails.json

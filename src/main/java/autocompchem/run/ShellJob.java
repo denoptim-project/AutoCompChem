@@ -214,7 +214,7 @@ public class ShellJob extends Job
     			Terminator.withMsgAndStatus("ERROR! Could not make the "
     					+ "required subfolder '" + workDir + "'.",-1);
     		}
-    		System.out.println("WARNING: setting work directory to '"
+    		logger.warn("WARNING: setting work directory to '"
     				+ workDir + "'.");
     		this.setUserDirAndStdFiles(workDir);
     	}
@@ -241,7 +241,7 @@ public class ShellJob extends Job
 								+ "file '" + source + "' to work directory.",-1);
 					}
     			} else {
-    				System.out.println("WARNING: file '" + source 
+    				logger.warn("WARNING: file '" + source 
     						+ "' was listed among "
     						+ "those to copy into the work directory, "
     						+ "but it does not exist. I'll skipp it.");

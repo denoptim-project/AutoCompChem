@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: AnalyseXTBOutput
 JobOutputFile: ../t135-xtb.log
 PRINTALLGEOMETRIES: XYZ t135_allGeoms.xyz

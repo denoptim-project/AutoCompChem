@@ -378,7 +378,7 @@ public class OrcaOutputReader extends ChemSoftOutputReader
             		File xyzSP = new File(path + nameSpace + ".xyz");
             		if (!xyzSP.exists())
             		{
-            			System.out.println("WARNING! Found redirection"
+            			logger.warn("WARNING! Found redirection"
             					+ " to additional output files, " 
             					+ "but neither '" 
             					+ xyzSP.getAbsolutePath() + "' nor '"
@@ -394,7 +394,6 @@ public class OrcaOutputReader extends ChemSoftOutputReader
         		if (xyzOpt.exists())
                 {
         			List<IAtomContainer> mols = IOtools.readXYZ(xyzOpt);
-        		
         			for (IAtomContainer mol : mols)
         			{
         				stepGeoms.addAtomContainer(mol);

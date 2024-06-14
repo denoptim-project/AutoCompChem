@@ -24,9 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.chemsoftware.DirectiveFactory;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
@@ -88,6 +91,10 @@ public class BondReviser
 
     //Verbosity level
     private int verbosity = 1;
+    
+
+	//TODO-gg remove once this is a Worker
+	Logger logger = LogManager.getLogger(BondReviser.class);
 
 //------------------------------------------------------------------------------
 
@@ -264,7 +271,7 @@ public class BondReviser
                         {
                             if (verbosity > 0)
                             {
-                                System.out.println("WARNING! Query '" + key 
+                                logger.warn("WARNING! Query '" + key 
                                 + "' matched a number of atoms not equal to "
                                 + "two. Match " + innerList + " ignored!");
                             }
@@ -298,7 +305,7 @@ public class BondReviser
                                 + newBO + "'.");
                             }
                         } catch (Throwable t) {
-                            System.out.println("WARNING! Unable to "
+                            logger.warn("WARNING! Unable to "
                                 + "deal with the given bond order '" 
                                 + newBO + "'. Check CDK's API at page "
                                 + "IBond.Order to find the acceptable "

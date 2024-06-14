@@ -164,7 +164,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                 		String sym = symNoTag;
                 		if (symNoTag.trim().length() == 0)
                         {
-                            System.out.println(" WARNING! Atom tag '" + tag 
+                            logger.warn("WARNING! Atom tag '" + tag 
                             		+ "' could not be converted into elemental "
                             		+ "symbol. Using dummy symbol 'Du'.");
                             sym = "Du";
@@ -208,7 +208,7 @@ public class NWChemOutputReader extends ChemSoftOutputReader
                 		String sym = symNoTag;
                 		if (symNoTag.trim().length() == 0)
                         {
-                            System.out.println(" WARNING! Atom tag '" + tag 
+                			logger.warn("WARNING! Atom tag '" + tag 
                             		+ "' could not be converted into elemental "
                             		+ "symbol. Using dummy symbol 'Du'.");
                             sym = "Du";

@@ -256,7 +256,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         		List<ZMatrix> lst = IOtools.readZMatrixFile(inFile2);
         		if (lst.size()>1)
                 {
-                	System.out.println("WARNING! Found " + lst.size() 
+                	logger.warn("WARNING! Found " + lst.size() 
                 			+ " from INFILE2, but "
                 			+ "can use only one atom container. "
                 			+ "I'll use the first and ignore the rest.");
@@ -269,7 +269,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 			inFile2);
             		if (lst.size()>1)
                     {
-                    	System.out.println("WARNING! Found " + lst.size() 
+                    	logger.warn("WARNING! Found " + lst.size() 
                     			+ " from INFILE2, but "
                     			+ "can use only one atom container. "
                     			+ "I'll use the first and ignore the rest.");
@@ -954,7 +954,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 */
                             if (verbosity > 0)
                             {
-                                System.out.println("WARNING: negligible c="
+                                logger.warn("WARNING: negligible c="
                                     + c + " for "
                                     + "atom (0-based) " + i + ". Low accuracy "
                                     + "is expected. To improve the results add "

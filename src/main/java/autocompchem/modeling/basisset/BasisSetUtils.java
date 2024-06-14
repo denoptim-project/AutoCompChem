@@ -22,6 +22,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
 import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.io.IOtools;
@@ -51,15 +54,13 @@ public class BasisSetUtils
     public static BasisSet importBasisSetFromGBSFile(File inFile, 
     		int verbosity)
     {
+    	Logger logger = LogManager.getLogger(BasisSetUtils.class);
         String msg = "";
         BasisSet bs = new BasisSet();
         boolean isECPSection = false;
         boolean foundBSSection = false;
         CenterBasisSet cbs;
-        if (verbosity > 1)
-        {
-            System.out.println(" Importing basis set from GBS file " + inFile);
-        }
+        logger.debug(" Importing basis set from GBS file " + inFile);
         List<String> lines = IOtools.readTXT(inFile);
         for (int i=0; i<lines.size(); i++)
         {
@@ -86,9 +87,9 @@ public class BasisSetUtils
                 // ...unless the blank line separates basis set from ECP
                 if (foundBSSection)
                 {
-                    if (!isECPSection && verbosity > 2)
+                    if (!isECPSection)
                     {
-                        System.out.println("From here reading ECP in "+inFile);
+                    	logger.trace("From here reading ECP in "+inFile);
                     }
                     isECPSection = true;
                 }
@@ -126,11 +127,7 @@ public class BasisSetUtils
                 } else {
                 	cbs = bs.getCenterBasisSetForElement(atmId);
                 }
-                if (verbosity > 2)
-                {
-                    System.out.println("Importing basis set for center '" 
-                                                                  + atmId +"'");
-                }
+                logger.trace("Importing basis set for center '" + atmId +"'");
                 boolean keepReadingCBS = true;
                 Shell shell = new Shell();
                 while (keepReadingCBS && i<lines.size())
@@ -160,11 +157,8 @@ public class BasisSetUtils
                         {
                             cbs.addShell(shell);
                         }
-                        if (verbosity > 2)
-                        {
-                            System.out.println("New "+ wrds[0] + " shell "
+                        logger.trace("New "+ wrds[0] + " shell "
                                              + "(scale fact. " + wrds[2] + ")");
-                        }
                         shell = new Shell(wrds[0],Double.parseDouble(
                                 NumberUtils.formatScientificNotation(wrds[2])));
                     }
@@ -181,10 +175,7 @@ public class BasisSetUtils
                                 NumberUtils.formatScientificNotation(wrds[1])));
                         p.setCoeffPrecision(NumberUtils.getPrecision(wrds[1]));
                         shell.add(p);
-                        if (verbosity > 2)
-                        {
-                            System.out.println("Adding primitive " + p);
-                        }
+                        logger.trace("Adding primitive " + p);
                     } 
                     else if (wrds.length>2 
                             && NumberUtils.isNumber(wrds[0])
@@ -208,10 +199,7 @@ public class BasisSetUtils
 					    	}
 					    }
 					    shell.add(p);
-					    if (verbosity > 2)
-					    {
-					        System.out.println("Adding primitive " + p);
-					    }
+					    logger.trace("Adding primitive " + p);
 					} 
                     else
                     {
@@ -249,11 +237,8 @@ public class BasisSetUtils
             	// By convention we store the elemental symbol in upper case
                 String elSymbol = wrds[0].toUpperCase();
                 cbs = bs.getCenterBasisSetForElement(elSymbol);
-                if (verbosity > 2)
-                {
-                    System.out.println("Importing ECP for '" + elSymbol+ "' "
+                logger.trace("Importing ECP for '" + elSymbol+ "' "
                                        + " element:'" + cbs.getElement()+ "'.");
-                }
                 boolean keepReadingECP = true;
                 boolean addIntECCP = false;
                 ECPShell ecps = new ECPShell();
@@ -278,11 +263,8 @@ public class BasisSetUtils
                     {
                         if (ecps.getSize() > 0)
                         {
-                            if (verbosity > 2)
-                            {
-                                System.out.println("Appending last ECP shell '" 
+                            logger.trace("Appending last ECP shell '" 
                                                     + ecps.getType() + "' (A)");
-                            }
                             cbs.addECPShell(ecps.clone());
                         }
 
@@ -291,11 +273,7 @@ public class BasisSetUtils
                         cbs = bs.getCenterBasisSetForElement(elSymbol);
                         addIntECCP = false;
 
-                        if (verbosity > 2)
-                        {
-                            System.out.println("Importing ECP for '" + wrds[0] 
-                                                                         + "'");
-                        }
+                        logger.trace("Importing ECP for '" + wrds[0] + "'");
                     }
                     else if (wrds.length==3 && wrds[0].matches(".*[a-zA-Z].*")
                                                    && wrds[1].matches("-?\\d+")
@@ -305,31 +283,22 @@ public class BasisSetUtils
                         cbs.setECPType(wrds[0]);
                         cbs.setECPMaxAngMom(Integer.parseInt(wrds[1]));
                         cbs.setElectronsInECP(Integer.parseInt(wrds[2]));
-                        if (verbosity > 2)
-                        {
-                            System.out.println("Setting Max.Ang.Mom. "+wrds[1]);
-                            System.out.println("Setting nr. core el. "+wrds[2]);
-                        }
+                        logger.trace("Setting Max.Ang.Mom. "+wrds[1]);
+                        logger.trace("Setting nr. core el. "+wrds[2]);
                     }
                     else if (wrds.length==2 && wrds[0].matches(".*[a-zA-Z].*")
                                             && wrds[1].matches(".*[a-zA-Z].*"))
                     {
                         if (addIntECCP && ecps.getSize()>0)
                         {
-                            if (verbosity > 2)
-                            {
-                                System.out.println("Appending ECP shell '" 
+                            logger.trace("Appending ECP shell '" 
                                                     + ecps.getType() + "' (B)");
-                            }
                             cbs.addECPShell(ecps.clone());
                         }
                         String ecpt = wrds[0] + " " + wrds[1];
                         ecps = new ECPShell(ecpt);
-                        if (verbosity > 2)
-                        {
-                            System.out.println("New ECP shell '" + ecpt + "'");
-                        }
-                        //NB: we skip the line reporting the numebr of functions
+                        logger.trace("New ECP shell '" + ecpt + "'");
+                        //NB: we skip the line reporting the number of functions
                         i++;
                     }
                     // ECP from SDD website use a single word format
@@ -338,20 +307,14 @@ public class BasisSetUtils
                     {
                         if (addIntECCP && ecps.getSize()>0)
                         {
-                            if (verbosity > 2)
-                            {
-                                System.out.println("Appending ECP shell '"
+                            logger.trace("Appending ECP shell '"
                                                     + ecps.getType() + "' (B)");
-                            }
                             cbs.addECPShell(ecps.clone());
                         }
                         String ecpt = wrds[0];
                         ecps = new ECPShell(ecpt);
-                        if (verbosity > 2)
-                        {
-                            System.out.println("New ECP shell '" + ecpt + "'");
-                        }
-                        //NB: we skip the line reporting the numebr of functions
+                        logger.trace("New ECP shell '" + ecpt + "'");
+                        //NB: we skip the line reporting the number of functions
                         i++;
                     }
                     else if (wrds.length==3 && wrds[0].matches("-?\\d+")
@@ -368,10 +331,7 @@ public class BasisSetUtils
                         p.setCoeffPrecision(NumberUtils.getPrecision(wrds[2]));
                         ecps.add(p);
                         addIntECCP = true;
-                        if (verbosity > 2)
-                        {
-                            System.out.println("Adding ECP component " + p);
-                        }
+                        logger.trace("Adding ECP component " + p);
                     }
                     else
                     {
@@ -383,12 +343,8 @@ public class BasisSetUtils
                 }
                 if (ecps.getSize()>0)
                 {
-                    if (verbosity > 2)
-                    {
-                        System.out.println("Adding ECP final shell '"
+                    logger.trace("Adding ECP final shell '"
                                                     + ecps.getType() + "' (C)");
-                    }
-
                     cbs.addECPShell(ecps.clone());
                 }
             }

@@ -184,10 +184,6 @@ public class ForceFieldEditor extends Worker
     public void initialize()
     {
     	super.initialize();
-        if (verbosity > 0)
-        {
-            System.out.println("Adding parameters to ForceFieldEditor");
-        }
 
         //Get and check initial force field file
         this.iFFFile = new File(
@@ -323,7 +319,7 @@ public class ForceFieldEditor extends Worker
     	if (task.equals(PARAMETRIZEFORCEFIELDTASK))
     	{
     		//TODO: to be finished
-    		System.out.println("WARNING! this method is still experimental "
+    		logger.warn("WARNING! this method is still experimental "
     				+ "and can produce unpredictable results.");
     		System.err.println("WARNING! this method is still experimental "
     				+ "and can produce unpredictable results.");

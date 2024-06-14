@@ -144,12 +144,6 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
     public void initialize()
     {
 		super.initialize();
-
-        if (verbosity > 0)
-        {
-        	System.out.println("Adding parameters to " 
-        			+ this.getClass().getSimpleName());
-        }
         
         // Read the atom type matching rules
         setBSMatchingRules(params.getParameter(
@@ -321,13 +315,8 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
                                  + "assignation rule '" + r.getType() + ".",-1);
             }
         }
-        if (verbosity > 0)
-        {
-            System.out.println(" SMARTS rules for basis set assignation: " 
-            		+ smarts);
-            System.out.println(" Elemental symbols rules for basis set "
-            		+ "assignation: " + elmnts);
-        }
+        logger.info("SMARTS rules for basis set assignation: " + smarts + NL
+            + "Elemental symbols rules for basis set assignation: " + elmnts);
 
         // Apply SMARTS-bases ruled 
         ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
@@ -406,11 +395,8 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
         // Elemental symbol-based rules
         for (String rulRef : elmnts.keySet())
         {
-            if (verbosity > 1)
-            {
-                System.out.println(" Setting basis set from rule '"
+            logger.debug(" Setting basis set from rule '"
                               + rulRef + "' (Element-based rule).");
-            }
             BSMatchingRule rule = rules.get(rulRef);
             String elSymb = rule.getKey();
             switch (rule.getSourceType().toUpperCase())
@@ -546,7 +532,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             {
                 if (verbosity > 0)
                 {
-                    System.out.println(" WARNING! Atom "
+                    logger.warn("WARNING! Atom "
                             + MolecularUtils.getAtomRef(atm,mol) 
                             + " matches both SMARTS-based rules '"
                             + rulRef + "' and '"
@@ -557,12 +543,9 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
         }
         String propName = BasisSetConstants.BSATMPROP + iBS;
         atm.setProperty(propName,rulRef);
-        if (verbosity > 1)
-        {
-            System.out.println(" Setting basis set from rule '" 
+        logger.debug(" Setting basis set from rule '" 
                               + rulRef + "' to atom "
                               + MolecularUtils.getAtomRef(atm,mol));
-        } 
     }
 
 //-----------------------------------------------------------------------------

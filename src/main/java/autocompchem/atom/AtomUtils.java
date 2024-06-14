@@ -3,6 +3,8 @@ package autocompchem.atom;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomRef;
 import org.openscience.cdk.PseudoAtom;
@@ -69,21 +71,14 @@ public class AtomUtils
 
     public static double getVdwRradius(String elSymbol)
     {
-        double r = 0.0;
+        double r = 1.2;
 
         try {
             r = PeriodicTable.getVdwRadius(elSymbol);
-
-//          TODO use Elements (CDK 1.5)
-//          Elements e = Elements.ofString(elSymbol);
-//          r = e.vdwRadius();
-
         } catch (Throwable thb) {
-            System.out.println("WARNING! Element "
-                                + elSymbol
-                                + " not found. Using "
-                                + r
-                                + " as van der Waals radius.");
+        	Logger logger = LogManager.getLogger(AtomUtils.class);
+        	logger.warn("WARNING! Element " + elSymbol + " not found. "
+        			+ "Using " + r + " as van der Waals radius.");
         }
         return r;
     }
@@ -110,8 +105,8 @@ public class AtomUtils
                 res = true;
             }
         } catch (Throwable t) {
-            Terminator.withMsgAndStatus("ERROR! Unable to create IsotopeFactory "
-                                        + " (in AtomUtils.getAtomicNumber)",-1);
+            Terminator.withMsgAndStatus(
+            		"ERROR! Unable to create IsotopeFactory.", -1);
         }
         return res;
     }
@@ -120,7 +115,7 @@ public class AtomUtils
 
     /**
      * Get the elemental symbol from the atomic number.
-     * Unrecognised atomic numbers will result in empty strings.
+     * Unrecognized atomic numbers will result in empty strings.
      * @param an the atomic number
      * @return the elemental symbol of a dummy if the atomic number is out of 
      * known range

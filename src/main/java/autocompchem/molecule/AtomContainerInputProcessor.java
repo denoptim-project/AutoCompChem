@@ -168,7 +168,7 @@ public class AtomContainerInputProcessor extends Worker
             if (params.contains("INFILE"))
             {
             	//TODO: logging
-            	System.out.println("WARNING: found both "
+            	logger.warn("WARNING: found both "
             			+ ChemSoftConstants.PARINFILE + " and "
             			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
             			+ ChemSoftConstants.PARGEOM + " as input for "
@@ -193,7 +193,7 @@ public class AtomContainerInputProcessor extends Worker
         	{
 	        	multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
 	        	//TODO: logging
-	        	System.out.println("WARNING: found parameter "
+	        	logger.warn("WARNING: found parameter "
 	        			+ ChemSoftConstants.PARMULTIGEOMID + ". Ignoring any "
 	        			+ "value given for "
 	        			+ ChemSoftConstants.PARMULTIGEOMMODE + " and setting "

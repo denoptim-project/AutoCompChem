@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: ExtractVibModuleForceConstants
 TEMPLATECONNECTIVITY: ../t88.sdf
 JOBOUTPUTFILE: ../t88.vmout

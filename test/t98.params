@@ -1,4 +1,4 @@
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: convertToZMATRIX
 INFILE: ../t98-mol.sdf
 TEMPLATEZMAT: ../t98.tmpl

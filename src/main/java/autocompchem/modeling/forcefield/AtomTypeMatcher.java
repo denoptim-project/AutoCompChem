@@ -246,7 +246,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
                     //Check already done
                     if (done.get(iAtm))
                     {
-                        System.out.println("WARNING! Atom " 
+                        logger.warn("WARNING! Atom " 
                                         + MolecularUtils.getAtomRef(atm,mol)
                                          + " matches both " 
                                         + at + " and " + atm.getAtomTypeName());
@@ -275,7 +275,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
                 
                 if (verbosity > 1)
                 {
-                    System.out.println("WARNING! Atom "
+                    logger.warn("WARNING! Atom "
                         + MolecularUtils.getAtomRef(mol.getAtom(i),mol) 
                         + " was not identified by Atom Typer! "
                         + "Original atom type '" + atm.getAtomTypeName()

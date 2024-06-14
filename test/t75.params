@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: GenerateBasisSet
 INFILE: ../t75-mol.sdf
 OUTFILE: t75.gbs

@@ -270,7 +270,7 @@ public class MolecularMutator extends AtomContainerInputProcessor
             {
                 if (verbosity > 0)
                 {
-                    System.out.println("WARNING: SMARTS query '" + k 
+                    logger.warn("WARNING: SMARTS query '" + k 
                                                   +"' did not match any atom.");
                 }
                 continue;

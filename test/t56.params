@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: CureNWChemJob
 JOBDEFINITION: ../t56-jobDetails.json
 SITUATIONSDBROOT: ../data/knowledgebase/nwchem

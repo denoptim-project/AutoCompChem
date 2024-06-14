@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 # Parsing data from Orca output
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: AnalyseORCAOutput
 JobOutputFile: ../t117-orca.log
 ROOTPATHNAMEOutput: t117_analysis

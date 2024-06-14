@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -289,6 +291,8 @@ public class MolecularMeter extends AtomContainerInputProcessor
     		List<String> sortedKeys, Map<String,List<Integer>> atmIds,
     		boolean onlyBonded, int i, int verbosity)
     {
+    	Logger logger = LogManager.getLogger(MolecularMeter.class);
+    	
     	String molName = MolecularUtils.getNameOrID(mol);
         Map<String,List<List<IAtom>>> allQuantities =
                       new HashMap<String,List<List<IAtom>>>();
@@ -312,7 +316,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
                 ArrayList<IAtom> atomsMatched = new ArrayList<IAtom>();
                 if (msq.getNumMatchesOfQuery(key) == 0)
                 {
-                    System.out.println("WARNING! No match for SMARTS "
+                    logger.warn("WARNING! No match for SMARTS "
                                            + "query " + smarts.get(key)
                                            + " in molecule " + i + ".");
                     break;

@@ -1,7 +1,7 @@
-VERBOSITY: 1
+VERBOSITY: 5
 JOBSTART
 TASK: PrepareInputORCA
-VERBOSITY: 1
+VERBOSITY: 5
 InputGeometriesFile: STRINGFROMCLI.sdf
 JOBDETAILS: $START$DIR_! $MT_model=XTB2
 $DIR_! $MT_calculation=NumFreq
@@ -15,7 +15,7 @@ $END
 $DIR_! $MT_model=XTB2
 $DIR_! $MT_calculation=Opt
 $DIR_geom $DIR_constraints $DATA_constraints=$START$ACCTASK: wrong_task_identifier
-VERBOSITY: 1
+VERBOSITY: 5
 VALUEDKEYWORDS: value
 SMARTS:$START[#8]
 [$([#6](~[#1])(~[#1])~[#1])]

@@ -158,7 +158,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
 	        List<IAtomContainer> lst = IOtools.readMultiMolFiles(refFile);
 	        if (lst.size()>1)
             {
-                System.out.println("WARNING: Found " + lst.size() 
+                logger.warn("WARNING: Found " + lst.size() 
                 + " reference molecules, but we'll use only the first one.");
             }
 	        referenceMol = lst.get(0);

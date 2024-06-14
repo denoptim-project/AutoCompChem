@@ -6,7 +6,7 @@
 #
 # Charge and spin multiplicity from default value
 #
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: RemoveDummyAtoms
 LINEARITIES: m
 INFILE: ../t45-mol.sdf

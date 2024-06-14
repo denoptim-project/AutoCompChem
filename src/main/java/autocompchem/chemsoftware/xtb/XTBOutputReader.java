@@ -307,7 +307,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         		File xyzOpt = new File(path + optGeomFileName);
         		if (!xyzOpt.exists())
         		{
-        			System.out.println("WARNING! Found redirection"
+        			logger.warn("WARNING! Found redirection"
             					+ " to additional output file, " 
             					+ "but '"
             					+ xyzOpt.getAbsolutePath() + "' could "

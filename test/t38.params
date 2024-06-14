@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: SortMolecules
 INFILE: ../t37-mol.sdf
 OUTFILE: t38sorted.sdf

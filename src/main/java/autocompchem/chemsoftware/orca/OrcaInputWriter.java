@@ -774,9 +774,9 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				}
 			}
     	} else if (job.getNumberOfSteps()==1) {
-    		System.out.println(NL + "WARNING! Found a multistep job with only "
+    		logger.warn("WARNING! Found a multistep job with only "
     				+ "one step. I assume you menat to prepare the input for"
-    				+ "a single step job." + NL);
+    				+ "a single step job.");
     		CompChemJob step = (CompChemJob) job.getStep(0);
     		preProcessingJob(step);
     		Iterator<Directive> it = step.directiveIterator();
@@ -882,8 +882,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 						
 						if (verbosity>0)
 						{
-							//TODO: use logger
-							System.out.println("WARNING: "
+							logger.warn("WARNING: "
 									+ "An index-specific basis set found in this "
 									+ "job. Altering the '" + sysDefDir.getName() 
 									+ "' directive, which, we assume, contains a "
@@ -1000,8 +999,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 									center = "element " + elSymbol;
 								}
 								
-								//TODO: logger
-								System.out.println("WARNING: found ECP shells "
+								logger.warn("WARNING: found ECP shells "
 										+ "in basis set for " + center 
 										+ " (" + dd.getClass().getSimpleName() 
 										+ " named '" + dd.getName() + "'). "
@@ -1175,13 +1173,12 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		String l = null;
 		if (azimuthalNumber>6)
 		{
-			System.out.println(NL + NL +
-					"WARNING! since Orca (5.0.4) uses letter 'j' "
+			logger.warn("WARNING! since Orca (5.0.4) uses letter 'j' "
 					+ "as identifier for angular momentum with azimuthal "
 					+ "number 7, and this is contrary to the convention of "
 					+ "omitting letter 'j', you may be using the wrong angular "
-					+ "momentum! Make sure this is indeed what you want to do."
-					+ NL + NL);
+					+ "momentum! "
+					+ "Make sure this is indeed what you want to do.");
 		}
 		switch (azimuthalNumber)
 		{

@@ -60,20 +60,6 @@ public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple>
 	   	
 	   	return true;
 	}
-
-//-----------------------------------------------------------------------------
-
-	/**
-	 * Prints all the constraints into stdout.
-	 */
-	
-	public void printAll() 
-	{
-		for (AnnotatedAtomTuple c : this)
-		{
-			System.out.println(" -> " + c);
-		}
-	}
 	
 //-----------------------------------------------------------------------------
 	

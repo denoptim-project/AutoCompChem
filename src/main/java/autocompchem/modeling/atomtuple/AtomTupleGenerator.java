@@ -268,11 +268,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	        
 	        // Now generate the tuple, possibly passing the atom labels data
 	        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels);
-	        if (verbosity > 0)
-	        {
-	        	System.out.println(StringUtils.mergeListToString(tuples, 
+	        logger.info(StringUtils.mergeListToString(tuples, 
 	        			System.getProperty("line.separator")));
-	        }
 	        AnnotatedAtomTupleList aatl = new AnnotatedAtomTupleList();
 	        if (tuples.size()>0)
 	        {

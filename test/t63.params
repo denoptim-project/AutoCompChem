@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t63-nwc.out last
 JOBDETAILSFILE: ../t63-jobDetails.json

@@ -2,7 +2,7 @@
 # General purpose generation of annotated atom tuple
 #
 TASK: generateAtomTuples
-VERBOSITY: 2
+VERBOSITY: 6
 INFILE: ../t142-mol.sdf
 SMARTS:$START[#7] prefix:FFHINT: suffix=~~999
 [#17] getatomlabels prefix:FFHINT: suffix=~~999

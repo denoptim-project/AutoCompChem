@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.JsonElement;
@@ -94,6 +96,11 @@ public class Directive implements IDirectiveComponent, Cloneable
      * system-specific ACC task actions.
      */
     private Set<IDirectiveComponent> toAdd = new HashSet<IDirectiveComponent>();
+    
+    /**
+     * Logging tool
+     */
+    private Logger logger = LogManager.getLogger(Directive.class);
 
 //-----------------------------------------------------------------------------
 
@@ -1188,9 +1195,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	}
     	if (matchingDataCount<1)
     	{
-    		//TODO: logger
-	    	System.out.println(System.getProperty("line.separator")
-	    			+ "WARNING! Task " + task + " did not produce any "
+    		logger.warn("WARNING! Task " + task + " did not produce any "
 	    			+ "results. Removing instance of "
 	    			+ dirComp.getComponentType() + " "
 	    			+ dirComp.getName() + "."

@@ -540,7 +540,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         if (outFile==null && verbosity > 0)
         {
             System.out.println(" ");
-            System.out.println(" WARNING! No output file produced (use OUTFILE "
+            logger.warn("WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }
         
@@ -1123,7 +1123,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         if (outFile==null && verbosity > 0)
         {
             System.out.println(" ");
-            System.out.println(" WARNING! No output file produced (use OUTFILE "
+            logger.warn("WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }
         

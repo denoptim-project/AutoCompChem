@@ -1,9 +1,9 @@
 JOBSTART
-VERBOSITY: 1
+VERBOSITY: 5
 parallelize: 3
 JOBSTART
 parallelize: 1
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: EvaluateJob
 SITUATIONSDBROOT: ../t124_KB
 IC-LOGS: ../t124.appLog:../t124.appLog2

@@ -15,7 +15,7 @@ if ! grep -q "contains 1 steps." t12.log ; then
   exit -1
 fi
 
-if ! grep -q "Known situation is e002.0-ConvergenceFailure" t12.log ; then
+if ! grep -q "Situation perceived = e002.0-ConvergenceFailure" t12.log ; then
   echo NOT Passed ERROR 4
   exit -1
 fi

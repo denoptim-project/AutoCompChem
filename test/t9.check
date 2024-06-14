@@ -2,7 +2,7 @@
 
 if ! grep -q 'The overall run did NOT terminate normally' t9.log ; then echo NOT Passed - Error 1 ; exit -1 ; fi
 
-if ! grep -q 'Perception result: Known situation is e001.0-QCNoLowerPoint' t9.log ; then echo NOT Passed - Error 2 ; exit -1 ; fi
+if ! grep -q 'Situation perceived = e001.0-QCNoLowerPoint' t9.log ; then echo NOT Passed - Error 2 ; exit -1 ; fi
 
 if [ ! -f accOutput.inp ] ; then echo NOT Passed - Error 3 ; exit -1 ; fi
 

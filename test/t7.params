@@ -1,5 +1,5 @@
 TASK: GenerateConformationalSpace
-verbosity:1
+verbosity:4
 INFILE: ../t7-mol.sdf
 SMARTS:$START[#7] fold=2
 [#7] [#7]

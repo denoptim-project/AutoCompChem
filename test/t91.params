@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-verbosity: 1
+verbosity: 4
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t91-mol.sdf
 MULTIGEOMNAMES: first_G second_G

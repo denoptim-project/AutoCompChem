@@ -6,7 +6,7 @@
 #
 # Charge and spin multi. from default and then spin overwritten by SDF
 #
-VERBOSITY: 2
+VERBOSITY: 6
 TASK: PrepareInputGaussian
 INPUTGEOMETRIESFILE: ../t6-mol.sdf
 JOBDETAILSFILE: ../t6-jobDetails.json

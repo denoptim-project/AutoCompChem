@@ -318,7 +318,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
                 {
                     if (verbosity > 0)
                     {
-                        System.out.println("WARNING! Unknown bond order between "
+                        logger.warn("WARNING! Unknown bond order between "
                             + MolecularUtils.getAtomRef(bnd.getAtom(0),mol)+" and "
                             + MolecularUtils.getAtomRef(bnd.getAtom(1),mol)
                             + " treated as single bond.");

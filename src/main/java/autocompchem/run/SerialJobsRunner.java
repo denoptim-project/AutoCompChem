@@ -221,7 +221,7 @@ public class SerialJobsRunner extends JobsRunner
 					{
 						// Nothing to do, but we do notify the user as this may
 						// be a wrong setting
-						System.out.println("WARNING: ignoring action " 
+						logger.warn("WARNING: ignoring action " 
 								+ requestedAction.getType() + " of " 
 								+ requestedAction.getObject() 
 								+ " because it was triggered by job " 
@@ -357,7 +357,7 @@ public class SerialJobsRunner extends JobsRunner
 				{
 					// Nothing to do, but we do notify the user as this may
 					// be a wrong setting
-					System.out.println("WARNING: ignoring action " 
+					logger.warn("WARNING: ignoring action " 
 							+ requestedAction.getType() + " of " 
 							+ requestedAction.getObject() 
 							+ " because it was triggered by job " 

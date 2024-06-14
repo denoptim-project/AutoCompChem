@@ -3,7 +3,7 @@
 #
 # Using parameter file to set charge and spin, but spin is overwritten by the SDF property
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: PrepareInputNWChem
 INPUTGEOMETRIESFILE: ../t54-mol.sdf 
 OUTFILE: t54.nw

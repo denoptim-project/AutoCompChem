@@ -1,5 +1,5 @@
 TASK: GenerateConformationalSpace
-VERBOSITY: 2
+VERBOSITY: 5
 INFILE: ../t5-mol.sdf
 SMARTS:$START[$([#7]F)] fold=2
 [#6] [#8]

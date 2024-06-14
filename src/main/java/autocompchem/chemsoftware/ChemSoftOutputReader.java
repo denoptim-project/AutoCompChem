@@ -178,9 +178,6 @@ public abstract class ChemSoftOutputReader extends Worker
     {
     	super.initialize();
 
-        logger.debug("Adding parameters to "
-            		+ this.getClass().getSimpleName());
-
         //Get and check the input file (which is an output from a comp.chem. 
         // software)
         if (params.contains(ChemSoftConstants.PARJOBOUTPUTFILE))
@@ -1106,7 +1103,7 @@ public abstract class ChemSoftOutputReader extends Worker
 					boolean isCompatible = true;
 					if (lastGeomToExpose == null)
 					{
-						System.out.println("WARNING! Undefined last geometry. "
+						logger.warn("WARNING! Undefined last geometry. "
 								+ "I cannot compare connectivity with bond "
 								+ "lengths. ");
 						isCompatible = false;

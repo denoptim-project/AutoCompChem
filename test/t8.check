@@ -5,7 +5,7 @@ if [ ! -f t8_restart.inp ] ; then
   exit -1
 fi
 
-if ! grep -q 'Perception result: Known situation is e007.0-MemoryAllocationFailure' t8.log; then 
+if ! grep -q 'Situation perceived = e007.0-MemoryAllocationFailure' t8.log; then 
   echo NOT Passed - ERROR 2
   exit -1
 fi

@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.openscience.cdk.AtomType;
 
 import autocompchem.atom.AtomUtils;
@@ -38,6 +40,7 @@ import autocompchem.modeling.forcefield.ForceFieldConstants;
 import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.modeling.forcefield.ForceFieldParamsSet;
 import autocompchem.run.Terminator;
+import autocompchem.run.jobediting.ActionApplier;
 
 
 /**
@@ -53,11 +56,6 @@ import autocompchem.run.Terminator;
 public class TinkerForceFieldHandler
 {
 
-    /**
-     * Verbosity level
-     */
-    private static int verbosity = 0;
-
 //------------------------------------------------------------------------------
 
     /**
@@ -68,6 +66,8 @@ public class TinkerForceFieldHandler
 
     public static ForceFieldParamsSet readFromFile(File file)
     {
+    	Logger logger = LogManager.getLogger(TinkerForceFieldHandler.class);
+    	
         ForceFieldParamsSet ff = new ForceFieldParamsSet();
 
         // Add the 'any atom type' that is implicit in Tinker force field file
@@ -89,29 +89,20 @@ public class TinkerForceFieldHandler
             String[] w = l.split("\\s+");
             String[] wUC = lUC.split("\\s+");
 
-            if (verbosity > 2)
-            {
-                System.out.println("Reading line: " + l);
-                System.out.println("Keyword: " + wUC[0]);
-            }
+            logger.trace("Reading line: " + l);
+            logger.trace("Keyword: " + wUC[0]);
 
             // select the type of line depending on the first keyword
             if (wUC[0].equals(TinkerConstants.FFKEYNAME))
             {
                 ff.setName(w[1]);
-                if (verbosity > 2)
-                {
-                    System.out.println("Force field name imported: " + w[1]);
-                }
+                logger.trace("Force field name imported: " + w[1]);
             }
             else if (wUC[0].equals(TinkerConstants.FFKEYATMTYP))
             {
                 AtomType at = getAtomTypeFromLine(mergeAllButFirstWord(w));
                 ff.addAtomType(at);
-                if (verbosity > 2)
-                {
-                    System.out.println("AtomType imported: " + at);
-                }
+                logger.trace("AtomType imported: " + at);
             }
             else if (TinkerConstants.FFKEYALLFFPAR.contains(wUC[0]))
             {
@@ -358,10 +349,7 @@ public class TinkerForceFieldHandler
                     Terminator.withMsgAndStatus("ERROR! Cannot import force "
                                 + "field parameter from line '" + l + "'. ",-1);
                 }
-                if (verbosity > 2)
-                {
-                    System.out.println("Parameter imported: " + p);
-                }
+                logger.trace("Parameter imported: " + p);
             }
             else
             {
@@ -379,11 +367,8 @@ public class TinkerForceFieldHandler
                         + "implementation of TinkerForceFieldReader.",-1);
                 }
                 ff.setProperty(w[0],mergeAllButFirstWord(w));
-                if (verbosity > 2)
-                {
-                    System.out.println("Force field property imported: " 
-                                                        + ff.getProperty(w[0]));
-                }
+                logger.trace("Force field property imported: "
+                		+ ff.getProperty(w[0]));
             }
 
         }

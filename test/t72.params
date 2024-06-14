@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 1
+VERBOSITY: 5
 TASK: analyseSpartanOutput
 jobOutputFile: ../t72.spartan
 PRINTLASTGEOMETRY: SDFXYZ t72_last

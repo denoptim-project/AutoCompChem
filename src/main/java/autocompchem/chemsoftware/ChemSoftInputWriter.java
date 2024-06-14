@@ -153,10 +153,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             String str = params.getParameter(
                     ChemSoftConstants.PARVERBOSITY).getValueAsString();
             this.verbosity = Integer.parseInt(str);
-
-            if (verbosity > 0)
-                System.out.println("Adding parameters to chemical software "
-                		+ "input writer.");
         }
         
         if (params.contains(ChemSoftConstants.PARPRECISION))
@@ -253,11 +249,8 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         {
             File jdFile = new File(params.getParameter(
                     ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString());
-            if (verbosity > 0)
-            {
-                System.out.println(" Job details from JD file '" 
-                        + jdFile + "'.");
-            }
+            logger.debug("Job details from JD file '" + jdFile + "'.");
+            
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             if (FileAnalyzer.getFileTypeByProbeContentType(jdFile) ==
             		ACCFileType.JSON)
@@ -282,10 +275,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         {
             String jdLines = params.getParameter(
                     ChemSoftConstants.PARJOBDETAILS).getValueAsString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Job details from nested parameter block.");
-            }
+            logger.info("Job details from nested parameter block.");
             List<String> lines = new ArrayList<String>(Arrays.asList(
                     jdLines.split("\\r?\\n")));
             this.ccJob = new CompChemJob(lines);
@@ -312,27 +302,21 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         	if (inFile==null)
         	{
         		outFileNameRoot = "accOutput";
-                if (verbosity > 0)
-                {
-	        		System.out.println(" Neither '" 
+                logger.debug(" Neither '" 
 	        				 + ChemSoftConstants.PAROUTFILE + "' nor '" 
 	        				 + ChemSoftConstants.PAROUTFILEROOT + "' found and no '"
 	        				 + ChemSoftConstants.PARGEOMFILE + "' found. " + NL
 	                         + " Root of any output file name set to '" 
 	                         + outFileNameRoot + "'.");
-                }
         	} else {
         		outFileNameRoot = FileUtils.getRootOfFileName(
         				inFile.getAbsolutePath());
-                if (verbosity > 0)
-                {
-                    System.out.println(" Neither '" 
+                logger.debug(" Neither '" 
                     		+ ChemSoftConstants.PAROUTFILEROOT + "' nor '"
                     		+ ChemSoftConstants.PAROUTFILE 
                     		+ "' parameter found. " + NL
                             + " Root of any output file name set to '" 
                             + outFileNameRoot + "'.");
-                }
         	}
             outFile = new File(outFileNameRoot + inpExtrension);
         }
@@ -414,12 +398,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         	fileRootName = outFileNameRoot + "-" + geomName;
         }
         
-        if (verbosity > 0)
-        {
-            System.out.println(" Writing input file for molecule #" 
+        logger.info("Writing input file for molecule #" 
                     + (i+1) + ": " 
             		+ MolecularUtils.getNameOrID(iac));
-        }
         
         List<IAtomContainer> set = new ArrayList<IAtomContainer>();
         set.add(iac);
@@ -451,11 +432,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 	public void processAllAtomContainer(List<IAtomContainer> iacs) 
 	{
 		// NB: do not use inMols, i.e., the field of the AtomContainer superclass
-	    if (verbosity > 0)
-	    {
-	        System.out.println(" Writing input file for " 
-	        		+ iacs.size() + " geometries");
-	    }
+	    logger.info("Writing input file for " + iacs.size() + " geometries");
 	    
 		if (overwriteGeomNames)
 	    {

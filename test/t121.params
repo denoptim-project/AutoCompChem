@@ -1,4 +1,4 @@
-VERBOSITY: 3
+VERBOSITY: 7
 TASK: MeasureGeomDescriptors
 INFILE: ../t121-mol.sdf
 $STARTSMARTS:
