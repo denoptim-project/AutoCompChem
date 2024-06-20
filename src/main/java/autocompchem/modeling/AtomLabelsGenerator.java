@@ -196,10 +196,7 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
     		List<String> lst = generateAtomLabels(iac);
             String txt = StringUtils.mergeListToString(lst, labelsSeparator);
             
-            if (verbosity > 1)
-            {
-            	System.out.println(txt);
-            }
+            logger.info(txt);
             
             if (outFile!=null)
             {

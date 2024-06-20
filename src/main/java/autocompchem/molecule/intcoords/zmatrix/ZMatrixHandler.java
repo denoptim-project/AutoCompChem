@@ -276,7 +276,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                     }
                 	IAtomContainer mol = lst.get(0);
                 	String molName = MolecularUtils.getNameOrID(mol);
-                    zmat2 = makeZMatrix(mol, tmplZMat, verbosity);
+                    zmat2 = makeZMatrix(mol, tmplZMat);
                     zmat2.setTitle(molName);
                 } catch (Throwable t) {
                     t.printStackTrace();
@@ -352,15 +352,13 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     public void makeZMatrix(IAtomContainer iac, int i)
     {
 	    String molName = MolecularUtils.getNameOrID(iac);
-	    ZMatrix zmat = makeZMatrix(iac, tmplZMat, verbosity);
+	    ZMatrix zmat = makeZMatrix(iac, tmplZMat);
 	    zmat.setTitle(molName);
 	    
-	    if (verbosity>0)
-	    {
-	    	System.out.println(StringUtils.mergeListToString(
+	    String msg = StringUtils.mergeListToString(
 	    			zmat.toLinesOfText(useTmpl, onlyTors), 
-	    			System.getProperty("line.separator")));
-	    }
+	    			System.getProperty("line.separator"));
+	    logger.info(msg);
 	    
 	    if (outFile!=null)
 	    {
@@ -398,7 +396,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 
     public  ZMatrix makeZMatrix(IAtomContainer iac)
     {
-    	return makeZMatrix(iac, tmplZMat, verbosity);
+    	return makeZMatrix(iac, tmplZMat);
     }
     
 //------------------------------------------------------------------------------
@@ -408,8 +406,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
      * @return the resulting ZMatrix
      */
 
-    public ZMatrix makeZMatrix(IAtomContainer iac, ZMatrix tmplZMat, 
-    		int verbosity)
+    public ZMatrix makeZMatrix(IAtomContainer iac, ZMatrix tmplZMat)
     {
         ZMatrix zmat = new ZMatrix();
 
@@ -426,10 +423,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         // Fill the Z-matrix
         for (int idC=0; idC<iac.getAtomCount(); idC++)
         {
-            if (verbosity > 2)
-            {
-                System.out.println("Working on atom "+idC);
-            }
+            logger.trace("Working on atom "+idC);
             int idI = -1;
             int idJ = -1;
             int idK = -1;
@@ -558,12 +552,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         {
             ZMatrixAtom zatm = modZMat.getZAtom(i);
             ZMatrixAtom zmov = zmtMove.getZAtom(i);
-            if (verbosity > 3)
-            {
-                System.out.println("ZATOM: "+zatm.toZMatrixLine(false,false));
-                System.out.println("ZMOVE: "+zmov.toZMatrixLine(false,false));
-            }
-
+            
             if (!zatm.sameIDsAs(zmov))
             {
                 Terminator.withMsgAndStatus("ERROR! Different set of atom IDs "
@@ -577,19 +566,9 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 InternalCoord zmatIC = zatm.getIC(j);
                 double change = zmov.getIC(j).getValue();
                 change = change * scale;
-                if (verbosity > 3)
+                if (Math.abs(change)<0.0000001)
                 {
-                    System.out.println("j:"+j);
-                    System.out.println(" zmatIC:"+zmatIC);
-                    System.out.println(" zmovIC:"+zmov.getIC(j));
-                    System.out.println(" Change:"+change);
-                }
-                else
-                {
-                    if (Math.abs(change)<0.0000001)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 double tmpVal = zmatIC.getValue()+change;
                 double s = Math.signum(tmpVal);
@@ -649,21 +628,16 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                         break;
                 }
             }
-            if (verbosity > 3)
-            {
-                System.out.println("ZATM-OUT:"+zatm.toZMatrixLine(false,false));
-                IOtools.pause();
-            }
         }
-        if (verbosity > 1)
+        
+        String msg = "Modified ZMatrix: " + NL;
+        List<String> txt = modZMat.toLinesOfText(false,false);
+        for (int i=0; i<txt.size(); i++)
         {
-            System.out.println(" Modified ZMatrix: ");
-            ArrayList<String> txt = modZMat.toLinesOfText(false,false);
-            for (int i=0; i<txt.size(); i++)
-            {
-                System.out.println("  Line-" + i + ": " + txt.get(i));
-            }
+           msg = msg + "  Line-" + i + ": " + txt.get(i);
         }
+        logger.info(msg);
+        
         return modZMat;
     } 
     
@@ -688,10 +662,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             		}
 	            }
             	ZMatrix zmat = zmats.get(i);
-      			if (verbosity > 0)
-      	        {
-      	        	System.out.println("# " + zmat.getTitle());
-      	        }
+      			logger.info("# " + zmat.getTitle());
             	processOneZMatrix(zmat, i);
             	if (breakAfterThis)
             		break;
@@ -720,10 +691,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 	IOtools.writeSDFAppend(outFile, iac, true);
                 }
                 
-                if (verbosity>1)
-                {
-                	System.out.println(zmat.toLinesOfText(false, onlyTors));
-                }
+                logger.debug(zmat.toLinesOfText(false, onlyTors));
                 
                 if (exposedOutputCollector != null)
                 {
@@ -746,10 +714,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             	IOtools.writeZMatAppend(outFile, zmatRes, true);
             }
             
-            if (verbosity>1)
-            {
-            	System.out.println(zmatRes.toLinesOfText(false, onlyTors));
-            }
+            logger.debug(zmatRes.toLinesOfText(false, onlyTors));
             
             if (exposedOutputCollector != null)
             {
@@ -952,16 +917,14 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                                     + "linearity-breaking dummy atom bonded to "
                                     + "atom (0-based) " + zatm.getIdRef(0));
 */
-                            if (verbosity > 0)
-                            {
-                                logger.warn("WARNING: negligible c="
-                                    + c + " for "
-                                    + "atom (0-based) " + i + ". Low accuracy "
-                                    + "is expected. To improve the results add "
-                                    + "a dummy on atom (0-based) " 
-                                    + zatm.getIdRef(0) + ", reorder atom list, "
-                                    + "and build a more healty ZMatrix.");
-                            }
+                        
+                            logger.warn("WARNING: negligible c="
+                                + c + " for "
+                                + "atom (0-based) " + i + ". Low accuracy "
+                                + "is expected. To improve the results add "
+                                + "a dummy on atom (0-based) " 
+                                + zatm.getIdRef(0) + ", reorder atom list, "
+                                + "and build a more healty ZMatrix.");
                         }
                         else
                         {
@@ -1227,14 +1190,12 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             typK = "1";
             for (IAtom nbr : mol.getConnectedAtomsList(atmI))
             {
-                if (verbosity > 2)
-                {
-                   System.err.println("  Eval. 3rd (ANG): " + nbr.getSymbol()
+            	String msg = "Eval. 3rd (ANG): " + nbr.getSymbol()
                    + mol.indexOf(nbr) + " "
                    + (mol.indexOf(nbr) < idC) + " "
                    + (nbr != atmC) + " "
-                   + (nbr != atmJ));
-                }
+                   + (nbr != atmJ);
+            	logger.trace(msg);
                 if ((mol.indexOf(nbr) < idC) && (nbr != atmC) &&
                                                         (nbr != atmJ))
                 {
@@ -1247,13 +1208,10 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                     }
                     else
                     {
-                        if (verbosity > 2)
-                        {
-                            System.err.println("Rejected due to linearity with "
+                        logger.trace("Rejected due to linearity with "
                                                + atmJ.getSymbol() + idJ
                                                + " (idK-idI-idJ: " + dbcAng
                                                + ")");
-                        }
                     }
                 }
             }
@@ -1263,14 +1221,13 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             typK = "0";
             for (IAtom nbr : mol.getConnectedAtomsList(atmJ))
             {
-                if (verbosity > 2)
-                {
-                   System.err.println("  Eval. 3rd (TOR): " + nbr.getSymbol()
+            	String msg = "Eval. 3rd (TOR): " + nbr.getSymbol()
                    + mol.indexOf(nbr) + " "
                    + (mol.indexOf(nbr) < idC) + " "
                    + (nbr != atmC) + " "
-                   + (nbr != atmI));
-                }
+                   + (nbr != atmI);
+                logger.trace(msg);
+                
                 if ((mol.indexOf(nbr) < idC) && (nbr != atmC) &&
                                                         (nbr != atmI))
                 {

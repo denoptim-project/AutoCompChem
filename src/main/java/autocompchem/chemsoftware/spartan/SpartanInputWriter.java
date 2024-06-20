@@ -316,13 +316,10 @@ public class SpartanInputWriter extends ChemSoftInputWriter
                 } 
                 else
                 {
-                    if (verbosity > 0)
-                    {
-                        logger.warn("WARNING! Unknown bond order between "
+                    logger.warn("WARNING! Unknown bond order between "
                             + MolecularUtils.getAtomRef(bnd.getAtom(0),mol)+" and "
                             + MolecularUtils.getAtomRef(bnd.getAtom(1),mol)
                             + " treated as single bond.");
-                    }
                     bo = 1;
                 }
                 StringBuilder sb = new StringBuilder();

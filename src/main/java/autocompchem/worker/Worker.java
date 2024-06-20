@@ -91,11 +91,6 @@ public abstract class Worker implements IOutputExposer
      * the Job this worker is part of).
      */
     protected NamedDataCollector exposedOutputCollector;
-
-    /**
-     * Verbosity level
-     */
-    protected int verbosity = 0;
     
     /**
      * Class specific logger.
@@ -343,7 +338,6 @@ public abstract class Worker implements IOutputExposer
 			}
             Configurator.setLevel(logger.getName(), 
             		LogUtils.verbosityToLevel(Integer.parseInt(str)));
-            verbosity = Integer.parseInt(str) - 4;
         }
     }
     

@@ -138,10 +138,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     	{
 	    	ConstraintsSet cs = createConstraints(iac);
 	        
-	        if (verbosity > 0)
-	        {
-	        	cs.printAll();
-	        }
+	        logger.debug(cs.toString());
 	        
 	        if (exposedOutputCollector != null)
 	    	{

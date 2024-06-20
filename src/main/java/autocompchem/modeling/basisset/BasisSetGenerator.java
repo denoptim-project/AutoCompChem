@@ -319,7 +319,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             + "Elemental symbols rules for basis set assignation: " + elmnts);
 
         // Apply SMARTS-bases ruled 
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, 0);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -530,14 +530,11 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             String keyStr = key.toString();
             if (keyStr.toUpperCase().startsWith(BasisSetConstants.BSATMPROP))
             {
-                if (verbosity > 0)
-                {
-                    logger.warn("WARNING! Atom "
+                logger.warn("WARNING! Atom "
                             + MolecularUtils.getAtomRef(atm,mol) 
                             + " matches both SMARTS-based rules '"
                             + rulRef + "' and '"
                             + allProps.get(key) + "'.");
-                }
                 iBS++;
             }
         }
@@ -561,7 +558,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
     private void importBasisSetFromFile(String bsName, File src)
     {
         //TODO for now only GBS files can be imported
-        BasisSet bs = BasisSetUtils.importBasisSetFromGBSFile(src, verbosity);
+        BasisSet bs = BasisSetUtils.importBasisSetFromGBSFile(src);
         importedBSs.put(bsName,bs);
     }
 

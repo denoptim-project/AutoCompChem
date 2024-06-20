@@ -1,7 +1,7 @@
 # 
 # Parameters for AutoCompChem: recalculation of connectivity
 #
-VERBOSITY: 4
+VERBOSITY: 7
 TASK: RicalculateConnectivity
 TOLERANCE: 0.333
 INFILE: ../t18mol.sdf

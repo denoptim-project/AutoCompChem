@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
@@ -185,7 +187,7 @@ public class MolecularMutator extends AtomContainerInputProcessor
                 }
             }
 
-            iac = mutateContainer(iac, targetsMap, verbosity);
+            iac = mutateContainer(iac, targetsMap);
 
             if (outFile!=null)
             	IOtools.writeSDFAppend(outFile, iac, true);
@@ -248,7 +250,7 @@ public class MolecularMutator extends AtomContainerInputProcessor
     public  Map<String,List<IAtom>> identifyMutatingCenters(IAtomContainer mol)
     {
         Map<String,List<IAtom>> targets = new HashMap<String,List<IAtom>>();
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -268,11 +270,8 @@ public class MolecularMutator extends AtomContainerInputProcessor
         {
             if (msq.getNumMatchesOfQuery(k) == 0)
             {
-                if (verbosity > 0)
-                {
-                    logger.warn("WARNING: SMARTS query '" + k 
+            	logger.warn("WARNING: SMARTS query '" + k 
                                                   +"' did not match any atom.");
-                }
                 continue;
             }
 
@@ -341,8 +340,9 @@ public class MolecularMutator extends AtomContainerInputProcessor
      */
 
     public static IAtomContainer mutateContainer(IAtomContainer iac, 
-    		Map<IAtom,String> targetsMap, int verbosity)
+    		Map<IAtom,String> targetsMap)
     {
+    	Logger logger = LogManager.getLogger();
         IAtomContainer mutatedIAC = new AtomContainer();
         for (IAtom origAtm : iac.atoms())
         {
@@ -360,12 +360,9 @@ public class MolecularMutator extends AtomContainerInputProcessor
             }
             if (targetsMap.containsKey(origAtm))
             {
-                if (verbosity > 1)
-                {
-                    System.out.println(" Mutating atom "  
+                logger.debug("Mutating atom "  
                         + MolecularUtils.getAtomRef(origAtm,iac) + " into " 
                         + targetsMap.get(origAtm));
-                }
                 IAtom newEl = new Atom(targetsMap.get(origAtm));
                 newAtm.setSymbol(newEl.getSymbol());
                 newAtm.setAtomicNumber(newEl.getAtomicNumber());

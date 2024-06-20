@@ -132,12 +132,8 @@ public class GaussianJobDetailsConverter extends Worker
     	  GaussianJob gJob = new GaussianJob(inFile.getAbsolutePath());
     	  Job jJob = gJob.convertToCompChemJob();
     	  Gson writer = ACCJson.getWriter();
-    	  if (verbosity > -1)
-    	  {    
-    		  System.out.println("Writing job with " + jJob.getNumberOfSteps() 
+    	  logger.info("Writing job with " + jJob.getNumberOfSteps() 
     		  + " steps to '" + outFile + "'.");
-    	  }
-    	  
     	  IOtools.writeTXTAppend(outFile, writer.toJson(jJob).toString(), false);
       }
 

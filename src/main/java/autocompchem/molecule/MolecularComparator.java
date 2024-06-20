@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Level;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -221,22 +222,16 @@ public class MolecularComparator extends AtomContainerInputProcessor
     {
         ConnectivityUtils cu = new ConnectivityUtils();
         boolean consistentConnectivity = cu.compareWithReference(iac, 
-        		referenceMol, verbosity);
+        		referenceMol, logger);
         
         if (!consistentConnectivity)
         {
-            if (verbosity > 0)
-            {
-                System.out.println(" Inconsistent adjacency between molecules "
+            logger.info("Inconsistent adjacency between molecules "
                                  + MolecularUtils.getNameOrID(iac)
                                  + " and "
                                  + MolecularUtils.getNameOrID(referenceMol));
-            }
         } else {
-            if (verbosity > 0)
-            {
-            	System.out.println(" Consistent connectivity");
-            }
+            logger.info("Consistent connectivity");
         }
         
         if (exposedOutputCollector != null)
@@ -272,13 +267,9 @@ public class MolecularComparator extends AtomContainerInputProcessor
         SMARTSAllInOne.put("center", targetAtoms);
 
         //For First molecule
-        if (verbosity > 2)
-        {    
-            System.out.println(" Trying to identify the target atom in '"
+        logger.trace("Trying to identify the target atom in '"
                 + MolecularUtils.getNameOrID(iac) + "'.");
-        }    
-        ManySMARTSQuery msq = new ManySMARTSQuery(iac, SMARTSAllInOne,
-        		verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(iac, SMARTSAllInOne,0);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -309,13 +300,10 @@ public class MolecularComparator extends AtomContainerInputProcessor
         IAtom inAtm = iac.getAtom(centerID);
 
         //For second molecule
-        if (verbosity > 2)
-        {
-            System.out.println(" Trying to identify the target atom in '"
+        logger.trace(" Trying to identify the target atom in '"
                 + MolecularUtils.getNameOrID(referenceMol) + "'.");
-        }
         ManySMARTSQuery msqR = new ManySMARTSQuery(referenceMol,
-        		SMARTSAllInOne, verbosity);
+        		SMARTSAllInOne, 0);
         if (msqR.hasProblems())
         {
             String cause = msqR.getMessage();
@@ -372,21 +360,19 @@ public class MolecularComparator extends AtomContainerInputProcessor
         //Make geometries for the two atoms
         List<IAtom> lsA = molA.getConnectedAtomsList(atmA);
         List<IAtom> lsR = molR.getConnectedAtomsList(atmR);
-        if (verbosity > 1)
+        String msg = "Generating CoordinationGeometry 'gA'";
+        for (int ia=0; ia<lsA.size(); ia++)
         {
-            System.out.println("Generating CoordinationGeometry 'gA'");
-            for (int ia=0; ia<lsA.size(); ia++)
-            {
-                System.out.println(" " + ia + " atom " 
-                		+ MolecularUtils.getAtomRef(lsA.get(ia),molA));
-            }
-            System.out.println("Generating CoordinationGeometry 'gB'");
-            for (int ir=0; ir<lsR.size(); ir++)
-            {
-                System.out.println(" " + ir + " atom " 
-                		+ MolecularUtils.getAtomRef(lsR.get(ir),molR));
-            }        
+        	msg = msg + " " + ia + " atom " 
+            		+ MolecularUtils.getAtomRef(lsA.get(ia),molA) + NL;
         }
+        msg = msg + "Generating CoordinationGeometry 'gB'" + NL;
+        for (int ir=0; ir<lsR.size(); ir++)
+        {
+        	msg = msg +" " + ir + " atom " 
+            		+ MolecularUtils.getAtomRef(lsR.get(ir),molR) + NL;
+        }
+        logger.debug(msg);
         CoordinationGeometry gA = new CoordinationGeometry("gA", atmA, 
                                               molA.getConnectedAtomsList(atmA));
         CoordinationGeometry gR = new CoordinationGeometry("gR", atmR, 
@@ -413,8 +399,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
         //Compare the two geometries
         double mad = CoordinationGeometryUtils.calculateMeanAngleDifference(
                                                                 gA,
-                                                                gR,
-                                                                verbosity);
+                                                                gR, 
+                                                                logger);
 
         //Build result string
         String summary = MolecularUtils.getAtomRef(atmA,molA) 
@@ -436,12 +422,12 @@ public class MolecularComparator extends AtomContainerInputProcessor
                 CoordinationGeometryUtils.calculateMeanAngleDifference(
                                                                 gA,
                                                                 gRef,
-                                                                0);
+                                                                logger);
             double madR =
                 CoordinationGeometryUtils.calculateMeanAngleDifference(
                                                                 gR,
                                                                 gRef,
-                                                                0);
+                                                                logger);
             String nStd = gRef.getName();
             String report = String.format(Locale.ENGLISH," MAD_mol;" + nStd + " %1.2f", madA);
             report = report + String.format(Locale.ENGLISH," MAD_ref;" + nStd + " %1.2f",madR);
@@ -451,21 +437,15 @@ public class MolecularComparator extends AtomContainerInputProcessor
         }
 
         //In case of debug print the matrix of all-vs-all MAD for the standard gc
-        if (verbosity > 2)
+        if (logger.getLevel().isMoreSpecificThan(Level.DEBUG))
         {
             for (int i=2; i<7; i++)
             {
                 List<CoordinationGeometry> a = cgRefs.getReferenceGeometryForCN(i);
-                CoordinationGeometryUtils.printAllVsAllMAD(a);
+                CoordinationGeometryUtils.printAllVsAllMAD(a, logger);
             }
         }
-
-        if (verbosity > 0)
-        {
-	        System.out.println(" ");
-	        System.out.println(" Comparison on two geometries: ");
-	        System.out.println(summary);
-        }
+        logger.info("Comparison on two geometries: " + NL + summary);
         
         return mad;
     }
@@ -479,7 +459,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
 
     public void runComparisonOfMoleculesBySuperposition(IAtomContainer iac, int i)
     {
-        ComparatorOfGeometries cog = new ComparatorOfGeometries(verbosity);
+        ComparatorOfGeometries cog = new ComparatorOfGeometries();
         cog.compareGeometryBySuperposition(iac, referenceMol);
 
         if (exposedOutputCollector != null)
@@ -507,7 +487,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
     public Map<Integer,Integer> getGeometryAwareAtomMapping(IAtomContainer molA,
                                                             IAtomContainer molB)
     {
-        ComparatorOfGeometries cog = new ComparatorOfGeometries(verbosity);
+        ComparatorOfGeometries cog = new ComparatorOfGeometries();
         return cog.getAtomMapping(molA,molB);
     }
 

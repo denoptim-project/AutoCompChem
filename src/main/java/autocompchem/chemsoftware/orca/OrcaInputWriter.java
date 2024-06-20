@@ -880,9 +880,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 								+ dd, -1);
 						}
 						
-						if (verbosity>0)
-						{
-							logger.warn("WARNING: "
+						logger.warn("WARNING: "
 									+ "An index-specific basis set found in this "
 									+ "job. Altering the '" + sysDefDir.getName() 
 									+ "' directive, which, we assume, contains a "
@@ -890,7 +888,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 									+ OrcaConstants.COORDSDIRNAME + "' with the "
 									+ "list of atoms/centers to which we associate "
 									+ "a basis set.");
-						}
 						systemDefSubDirs = sysDefDir.getDirectives(
 								OrcaConstants.COORDSDIRNAME);
 						if (systemDefSubDirs.size()==0)

@@ -673,7 +673,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         IAtomContainer mol = connectivityTemplate;
 
         //Identify selected internal coordinates
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, 0);
         if (msq.hasProblems()) 
         {
             String cause = msq.getMessage();
@@ -703,13 +703,10 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 if (msq.getNumMatchesOfQuery(key) == 0)
                 {
                     skipRule = true;
-                    if (verbosity > 0)
-                    {
-                        logger.warn("WARNING! No match for SMARTS query "
+                    logger.warn("WARNING! No match for SMARTS query "
                          + smarts.get(key) + " in molecule "
                          + MolecularUtils.getNameOrID(mol) + ". Skipping "
                          + "Int. Coord. definition '" + icRuleName + "'.");
-                    }
                     break;
                 }
 

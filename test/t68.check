@@ -1,29 +1,19 @@
 #!/bin/bash
 
-n=0
-grep -q "58 57  0  0  0  0  0  0  0  0" t68-pruned.sdf
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 1
-exit -1
+if ! grep -q "58 57  0  0  0  0  0  0  0  0" t68-pruned.sdf ; then
+  echo NOT Passed ERROR 1
+  exit -1
 fi
 
-grep -q "Matches for query '0': 3" t68.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 2
-exit -1
+if ! grep -q "Removing atoms He62, He63, He64, N14, C13, N41, N41, C13, N14" t68.log ; then
+  echo NOT Passed ERROR 2
+  exit -1
 fi
 
-grep -q "Matches for query '1': 2" t68.log
-if [ $? != 0 ] ; then
-echo NOT Passed ERROR 3
-exit -1
-fi
-
-grep -q 'Termination status: 0' t68.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if grep -q 'Termination status: 0' t68.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed ERROR 4
-exit -1
+  echo NOT Passed ERROR 4
+  exit -1
 fi

@@ -902,8 +902,7 @@ public abstract class ChemSoftOutputReader extends Worker
 		        					(ArrayList<Double>) stepData.getNamedData(
 		    	        					ChemSoftConstants.JOBDATAVIBFREQ)
 		        					.getValue(), temp, qhThrsh, imThrsh, 
-		        						ignThrsh, 
-		        					verbosity-1); // J/(mol*K)
+		        						ignThrsh, logger); // J/(mol*K)
 		        			qhVibS = qhVibS / ACCConstants.HARTREETOJOULEPERMOLE;
 		        			// J/(mol*K) * ((Eh * mol)/J) = Eh/K = Hartree/K
 	
@@ -1109,7 +1108,7 @@ public abstract class ChemSoftOutputReader extends Worker
 						isCompatible = false;
 					} else if (!ConnectivityUtils.compareBondDistancesWithReference(
 							lastGeomToExpose, connectivityTemplate, 
-							connectivityCheckTol, 0, log))
+							connectivityCheckTol, logger, log))
 					{
 						isCompatible = false;
 					}

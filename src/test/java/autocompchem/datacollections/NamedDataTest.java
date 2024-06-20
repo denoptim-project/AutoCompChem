@@ -244,6 +244,25 @@ public class NamedDataTest
         	}
     	}
     }
+
+//------------------------------------------------------------------------------
+   
+    @Test
+    public void testGetValueAsLines() throws Exception
+    {
+    	NamedData ndInteger = new NamedData("integer", NamedDataType.INTEGER, 
+    			123);
+    	assertEquals("123", ndInteger.getValueAsString());
+    	
+    	NamedData ndDouble = new NamedData("double", NamedDataType.DOUBLE, 
+    			1.234);
+    	assertEquals("1.234", ndDouble.getValueAsString());
+    	
+    	NamedData ndDoubleLst = new NamedData("doubleLst", 
+    			NamedDataType.LISTOFDOUBLES, 
+    			new ListOfDoubles(Arrays.asList(1.2, 3.4, 5.6)));
+    	assertEquals("1.2 3.4 5.6", ndDoubleLst.getValueAsString());
+    }
     
 //-----------------------------------------------------------------------------
     

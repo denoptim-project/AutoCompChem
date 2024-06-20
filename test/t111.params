@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-VERBOSITY: 4
+VERBOSITY: 7
 TASK: AnalyseNWChemOutput
 JOBOUTPUTFILE: ../t111-nwc.out
 GetFreeEnergy: QHARMTOREAL 50.0 QHTHRESHOLD 101.0 QHARMIGNORE 1.0

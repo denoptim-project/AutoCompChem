@@ -77,8 +77,8 @@ public class AtomUtils
             r = PeriodicTable.getVdwRadius(elSymbol);
         } catch (Throwable thb) {
         	Logger logger = LogManager.getLogger(AtomUtils.class);
-        	logger.warn("WARNING! Element " + elSymbol + " not found. "
-        			+ "Using " + r + " as van der Waals radius.");
+        	logger.warn("WARNING! van der Waals radius of element " + elSymbol 
+        			+ " not found. Using " + r + " as radius.");
         }
         return r;
     }

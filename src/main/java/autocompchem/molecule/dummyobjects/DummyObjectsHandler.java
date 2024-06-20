@@ -446,22 +446,16 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                     IAtom atmR = nbrs.get(j);
                     double ang = MolecularUtils.calculateBondAngle(atmL,srcAtm,
                                                                           atmR);
-                    if (verbosity > 3)
-                    {
-                        System.out.println("Checking for linearity of: "
+                    logger.trace("Checking for linearity of: "
                         + MolecularUtils.getAtomRef(atmL,mol)
                         + "-" + MolecularUtils.getAtomRef(srcAtm,mol)
                         + "-" + MolecularUtils.getAtomRef(atmR,mol)
                         + " angle: " + ang);
-                    }
                     if (DummyObjectsConstants.LINEARANGLE < ang)
                     {
-                        if (verbosity > 1)
-                        {
-                            System.out.println("Adding linearity-breaking "
+                        logger.trace("Adding linearity-breaking "
                                 + "dummy atom on: "  
                                 + MolecularUtils.getAtomRef(srcAtm,mol));
-                        }
                         this.activeSrcAtmIds.add(mol.indexOf(srcAtm));
                     }
                 }
@@ -490,22 +484,16 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                                                               srcAtm,
                                                               nbrs.get(1),
                                                               nbrs.get(2));
-            if (verbosity > 3)
-            {
-                System.out.println("For trigonal "  
+            logger.trace("For trigonal "  
                         + MolecularUtils.getAtomRef(srcAtm,mol) 
                         + "(" + MolecularUtils.getAtomRef(nbrs.get(0),mol) 
                         + ")(" + MolecularUtils.getAtomRef(nbrs.get(1),mol)
                         + ")" + MolecularUtils.getAtomRef(nbrs.get(2),mol)
                         + " dih: " + dih);
-            }
             if (DummyObjectsConstants.LINEARANGLE < Math.abs(dih))
             {
-                if (verbosity > 1)
-                {
-                    System.out.println("Adding planarity-breaking du on: " 
+                logger.debug("Adding planarity-breaking du on: " 
                                        + MolecularUtils.getAtomRef(srcAtm,mol));
-                }
                 this.activeSrcAtmIds.add(mol.indexOf(srcAtm));
             }
         }
@@ -692,20 +680,13 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             }
         }
 
-        if (verbosity > 0)
+        String msg = ("#Candidate dummy atoms (" + type + "): "
+            		+ dummiesList.size()) + NL;
+        for (IAtom du : dummiesList)
         {
-            System.err.println("#Candidate dummy atoms (" + type + "): "
-            		+ dummiesList.size());
-
-            if (verbosity > 2)
-            {
-                for (IAtom du : dummiesList)
-                {
-                    System.err.println(" -> Atom " 
-                    		+ MolecularUtils.getAtomRef(du,mol));
-                }
-            }
+           msg = msg + " -> Atom "+ MolecularUtils.getAtomRef(du,mol);
         }
+        logger.debug(msg);
 
         //Delete dummy atoms and change connectivity
         for (IAtom du : dummiesList)
@@ -725,12 +706,9 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             		&& nbrOfDu.size()>1)
             {
             	//Identify atoms of ligand in mupltihapto system
-	            if (verbosity > 2)
-	            {
-	                System.err.println(" Fixing connectivity for: " 
+	            logger.trace(" Fixing connectivity for: " 
 	                		+ MolecularUtils.getAtomRef(du,mol)
 	                        + " #neighbours: "+nbrOfDu.size());
-	            }
 	
 	            List<Boolean> found = getFlagsVector(numOfTerms);
 	            List<Set<IAtom>> goupsOfTerms = new ArrayList<Set<IAtom>>();
@@ -753,25 +731,20 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	
 	            } //end of loop over neighbours of Dummy
 	
-	            if (verbosity > 2)
-	            {
-	                System.err.println("#Groups of terms: " 
-	                		+ goupsOfTerms.size());
-	                for (int i=0; i<goupsOfTerms.size(); i++)
-	                {
-	                    Set<IAtom> s = goupsOfTerms.get(i);
-	                    System.err.print(" Group " + i 
-	                                     + " - Hapticity: " + hapticity.get(i) 
-	                                     + " => ");
-	                    for (IAtom sa : s)
-	                    {
-	                    	//TODO control via logging level/verbosity
-	                        System.err.print((mol.indexOf(sa)+1) 
-	                        		+ sa.getSymbol()+" ");
-	                    }
-	                    System.err.println(" ");
-	                }
+	            String msg2 = "#Groups of terms: " + goupsOfTerms.size() + NL;
+                for (int i=0; i<goupsOfTerms.size(); i++)
+                {
+                    Set<IAtom> s = goupsOfTerms.get(i);
+                    msg2 = msg2 +" Group " + i 
+                                     + " - Hapticity: " + hapticity.get(i) 
+                                     + " => " ;
+                    for (IAtom sa : s)
+                    {
+                    	msg2 = msg2 + (mol.indexOf(sa)+1) + sa.getSymbol()+" ";
+                    }
+                    msg2 = msg2 + (" ");
 	            }
+                logger.debug(msg2);
 	
 	            // If Du is in between groups, connectivity has to be fixed
 	            if (goupsOfTerms.size() > 1)
@@ -834,10 +807,10 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	                    {
 	                        if (ligandFound)
 	                        {
-	                            String msg = "More then one group of atoms may "
+	                            String msg3 = "More then one group of atoms may "
 	                                         + "correspond to the ligand. Not "
 	                                         + "able  to identify the ligand!";
-	                            Terminator.withMsgAndStatus(msg, -1);
+	                            Terminator.withMsgAndStatus(msg3, -1);
 	                        }
 	                        ligandID = i;
 	                        ligandFound = true;
@@ -847,13 +820,13 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	                //In case of no matching return the error
 	                if (!ligandFound)
 	                {
-	                    String msg = "Dummy atom does not seem to be placed at "
+	                    String msg3 = "Dummy atom does not seem to be placed at "
 	                                 + "the centroid of a multihapto ligand. "
 	                                 + "Du: " + du
 	                                 + "Candidates: " + allCandidates
 	                                 + "See current molecule in 'error.sdf'";
 	                    IOtools.writeSDFAppend(new File("error.sdf"),mol,false);
-	                    Terminator.withMsgAndStatus(msg, -1);
+	                    Terminator.withMsgAndStatus(msg3, -1);
 	                }
 	                
 	                //Connect every atom from the multihapto ligand with
@@ -870,15 +843,12 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	                    {
 	                        for (IAtom ligandAtm : ligand)
 	                        {
-	                            if (verbosity > 2)
-	                            {
-	                                System.err.println("Making a bond " 
+	                            logger.trace("Making a bond " 
 	                                		+ MolecularUtils.getAtomRef(
 	                                				ligandAtm,mol)
 	                                		+ " - " 
 	                                		+ MolecularUtils.getAtomRef(
 	                                				centralAtm,mol));
-	                            }
 	                            IBond bnd = new Bond(ligandAtm,centralAtm);
 	                            mol.addBond(bnd);
 	                        }

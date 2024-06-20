@@ -265,6 +265,12 @@ public class NamedData implements Cloneable
     	List<String> lines = new ArrayList<String>();
     	switch (type)
     	{
+    	case BOOLEAN:
+    		lines.add(((Boolean) value).toString());
+    	case INTEGER:
+    		lines.add(((Integer) value).toString());
+    	case DOUBLE:
+    		lines.add(((Double) value).toString());
 		case LISTOFDOUBLES:
 			for (Double d : (ListOfDoubles) value)
 				lines.add(d.toString());

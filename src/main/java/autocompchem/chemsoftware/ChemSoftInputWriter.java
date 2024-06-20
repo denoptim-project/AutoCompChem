@@ -147,13 +147,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     public void initialize()
     {
     	super.initialize();
-    	
-        if (params.contains(ChemSoftConstants.PARVERBOSITY))
-        {
-            String str = params.getParameter(
-                    ChemSoftConstants.PARVERBOSITY).getValueAsString();
-            this.verbosity = Integer.parseInt(str);
-        }
         
         if (params.contains(ChemSoftConstants.PARPRECISION))
         {

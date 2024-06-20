@@ -285,7 +285,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         IAtomContainer ref = refMols.get(0); 
          
         boolean result = ConnectivityUtils.compareBondDistancesWithReference(
-                        iac, ref, tolerance, verbosity);
+                        iac, ref, tolerance, logger);
         
         if (exposedOutputCollector != null)
         {
@@ -308,7 +308,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
                 targetEl, 
                 tolerance,
                 tolerance2ndShell, 
-                verbosity);
+                logger);
 
         if (outFile!=null)
             IOtools.writeSDFAppend(outFile, iac, true);
@@ -357,8 +357,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
     {
         String molName = MolecularUtils.getNameOrID(mol);
         int nAtms = mol.getAtomCount();
-        if (verbosity > 1)
-            System.out.println("Recalculating connectivity for " + molName);
+        logger.debug("Recalculating connectivity for " + molName);
 
         for (int i=0; i<nAtms; i++)
         {
@@ -375,15 +374,12 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 
                 if ((ab < minNBD) && (!nbrs.contains(b)))
                 {
-                    if (verbosity > 2)
-                    {
-                        System.out.println("Adding bond between atom '" 
+                    logger.trace("Adding bond between atom '" 
                                                 + MolecularUtils.getAtomRef(a,mol)
                                                 + "' and '"
                                                 + MolecularUtils.getAtomRef(b,mol)
                                                 + "' (dist=" + ab + " - minNBD="
                                                 + minNBD + "). ");
-                    }
 
                     //TODO: add attempt to guess bond order
 

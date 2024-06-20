@@ -10,7 +10,7 @@ if [ $? != 0 ] ; then
   echo NOT Passed 2
   exit -1
 fi
-n=0; n=$(grep -c '^# ' t100.log)
+n=0; n=$(grep -c '^#[0-9] ' t100.log)
 if [ 5 != "$n" ] ; then
   echo NOT Passed 3
   exit -1

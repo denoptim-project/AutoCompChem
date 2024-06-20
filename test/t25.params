@@ -1,7 +1,7 @@
 # 
 # Parameters for AutoCompChem: recalculation of connectivity
 #
-VERBOSITY: 4
+VERBOSITY: 7
 TASK: CompareTwoGeometries
 TARGETATOMSQUERY: [Ti]
 INFILE: ../t25mol.sdf

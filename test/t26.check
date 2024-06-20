@@ -1,9 +1,8 @@
 #!/bin/bash
 
-grep -q "molA..0, 1, 2, 3. molB..0, 1, 2, 3. LowestMAD. 36.4901899364" t26.log
-if [ $? != 0 ] ; then
-echo NOT Passed err2
-exit -1
+if ! grep -q "molA..0, 1, 2, 3. molB..0, 1, 2, 3. LowestMAD. 36.4901" t26.log ; then
+  echo NOT Passed - Error 1
+  exit -1
 fi
 
 grep -q 'Termination status: 0' t26.log

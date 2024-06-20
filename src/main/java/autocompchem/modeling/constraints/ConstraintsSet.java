@@ -73,13 +73,16 @@ public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 	 * Prints all the constraints into stdout.
 	 */
 	
-	public void printAll() 
+	public String toString() 
 	{
-		System.out.println("List of constraints: ");
+		StringBuilder sb = new StringBuilder();
+		String NL = System.getProperty("line.separator");
+		sb.append("List of constraints: ").append(NL);
 		for (Constraint c : this)
 		{
-			System.out.println(" -> "+c);
+			sb.append(" -> "+c+NL);
 		}
+		return sb.toString();
 	}
 	
 //-----------------------------------------------------------------------------

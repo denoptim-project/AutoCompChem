@@ -47,12 +47,11 @@ public class BasisSetUtils
     /**
      * Reads a Gaussian Basis Set (gbs) file and returns the basis set object. 
      * @param inFile pathname to the gbs file to read
-     * @param verbosity amount of log
+     * @param  logger tool for logging
      * @return the basis set object
      */
 
-    public static BasisSet importBasisSetFromGBSFile(File inFile, 
-    		int verbosity)
+    public static BasisSet importBasisSetFromGBSFile(File inFile)
     {
     	Logger logger = LogManager.getLogger(BasisSetUtils.class);
         String msg = "";

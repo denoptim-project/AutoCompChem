@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -58,8 +59,9 @@ public class MolecularGeometryEditorTest
 		move.add(new Point3d(0,0,0));
     	
 
-		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors(mol, 
-				move,15,"EVEN",0.01,0.01,5.0,0.001,1.0,0);
+		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors(
+				mol,move,15,"EVEN",0.01,0.01,5.0,0.001,1.0, 
+				LogManager.getLogger());
 		
 		assertEquals(16,sf.size(), "Size of scaling factors list");
     }
@@ -81,7 +83,8 @@ public class MolecularGeometryEditorTest
     	
 
 		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors( 
-				mol,move,15,"EVEN",0.01,0.01,5.0,0.0001,1.0,0);
+				mol,move,15,"EVEN",0.01,0.01,5.0,0.0001,1.0,
+				LogManager.getLogger());
 		
 		double trsh = 0.001;
 		assertTrue(Math.abs(sf.get(0)-(-0.535)) < trsh, "Check minus side");
@@ -105,7 +108,8 @@ public class MolecularGeometryEditorTest
     	
 
 		ArrayList<Double> sf = MolecularGeometryEditor.optimizeScalingFactors( 
-				mol,move,15,"BalANced",0.01,0.01,5.0,0.0001,1.0,0);
+				mol,move,15,"BalANced",0.01,0.01,5.0,0.0001,1.0,
+				LogManager.getLogger());
 		
 		double trsh = 0.001;
 		assertEquals(15,sf.size(), "Size of scaling factors list");

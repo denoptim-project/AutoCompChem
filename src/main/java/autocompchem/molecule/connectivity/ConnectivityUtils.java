@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
@@ -71,19 +72,17 @@ public class ConnectivityUtils
      * one the tolerance is increased by an extra factor.
      * @param extraTollSecShell additional tolerance for atoms connected to
      * atoms already directly connected to the central one
-     * @param verbosity verbosity level
+     * @param logger loggign tool
      */
 
     public static void addConnectionsByVDWRadius(IAtomContainer mol, String el, 
-                      double tolerance, double extraTollSecShell, int verbosity)
+                      double tolerance, double extraTollSecShell, 
+                      Logger logger)
     {
-        if (verbosity > 2)
-        {
-            System.out.println("Evaluating Connections of '" 
+        logger.trace("Evaluating Connections of '" 
                         + el + "' atoms using van der Waals radii (Tolerance: "
                         + (tolerance * 100) + "% (sec. shell +" 
                         + (extraTollSecShell * 100) + "%).");
-        }
 
         for (IAtom atmA : mol.atoms())
         {
@@ -136,14 +135,11 @@ public class ConnectivityUtils
                     }
                     if (dist < refDist)
                     {
-                        if (verbosity >= 1)
-                        {
-                            System.out.println("Adding a bond between '" 
+                        logger.info("Adding a bond between '" 
                                         + MolecularUtils.getAtomRef(atmA,mol)
                                         + "' and '" 
                                         + MolecularUtils.getAtomRef(atmB,mol)
                                         + "'.");
-                        }
                         IBond b = new Bond(atmA, atmB,
                                                 IBond.Order.valueOf("SINGLE"));
                         mol.addBond(b);
@@ -216,12 +212,12 @@ public class ConnectivityUtils
      * connectivity matrices.
      * @param mol the atom container under evaluation
      * @param ref the reference atom container 
-     * @param verbosity the amount of log to write
+     * @param logger loggign tool.
      * @return <code>true</code> if the two connectivity matrices are equal
      */
 
     public static boolean compareWithReference(IAtomContainer mol, 
-    		IAtomContainer ref, int verbosity)
+    		IAtomContainer ref, Logger logger)
     {
         if (mol.getAtomCount() == ref.getAtomCount()) 
         {
@@ -245,15 +241,12 @@ public class ConnectivityUtils
                         }
                     }
                 }
-                if (verbosity > 0) 
-                    System.out.println("No compatible atom tree found!");
+                logger.info("No compatible atom tree found!");
             } else {
-                if (verbosity > 0)
-                    System.out.println("Different number of Bonds!");
+            	logger.info("Different number of Bonds!");
             }
         } else {
-            if (verbosity > 0)
-                System.out.println("Different number of atoms!");
+        	logger.info("Different number of atoms!");
         }
         return false;
     }
@@ -275,7 +268,7 @@ public class ConnectivityUtils
     public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
     		IAtomContainer ref, double tolerance)
     {
-    	return compareBondDistancesWithReference(mol, ref, tolerance, 0);
+    	return compareBondDistancesWithReference(mol, ref, tolerance);
     }
     
 //------------------------------------------------------------------------------
@@ -288,15 +281,15 @@ public class ConnectivityUtils
      * @param ref the reference atom container .
      * @param tolerance the tolerance applied when comparing interatomic 
      * distances.
-     * @param verbosity about of log in stdout.
+     * @param logger logging tool.
      * @return <code>true</code> if the two interatomic distances are compatible
      * with the given connectivity matrix (within the given tolerance).
      */
 
     public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
-    		IAtomContainer ref, double tolerance, int verbosity)
+    		IAtomContainer ref, double tolerance, Logger logger)
     {
-    	return compareBondDistancesWithReference(mol, ref, tolerance, verbosity, 
+    	return compareBondDistancesWithReference(mol, ref, tolerance, logger, 
     			new StringBuffer());
     }
     
@@ -310,24 +303,23 @@ public class ConnectivityUtils
      * @param ref the reference atom container .
      * @param tolerance the tolerance applied when comparing interatomic 
      * distances. The value is a factor applied to the reference distance.
-     * @param verbosity about of log in stdout.
+     * @param logger logging tool.
      * @param log a string with the log from this analysis.
      * @return <code>true</code> if the two interatomic distances are compatible
      * with the given connectivity matrix (within the given tolerance).
      */
 
+    //TODO-gg get rid of log and logger by moving this into a worker
+    
     public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
-    		IAtomContainer ref, double tolerance, int verbosity, 
+    		IAtomContainer ref, double tolerance, Logger logger, 
     		StringBuffer log)
     {  
     	String largest = "";
     	double maxDelta = -10000.0;
         if (mol.getAtomCount() == ref.getAtomCount()) 
         {
-        	if (verbosity > 1)
-            {
-            	System.out.println(" Compatison of bond distances:");
-            }
+        	logger.debug(" Compatison of bond distances:");
             for (IBond refBnd : ref.bonds())
             {
             	int iA = ref.indexOf(refBnd.getAtom(0));
@@ -348,7 +340,7 @@ public class ConnectivityUtils
             			msg = msg + "-"
             				+ MolecularUtils.getAtomRef(refBnd.getAtom(i), ref);
             		}
-            		System.out.println(msg);
+            		logger.warn(msg);
             		continue;
             	}
             	double refDist = MolecularUtils.calculateInteratomicDistance(
@@ -360,10 +352,7 @@ public class ConnectivityUtils
         				+ "-" 
         				+ MolecularUtils.getAtomRef(refBnd.getAtom(1),ref)
         				+ ": |" + refDist + "-" + molDist + "| = " + delta;
-            	if (verbosity > 1)
-                {
-                	System.out.println("  -> "+line);
-                }
+            	logger.debug("  -> "+line);
             	if (delta > maxDelta)
             	{
             		maxDelta = delta;
@@ -374,29 +363,19 @@ public class ConnectivityUtils
             	{
             		String msg = "Unacceptable bond distance "
         					+ "deviation: "+ largest + " > " + maxAllowed;
-            		if (verbosity > 0)
-            		{
-            			System.out.println(msg );
-            		}
+            		logger.info(msg);
             		log.append(msg);
             		return false;
             	}
             }
         } else {
-            if (verbosity > 0)
-            {
-            	String msg = "Different number of atoms!";
-            	System.out.println(msg);
-            	log.append(msg);
-            	return false;
-            }
+        	String msg = "Different number of atoms!";
+        	logger.info(msg);
+        	log.append(msg);
+        	return false;
         }
 
-        if (verbosity > 0)
-        {
-            System.out.println("Largest deviation in bond distance: " 
-            		+ largest);
-        }
+        logger.info("Largest deviation in bond distance: " + largest);
         return true;
     }
 

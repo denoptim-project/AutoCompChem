@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
@@ -24,9 +25,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Enumeration;
 
 import javax.vecmath.Point3d;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.WriterAppender;
+import org.apache.log4j.spi.ErrorHandler;
+import org.apache.log4j.spi.Filter;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openscience.cdk.Atom;
@@ -34,6 +46,7 @@ import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
@@ -50,8 +63,6 @@ import autocompchem.worker.WorkerConstants;
 public class ACCJobTest 
 {
     private final String SEP = System.getProperty("file.separator");
-    private final ByteArrayOutputStream outRec = new ByteArrayOutputStream();
-    private final PrintStream originalOut = System.out;
 
     @TempDir 
     File tempDir;
@@ -93,22 +104,21 @@ public class ACCJobTest
             Job job = JobFactory.createJob(AppID.ACC);
             job.setParameters(params);
             
-            // Run redirecting output to readable stream (only for the job)
-            System.setOut(new PrintStream(outRec));
+            // Run the job
             job.run();
-            System.setOut(originalOut);
             
-            // Red the record of stdout to find the result, if any
-            String outStr = outRec.toString();
-            assertTrue(outStr.contains(label),
-            		"Result not found in STDOUT");
-            outStr = outStr.substring(outStr.indexOf(label));
-            outStr = outStr.substring(outStr.indexOf("=")+1).trim();
+            // Check that results are present
+            NamedDataCollector results = job.getOutputCollector();
+            assertEquals(1, results.size());
+            
+            // Check the actual value
+            String name = results.getAllNamedData().keySet().iterator().next();
+            String valueStr = results.getNamedData(name).getValueAsLines().get(0);
             double dist = 0.0;
 			try {
-				dist = Double.parseDouble(outStr);
+				dist = Double.parseDouble(valueStr);
 			} catch (Exception e) {
-				assertTrue(false,"Found numerical result");
+				assertTrue(false, "Found numerical result");
 			}
             assertTrue(Math.abs(dist-2.0) < 0.0001, "Correct numerical output");
         }

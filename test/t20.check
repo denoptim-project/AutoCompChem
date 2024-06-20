@@ -2,21 +2,21 @@
 
 totDone=$(grep -c "Adding a bond between" t20.log)
 if [ $totDone != 6 ] ; then
-echo NOT Passed
-exit -1
+  echo NOT Passed - Error 1
+  exit -1
 fi
 
 totDone=$(grep -c "Evaluating Connections of 'Ru'" t20.log)
 if [ $totDone != 82 ] ; then
-echo NOT Passed
-exit -1
+  echo NOT Passed - Error 2
+  exit -1
 fi
 
 grep -q 'Termination status: 0' t20.log
 if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+  echo Passed
+  exit 0
 else
-echo NOT Passed
-exit -1
+  echo NOT Passed - Error 99
+  exit -1
 fi

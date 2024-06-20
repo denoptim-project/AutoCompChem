@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -151,10 +152,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
         {
             String allSmarts = 
                     params.getParameter("SMARTS").getValue().toString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Importing SMARTS queries ");
-            }
             String[] lines = allSmarts.split("\\r?\\n");
             for (int i=0; i<lines.length; i++)
             {
@@ -167,10 +164,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
         {
             String allIDs =
                        params.getParameter("ATOMINDEXES").getValue().toString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Importing atom indexes ");
-            }
             String[] lines = allIDs.split("\\r?\\n");
             for (int i=0; i<lines.length; i++)
             {
@@ -267,7 +260,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
     	if (task.equals(MEASUREGEOMDESCRIPTORSTASK))
     	{
     		Map<String,List<Double>> descriptors = measureAllQuantities(iac,
-    				smarts, sortedKeys, atmIds, onlyBonded, i, verbosity);
+    				smarts, sortedKeys, atmIds, onlyBonded, i);
     		
             if (exposedOutputCollector != null)
         	{
@@ -275,8 +268,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
 	    		for (String descRef : descriptors.keySet())
 	    		{
 	    			String reference = molID + "_" + descRef;
-	  		        exposeOutputData(new NamedData(reference, 
-	  		        		NamedDataType.DOUBLE, descriptors.get(descRef)));
+	  		        exposeOutputData(new NamedData(reference,
+	  		        		NamedDataType.LISTOFDOUBLES, 
+	  		        		new ListOfDoubles(descriptors.get(descRef))));
 	    		}
         	}
     	} else {
@@ -289,7 +283,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
     public static Map<String,List<Double>> measureAllQuantities(
     		IAtomContainer mol, Map<String,String> smarts, 
     		List<String> sortedKeys, Map<String,List<Integer>> atmIds,
-    		boolean onlyBonded, int i, int verbosity)
+    		boolean onlyBonded, int i)
     {
     	Logger logger = LogManager.getLogger(MolecularMeter.class);
     	
@@ -298,11 +292,10 @@ public class MolecularMeter extends AtomContainerInputProcessor
                       new HashMap<String,List<List<IAtom>>>();
         if (smarts.keySet().size() > 0)
         {
-            if (verbosity > 1)
-            {
-                System.out.println(" Matching SMARTS queries");
-            }
-            ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
+            logger.debug("Matching SMARTS queries");
+            //TODO-gg get rid of deprecated elsewhere
+//            ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
+            ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
             if (msq.hasProblems())
             {
                 String cause = msq.getMessage();
@@ -357,10 +350,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
 
         if (atmIds.keySet().size() > 0)
         {
-            if (verbosity > 1)
-            {
-                System.out.println(" Matching atoms from indexes");
-            }
+            logger.debug("Matching atoms from indexes");
             for (String key : atmIds.keySet())
             {
                 List<List<IAtom>> atmsForQuantity = new ArrayList<List<IAtom>>();
@@ -383,11 +373,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
         {
             if (!allQuantities.containsKey(key))
             {
-                if (verbosity > 1)
-                {
-                    System.out.println(" No quantity '" + key 
-                    		+ "' found.");
-                }
+            	logger.debug(" No quantity '" + key + "' found.");
                 continue;
             }
 
@@ -396,12 +382,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 2)
             	{
-            		if (verbosity > 0)
-                    {
-                        System.out.println(" Not enough matches for "
+            		logger.debug(" Not enough matches for "
                         		+ "quantity '" + key + "'. Found only " 
                         		+ atmsForQuantity.size() + " set.");
-                    }
             		continue;
             	}
             	
@@ -427,19 +410,16 @@ public class MolecularMeter extends AtomContainerInputProcessor
                                                                   atmB);
 
                         //Report value
-                        if (verbosity > 0)
-                        {
-                            String strRes = "Mol." + i + " " 
-                                + molName + " "
-                                + " Dst."
-                                + key + " "
-                                + MolecularUtils.getAtomRef(atmA,mol) 
-                                + ":"
-                                + MolecularUtils.getAtomRef(atmB,mol) 
-                                + " = "
-                                + res;
-                            System.out.println(strRes);
-                        }
+                        String strRes = "Mol." + i + " " 
+                            + molName + " "
+                            + " Dst."
+                            + key + " "
+                            + MolecularUtils.getAtomRef(atmA,mol) 
+                            + ":"
+                            + MolecularUtils.getAtomRef(atmB,mol) 
+                            + " = "
+                            + res;
+                        logger.info(strRes);
                         distances.add(res);
                     }
                 }
@@ -452,12 +432,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 3)
             	{
-            		if (verbosity > 0)
-                    {
-                        System.out.println(" Not enough matches for "
+            		logger.info("Not enough matches for "
                         		+ "quantity '" + key + "'. Found only " 
                         		+ atmsForQuantity.size() + " set.");
-                    }
             		continue;
             	}
             	
@@ -500,17 +477,14 @@ public class MolecularMeter extends AtomContainerInputProcessor
                             		atmA, atmB, atmC);
                             
                             //Report value
-                            if (verbosity > 0)
-                            {
-                                String strRes = "Mol." + i + " " 
-                                    + molName + " " + " Ang."
-                                        + key + " "
-                            + MolecularUtils.getAtomRef(atmA,mol) + ":"
-                            + MolecularUtils.getAtomRef(atmB,mol) + ":"
-                            + MolecularUtils.getAtomRef(atmC,mol) +" = "
-                                    + res;
-                                System.out.println(strRes);
-                            }
+                            String strRes = "Mol." + i + " " 
+                                + molName + " " + " Ang."
+                                    + key + " "
+		                        + MolecularUtils.getAtomRef(atmA,mol) + ":"
+		                        + MolecularUtils.getAtomRef(atmB,mol) + ":"
+		                        + MolecularUtils.getAtomRef(atmC,mol) +" = "
+                                + res;
+                            logger.info(strRes);
                             angles.add(res);
                         }
                     }
@@ -523,12 +497,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 4)
             	{
-            		if (verbosity > 0)
-                    {
-                        System.out.println(" Not enough matches for "
+            		logger.info(" Not enough matches for "
                         		+ "quantity '" + key + "'. Found only " 
                         		+ atmsForQuantity.size() + " set.");
-                    }
             		continue;
             	}
             	
@@ -590,18 +561,15 @@ public class MolecularMeter extends AtomContainerInputProcessor
                                 				atmA, atmB, atmC, atmD);
 
                                 //Report value
-                                if (verbosity > 0)
-                                {
-                                    String strRes = "Mol." + i + " "
-                                        + molName + " " + " Dih."
-                                        + key +" "
-                            + MolecularUtils.getAtomRef(atmA,mol) + ":"
-                            + MolecularUtils.getAtomRef(atmB,mol) + ":"
-                            + MolecularUtils.getAtomRef(atmC,mol) + ":"
-                            + MolecularUtils.getAtomRef(atmD,mol) +" = "
+                                String strRes = "Mol." + i + " "
+                                    + molName + " " + " Dih."
+                                    + key +" "
+		                            + MolecularUtils.getAtomRef(atmA,mol) + ":"
+		                            + MolecularUtils.getAtomRef(atmB,mol) + ":"
+		                            + MolecularUtils.getAtomRef(atmC,mol) + ":"
+		                            + MolecularUtils.getAtomRef(atmD,mol) +" = "
                                         + res;
-                                    System.out.println(strRes);
-                                }
+                                logger.info(strRes);
                                 dihedrals.add(res);
                             }
                         }

@@ -395,11 +395,8 @@ public class ForceFieldEditor extends Worker
         }
         else
         {
-            if (verbosity > 0)
-            {
-                System.out.println("Importing force field parameters from "
+        	logger.debug("Importing force field parameters from "
                                    + vaFiles.size() + " vibrational analysis.");
-            }
         }
 
         // Get new (averaged) force field parameters from vibrational analysis
@@ -412,10 +409,7 @@ public class ForceFieldEditor extends Worker
                 	ParameterStorage ps = new ParameterStorage();
                 	ps.setParameter("MOLFILE", molFiles.get(imol));
                 	ps.setParameter("VMFILE", vaFiles.get(imol));
-                	ps.setParameter( 
-                			params.getParameter("INTCOORDBYSMARTS"));
-                	ps.setParameter( 
-                			params.getParameter("VERBOSITY"));
+                	ps.setParameter(params.getParameter("INTCOORDBYSMARTS"));
                 	
                 	Worker w;
 					try {
@@ -448,11 +442,8 @@ public class ForceFieldEditor extends Worker
         }
 
         //Assign atom type/class
-        if (verbosity > 0)
-        {
-            System.out.println(" Mean force field parameters (over all " 
-                            + molFiles.size() + " mols):");
-        }
+        String paramsLog = " Mean force field parameters (over all " 
+                            + molFiles.size() + " mols): " + NL;
         for (ForceFieldParameter ffp : ffParStats.getMeanFFPar())
         {
             for (AtomType at : ffp.getAtomTypes())
@@ -461,16 +452,14 @@ public class ForceFieldEditor extends Worker
                             ForceFieldConstants.SMARTSQUERYATMTYP).toString();
                 if (!smartsToAtmTyp.keySet().contains(smartsKey))
                 {
-                    msg = " WARNING! No atom type/class definition for SMARTS '"
+                    logger.warn(" WARNING! No atom type/class definition for "
+                    		+ "SMARTS '"
                             + smartsKey + "'. Cannot assign force field "
-                            + "parameter " + ffp.toSimpleString();
-                    System.out.println(msg);
+                            + "parameter " + ffp.toSimpleString());
                     ffp.setProperty("IGNORE","IGNORE");
                 }
                 else
                 {
-                    //TODO
-                    System.out.println("===>>FOUDN MAP for "+smartsKey);
                     Map<String,String> atOpts = smartsToAtmTyp.get(smartsKey);
                     if (atOpts.keySet().contains(
                         ForceFieldConstants.ATMTYPSTRMAP))
@@ -490,17 +479,15 @@ public class ForceFieldEditor extends Worker
                     break;
                 }
             }
-            if (verbosity > 0 && !ffp.hasProperty("IGNORE"))
+            if (!ffp.hasProperty("IGNORE"))
             {
-                System.out.println("  -> "+ffp.toSimpleString());
+            	paramsLog = paramsLog + "  -> "+ffp.toSimpleString() + NL;
             }
         }
-
+        logger.info(paramsLog);
+        
         //Import new parameter into the loaded FF parameters' set
-//TODO
-System.out.println("TODO!!!");
-
-
+        logger.fatal("ERROR: implementation ot complete! Use at your own risk!");
 
 
         //Write results
@@ -532,10 +519,7 @@ System.out.println("TODO!!!");
     private Map<String,String> getNamedICSMARTS(String allLines)
     {
         Map<String,String> map = new HashMap<String,String>();
-        if (verbosity > 1)
-        {
-            System.out.println(" Importing SMARTS to identify ICs");
-        }
+        logger.debug("Importing SMARTS to identify ICs");
         String[] lines = allLines.split("\\r?\\n");
         int ii = -1;
         for (int i=0; i<lines.length; i++)
@@ -610,13 +594,9 @@ System.out.println("TODO!!!");
                                      String allLines, Map<String,String> smarts)
     {
         ArrayList<String> sortedMasterNames = getSortedSMARTSRefNames(smarts);
-
         Map<String,ArrayList<String>> map =
-                                        new HashMap<String,ArrayList<String>>();
-        if (verbosity > 1)
-        {
-            System.out.println(" Importing options for IC-identifying SMARTS");
-        }
+        		new HashMap<String,ArrayList<String>>();
+        logger.debug("Importing options for IC-identifying SMARTS");
         String[] lines = allLines.split("\\r?\\n");
         int ii=-1;
         for (int i=0; i<lines.length; i++)

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -135,10 +136,6 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
         	this.targetsmarts = new HashMap<String,String>();
             String allSamrts = 
                 params.getParameter("TARGETSMARTS").getValue().toString();
-            if (verbosity > 2)
-            {
-                System.out.println(" Importing SMARTS queries ");
-            }
             String[] lines = allSamrts.split("\\r?\\n");
             int k = 0;
             for (int i=0; i<lines.length; i++)
@@ -179,16 +176,12 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
     	{
     		List<Chelant> chelants = analyzeChelation(iac);
     		
-            //Report
-            if (verbosity > 0)
+            String record = " Ligands: " + chelants.size() + " Denticity: ";
+            for (Chelant c : chelants)
             {
-                String record = " Ligands: " + chelants.size() + " Denticity: ";
-                for (Chelant c : chelants)
-                {
-                    record = record + c.getDenticity() + " ";
-                }
-                System.out.println(record);
+                record = record + c.getDenticity() + " ";
             }
+            logger.info(record);
             
     		//TODO-gg expose output
             /*
@@ -219,7 +212,7 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
      */
     public List<Chelant> analyzeChelation(IAtomContainer mol) 
     {
-    	return analyzeChelation(mol, targetsmarts, verbosity);
+    	return analyzeChelation(mol, targetsmarts, logger);
     }
     
 //-----------------------------------------------------------------------------
@@ -228,11 +221,11 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
      * 
      * @param mol
      * @param targetsmarts
-     * @param verbosity
+     * @param loggign tool
      * @return
      */
     public static List<Chelant> analyzeChelation(IAtomContainer mol, 
-    		Map<String,String> targetsmarts, int verbosity) 
+    		Map<String,String> targetsmarts, Logger logger) 
     {
         ArrayList<Chelant> chelates = new ArrayList<Chelant>();
 
@@ -319,15 +312,9 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
             }
         }
 
-        if (verbosity > 1)
-        {
-            System.out.println(" Searching chelating ligands on " 
-                                + targets.size() + " centers");
-            if (verbosity > 3)
-            {
-                System.out.println("List of centers: " + targets);
-            }
-        }
+        logger.debug("Searching chelating ligands on " + targets.size() 
+        	+ " centers");
+        logger.trace("List of centers: " + targets);
 
         //Chelates are identifyed by remotion of the target atom and 
         // evaluation of the remaining connectivity

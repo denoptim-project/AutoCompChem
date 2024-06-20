@@ -215,7 +215,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
     public void assignAtomTypes(IAtomContainer mol)
     {
         //Match atoms by the given rules
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,0);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -255,12 +255,9 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
                     //Set the atom type
                     atm.setAtomTypeName(at);
                     done.set(iAtm,true);
-                    if (verbosity > 3)
-                    {
-                        System.out.println("Setting atom type  '" + at 
+                    logger.info("Setting atom type  '" + at 
                                           + "' to atom " 
                                           + MolecularUtils.getAtomRef(atm,mol));
-                    }
                 }
             }
         }
@@ -273,14 +270,11 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
                 IAtom atm = mol.getAtom(i);
                 String el = atm.getSymbol();
                 
-                if (verbosity > 1)
-                {
-                    logger.warn("WARNING! Atom "
+                logger.warn("WARNING! Atom "
                         + MolecularUtils.getAtomRef(mol.getAtom(i),mol) 
                         + " was not identified by Atom Typer! "
                         + "Original atom type '" + atm.getAtomTypeName()
                         + "' moved to '" + el + "'.");
-                }
                 atm.setAtomTypeName(el);
             }
         }

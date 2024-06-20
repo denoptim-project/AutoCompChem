@@ -10,11 +10,6 @@ if ! grep -q "The overall run did NOT terminate normally" t55.log ; then
   exit -1
 fi
 
-if ! grep -q "Perception result: Known situation" t55.log ; then
-  echo NOT Passed ERROR 3
-  exit -1
-fi
-
 if ! grep -q "JobEvaluator: Situation perceived .*SaddleOpt" t55.log ; then
   echo NOT Passed ERROR 4
   exit -1

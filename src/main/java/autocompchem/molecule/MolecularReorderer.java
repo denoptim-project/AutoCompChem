@@ -189,10 +189,6 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             useSmarts = true;
             String allSamrts = 
                       params.getParameter("SOURCESMARTS").getValue().toString();
-            if (verbosity > 0)
-            {
-                System.out.println(" Importing SMARTS queries ");
-            }
             String[] parts = allSamrts.split("\\s+");
             for (int i=0; i<parts.length; i++)
             {
@@ -282,14 +278,10 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             while (sdfItr.hasNext())
             {
                 i++;
-                if (verbosity > 1)
-                {
-                    System.out.println("Aligning atom container #" + i);
-                }
+                logger.debug("Aligning atom container #" + i);
                 IAtomContainer mol = sdfItr.next();
                 
-                ComparatorOfGeometries cog = new ComparatorOfGeometries(
-                		verbosity-1);
+                ComparatorOfGeometries cog = new ComparatorOfGeometries();
                 Map<Integer,Integer> refToInAtmMap = cog.getAtomMapping(mol,
                 		refMol);
 
@@ -382,7 +374,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
 
         if (useSmarts)
         {
-            ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+            ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts);
             if (msq.hasProblems())
             {
                 String cause = msq.getMessage();
@@ -464,18 +456,12 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         for (IAtom src : sources)
         {
             n++;
-            if (verbosity > 2)
-            {
-                System.out.println(" Attempt to reorder from source-"+n+": " + 
-                                            MolecularUtils.getAtomRef(src,iac));
-            }
+            logger.trace(" Attempt to reorder from source-"+n+": " + 
+            		MolecularUtils.getAtomRef(src,iac));
 
             if (src.getProperty(visitedFlag) != null)
             {
-                if (verbosity > 2)
-                {
-                    System.out.println(" Skip: previously visited src atom.");
-                }
+                logger.trace(" Skip: previously visited src atom.");
                 continue;
             }
 
@@ -540,10 +526,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             int frgId = (Integer) atm.getProperty(visitedFlag);
             int newId = (Integer) atm.getProperty(ordCounter);
         
-            if (verbosity > 1)
-            {
-                System.out.println(" " + s + " frg:" + frgId + " ord:" + newId);
-            }
+            logger.debug(" " + s + " frg:" + frgId + " ord:" + newId);
        
             fragFromOldID.put(id,frgId); 
             if (oldFromNewID.containsKey(frgId))

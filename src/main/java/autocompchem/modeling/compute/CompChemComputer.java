@@ -2,6 +2,9 @@ package autocompchem.modeling.compute;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import autocompchem.constants.ACCConstants;
 
 /**
@@ -36,10 +39,9 @@ public class CompChemComputer
      * @return the correction in [J/(K*mol))]
      */
 
-    public static double vibrationalEntropyCorr(List<Double> freqs,
-                                                                    double temp)
+    public static double vibrationalEntropyCorr(List<Double> freqs, double temp)
     {
-        return vibrationalEntropyCorr(freqs, temp, 0.0, 0.0, 0.0001, 0);
+        return vibrationalEntropyCorr(freqs, temp, 0.0, 0.0, 0.0001, null);
     }
 
 //------------------------------------------------------------------------------
@@ -65,7 +67,7 @@ public class CompChemComputer
      * frequency in cm<sup>-1</sup> is below this value the mode is ignored.
      * This is meant for handling list of modes that include rotations and
      * translations and report them with close-to-zero frequencies.
-     * @param verbosity the verbosity level
+     * @param logger tool for logging.
      * @return the correction in [J/(K*mol))]
      */
 
@@ -74,7 +76,7 @@ public class CompChemComputer
                                                 double qhThrsh, 
                                                 double imThrsh, 
                                                 double ignThrsh, 
-                                                int verbosity)
+                                                Logger logger)
     {
         double vibS = 0.0d;
         double cR = ACCConstants.GASR; // cR units are [J/(K*mol)]
@@ -82,6 +84,9 @@ public class CompChemComputer
                      * ACCConstants.SPEEDOFLIGHT 
                      / ACCConstants.BOLTZMANNSK; 
                      //hck units are  [J*s]*[cm/s]/[J/K]=cm/K
+        
+        if (logger==null)
+        	logger = LogManager.getLogger();
 
         String w = "VibS:";
         for (Double freqOrig : freqs)
@@ -89,41 +94,29 @@ public class CompChemComputer
         	double freq = freqOrig;
         	if (freqOrig < 0.0d && Math.abs(freqOrig) < imThrsh)
             {
-        		if (verbosity > 1)
-                {
-                    System.out.println(w + " changing sign to imaginary "
+        		logger.debug(w + " changing sign to imaginary "
                     		+ "frequency i" + Math.abs(freqOrig));
-                }
         		freq = Math.abs(freqOrig);
             }
         	
             if (freq < 0.0d)
             {
-                if (verbosity > 1)
-                {
-                    System.out.println(w + " ignoring imaginary frequency " 
+            	logger.debug(w + " ignoring imaginary frequency " 
                     		+ "i" + Math.abs(freq));
-                }
                 continue;
             }
         	// Typically here we get rid of translations and rotations
             if (freq < ignThrsh)
             {
-                if (verbosity > 1)
-                {
-                    System.out.println(w + " ignoring frequency " + freq);
-                }
+            	logger.debug(w + " ignoring frequency " + freq);
                 continue;
             }
             
             // scale to threshold value
             if (freq < qhThrsh)
             {
-                if (verbosity > 1)
-                {
-                    System.out.println(w + " scaling frequency " + freq 
+            	logger.debug(w + " scaling frequency " + freq 
                     		+ " to " + qhThrsh);
-                }
                 freq = qhThrsh;  
             }
             

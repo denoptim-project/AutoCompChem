@@ -484,7 +484,6 @@ public class JobEvaluator extends Worker
 		
 		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
-		p.setVerbosity(verbosity);
 		p.setTolerantMissingIC(tolerateMissingIC);
 		
 		if (EVALCOMPCHEMJOBTASKS.contains(task) 
@@ -503,15 +502,10 @@ public class JobEvaluator extends Worker
 			if (p.isAware())
 			{
 				Situation sit = p.getOccurringSituations().get(0);
-				System.out.println("JobEvaluator: Situation perceived = " 
+				logger.info("JobEvaluator: Situation perceived = " 
 						+ sit.getRefName());
 			} else {
-				if (verbosity > 0)
-				{
-					// TODO log
-					System.out.println("JobEvaluator: No known situation "
-							+ "perceived.");
-				}
+				logger.info("JobEvaluator: No known situation perceived.");
 				if (standaloneCureJob)
 				{
 					Terminator.withMsgAndStatus("Standalone job evaluation is "
@@ -551,14 +545,9 @@ public class JobEvaluator extends Worker
 				// but it can prepare a new input.
 				if (standaloneCureJob)
 				{
-
-					if (verbosity > 0)
-					{
-						// TODO log
-						System.out.println("Attempting to cure job. Reaction: " 
+					logger.info("Attempting to cure job. Reaction: " 
 								+ s.getReaction().getType() + " " 
 								+ s.getReaction().getObject());
-					}
 					ActionApplier.performAction(s.getReaction(), myJob, 
 							Arrays.asList(jobBeingEvaluated), 1);
 					

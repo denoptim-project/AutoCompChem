@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtom;
@@ -80,9 +81,9 @@ public class ConnectivityUtilsTest
         }
         
         assertTrue(ConnectivityUtils.compareBondDistancesWithReference(mol1, 
-        		ref, 0.01, 0));
+        		ref, 0.01, LogManager.getLogger()));
         
         assertFalse(ConnectivityUtils.compareBondDistancesWithReference(mol2, 
-        		ref, 0.98, 0));
+        		ref, 0.98, LogManager.getLogger()));
     }
 }

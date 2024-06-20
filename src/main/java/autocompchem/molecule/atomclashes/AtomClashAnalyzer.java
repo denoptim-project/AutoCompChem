@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -166,10 +167,6 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
         	this.targetsmarts = new HashMap<String,String>();
             String allSamrts = 
                 params.getParameter("TARGETSMARTS").getValue().toString();
-            if (verbosity > 2)
-            {
-                System.out.println(" Importing SMARTS queries ");
-            }
             String[] lines = allSamrts.split("\\r?\\n");
             int k = 0;
             for (int i=0; i<lines.length; i++)
@@ -220,10 +217,6 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
         {
             String allAllowance = 
                 params.getParameter("CUSTOMALLOWANCE").getValue().toString();
-            if (verbosity > 2)
-            {
-                System.out.println(" Importing CUSTOM ALLOWANCE");
-            }
             String[] lines = allAllowance.split("\\r?\\n");
             for (int i=0; i<lines.length; i++)
             {
@@ -267,13 +260,10 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
   			List<AtomClash> clashes = analyzeAtomClashes(iac);
   			if (clashes.size() > 0)
             {
-                if (verbosity > 0)
-                {
-                    System.out.println(" Found " + clashes.size() 
-                                            + " atom clashes: ");
-                    for (AtomClash ac : clashes)
-                        System.out.println(ac);
-                }
+                String msg = " Found " + clashes.size() + " atom clashes: " + NL;
+                for (AtomClash ac : clashes)
+                	msg = msg + ac + NL;
+                logger.info(msg);
 
                 if (outFile!=null)
                 {
@@ -315,7 +305,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
     public List<AtomClash> analyzeAtomClashes(IAtomContainer mol)
     {
     	return analyzeAtomClashes(mol, targetsmarts, allowances, cutoff, 
-    			allowance, allowance13, allowance14, verbosity);
+    			allowance, allowance13, allowance14, logger);
     }
     
 //-----------------------------------------------------------------------------
@@ -335,7 +325,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
      * @param allowance
      * @param allowance13
      * @param allowance14
-     * @param verbosity verbosity level
+     * @param logger logging tool
      * @return the list of atom clashes
      */
     public static List<AtomClash> analyzeAtomClashes(IAtomContainer mol, 
@@ -345,7 +335,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
     		double allowance,
     		double allowance13,
     		double allowance14,
-    		int verbosity)
+    		Logger logger)
     {
         List<AtomClash> acList = new ArrayList<AtomClash>();
 
@@ -353,9 +343,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
         List<IAtom> targets = new ArrayList<IAtom>();
         if (targetsmarts!=null)
         {
-            ManySMARTSQuery msq = new ManySMARTSQuery(mol,
-                                                      targetsmarts,
-                                                      verbosity);
+            ManySMARTSQuery msq = new ManySMARTSQuery(mol,targetsmarts);
             if (msq.hasProblems())
             {
                 String cause = msq.getMessage();
@@ -394,15 +382,8 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
             for (IAtom a : mol.atoms())
                 targets.add(a);
         }
-        if (verbosity > 1)
-        {
-            System.out.println(" Searching clashes among " + targets.size() 
-            + " atoms");
-        }
-        if (verbosity > 3)
-        {
-            System.out.println("List of atoms: " + targets);
-        }
+        logger.debug(" Searching clashes among " + targets.size() + " atoms");
+        logger.trace("List of atoms: " + targets);
 
         //Get custom allowances
         Map<String,Double> allowanceMasck = new HashMap<String,Double>();
@@ -424,7 +405,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
             }
 
             //identify atoms subject to custom allowance
-            ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,verbosity);
+            ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts);
             if (msq.hasProblems())
             {
                 String cause = msq.getMessage();

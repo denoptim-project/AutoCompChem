@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.collect.Collections2;
 
 import autocompchem.run.Terminator;
@@ -42,12 +44,13 @@ public class CoordinationGeometryUtils
      * Compare two coordination geometries and calculate Mean Angle Difference
      * @param cgA the first geometry
      * @param cgB the second geometry
-     * @param verbosity the verbosity level
+     * @param logger logging tool
      * @return the Mean Angle Difference between the two geometries
      */
 
     public static double calculateMeanAngleDifference(CoordinationGeometry cgA, 
-                                        CoordinationGeometry cgB, int verbosity)
+                                        CoordinationGeometry cgB, 
+                                        Logger logger)
     {
         //Check CN
         int cnA = cgA.getConnectionNumber();
@@ -103,12 +106,9 @@ public class CoordinationGeometryUtils
             }            
         }
         
-        if (verbosity > 1)
-        {
-            System.out.println("Atoms mapping returning lowest MAD is: " 
+        logger.debug("Atoms mapping returning lowest MAD is: " 
                                 + "molA:" + listIdA + " molB:" + bestPerm 
                                 + " LowestMAD: " + lowestMad);
-        }
 
         return lowestMad;
     }
@@ -228,14 +228,16 @@ TODO: test and update
     /**
      * Print a matrix representing the all-vs-all comparison of all the
      * coordination geometries contained in the list. The comparison is given by
-     * the Mean Angle Difference between each pair of CoordinationGeometry
-     * @param listGeometries list of geometries to compare
+     * the Mean Angle Difference between each pair of CoordinationGeometry.
+     * @param listGeometries list of geometries to compare.
+     * @param logger the logging tool.
      */
 
-    public static void printAllVsAllMAD(List<CoordinationGeometry> 
-                                                                listGeometries)
+    public static void printAllVsAllMAD(
+    		List<CoordinationGeometry> listGeometries, Logger logger)
     {
         String head = "                ";
+        String NL = System.getProperty("line.separator");
         ArrayList<String> lines = new ArrayList<String>();
         int cn = 0;
         for (int i=0; i<listGeometries.size(); i++)
@@ -245,7 +247,6 @@ TODO: test and update
             head = head + cgI.getName();
             for (int ii=0; ii<(16-cgI.getName().length()); ii++)
                  head = head + " ";
-
 /*
                             if (cgI.getName().length() > 6)
                                 head = head + cgI.getName() + "\t";
@@ -253,7 +254,6 @@ TODO: test and update
                                 head = head + cgI.getName() + "\t";
                         
 */
-
             String line = " " + cgI.getName();
             for (int ii=0; ii<(16-cgI.getName().length()); ii++)
                  line = line + " ";
@@ -261,8 +261,7 @@ TODO: test and update
             for (int j=0; j<listGeometries.size(); j++)
             {
                  CoordinationGeometry cgJ = listGeometries.get(j);
-                 double mad = calculateMeanAngleDifference(cgI,cgJ,0);
-//System.out.println("Comparing "+cgI.getName()+"-"+cgJ.getName()+" MAD: "+mad);
+                 double mad = calculateMeanAngleDifference(cgI, cgJ, logger);
                  String madStr = String.format(Locale.ENGLISH,"%.3f", mad);
                  line = line + madStr;
                  for (int ii=0; ii<(16-madStr.length()); ii++)
@@ -271,12 +270,11 @@ TODO: test and update
             lines.add(line);
         }
 
-        System.out.println(" Comparison between reference geometries (CN=" 
-                                                                + cn +")");
-        System.out.println(head);
+        String msg = " Comparison between reference geometries (CN=" + cn + ")";
+        msg = msg + NL + head + NL;
         for (String s: lines)
-             System.out.println(s);
-        System.out.println(" ");
+        	msg = msg + s + NL;
+        logger.info(msg);
     }
 
 //------------------------------------------------------------------------------

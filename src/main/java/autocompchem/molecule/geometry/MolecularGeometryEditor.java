@@ -30,6 +30,8 @@ import java.util.Set;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.CDKConstants;
@@ -397,10 +399,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	{
     		if (zmtMove!=null && zmtMove.getZAtomCount()>0)
             {
-                if (verbosity > 0)
-                {
-                    System.out.println(" Applying ZMatrix move");
-                }
+                logger.info(" Applying ZMatrix move");
                 try
                 {
                 	result = applyZMatrixMove(iac);
@@ -415,10 +414,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             }
             else if (crtMove!=null && crtMove.size()>0)
             {
-                if (verbosity > 0)
-                {
-                    System.out.println(" Applying Cartesian move");
-                }
+                logger.info(" Applying Cartesian move");
                 result = applyCartesianMove(iac);
             } else {
                 Terminator.withMsgAndStatus("ERROR! Choose and provide either "
@@ -463,17 +459,14 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         }
         if (this.refMol != null && this.refMol.getAtomCount() > 0)
         {
-            if (verbosity > 0)
-            {
-                System.out.println(" Matching reference sub-structure");
-            }
+            logger.info("Matching reference sub-structure");
             if (this.refMol.getAtomCount() != crtMove.size())
             {
                 Terminator.withMsgAndStatus("ERROR! Reference structure (size "
                      + this.refMol.getAtomCount() + ") and Cartesian step ("
                      + "size " + crtMove.size() + ") have different size. ",-1);
             }
-            ComparatorOfGeometries mc = new ComparatorOfGeometries(verbosity-1);
+            ComparatorOfGeometries mc = new ComparatorOfGeometries();
             Map<Integer,Integer> refToInAtmMap = mc.getAtomMapping(iac, refMol);
             for (Integer refAtId : refToInAtmMap.keySet())
             {
@@ -504,29 +497,24 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         			maxDispl, 
         			defConvCrit, 
         			defMaxStep,
-        			verbosity-1);
+        			logger);
         }
         
-        if (verbosity > 0)
+        String msg = " Actual Cartesian move: " + NL;
+        for (int i=0; i<actualMove.size(); i++)
         {
-            System.out.println(" Actual Cartesian move: ");
-            for (int i=0; i<actualMove.size(); i++)
-            {
-                Point3d pt = actualMove.get(i);
-                System.out.println("  " + i + ": " + pt);
-            }
-            System.out.println(" Scaling factors: " + scaleFactors);
+            Point3d pt = actualMove.get(i);
+            msg = msg + "  " + i + ": " + pt + NL;
         }
+        msg = msg + "Scaling factors: " + scaleFactors;
+        logger.info(msg);
 
         // Produce the transformed geometry/ies
     	AtomContainerSet results = new AtomContainerSet();
         for (int j=0; j<scaleFactors.size(); j++)
         {
-            if (verbosity > 0)
-            {
-                System.out.println(" Generating results for scaling " 
-                                            + " factor " + scaleFactors.get(j));
-            }
+            logger.info("Generating results for scaling factor " 
+            		+ scaleFactors.get(j));
 
             // Here we finally generate one new geometry
             IAtomContainer outMol = getGeomFromCartesianMove(iac,
@@ -537,9 +525,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             results.addAtomContainer(outMol); 
         }
         
-        if (outFile==null && verbosity > 0)
+        if (outFile==null)
         {
-            System.out.println(" ");
             logger.warn("WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }
@@ -602,34 +589,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
   	{
   		return optimizeScalingFactors(mol,move,numSfSteps,"EVEN",
   				defTolInteratmDist, defTolCovRadSum,
-  				defMaxDispl, defConvCrit, defMaxStep,0);
-  	}
-    
-//-------------------------------------------------------------------------------
-  	/**
-  	 * Searches for optimal scaling factors that do not generate atom clashes or 
-  	 * exploded systems. Uses default values for all settings of the search 
-  	 * algorithm.
-  	 * @param mol the atom container with the unmodified geometry
-  	 * @param move the Cartesian move
-  	 * @param numSfSteps divide the optimised range of scaling factors in this 
-  	 * number  
-  	 * @param distributionKind specifies how to spear scaling factors between
-  	 * the optimised extremes. Possible values are:
-  	 * <ul>
-  	 * <li><code>EVEN</code>: 
-  	 * to spread factors evenly at <code>(range)/#steps</code>.</li>
-  	 * <li><code>BALANCED</code>: 
-  	 * to put half of the points on each side of the 0.0 scaling.</li>
-  	 * </ul>
-  	 * @return the optimised list of scaling factors
-  	 */
-  	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
-      		ArrayList<Point3d> move, int numSfSteps, String distributionKind) 
-  	{
-  		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
-  				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
-  				defMaxStep, 0);
+  				defMaxDispl, defConvCrit, defMaxStep, LogManager.getLogger());
   	}
   	
 //-------------------------------------------------------------------------------
@@ -654,17 +614,16 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
   	 * as valid (for negative scaling factors)
   	 * @param percentualPos the amount of the possible path to consider 
   	 * as valid (for positive scaling factors)
-  	 * @param verbosity amount of log to stdout
   	 * @return the optimised list of scaling factors
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
     		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
-    		double percentualNeg, double percentualPos, int verbosity) 
+    		double percentualNeg, double percentualPos) 
 	{
-  		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
+  		return optimizeScalingFactors(mol, move, numSfSteps, distributionKind,
   				percentualNeg, percentualPos,
   				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
-  				defMaxStep, 0);
+  				defMaxStep, LogManager.getLogger());
   	}
 
 //-------------------------------------------------------------------------------
@@ -685,17 +644,15 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
   	 * <li><code>BALANCED</code>: 
   	 * to put half of the points on each side of the 0.0 scaling.</li>
   	 * </ul>
-  	 * @param verbosity amount of log to stdout
   	 * @return the optimised list of scaling factors
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
-    		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
-    		 int verbosity) 
+    		ArrayList<Point3d> move, int numSfSteps, String distributionKind) 
 	{
   		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
   				1.0, 1.0,
   				defTolInteratmDist, defTolCovRadSum, defMaxDispl, defConvCrit, 
-  				defMaxStep, 0);
+  				defMaxStep, LogManager.getLogger());
   	}
 
 //-------------------------------------------------------------------------------
@@ -723,18 +680,18 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
   	 * @param stretchLimit permits up to this displacement for a single atom.
   	 * @param convergence stop search when step falls below this value
   	 * @param maxStep maximum allowed step
-  	 * @param verbosity amount of log to stdout
+  	 * @param logger logging tool
   	 * @return the optimised list of scaling factors
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
     		ArrayList<Point3d> move, int numSfSteps, String distributionKind,
     		double tolInteractDist, double tolCovRadSum,
     		double stretchLimit, double convergence, double maxStep, 
-    		int verbosity) 
+    		Logger logger) 
 	{
 		return optimizeScalingFactors(mol,move,numSfSteps,distributionKind,
   				1.0, 1.0, tolInteractDist, tolCovRadSum, stretchLimit,
-  				convergence, maxStep,verbosity);
+  				convergence, maxStep, logger);
 	}
 	
 //-------------------------------------------------------------------------------
@@ -766,7 +723,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
   	 * @param stretchLimit permits up to this displacement for a single atom.
   	 * @param convergence stop search when step falls below this value.
   	 * @param maxStep maximum allowed step.
-  	 * @param verbosity amount of log to stdout.
+  	 * @param logger logging tool
   	 * @return the optimised list of scaling factors.
   	 */
 	public static ArrayList<Double> optimizeScalingFactors(IAtomContainer mol, 
@@ -774,13 +731,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     		double percentualNeg, double percentualPos,
     		double tolInteractDist, double tolCovRadSum,
     		double stretchLimit, double convergence, double maxStep, 
-    		int verbosity) 
+    		Logger logger)
 	{
-		if (verbosity > 0)
-        {
-		    System.out.println(" Optimizing Scaleing Factors");
-        }
-		
+		logger.info("Optimizing Scaleing Factors");
+        
 		//Run optimisation twice:
 		//either maximise (+1) or minimise (-1) scaling factor.
 		double[] signs = new double[] {-1.0,1.0};
@@ -808,12 +762,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 			String reason = ""; // for logging
 			double lowestDist = Double.MAX_VALUE;
 			
-			if (verbosity > 0)
-            {
-			    System.out.println("   Sign  MinDist    MaxDispl     Guess"
+			String tabTxt = "   Sign  MinDist    MaxDispl     Guess"
 			    		+ "      Dir     LastStep  ok/old smallest!OK  "
-			    		+ "largestOK Notes");
-            }
+			    		+ "largestOK Notes";
 			
 			// Get interatomic distances in initial geometry (for later)
 			DistanceMatrix initialDM = 
@@ -828,11 +779,9 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				lowestDist = Double.MAX_VALUE;
 				if (Math.abs(step) < Math.abs(convergence))
 				{
-					if (verbosity > 0)
-		            {
-					    System.out.println("CONVERGED!!! |"+step
-							+"| < |"+convergence+"|");
-		            }
+					tabTxt = tabTxt + "CONVERGED!!! |"+step
+							+"| < |"+convergence+"|" 
+							+ System.getProperty("line.separator");
 					goon = false;
 					break;
 				}
@@ -859,13 +808,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				{
 					isOK = false;
 					goon = false;
-					if (verbosity > 0)
-		            {
-					    System.out.println(String.format(
+					tabTxt = tabTxt + String.format(
 					    		"Attempt to use scaling factor %-11.3e stopped by "
 					    		+ "max displacement: %-11.3e (>%-11.3e)",
-					    		guessSF,maxDisplacement,stretchLimit));
-		            }
+					    		guessSF,maxDisplacement,stretchLimit);
 					break;
 				}
 				
@@ -945,14 +891,12 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 	            }
             	
             	// Finished with this step
-				if (verbosity > 0)
-	            {
-				    String msg = String.format(Locale.ENGLISH,"%+7.1f %-11.3e %-11.3e %-11.3e "
+            	tabTxt = tabTxt + 
+            			String.format(Locale.ENGLISH,
+            					"%+7.1f %-11.3e %-11.3e %-11.3e "
 				    		+ "%-7.1f %-11.3e %1.1B(%1.1B) %-11.3e  %-11.3e %s",
 						sign,lowestDist,maxDisplacement,guessSF,direction,step,
 						isOK,lastWasOK,smallestToNotOK,largestToOK,reason);
-				    System.out.println(msg);
-	            }
 				
 				// Prepare next step
 				if (!foundFirstNonOK)
@@ -985,6 +929,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 				}
 			}
 			optimalExtremes[ig] = oldGuessSF*sign;
+			logger.info(tabTxt);
 	    }
 		
 		// Apply the percentage of neg/pos possible path
@@ -1024,13 +969,11 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 		
 		}
 		
-		if (verbosity > 0)
-        {
-            System.out.println("Optimized extremes: " 
-            		+ optimalExtremes[0] + " " + optimalExtremes[1]);
-            System.out.println("Optimized Scaling factors: " 
-            		+ chosenScalingFactors);
-        }
+		String result = "Optimized extremes: " + optimalExtremes[0] + " " 
+		+ optimalExtremes[1] + System.getProperty("line.separator");
+        result = result + "Optimized Scaling factors: " + chosenScalingFactors;
+        logger.info(result);
+        
 		return chosenScalingFactors;
 	}
 
@@ -1060,51 +1003,40 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix(iac);
-        if (verbosity > 1)
+        String msg = " Original ZMatrix: " + NL;
+        List<String> txt = inZMatMol.toLinesOfText(false,false);
+        for (int i=0; i<txt.size(); i++)
         {
-            System.out.println(" Original ZMatrix: ");
-            ArrayList<String> txt = inZMatMol.toLinesOfText(false,false);
-            for (int i=0; i<txt.size(); i++)
-            {
-                System.out.println("  Line-" + i + ": " + txt.get(i));
-            }
+        	msg = msg + "  Line-" + i + ": " + txt.get(i) + NL;
         }
+        logger.debug(msg);
 
         // Identify the actual move in terms of ZMatrix
         ZMatrix actualZMatMove = new ZMatrix();
         if (iac.getAtomCount() != zmtMove.getZAtomCount())
         {
-            // TODO
-            if (verbosity > -1)
-            {
-                System.out.println(" TODO: what if only some IC is modified?");
-                Terminator.withMsgAndStatus("ERROR! Still in development",-1);
-            }
+            logger.fatal(" TODO: what if only some IC is modified?");
+            Terminator.withMsgAndStatus("ERROR! Still in development",-1);
         }
         else
         {
             actualZMatMove = new ZMatrix(zmtMove.toLinesOfText(false,false));
         }
-        if (verbosity > 0)
+        String msg2 = " Actual ZMatrixMove: " + NL;
+        List<String> txt2 = actualZMatMove.toLinesOfText(false,false);
+        for (int i=0; i<txt2.size(); i++)
         {
-            System.out.println(" Actual ZMatrixMove: ");
-            ArrayList<String> txt = actualZMatMove.toLinesOfText(false,false);
-            for (int i=0; i<txt.size(); i++)
-            {
-                System.out.println("  Line-" + i + ": " + txt.get(i));
-            }
-            System.out.println(" Scaling factors: " + scaleFactors);
+        	msg2 = msg2 + "  Line-" + i + ": " + txt.get(i) + NL;
         }
+        msg2 = msg2 + "Scaling factors: " + scaleFactors;
+        logger.debug(msg2);
 
         // Produce the transformed geometry/ies
     	AtomContainerSet results = new AtomContainerSet();
         for (int j=0; j<scaleFactors.size(); j++)
         {
-            if (verbosity > 0)
-            {
-                System.out.println(" Generating results for scaling " 
-                                            + " factor " + scaleFactors.get(j));
-            }
+            logger.info(" Generating results for scaling factor " 
+            		+ scaleFactors.get(j));
 
             // Apply ZMatrixMove
             ZMatrix modZMat = zmh.modifyZMatrix(inZMatMol,actualZMatMove,
@@ -1120,9 +1052,8 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             results.addAtomContainer(outMol);
         }
         
-        if (outFile==null && verbosity > 0)
+        if (outFile==null)
         {
-            System.out.println(" ");
             logger.warn("WARNING! No output file produced (use OUTFILE "
                 + " to write the results into a new SDF file");
         }

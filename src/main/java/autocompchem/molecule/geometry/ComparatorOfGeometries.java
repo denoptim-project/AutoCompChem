@@ -111,6 +111,7 @@ public class ComparatorOfGeometries
      * @param verbosity the verbosity level
      */
 
+    @Deprecated
     public ComparatorOfGeometries(int verbosity)
     {
         this.verbosity = verbosity;
