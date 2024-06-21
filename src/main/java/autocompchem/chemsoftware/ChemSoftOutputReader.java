@@ -522,9 +522,9 @@ public abstract class ChemSoftOutputReader extends Worker
                 if (logReader != null)
                 	logReader.close();
             } catch (IOException ioex2) {
-                System.err.println(ioex2.getMessage());
                 Terminator.withMsgAndStatus("ERROR! Unable to close comp. "
-                		+ "chem. software log file reader!",-1);
+                		+ "chem. software log file reader! "  
+                		+ ioex2.getMessage() ,-1);
             }
         }
     	

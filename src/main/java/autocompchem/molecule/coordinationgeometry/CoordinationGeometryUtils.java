@@ -84,12 +84,6 @@ public class CoordinationGeometryUtils
             {
                 for (int posB=posA+1; posB<cnA; posB++)
                 {
-/*
-                    System.out.println("Get pair: "+posA+";"+posB);
-                    System.out.println("     "+listIdA.get(posA)+"-0-"+listIdA.get(posB));
-                    System.out.println("     "+permB.get(posA)+"-0-"+permB.get(posB));
-*/
-                  
                     locMad = locMad + Math.abs(
                               cgA.getAngle(listIdA.get(posA),listIdA.get(posB))
                               - cgB.getAngle(permB.get(posA),permB.get(posB)));
@@ -102,7 +96,6 @@ public class CoordinationGeometryUtils
             {
                 lowestMad = locMad;
                 bestPerm = permB;
-//                System.out.println("Lowest ("+i+") "+permB+" MAD: "+locMad);
             }            
         }
         
@@ -112,117 +105,7 @@ public class CoordinationGeometryUtils
 
         return lowestMad;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns the list of <code>CoordinationGeometry</code> representing the 
-     * atoms matched by a given list of SMARS in the given molecule.
-     * @param mol the molecular object
-     * @param centersToAnalyze map of centers' names and SMARTS queries 
-     * matching ONLY the central atom of each center.
-     * @param verbosity verbosity level
-     */
-/*
-TODO: test and update
-    public static List<CoordinationGeometry> getAllCoordinationGeometries(
-        IAtomContainer mol, Map<String,String> centersToAnalyze, int verbosity)
-    {
-        ManySMARTSQuery msq = 
-                        new ManySMARTSQuery(mol,centersToAnalyze,verbosity);
-        if (msq.hasProblems())
-        {
-            String cause = msq.getMessage();
-            if (verbosity >= 1)
-            {
-                System.out.println("\nWARNING! Problems in using SMARTS " 
-                                        + "queries: " + cause);
-            }
-        } else if (msq.getTotalMatches() < 1) {
-                String msg = "ERROR! Not able to locate the central atom " +
-                                "you wanted.";
-                Terminator.withMsgAndStatus(msg,-1);
-        }
-
-        //Collect all CoordinationGeometries
-        List<CoordinationGeometry> allCG = 
-                                        new ArrayList<CoordinationGeometry>();
-        for (String nameQ : centersToAnalyze.keySet())
-        {
-            if (msq.getNumMatchesOfQuery(nameQ) > 0 )
-            {
-                List<List<Integer>> m = msq.getMatchesOfSMARTS(nameQ);
-                for (List<Integer> mn : m)
-                {
-                    //There should be only one atom matched for each list 
-                    if (mn.size() != 1)
-                    {
-                        String msg = "ERROR! More than one atom in a single "
-                                        + "match of query " + nameQ + ". "
-                                        + "Check this SMARTS query: "
-                                        + centersToAnalyze.get(nameQ);
-                        Terminator.withMsgAndStatus(msg,-1);
-                    }
-
-                    //Generate this CoordinationGeometry
-                    IAtom centralAtm = mol.getAtom(mn.get(0));
-                    List<IAtom> nbrs = mol.getConnectedAtomsList(centralAtm);
-                    CoordinationGeometry molCG = new CoordinationGeometry(nameQ, 
-                                                              centralAtm, nbrs);
-
-                    if (verbosity > 1)
-                    {
-                         System.out.println("Identifyed one center with "
-                                + "CoordinationGeometry => " + molCG);
-                    }
-
-                    //Store
-                    allCG.add(molCG);
-                } 
-            }
-        }
-
-        return allCG;
-    }
-*/
-//------------------------------------------------------------------------------
-
-    /**
-     * Returns the overview on the MeanAngleDifference between the a specific
-     * <code>CoordinationGeometry</code> and all the reference ones.
-     * @param qCG query geometry
-     * @param refCGList list of references
-     */
-/*
-//TODO: update and test
-    public static Map<String,Double> getMeanAngleDifference(
-                                CoordinationGeometry qCG,
-                                ArrayList<CoordinationGeometry> refCGList)
-    {
-        //Check connection number
-        int cn = qCG.getConnectionNumber();
-        for (CoordinationGeometry cg : refCGList)
-        {
-            int cnNew = cg.getConnectionNumber();
-            if (cn != cnNew)
-            {
-                String msg = "ERROR! Attempt to compare geometries having "
-                             + " different CN! (" + cn + " vs " + cnNew + ")";
-                Terminator.withMsgAndStatus(msg,-1);
-            }
-        }
-
-        //Compare
-        Map<String,Double> map = new HashMap<String,Double>();
-        for (CoordinationGeometry refCG : refCGList)
-        {
-            double mad = calculateMeanAngleDifference(refCG,qCG);
-            map.put(refCG.getName(),mad);
-        }
-
-        return map;
-    }
-*/
+    
 //------------------------------------------------------------------------------
 
     /**

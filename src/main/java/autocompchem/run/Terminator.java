@@ -39,6 +39,22 @@ public class Terminator
     private static Logger logger = LogManager.getLogger(
     		"autocompchem.run.Terminator");
 	
+ //------------------------------------------------------------------------------
+
+    /**
+     * Terminate execution with error message and specify exit status.
+     * @param message the final message to be printed when closing the log.
+     * @param exitStatus exit status
+     * @param cuase a cause for which we print stack trace.
+     */
+
+    public static void withMsgAndStatus(String message, int exitStatus,
+    		Throwable cuase)
+    {
+    	cuase.printStackTrace();
+    	withMsgAndStatus(message, exitStatus);
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

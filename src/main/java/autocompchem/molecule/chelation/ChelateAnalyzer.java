@@ -261,9 +261,9 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
                         + " To solve the problem try to move this "
                         + "element to \"Du\" an try again.",-1);
                 }
-                System.err.println("\nWARNING! Problems in using SMARTS queries. "
-                                + cause);
-                System.out.println("Matches: "+msq.getNumMatchesMap());
+                logger.warn("WARNING! Problems in using SMARTS queries. "
+                                + cause + NL 
+                                + "Matches: "+msq.getNumMatchesMap());
             }
             
             if (msq.getTotalMatches() > 0)

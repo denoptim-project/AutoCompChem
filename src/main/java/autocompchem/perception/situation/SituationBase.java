@@ -311,28 +311,6 @@ public class SituationBase
 //------------------------------------------------------------------------------
 
     /**
-     * Prints the situations grouped by {@link InfoChannelType}. 
-     * Prints on STDOUT
-     */
-
-    public void printSituationsByICT()
-    {
-        String newline = System.getProperty("line.separator");
-        StringBuilder sb = new StringBuilder();
-        sb.append(newline);
-        sb.append("Situations by InfoChannelType:").append(newline);
-        for (InfoChannelType ict : situationsByICType.keySet())
-        {
-            sb.append(" -> ").append(ict);
-            sb.append(" = ").append(situationsByICType.get(ict));
-            sb.append(newline);   
-        }
-        System.out.println(sb.toString());
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Return a string describing this knowledge
      * @return a human readable description of the knowledge
      */

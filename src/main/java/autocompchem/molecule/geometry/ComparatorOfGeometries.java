@@ -689,7 +689,6 @@ public class ComparatorOfGeometries
                     System.out.println(MolecularUtils.getAtomRef(qB,molB));
                     System.out.println(MolecularUtils.getAtomRef(candidateInB,
                                                                         molB));
-                    IOtools.pause();
                 } else {
                     qB = candidateInB;
                     alreadyFound = true;

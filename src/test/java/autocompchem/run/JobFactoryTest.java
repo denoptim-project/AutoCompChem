@@ -210,15 +210,6 @@ public class JobFactoryTest
 
             Job job = JobFactory.buildFromFile(jdFile);
             
-//            System.out.println("JOB CREATED");        	
-//            System.out.println("#steps: "+job.getNumberOfSteps());
-//            for (Job sj : job.getSteps())
-//            {
-//            	System.out.println("  -> "+sj.getAppID());
-//            	System.out.println("     "+sj.params.toLinesJobDetails());
-//            	System.out.println("  ");
-//            }
-            
             assertEquals(3, job.getNumberOfSteps(), "Number of steps");
             assertEquals(job.getStep(0).getAppID(), AppID.ACC,
             		"App for first step");

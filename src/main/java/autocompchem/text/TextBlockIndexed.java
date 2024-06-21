@@ -329,22 +329,6 @@ public class TextBlockIndexed
     }
     
 //------------------------------------------------------------------------------
-    
-    /**
-     * Prints the content of this text block to stdout.
-     */
-    public void printContent(String indent)
-    {
-    	System.out.println(indent+getText());
-		for (TextBlockIndexed t : nestedBlocks)
-		{
-			System.out.println(indent+"-> "+t.getText());
-			for (TextBlockIndexed t2 : t.getNestedBlocks())
-				t2.printContent(indent+"---");
-		}
-    }
-    
-//------------------------------------------------------------------------------
 
     /**
      * Replaces all occurrences of a given substring matching the regex with

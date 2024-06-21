@@ -56,16 +56,14 @@ public class AspecificInputWriter extends Worker
 				.getValueAsString();
     	if (Task.make(taskStr) != PREPAREINPUTTASK)
     	{
-			//TODO-gg log
-			System.err.println("WARNING: attempt to make a " 
+			logger.warn("WARNING: attempt to make a " 
 					+ ChemSoftInputWriter.class.getSimpleName() 
 					+ " for task '" + taskStr + "', but this is not allowed.");
 			return new AspecificInputWriter();
     	}
     	if (!job.hasParameter(ChemSoftConstants.SOFTWAREID))
 		{
-			//TODO-gg log
-			System.err.println("WARNING: cannot detect the type of "
+			logger.warn("WARNING: cannot detect the type of "
 					+ "software for which to prepare an input. "
 					+ "Make sure the parameter '" 
 					+ ChemSoftConstants.SOFTWAREID + "' is given.");

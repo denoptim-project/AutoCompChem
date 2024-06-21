@@ -73,8 +73,7 @@ public class AspecificOutputReader extends Worker
 		
 		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
 		{
-			//TODO-gg log
-			System.err.println("WARNING: cannot detect the type of "
+			logger.warn("WARNING: cannot detect the type of "
 					+ "output to analyze. Make sure the parameter '" 
 					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
 			return new AspecificOutputReader();

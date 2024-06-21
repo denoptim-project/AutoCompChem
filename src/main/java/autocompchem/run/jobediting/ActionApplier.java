@@ -430,8 +430,7 @@ public class ActionApplier
         			+ job.getHashCodeSnapshot() + idx + "_" + restartCounter);
         		if (archiveFolder.mkdirs())
 	            {
-		        	//TODO-gg log
-		        	System.out.println(str + archiveFolder + "'.");
+		        	logger.debug(str + archiveFolder + "'.");
 		        	break;
 	            }
         		idx++;

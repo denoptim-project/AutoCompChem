@@ -108,19 +108,6 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     static {
     	REORDERATOMLISTTASK = Task.make(REORDERATOMLISTTASKNAME);
     }
-    
-//    /**
-//     * String defining the task aligning atom lists to a reference list
-//     */
-//    public static final String ALIGNATOMLISTSTASKNAME = "alignAtomLists";
-//
-//    /**
-//     * Task about aligning atom lists to a reference list
-//     */
-//    public static final Task ALIGNATOMLISTSTASK;
-//    static {
-//    	ALIGNATOMLISTSTASK = Task.make(ALIGNATOMLISTSTASKNAME);
-//    }
 
 
 //------------------------------------------------------------------------------
@@ -136,8 +123,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-                Arrays.asList(REORDERATOMLISTTASK//,
-                		//ALIGNATOMLISTSTASK
+                Arrays.asList(REORDERATOMLISTTASK
                 		)));
     }
 
@@ -235,14 +221,6 @@ public class MolecularReorderer extends AtomContainerInputProcessor
 		        exposeOutputData(new NamedData(molID, 
 		      		NamedDataType.ATOMCONTAINERSET, reordered));
             }
-            
-//    	} else if (task.equals(ALIGNATOMLISTSTASK)) {
-//    		//TODO
-//    		logger.warn("WARNING!!! Method for aligning list is not"
-//    				+ "fully functional. Results are unreliable!");
-//    		System.err.println("WARNING!!! Method for aligning list is not"
-//    				+ "fully functional. Results are unreliable!");
-//    		alignAtomList();
     	} else {
     		dealWithTaskMismatch();
         }
@@ -287,11 +265,11 @@ public class MolecularReorderer extends AtomContainerInputProcessor
 
                 if (refToInAtmMap.size() < mol.getAtomCount())
                 {
-                    System.out.println("Mapped atoms: "+refToInAtmMap.size());
-                    System.out.println("Atom List:    "+mol.getAtomCount());
-                    logger.warn("WARNING: some atoms were not matched!");
-                    Terminator.withMsgAndStatus("ERROR! Atom map is shorter "
-                        + "than atom list. Cannot align atom list.",-1);
+                    String msg = "ERROR! Atom map is shorter "
+                            + "than atom list. Cannot align atom list. "
+                            + "Mapped atoms: "+refToInAtmMap.size() + NL
+                    		+ "Atom List:    "+mol.getAtomCount();
+                    Terminator.withMsgAndStatus(msg, -1);
                 }
 
                 // NB: the information about the new atom order is stored

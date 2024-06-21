@@ -488,8 +488,6 @@ public class ConnectivityUtils
 
             for (IAtom tRef : nbrsRef)
             {
-//System.out.println("Check pair: "+MolecularUtils.getAtomRef(tMol,mol)+" "+MolecularUtils.getAtomRef(tRef,ref));
-//IOtools.pause();
                 if (doneRef.contains(tRef))
                     continue;
                 
@@ -507,24 +505,6 @@ public class ConnectivityUtils
                 List<IAtom> childDoneRef = new ArrayList<IAtom>();
                 childDoneRef.addAll(doneRef);
                 childDoneRef.add(tRef);
-
-/*
-System.out.println(recFlag + "Found compatible: "+MolecularUtils.getAtomRef(tMol,mol)+"(MOL) "+MolecularUtils.getAtomRef(tRef,ref)+"(REF) ");
-String doneA = "";
-for (IAtom da : doneMol)
-{
-    doneA = doneA + MolecularUtils.getAtomRef(da,mol);
-}
-//System.out.println(recFlag + "Done Mol: "+doneA);
-String doneB = "";
-for (IAtom da : doneRef)
-{
-    doneB = doneB + MolecularUtils.getAtomRef(da,ref);
-}
-if (doneB.length() > maxlengtdone.length())
-     maxlengtdone = doneB;
-//System.out.println(recFlag + "Done REF: "+doneB);
-*/
                 
                 //Try to go on with another recursion = evaluate unvisited branches
                 if (mol.getConnectedBondsCount(tMol) > 1)
@@ -532,15 +512,6 @@ if (doneB.length() > maxlengtdone.length())
                     boolean branchOntMolIsCompatible = exploreConnectivity(
                     		recNum+1, mol, tMol, childDoneMol, ref, tRef, 
                     		childDoneRef);
-/*
-System.out.println(recFlag+"finished a branch on "+MolecularUtils.getAtomRef(seedRef,ref)+": "+branchOntMolIsCompatible);
-String doneB2= "";
-for (IAtom da : doneRef)
-{
-    doneB2= doneB2+ MolecularUtils.getAtomRef(da,ref);
-}
-System.out.println(recFlag+"DoneB2: "+doneB2);
-*/
                     if (branchOntMolIsCompatible)
                     {
                         //Update list of successfully visited atoms
@@ -562,38 +533,17 @@ System.out.println(recFlag+"DoneB2: "+doneB2);
                 } else {
                     doneMol.add(tMol);
                     doneRef.add(tRef);
-/*
-String doneB2= "";
-for (IAtom da : doneRef)
-{
-    doneB2= doneB2+ MolecularUtils.getAtomRef(da,ref);
-}
-if (doneB2.length() > maxlengtdone.length())
-
-     maxlengtdone2 = MolecularUtils.getAtomRef(tRef,ref);
-*/
-
                     numCompBranches++;
                     break;
                 }
             }
-
-/*            //exit if a compatible tree has been found
-            Integer totAtmMol = new Integer(mol.getAtomCount());
-            Integer totAtmRef = new Integer(ref.getAtomCount());
-            Integer visitAtmMol = new Integer(doneMol.size());
-            Integer visitAtmRef = new Integer(doneRef.size());
-            if ((doneRef.size() == ref.getAtomCount()) && (doneMol.size() == mol.getAtomCount()))
-*/
         }
         
         boolean foundCompatibleTree = false;
-//System.out.println(recFlag+"Branches: "+numCompBranches+" + "+numAlreadyDone+" =? "+numBranches);
         if ((numCompBranches + numAlreadyDone) == numBranches)
         {
             foundCompatibleTree = true;
         }
-//System.out.println(recFlag+"returning: "+foundCompatibleTree);
         return foundCompatibleTree;
     }
 

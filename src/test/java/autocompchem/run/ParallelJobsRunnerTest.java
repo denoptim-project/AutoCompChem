@@ -77,10 +77,8 @@ public class ParallelJobsRunnerTest
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
-    	System.out.println("STARTING TestJob");
     	Job job = new TestJob(roothName,6,3000,500,true);
     	job.run();
-    	System.out.println(" END of TestJob");
     }
 
 //-----------------------------------------------------------------------------
@@ -502,9 +500,8 @@ public class ParallelJobsRunnerTest
     	if (!(new File("/bin/sh")).canExecute())
     	{
     		String NL = System.getProperty("line.separator");
-    		System.out.println(NL + "WARNING: Skipping test that depends on "
+    		System.err.println(NL + "WARNING: Skipping test that depends on "
     				+ "/bin/sh, which is not found." + NL);
-    		
     		return;
     	}
     	

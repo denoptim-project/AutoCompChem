@@ -123,24 +123,6 @@ public class InfoChannelBase
 //------------------------------------------------------------------------------
 
     /**
-     * Print the list of information channels to STDOUT
-     */
-
-    public void printInfoChannels()
-    {
-        String newline = System.getProperty("line.separator");
-        StringBuilder sb = new StringBuilder();
-        sb.append(newline).append("Information Channels:").append(newline);
-        for (InfoChannel ic : allInfoChans)
-        {
-            sb.append(" -> ").append(ic.toString()).append(newline);
-        }
-        System.out.println(sb.toString());
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Return a string describing this list
      * @return a human readable description of the list
      */

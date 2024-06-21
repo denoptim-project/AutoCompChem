@@ -34,6 +34,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.EventLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
@@ -76,7 +79,7 @@ import autocompchem.worker.WorkerConstants;
 public class IOtools
 {
     public static String newline = System.getProperty("line.separator");
-
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -121,19 +124,17 @@ public class IOtools
                 }
             }
         } catch (FileNotFoundException fnf) {
-            System.err.println("File Not Found: " + file);
-            System.err.println(fnf.getMessage());
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("File Not Found: " + file, -1);
         } catch (IOException ioex) {
-            System.err.println(ioex.getMessage());
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in reading file '" + file, 
+        			-1 , ioex);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-                System.err.println(ioex2.getMessage());
-                System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in reading file '" + file, 
+            			-1 , ioex2);
             }
         }
         return allLines;
@@ -171,15 +172,15 @@ public class IOtools
             Terminator.withMsgAndStatus("ERROR! File " + file 
                                 + " not found!", -1);
         } catch (IOException ioex) {
-            Terminator.withMsgAndStatus("ERROR! IOException while reading "
-                                + file, -1);
+        	Terminator.withMsgAndStatus("Error in reading file '" + file, 
+        			-1 , ioex);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-                Terminator.withMsgAndStatus("ERROR! IOException while "
-                                + "reading " + file, -1);
+            	Terminator.withMsgAndStatus("Error in reading file '" + file, 
+            			-1 , ioex2);
             }
         }
         return allLines;
@@ -503,17 +504,15 @@ public class IOtools
             Terminator.withMsgAndStatus("ERROR! File '" + file + "' not found.",
             		-1);
         } catch (IOException ioex) {
-            System.err.println(ioex.getMessage());
-            Terminator.withMsgAndStatus("ERROR! While reading '" + file 
-                                      + "'. Message: " + ioex.getMessage(), -1);
+        	Terminator.withMsgAndStatus("Error in reading file '" + file, 
+        			-1 , ioex);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-                System.err.println(ioex2.getMessage());
-                Terminator.withMsgAndStatus("ERROR! While reading '" + file 
-                                      + "'. Message: " + ioex2.getMessage(),-1);
+            	Terminator.withMsgAndStatus("Error in reading file '" + file, 
+            			-1 , ioex2);
             }
         }
         return allZMats;
@@ -650,19 +649,11 @@ public class IOtools
             {
                 sdfWriter.write(mol);
             }
-        } 
-        catch (CDKException e) 
-        {
-            if (e.getMessage().contains("For input string: \"#\""))
-            {
-                System.err.println("CDK unable to write MDL file " + file);
-            }
-            
-        } 
+        }
         catch (Throwable t2) 
         {
-            System.err.println("Failure in writing SDF: " + t2);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 , t2);
         } 
         finally 
         {
@@ -673,8 +664,8 @@ public class IOtools
             } 
             catch (IOException ioe) 
             {
-                System.err.println("Error in writing: " + ioe);
-                System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1 , ioe);
             }
         }
     }
@@ -698,18 +689,10 @@ public class IOtools
             sdfWriter = new SDFWriter(new FileWriter(file, append));
             sdfWriter.write(mol);
         } 
-        catch (CDKException e) 
-        {
-            if (e.getMessage().contains("For input string: \"#\""))
-            {
-                System.err.println("CDK unable to write MDL file " + file);
-            }
-            
-        } 
         catch (Throwable t2) 
         {
-            System.err.println("Failure in writing SDF: " + t2);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file 
+        			+ "': " + t2, -1);
         } 
         finally 
         {
@@ -720,8 +703,8 @@ public class IOtools
             } 
             catch (IOException ioe) 
             {
-                System.err.println("Error in writing: " + ioe);
-                System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1 , ioe);
             }
         }
     }
@@ -746,14 +729,13 @@ public class IOtools
         }
         catch (CDKException e)
         {
-            e.printStackTrace();
-            System.err.println("CDK unable to write XYZ file " + file);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 ,e);
         }
         catch (Throwable t2)
         {
-            t2.printStackTrace();
-            System.err.println("Failure in writing XYZ: " + t2);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 ,t2);
         }
         finally
         {
@@ -764,8 +746,8 @@ public class IOtools
             }
             catch (IOException ioe)
             {
-                System.err.println("Error in writing: " + ioe);
-                System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1 ,ioe);
             }
         }
     }
@@ -857,15 +839,15 @@ public class IOtools
             sdfWriter = new SDFWriter(new FileWriter(file, append));
             sdfWriter.write(mols);
         } catch (Throwable t2) {
-            System.err.println("Failure in writing SDF: " + t2);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 , t2);
         } finally {
              try {
                  if(sdfWriter != null)
                      sdfWriter.close();
              } catch (IOException ioe) {
-                 System.err.println("Error in writing: " + ioe);
-                 System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1 , ioe);
              }
         }
     }
@@ -922,16 +904,10 @@ public class IOtools
             xyzWriter = new XYZWriter(new FileWriter(file, append));
             xyzWriter.write(acs.getAtomContainer(0));
         }
-        catch (CDKException e)
-        {
-            e.printStackTrace();
-            System.err.println("CDK unable to write XYZ file " + file);
-        }
         catch (Throwable t2)
         {
-            t2.printStackTrace();
-            System.err.println("Failure while writing XYZ: " + t2);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 , t2);
         }
         finally
         {
@@ -942,8 +918,8 @@ public class IOtools
             }
             catch (IOException ioe)
             {
-                System.err.println("Error in writing: " + ioe);
-                System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1, ioe);
             }
         }
         XYZWriter xyzWriterAppend = null;
@@ -954,16 +930,10 @@ public class IOtools
                 xyzWriterAppend.write(acs.getAtomContainer(i));
             }
         }
-        catch (CDKException e)
-        {
-            e.printStackTrace();
-            System.err.println("CDK unable to append XYZ file " + file);
-        }
         catch (Throwable t2)
         {
-            t2.printStackTrace();
-            System.err.println("Failure in appending to XYZ: " + t2);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 , t2);
         }
         finally
         {
@@ -974,8 +944,8 @@ public class IOtools
             }
             catch (IOException ioe)
             {
-                System.err.println("Error in writing: " + ioe);
-                System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1 , ioe);
             }
         }
     }
@@ -1006,24 +976,24 @@ public class IOtools
      * target file
      */
 
-    public static void writeTXTAppend(File outFile, List<String> lines,
+    public static void writeTXTAppend(File file, List<String> lines,
     		boolean append)
     {
         FileWriter writer = null;
         try
         {
-            writer = new FileWriter(outFile, append);
+            writer = new FileWriter(file, append);
             writer.write(StringUtils.mergeListToString(lines, newline));
         } catch (Throwable t) {
-            System.err.println("Failure in writing TXT: " + t);
-            System.exit(-1);
+        	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+        			-1 , t);
         } finally {
              try {
                  if(writer != null)
                      writer.close();
              } catch (IOException ioe) {
-                 System.err.println("Error in writing: " + ioe);
-                 System.exit(-1);
+            	Terminator.withMsgAndStatus("Error in writing file '" + file, 
+            			-1 , ioe);
              }
         }
     }
@@ -1033,7 +1003,7 @@ public class IOtools
     /**
      * Copy the content of text files into other files
      * @param inFile the source file, i.e., where to copy from.
-     * @param outFile the target file, i.e., where to copo into.
+     * @param outFile the target file, i.e., where to copy into.
      * @param append if <code>true</code> required to append the content of the
      * input file at the end of the output file
      */
@@ -1041,19 +1011,19 @@ public class IOtools
     public static void copyFile(File inFile, File outFile, boolean append)
     {
         try {
-        InputStream inStr = new FileInputStream(inFile);
-        OutputStream outStr = new FileOutputStream(outFile,append);
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = inStr.read(buf)) > 0)
-        {
-            outStr.write(buf, 0, len);
-        }
-        inStr.close();
-        outStr.close();
+	        InputStream inStr = new FileInputStream(inFile);
+	        OutputStream outStr = new FileOutputStream(outFile,append);
+	        byte[] buf = new byte[1024];
+	        int len;
+	        while ((len = inStr.read(buf)) > 0)
+	        {
+	            outStr.write(buf, 0, len);
+	        }
+	        inStr.close();
+	        outStr.close();
         } catch (Throwable t) {
-            System.err.println("\nERROR in copying file "+inFile+": "+t);
-            System.exit(0);
+        	Terminator.withMsgAndStatus("Error in copying file '" + inFile, 
+        			-1 , t);
         } 
     }
 
@@ -1105,42 +1075,20 @@ public class IOtools
                 }
             }
         } catch (FileNotFoundException fnf) {
-            System.err.println("File Not Found: " + inFile);
-            System.err.println(fnf.getMessage());
-            System.exit(0);
-        } catch (IOException ioex) {
-            System.err.println(ioex.getMessage());
-            System.exit(0);
+        	Terminator.withMsgAndStatus("File Not Found: " + inFile, 1);
+        } catch (IOException ioe) {
+        	Terminator.withMsgAndStatus("Error in reading file '" + inFile, 
+        			-1 , ioe);
         } finally {
             try {
                 if (buffRead != null)
                     buffRead.close();
             } catch (IOException ioex2) {
-                System.err.println(ioex2.getMessage());
-                System.exit(0);
+            	Terminator.withMsgAndStatus("Error in reading file '" + inFile, 
+            			-1 , ioex2);
             }
         }
 
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Stop execution, Ask the user to pres RETURN key and move on
-     */
-
-    public static void pause()
-    {
-        System.err.println("Press <RETURN> to continue");
-        try
-        {
-            @SuppressWarnings("unused")
-                        int inchar = System.in.read();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Error reading from user");
-        }
     }
 
 //------------------------------------------------------------------------------

@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import autocompchem.chemsoftware.gaussian.GaussianOutputReader;
 import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
 import autocompchem.chemsoftware.orca.OrcaOutputReader;
@@ -60,6 +63,9 @@ public final class ChemSoftReaderWriterFactory
 	 * Singleton instance of this class
 	 */
 	private static ChemSoftReaderWriterFactory INSTANCE;
+	
+	private static Logger logger = LogManager.getLogger(
+			ChemSoftReaderWriterFactory.class);
 
 
 //------------------------------------------------------------------------------
@@ -176,8 +182,7 @@ public final class ChemSoftReaderWriterFactory
             
             csoa = instantiateOutputReader(c);
         } catch (NoClassDefFoundError | ClassNotFoundException error) {
-			//TODO-gg: log warning
-			System.err.println("Could not find analyzer class " + readerName);
+			logger.warn("Could not find analyzer class " + readerName);
         }
 		return csoa;
 	}
@@ -234,8 +239,7 @@ public final class ChemSoftReaderWriterFactory
 		ChemSoftInputWriter result = null;
 		if (target==null)
 		{
-			//TODO-gg: log warning
-			System.err.println("WARNING: Class " 
+			logger.warn("WARNING: Class " 
 					+ knownOutputReaders.get(softwareName).getClass().getSimpleName()
 					+ " declares no linked implementation of " 
 					+ ChemSoftInputWriter.class.getSimpleName() 
@@ -254,8 +258,7 @@ public final class ChemSoftReaderWriterFactory
             
             result = instantiateInputWriter(c);
         } catch (NoClassDefFoundError | ClassNotFoundException error) {
-			//TODO-gg: log warning
-			System.err.println("Could not find class " + writerName 
+			logger.warn("Could not find class " + writerName 
 					+ " that extends " 
 					+ ChemSoftInputWriter.class.getSimpleName());
         }
@@ -310,8 +313,7 @@ public final class ChemSoftReaderWriterFactory
 			ChemSoftOutputReader csoa = (ChemSoftOutputReader) exampleReader;
 			knownOutputReaders.put(csoa.getSoftwareID(), csoa);
 		} else {
-			//TODO-gg: log warning
-			System.err.println("Registration of output reader has failed "
+			logger.warn("Registration of output reader has failed "
 					+ "because the given object is not an instance of "
 					+ ChemSoftOutputReader.class.getSimpleName() 
 					+ ". Ignoting reader '" + exampleReader.toString() + "'");

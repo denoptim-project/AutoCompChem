@@ -1168,10 +1168,6 @@ public class TextAnalyzer
     private static boolean match(String line, String pattern, 
     		boolean[] relation)
     {
-    	//TODO del
-    	//System.out.println("Matching: "+line+" pat:"+pattern+"_ "
-    	//		+ relation[0]+"-"+relation[1]+"-"+relation[2]);
-    	
         boolean answ = false;
         if (relation[0])
         {

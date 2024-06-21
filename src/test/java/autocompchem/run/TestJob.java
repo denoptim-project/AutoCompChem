@@ -34,11 +34,6 @@ public class TestJob extends Job
      */
 	protected static final String ITERATIONKEY = "Iteration";
     
-    /**
-     * Flag used (hard-coded) to create debug behavior
-     */
-    private final boolean debug = false; 
-    
 //------------------------------------------------------------------------------
     
 	/**
@@ -86,14 +81,7 @@ public class TestJob extends Job
 	   
 	@Override
 	public void runThisJobSubClassSpecific()
-	{	
-		if (debug)
-		{
-    		date = new Date();
-    		System.out.println("RUNNING TestJobLog: "+df.format(date)
-    			+ " Pathname: "+stdout);
-		}
-		
+	{
 		// The dummy command will just ping every N-milliseconds
 		ScheduledThreadPoolExecutor stpe = 
 				new ScheduledThreadPoolExecutor(1);

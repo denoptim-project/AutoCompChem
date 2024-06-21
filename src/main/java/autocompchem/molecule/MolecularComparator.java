@@ -280,9 +280,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
                         + " To solve the problem try to move this "
                         + "element to \"Du\" an try again.",-1);
             }
-            System.err.println("\nWARNING! Problems in using SMARTS queries. " 
-                                + cause);
-            System.out.println("Matches: "+msq.getNumMatchesMap());
+            logger.warn("WARNING! Problems in using SMARTS queries. " + cause
+            		+ NL + "Matches: "+msq.getNumMatchesMap());
         } 
         if (msq.getTotalMatches() < 1) {
             Terminator.withMsgAndStatus("ERROR! Unable to find the central "
@@ -302,8 +301,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
         //For second molecule
         logger.trace(" Trying to identify the target atom in '"
                 + MolecularUtils.getNameOrID(referenceMol) + "'.");
-        ManySMARTSQuery msqR = new ManySMARTSQuery(referenceMol,
-        		SMARTSAllInOne, 0);
+        ManySMARTSQuery msqR = new ManySMARTSQuery(referenceMol, SMARTSAllInOne);
         if (msqR.hasProblems())
         {
             String cause = msqR.getMessage();
@@ -314,9 +312,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
                         + " To solve the problem try to move this "
                         + "element to \"Du\" an try again.",-1);
             }   
-            System.err.println("\nWARNING! Problems in using SMARTS queries. " 
-                                + cause);
-            System.out.println("Matches: "+msqR.getNumMatchesMap());
+            logger.warn("WARNING! Problems in using SMARTS queries. " + cause
+            		+ NL + "Matches: "+msqR.getNumMatchesMap());
         } 
         if (msqR.getTotalMatches() < 1) {
             Terminator.withMsgAndStatus("ERROR! Unable to find the central "

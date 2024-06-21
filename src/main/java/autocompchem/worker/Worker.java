@@ -100,7 +100,7 @@ public abstract class Worker implements IOutputExposer
     /**
      * System-specific newline characters
      */
-    protected final String NL = System.getProperty("line.separator");
+    protected final static String NL = System.getProperty("line.separator");
     
 //------------------------------------------------------------------------------
 

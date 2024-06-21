@@ -30,6 +30,8 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -55,8 +57,6 @@ import autocompchem.run.Terminator;
 public class MolecularUtils
 {
 
-    //Reporting flag
-    private static int repOnScreen = 0;
     //TODO move to constants
     private static String duSymbol = "Du";
     //TODO move to constants
@@ -65,6 +65,8 @@ public class MolecularUtils
     
 	private static IChemObjectBuilder chemBuilder = 
     		DefaultChemObjectBuilder.getInstance();
+	
+	private static Logger logger = LogManager.getLogger(MolecularUtils.class);
 
 
 //------------------------------------------------------------------------------
@@ -123,8 +125,7 @@ public class MolecularUtils
     public static int getSmallestRing(IAtom atmS, IAtom atmT, 
                                                         IAtomContainer mol)
     {
-        if (repOnScreen >= 3)
-            System.out.println("Looking for ring involving "
+    	logger.trace("Looking for ring involving "
                         +getAtomRef(atmS, mol)
                         +" and "
                         +getAtomRef(atmT, mol));
@@ -181,21 +182,16 @@ public class MolecularUtils
                         {
                             size = level + 1;
                             moreTrials = false;
-                            if (repOnScreen >= 3)
-                                System.out.println("\nFound target: "
+                            logger.trace("Found target: "
                                         + getAtomRef(nbr,mol)
                                         + " - Ring size: " + size);
                         } else {
                             first = false;
                         }
                     } else {
-                        if (repOnScreen >= 3)
-                            System.out.print((mol.indexOf(nbr)+1)+" ");
                         visited.put(nbr,level);
                     }
                 }
-                if (repOnScreen >= 3)
-                    System.out.print("\n");
             }
         }
 
@@ -460,9 +456,8 @@ public class MolecularUtils
 	                    try {
 	                        name = mol.getProperty(CDKConstants.TITLE).toString();
 	                    } catch (Throwable t) {
-	                        if (repOnScreen >= 3)
-	                            System.out.println("Molecule name not found. "
-	                                                + "Set to '" + name + "'.");
+	                        logger.trace("Molecule name not found. Set to '" 
+	                        		+ name + "'.");
 	                    }
 	                }
 	            }

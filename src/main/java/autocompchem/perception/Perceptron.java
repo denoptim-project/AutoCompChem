@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.IScoring;
 import autocompchem.perception.circumstance.MatchText;
@@ -85,16 +88,16 @@ public class Perceptron
      * Flas enabling tolerance towards missing info channels
      */
     private boolean tolerateMissingIC = false;
-    
-    /**
-     * Verbosity level
-     */
-    private int verbosity = 0;
 
     /**
      * New line character (for logging)
      */
     private final String newline = System.getProperty("line.separator");
+    
+    /**
+     * Logging tool
+     */
+    private static Logger logger;
 
 
 //------------------------------------------------------------------------------
@@ -105,6 +108,7 @@ public class Perceptron
 
     public Perceptron() 
     {
+    	this.logger = LogManager.getLogger(Perceptron.class);
         this.scoreCollector = new ScoreCollector();
         this.occurringSituations = new ArrayList<Situation>();
     }
@@ -118,22 +122,11 @@ public class Perceptron
 
     public Perceptron(SituationBase sitsBase, InfoChannelBase icb)
     {
+    	this();
         this.sitsBase = sitsBase;
         this.icb = icb;
         this.scoreCollector = new ScoreCollector();
         this.occurringSituations = new ArrayList<Situation>();
-    }
-
-//------------------------------------------------------------------------------
-
-    /** 
-     * Set the verbosity level to the given number
-     * @param l the given verbosity level
-     */
-
-    public void setVerbosity(int l)
-    {
-        this.verbosity = l;
     }
     
 //------------------------------------------------------------------------------
@@ -198,36 +191,18 @@ public class Perceptron
 //------------------------------------------------------------------------------
 
     /**
-     * Print perception scores on stout
-     */
-
-    public void printScores()
-    {
-        System.out.println(scoreCollector.printToString());
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Perception of situation that is occurring and do it based on the 
      * available information channels and situation base.
      */
 
     public void perceive() throws Exception
     {
-        if (verbosity > 1)
-        {
-            System.out.println(newline + "Perception from " + this.hashCode());
-        }
-
+    	logger.trace(newline + "Perception from " + this.hashCode());
+        
         //To read text files only once we run all text-matching queries in once
         analyzeAllText();
 
-        if (verbosity > 3)
-        {
-            System.out.println(newline + "Scores after text-only");
-            System.out.println(scoreCollector.printToString());
-        }
+        logger.trace("Scores after text-only: " + scoreCollector.printToString());
 
         //Do actual perception
         for (Situation s : sitsBase.getRelevantSituations(icb))
@@ -250,44 +225,31 @@ public class Perceptron
             }
         }
 
-        if (verbosity > 3)
-        {
-            System.out.println(newline +"Final Scores");
-            System.out.println(scoreCollector.printToString());
-        }
+        logger.trace("Final Scores: " + scoreCollector.printToString());
 
         String init = "Perception result: ";
         switch (occurringSituations.size())
         {
         case 0:
-            if (verbosity > 1)
-            {
-                System.out.println(init + "No situation has been detected");
-            }
+            logger.debug(init + "No situation has been detected");
             break;
             
         case 1:
             iamaware = true;
-            if (verbosity > 0)
-            {
-                System.out.println(init + "Known situation is " 
+            logger.debug(init + "Known situation is " 
                 		+ occurringSituations.get(0).getRefName());
-            }
             break;
             
        default:
-            if (verbosity > 0)
-            {
-            	List<String> names = new ArrayList<String>();
-            	occurringSituations.stream().forEach(s -> names.add(
-            			s.getRefName()));
-            	String msg = init + "Confusion - The situation matches "
-            			+ "multiple known situation. You may have to make "
-                        + "the situations more specific as to "
-                        + "disctiminate between these: " 
-                        + StringUtils.mergeListToString(names, ", ", true);
-                System.out.println(msg);
-            }
+        	List<String> names = new ArrayList<String>();
+        	occurringSituations.stream().forEach(s -> names.add(
+        			s.getRefName()));
+        	String msg = init + "Confusion - The situation matches "
+        			+ "multiple known situation. You may have to make "
+                    + "the situations more specific as to "
+                    + "disctiminate between these: " 
+                    + StringUtils.mergeListToString(names, ", ", true);
+        	logger.debug(msg);
             break;
         }
     }
@@ -323,11 +285,7 @@ public class Perceptron
             // Scan all the input channels of relevant type
             for (InfoChannel ic : icb.getChannelsOfType(c.getChannelType()))
             {	
-                if (verbosity > 2)
-                {
-                    System.out.println(newline +"Scanning InfoChannel: "+ic);
-                }
-                
+            	logger.trace(newline +"Scanning InfoChannel: "+ic);
                 score = score * sc.calculateScore(ic);
             }
 
@@ -354,43 +312,11 @@ public class Perceptron
         Map<InfoChannelType,List<Situation>> situationsByICType = 
         		sitsBase.getRelevantSituationsByICT(icb);
 
-//TODO del
-//System.out.println("The relevant Situations are:");
-//System.out.println(sitsBase.getRelevantSituationsByICT(icb));
-
-/*        
-// Define the max theoretical score for each Situation (it depends on
-// the number of info channels so, cannot be known a priory),
-//        maxScoreCollector = new ScoreCollector();
-        Set<Situation> relevantSituations = HashSet<Situation>();
-        for (InfoChannelType ict : icb.getAllChannelType())
-        {
-            relevantSituations.addAll(sitsBase.getRelevantSituationsByICT(ict));
-            for (InfoChannel ic : icb.getChannelsOfType(ict))
-            {
-                for (Situation n : sitsBase.getRelevantSituationsByICT(ict))
-                {
-                    for (ICircumstance : n.getCircumstances())
-                    {
-                        if (c.getChannelType() == ict)
-                        {
-                            maxScoreCollector.addScore(n,1.0);
-                        }
-                    }
-                }                
-            }
-        }
-*/
-
-
         // Explore all the information channels by type, so that we can take all
         // the Circumstances that involve such channel type
         for (InfoChannelType ict : situationsByICType.keySet())
         {
-            if (verbosity > 2)
-            {
-                System.out.println(newline+newline+"InfoChannelType: "+ict);
-            }
+            logger.trace("InfoChannelType: "+ict);
             
             List<TxtQuery> txtQueries = new ArrayList<TxtQuery>(
             		sitsBase.getAllTxTQueriesForICT(ict, true));
@@ -404,38 +330,22 @@ public class Perceptron
             	if (!(ic instanceof ReadableIC))
             		continue;
             	
-                if (verbosity > 2)
-                {
-                    System.out.println(newline +"Scanning InfoChannel: "+ic);
-                }
+                logger.trace("Scanning InfoChannel: "+ic);
                 
                 Map<TxtQuery,List<String>> matches = getTxtMatchesFromICReader(
                 		txtQueries, ic, tolerateMissingIC, 0);
                 for (TxtQuery tq : matches.keySet())
-                {
-                    if (verbosity > 4)
-                    {
-                        System.out.println("Result for text query "+tq);
-                    }
-                    
+                {   
                     if (matches.get(tq).size()!=0)
                     {
-                        if (verbosity > 3)
-                        {        
-                             System.out.println("#Matches for text query '" 
-                            		 + tq.query + "' = "
-                            		 + matches.size() + ". Lines:");
-                            for (String m : matches.get(tq))
-                            {
-                                System.out.println("  ->  " + m);
-                            }
-                        }
+                    	String msg = "#Matches for text query '" 
+                    			+ tq.query + "' = "
+                    			+ matches.size() + ". Lines: " 
+                    			+ StringUtils.mergeListToString(matches.get(tq),
+                    					" ");
+                        logger.trace(msg);
                     } else {
-                        if (verbosity > 3)
-                        {        
-                            System.out.println("No matches for text query '"
-                                             + tq.query + "'");
-                        }
+                    	logger.trace("No matches for text query '" + tq.query + "'");
                     }
 
                     // Collect scores afterwards
@@ -518,8 +428,7 @@ public class Perceptron
         try 
         {   // Extract potentially useful information from text
             // WARNING!!! No attempt to match multi-line blocks here!
-            allMatches = 
-            		TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
+            allMatches = TextAnalyzer.extractMapOfTxtBlocksWithDelimiters(br,
                                                 txtQueriesAsStr,
                                                 new ArrayList<String>(),
                                                 new ArrayList<String>(),
@@ -586,25 +495,14 @@ public class Perceptron
                 for (String strQuery : matchesIDsbyTxtQueryIdx.get(qIdx))
                 {
                     matches.addAll(allMatches.get(strQuery));
-                }
-
-                if (verbosity > 3)
-                {        
-                     System.out.println("Matches for text query '" 
-                    		 + txtQueriesAsStr.get(qIdx) + "' = "
-                    		 + matches.size() + ". Lines:");
-                    for (String m : matches)
-                    {
-                        System.out.println("  ->  " + m);
-                    }
-                }
+                }     
+                logger.trace("Matches for text query '" 
+                		 + txtQueriesAsStr.get(qIdx) + "' = "
+                		 + matches.size() + ". Lines: " 
+                		 + StringUtils.mergeListToString(matches, " "));
             } else {
-                //This is a text query that does NOT have any match
-                if (verbosity > 3)
-                {        
-                    System.out.println("No matches for text query '"
-                                     + txtQueriesAsStr.get(qIdx) + "'");
-                }
+                logger.trace("No matches for text query '"
+                		+ txtQueriesAsStr.get(qIdx) + "'");
             }
             mapOfMatches.put(tq, matches);
         }

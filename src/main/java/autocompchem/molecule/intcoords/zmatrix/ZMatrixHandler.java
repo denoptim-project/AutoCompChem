@@ -221,8 +221,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             	 		+ "ZMatrix in '" + tmplZMatFile + "'",-1);
             } else if (templates.size()>1)
             {
-                System.out.println(" Found " + templates.size() 
-                + " ZMatrix templates, but we'll use only the first one.");
+                logger.warn(" Found " + templates.size() 
+                	+ " ZMatrix templates, but we'll use only the first one.");
             }
             this.tmplZMat = templates.get(0);
         }
@@ -1086,12 +1086,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         }
         catch (Throwable t)
         {
-            System.out.println("SourceAtm: " + MolecularUtils.getAtomRef(atmC,
-                                              mol)+ " Candidates: "+candidates);
             Terminator.withMsgAndStatus("Cannot choose a reference atom. "
                 + "Make sure each atoms is connected by any chain of bonds to "
                 + "any other atom in the chemical entity, or reorder the atom "
-                + "list as to follow the connectivity.",-1);
+                + "list as to follow the connectivity. Candidate for atom " 
+                + MolecularUtils.getAtomRef(atmC, mol) + ": " + candidates,-1);
         }
         return mol.indexOf(candidates.get(0).getAtom());
     }

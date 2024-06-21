@@ -59,20 +59,7 @@ public class InternalCoordTable
     public InternalCoordTable(IAtomContainer mol, int verbosity)
     {
         Terminator.withMsgAndStatus("ERROR! Attempt to use InternalCoordTable "
-                + "which is not implemented yet...",-1);
-//TODO
-/*
-        for (IAtom atm : mol.atoms())
-        {
-            
-        }
-
-        if (verbosity > 2)
-        {
-            System.out.println("Generated InternalCoordinateTable:");
-            printOnScreen(); 
-        }
-*/
+                + "which is not implemented yet...", -1);
     }
 
 //------------------------------------------------------------------------------
@@ -97,20 +84,6 @@ public class InternalCoordTable
             }
         }
         return res;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Prints the table on standard output.
-     */
-
-    public void printOnScreen()
-    {
-        for (InternalCoord ic : intCrds)
-        {
-            System.out.println(ic.toTableLine());
-        }
     }
 
 //------------------------------------------------------------------------------

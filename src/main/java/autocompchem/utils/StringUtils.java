@@ -26,6 +26,9 @@ import java.util.regex.Matcher;
 
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Toolbox for strings
  * 
@@ -34,7 +37,6 @@ import java.util.regex.Pattern;
 
 public class StringUtils
 {
-     private static boolean debug = false;
 
 //------------------------------------------------------------------------------
 
@@ -58,12 +60,6 @@ public class StringUtils
                 Pattern rgxPattern = Pattern.compile(regex);
                 Matcher m = rgxPattern.matcher(result);
                 result = m.replaceAll(replacement);
-                if (debug)
-                {
-                    System.out.println("Replacing " + rgxPattern 
-                                        + " with " + replacement);
-                    System.out.println("After: "+result);
-                }
             }
         }
         return result;
@@ -91,12 +87,6 @@ public class StringUtils
                 Pattern rgxPattern = Pattern.compile(regex);
                 Matcher m = rgxPattern.matcher(result);
                 result = m.replaceAll("\\"+key);
-                if (debug)
-                {
-                    System.out.println("de-Replacing " + rgxPattern
-                                        + " with " + key);
-                    System.out.println("After: "+result);
-                }
             }
         }
         return result;

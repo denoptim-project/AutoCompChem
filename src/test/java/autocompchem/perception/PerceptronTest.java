@@ -128,21 +128,14 @@ public class PerceptronTest
 
         String sInFile = "PATH and blabla in file";
         InfoChannel icFile;
-        try 
-        {
-            String fileName = "/tmp/tmpTxtFileForJUnitTestingOfPerceptron";
-            FileWriter writer = new FileWriter(fileName);
-            writer.write(sInFile + NL);
-            writer.close();
-            icFile = new FileAsSource(fileName);
-            icFile.setType(InfoChannelType.OUTPUTFILE);
-            icb.addChannel(icFile);
-        }
-        catch (Throwable t)
-        {
-            System.err.println(NL + NL +  "WARNING! Unable to create tmp file "
-                        + "for testing perception. I'll avoid tmp files." + NL);
-        }
+        String fileName = "/tmp/tmpTxtFileForJUnitTestingOfPerceptron";
+        FileWriter writer = new FileWriter(fileName);
+        writer.write(sInFile + NL);
+        writer.close();
+        icFile = new FileAsSource(fileName);
+        icFile.setType(InfoChannelType.OUTPUTFILE);
+        icb.addChannel(icFile);
+        
 
         Situation sit1 = new Situation("case", "");
         sit1.addCircumstance(new MatchText(".*blabla.*",
