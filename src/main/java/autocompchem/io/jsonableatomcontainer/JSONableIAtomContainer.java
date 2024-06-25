@@ -31,7 +31,7 @@ public class JSONableIAtomContainer
 	/**
 	 * The CDK representation wrapped by this object
 	 */
-	private IAtomContainer iac;
+	public IAtomContainer iac;
 	
 //------------------------------------------------------------------------------
 	

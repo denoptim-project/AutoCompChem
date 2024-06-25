@@ -177,7 +177,6 @@ public class BasisSetTest
     	bs.addCenterSpecBSet(cbs1);
     	return bs;
     }
-    
 
 //------------------------------------------------------------------------------
 

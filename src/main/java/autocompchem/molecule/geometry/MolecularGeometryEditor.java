@@ -399,7 +399,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	{
     		if (zmtMove!=null && zmtMove.getZAtomCount()>0)
             {
-                logger.info(" Applying ZMatrix move");
+                logger.info("Applying ZMatrix move");
                 try
                 {
                 	result = applyZMatrixMove(iac);
@@ -414,7 +414,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             }
             else if (crtMove!=null && crtMove.size()>0)
             {
-                logger.info(" Applying Cartesian move");
+                logger.info("Applying Cartesian move");
                 result = applyCartesianMove(iac);
             } else {
                 Terminator.withMsgAndStatus("ERROR! Choose and provide either "

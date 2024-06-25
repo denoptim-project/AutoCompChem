@@ -100,8 +100,7 @@ public class ComparatorOfGeometries
      */
 
     public ComparatorOfGeometries() 
-    {
-    }
+    {}
 
 //------------------------------------------------------------------------------
 
@@ -131,6 +130,7 @@ public class ComparatorOfGeometries
      * @return the atom map where keys are atom indexes in the second molecule
      * and values are atom indexes in the first molecule
      */
+    @Deprecated
     public Map<Integer,Integer> getAtomMapping(IAtomContainer molA,
                                                             IAtomContainer molB)
     {
@@ -161,6 +161,7 @@ public class ComparatorOfGeometries
      * @param refMol reference molecule
      */
 
+    @Deprecated
     public void compareGeometryBySuperposition(IAtomContainer inMol, 
                                                IAtomContainer refMol)
     {
@@ -220,7 +221,7 @@ public class ComparatorOfGeometries
      * @param  removeHydrogen see Journal of Cheminformatics 2009 1:12
      * @param  cleanAndConfigure see Journal of Cheminformatics 2009 1:12
      */
-
+    @Deprecated
     public void compareGeometryBySuperposition(IAtomContainer inMol,
                                                IAtomContainer refMol,
                                                boolean bondSensitive,
@@ -453,6 +454,7 @@ public class ComparatorOfGeometries
      * @return the aligned atom container.
      */
 
+    @Deprecated
     public IAtomContainer getFirstMolAligned()
     {
         if (!runConparisonBySuperposition)
@@ -474,6 +476,7 @@ public class ComparatorOfGeometries
      * @return the aligned atom container.
      */
 
+    @Deprecated
     public IAtomContainer getSecondMolAligned()
     {
         if (!runConparisonBySuperposition)
@@ -492,6 +495,7 @@ public class ComparatorOfGeometries
      * @return the size of the atom-atom map 
      */
 
+    @Deprecated
     public int getSizeOfMap()
     {
         return  allAtomMapsAsIdx.get(bestAtomMapping).size();
@@ -504,6 +508,7 @@ public class ComparatorOfGeometries
      * @return the score representing agreement between the geometries
      */
 
+    @Deprecated
     public double getAlignementScore()
     {
         if (!runConparisonBySuperposition)
@@ -718,6 +723,7 @@ public class ComparatorOfGeometries
      *         Distances (RMSDIAD)
      */
 
+    @Deprecated
     public static double getRMSDevIntramolecularDistances(Map<IAtom,IAtom> map)
     {
         //Get Lists of atoms in non-map format
@@ -749,6 +755,7 @@ public class ComparatorOfGeometries
      *         Distances (RMSDIAD)
      */
 
+    @Deprecated
     public static double getRMSDevIntramolecularDistances(IAtom[] lstA, IAtom[] lstB)
     {
         double result = 0.0d;

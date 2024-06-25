@@ -57,7 +57,7 @@ import autocompchem.worker.Worker;
 public class MolecularComparator extends AtomContainerInputProcessor
 {
     /**
-     * To atom container we conmpare to, i.e., our reference
+     * To atom container we compare to, i.e., our reference
      */
 	private IAtomContainer referenceMol;
 	
@@ -485,7 +485,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
                                                             IAtomContainer molB)
     {
         ComparatorOfGeometries cog = new ComparatorOfGeometries();
-        return cog.getAtomMapping(molA,molB);
+        return cog.getAtomMapping(molA, molB);
     }
 
 //------------------------------------------------------------------------------
