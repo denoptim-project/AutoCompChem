@@ -45,6 +45,7 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.modeling.forcefield.AtomTypeMatcher;
 import autocompchem.modeling.forcefield.ForceFieldEditor;
 import autocompchem.molecule.AtomContainerInputProcessor;
+import autocompchem.molecule.BondMutator;
 import autocompchem.molecule.MolecularComparator;
 import autocompchem.molecule.MolecularMeter;
 import autocompchem.molecule.MolecularMutator;
@@ -117,6 +118,7 @@ public final class WorkerFactory
         registerType(new MolecularGeometryEditor());
         registerType(new MolecularMeter());
         registerType(new MolecularMutator());
+        registerType(new BondMutator());
         registerType(new MolecularPruner());
         registerType(new MolecularReorderer());
         registerType(new MolecularSorter());

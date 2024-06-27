@@ -21,7 +21,7 @@ public class AtomTupleConstants
 	 * coordinates definable from atom tuples. 
 	 */
 	// WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
 	public static final String KEYUSECURRENTVALUE = "GETCURRENTVALUE";
 
@@ -31,7 +31,7 @@ public class AtomTupleConstants
 	 * to those that contain atoms bonded in the order given by the tuple.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
 	public static final String KEYONLYBONDED = "ONLYBONDED";
 
@@ -42,7 +42,7 @@ public class AtomTupleConstants
 	 * are used to generate the labels.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
 	public static final String KEYGETATOMLABELS = "GETATOMLABELS";
 	
@@ -50,7 +50,7 @@ public class AtomTupleConstants
      * Keyword used to identify prefixes
      */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
     public static final String KEYPREFIX = "PREFIX";
     
@@ -58,7 +58,7 @@ public class AtomTupleConstants
      * Keyword used to identify suffix
      */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
     public static final String KEYSUFFIX= "SUFFIX";
 	
@@ -67,7 +67,7 @@ public class AtomTupleConstants
      * atom tuple matching rules.
      */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
     public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX};
     
@@ -76,7 +76,7 @@ public class AtomTupleConstants
      * atom tuple matching rules.
      */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/ConstraintsGenerator.json and
+    // at the resource inputdefinition/*.json and
 	// inputdefinition/AtomTupleGenerator.jsonv
     public static final String[] DEFAULTVALUELESSKEYS = {
     		KEYONLYBONDED, KEYUSECURRENTVALUE, KEYGETATOMLABELS};

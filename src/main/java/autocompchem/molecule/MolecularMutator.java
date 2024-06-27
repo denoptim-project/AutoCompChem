@@ -333,9 +333,9 @@ public class MolecularMutator extends AtomContainerInputProcessor
 
     /**
      * Mutate atoms in a container. 
-     * @param iac the complete container
-     * @param targetsMap the atoms to mutate and the new elemental symbol
-     * @param verbosity the verbosity level
+     * @param iac the complete container.
+     * @param targetsMap the atoms to mutate and the new elemental symbol.
+     * @param verbosity the verbosity level.
      * @return a new container.
      */
 

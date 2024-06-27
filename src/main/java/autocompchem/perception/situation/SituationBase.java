@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.molecule.BondReviser;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;

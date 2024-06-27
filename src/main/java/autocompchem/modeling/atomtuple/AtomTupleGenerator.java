@@ -392,7 +392,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         if (smarts.keySet().size()>0)
         {
         	//First apply all SMARTS in once, for the sake of efficiency
-	        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, 0);
+	        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
 	        if (msq.hasProblems())
 	        {
 	            String cause = msq.getMessage();
