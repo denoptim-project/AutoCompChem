@@ -1,4 +1,4 @@
-VERBOSITY: 4
+VERBOSITY: 5
 TASK: CompareTwoMolecules
 INFILE: ../t17mol.sdf
 REFERENCE: ../t17ref.sdf

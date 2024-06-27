@@ -1,0 +1,5 @@
+VERBOSITY: 5
+TASK: AlignGeometries
+INFILE: ../t4-mol.sdf
+REFERENCE: ../t4-ref.sdf
+ROTATEDOUT: t4-rot.sdf

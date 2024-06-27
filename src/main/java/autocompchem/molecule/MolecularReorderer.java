@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -39,9 +38,7 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.SDFIterator;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
-import autocompchem.molecule.geometry.ComparatorOfGeometries;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
@@ -61,16 +58,6 @@ import autocompchem.worker.Worker;
 
 public class MolecularReorderer extends AtomContainerInputProcessor
 {
-    /**
-     * Name of the reference file
-     */
-    private File refFile;
-
-    /**
-     * Flag indicating the output is to be written to file
-     */
-    private boolean outToFile = false;
-
     /**
      * Name of the output file
      */
@@ -155,18 +142,9 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         //Get and check output file
         if (params.contains("OUTFILE"))
         {
-            outToFile = true;
             this.outFile =  new File(
             		params.getParameter("OUTFILE").getValueAsString());
             FileUtils.mustNotExist(this.outFile);
-        }
-
-        //Get and check the reference file
-        if (params.contains("REFFILE"))
-        {
-            this.refFile =  new File(
-            		params.getParameter("REFFILE").getValueAsString());
-            FileUtils.foundAndPermissions(this.inFile,true,false,false);
         }
 
         //Get the list of SMARTS to be matched
@@ -223,80 +201,6 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             }
     	} else {
     		dealWithTaskMismatch();
-        }
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * DO NOT USE!!! Work in progress on this method.
-     *
-     * Reorder all atom lists in the input file trying to match the reference
-     * atom list, all according to the current settings.
-     */
-
-    public void alignAtomList()
-    {
-
-        //Get the reference molecule
-        List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
-        mols = IOtools.readSDF(refFile);
-        if (mols.size() > 1)
-        {
-            Terminator.withMsgAndStatus("ERROR! Cannot handle multiple "
-                + "reference structures. Please provide a reference file with "
-                + "a single entry.",-1);
-        }
-        IAtomContainer refMol = mols.get(0);
-
-        int i = 0;
-        try
-        {
-            SDFIterator sdfItr = new SDFIterator(inFile);
-            while (sdfItr.hasNext())
-            {
-                i++;
-                logger.debug("Aligning atom container #" + i);
-                IAtomContainer mol = sdfItr.next();
-                
-                ComparatorOfGeometries cog = new ComparatorOfGeometries();
-                Map<Integer,Integer> refToInAtmMap = cog.getAtomMapping(mol,
-                		refMol);
-
-                if (refToInAtmMap.size() < mol.getAtomCount())
-                {
-                    String msg = "ERROR! Atom map is shorter "
-                            + "than atom list. Cannot align atom list. "
-                            + "Mapped atoms: "+refToInAtmMap.size() + NL
-                    		+ "Atom List:    "+mol.getAtomCount();
-                    Terminator.withMsgAndStatus(msg, -1);
-                }
-
-                // NB: the information about the new atom order is stored
-                // in the properties of each Atom
-                ArrayList<Integer> usedTrg = new ArrayList<Integer>();
-                for (Map.Entry<Integer, Integer> e : refToInAtmMap.entrySet())
-                {
-                    IAtom atm = mol.getAtom((Integer) e.getValue());
-                    atm.setProperty(ordCounter,(Integer) e.getKey());
-                    atm.setProperty(visitedFlag,1);
-                    usedTrg.add((Integer) e.getKey());
-                }
-
-                // The information in the Atom properties is  now used 
-                // to create the new container.
-                mol = makeReorderedIAtomContainer(mol);
-
-                if (outToFile)
-                {
-                    IOtools.writeSDFAppend(outFile,mol,true);
-                }
-            } //end loop over molecules
-            sdfItr.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Terminator.withMsgAndStatus("ERROR! Exception returned by "
-                + "SDFIterator while reading " + inFile + ": " + t, -1);
         }
     }
 

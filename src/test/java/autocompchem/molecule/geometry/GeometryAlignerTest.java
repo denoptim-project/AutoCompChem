@@ -157,7 +157,7 @@ public class GeometryAlignerTest
     	boolean thrown = false;
     	try {
     		result = GeometryAligner.alignGeometries(
-        			getGeometryNoBonds(), getGeometryA());
+    				 getGeometryA(), getGeometryNoBonds());
     	} catch (IllegalArgumentException iae) {
     		thrown = true;
     	}
@@ -167,7 +167,7 @@ public class GeometryAlignerTest
     	thrown = false;
     	try {
     		result = GeometryAligner.alignGeometries(
-    				getGeometryQuery(), getGeometryA());
+    				 getGeometryA(), getGeometryQuery());
     	} catch (IllegalArgumentException iae) {
     		thrown = true;
     	}
@@ -181,12 +181,12 @@ public class GeometryAlignerTest
     			
     	// Align molecule to substructure (NB: the opposite is not possible!)
     	result = GeometryAligner.alignGeometries(
-    			getGeometryB(), getGeometryQuery());
+    			getGeometryQuery(), getGeometryB());
     	assertTrue(NumberUtils.closeEnough(0.0, result.getRMSD()));
     	assertTrue(NumberUtils.closeEnough(0.0, result.getRMSDIM()));
     	
     	result = GeometryAligner.alignGeometries(
-    			getGeometryA(), getGeometryQuery());
+    			getGeometryQuery(), getGeometryA());
     	assertTrue(NumberUtils.closeEnough(0.043, result.getRMSD(), 0.001));
     	assertTrue(NumberUtils.closeEnough(0.063, result.getRMSDIM(), 0.001));
     }

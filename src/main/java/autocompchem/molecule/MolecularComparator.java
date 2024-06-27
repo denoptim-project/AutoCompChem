@@ -40,7 +40,8 @@ import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometry;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometryReferences;
 import autocompchem.molecule.coordinationgeometry.CoordinationGeometryUtils;
-import autocompchem.molecule.geometry.ComparatorOfGeometries;
+import autocompchem.molecule.geometry.GeometryAligner;
+import autocompchem.molecule.geometry.GeometryAlignment;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
@@ -60,9 +61,6 @@ public class MolecularComparator extends AtomContainerInputProcessor
      * To atom container we compare to, i.e., our reference
      */
 	private IAtomContainer referenceMol;
-	
-    //Filenames
-    private File rotatedFile;
 
     //SMARTS query identifying target atoms
     private String targetAtoms;
@@ -163,14 +161,6 @@ public class MolecularComparator extends AtomContainerInputProcessor
                 + " reference molecules, but we'll use only the first one.");
             }
 	        referenceMol = lst.get(0);
-        }
-    	
-        //Get and check optional file for rotated output
-        if (params.contains("ROTATEDOUT")) 
-        {
-            this.rotatedFile = new File(
-                        params.getParameter("ROTATEDOUT").getValueAsString());
-            FileUtils.mustNotExist(this.rotatedFile);
         }
 
         //Get the SMARTS query identifying target atoms
@@ -456,36 +446,22 @@ public class MolecularComparator extends AtomContainerInputProcessor
 
     public void runComparisonOfMoleculesBySuperposition(IAtomContainer iac, int i)
     {
-        ComparatorOfGeometries cog = new ComparatorOfGeometries();
-        cog.compareGeometryBySuperposition(iac, referenceMol);
+        GeometryAlignment alignment = null;
+		try {
+			alignment = GeometryAligner.alignGeometries(referenceMol, iac);
+		} catch (IllegalArgumentException | CloneNotSupportedException e) {
+			 Terminator.withMsgAndStatus("ERROR! Could not match reference "
+			 		+ "substructure in geometry to edit. "
+			 		+ "Cannot compare moleculed by superposition.", -1, e);
+		}
+		logger.debug("Comparison by superposition - RMSD: " + alignment.getRMSD());
 
         if (exposedOutputCollector != null)
         {
     	    String molID = "mol-"+i;
 	        exposeOutputData(new NamedData(task.ID + molID, 
-	      		NamedDataType.DOUBLE, cog.getAlignementScore()));
+	      		NamedDataType.DOUBLE, alignment.getRMSD()));
     	}
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Calculates and return the best atom mapping between two structures:
-     * a map of which atom in the first structure corresponds to an atom in the
-     * second structure. The result is reported with 0-based indexes in the atom
-     * array of each structure, so that
-     * the keys are the indexes of atoms in the second (reference)
-     * structure while the values are the indexes in the first structure.
-     * @param molA the first molecule
-     * @param molB the second molecule
-     * @return the atom map where keys are atom indexes in the second molecule
-     * and values are atom indexes in the first molecule
-     */
-    public Map<Integer,Integer> getGeometryAwareAtomMapping(IAtomContainer molA,
-                                                            IAtomContainer molB)
-    {
-        ComparatorOfGeometries cog = new ComparatorOfGeometries();
-        return cog.getAtomMapping(molA, molB);
     }
 
 //------------------------------------------------------------------------------

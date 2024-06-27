@@ -55,6 +55,7 @@ import autocompchem.molecule.chelation.ChelateAnalyzer;
 import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
 import autocompchem.molecule.connectivity.ConnectivityGenerator;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
+import autocompchem.molecule.geometry.GeometryAligner;
 import autocompchem.molecule.geometry.MolecularGeometryEditor;
 import autocompchem.molecule.geometry.MolecularGeometryHandler;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
@@ -133,6 +134,7 @@ public final class WorkerFactory
         registerType(new AtomSpecificStringGenerator());
         registerType(new MolecularGeometryHandler());
         registerType(new AtomContainerInputProcessor());
+        registerType(new GeometryAligner());
 	}
 
 //-----------------------------------------------------------------------------

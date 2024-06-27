@@ -78,7 +78,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
     /**
      * String defining the task of sorting molecules
      */
-    public static final String ALIGNGEOMETRIESTASKNAME = "AlignGeometries";
+    public static final String ALIGNGEOMETRIESTASKNAME = "alignGeometries";
 
     /**
      * Task about sorting molecules
@@ -108,7 +108,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
 
     @Override
     public String getKnownInputDefinition() {
-        return "inputdefinition/GeometryComparator.json";
+        return "inputdefinition/GeometryAligner.json";
     }
 
 //------------------------------------------------------------------------------
@@ -174,10 +174,11 @@ public class GeometryAligner extends AtomContainerInputProcessor
 		{
 			GeometryAlignment alignment = null;
 			try {
-				alignment = alignGeometries(iac, reference);
+				alignment = alignGeometries(reference, iac);
 			} catch (IllegalArgumentException | CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Terminator.withMsgAndStatus("ERROR! Could not align geometries "
+						+ "'" + MolecularUtils.getNameOrID(iac) + "' and '" 
+						+ MolecularUtils.getNameOrID(reference)+ "'.", -1, e);
 			}
 			
 			if (outFile!=null)
@@ -203,12 +204,12 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	
     /**
      * Calculates and return the best atom mapping between two structures:
-     * a map of which atom in the first structure best corresponds to an atom 
-     * in the second structure. 
+     * a map of which atom in the first structure (reference or query) 
+     * best corresponds to an atom in the second structure.
      * @param molA the first molecule
      * @param molB the second molecule
-     * @return the atom map where keys are atom in the second molecule
-     * and values are atom indexes in the first molecule
+     * @return the atom map where keys are atom in the first molecule
+     * and values are atom indexes in the second molecule
      */
     public static Map<Integer,Integer> getBestAtomMappingByGeometry(
     		IAtomContainer molA,
@@ -235,8 +236,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
 
     /**
      * Aligns two structures according to general purpose default settings.
-     * @param structure the geometry to be aligned to the second.
      * @param reference the geometry onto which we align.
+     * @param structure the geometry to be aligned to the reference.
      * @return the best alignment as a snapshot of both systems, i.e., it 
      * contains clones of the {@link IAtomContainer}s given as input.
      * @throws IllegalArgumentException if the structures cannot be aligned
@@ -244,8 +245,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
      * not cloneable.
      */
 
-    public static GeometryAlignment alignGeometries(
-    		IAtomContainer structure, IAtomContainer reference) 
+    public static GeometryAlignment alignGeometries(IAtomContainer reference,
+    		IAtomContainer structure) 
     				throws IllegalArgumentException, CloneNotSupportedException
     {
         //See http://www.jcheminf.com/content/pdf/1758-2946-1-12.pdf
@@ -281,7 +282,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
         
         boolean useRMSDIntDist = false;
 
-        return alignGeometries(structure, reference, 
+        return alignGeometries(reference, structure, 
         		bondSensitive,
         		ingnoreBondType,
         		ignoreStereType,
@@ -291,6 +292,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
         		energyMinimization,
         		removeHydrogen,
         		cleanAndConfigure,
+        		2, //maximum number of re-mapping attempts
         		useRMSDIntDist);
     } 
     
@@ -301,8 +303,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
      * See the meaning of the boolean flags in 
      * <a href="https://doi.org/10.1186/1758-2946-1-12">Journal of Cheminformatics 2009 1:12</a>.
      * 
-     * @param structure the geometry to be aligned to the second.
      * @param reference the geometry onto which we align.
+     * @param structure the geometry to be aligned to the reference.
      * @param bondSensitive see Journal of Cheminformatics 2009 1:12
      * @param ingnoreBondType see Journal of Cheminformatics 2009 1:12
      * @param ignoreStereType see Journal of Cheminformatics 2009 1:12
@@ -312,6 +314,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
      * @param energyMinimization see Journal of Cheminformatics 2009 1:12
      * @param removeHydrogen see Journal of Cheminformatics 2009 1:12
      * @param cleanAndConfigure see Journal of Cheminformatics 2009 1:12
+     * @param maxCycles maximum number of attempt to update mapping after
+     * alignment of the geometries.
      * @param useRMSDIntDist use <code>true</code> to select the best mapping 
      * based on the RMSD of intermolecular distances.
      * @return the best alignment.
@@ -321,8 +325,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
      */
 
     public static GeometryAlignment alignGeometries(
-    		IAtomContainer structure,
             IAtomContainer reference,
+    		IAtomContainer structure,
             boolean bondSensitive,
             boolean ingnoreBondType,
             boolean ignoreStereType,
@@ -332,6 +336,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
             boolean energyMinimization,
             boolean removeHydrogen,
             boolean cleanAndConfigure,
+            int maxCycles,
             boolean useRMSDIntDist) 
             		throws IllegalArgumentException, CloneNotSupportedException
     {
@@ -500,14 +505,12 @@ public class GeometryAligner extends AtomContainerInputProcessor
 
 
         String msg = "Best atom mapping from Isomorphism: " + NL 
-        		+ "RMSD = " + rmsd 
-        		+ " (Map " + bestAtomMapping + " of "+ allAtomMaps.size() 
-        		+ "." + NL ;
+        		+ "RMSD = " + rmsd + NL 
+        		+ "Map " + bestAtomMapping + " of "+ allAtomMaps.size() 
+        		+ ": " +  bestAlignment.getMappingDefinition();
         logger.debug(msg);
 
         //Try improving mapping and alignment up to convergence
-//TODO make this parameter user defined
-        int maxCycles = 2;
         boolean foundBetterAlignment = false;
         for (int c=0; c<maxCycles; c++)
         {

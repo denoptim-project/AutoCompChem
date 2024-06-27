@@ -6,13 +6,17 @@
     "doc": "The pathname to the file with the reference chemical system. Only SDF files with ONE molecule are acceptable."
   },
   {
-    "key": "TARGETATOMSQUERY",
-    "casedKey": "targetAtomsQuery",
+    "key": "ROTATEDOUT",
+    "casedKey": "rotatedOut",
     "type": "<String>",
-    "doc": "SMARTS query identifying the atoms on which the analysis will focus."
+    "doc": "The pathname to the output file where the aligned geometry will be saved."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "multiGeomMode",
+      "inputGeometries"
+    ]
   }
 ]

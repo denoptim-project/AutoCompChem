@@ -466,8 +466,17 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                      + this.refMol.getAtomCount() + ") and Cartesian step ("
                      + "size " + crtMove.size() + ") have different size. ",-1);
             }
-            ComparatorOfGeometries mc = new ComparatorOfGeometries();
-            Map<Integer,Integer> refToInAtmMap = mc.getAtomMapping(iac, refMol);
+            
+            GeometryAlignment alignment = null;
+			try {
+				alignment = GeometryAligner.alignGeometries(refMol, iac);
+			} catch (IllegalArgumentException | CloneNotSupportedException e) {
+				 Terminator.withMsgAndStatus("ERROR! Could not match reference "
+				 		+ "substructure in geometry to edit. "
+				 		+ "Cannot perform Cartesian move.", -1, e);
+			}
+            Map<Integer,Integer> refToInAtmMap = alignment.getMappingIndexes();
+
             for (Integer refAtId : refToInAtmMap.keySet())
             {
                 actualMove.set(refToInAtmMap.get(refAtId),crtMove.get(refAtId));
@@ -475,7 +484,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 
             //Get the rototranslate actualMol as to make it consistent with the
             // reference's Cartesian move
-            iac = mc.getFirstMolAligned();
+            iac = alignment.getSecondIAC().iac;
         }
         else
         {

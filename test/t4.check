@@ -1,0 +1,28 @@
+#!/bin/bash
+if [ ! -f t4.log ]; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+if ! grep -q 'RMSD = 2\.5384' t4.log ; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if ! grep -q 'Ru1 \- Ru4' t4.log ; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if ! grep -q 'Cl8 \- Cl6' t4.log ; then
+  echo NOT Passed ERROR 4 
+  exit -1
+fi
+
+if grep -q 'Termination status: 0' t4.log ; then
+  echo Passed 
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi
