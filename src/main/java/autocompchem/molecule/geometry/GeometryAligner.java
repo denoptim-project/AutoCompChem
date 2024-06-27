@@ -391,6 +391,8 @@ public class GeometryAligner extends AtomContainerInputProcessor
 //        Isomorphism im = new Isomorphism(Algorithm.DEFAULT, bondSensitive);
 //This algorithm is faster for the kind of task meant here
 //but fails sometime
+        
+        //TODO: consider using  http://github.com/asad/smsd
         @SuppressWarnings("deprecation")
 		Isomorphism im = new Isomorphism(Algorithm.VFLibMCS, bondSensitive);
 //
