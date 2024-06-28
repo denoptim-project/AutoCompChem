@@ -1,4 +1,4 @@
-TASK: MutateBonds
+TASK: editBonds
 INFILE: ../t2-mol.sdf
 OUTFILE:  t2-mol_mutated.sdf
 $STARTSMARTS: [Ru]~[#6] ORDER: SINGLE

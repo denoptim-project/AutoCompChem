@@ -7,7 +7,7 @@
   },
   {
     "key": "SMARTS",
-    "casedKey": "SMARTSMap",
+    "casedKey": "SMARTS",
     "type": "<String>",
     "doc": "Defines one or more SMARTS-based rules for identifying bonds to edit. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as a single SMARTS until a word is found that corresponds to the 'REMOVE' keyword, which indicated that any bond matched by that rule should be removed, or to any of the keywords in the following key-value pairs: 'ORDER: value' (use this to set the bond order of any matched bond), and 'STEREO: value' (use this to set the stereochemistry flag of any matched bond). Once the first keyword is found no more words will be interpreted as SMARTS. To edit existing bonds, a single SMARTS should be used to isentify the two atoms connected by the target bond (e.g., '[#6]-[#8]'). To add bonds, a pair of SMARTS can be used to identify the atoms to be connected by a bons, if not already connected (e.g., '[#6] [17] ORDER: Single' is the rule to add a single bond between each pair of non-bonded C and Cl atoms)."
   },

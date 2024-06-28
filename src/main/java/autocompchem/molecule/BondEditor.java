@@ -56,7 +56,7 @@ import autocompchem.worker.Worker;
  */
 
 
-public class BondMutator extends AtomContainerInputProcessor
+public class BondEditor extends AtomContainerInputProcessor
 {
     /**
      * Name of the output file
@@ -85,16 +85,16 @@ public class BondMutator extends AtomContainerInputProcessor
     private Map<String,Object> editorObjectives = new HashMap<String,Object>();
     
     /**
-     * String defining the task of mutating bonds
+     * String defining the task of editing bonds
      */
-    public static final String MUTATEBONDSTASKNAME = "mutateBonds";
+    public static final String EDITBONDSTASKNAME = "editBonds";
 
     /**
-     * Task about mutating atoms
+     * Task about editing bonds
      */
-    public static final Task MUTATEBONDSTASK;
+    public static final Task EDITBONDSTASK;
     static {
-    	MUTATEBONDSTASK = Task.make(MUTATEBONDSTASKNAME);
+    	EDITBONDSTASK = Task.make(EDITBONDSTASKNAME);
     }
     
 	/**
@@ -121,7 +121,7 @@ public class BondMutator extends AtomContainerInputProcessor
 	 * Keywords that expect values and are used to annotate constraints.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/BondMutator.json.
+    // at the resource inputdefinition/BondEditor.json.
 	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
 			KEYORDER, KEYSTEREO);
 
@@ -129,7 +129,7 @@ public class BondMutator extends AtomContainerInputProcessor
 	 * Keywords that do not expect values and are used to annotate constraints.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/BondMutator.json.
+    // at the resource inputdefinition/BondEditor.json.
 	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList(
 			KEYREMOVE);
 
@@ -138,7 +138,7 @@ public class BondMutator extends AtomContainerInputProcessor
     /**
      * Constructor.
      */
-    public BondMutator()
+    public BondEditor()
     {}
 
 //------------------------------------------------------------------------------
@@ -146,21 +146,21 @@ public class BondMutator extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(MUTATEBONDSTASK)));
+             Arrays.asList(EDITBONDSTASK)));
     }
 
 //------------------------------------------------------------------------------
 
     @Override
     public String getKnownInputDefinition() {
-        return "inputdefinition/BondMutator.json";
+        return "inputdefinition/BondEditor.json";
     }
 
 //------------------------------------------------------------------------------
 
     @Override
     public Worker makeInstance(Job job) {
-        return new BondMutator();
+        return new BondEditor();
     }
     
 //-----------------------------------------------------------------------------
@@ -245,8 +245,8 @@ public class BondMutator extends AtomContainerInputProcessor
          * Constructor for a rule by parsing a formatted string of text. 
          * Default keywords that are interpreted to parse specific input
          * instructions are defined by
-         * {@link BondMutator#DEFAULTVALUEDKEYS} and 
-         * {@link BondMutator#DEFAULTVALUELESSKEYS}.
+         * {@link BondEditor#DEFAULTVALUEDKEYS} and 
+         * {@link BondEditor#DEFAULTVALUELESSKEYS}.
          * @param txt the string to be parsed
          * @param i a unique integer used to identify the rule. Is used to build
          * the reference name of the generated rule.
@@ -309,7 +309,7 @@ public class BondMutator extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-      	if (task.equals(MUTATEBONDSTASK))
+      	if (task.equals(EDITBONDSTASK))
       	{
       		editBonds(iac, smarts, editorObjectives);
             
@@ -332,9 +332,9 @@ public class BondMutator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Mutate bonds in a container.
-     * @param iac the container to mutate.
-     * @param smarts the SMARTS matching the bonds to mutate, or the pair of 
+     * Edit bonds in a container.
+     * @param iac the container to edit.
+     * @param smarts the SMARTS matching the bonds to edit, or the pair of 
      * atoms between which to define a bond (if none is already present). 
      * In the latter case the SMARTS should be separated by a space.
      * @param editorObjectives map defining with to do or edit in the matches 
@@ -430,7 +430,7 @@ public class BondMutator extends AtomContainerInputProcessor
 	  					(objective.toString().toUpperCase().equals("DELETE"))){
 	  				toRemove.addAll(targets.get(key));
 	  			} else {
-	  				logger.warn("No implementation is available for mutating "
+	  				logger.warn("No implementation is available for editing "
 	  						+ "bond feature to '" + objective + "'.");
 	  			}
 	  		}

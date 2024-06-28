@@ -59,12 +59,12 @@ import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
- * Unit Test for {@link BondMutator}.
+ * Unit Test for {@link BondEditor}.
  * 
  * @author Marco Foscato
  */
 
-public class BondMutatorTest 
+public class BondEditorTest 
 {
 
 	private static IChemObjectBuilder chemBuilder = 
@@ -101,7 +101,7 @@ public class BondMutatorTest
 //------------------------------------------------------------------------------
 	
 	@Test
-	public void testMutateBond() throws Exception
+	public void testEditBonds() throws Exception
 	{
     	IAtomContainer mol = getTestMol();
     	
@@ -119,7 +119,7 @@ public class BondMutatorTest
     	newFeatures.put("RuO", IBond.Order.SINGLE);
     	newFeatures.put("newBond", IBond.Order.QUADRUPLE);
     	
-    	BondMutator.editBonds(mol, smarts, newFeatures);
+    	BondEditor.editBonds(mol, smarts, newFeatures);
     	
     	assertEquals(6, mol.getBondCount());
     	assertEquals(1, mol.getConnectedBondsList(mol.getAtom(1)).size());
