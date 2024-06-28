@@ -42,7 +42,7 @@ public class SMARTSUtils
      */
 
     public static Map<String, List<List<List<IAtom>>>> identifyAtomTuples(
-    		IAtomContainer mol, Map<String, String> smartsTuples)
+    		IAtomContainer mol, Map<String, List<SMARTS>> smartsTuples)
     {
     	Map<String,List<MatchingIdxs>> matchesAsIdxs = 
     			identifyAtomIdxTuples(mol, smartsTuples);
@@ -88,7 +88,7 @@ public class SMARTSUtils
      */
 
     public static Map<String, List<MatchingIdxs>> identifyAtomIdxTuples(
-    		IAtomContainer mol, Map<String, String> smartsTuples)
+    		IAtomContainer mol, Map<String, List<SMARTS>> smartsTuples)
     {
     	// Here we collect all atom tuples by the reference name of
     	// the tuple of SMARTS given as parameter
@@ -98,18 +98,15 @@ public class SMARTSUtils
     	// Extract single SMARTS from tuples of SMARTS, but keep track of
     	// the tuples via the reference names
     	Set<String> sortedKeys = new TreeSet<String>();
-    	Map<String,String> smarts = new HashMap<String,String>();
-        for (Entry<String,String> tupleRule : smartsTuples.entrySet())
+    	Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
+        for (Entry<String,List<SMARTS>> tupleRule : smartsTuples.entrySet())
         {
         	String key = tupleRule.getKey();
-        	String[] smarts_for_key = tupleRule.getValue().trim().split("\\s+");
-        	for (int i=0; i<smarts_for_key.length; i++)
+    		sortedKeys.add(key);
+    		for (int i=0; i<tupleRule.getValue().size(); i++)
         	{
-        		sortedKeys.add(key);
-        		SMARTS oneSMARTS = new SMARTS(smarts_for_key[i]);
-        		//NB: this format is assumed here and elsewhere
         		String refName = key + "_" + i;
-        		smarts.put(refName, oneSMARTS.getString());
+        		smarts.put(refName, tupleRule.getValue().get(i));
         	}
         }
 
@@ -189,7 +186,7 @@ public class SMARTSUtils
      */
 
     public static Map<String, List<IBond>> identifyBondsBySMARTS(
-    		IAtomContainer mol, Map<String, String> smarts)
+    		IAtomContainer mol, Map<String, SMARTS> smarts)
     {
         Map<String, List<IBond>> targets = new HashMap<String, List<IBond>>();
         ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);

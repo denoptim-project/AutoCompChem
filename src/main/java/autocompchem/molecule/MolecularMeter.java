@@ -43,6 +43,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -65,7 +66,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
     /**
      * Map of the SMARTS queries used to define the quantities to measure
      */
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
 
     /**
      * Map of the atom indexes used to define the quantities to measure
@@ -199,6 +200,8 @@ public class MolecularMeter extends AtomContainerInputProcessor
      * @param type the string defining the type of rule: "S" for SMARTS, "A" for
      * atom indexes
      */
+	
+	//TODO: consider using atom tuple matching rule
 
     private void addRule(String line, String type)
     {
@@ -214,7 +217,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
                 if (singleSmarts.equals(""))
                     continue;
                 String k2 = key + "_" + Integer.toString(j-1);
-                this.smarts.put(k2,singleSmarts);
+                this.smarts.put(k2,new SMARTS(singleSmarts));
             }
         }
         else if (type.equals("A"))
@@ -281,7 +284,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     public static Map<String,List<Double>> measureAllQuantities(
-    		IAtomContainer mol, Map<String,String> smarts, 
+    		IAtomContainer mol, Map<String,SMARTS> smarts, 
     		List<String> sortedKeys, Map<String,List<Integer>> atmIds,
     		boolean onlyBonded, int i)
     {

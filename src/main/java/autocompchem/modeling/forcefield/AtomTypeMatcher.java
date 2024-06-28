@@ -44,6 +44,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -70,7 +71,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
     /**
      * List of atom type-matching smarts with string identifiers
      */
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
 
     /**
      * Flag controlling no-output mode
@@ -215,7 +216,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
     public void assignAtomTypes(IAtomContainer mol)
     {
         //Match atoms by the given rules
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts,0);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol,smarts);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();
@@ -307,7 +308,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
             s =  s.substring(1,s.length()-1);
 
             //Store
-            smarts.put(at,s);
+            smarts.put(at, new SMARTS(s));
         }
 
     }

@@ -358,14 +358,14 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     	
         //Handling differs for SMARTS- and ID-based rules
     	Set<String> sortedKeys = new TreeSet<String>();
-    	Map<String,String> smarts = new HashMap<String,String>();
-    	Map<String,String> mergedSmarts = new HashMap<String,String>();
+    	Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
+    	Map<String,List<SMARTS>> mergedSmarts = 
+    			new HashMap<String,List<SMARTS>>();
         for (AtomTupleMatchingRule r : rules)
         {
         	// For SMARTS-based we need to inspect the structure
             if (r.getType() == RuleType.SMARTS)
             {
-            	String mergedSMARTS = "";
             	for (int i=0; i<r.getSMARTS().size(); i++)
             	{
             		SMARTS s = r.getSMARTS().get(i);
@@ -373,10 +373,9 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
             		//NB: this format is assumed here and elsewhere
             		String refName = r.getRefName()+"_"+i;
             		sortedKeys.add(r.getRefName());
-            		smarts.put(refName, s.getString());
-            		mergedSMARTS = mergedSMARTS + " " + s.getString();
+            		smarts.put(refName, s);
             	}
-            	mergedSmarts.put(r.getRefName(), mergedSMARTS);
+            	mergedSmarts.put(r.getRefName(), r.getSMARTS());
             }
             // For ID-based we just collect the atoms
             else if (r.getType() == RuleType.ID)

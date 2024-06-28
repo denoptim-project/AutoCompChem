@@ -47,6 +47,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -69,7 +70,7 @@ public class MolecularMutator extends AtomContainerInputProcessor
     /**
      * List (with string identifier) of smarts queries
      */
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
 
     /**
      * List (with string identifier) of new elemental symbols
@@ -151,7 +152,7 @@ public class MolecularMutator extends AtomContainerInputProcessor
                 continue;
             String[] words = line.split("\\s+");
             String refName = "mutDef" + Integer.toString(i);
-            this.smarts.put(refName,words[0]);
+            this.smarts.put(refName, new SMARTS(words[0]));
             this.newElms.put(refName,words[1]);
         }
     }
@@ -216,10 +217,10 @@ public class MolecularMutator extends AtomContainerInputProcessor
      */
 
     public Map<String,List<IAtom>> identifyMutatingCenters(
-    		IAtomContainer mol, Map<String,String> tmpSmarts)
+    		IAtomContainer mol, Map<String,SMARTS> tmpSmarts)
     {
         //make backup of SMARTS queries
-        Map<String,String> bkpSmarts = new HashMap<String,String>();
+        Map<String,SMARTS> bkpSmarts = new HashMap<String,SMARTS>();
         for (String k : smarts.keySet())
         {
             bkpSmarts.put(k,smarts.get(k));

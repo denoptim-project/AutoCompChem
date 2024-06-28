@@ -51,6 +51,7 @@ import autocompchem.geometry.DistanceMatrix;
 import autocompchem.modeling.AtomSpecificStringGenerator;
 import autocompchem.molecule.AtomContainerInputProcessor.MultiGeomMode;
 import autocompchem.run.Job;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.DummyWorker;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -104,11 +105,13 @@ public class BondMutatorTest
 	{
     	IAtomContainer mol = getTestMol();
     	
-    	Map<String, String> smarts = new HashMap<String, String>();
-    	smarts.put("triple bond", "C#C");
-    	smarts.put("CC", "C-C");
-    	smarts.put("RuO", "[Ru]~[#8]");
-    	smarts.put("newBond", "[#8] [$(C-C#C)]");
+    	Map<String, List<SMARTS>> smarts = new HashMap<String, List<SMARTS>>();
+    	smarts.put("triple bond", Arrays.asList(new SMARTS("C#C")));
+    	smarts.put("CC", Arrays.asList(new SMARTS("C-C")));
+    	smarts.put("RuO", Arrays.asList(new SMARTS("[Ru]~[#8]")));
+    	smarts.put("newBond", Arrays.asList(
+    			new SMARTS("[#8]"), 
+    			new SMARTS("[$(C-C#C)]")));
     	
     	Map<String, Object> newFeatures = new HashMap<String, Object>();
     	newFeatures.put("triple bond", "remove");

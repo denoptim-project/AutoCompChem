@@ -71,22 +71,6 @@ public class ManySMARTSQuery
      * Text that may be useful to understand any problem encountered.
      */
     private String message = "";
-    
-
-//------------------------------------------------------------------------------
-
-    /**      
-     * Constructs a new ManySMARTSQuery specifying all the parameters needed
-     * @param mol the target molecule
-     * @param smarts map of SMARTS (with reference names as keys)
-     * @param verbosity level of verbosity
-     */
-
-    @Deprecated
-    public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts, int verbosity)
-    {
-    	this(mol, smarts);
-    }
 
 //------------------------------------------------------------------------------
 
@@ -96,12 +80,12 @@ public class ManySMARTSQuery
      * @param smarts map of SMARTS (with reference names as keys).
      */
 
-    public ManySMARTSQuery(IAtomContainer mol, Map<String,String> smarts)
+    public ManySMARTSQuery(IAtomContainer mol, Map<String,SMARTS> smarts)
     {	
         totNum = 0;
     	for (String smartsRef : smarts.keySet()) 
     	{
-            String oneSmarts = smarts.get(smartsRef);
+            String oneSmarts = smarts.get(smartsRef).getString();
 
             logger.debug("Attempt to match query '" + smartsRef + "': " 
             		+ oneSmarts);

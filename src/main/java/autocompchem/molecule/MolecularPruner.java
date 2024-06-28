@@ -44,6 +44,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -62,7 +63,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
     private File outFile;
 
     //List (with string identifier) of smarts
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
     
     /**
      * String defining the task of pruning molecules
@@ -134,7 +135,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
             String singleSmarts = parts[i];
             if (singleSmarts.equals(""))
                 continue;
-            this.smarts.put(Integer.toString(i),singleSmarts);
+            this.smarts.put(Integer.toString(i), new SMARTS(singleSmarts));
         }
     }
     
@@ -188,7 +189,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
      */
 	
     public static IAtomContainer prune(IAtomContainer iac, 
-    		Map<String,String> smarts)
+    		Map<String,SMARTS> smarts)
     {           
         ManySMARTSQuery msq = new ManySMARTSQuery(iac, smarts);
         if (msq.hasProblems())

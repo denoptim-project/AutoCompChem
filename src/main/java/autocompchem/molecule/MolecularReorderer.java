@@ -43,6 +43,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -71,7 +72,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     /**
      * List (with string identifier) of smarts queries
      */
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
 
     /**
      * Name of the atom property used to stamp a visited atom
@@ -79,7 +80,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     private static final String visitedFlag = "VISITEDBYREORDERER";
 
     /**
-     * Name of the atom property used to record the orded of the visits
+     * Name of the atom property used to record the order of the visits
      */
     private static final String ordCounter = "ORDERLABEL";
     
@@ -159,7 +160,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
                 String singleSmarts = parts[i];
                 if (singleSmarts.equals(""))
                     continue;
-                this.smarts.put(Integer.toString(i),singleSmarts);
+                this.smarts.put(Integer.toString(i), new SMARTS(singleSmarts));
             }
         }
     }
@@ -219,10 +220,10 @@ public class MolecularReorderer extends AtomContainerInputProcessor
      */
 
     public List<IAtom> identifySourceAtoms(IAtomContainer mol,
-    		Map<String,String> tmpSmarts)
+    		Map<String,SMARTS> tmpSmarts)
     {
         //make backup of SMARTS queries
-        Map<String,String> bkpSmarts = new HashMap<String,String>();
+        Map<String,SMARTS> bkpSmarts = new HashMap<String,SMARTS>();
         for (String k : smarts.keySet())
         {
             bkpSmarts.put(k,smarts.get(k));
@@ -244,7 +245,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
 
     /**
      * Look for the source atoms according to the criteria given to the 
-     * constructor. For now only
+     * constructor. For now, only
      * SMARTS-based selection is implemented
      * @param mol the molecule to work with
      * @return the list of source atoms

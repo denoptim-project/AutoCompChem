@@ -45,6 +45,7 @@ import autocompchem.molecule.geometry.GeometryAlignment;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -253,13 +254,13 @@ public class MolecularComparator extends AtomContainerInputProcessor
         }
 
         //Get the atoms of which geometry have to be compared
-        Map<String,String> SMARTSAllInOne = new HashMap<String,String>();
-        SMARTSAllInOne.put("center", targetAtoms);
+        Map<String,SMARTS> SMARTSAllInOne = new HashMap<String,SMARTS>();
+        SMARTSAllInOne.put("center", new SMARTS(targetAtoms));
 
         //For First molecule
         logger.trace("Trying to identify the target atom in '"
                 + MolecularUtils.getNameOrID(iac) + "'.");
-        ManySMARTSQuery msq = new ManySMARTSQuery(iac, SMARTSAllInOne,0);
+        ManySMARTSQuery msq = new ManySMARTSQuery(iac, SMARTSAllInOne);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();

@@ -47,6 +47,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -294,7 +295,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
     	}
     	
         //Split atom matching rules based on type
-        Map<String,String> smarts = new HashMap<String,String>();
+        Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
         Map<String,String> elmnts = new HashMap<String,String>();
         for (String refName : rules.keySet())
         {
@@ -302,7 +303,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             if (r.getType().toUpperCase().equals(
                                             BasisSetConstants.ATMMATCHBYSMARTS))
             {
-                smarts.put(refName,r.getKey());
+                smarts.put(refName,new SMARTS(r.getKey()));
             }
             else if (r.getType().toUpperCase().equals(
                                             BasisSetConstants.ATMMATCHBYSYMBOL))
@@ -319,7 +320,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             + "Elemental symbols rules for basis set assignation: " + elmnts);
 
         // Apply SMARTS-bases ruled 
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, 0);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
         if (msq.hasProblems())
         {
             String cause = msq.getMessage();

@@ -44,6 +44,7 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
+import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -75,7 +76,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
     /**
      * List target atoms to consider when searching for clashes.
      */
-    private Map<String,String> targetsmarts;
+    private Map<String,SMARTS> targetsmarts;
 
     //cutoff
     private double cutoff = 0.6;
@@ -164,7 +165,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
         //Get the list of SMARTS to be matched
         if (params.contains("TARGETSMARTS"))
         {
-        	this.targetsmarts = new HashMap<String,String>();
+        	this.targetsmarts = new HashMap<String,SMARTS>();
             String allSamrts = 
                 params.getParameter("TARGETSMARTS").getValue().toString();
             String[] lines = allSamrts.split("\\r?\\n");
@@ -179,7 +180,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
                         continue;
                     k++;
                     String key2 = "target_" + Integer.toString(k);
-                    this.targetsmarts.put(key2,singleSmarts);
+                    this.targetsmarts.put(key2, new SMARTS(singleSmarts));
                 }
             }
         }
@@ -329,7 +330,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
      * @return the list of atom clashes
      */
     public static List<AtomClash> analyzeAtomClashes(IAtomContainer mol, 
-    		Map<String, String> targetsmarts, 
+    		Map<String, SMARTS> targetsmarts, 
     		List<VDWAllowance> allowances, 
     		double cutoff,
     		double allowance,
@@ -390,7 +391,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
         if (allowances.size() != 0)
         {
             //make map of smarts
-            Map<String,String> smarts = new HashMap<String,String>();
+            Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
 
             for (int ikey = 0; ikey<allowances.size(); ikey++)
             {
@@ -400,7 +401,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
                 {
                     String key = Integer.toString(ikey) + "_"
                                  + Integer.toString(jkey); 
-                    smarts.put(key,atmsmarts[jkey]);
+                    smarts.put(key, new SMARTS(atmsmarts[jkey]));
                 }
             }
 

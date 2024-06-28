@@ -77,7 +77,7 @@ public class BondMutator extends AtomContainerInputProcessor
     /**
      * List (with string identifier) of smarts queries to identify target bonds.
      */
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,List<SMARTS>> smarts = new HashMap<String,List<SMARTS>>();
 
     /**
      * List (with string identifier) of feature for target bond
@@ -189,11 +189,7 @@ public class BondMutator extends AtomContainerInputProcessor
         	parseBondEditingRules(all);
         	for (BondEditingRule bmRule : rules)
         	{
-        		//TODO-gg use list of smarts
-        		String smartsStr = "";
-        		for (SMARTS s : bmRule.getSMARTS())
-        			smartsStr = smartsStr + " " + s.getString();
-        		smarts.put(bmRule.getRefName(), smartsStr.trim());
+        		smarts.put(bmRule.getRefName(), bmRule.getSMARTS());
         		Object objective = bmRule.getObjective();
         		if (objective!=null)
         			editorObjectives.put(bmRule.getRefName(), objective);
@@ -348,19 +344,21 @@ public class BondMutator extends AtomContainerInputProcessor
      * @return a new container.
      */
 
-    public static void editBonds(IAtomContainer iac, Map<String,String> smarts, 
+    public static void editBonds(IAtomContainer iac, 
+    		Map<String,List<SMARTS>> smarts, 
     		Map<String,Object> editorObjectives)
     {
     	Logger logger = LogManager.getLogger();
     	
-    	Map<String,String> atomPairSmarts = new HashMap<String,String>();
-    	Map<String,String> bondSmarts = new HashMap<String,String>();
-    	for (Entry<String, String> e : smarts.entrySet())
+    	Map<String,List<SMARTS>> atomPairSmarts = 
+    			new HashMap<String,List<SMARTS>>();
+    	Map<String,SMARTS> bondSmarts = new HashMap<String,SMARTS>();
+    	for (Entry<String, List<SMARTS>> e : smarts.entrySet())
     	{
-    		if (e.getValue().contains(" "))
+    		if (e.getValue().size()>1)
     			atomPairSmarts.put(e.getKey(), e.getValue());
     		else
-    			bondSmarts.put(e.getKey(), e.getValue());
+    			bondSmarts.put(e.getKey(), e.getValue().get(0));
     	}
 
     	// Add new bonds, if not already present

@@ -69,7 +69,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
     /**
      * Storage of SMARTS queries
      */
-    private Map<String,String> smarts = new HashMap<String,String>();
+    private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
 
     /**
      * Storage of options associated with SMARTS queries
@@ -93,7 +93,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
     private final AtomicInteger iNameSmarts = new AtomicInteger(0);
     
     /**
-     * Counters of intermal coordinates by type
+     * Counters of internal coordinates by type
      */
     private Map<String,Integer> vmICcounter = new HashMap<String,Integer>();
 
@@ -193,7 +193,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
      */
 
      private Map<String,List<String>> getOptsForNamedICSMARTS(
-    		  String allLines, Map<String,String> smarts)
+    		  String allLines, Map<String,SMARTS> smarts)
      {
          List<String> sortedMasterNames = getSortedSMARTSRefNames(smarts);
 
@@ -232,7 +232,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
      * get the sorted list of master names
      */
 
-    private ArrayList<String> getSortedSMARTSRefNames(Map<String,String> smarts)
+    private ArrayList<String> getSortedSMARTSRefNames(Map<String,SMARTS> smarts)
     {
         ArrayList<String> sortedMasterNames = new ArrayList<String>();
         for (String k : smarts.keySet())
@@ -263,9 +263,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
      * order of the SMARTS red in the same line.
      */
 
-    private Map<String,String> getNamedICSMARTS(String allLines)
+    private Map<String,SMARTS> getNamedICSMARTS(String allLines)
     {
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,SMARTS> map = new HashMap<String,SMARTS>();
         logger.debug(" Importing SMARTS to identify ICs");
         String[] lines = allLines.split("\\r?\\n");
         int ii = -1;
@@ -304,7 +304,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                 }
                 jj++;
                 String childName = masterName + SUBRULELAB + jj;
-                map.put(childName,singleSmarts);
+                map.put(childName, new SMARTS(singleSmarts));
             }
             if (jj < 1)
             {
@@ -673,7 +673,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         IAtomContainer mol = connectivityTemplate;
 
         //Identify selected internal coordinates
-        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, 0);
+        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
         if (msq.hasProblems()) 
         {
             String cause = msq.getMessage();
