@@ -49,6 +49,7 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
+import autocompchem.smarts.SMARTSUtils;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
@@ -358,11 +359,13 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         //Handling differs for SMARTS- and ID-based rules
     	Set<String> sortedKeys = new TreeSet<String>();
     	Map<String,String> smarts = new HashMap<String,String>();
+    	Map<String,String> mergedSmarts = new HashMap<String,String>();
         for (AtomTupleMatchingRule r : rules)
         {
         	// For SMARTS-based we need to inspect the structure
             if (r.getType() == RuleType.SMARTS)
             {
+            	String mergedSMARTS = "";
             	for (int i=0; i<r.getSMARTS().size(); i++)
             	{
             		SMARTS s = r.getSMARTS().get(i);
@@ -371,7 +374,9 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
             		String refName = r.getRefName()+"_"+i;
             		sortedKeys.add(r.getRefName());
             		smarts.put(refName, s.getString());
+            		mergedSMARTS = mergedSMARTS + " " + s.getString();
             	}
+            	mergedSmarts.put(r.getRefName(), mergedSMARTS);
             }
             // For ID-based we just collect the atoms
             else if (r.getType() == RuleType.ID)
@@ -391,54 +396,9 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         // present in each AtomTupleMatchingRule (below called MR for brevity)
         if (smarts.keySet().size()>0)
         {
-        	//First apply all SMARTS in once, for the sake of efficiency
-	        ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
-	        if (msq.hasProblems())
-	        {
-	            String cause = msq.getMessage();
-	            Terminator.withMsgAndStatus("ERROR! " +cause, -1);
-	        }
-	        
-	        //Get matches grouped by the ref names of SMARTS queries
-	        Map<String,MatchingIdxs> groupedByRule = new HashMap<String,MatchingIdxs>();
-	        for (String rulRef : smarts.keySet())
-	        {
-	            if (msq.getNumMatchesOfQuery(rulRef) == 0)
-	            {
-	                continue;
-	            }
-	            groupedByRule.put(rulRef, msq.getMatchingIdxsOfSMARTS(rulRef));
-	        }
-
-            // Collect matches that belong to same AtomTupleMatchingRule (MR)
-            for (String key : sortedKeys)
-            {
-                List<String> smartsRefNamesForMR = new ArrayList<String>();
-                for (String k2 : groupedByRule.keySet())
-                {
-                    if (k2.toUpperCase().startsWith(key.toUpperCase()))
-                    {
-                    	smartsRefNamesForMR.add(k2);
-                    }
-                }
-                boolean allComponentsMatched = true;;
-                List<MatchingIdxs> atmsForMR = new ArrayList<MatchingIdxs>();
-                for (int ig = 0; ig<smartsRefNamesForMR.size(); ig++)
-                {
-                	//NB: here we assume the format of the SMARTS ref names
-                    String k2qry = key + "_" + Integer.toString(ig);
-                    if (groupedByRule.containsKey(k2qry))
-                    {
-                    	atmsForMR.add(groupedByRule.get(k2qry));
-                    } else {
-                    	allComponentsMatched = false;
-                    }
-                }
-                if (allComponentsMatched)
-                {
-                	allIDsForEachMR.put(key, atmsForMR);
-                }
-            }
+        	Map<String,List<MatchingIdxs>> matchesFromMR = 
+        			SMARTSUtils.identifyAtomIdxTuples(mol, mergedSmarts);
+        	allIDsForEachMR.putAll(matchesFromMR);
         }
         
         //Define annotated tuples according to the matched atom

@@ -152,13 +152,39 @@ public class AtomTupleMatchingRule
     public AtomTupleMatchingRule(String txt, String ruleName, 
     		List<String> valuedKeywords, List<String> booleanKeywords)
     {
+    	this(txt, ruleName, valuedKeywords, booleanKeywords, false);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor for a rule by parsing a formatted string of text. 
+     * @param txt the string to be parsed.
+     * @param ruleName a unique name used to identify this rule. We do not check
+     * for uniqueness.
+     * @param valuedKeywords list of keywords expected to have a value.
+     * @param booleanKeywords list of keywords expected to have no value, 
+     * i.e., their presence is sufficient to convey meaning.
+     * @param excludeDefaultKeys use <code>true</code> to exclude the default
+     * keywords that are defined in
+     * {@link AtomTupleConstants#DEFAULTVALUEDKEYS} and 
+     * {@link AtomTupleConstants#DEFAULTVALUELESSKEYS}. 
+     */
+
+    public AtomTupleMatchingRule(String txt, String ruleName, 
+    		List<String> valuedKeywords, List<String> booleanKeywords, 
+    		boolean excludeDefaultKeys)
+    {
         this.refName = ruleName;
         
         // These are default attribute keywords that we always have
-        for (String defValuedKey : AtomTupleConstants.DEFAULTVALUEDKEYS)
+        if (!excludeDefaultKeys)
         {
-        	if (!attributeKeywords.contains(defValuedKey))
-    			attributeKeywords.add(defValuedKey.toUpperCase());
+	        for (String defValuedKey : AtomTupleConstants.DEFAULTVALUEDKEYS)
+	        {
+	        	if (!attributeKeywords.contains(defValuedKey))
+	    			attributeKeywords.add(defValuedKey.toUpperCase());
+	        }
         }
         if (valuedKeywords!=null)
         {
@@ -171,13 +197,17 @@ public class AtomTupleMatchingRule
         
         Map<String,Boolean> booleanAttributes = new HashMap<String,Boolean>();
     	// These are default keywords that we always have
-        for (String defValuelessKey : AtomTupleConstants.DEFAULTVALUELESSKEYS)
+        if (!excludeDefaultKeys)
         {
-        	if (!attributeKeywords.contains(defValuelessKey))
-        	{
-	        	booleanAttributes.put(defValuelessKey.toUpperCase(), false);
-	            attributeKeywords.add(defValuelessKey.toUpperCase());
-        	}
+	        for (String defValuelessKey : 
+	        	AtomTupleConstants.DEFAULTVALUELESSKEYS)
+	        {
+	        	if (!attributeKeywords.contains(defValuelessKey))
+	        	{
+		        	booleanAttributes.put(defValuelessKey.toUpperCase(), false);
+		            attributeKeywords.add(defValuelessKey.toUpperCase());
+	        	}
+	        }
         }
         if (booleanKeywords!=null)
         {

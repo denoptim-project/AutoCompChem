@@ -1,0 +1,8 @@
+TASK: MutateBonds
+INFILE: ../t2-mol.sdf
+OUTFILE:  t2-mol_mutated.sdf
+$STARTSMARTS: [Ru]~[#6] ORDER: SINGLE
+[Cl]-[Ru] remove
+[Br]~[Ru] STEREO:UP
+[I] [$([#6]1~[#6]~[#7;X3]~[#6;X3]~[#7;X3]~1)] ORDER:double
+$END
