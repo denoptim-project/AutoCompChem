@@ -91,12 +91,11 @@ public class ConfigItem
 	/**
 	 * The list of keys of an embedded worker's configuration items to ignore  
 	 * when producing documentation strings. Should be not empty only when 
-	 * this item defines an embedded worker. The content should correspond to 
-	 * configuration items that are ignored by the embedded worker, i.e.,
-	 * the source code should remove them to the set of parameters given to
-	 * the embedded worker. <b>This consistency is not checked automatically!<b>
+	 * this item defines an embedded worker. This has no effect to the items 
+	 * that are given as parameters to embedded workers, i.e., it affects only
+	 * the items that are made visible in the documentation, not those that are
+	 * actually passed at run time.
 	 */
-	//TODO-gg check consistency
 	final List<String> ignorableItems;
 	
 	/**
