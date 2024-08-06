@@ -203,7 +203,9 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 	    		{
 	    			AnnotatedAtomTupleList tuples = (AnnotatedAtomTupleList) 
 	    					outputOfEmbedded.getNamedData(key).getValue();
-	    			//TODO-gg whay are we not using the AnnotatedAtomTupleList?
+	    			// NB: we are we not using the AnnotatedAtomTupleList because
+	    			// it would embed multiple items into a single one that
+	    			// would be what we deal with in an downstream processing.
 	    			for (AnnotatedAtomTuple tuple : tuples)
 	    			{
 	    				atomStringsForThisMol.add(convertTupleToAtomSpecString(
