@@ -1,31 +1,30 @@
 #!/bin/bash
 
-n=0
-n=$(grep -c " Cl " t66-mol_mutated.sdf)
-if [ $n != 2 ] ; then
-echo NOT Passed ERROR 1
-exit -1
-fi
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
 
-n=0
-n=$(grep -c " He " t66-mol_mutated.sdf)
-if [ $n != 2 ] ; then
-echo NOT Passed ERROR 2
-exit -1
-fi
+n=0; n=$(grep -c " Cl " t66-mol_mutated.sdf)
+if [ $n != 2 ] ; then not_passed $LINENO ; fi
 
-n=0
-n=$(grep -c " U " t66-mol_mutated.sdf)
-if [ $n != 1 ] ; then
-echo NOT Passed ERROR 3
-exit -1
-fi
+n=0; n=$(grep -c " He " t66-mol_mutated.sdf)
+if [ $n != 2 ] ; then not_passed $LINENO ; fi
 
-grep -q 'Termination status: 0' t66.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
-else
-echo NOT Passed ERROR 4
+n=0; n=$(grep -c " U " t66-mol_mutated.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c " P " t66-mol_mutated.sdf)
+if [ $n != 0 ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c " Si " t66-mol_mutated.sdf)
+if [ $n != 1 ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c " H " t66-mol_mutated.sdf)
+if [ $n != 28 ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t66.log" ; then echo Passed ; exit 0 ; fi
+
+not_passed $LINENO
 exit -1
-fi
+

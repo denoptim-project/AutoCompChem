@@ -32,10 +32,13 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -43,6 +46,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
+import autocompchem.run.Terminator;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.smarts.SMARTSUtils;
@@ -50,13 +54,13 @@ import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * Tool to add, modify, or remove one or more bonds.
+ * Tool to edit or remove one or more atoms.
  * 
  * @author Marco Foscato
  */
 
 
-public class BondEditor extends AtomContainerInputProcessor
+public class AtomEditor extends AtomContainerInputProcessor
 {
     /**
      * Name of the output file
@@ -64,10 +68,10 @@ public class BondEditor extends AtomContainerInputProcessor
     private File outFile;
     
     /**
-     * List of atom-matching rules for definition of the bonds to edit and 
+     * List of atom-matching rules for definition of the atoms to edit and 
      * the relevant attributes.
      */
-    private List<BondEditingRule> rules = new ArrayList<BondEditingRule>();
+    private List<AtomEditingRule> rules = new ArrayList<AtomEditingRule>();
     
     /**
      * Unique identifier for rules
@@ -75,7 +79,7 @@ public class BondEditor extends AtomContainerInputProcessor
 	protected AtomicInteger ruleID = new AtomicInteger(0);
 
     /**
-     * List (with string identifier) of smarts queries to identify target bonds.
+     * List (with string identifier) of smarts queries to identify target atoms.
      */
     private Map<String,List<SMARTS>> smarts = new HashMap<String,List<SMARTS>>();
 
@@ -85,35 +89,30 @@ public class BondEditor extends AtomContainerInputProcessor
     private Map<String,Object> editorObjectives = new HashMap<String,Object>();
     
     /**
-     * String defining the task of editing bonds
+     * String defining the task of mutating bonds
      */
-    public static final String EDITBONDSTASKNAME = "editBonds";
+    public static final String MUTATEATOMSTASKNAME = "mutateAtoms";
 
     /**
-     * Task about editing bonds
+     * Task about mutating atoms
      */
-    public static final Task EDITBONDSTASK;
+    public static final Task MUTATEATOMSTASK;
     static {
-    	EDITBONDSTASK = Task.make(EDITBONDSTASKNAME);
+    	MUTATEATOMSTASK = Task.make(MUTATEATOMSTASKNAME);
     }
     
 	/**
 	 * Root of name used to identify any instance of this class.
 	 */
-	public static final String BASENAME = "BondEditRule-";
+	public static final String BASENAME = "AtomEditRule-";
    
     /**
-     * Keyword used to identify the imposed bond order value.
+     * Keyword used to identify the imposed elemental symbols.
      */
-    public static final String KEYORDER = "ORDER";
+    public static final String KEYELEMENT = "ELEMENT";
    
     /**
-     * Keyword used to identify the stereochemistry descriptor value.
-     */
-    public static final String KEYSTEREO = "STEREO";
-   
-    /**
-     * Value-less keyword used to identify bonds to remove.
+     * Value-less keyword used to identify atoms to remove.
      */
     public static final String KEYREMOVE = "REMOVE";
     
@@ -121,15 +120,15 @@ public class BondEditor extends AtomContainerInputProcessor
 	 * Keywords that expect values and are used to annotate constraints.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/BondEditor.json.
+    // at the resource inputdefinition/AtomEditor.json.
 	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
-			KEYORDER, KEYSTEREO);
+			KEYELEMENT);
 
 	/**
 	 * Keywords that do not expect values and are used to annotate constraints.
 	 */
     // WARNING: if you change this list you must update also the documentation
-    // at the resource inputdefinition/BondEditor.json.
+    // at the resource inputdefinition/AtomEditor.json.
 	public static final List<String> DEFAULTVALUELESSKEYS = Arrays.asList(
 			KEYREMOVE);
 
@@ -138,7 +137,7 @@ public class BondEditor extends AtomContainerInputProcessor
     /**
      * Constructor.
      */
-    public BondEditor()
+    public AtomEditor()
     {}
 
 //------------------------------------------------------------------------------
@@ -146,21 +145,21 @@ public class BondEditor extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(EDITBONDSTASK)));
+             Arrays.asList(MUTATEATOMSTASK)));
     }
 
 //------------------------------------------------------------------------------
 
     @Override
     public String getKnownInputDefinition() {
-        return "inputdefinition/BondEditor.json";
+        return "inputdefinition/AtomEditor.json";
     }
 
 //------------------------------------------------------------------------------
 
     @Override
     public Worker makeInstance(Job job) {
-        return new BondEditor();
+        return new AtomEditor();
     }
     
 //-----------------------------------------------------------------------------
@@ -186,8 +185,8 @@ public class BondEditor extends AtomContainerInputProcessor
         if (params.contains("SMARTS"))
         {
         	String all = params.getParameter("SMARTS").getValueAsString();
-        	parseBondEditingRules(all);
-        	for (BondEditingRule bmRule : rules)
+        	parseAtomEditingRules(all);
+        	for (AtomEditingRule bmRule : rules)
         	{
         		smarts.put(bmRule.getRefName(), bmRule.getSMARTS());
         		Object objective = bmRule.getObjective();
@@ -200,33 +199,33 @@ public class BondEditor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Parses the formatted text defining {@link BondEditingRule} and adds
+     * Parses the formatted text defining {@link AtomEditingRule} and adds
      * the resulting rules to this instance.
      * @param text the text (i.e., multiple lines) to be parsed into 
-     * {@link BondEditingRule}s.
+     * {@link AtomEditingRule}s.
      */
 
-    protected void parseBondEditingRules(String text)
+    protected void parseAtomEditingRules(String text)
     {
     	// NB: the REGEX makes this compatible with either new-line character
         String[] arr = text.split("\\r?\\n|\\r");
-        parseBondEditingRules(new ArrayList<String>(Arrays.asList(arr)));
+        parseAtomEditingRules(new ArrayList<String>(Arrays.asList(arr)));
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * Parses the formatted text defining {@link BondEditingRule} and adds
+     * Parses the formatted text defining {@link AtomEditingRule} and adds
      * the resulting rules to this instance.
      * @param lines the lines of text to be parsed into 
-     * {@link BondEditingRule}s.
+     * {@link AtomEditingRule}s.
      */
 
-    protected void parseBondEditingRules(List<String> lines)
+    protected void parseAtomEditingRules(List<String> lines)
     {
         for (String line : lines)
         {
-            rules.add(new BondEditingRule(line, ruleID.getAndIncrement()));
+            rules.add(new AtomEditingRule(line, ruleID.getAndIncrement()));
         }
     }
     
@@ -234,9 +233,9 @@ public class BondEditor extends AtomContainerInputProcessor
     
     /**
      * Class adapting the general functionality of {@link AtomTupleMatchingRule}
-     * to parse SMARTS-based definition of bond editing task
+     * to parse SMARTS-based definition of atom editing task
      */
-    private class BondEditingRule extends AtomTupleMatchingRule
+    private class AtomEditingRule extends AtomTupleMatchingRule
     {
 
     //--------------------------------------------------------------------------
@@ -245,14 +244,14 @@ public class BondEditor extends AtomContainerInputProcessor
          * Constructor for a rule by parsing a formatted string of text. 
          * Default keywords that are interpreted to parse specific input
          * instructions are defined by
-         * {@link BondEditor#DEFAULTVALUEDKEYS} and 
-         * {@link BondEditor#DEFAULTVALUELESSKEYS}.
+         * {@link AtomEditor#DEFAULTVALUEDKEYS} and 
+         * {@link AtomEditor#DEFAULTVALUELESSKEYS}.
          * @param txt the string to be parsed
          * @param i a unique integer used to identify the rule. Is used to build
          * the reference name of the generated rule.
          */
 
-        public BondEditingRule(String txt, int i)
+        public AtomEditingRule(String txt, int i)
         {
         	super(txt, BASENAME+i, DEFAULTVALUEDKEYS, DEFAULTVALUELESSKEYS, 
         			true);
@@ -267,16 +266,10 @@ public class BondEditor extends AtomContainerInputProcessor
          */
         public Object getObjective()
         {
-        	String bndOrderObjective = getValueOfAttribute(KEYORDER);
-        	if (bndOrderObjective!=null)
+        	String elementSymbolObjective = getValueOfAttribute(KEYELEMENT);
+        	if (elementSymbolObjective!=null)
         	{
-        		return IBond.Order.valueOf(bndOrderObjective.toUpperCase());
-        	}
-        	
-        	String stereoDscrpObjective = getValueOfAttribute(KEYSTEREO);
-        	if (stereoDscrpObjective!=null)
-        	{
-        		return IBond.Stereo.valueOf(stereoDscrpObjective.toUpperCase());
+        		return elementSymbolObjective;
         	}
         	
         	if (hasValuelessAttribute(KEYREMOVE))
@@ -309,9 +302,9 @@ public class BondEditor extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-      	if (task.equals(EDITBONDSTASK))
+      	if (task.equals(MUTATEATOMSTASK))
       	{
-      		editBonds(iac, smarts, editorObjectives);
+      		editAtoms(iac, smarts, editorObjectives);
             
             if (exposedOutputCollector != null)
             {
@@ -332,110 +325,99 @@ public class BondEditor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Edit bonds in a container.
+     * Edit atoms in a container.
      * @param iac the container to edit.
-     * @param smarts the SMARTS matching the bonds to edit, or the pair of 
-     * atoms between which to define a bond (if none is already present).
+     * @param smarts the SMARTS matching the atoms to edit.
      * @param editorObjectives map defining what to do or edit in the matches 
-     * bonds.
+     * atoms.
      */
 
-    public static void editBonds(IAtomContainer iac, 
+    public static void editAtoms(IAtomContainer iac, 
     		Map<String,List<SMARTS>> smarts, 
     		Map<String,Object> editorObjectives)
     {
     	Logger logger = LogManager.getLogger();
     	
-    	Map<String,List<SMARTS>> atomPairSmarts = 
-    			new HashMap<String,List<SMARTS>>();
-    	Map<String,SMARTS> bondSmarts = new HashMap<String,SMARTS>();
-    	for (Entry<String, List<SMARTS>> e : smarts.entrySet())
-    	{
-    		if (e.getValue().size()>1)
-    			atomPairSmarts.put(e.getKey(), e.getValue());
-    		else
-    			bondSmarts.put(e.getKey(), e.getValue().get(0));
-    	}
-
-    	// Add new bonds, if not already present
-    	if (atomPairSmarts.size()>0)
-    	{
-	    	Map<String, List<MatchingIdxs>> matchesPerRule = 
-	    			SMARTSUtils.identifyAtomIdxTuples(iac, atomPairSmarts);
-	    	for (String key : matchesPerRule.keySet())
-	  		{
-	    		IBond.Order bo = IBond.Order.SINGLE;
-	    		if (editorObjectives.containsKey(key) 
-	    				&& editorObjectives.get(key) instanceof IBond.Order)
-	    		{
-	    			bo = (IBond.Order) editorObjectives.get(key);
-	    		}
-	    		List<MatchingIdxs> matchesThisRule = matchesPerRule.get(key);
-	    		if (matchesThisRule.size() != 2)
-	    		{
-	    			logger.warn("Match of SMARTS tuple '" + key 
-	    					+ "' is not a pair (is " + matchesThisRule.size()
-	    					+ "-tuple: " + matchesThisRule + "). Skipped.");
-	    			continue;
-	    		}
-	    		for (List<Integer> idxGroupA : matchesThisRule.get(0))
-	    		{
-	    			int idxA = idxGroupA.get(0);
-	    			IAtom atmA = iac.getAtom(idxA);
-	    			for (List<Integer> idxGroupB : matchesThisRule.get(1))
-		    		{
-		    			int idxB = idxGroupB.get(0);
-	    				if (idxA==idxB)
-	    					continue;
-		    			IAtom atmB = iac.getAtom(idxB);
-		    			if (!iac.getConnectedAtomsList(atmA).contains(atmB))
-		    			{
-		    				IBond bnd = new Bond(atmA, atmB, bo);
-		    				iac.addBond(bnd);
-		    			}
-		    		}
-	    		}
-	  		}
-    	}
+    	Map<String, List<List<List<IAtom>>>> matchesPerRule = 
+    			SMARTSUtils.identifyAtomTuples(iac, smarts);
     	
-    	if (bondSmarts.size()>0)
-    	{
-	    	// Alter previously existing bonds
-	    	Map<String,List<IBond>> targets = 
-	    			SMARTSUtils.identifyBondsBySMARTS(iac, bondSmarts);
-	
-			List<IBond> toRemove = new ArrayList<IBond>();
-	  		for (String key : targets.keySet())
-	  		{
-	  			if (!editorObjectives.containsKey(key))
-	  				continue;
-	  			Object objective = editorObjectives.get(key);
-	  			if (objective instanceof IBond.Order) {
-	  				for (IBond bnd : targets.get(key))
-	  				{
-	  					bnd.setOrder((IBond.Order) objective);
-	  				}
-	  			} else if (objective instanceof IBond.Stereo) {
-	  				for (IBond bnd : targets.get(key))
-	  				{
-	  					bnd.setStereo((IBond.Stereo) objective);
-	  				}
-	  			} else if (
-	  					(objective.toString().toUpperCase().equals("REMOVE")) 
-	  					||
-	  					(objective.toString().toUpperCase().equals("DELETE"))){
-	  				toRemove.addAll(targets.get(key));
+    	Set<IAtom> toRemove = new HashSet<IAtom>();
+    	for (String key : matchesPerRule.keySet())
+  		{
+    		if (!editorObjectives.containsKey(key))
+    		{
+    			// Nothing to do for these matched atoms
+    			continue;
+    		}
+  			Object objective = editorObjectives.get(key);
+    		
+    		for (List<List<IAtom>> matchObj : matchesPerRule.get(key))
+    		{
+    			if (objective instanceof String)
+    			{
+        			// NB: assumption that a string objective means 
+        			// either change of elemental symbol,
+        			// or removal of atom
+    				if (objective.toString().toUpperCase().equals(
+    	  					KEYREMOVE.toString().toUpperCase())) {
+    	  				for (List<IAtom> atms : matchObj)
+    	  					for (IAtom atm : atms)
+    	  						toRemove.add(atm);
+    				} else {
+	  				for (List<IAtom> atms : matchObj)
+	  					for (IAtom atm : atms)
+	  					{
+	  						mutateElement(iac, atm, (String) objective);
+	  					}
+    				}
 	  			} else {
 	  				logger.warn("No implementation is available for editing "
-	  						+ "bond feature to '" + objective + "'.");
+	  						+ "task '" + objective + "'. Ignoring task.");
 	  			}
-	  		}
-	  		
-	  		for (IBond bnd : toRemove)
-	  		{
-	  			iac.removeBond(bnd);
-	  		}
+    		}
     	}
+    	
+  		for (IAtom atm : toRemove)
+  		{
+  			iac.removeAtom(atm);
+  		}
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Changes the elemental features of a specific atom in the given atom 
+     * container. Features that will be edited are: elemental symbol, 
+     * atomic number, exact mass, mass number, natural abundance.
+     * @param iac the atom container that contains the atom to edit.
+     * @param originalAtom the atom to edit
+     * @param newElSymbol the symbol of the new element to use.
+     */
+    public static void mutateElement(IAtomContainer iac, 
+    		IAtom originalAtom, String newElSymbol)
+    {
+    	Logger logger = LogManager.getLogger();
+    	
+        IAtom newAtm = new Atom(newElSymbol);
+        try
+        {
+            newAtm = (IAtom) originalAtom.clone();
+            IAtom newEl = new Atom(newElSymbol);
+            newAtm.setSymbol(newEl.getSymbol());
+            newAtm.setAtomicNumber(newEl.getAtomicNumber());
+            newAtm.setExactMass(newEl.getExactMass());
+            newAtm.setMassNumber(newEl.getMassNumber());
+            newAtm.setNaturalAbundance(newEl.getNaturalAbundance());
+        }
+        catch (CloneNotSupportedException cnse)
+        {
+            logger.warn("Cannot clone atom " 
+            		+ MolecularUtils.getAtomRef(originalAtom, iac) 
+            		+ ". Some atom features will be lost upon creation of a "
+            		+ "new atom object.");
+        }
+        
+        AtomContainerManipulator.replaceAtomByAtom(iac, originalAtom, newAtm);
     }
 
 //------------------------------------------------------------------------------

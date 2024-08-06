@@ -134,7 +134,8 @@ public class SMARTSUtils
             if (msq.getNumMatchesOfQuery(key) == 0)
             {
             	logger.warn("WARNING: SMARTS query '" + key
-            			+ "' did not match anything.");
+            			+ "' ('" + smarts.get(key).getString()
+            			+ "') did not match anything.");
                 continue;
             }
             groupedByTuple.put(key, msq.getMatchingIdxsOfSMARTS(key));

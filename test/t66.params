@@ -1,13 +1,9 @@
-#
-# Parameters for Automated Computational Chemistry
-#
-# Using parameter file to set charge and spin, but spin is overwritten by the SDF property
-#
-VERBOSITY: 4
-TASK: MutateAtoms
+TASK: mutateAtoms
 INFILE: ../t66-mol.sdf
 OUTFILE:  t66-mol_mutated.sdf
-$STARTSMARTSMAP: [Pb] U
-[N] He
-[He] Cl
+$STARTSMARTS: [Pb] ELEMENT: U
+[N] ELEMENT: He
+[$([Si][#6])]([#1])[#1] remove
+[#15][#1] remove
+[He] element: Cl
 $END

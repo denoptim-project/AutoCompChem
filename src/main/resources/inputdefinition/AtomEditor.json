@@ -1,0 +1,22 @@
+[
+  {
+    "key": "OUTFILE",
+    "casedKey": "outFile",
+    "type": "<String>",
+    "doc": "The pathname to the file where to print the resulting chemical system."
+  },
+  {
+    "key": "SMARTS",
+    "casedKey": "SMARTS",
+    "type": "<String>",
+    "doc": "Defines one or more SMARTS-based rules for identifying atoms to edit. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: The first word is interpreted as a SMARTS string. Any following word is interpreted either as a keyword or a key-value pair. Keywords include 'REMOVE', which indicated that any atom matched by that rule should be removed. Key-value pairs include: 'ELEMENT: symbol', which allows to change the element of any atom matched by the SMARTS."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "multiGeomMode",
+      "inputGeometries"
+    ]
+  }
+]
