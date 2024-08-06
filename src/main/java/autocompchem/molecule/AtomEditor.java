@@ -91,14 +91,14 @@ public class AtomEditor extends AtomContainerInputProcessor
     /**
      * String defining the task of mutating bonds
      */
-    public static final String MUTATEATOMSTASKNAME = "mutateAtoms";
+    public static final String EDITATOMSTASKNAME = "mutateAtoms";
 
     /**
      * Task about mutating atoms
      */
-    public static final Task MUTATEATOMSTASK;
+    public static final Task EDITATOMSTASK;
     static {
-    	MUTATEATOMSTASK = Task.make(MUTATEATOMSTASKNAME);
+    	EDITATOMSTASK = Task.make(EDITATOMSTASKNAME);
     }
     
 	/**
@@ -145,7 +145,7 @@ public class AtomEditor extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(MUTATEATOMSTASK)));
+             Arrays.asList(EDITATOMSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ public class AtomEditor extends AtomContainerInputProcessor
 	@Override
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-      	if (task.equals(MUTATEATOMSTASK))
+      	if (task.equals(EDITATOMSTASK))
       	{
       		editAtoms(iac, smarts, editorObjectives);
             
