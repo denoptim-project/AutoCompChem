@@ -671,7 +671,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                 }
                 else
                 {
-                	if (AtomUtils.isPsaudoAtmWithLabel(atm,elm))
+                	if (AtomUtils.isPseudoAtmWithLabel(atm,elm))
                 	{
                 		dummiesList.add(atm);
                         dummiesIdxs.add(mol.indexOf(atm));

@@ -268,7 +268,7 @@ public class AtomUtils
 
     public static boolean isAccDummy(IAtom atm)
     {
-    	return isPsaudoAtmWithLabel(atm,AtomConstants.DUMMYATMLABEL);
+    	return isPseudoAtmWithLabel(atm,AtomConstants.DUMMYATMLABEL);
     }
     
 //-----------------------------------------------------------------------------
@@ -282,8 +282,7 @@ public class AtomUtils
      * and it has the given label.
      */
     
-    //TODO-gg fix typo
-    public static boolean isPsaudoAtmWithLabel(IAtom atm, String lab)
+    public static boolean isPseudoAtmWithLabel(IAtom atm, String lab)
     {
     	if (atm instanceof AtomRef)
     	{
@@ -368,7 +367,7 @@ public class AtomUtils
 
     public static boolean isAttachmentPoint(IAtom atm)
     {
-        return isPsaudoAtmWithLabel(atm, AtomConstants.ATTACHMENTPOINTLABEL);
+        return isPseudoAtmWithLabel(atm, AtomConstants.ATTACHMENTPOINTLABEL);
     }
     
 //------------------------------------------------------------------------------
