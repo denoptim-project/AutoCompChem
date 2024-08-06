@@ -208,8 +208,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
      * Run comparison of two connectivity matrices as from the parameters given
      * in construction of this comparator
      */
-//TODO-gg make private
-    public void compareTwoConnectivities(IAtomContainer iac, int i)
+	
+    private void compareTwoConnectivities(IAtomContainer iac, int i)
     {
         ConnectivityUtils cu = new ConnectivityUtils();
         boolean consistentConnectivity = cu.compareWithReference(iac, 

@@ -296,8 +296,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
         if (smarts.keySet().size() > 0)
         {
             logger.debug("Matching SMARTS queries");
-            //TODO-gg get rid of deprecated elsewhere
-//            ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts, verbosity);
             ManySMARTSQuery msq = new ManySMARTSQuery(mol, smarts);
             if (msq.hasProblems())
             {

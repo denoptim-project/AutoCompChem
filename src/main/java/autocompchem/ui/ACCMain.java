@@ -190,7 +190,7 @@ public class ACCMain
      * aware of what we can do. Only after this initialization we can decide if
      * a request from the user is valid or not.
      */
-    //TODO-gg search for andy instance of Worker in the java path.
+    
     private static void initializeRegistry() 
     {
     	WorkerFactory.getInstance();

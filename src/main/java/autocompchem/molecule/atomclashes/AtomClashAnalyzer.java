@@ -272,23 +272,6 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
                     writeAtmClashToSDFFields(iac, clashes, i, outFile);
                 }
             }
-  			//TODO-gg
-  			/*
-  			if (exposedOutputCollector != null)
-  	    	{
-  		    	int ii = 0;
-  		    	for (List<AtomClash> acs : results)
-  		    	{
-  		    		ii++;
-  		    		if (acs != null)
-  		    		{
-  		    			String molID = "mol-"+ii;
-  		  		        exposeOutputData(new NamedData(molID, 
-  		  		        		NamedDataType.ATOMCLASH, acs));
-  		    		}
-  		    	}
-  	    	}
-  			*/
   		} else {
   			dealWithTaskMismatch();
   		}

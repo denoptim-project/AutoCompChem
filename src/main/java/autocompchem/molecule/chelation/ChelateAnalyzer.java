@@ -182,20 +182,6 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
                 record = record + c.getDenticity() + " ";
             }
             logger.info(record);
-            
-    		//TODO-gg expose output
-            /*
-            if (exposedOutputCollector != null)
-	    	{
-				String molID = "mol-"+i;
-				for (int j=0; j<chelants.size(); j++)
-				{
-			        exposeOutputData(new NamedData(
-			        		ANALYZECHELATESTASK.ID + "_" + molID + "-" + j, 
-			        		NamedDataType.CHELANT, chelants.get(j)));
-				}
-	    	}
-            */
     	} else {
     		dealWithTaskMismatch();
         }
