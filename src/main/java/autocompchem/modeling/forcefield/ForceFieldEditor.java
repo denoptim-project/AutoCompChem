@@ -416,18 +416,12 @@ public class ForceFieldEditor extends Worker
 								+ "VibModuleOutputHandler");
 					}
                 	VibModuleOutputReader vmoh = (VibModuleOutputReader) w;
-                	
-                	/*
-                	//TODO del
-                    VibModuleOutputHandler vmoh = new VibModuleOutputHandler(
-                                                             molFiles.get(imol),
-                                                              vaFiles.get(imol),
-                                                                         smarts,
-                                                                     smartsOpts,
-                                                                     verbosity);
-                    */
-                    //TODO-gg reactivate 
+
+                    //TODO make vmoh produce ForceFieldParameterStats 
                 	//ffParStats.addAllFFParams(vmoh.getFFParams());
+                	logger.fatal("Sorry...incomplete implementation. If you "
+                			+ "want this feature, get in contact with the "
+                			+ "development team.");
                 }
                 break;
 

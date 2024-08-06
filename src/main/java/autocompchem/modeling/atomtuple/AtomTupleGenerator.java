@@ -306,20 +306,6 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 		}
 		return labGenerator.generateAtomLabels(iac);
     }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Define annotated atom tuples for the given atom container using the
-     *  tuple-defining rules present in this instance.
-     * @param mol the atom container for which we want to create atom tuples.
-     * @return the list of tuples
-     */
-    public List<AnnotatedAtomTuple> createTuples(IAtomContainer mol)
-    {
-    	//TODO-gg get rid of this method! it's obsolete
-    	return createTuples(mol, rules, null);
-    }
 
 //------------------------------------------------------------------------------
 
