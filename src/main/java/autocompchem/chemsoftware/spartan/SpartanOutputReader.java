@@ -114,7 +114,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     	
     	if (selectedMolID==null)
     	{
-	    	List<File> allFIles = FileUtils.find(inFile, "", true);
+	    	List<File> allFIles = FileUtils.findByGlob(inFile, "*", true);
 			modelIDs = new ArrayList<String>(); 
 			allFIles.stream()
 				.filter(f -> f.isDirectory())
@@ -145,7 +145,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     	if (inFile.isDirectory())
     	{
     		// Search for Spartan model/molecule-specific data
-    		List<File> allFiles = FileUtils.find(inFile, "", true);
+    		List<File> allFiles = FileUtils.findByGlob(inFile, "*", true);
     		List<File> allDirectories = allFiles.stream()
     			.filter(f -> f.isDirectory())
     			.collect(Collectors.toList());

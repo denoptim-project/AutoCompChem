@@ -101,7 +101,7 @@ public class SituationBase
     {
     	// WARNING: we only look for files with the expected formats
     	
-        for (File f : FileUtils.find(rootFolder,"*" 
+        for (File f : FileUtils.findByREGEX(rootFolder, ".*" 
         		+ SituationConstants.SITUATIONTXTFILEEXT))
         {   
         	try {

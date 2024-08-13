@@ -18,12 +18,19 @@ package autocompchem.files;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -43,52 +50,11 @@ public class FileUtilsTest
 
     @TempDir 
     protected File tempDir;
-
+	
 //------------------------------------------------------------------------------
 
 	@Test
     public void testFind() throws Exception
-    {
-    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
-		String basePath = tempDir.getAbsolutePath() + fileSeparator ;
-    	for (int i=0; i<3; i++)
-    	{
-    		IOtools.writeTXTAppend(
-    				new File(basePath + "ttt"+i+".log"), "text", false);
-    		IOtools.writeTXTAppend(
-    				new File(basePath + i), "text", false);
-    	}
-    	for (int i=0; i<3; i++)
-    	{
-    		assertEquals(2, FileUtils.find(tempDir, i+"").size());
-    	}
-    	assertEquals(3, FileUtils.find(tempDir, "*.log").size());
-    	assertEquals(3, FileUtils.find(tempDir, "ttt*").size());
-		
-    	for (int i=0; i<3; i++)
-    	{
-    		File folder = new File(basePath + "tt" + i);
-    		folder.mkdir();
-    		IOtools.writeTXTAppend(new File(
-    				folder.getAbsolutePath() + fileSeparator + "ttt"+i+".in"), 
-    				"text", false);
-    	}
-    	assertEquals(9, FileUtils.find(tempDir, "tt*", true).size());
-    	assertEquals(6, FileUtils.find(tempDir, "tt*", false).size());
-    	assertEquals(6, FileUtils.find(tempDir, "ttt*").size());
-    	assertEquals(3, FileUtils.find(tempDir, "*.log").size());
-    	assertEquals(3, FileUtils.find(tempDir, "*.in").size());
-    	assertEquals(0, FileUtils.find(tempDir, "*.*", 0, true).size());
-    	assertEquals(3, FileUtils.find(tempDir, "*.*", 1, true).size());
-    	assertEquals(6, FileUtils.find(tempDir, "*.*", 2, true).size());
-    	assertEquals(3, FileUtils.find(tempDir, "ttt*", 1, true).size());
-    	assertEquals(6, FileUtils.find(tempDir, "ttt*", 2, true).size());
-    }
-
-//------------------------------------------------------------------------------
-
-	@Test
-    public void testFind2() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 
@@ -146,35 +112,154 @@ sub2_abc
 sub2_abc/subsub2_abc
    	 */
 		
-		assertEquals(5, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*", true).size());
-		assertEquals(7, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*", true).size());
-		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*", true).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*", false).size());
-		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*", false).size());
-		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*", false).size());
+		String[] pattern = {".*", ".*/.*", ".*", ".*/.*", ".*/.*/.*",
+				".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*",
+				"file.*", "file.*", ".*file.*", ".*file.*", ".*file.*", ".*file.*",
+				"file_abc", ".*/file_abc", ".*/file_abc",};
+		int[] depth = {1, 2, 1, 2, 3,
+				1, 2, 3, 1, 2, 3,
+				Integer.MAX_VALUE, 2, 3, 1, 2, 3,
+				3, 2, 3};
+		boolean[] countFldrs = {true, true, false, false, false, //  0-4
+				true, true, true, false, false, false,           //  5-10
+				true, true, true, false, false, false,           // 11-16
+				true, true, true,                                // 17-
+				};
+		int[] expected = {6, 13, 2, 5, 9,
+				3, 9, 12, 1, 4, 7,
+				0, 0, 9, 2, 5, 9,
+				0, 3, 5};
+		//NB: you can use this to print the actual matches
+		boolean debugLog = false;
+		for (int i=0; i<expected.length; i++)
+		{
+			List<File> matches = FileUtils.findByREGEX(tempDir, 
+					pattern[i], depth[i], countFldrs[i]);
+			if (debugLog)
+			{
+				System.out.println("Pattern: '" + pattern[i]+"'");
+				System.out.println("Depth: " + depth[i]);
+				System.out.println("Count Folders: "+ countFldrs[i]);
+				final String label = i + " ->"; 
+				matches.forEach(f -> System.out.println(label + f));
+			}
+			assertEquals(expected[i], matches.size());
+		}
 		
-		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*ab*", true).size());
-		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*ab*", true).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*ab*", true).size());
-		assertEquals(1, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*ab*", false).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*ab*", false).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/*ab*", false).size());
 		
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file*", true).size());
-		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file*", true).size());
-		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file*", true).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file*", false).size());
-		assertEquals(3, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file*", false).size());
-		assertEquals(4, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file*", false).size());
-		
-		assertEquals(1, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file_abc", true).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file_abc", true).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file_abc", true).size());
-		assertEquals(1, FileUtils.find2(tempDir, Integer.MAX_VALUE, "file_abc", false).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/file_abc", false).size());
-		assertEquals(2, FileUtils.find2(tempDir, Integer.MAX_VALUE, "*/*/file_abc", false).size());
-		
+		String[] patternG = {"*", "*/*", "*/*/*", "*", "*/*", "*/*/*", 
+				"*ab*", "*/*ab*", "*/*/*ab*", "*ab*", "*/*ab*", "*/*/*ab*",
+				"file*", "*/file*", "*/*/file*", "file*", "*/file*", "*/*/file*",
+				"file_abc", "*/file_abc", "*/*/file_abc",
+				"file_abc", "*/file_abc", "*/*/file_abc"};
+		boolean[] countFldrsG = {true, true, true, false, false, false,
+				true, true, true, false, false, false,
+				true, true, true, false, false, false,
+				true, true, true, 
+				false, false, false};
+		int[] expectedG = {5, 7, 4, 2, 3, 4,
+				3, 4, 2, 1, 2, 2,
+				2, 3, 4, 2, 3, 4,
+				1, 2, 2, 
+				1, 2, 2};
+		//NB: you can use this to print the actual matches
+		debugLog = false; 
+		for (int i=0; i<expectedG.length; i++)
+		{
+			List<File> matches = FileUtils.findByGlob(tempDir, 
+					patternG[i], countFldrsG[i]);
+			if (debugLog)
+			{
+				System.out.println("Pattern: '" + patternG[i]+"'");
+				System.out.println("Count Folders: "+ countFldrsG[i]);
+				final String label = i + " ->"; 
+				matches.forEach(f -> System.out.println(label + f));
+			}
+			assertEquals(expectedG[i], matches.size());
+		}
     }
+	
+//------------------------------------------------------------------------------
+	
+	/*
+	 * This is only meant to test the differences between regex- and glob-based
+	 * path matcher.
+	 */
+	@Test
+	public void testPathMatcher() throws Exception
+	{
+		String filename = "name";
+		String pathStr = "_sep_first_sep_second_sep_third_sep_" + filename;
+		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		File file = new File(pathStr);
+		Path path = file.toPath();
+		
+		// Both work with query that is the abs pathname (only directed)
+		PathMatcher regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:" + pathStr);
+		assertTrue(regexMatch.matches(path));
+		PathMatcher globMatch = FileSystems.getDefault().getPathMatcher(
+    			"glob:" + pathStr);
+		assertTrue(globMatch.matches(path));
+		
+		// Pathname with dots
+		filename = "name-1.ext";
+		pathStr = "_sep_first_sep_second_sep_other_sep_.._sep_third_sep_" + filename;
+		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		file = new File(pathStr);
+		path = file.toPath();
+		regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:" + pathStr);
+		assertTrue(regexMatch.matches(path));
+		globMatch = FileSystems.getDefault().getPathMatcher(
+    			"glob:" + pathStr);
+		assertTrue(globMatch.matches(path));
+		
+		// Relative pathname 
+		pathStr = ".._sep_.._sep_second_sep_third_sep_" + filename;
+		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		file = new File(pathStr);
+		path = file.toPath();
+		regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:" + pathStr);
+		assertTrue(regexMatch.matches(path));
+		globMatch = FileSystems.getDefault().getPathMatcher(
+    			"glob:" + pathStr);
+		assertTrue(globMatch.matches(path));
+		
+		// Wildcard pathname 
+		pathStr = ".._sep_.._sep_second_sep_third_sep_" + filename;
+		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		file = new File(pathStr);
+		path = file.toPath();
+		regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:.*name.*");
+		assertTrue(regexMatch.matches(path));
+		regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:.*");
+		assertTrue(regexMatch.matches(path));
+		regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:.*ext");
+		assertTrue(regexMatch.matches(path));
+		regexMatch = FileSystems.getDefault().getPathMatcher(
+    			"regex:.*.ext");
+		assertTrue(regexMatch.matches(path));
+		// wildcard in glob does not go beyond file separator
+		globMatch = FileSystems.getDefault().getPathMatcher(
+    			"glob:*name*");
+		assertFalse(globMatch.matches(path));
+		globMatch = FileSystems.getDefault().getPathMatcher(
+    			"glob:"
+    			+ "*" + File.separator + "*name*");
+		assertFalse(globMatch.matches(path));
+		globMatch = FileSystems.getDefault().getPathMatcher(
+    			"glob:"
+    			+ "*" + File.separator 
+    			+ "*" + File.separator 
+    			+ "*" + File.separator 
+    			+ "*" + File.separator + "*name*");
+		assertTrue(globMatch.matches(path));
+	}
 	
 //------------------------------------------------------------------------------
 	

@@ -112,12 +112,7 @@ public class FileFingerprint
     				.replaceFirst("\\.\\/", "")
     				.replaceFirst("\\.\\\\", "");
     	
-    		try {
-				targetFiles.addAll(FileUtils.find2(file, Integer.MAX_VALUE, 
-						relPath, false));
-			} catch (IOException e) {
-				//TODO-log: no such file found
-			}
+    		targetFiles.addAll(FileUtils.findByGlob(file, relPath, false));
     	}
 
 		boolean result = false;

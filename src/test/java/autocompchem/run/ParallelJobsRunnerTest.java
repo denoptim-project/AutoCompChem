@@ -24,8 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -266,7 +272,7 @@ public class ParallelJobsRunnerTest
         
         master.run();
         
-        int iPingFiles = FileUtils.find(tempDir, baseName, false).size();
+        int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false).size();
         assertEquals(2, iPingFiles, "Number of initiated TestJobs");
     }
     
@@ -357,13 +363,14 @@ public class ParallelJobsRunnerTest
          * Job_#0.6 is a sibling but does not run (not enough threads to start it)
          */
         
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.1*", true).size());
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.3*", true).size());
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.4*", true).size());
-        assertEquals(2, FileUtils.find(tempDir, "Job_#0.5*", true).size());
-        assertEquals(4, FileUtils.find(tempDir, "*_1", true).size());
-        assertEquals(4, FileUtils.find(tempDir, "*_2", true).size());
-        assertEquals(3, FileUtils.find(tempDir, "testjob.log_production").size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.1*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.3*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.4*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.5*", true).size());
+        assertEquals(4, FileUtils.findByGlob(tempDir, "*_1", true).size());
+        assertEquals(4, FileUtils.findByGlob(tempDir, "*_2", true).size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, "testjob.log_production").size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, "*/testjob.log_production").size());
     }
     
   //-----------------------------------------------------------------------------
@@ -444,9 +451,8 @@ public class ParallelJobsRunnerTest
          * hence the monitoring job has to be tolerant.
          */
         
-        assertEquals(1, FileUtils.find(tempDir, "Job_#0.2_0", true).size());
-        assertEquals(4, FileUtils.find(tempDir, "testjob.log*", true).size());
-        assertEquals(3, FileUtils.find(tempDir, "testjob.log*", 1, true).size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, "Job_#0.2_0", true).size());
+        assertEquals(3, FileUtils.findByGlob(tempDir, "testjob.log*", true).size());
         assertTrue(16>FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
         		+ "Job_#0.2_0" + SEP +  "testjob.log_production", "Iteration"));
         assertTrue(30<FileAnalyzer.count(roothName+"1", "Iteration"));
@@ -484,7 +490,7 @@ public class ParallelJobsRunnerTest
         
         master.run();
 
-        int iPingFiles = FileUtils.find(tempDir, baseName, false).size();
+        int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false).size();
         assertEquals(3,iPingFiles,"Number of initiated TestJobs");
         
         //TODO add more checking. This will be made available once we'll

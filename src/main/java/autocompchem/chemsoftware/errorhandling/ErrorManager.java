@@ -56,7 +56,7 @@ public class ErrorManager
     public static List<ErrorMessage> getAll(String path)
     {
         List<ErrorMessage> listErrors = new ArrayList<ErrorMessage>();
-        List<File> listFiles = FileUtils.find(path,"*.err");
+        List<File> listFiles = FileUtils.findByREGEX(path, ".*.err");
 
         //sort ascending=true
         Collections.sort(listFiles, new FileComparatorByName(true));

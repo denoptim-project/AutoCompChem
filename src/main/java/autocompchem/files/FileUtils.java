@@ -19,18 +19,26 @@ package autocompchem.files;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 
 /**
  * Tool for managing files and folder trees
@@ -110,170 +118,173 @@ public class FileUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Find all files in a folder tree and keep only those with a 
-     * filename 
-     * containing the given string. It assumes an existing folder if given
-     * as argument. This method does not lists folders. 
-     * See {@link #find(File, String, boolean)} to include also folders.
-     * @param path root folder from where the search should start
-     * @param str string to be contained in the target file's name. '*' is used
-     * as usual to specify the continuation of the string with any number of 
-     * any character. Use it only at the beginning (*blabla), at the end 
-     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
-     * case is chosen by default: filename must contain the query string.
-     * @return the list of files
+     * Finds files and folders that have a relative pathname matching the given 
+     * REGEX pattern.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @return the list of file that match the criteria.
+     * @throws IOException
      */
 
-    public static List<File> find(String path, String str)
+    public static List<File> findByREGEX(String root, String pattern)
     {
-    	return find(new File(path), str, false);
+    	return findByREGEX(new File(root), pattern, false);
     }
 
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     /**
-     * Find all files in a folder tree and keep only those with a 
-     * filename 
-     * containing the given string. It assumes an existing folder if given
-     * as argument. This method does not list folders. 
-     * See {@link #find(File, String, boolean)} to include also folders.
-     * @param root folder from where the search should start
-     * @param str string to be contained in the target file's name. '*' is used
-     * as usual to specify the continuation of the string with any number of 
-     * any character. Use it only at the beginning (*blabla), at the end 
-     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
-     * case is chosen by default: filename must contain the query string.
-     * @return the list of files
+     * Finds files and folders that have a relative pathname matching the given 
+     * REGEX pattern.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @return the list of file that match the criteria.
+     * @throws IOException
      */
 
-    public static List<File> find(File root, String str)
+    public static List<File> findByREGEX(File root, String pattern)
     {
-    	return find(root, str, false);
+    	return findByREGEX(root, pattern, false);
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * Find all files/folders in a folder tree and keep only those with a 
-     * filename 
-     * containing the given string. It assumes an existing folder is given
-     * as argument.
-     * @param root folder from where the search should start
-     * @param str string to be contained in the target file's name. '*' is used
-     * as usual to specify the continuation of the string with any number of 
-     * any character. Use it only at the beginning (*blabla), at the end 
-     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
-     * case is chosen by default: filename must contain the query string.
-     * @param collectFolders <code>true</code> to collect also folders.
-     * @return the list of files
+     * Finds files and folders that have a relative pathname matching the given 
+     * REGEX pattern.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @param collectFolders use <code>true</code> to collect both files and
+     * directories.
+     * @return the list of file that match the criteria.
+     * @throws IOException
      */
 
-    public static List<File> find(File root, String str, boolean collectFolders)
+    public static List<File> findByREGEX(File root, String pattern, boolean collectFolders)
     {
-    	return find(root, str, Integer.MAX_VALUE, collectFolders);
+    	return findByREGEX(root, pattern, Integer.MAX_VALUE, collectFolders);
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * Find all files/folders in a folder tree and keep only those with a 
-     * filename 
-     * containing the given string. It assumes an existing folder is given
-     * as argument.
-     * @param root folder from where the search should start
-     * @param pattern string to be contained in the target file's name. '*' is used
-     * as usual to specify the continuation of the string with any number of 
-     * any character. Use it only at the beginning (*blabla), at the end 
-     * (blabla*), or in both places (*blabla*). If no '*' is given the third 
-     * case is chosen by default: filename must contain the query string.
-     * @param collectFolders <code>true</code> to collect also folders.
-     * @return the list of files
+     * Finds files and folders that have a relative pathname matching the 
+     * pattern resulting
+     *  by appending the given REGEX to the absolute pathname of the root 
+     *  folder.
+     * @param root file system location from which to start searching.
+     * @param regex the patter to find in filenames.
+     * @param maxdepth maximum depth in folder tree starting from the root.
+     * @param collectFolders use <code>true</code> to collect both files and
+     * directories.
+     * See {@link FileSystem#getPathMatcher(String)}
+     * @return the list of file that match the criteria.
      */
-
-    public static List<File> find(File root, String pattern, Integer maxdepth, 
+    public static List<File> findByREGEX(File root, String pattern, Integer maxdepth, 
     		boolean collectFolders)
     {
-    	//TODO-gg replace with find2
-    	
-    	if (pattern.equals("*"))
-    	{
-	    	List<File> result = new ArrayList<File>();
-	        try {
-	        	if (collectFolders)
-	        	{
-					Files.walk(root.toPath(), maxdepth)
-						.filter(p -> !p.equals(root.toPath()))
-						.forEach(p -> result.add(p.toFile()));
-	        	} else {
-					Files.walk(root.toPath(), maxdepth)
-						.filter(p -> !p.equals(root.toPath()))
-						.filter(p -> !p.toFile().isDirectory())
-						.forEach(p -> result.add(p.toFile()));
-	        	}
-			} catch (IOException e) {
-			}
-	        return result;
-    	}
-        
-    	boolean starts = false;
-        boolean ends = false;
-        boolean mid = true;
-        if (pattern.startsWith("*") && (!pattern.endsWith("*")))
-        {
-            ends = true;
-            mid = false;
-            pattern = pattern.substring(1);        
-        } else if (pattern.endsWith("*") && (!pattern.startsWith("*")))
-        {
-            starts = true;
-            mid = false;
-            pattern = pattern.substring(0,pattern.length() - 1);
-        } else if (pattern.startsWith("*") && pattern.endsWith("*"))
-        {
-            starts = false;
-            ends = false;
-            mid = true;
-            pattern = pattern.substring(1,pattern.length() - 1);
-        } else if ((!pattern.startsWith("*")) && (!pattern.endsWith("*")))
-        {
-            starts = false;
-            ends = false;
-            mid = true;
-        }
-
-        String finalPattern = pattern;
-        boolean finalStart = starts;
-        boolean finalMid = mid;
-        boolean finalEnds = ends;
-        List<File> result = new ArrayList<File>();
-        try {
-			Files.walk(root.toPath(), maxdepth)
-				.filter(p -> !p.equals(root.toPath()))
-				.filter(p -> matchesPattern(p,
-						finalPattern, finalStart, finalMid, finalEnds, 
-						collectFolders))
-				.forEach(p -> result.add(p.toFile()));
-		} catch (IOException e) {
-			return result;
-		}
-        
-        return result;
+    	return find(root, pattern, maxdepth, collectFolders, "regex");
     }
     
 //------------------------------------------------------------------------------
-    
-    public static List<File> find2(File root, Integer maxdepth, String pattern,
-    		boolean collectFolders) throws IOException
+
+    /**
+     * Finds files and folders that have a relative pathname matching the given
+     * glob pattern.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @return the list of file that match the criteria.
+     * @throws IOException
+     */
+
+    public static List<File> findByGlob(String root, String pattern)
     {
-    	String absPattern = root.getAbsolutePath() + File.separator + pattern;
+    	return findByGlob(new File(root), pattern, false);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Finds files and folders that have a relative pathname matching the given
+     * glob pattern.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @return the list of file that match the criteria.
+     * @throws IOException
+     */
+
+    public static List<File> findByGlob(File root, String pattern)
+    {
+    	return findByGlob(root, pattern, false);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Finds files and folders that have a relative pathname matching the given
+     * glob pattern.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @param collectFolders use <code>true</code> to collect both files and
+     * directories.
+     * @return the list of file that match the criteria.
+     * @throws IOException
+     */
+
+    public static List<File> findByGlob(File root, String pattern, boolean collectFolders)
+    {
+    	return find(root, pattern, Integer.MAX_VALUE, collectFolders, "glob");
+    }
+   
+//------------------------------------------------------------------------------
+
+    /**
+     * Finds files and folders that have a relative pathname matching the 
+     * pattern resulting
+     *  by appending the given pattern to the absolute pathname of the root 
+     *  folder and interpreting it as a 'regex' or a 'glob' according to
+     *  the 'mode' parameter.
+     * @param root file system location from which to start searching.
+     * @param pattern the patter to find in filenames.
+     * @param maxdepth maximum depth in folder tree starting from the root.
+     * @param collectFolders use <code>true</code> to collect both files and
+     * directories.
+     * @param mode whether 'regex' or 'glob'. 
+     * See {@link FileSystem#getPathMatcher(String)}
+     * @return the list of file that match the criteria.
+     */
+    public static List<File> find(File root, String pattern, Integer maxdepth, 
+    		boolean collectFolders, String mode)
+    {
+    	switch (mode.toUpperCase())
+    	{
+    		case "REGEX":
+    			// Nothing
+    			break;
+    			
+    		case "GLOB":
+    			pattern = pattern.replace("\\", "\\\\");
+    			pattern = root.getPath() + File.separator + pattern;
+    			break;
+    			
+    		default:
+    			Terminator.withMsgAndStatus("ERROR! The mode for finding files can "
+        				+ "only be 'regex' or 'glob', but you arked for '" + mode 
+        				+ "'", -1);
+    			break;
+    	}
     	
-    	// This replace is needed to escape the backslash in Windows
-    	absPattern = absPattern.replace("\\", "\\\\");
-    	PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:"+absPattern);
-    	
-    	List<Path> paths = Files.find(root.toPath(), maxdepth,
-    	        (path, basicFileAttributes) ->  matcher.matches(path))
-    			.collect(Collectors.toList());
+    	PathMatcher matcher = FileSystems.getDefault().getPathMatcher(
+    			mode.toLowerCase() + ":" + pattern);
+    	List<Path> paths;
+		try {
+			paths = Files.find(root.toPath(), maxdepth,
+			        (path, basicFileAttributes) ->  matcher.matches(path))
+					.collect(Collectors.toList());
+		} catch (IOException e) {
+			e.printStackTrace();
+			paths = new ArrayList<Path>();
+		}
     	
     	if (!collectFolders)
     	{
@@ -286,40 +297,6 @@ public class FileUtils
     	List<File> files = new ArrayList<File>();
     	paths.stream().forEach(p -> files.add(new File(p.toString())));
     	return files;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
-     * Checks is a path matches the criteria for collecting it.
-     * @param path the candidate path
-     * @param pattern the pattern to match (without wild card)
-     * @param starts if the pattern should be at the beginning of the file name.
-     * @param contains if the pattern should be in the mids of the file name.
-     * @param ends if the pattern should be at the end of the file name.
-     * @param collectFolders if folders should be collected as well.
-     * @return <code>true</code> if the path matches the criteria.
-     */
-    private static boolean matchesPattern(Path path,
-    		String pattern, boolean starts, boolean contains, boolean ends,
-    		boolean collectFolders)
-    {
-    	File file = path.toFile();
-    	if (file.isDirectory() && !collectFolders)
-        {
-    		return false;
-        }
-        if (starts)
-        {
-            return file.getName().startsWith(pattern);
-        } else if (ends) 
-        {
-            return file.getName().endsWith(pattern);
-        } else if (contains)
-        {
-            return file.getName().contains(pattern);
-        }
-        return false;
     }
     
 //------------------------------------------------------------------------------

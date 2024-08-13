@@ -351,27 +351,26 @@ public class ActionApplier
         	filesToArchive.add(job.getStdErr());
         for (String pattern : fileNamePatternToArchive)
         { 
-        	filesToArchive.addAll(FileUtils.find(jobsRootPath, pattern, true));
+        	filesToArchive.addAll(FileUtils.findByGlob(jobsRootPath, pattern, true));
         }
         
         // Collect files that we want to copy instead of moving to the archive
         Set<File> filesToCopy = new HashSet<File>();
         for (String pattern : fileNamePatternToCopy)
         { 
-        	filesToCopy.addAll(FileUtils.find(jobsRootPath, pattern, true));
+        	filesToCopy.addAll(FileUtils.findByGlob(jobsRootPath, pattern, true));
         }
         
         // Collect files that we want to trash
         Set<File> filesToTrash = new HashSet<File>();
         for (String pattern : fileNamePatternToTrash)
         { 
-        	filesToTrash.addAll(FileUtils.find(jobsRootPath, pattern, true));
+        	filesToTrash.addAll(FileUtils.findByGlob(jobsRootPath, pattern, true));
         }
         Set<File> intersectionTrashArchive = SetUtils.getIntersection(
         		filesToTrash, filesToArchive);
         if (filesToTrash.removeAll(intersectionTrashArchive))
         {
-        	//TODO-gg log
         	logger.warn("WARNING: the following files will not be "
         			+ "removed as they match one or more pattern for "
         			+ "archiving. " + StringUtils.mergeListToString(
@@ -381,7 +380,6 @@ public class ActionApplier
         		filesToTrash, filesToCopy);
         if (filesToTrash.removeAll(intersectionTrashCopy))
         {
-        	//TODO-gg log
         	logger.warn("WARNING: the following files will not be "
         			+ "removed as they match one or more pattern for copying."
         			+ StringUtils.mergeListToString(

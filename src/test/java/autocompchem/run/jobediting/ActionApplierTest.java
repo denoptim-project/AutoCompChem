@@ -129,13 +129,13 @@ public class ActionApplierTest
     	
     	File archiveDir = new File(tempDir+SEP+"Job_#0_6");
     	assertTrue(archiveDir.exists());
-        assertEquals(1, FileUtils.find(tempDir, "Job_#*", true).size());
-        assertEquals(0, FileUtils.find(tempDir, "*toMv*", 1, true).size());
-        assertEquals(9, FileUtils.find(archiveDir, "*toMv*", true).size());
-        assertEquals(9, FileUtils.find(tempDir, "*toCp*", 1, true).size());
-        assertEquals(9, FileUtils.find(archiveDir, "*toMv*", true).size());
-        assertEquals(18, FileUtils.find(tempDir, "*toCp*", 2, true).size());
-        assertEquals(0, FileUtils.find(tempDir, "*toDel*", true).size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, "Job_#*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "*toMv*", true).size());
+        assertEquals(9, FileUtils.findByGlob(archiveDir, "*toMv*", true).size());
+        assertEquals(9, FileUtils.findByGlob(tempDir, "*toCp*", true).size());
+        assertEquals(9, FileUtils.findByGlob(archiveDir, "*toCp*", true).size());
+        assertEquals(9, FileUtils.findByGlob(tempDir, "Job_*/*toCp*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "*toDel*", true).size());
     }
     
 //------------------------------------------------------------------------------
@@ -194,16 +194,16 @@ public class ActionApplierTest
     	// Do the magic
     	ActionApplier.performAction(action, focusJob, 0, jobs, 1);
     	
-        assertEquals(3, FileUtils.find(tempDir, "Job_*", true).size());
-        assertEquals(0, FileUtils.find(tempDir, "*toMv*", 1, true).size());
-        assertEquals(6, FileUtils.find(tempDir, "*toMv*", 2, true).size());
-        assertEquals(6, FileUtils.find(tempDir, "*toCp*", 1, true).size());
-        assertEquals(24, FileUtils.find(tempDir, "*toCp*", 2, true).size());
-        assertEquals(0, FileUtils.find(tempDir, "*toDel*", true).size());
-        assertEquals(0, FileUtils.find(tempDir, "*.err", 1, true).size());
-        assertEquals(0, FileUtils.find(tempDir, "*.log", 1, true).size());
-        assertEquals(3, FileUtils.find(tempDir, "*.err", 2, true).size());
-        assertEquals(3, FileUtils.find(tempDir, "*.log", 2, true).size());
+        assertEquals(3, FileUtils.findByGlob(tempDir, "Job_*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "*toMv*", true).size());
+        assertEquals(6, FileUtils.findByGlob(tempDir, "*/*toMv*", true).size());
+        assertEquals(6, FileUtils.findByGlob(tempDir, "*toCp*", true).size());
+        assertEquals(18, FileUtils.findByGlob(tempDir, "*/*toCp*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "*toDel*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "*.err", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "*.log", true).size());
+        assertEquals(3, FileUtils.findByGlob(tempDir, "*/*.err", true).size());
+        assertEquals(3, FileUtils.findByGlob(tempDir, "*/*.log", true).size());
     }
     
 //------------------------------------------------------------------------------
