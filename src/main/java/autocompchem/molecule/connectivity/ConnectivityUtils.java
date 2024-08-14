@@ -149,26 +149,6 @@ public class ConnectivityUtils
         }
         return false;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Compares the bond distances within an atom container with the 
-     * corresponding ones of a reference container. The connectivity of the
-     * reference defines what are the pair of bonded atoms.
-     * @param mol the atom container under evaluation.
-     * @param ref the reference atom container .
-     * @param tolerance the tolerance applied when comparing interatomic 
-     * distances.
-     * @return <code>true</code> if the two interatomic distances are compatible
-     * with the given connectivity matrix (within the given tolerance).
-     */
-
-    public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
-    		IAtomContainer ref, double tolerance)
-    {
-    	return compareBondDistancesWithReference(mol, ref, tolerance);
-    }
     
 //------------------------------------------------------------------------------
 
@@ -207,8 +187,6 @@ public class ConnectivityUtils
      * @return <code>true</code> if the two interatomic distances are compatible
      * with the given connectivity matrix (within the given tolerance).
      */
-
-    //TODO-gg get rid of log and logger by moving this into a worker
     
     public static boolean compareBondDistancesWithReference(IAtomContainer mol, 
     		IAtomContainer ref, double tolerance, Logger logger, 
