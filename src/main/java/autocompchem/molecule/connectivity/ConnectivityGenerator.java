@@ -26,12 +26,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
+import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
@@ -304,11 +306,10 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 
     public void addBondsOnSingleElement(IAtomContainer iac, int i)
     {   
-        ConnectivityUtils.addConnectionsByVDWRadius(iac, 
+        addConnectionsByVDWRadius(iac, 
                 targetEl, 
                 tolerance,
-                tolerance2ndShell, 
-                logger);
+                tolerance2ndShell);
 
         if (outFile!=null)
             IOtools.writeSDFAppend(outFile, iac, true);
@@ -318,6 +319,96 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
             String molID = "mol-"+i;
             exposeOutputData(new NamedData(molID, 
                   NamedDataType.ATOMCONTAINERSET, iac));
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Add connections between atoms if distance is below sum of vdW radii
+     * Does not remove existing bonds.
+     * @param mol the atom container under evaluation (may be modified)
+     * @param el the symbol of the central atom around which interatomic 
+     * distances are evaluated
+     * @param tolerance a new bond is added only when the distance between the 
+     * central atom and a neighbor is below the sum of their v.d.W. radii
+     * minus the tolerance (as percentage). Values between 0.0 and 1.0 should 
+     * be used. For atoms connected to atoms directly connected to the central
+     * one the tolerance is increased by an extra factor.
+     * @param extraTollSecShell additional tolerance for atoms connected to
+     * atoms already directly connected to the central one
+     */
+
+    public void addConnectionsByVDWRadius(IAtomContainer mol, String el, 
+                      double tolerance, double extraTollSecShell)
+    {
+        logger.trace("Evaluating Connections of '" 
+                        + el + "' atoms using van der Waals radii (Tolerance: "
+                        + (tolerance * 100) + "% (sec. shell +" 
+                        + (extraTollSecShell * 100) + "%).");
+
+        for (IAtom atmA : mol.atoms())
+        {
+            if (!atmA.getSymbol().equals(el))
+                continue;
+
+            //get van der Waals radius
+            double rA = AtomUtils.getVdwRradius(el);
+
+            //Already connected atoms
+            List<IAtom> nbrs = mol.getConnectedAtomsList(atmA);
+            //And second shell (atoms connected to one in nbrs)
+            List<IAtom> secShell = new ArrayList<IAtom>();
+            for (IAtom nbr : nbrs)
+            {
+                List<IAtom> nbrsOfNbr = mol.getConnectedAtomsList(nbr);
+                for (IAtom nbrOfNbr : nbrsOfNbr)
+                {
+                    //Skip central
+                    if (nbrOfNbr.equals(atmA))
+                        continue;
+        
+                    secShell.add(nbrOfNbr);
+                }
+            }
+
+            for (IAtom atmB : mol.atoms())
+            {
+                if (atmB.equals(atmA))
+                    continue;
+
+                //get van der Waals radius
+                String sB = atmB.getSymbol();
+                double rB = AtomUtils.getVdwRradius(sB);
+
+                //Evaluate possibility of generating a new bond
+                if (!nbrs.contains(atmB))
+                {
+                    double dist = 
+                        MolecularUtils.calculateInteratomicDistance(atmA,atmB);
+                    double refDist = rA + rB;
+
+                    if (secShell.contains(atmB))
+                    {
+                        //Apply extra tolerance for second layer of atoms
+                        refDist = refDist - (refDist * 
+                                        (tolerance + extraTollSecShell));
+                    } else {
+                        refDist = refDist - (refDist * tolerance);
+                    }
+                    if (dist < refDist)
+                    {
+                        logger.info("Adding a bond between '" 
+                                        + MolecularUtils.getAtomRef(atmA,mol)
+                                        + "' and '" 
+                                        + MolecularUtils.getAtomRef(atmB,mol)
+                                        + "'.");
+                        IBond b = new Bond(atmA, atmB,
+                                                IBond.Order.valueOf("SINGLE"));
+                        mol.addBond(b);
+                    }
+                }
+            }
         }
     }
 
