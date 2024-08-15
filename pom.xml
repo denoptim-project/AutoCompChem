@@ -114,6 +114,12 @@
         <artifactId>py4j</artifactId>
         <version>0.10.9.7</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+    <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-core</artifactId>
+        <version>2.9.2</version>
+    </dependency>
   </dependencies>
   
   <build>

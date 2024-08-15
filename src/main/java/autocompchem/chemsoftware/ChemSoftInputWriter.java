@@ -245,7 +245,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             logger.debug("Job details from JD file '" + jdFile + "'.");
             
             FileUtils.foundAndPermissions(jdFile,true,false,false);
-            if (FileAnalyzer.getFileTypeByProbeContentType(jdFile) ==
+            if (FileAnalyzer.detectFileType(jdFile) ==
             		ACCFileType.JSON)
             {
             	try {

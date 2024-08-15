@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -43,6 +45,8 @@ public class FileAnalyzerTest
 {
     @TempDir 
     File tempDir;
+    
+    public static String NL = System.getProperty("line.separator");
     
 //------------------------------------------------------------------------------
 
@@ -66,7 +70,7 @@ public class FileAnalyzerTest
 //------------------------------------------------------------------------------
     
     @Test
-    public void testGetFileTypeByProbing()
+    public void testGetFileTypeByProbing() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String tmpPathName = tempDir.getAbsolutePath() 
@@ -78,7 +82,7 @@ public class FileAnalyzerTest
         		false);
     	
     	assertEquals(ACCFileType.JSON,
-    			FileAnalyzer.getFileTypeByProbeContentType(tmpFile));
+    			FileAnalyzer.detectFileType(tmpFile));
     }
 
 //------------------------------------------------------------------------------

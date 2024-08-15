@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.tika.Tika;
+
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
@@ -638,37 +640,30 @@ public class FileAnalyzer
     
 //------------------------------------------------------------------------------
     
-    public static ACCFileType getFileTypeByProbeContentType(File jdFile)
+    public static ACCFileType detectFileType(File file)
     {
-    	/*
-//TODO-gg use Tika
-<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
-<dependency>
-    <groupId>org.apache.tika</groupId>
-    <artifactId>tika-core</artifactId>
-    <version>2.6.0</version>
-</dependency>
-    	 */
     	ACCFileType type = ACCFileType.UNSPECIFIED;
-        
-        //TODO-gg remove this is hardcoded for now
-    	String typ = "UNSPECIFIED";
-    	if (jdFile.getName().toUpperCase().endsWith(".JSON"))
-    	{
-    		typ = "JSON";
-    	} else if (jdFile.getName().toUpperCase().endsWith(".TXT"))
-    	{
-    		typ = "TXT";
-    	/*
-    	} else if (fileName.toUpperCase().endsWith("JOBDETAILS"))
-    	{	
-    		typ = "JSON";
-    	*/
-    	} else if (jdFile.getName().toUpperCase().endsWith("SDF"))
-    	{	
-    		typ = "SDF";
+    	
+    	Tika tika = new Tika();
+    	String mimeType = "";
+		try {
+			mimeType = tika.detect(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	switch (mimeType)
+	    {
+	    	case "application/json":
+	    		type = ACCFileType.JSON;
+	    		break;
+
+	    	case "text/plain":
+	    		type = ACCFileType.TXT;
+	    		//TODO: could make custom parser for SDF
+	    		if (file.getName().toUpperCase().endsWith(".SDF"))
+	    			type = ACCFileType.SDF;
+	    		break;
     	}
-	    type = ACCFileType.valueOf(typ);
 	    
         return type;
     }   
