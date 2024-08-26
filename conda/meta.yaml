@@ -1,0 +1,35 @@
+{% set openjdk_version = "11.0.*" %}
+
+package:
+  name: autocompchem
+  version: {{ environ.get('AUTOCOMPCHEM_VERSION', '') }}
+
+source:
+  path: ..
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - openjdk =={{ openjdk_version }}
+    - maven
+  run:
+    - openjdk =={{ openjdk_version }}
+
+test:
+  commands:
+    - autocompchem -h
+
+about:
+  home: https://github.com/denoptim-project/AutoCompChem
+  license: AGPL-3.0-only
+  license_file: ../COPYING
+  summary: 'Package for automation of computational chemistry tasks.'
+  description: Package for automation of computational chemistry tasks.
+  dev_url: https://github.com/denoptim-project/AutoCompChem
+  doc_url: https://github.com/denoptim-project/AutoCompChem
+
+extra:
+  recipe-maintainers:
+    - marco-foscato

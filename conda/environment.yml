@@ -1,0 +1,6 @@
+name: acc_package_builder
+channels:
+  - defaults
+dependencies:
+  - anaconda-client
+  - conda-build

@@ -1,22 +1,26 @@
 ## AutoCompChem
 AutoCompChem (or ACC) is a collection of tools used to automatize computational chemistry tasks.
 
-## Installation
-1) Create a suitable environment with [conda](https://docs.conda.io/en/latest/)
-   ```
-   conda env create -f https://raw.githubusercontent.com/denoptim-project/AutoCompChem/main/environment.yml
-   ```
-   and then activate it with 
-   ```
-   conda activate acc_devel
-   ```
-   Alternatively, if you do not want to use conda, you can install [Maven](https://maven.apache.org/) and JAVA (version 11 or higher) by yourself. Your environment should allow to run the following commands without errors.
+## Installation from Conda
+From within any conda environment you can install AutoCompChem as follows
+```
+conda install -c denoptim-project autocompchem
+```
+Now the `autocompchem` command should be available. Try to run the following to start using it:
+```
+autocompchem -h
+```
+
+## Installation from Source
+1) Make sure you have [Maven](https://maven.apache.org/), which is used to build AutoCompChem. The following command should return the version of Maven
     ```
     mvn -version
+    ```
+2) Make sure you have a version of JAVA that is &ge;11. To this end try the following command
+    ```
     javac -version
     ```
-    
-2) Download the latest release from [the releases page](https://github.com/denoptim-project/AutoCompChem/releases) and unzip/untar-gz the resulting archive.
+3) Download the latest release and unzip/untar-gz the resulting archive. Alternatively, clone this github repository.
 
 3) move inside the resulting folder. The pathname of this folder is here represented by `<your_path_to_ACC>`. Remember to replace `<your_path_to_ACC>` with the appropriate pathname in any following command.
     ```
@@ -29,12 +33,18 @@ AutoCompChem (or ACC) is a collection of tools used to automatize computational 
 5) If the above command terminates successfully, you are done. AutoCompChem is ready to be used.
 
 ## Usage
-To launch any functionality of the tool you execute the following command, where `<your_path_to_ACC>` and `<version>` have to be replaced with the appropriate strings that depend on your file system and on the version of AutoCompChem that you have installed:
+If you have installed AutoCompChem with Conda, then you have the `autocompchem` command. The following will give you the usage instructions:
+```
+autocompchem -h
+```
 
-```
-java -jar <your_path_to_ACC>/target/autocompchem-<version>-jar-with-dependencies.jar
-```
-Executing the above command will print the usage instructions. In particular, use the '-h' option to get help.
+Otherwise, say you have installed AutoCompChem inside a folder that we'll refer to as the `$ACC_HOME` folder. This is how to launch any functionality of the tool by executing the Main class if the `$version` you have installed:
+
+    java -jar $ACC_HOME/target/autocompchem-${version}-jar-with-dependencies.jar -h
+
+Executing the above command will print the usage instructions.
+
+Examples of usage are available in the [test folder](test). There, each `*.params` files contains the keywords that control AutoCompChem. See the [users' manual](https://htmlpreview.github.io/?https://github.com/denoptim-project/AutoCompChem/blob/making_conda_package/doc/user_manual.html).
 
 
 ## Acknowledgments

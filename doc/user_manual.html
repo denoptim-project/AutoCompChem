@@ -43,53 +43,35 @@ This tool kit for the Automation of Computational Chemistry
 (AutoCompChem) is developed with the aim of 
 increasing efficiency, effectiveness, and reproducibility of 
 computational tasks such as modeling and evaluation of chemical
- species.<br>
-In practice, AutoCompChem is the interface to the collection of
- methods and objects
-stored in the 
-<a href="../../uibkvant/doc/index.html">UiBkvant library</a>:
-a Java library meant to host methods
-and objects developed day by day to automatize tasks such as creation 
-of input files, 
-simple operations on molecular systems, 
-analysis of molecular geometries,
-and so on.<br>
-In the present document you can find information on how to use the various 
-tools made available by UiBkvant. Please refer to 
-<a href="../../uibkvant/doc/index.html">UiBkvant documentation</a> 
-for more details on UiBkvant classes.
-</p>
+ species.</p>
 
 <hr>
 <a id="Building"><h3>Building and Testing AutoCompChem</h3></a>
 <p>
-To compile AutoCompChem you just have to run the building script:
-</p><pre><code>./build_test.sh</code></pre>
-and follow the instructions. Java 1.7.0_07 or higher is required.<br>
-After the script has compiled AutoCompChem and link the libraries of CDK, guava 
-and UiBKvant into a single jar file, a list of test will be 
-executed. Each test is provided with input files and specific
-a script that evaluates the outcome and returns a <i>passed</i>/<i>not-passed</i> grade.
-
+To compile AutoCompChem you just have the <a href="https://docs.conda.io/projects/conda/en/stable/">conda</a> environment defined at <a href="../conda/environment.yml">environment.yml</a>. Once you have activated such environment with
+</p><pre><code>conda activate acc_devel</code></pre>
+you can move to the distribution folder:
+</p><pre><code>cd &lt;path_to_your_AutoCompChem_distribution_folder&gt;</code></pre>
+and start the building and testing script as follows:
+</p><pre><code>./test/run_tests.sh</code></pre>
+After a minute or so the building and testing should be done and should return a comforting message.
 
 <hr>
 <a id="Running"><h3>Running AutoCompChem</h3></a>
 <p>
-AutoCompChem accepts one, and only one, argument that is the name of the
-parameters file defining "what" and "how". Thus, this is how you run:
-</p><pre><code>java -jar $yourpath/AutoCompChem.jar [parameters_file]</code></pre>
-In general, should AutoCompChem encounter an error of any kind
-error messages will be printed both on stderr and stdout. Such error messages 
-are meant to be as self-explanatory as possible. If you really cannot
-understand what's going on, be kind and contact the author.
-
+To run AutoCompChem installed from source, provided you have the corresponding version of java in the path (or are in an environment that includes the openjdk dependency defined in <a href="../environment.yml">the runtime environment</a>), you can do:
+</p>
+<pre><code>java -jar $yourpath/AutoCompChem.jar -h</code></pre>
+<p>to get an help message that offers a list of potential tasks. Note that any of the keywords defined below can be given as command line argument by using a "--" in front of it. For example, to specify the value of the keyword "InFile" for task "PrepareInputGaussian" NB: keywords and task names are case independent) you can do:</p>
+<pre><code>java -jar $yourpath/AutoCompChem.jar -t PrepareInputGaussian --infile &lt;file_pathname&gt;</code></pre>
+<p>and the same can be done for any keyword that is used in a parameter file (see below).</p>
 
 <hr>
 <a id="Parameters"><h3>The Parameters File</h3></a>
 <p>The parameters file is a formatted text file where all the information needed to 
 perform a task is reported. All keywords, data, file names, links and anything 
 else needed to perform a task is stored into the parameters file as organized 
-text. The content of a parameters file can be divided into these main blocks (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>):
+text. The content of a parameters file can be divided into these main blocks:
 </p>
 <ul>
 <li><b>Keywords</b>: a single line starting with a keyword (no leading spaces)
@@ -99,8 +81,7 @@ text. The content of a parameters file can be divided into these main blocks (se
 beginning label), and an well defined end (label <code>$END</code>). Labeled 
 blocks are used to provide complex information to AutoCompChem, that is, 
 information that is not interpreted by AutoCompChem in the first place, but is
-sent and deployed by one of the tools/routines made available in subsidiary 
-libraries (i.e., uibkvant). The special meaning of the dollar sign can be escaped like in a bash script by using the backslash sign (&#92;) in front of any special character. Foe example, only the second dollar sign of the string "&#92;$end$end" is interpreted as such, while the first is escaped. As a result, AutoCompChem will interpret the second instance of "$end" as the end of a labeled block, while the first "$end" is threated as bare text.</li>
+sent and deployed by one of the tools/routines made available in tools. The special meaning of the dollar sign can be escaped like in a bash script by using the backslash sign (&#92;) in front of any special character. For example, only the second dollar sign of the string "&#92;$end$end" is interpreted as such, while the first is escaped. As a result, AutoCompChem will interpret the second instance of "$end" as the end of a labeled block, while the first "$end" is threated as bare text.</li>
 <li><b>Comments</b>: each line starting with "<code>#</code>" is ignored unless 
 is part of a labeled block.</li>
 </ul>
@@ -285,7 +266,7 @@ More details on each task, and the list of parameters needed to perform it, are 
 computational task and compare it with a list of known error messages.
 AutoCompChem will attempt to identify if the computational task has
 completed normally and, if not, try to identify what error was returned
-by the generic software (see <a href="../../uibkvant/doc/uibkvant/chemsoftware/generic/GenericToolOutputHandler.html">GenericToolOutputHandler</a>).
+by the generic software.
 </p>
 
 <div style="background-color: rgb(129, 247, 159);" align="right">
@@ -298,7 +279,7 @@ This task allows you to prepare input files automatically. A so-called
 <i>JOBDETAILS</i> file has to be provided with the details defining all
 the steps of the job. The format of such file is described in the
 documentation of the
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianJob.html">GaussianJob</a> class.
+<a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianJob.java">GaussianJob</a> class.
 The parameters needed to perform this task are:
 </p>
 <ul>
@@ -308,11 +289,11 @@ The parameters needed to perform this task are:
 <li>
 <b>JOBDETAILS</b>: formatted text file defining all 
 the details of a 
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianJob.html">GaussianJob</a>.
+<a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianJob.java">GaussianJob</a>.
  Usually the jobdetails txt 
 file is the file used to generate the input file (name.inp) for 
 Gaussian. The definition of the format of jobdetails files can be found in
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianJob.html">GaussianJob</a> documentation. Examples of jobdetails files are also available in the <a href="../test">test folder</a>. In alternative, use
+<a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianJob.java">GaussianJob</a> documentation. Examples of jobdetails files are also available in the <a href="../test">test folder</a>. In alternative, use
 keyword
 <b>HEADER</b> with a labeled block of lines (i.e., a bunch of text 
 starting with the <code>$START</code> label and finishing with the 
@@ -330,7 +311,7 @@ format, so will have the output file.
 Moreover, by using a fixed header no modification of such 
 header can be performed by other tools of available to AutoCompChem
  (i.e. 
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianReStarter.html">GaussianReStarter</a>). For instance,
+<a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianReStarter.java">GaussianReStarter</a>). For instance,
 name of checkpoint file, memory, nodes, processors, and 
 everything that is specified in the header CANNOT BE EDITED!
 </p>
@@ -365,7 +346,7 @@ mandatory only when the multiplicity is not defined in the SDF input file.
 <p>This tasks reads and analyzes the output file of a Gaussian job evaluating whether
  the job has terminated normally or not. In the latter case, the error messages from
 Gaussian are compared with a library of known error messages to identify the problem.
-The parameters needed to perform this task are (See <a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianOutputHandler.html">GaussianOutputHandler</a> for details):
+The parameters needed to perform this task are (See <a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianOutputHandler.java">GaussianOutputHandler</a> for details):
 </p>
 <ul>
 <li>
@@ -381,10 +362,10 @@ error messages.
 </li>
 <li>
 (optional) <b>JOBDETAILS</b>: formatted text file defining all 
-the details of a <a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianJob.html">GaussianJob</a>.
+the details of a <a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianJob.java">GaussianJob</a>.
 Usually the jobdetails txt 
 file is the file used to generate the input file (name.inp) for 
-Gaussian (see <a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianInputWriter.html">GaussianInputWriter</a>).
+Gaussian (see <a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianInputWriter.java">GaussianInputWriter</a>).
 </li>
 </ul>
 
@@ -402,7 +383,7 @@ with settings
  and to generate a dynamic sequence of jobs. In the following list of 
 parameters are required with using the 
 <b><code>FixAndRestartGaussian</code></b> keyword (see 
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/gaussian/GaussianReStarter.html">GaussianReStarter</a>
+<a href="../src/main/java/autocompchem/chemsoftware/gaussian/GaussianReStarter.java">GaussianReStarter</a>
 for further information including the type of error fixing action that can be performed).
 </p>
 <ul>
@@ -439,7 +420,7 @@ of  the Gaussian job originally submitted to Gaussian.
 This task allows you to automatically prepare input files for NWChem. A so-called <i>JOBDETAILS</i>
 file has to be provided with the details defining all the steps of the
 NWChem job. The format of such file is described in the documentation
-of the <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a> (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemInputWriter.html">NWChemInputWriter</a>).
+of the <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a> (see also <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemInputWriter.java">NWChemInputWriter</a>).
 The parameters required to perform this task are:
 </p><ul>
 <li>
@@ -449,15 +430,15 @@ The parameters required to perform this task are:
 <b>JOBDETAILS</b>: formatted text file defining all
 the details of a job.
 The definition of the format of jobdetails files can be found in
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a>'s documentation. Examples of jobdetails files are also available in the <a href="../test">test folder</a>.
+<a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a>'s documentation. Examples of jobdetails files are also available in the <a href="../test">test folder</a>.
 </li>
 <li>(optional)
 <b>MULTIGEOMNWCHEM</b>: 
 use this parameter to provide names for the geometry/ies (all space-free names listed in one single line, space-separated). When this parameter is used all the geometries in the input molecular structure file (i.e., SDF or XYZ) are written into the first task of the NWChem job with unique atom tags. Basis set and constrains are also generated for all the geometries. This parameter can also be specified within a job details file (see below) as a task-specific parameter in the first task (see also
- <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemTask.html">NWChemTask</a>).
+ <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemTask.java">NWChemTask</a>).
 </li>
 <li>(optional)
-<b>USESAMETAGSFORMULTIGEOM</b>:  imposes to use the same atom tag through all geometries. We assume that all the geometries are consistent (i.e., same atom list). This parameter can also be specified within a job details file (see below) as a task-specific parameter in the first task (see also  <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemTask.html">NWChemTask</a>).
+<b>USESAMETAGSFORMULTIGEOM</b>:  imposes to use the same atom tag through all geometries. We assume that all the geometries are consistent (i.e., same atom list). This parameter can also be specified within a job details file (see below) as a task-specific parameter in the first task (see also  <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemTask.java">NWChemTask</a>).
 </li>
 <li>
 (optional) <b>VERBOSITY</b> verbosity level.
@@ -490,7 +471,7 @@ internal) to be used for the input file of NWChem.
 (optional) <b>FREEZEIC</b> define frozen internal coordinates
 (i.e., constants)
 To identify the IC to freeze, SMARTS queries are used.
-A multi line block (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>)
+A multi line block (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>)
 can be used defining one SMARTS
 query per line.
 </li>
@@ -517,7 +498,7 @@ After the 2/3/4 single-atom SMARTS
 the user can add one numerical value and/or the <code>constant</code>
 keyword that will apply to all ICs matched by the combination of
 single-atom SMARTS.
-A multi line block (see {@link uibkvant.parameters.Parameter}) is used to
+A multi line block is used to
 define one set of SMARTS queries (plus additional keywords-
 related to that
 class of IC) per each line.
@@ -532,13 +513,13 @@ $END
 </ul>
 <p>
 Note that specifying these options in the parameters file fed to AutoCompChem will make these options take effect from 
-the first <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemTask.html">NWChemTask</a> of the generated <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a>. Also, most of the options (see NWChem user manual for further details)
+the first <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemTask.java">NWChemTask</a> of the generated <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a>. Also, most of the options (see NWChem user manual for further details)
 will be effective until new instructions (i.e., keyword, directive)
-are given into the <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a>.
+are given into the <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a>.
 </p><p>To specify task-specific parameters, i.e., parameters that are meant
-for a specific <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemTask.html">NWChemTask</a> in the <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a>, use the
+for a specific <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemTask.java">NWChemTask</a> in the <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a>, use the
 jobDetails file (see 
- <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemTask.html">NWChemTask</a>).
+ <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemTask.java">NWChemTask</a>).
 </p>
 
 <div style="background-color: rgb(129, 247, 159);" align="right">
@@ -550,7 +531,7 @@ jobDetails file (see
 This task allows to read and analyze the output of an NWChem job
 evaluating whether the job has terminated normally or not. In the
 latter case, the error messages from NWChem are compared with a list of
-known errors to identify the problem (see <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemOutputHandler.html">NWChemOutputHandler</a>).
+known errors to identify the problem (see <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemOutputHandler.java">NWChemOutputHandler</a>).
 The evaluation requires the following parameters:
 </p>
 <ul>
@@ -560,16 +541,16 @@ i.e. name.out).
 </li>
 <li>
 <b>NWCHEMERRORS</b>: path to the folder storing NWChem known
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/errorhandling/ErrorMessage.html">ErrorMessage</a>s.
+<a href="../src/main/java/autocompchem/chemsoftware/errorhandling/ErrorMessage.java">ErrorMessage</a>s.
 </li>
 <li>
 <b>VERBOSITY</b>: verbosity level.
 </li>
 <li>
 (optional) <b>JOBDETAILS</b>: formatted text file defining all
-he details of a <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a>. Usually the jobdetails txt
+he details of a <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a>. Usually the jobdetails txt
 file is the file used to generate the original input file (name.nw) for the
-NWChem job that produced the output file under analysis (see <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemInputWriter.html">NWChemInputWriter</a>).
+NWChem job that produced the output file under analysis (see <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemInputWriter.java">NWChemInputWriter</a>).
 </li>
 <li>
 (optional) <b>OUTFILE</b>: name of the file where output molecular
@@ -612,7 +593,7 @@ This task allows to read the output of an NWChem job, evaluate if the
 calculation terminated with an error, and, if the error is recognized
 as a known error, generate an NWChem input file corresponding to a
 defined "error-fixing action" aiming to fix the problem and achieve the
-completion of the NWChem job (see <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemReStarter.html">NWChemReStarter</a>). 
+completion of the NWChem job (see <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemReStarter.java">NWChemReStarter</a>). 
 The execution of the this task requires the following
 parameters: <br>
 </p><ul>
@@ -631,13 +612,13 @@ before the new <code>name.nw</code> is submitted to NWChem. In alternative, the 
 <li>
 <b>JOBDETAILS</b>: formatted text file defining all the details
 of the NWChem job originally submitted to NWChem. The format of a jobdatails
-file is described in <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemJob.html">NWChemJob</a>'s documentation.
+file is described in <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemJob.java">NWChemJob</a>'s documentation.
 </li>
 <li>
 <b>NWCHEMERRORS</b> path to the folder storing NWChem known errors.
 The format of the files defining errors is described in
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/errorhandling/ErrorMessage.html">ErrorMessage</a>'s documentation. Acceptable error-fixing actions
-are described <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemReStarter.html#restartJobWithErrorFix--">here</a>.
+<a href="../src/main/java/autocompchem/chemsoftware/errorhandling/ErrorMessage.java">ErrorMessage</a>'s documentation. Acceptable error-fixing actions
+are described <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemReStarter.java#restartJobWithErrorFix--">here</a>.
 </li>
 <li>
 (optional) <b>OUTFORMAT</b>: (default XYZ):
@@ -674,7 +655,7 @@ runtime settings and data of an NWChem job (i.e., the checkpoint file in NWChem)
 </div>
 
 <h4><a id="ExtractTrajectoryFromNWChemOutput"></a>ExtractTrajectoryFromNWChemOutput</h4>
-<p>To extract all geometries (i.e., Cartesian coordinates) from NWChem output file the following parameters are used (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemOutputHandler.html">NWChemOutputHandler</a>):
+<p>To extract all geometries (i.e., Cartesian coordinates) from NWChem output file the following parameters are used (see also <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemOutputHandler.java">NWChemOutputHandler</a>):
 </p>
 <ul>
 <li>
@@ -698,7 +679,7 @@ root of the structure file name.
 </div>
 
 <h4><a id="ExtractLastGeometryFromNWChemOutput"></a>ExtractLastGeometryFromNWChemOutput</h4>
-<p>To extract the last geometry (i.e., Cartesian coordinates) from NWChem output file the following parameters are used (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/nwchem/NWChemOutputHandler.html">NWChemOutputHandler</a>):
+<p>To extract the last geometry (i.e., Cartesian coordinates) from NWChem output file the following parameters are used (see also <a href="../src/main/java/autocompchem/chemsoftware/nwchem/NWChemOutputHandler.java">NWChemOutputHandler</a>):
 </p>
 <ul>
 <li>
@@ -723,7 +704,7 @@ root of the structure file name.
 
 <h4><a id="PrepareInputQMMM"></a>PrepareInputQMMM</h4>
 <p>
-This task allows to generate the input files (i.e., both the ".dat" with the settings and the ".crd" with the geometry) for running a calculation with the QMMM software developed by <a href="http://comp.chem.umn.edu/qmmm/">Hai Lin and Donald G. Truhlar</a> (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/qmmm/QMMMInputWriter.html">QMMMInputWriter</a>)). To prepare the input files the following parameters are used:
+This task allows to generate the input files (i.e., both the ".dat" with the settings and the ".crd" with the geometry) for running a calculation with the QMMM software developed by <a href="http://comp.chem.umn.edu/qmmm/">Hai Lin and Donald G. Truhlar</a> (see also <a href="../src/main/java/autocompchem/chemsoftware/qmmm/QMMMInputWriter.java">QMMMInputWriter</a>)). To prepare the input files the following parameters are used:
 </p>
 <ul>
 <li>
@@ -733,7 +714,7 @@ This task allows to generate the input files (i.e., both the ".dat" with the set
 <b>JOBDETAILS</b>: formatted text file defining all
 the details of a QMMM job. 
 The definition of the format of jobdetails files can be found in
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/qmmm/QMMMJob.html">QMMMJob's</a> documentation.
+<a href="../src/main/java/autocompchem/chemsoftware/qmmm/QMMMJob.java">QMMMJob's</a> documentation.
 </li>
 <li>
 (optional) <b>VERBOSITY</b> verbosity level.
@@ -775,14 +756,14 @@ listing atom ID
 <li>
 (optional) <b>QMATOMS_SMARTS</b> define atoms belonging to QM region
 using SMARTS queries.
-A multi line block (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>)
+A multi line block (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>)
 can be used defining one SMARTS
 query per line.
 </li>
 <li>
 (optional) <b>CAPATOMS_SMARTS</b> define cap atoms using SMARTS queries
 and cap atom specification.
-A multi line block  (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>)
+A multi line block  (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>)
 can be used defining each line
 one SMARTS and the cap atom properties (name, atom type, scale factor)
 used to define the cap atom that replaces the atom matched by the SMARTS
@@ -792,7 +773,7 @@ The syntax for each lice is as follows: [SMARTSquery] [cap atom specs]
 <li>
 (optional) <b>FREEZEATM</b> define frozen atoms.
 SMARTS queries are used to identify atoms to freeze.
-A multi line block (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>)
+A multi line block (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>)
 can be used defining one SMARTS
 query per line.
 </li>
@@ -811,7 +792,7 @@ The syntax for this option is as follows: [filename] [format]
 <h4><a id="PrepareInputSpartan"></a>PrepareInputSpartan</h4>
 <p>
 This task allows to generate the work environment for running Spartan (tested with Spartan14 under Linux). To perform this task use the following
-parameters (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/spartan/SpartanInputWriter.html">SpartanInputWriter</a>): <br>
+parameters (see also <a href="../src/main/java/autocompchem/chemsoftware/spartan/SpartanInputWriter.java">SpartanInputWriter</a>): <br>
 </p>
 <ul>
 <li>
@@ -842,7 +823,7 @@ the root of the structure file name given in the INFILE parameter.
 <li>
 (optional) <b>ROTATABLEBONDS</b> the definition of the rotatable bonds.
 can be a pathname or a single/multi line block
-(see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>)
+(see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>)
 in which each line
 contains a bond-matching SMARTS query and additional options/keywords
 (for instance, the fold number to use for the bonds matched by the SMARTS
@@ -867,7 +848,7 @@ After the 2/3/4 single-atom SMARTS
 the user can add one numerical value and/or text-type options
 that will apply to all ICs matched by the combination of
 single-atom SMARTS.
-A multi line block (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>) is used to
+A multi line block (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>) is used to
 define one set of SMARTS queries (plus additional numerical or text)
 per each line. For example:
 <pre>
@@ -907,7 +888,7 @@ query per line. Multi line block can be used.
 <p>
 This task allows to read into the Spartan's calculation folder and convert the geometries into some standard chemical structure file (SDF, XYZ). 
 To perform this task use the following
-parameters (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/spartan/SpartanOutputHandler.html">SpartanOutputHandler</a>): <br>
+parameters (see also <a href="../src/main/java/autocompchem/chemsoftware/spartan/SpartanOutputHandler.java">SpartanOutputHandler</a>): <br>
 </p>
 <ul>
 <li>
@@ -927,7 +908,7 @@ For instance:
 <li>
 (optional)<b>SPRTERRORS</b>: path to the folder storing
 Spartan known
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/errorhandling/ErrorMessage.html">ErrorMessage</a>s.
+<a href="../src/main/java/autocompchem/chemsoftware/errorhandling/ErrorMessage.java">ErrorMessage</a>s.
 </li>
 <li>
 (optional) <b>VERBOSITY</b>: verbosity level.
@@ -955,7 +936,7 @@ SDF).
 <p>
 This task allows to read into the Spartan's calculation folder and convert the last geometry into a standard chemical structure file (SDF, XYZ).
 To perform this task use the following
-parameters (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/spartan/SpartanOutputHandler.html">SpartanOutputHandler</a>): <br>
+parameters (see also <a href="../src/main/java/autocompchem/chemsoftware/spartan/SpartanOutputHandler.java">SpartanOutputHandler</a>): <br>
 </p>
 <ul>
 <li>
@@ -975,7 +956,7 @@ For instance:
 <li>
 (optional)<b>SPRTERRORS</b>: path to the folder storing
 Spartan known
-<a href="../../uibkvant/doc/uibkvant/chemsoftware/errorhandling/ErrorMessage.html">ErrorMessage</a>s.
+<a href="../src/main/java/autocompchem/chemsoftware/errorhandling/ErrorMessage.java">ErrorMessage</a>s.
 </li>
 <li>
 (optional) <b>VERBOSITY</b>: verbosity level.
@@ -1001,14 +982,14 @@ SDF).
 
 <h4><a id="ExtractVibModuleForceConstants">ExtractVibModuleForceConstants</a></h4>
 <p>This tasks allows to pick selected force field parameters from the output file of the vibrational analysis performed by the software <a href="http://molwiki.org/wiki/VibModule">VibModule</a> (see also <a href="http://iopscience.iop.org/article/10.1088/1742-6596/633/1/012076">the related publication</a>).</p>
-<p>All the parameters must be in the form specified as follows (see also <a href="../../uibkvant/doc/uibkvant/chemsoftware/vibmodule/VibModuleOutputHandler.html">VibModuleOutputHandler</a>):
+<p>All the parameters must be in the form specified as follows (see also <a href="../src/main/java/autocompchem/chemsoftware/vibmodule/VibModuleOutputHandler.java">VibModuleOutputHandler</a>):
 <ul>
 	<li><b>MOLFILE</b>: pathname of the molecular representation of the system
 	analyzed by VibModule.</li>
 	<li><b>VMFILE</b>: pathname of the VibModule output file.</li>
 	<li>(optional) <b>VERBOSITY</b>: verbosity level. </li>
 	<li>(optional) <b>OUTFILE</b>: name of the file where to write the output </li>
-	<li>(optional) <b>INTCOORDBYSMARTS</b>: definition of internal coordinates (IC) by SMARTS. A multi line block (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>) can be used defining one IC-defining rule per line. The syntax is defined in the <a href="../../uibkvant/doc/uibkvant/chemsoftware/vibmodule/VibModuleOutputHandler.html">VibModuleOutputHandler</a> page.</li>
+	<li>(optional) <b>INTCOORDBYSMARTS</b>: definition of internal coordinates (IC) by SMARTS. A multi line block (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>) can be used defining one IC-defining rule per line. The syntax is defined in the <a href="../src/main/java/autocompchem/chemsoftware/vibmodule/VibModuleOutputHandler.java">VibModuleOutputHandler</a> page.</li>
 </ul></p>
 
 <div style="background-color: rgb(129, 247, 159);" align="right">
@@ -1018,7 +999,7 @@ SDF).
 <h4><a id="ModifyGeometry">ModifyGeometry</a></h4>
 <p>
 This task allows to move all or some specific atoms in space according to a given transformation (see also
-<a href="../../uibkvant/doc/uibkvant/molecule/MolecularGeometryEditor.html">MolecularGeometryEditor</a>). The geometrical transformation is defined as a step in Cartesian coordinates, that can be scaled one or more times. In the latter case, a sequence of new geometries is generated. The following parameters can be used to control the task:
+<a href="../src/main/java/autocompchem/molecule/geometry/MolecularGeometryEditor.java">MolecularGeometryEditor</a>). The geometrical transformation is defined as a step in Cartesian coordinates, that can be scaled one or more times. In the latter case, a sequence of new geometries is generated. The following parameters can be used to control the task:
 <ul>
 <li>
 <b>INFILE</b> pathname of the SDF file containing the molecular
@@ -1073,7 +1054,7 @@ the atoms of the molecular system given via the INFILE keyword.
 </div>
 
 <h4><a id="RemoveDummyAtoms">RemoveDummyAtoms</a></h4>
-<p>This task allows to take a molecular representation (as SDF) and remove dummy atoms. Note that if none of the possible keyword is given nothing will be done (see also <a href="../../uibkvant/doc/uibkvant/molecule/dummyobjects/DummyObjectsHandler.html">DummyObjectsHandler</a>). The followgin parameters can be used to control the task:
+<p>This task allows to take a molecular representation (as SDF) and remove dummy atoms. Note that if none of the possible keyword is given nothing will be done (see also <a href="../src/main/java/autocompchem/molecule/dummyobjects/DummyObjectsHandler.java">DummyObjectsHandler</a>). The followgin parameters can be used to control the task:
 <ul>
 <li>
 <b>INFILE</b> pathname of the SDF file containing the molecular
@@ -1153,7 +1134,7 @@ of dummy atom to remove. Compatible with both LINEARITIES and MULTIHAPTO.
 <h4><a id="PruneMolecules">PruneMolecules</a></h4>
 <p>
 <p>This task allows to take a molecular representation (as SDF) and remove single atoms or molecular fragments (see also
-<a href="../../uibkvant/doc/uibkvant/molecule/MolecularPruner.html">MolecularPruner</a>). To perform this task the following parameters are used:</p>
+<a href="../src/main/java/autocompchem/molecule/MolecularPruner.java">MolecularPruner</a>). To perform this task the following parameters are used:</p>
 <ul>
 <li>
 <b>INFILE</b> path or name of the SDF file containing the structure
@@ -1185,7 +1166,7 @@ a tolerance value (reported as percentage), then the two atoms are
 considered as bonded atoms. 
  Note that the bonds existing in the input file will not be removed, and currently the new bond is always a SINGLE bond; no attempt to guess the bond order is made
 (see also 
-<a href="../../uibkvant/doc/uibkvant/molecule/connectivity/ConnectivityGenerator.html">ConnectivityGenerator</a>). The following parameters are used when performing this task:
+<a href="../src/main/java/autocompchem/molecule/connectivity/ConnectivityGenerator.java">ConnectivityGenerator</a>). The following parameters are used when performing this task:
 </p>
 <ul>
 <li>
@@ -1219,7 +1200,7 @@ An additional tolerance can be defined for atoms
 sharing a common, bonded neighbor (2nd shell neighbors one to each
 other - 1,3 relation. Note that the bonds existing in the input file
 will not be removed.
-(see also <a href="../../uibkvant/doc/uibkvant/molecule/connectivity/ConnectivityGenerator.html">ConnectivityGenerator</a>)
+(see also <a href="../src/main/java/autocompchem/molecule/connectivity/ConnectivityGenerator.java">ConnectivityGenerator</a>)
 </p>
 <ul>
 <li>
@@ -1255,7 +1236,7 @@ This task is used to change the elemental symbol of an atom. The target
 atoms must be identified unambiguously by means of SMARTS queries. The
 connectivity and the total number of atoms remain the same. The
 following parameters are needed to perform this task (see also
-<a href="../../uibkvant/doc/uibkvant/molecule/MolecularMutator.html">MolecularMutator</a>):
+<a href="../src/main/java/autocompchem/molecule/MolecularMutator.java">MolecularMutator</a>):
 </p>
 <ul>
 <li>
@@ -1291,7 +1272,7 @@ continuously connected network of covalently bonded atom, and proceed
 following the connectivity. The user can request to start the reordered
 list from a particular type of atom (i.e., the source atom) which is
 identified by means of SMARTS queries. The following parameters are
-needed to perform this task (see also <a href="../../uibkvant/doc/uibkvant/molecule/MolecularReorderer.html">MolecularReorderer</a>):
+needed to perform this task (see also <a href="../src/main/java/autocompchem/molecule/MolecularReorderer.java">MolecularReorderer</a>):
 </p>
 <ul>
 <li>
@@ -1337,7 +1318,7 @@ by the used in this option
 <p>
 Attempts to compare the structure of two molecules by attempting the
 superposition of their maximum common substructure (from CDK).
-The parameters needed for this task are the following (see also <a href="../../uibkvant/doc/uibkvant/molecule/MolecularComparator.html">MolecularComparator</a>):
+The parameters needed for this task are the following (see also <a href="../src/main/java/autocompchem/molecule/MolecularComparator.java">MolecularComparator</a>):
 </p>
 <ul>
 <li> 
@@ -1371,7 +1352,7 @@ rotated structure of the input molecule (from INFILE)
 Focussed the analysis on the geometry of a single atom that is found in 
 two molecules. Useful to compare the coordination geometry of the same 
 metal in two different complexed, or to evaluate the geometrical deviation
-of the same atom in two different conformers or isomers (see also <a href="../../uibkvant/doc/uibkvant/molecule/MolecularComparator.html">MolecularComparator</a>).
+of the same atom in two different conformers or isomers (see also <a href="../src/main/java/autocompchem/molecule/MolecularComparator.java">MolecularComparator</a>).
 </p>
 <ul>
 <li>
@@ -1403,7 +1384,7 @@ atom of which geometry is to be compared in the two molecules
 <p>
 Compares the connectivity matrix of two molecules looking for
 inconsistent bonds (connections). Useful to compare structures before 
-and after recalculation of the connectivity matrix (see also <a href="../../uibkvant/doc/uibkvant/molecule/MolecularComparator.html">MolecularComparator</a>).
+and after recalculation of the connectivity matrix (see also <a href="../src/main/java/autocompchem/molecule/MolecularComparator.java">MolecularComparator</a>).
 </p>
 <ul>
 <li>
@@ -1460,7 +1441,7 @@ molecules
  and dihedral angles. These quantities are calculated for groups of atoms 
 identified by means of SMARTS queries, thus allowing to specify either 
 generic or specific types of atoms (see also
-<a href="../../uibkvant/doc/uibkvant/molecule/MolecularMeter.html">MolecularMeter</a>).
+<a href="../src/main/java/autocompchem/molecule/MolecularMeter.java">MolecularMeter</a>).
 Parameters to be provided to perform this task are:
 </p>
 <ul>
@@ -1471,7 +1452,7 @@ name/title)
 </li>
 <li>
 <b>ATOMINDEXES</b> single or multi line argument
-(see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>) providing the definitions
+(see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>) providing the definitions
 of the quantities to be measured.
 Each line codifies for a single quantity. All lines should respect the
 following format:
@@ -1497,7 +1478,7 @@ Moreover, note that the list is ordered.
 </li>
 <li>
 <b>SMARTS</b> single or multi line argument 
-(see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>) providing the definitions
+(see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>) providing the definitions
 of the quantities to be measured.    
 Each line codifies for a single quantity. All lines should respect the    
 following format:
@@ -1553,7 +1534,7 @@ where <i>allowance</i> is a value in angstroms that allows to specify that
 some atoms can came closer to each other that the sum of their van der Waals 
 radii.<br>
 Parameters needed by the 
-<a href="../../uibkvant/doc/uibkvant/molecule/atomclashes/AtomClashAnalyzer.html">AtomClashAnalyzer</a>:
+<a href="../src/main/java/autocompchem/molecule/atomclashes/AtomClashAnalyzer.java">AtomClashAnalyzer</a>:
 </p><ul>
 <li> 
 <b>INFILE</b> name of the SDF file containing the structures
@@ -1561,7 +1542,7 @@ Multiple structures can be provided (better if mols have different
 name/title)
 </li>
 <li>
-(optional) <b>TARGETSMARTS</b> single or multi line (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>) argument providing the
+(optional) <b>TARGETSMARTS</b> single or multi line (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>) argument providing the
 list of SMARTS that identify the atoms to be included in the 
 analysis.
 </li>
@@ -1608,7 +1589,7 @@ format:
 Identification and analysis of metal-chelating systems in terms of ligand denticity.
 
 Parameters needed by the 
-<a href="../../uibkvant/doc/uibkvant/molecule/chelation/ChelateAnalyzer.html">ChelateAnalyzer</a>:
+<a href="../src/main/java/autocompchem/molecule/chelation/ChelateAnalyzer.java">ChelateAnalyzer</a>:
 </p><ul>
 <li> 
 <b>INFILE</b> name of the SDF file containing the structures
@@ -1620,7 +1601,7 @@ name/title)
 on the characterization of chelating systems
 </li>
 <li>
-(optional) <b>TARGETSMARTS</b> single or multi line (see <a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>) argument providing the
+(optional) <b>TARGETSMARTS</b> single or multi line (see <a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>) argument providing the
 list of SMARTS that identify the atoms to be included in the 
 analysis.
 </li>
@@ -1644,12 +1625,12 @@ is used to define the
 atom-matching rules for assigning a specific basis set to one or more
 atoms in the system. One rule for each line.
 The syntax of each line is defined in the
-<a href="../../uibkvant/doc/uibkvant/modeling/basisset/BSMatchingRule.html">BSMatchingRule</a>, and that for defining
-a multi line <a href="../../uibkvant/doc/uibkvant/parameters/Parameter.html">Parameter</a> in the
-<a href="../../uibkvant/doc/uibkvant/parameters/ParameterStorage.html">ParameterStorage</a>'s documentation.
+<a href="../src/main/java/autocompchem/modeling/basisset/BSMatchingRule.java">BSMatchingRule</a>, and that for defining
+a multi line <a href="../src/main/java/autocompchem/datacollections/Parameter.java">Parameter</a> in the
+<a href="../src/main/java/autocompchem/datacollections/ParameterStorage.java">ParameterStorage</a>'s documentation.
 </li>
 <li>(optional)
-<b>ALLOWPARTIALMATCH</b> allows to tollerate partial basis set that do not cover all atoms in the
+<b>ALLOWPARTIALMATCH</b> allows to tolerate partial basis set that do not cover all atoms in the
 molecular structure. Any value other than <code>true</code>
 will forbid partial matches.
 </li>

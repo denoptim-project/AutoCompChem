@@ -2240,6 +2240,8 @@ rotational constants/cm⁻¹ :        0.3086292E-02   0.2325161E-02   0.1938584E
            -------------------------------------------------
  projected vibrational frequencies (cm⁻¹)
 eigval :       -0.00    -0.00    -0.00     0.00     0.00     0.00
+Molecule has no symmetry elements
+It seems to be the C1 point group
 eigval :     -512.87  -440.02  -282.63  -120.79  -105.98   -84.53
 eigval :       23.21    27.87    29.44    36.15    39.09    47.67
 eigval :       55.07    58.79    67.27    72.89    79.27    86.51
