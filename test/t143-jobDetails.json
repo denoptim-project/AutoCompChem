@@ -81,6 +81,10 @@
                   "value": "XYZ"
                 },
                 {
+                  "reference": "ZEROBASED",
+                  "value": "false"
+                },
+                {
                   "reference": "labelType",
                   "value": "IndexBased"
                 }

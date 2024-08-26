@@ -3,7 +3,7 @@
     "key": "RULENAMEROOT",
     "casedKey": "ruleNameRoot",
     "type": "<String>",
-    "doc": "String used to name the rules meant to find atom tuples. This sting helps making the log more understandable but does not affect the behavior of the algorithms."
+    "doc": "String used to name the rules meant to find atom tuples. This string helps making the log more understandable but does not affect the behavior of the algorithms."
   },
   {
     "key": "VALUEDKEYWORDS",
@@ -15,7 +15,7 @@
     "key": "BOOLEANKEYWORDS",
     "casedKey": "booleanKeywords",
     "type": "<String>",
-    "doc": "Provides a space-separated list of keywords that should be in interpreted as the keywords without any value (i.e., 'mute' keywords or 'boolean' keywords). Since no value is expected, any word following the keyword will be analyzed independently on the preceeding boolean keyword. Moreover, if any ':' or '=' is given in the definition of the keyword it will be ignored and threated as part of the keyword. Default boolean keywords that are always recognized are:\n --> 'GetCurrentValue': requests the determination of the value of the internal coordinate defined by the tuple: distance, angle, dihedral angle for 4-tuples. This keyword is ignored for N-tuples with N different from 2, 3, or 4.\n --> 'OnlyBonded': limits to tuples of atoms connected to form a path visiting the tuple in the orded given in the tuple matching rule. For example, a SMARTS-based rule for tuple '[#1] [#6] [#7]' may be limited to match only substructures where the H atom is connected with any bond to the C atom, which is connected with any bond to the N atom.\n Default boolean keywords do not need to be specified in this parameter."
+    "doc": "Provides a space-separated list of keywords that should be in interpreted as the keywords without any value (i.e., 'mute' keywords or 'boolean' keywords). Since no value is expected, any word following the keyword will be analyzed independently on the preceeding boolean keyword. Moreover, if any ':' or '=' is given in the definition of the keyword it will be ignored and threated as part of the keyword. Default boolean keywords that are always recognized are:\n --> 'GetCurrentValue': requests the determination of the value of the internal coordinate defined by the tuple: distance, angle, dihedral angle for 4-tuples. This keyword is ignored for N-tuples with N different from 2, 3, or 4.\n --> 'OnlyBonded': limits to tuples of atoms connected to form a path visiting the tuple in the orded given in the tuple matching rule. For example, a SMARTS-based rule for tuple '[#1] [#6] [#7]' may be limited to match only substructures where the H atom is connected with any bond to the C atom, which is connected with any bond to the N atom.\n --> 'getAtomLabels': request the generation of formatted atom labels to be used when reporting the atom tuple defined by the specific rule that contains this keyword. This keyword activates all the keywords associated with the 'GenerateAtomLabels' task.\n Default boolean keywords do not need to be specified in this parameter."
   },  
   {
     "key": "SMARTS",

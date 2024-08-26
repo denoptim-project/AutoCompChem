@@ -1,0 +1,168 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "!",
+          "keywords": [
+            {
+              "reference": "method",
+              "value": "RHF",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "*",
+          "keywords": [
+            {
+              "reference": "coordtype",
+              "value": "xyzfile",
+              "isLoud": false
+            },
+            {
+              "reference": "filename",
+              "isLoud": false,
+              "accTaskParams": [
+                {
+                  "reference": "SUFFIX",
+                  "value": ".xyz"
+                },
+                {
+                  "reference": "TASK",
+                  "value": "getpathname"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "eprnmrs",
+          "dirData": [
+            {
+              "reference": "selectedAtoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getAtomSpecificString"
+                },
+                {
+                  "reference": "fieldSeparator",
+                  "value": " "
+                },
+                {
+                  "reference": "LABELTYPE",
+                  "value": "ElementBased"
+                },
+                {
+                  "reference": "ZEROBASED",
+                  "value": "false"
+                },
+                {
+                  "reference": "SMARTS", 
+                  "value": "[$([#1][#6;X3]([#6])~[Ru])] getAtomLabels prefix: Nuclei = suffix: { shift }\n[$([#1][#6;X4]([#6;H3])([#6;H3])[#8])] prefix: Nuclei = suffix: { shift }"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "bis",
+          "dirData": [
+            {
+              "reference": "selectedAtoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getAtomSpecificString"
+                },
+                {
+                  "reference": "idSeparator",
+                  "value": "@"
+                },
+                {
+                  "reference": "fieldSeparator",
+                  "value": "^"
+                },
+                {
+                  "reference": "LABELTYPE",
+                  "value": "IndexBased"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[$([#1][#6;X3]([#6])~[Ru])] [#6] OnlyBonded getAtomLabels prefix: bisNuclei = suffix: { shift }\n[$([#1][#6;X4]([#6;H3])([#6;H3])[#8])]  [#6] OnlyBonded prefix: bisNuclei = suffix: { shift }"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tris",
+          "dirData": [
+            {
+              "reference": "selectedAtoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getAtomSpecificString"
+                },
+                {
+                  "reference": "fieldSeparator",
+                  "value": "/"
+                },
+                {
+                  "reference": "idSeparator",
+                  "value": "-"
+                },
+                {
+                  "reference": "LABELTYPE",
+                  "value": "AtomicNumber"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[$([#1][#6;X3]([#6])~[Ru])] [#6] OnlyBonded getAtomLabels prefix: trisNuclei = suffix: { shift }\n[$([#1][#6;X4]([#6;H3])([#6;H3])[#8])]  [#6] OnlyBonded prefix: trisNuclei = suffix: { shift }"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "quater",
+          "dirData": [
+            {
+              "reference": "selectedAtoms",
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "getAtomSpecificString"
+                },
+                {
+                  "reference": "LABELTYPE",
+                  "value": "IndexOnly"
+                },
+                {
+                  "reference": "fieldSeparator",
+                  "value": " "
+                },
+                {
+                  "reference": "idSeparator",
+                  "value": " "
+                },
+                {
+                  "reference": "ZEROBASED",
+                  "value": "false"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[$([#1][#6;X3]([#6])~[Ru])] [#6] OnlyBonded getAtomLabels prefix: quaterNuclei = suffix: { shift }\n[$([#1][#6;X4]([#6;H3])([#6;H3])[#8])]  [#6] getAtomLabels OnlyBonded prefix: quaterNuclei = suffix: { shift }"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
