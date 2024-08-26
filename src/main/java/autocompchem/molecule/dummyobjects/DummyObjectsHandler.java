@@ -699,14 +699,13 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
                 mol.removeBond(du,nbr);
             }
             
-            // Here we change the connectivity between multihapto
-            //ligand  and central atom
+            // Here we change the connectivity between multihapto ligand and central atom
             if ((type.equals(DummyAtomType.MULTIHAPTO) 
             		|| type.equals(DummyAtomType.ANY))
             		&& nbrOfDu.size()>1)
             {
             	//Identify atoms of ligand in mupltihapto system
-	            logger.trace(" Fixing connectivity for: " 
+	            logger.trace("Fixing connectivity for: " 
 	                		+ MolecularUtils.getAtomRef(du,mol)
 	                        + " #neighbours: "+nbrOfDu.size());
 	

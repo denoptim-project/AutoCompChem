@@ -509,7 +509,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         			logger);
         }
         
-        String msg = " Actual Cartesian move: " + NL;
+        String msg = "Actual Cartesian move: " + NL;
         for (int i=0; i<actualMove.size(); i++)
         {
             Point3d pt = actualMove.get(i);
@@ -1012,7 +1012,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix(iac);
-        String msg = " Original ZMatrix: " + NL;
+        String msg = "Original ZMatrix: " + NL;
         List<String> txt = inZMatMol.toLinesOfText(false,false);
         for (int i=0; i<txt.size(); i++)
         {
@@ -1024,14 +1024,14 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         ZMatrix actualZMatMove = new ZMatrix();
         if (iac.getAtomCount() != zmtMove.getZAtomCount())
         {
-            logger.fatal(" TODO: what if only some IC is modified?");
+            logger.fatal("TODO: what if only some IC is modified?");
             Terminator.withMsgAndStatus("ERROR! Still in development",-1);
         }
         else
         {
             actualZMatMove = new ZMatrix(zmtMove.toLinesOfText(false,false));
         }
-        String msg2 = " Actual ZMatrixMove: " + NL;
+        String msg2 = "Actual ZMatrixMove: " + NL;
         List<String> txt2 = actualZMatMove.toLinesOfText(false,false);
         for (int i=0; i<txt2.size(); i++)
         {
@@ -1044,7 +1044,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	AtomContainerSet results = new AtomContainerSet();
         for (int j=0; j<scaleFactors.size(); j++)
         {
-            logger.info(" Generating results for scaling factor " 
+            logger.info("Generating results for scaling factor " 
             		+ scaleFactors.get(j));
 
             // Apply ZMatrixMove

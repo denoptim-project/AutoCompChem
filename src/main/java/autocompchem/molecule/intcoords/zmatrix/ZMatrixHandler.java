@@ -221,7 +221,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             	 		+ "ZMatrix in '" + tmplZMatFile + "'",-1);
             } else if (templates.size()>1)
             {
-                logger.warn(" Found " + templates.size() 
+                logger.warn("Found " + templates.size() 
                 	+ " ZMatrix templates, but we'll use only the first one.");
             }
             this.tmplZMat = templates.get(0);

@@ -433,7 +433,7 @@ public class ForceFieldEditor extends Worker
         }
 
         //Assign atom type/class
-        String paramsLog = " Mean force field parameters (over all " 
+        String paramsLog = "Mean force field parameters (over all " 
                             + molFiles.size() + " mols): " + NL;
         for (ForceFieldParameter ffp : ffParStats.getMeanFFPar())
         {
@@ -443,7 +443,7 @@ public class ForceFieldEditor extends Worker
                             ForceFieldConstants.SMARTSQUERYATMTYP).toString();
                 if (!smartsToAtmTyp.keySet().contains(smartsKey))
                 {
-                    logger.warn(" WARNING! No atom type/class definition for "
+                    logger.warn("WARNING! No atom type/class definition for "
                     		+ "SMARTS '"
                             + smartsKey + "'. Cannot assign force field "
                             + "parameter " + ffp.toSimpleString());

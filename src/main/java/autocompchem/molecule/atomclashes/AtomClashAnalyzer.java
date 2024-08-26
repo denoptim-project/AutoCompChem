@@ -261,7 +261,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
   			List<AtomClash> clashes = analyzeAtomClashes(iac);
   			if (clashes.size() > 0)
             {
-                String msg = " Found " + clashes.size() + " atom clashes: " + NL;
+                String msg = "Found " + clashes.size() + " atom clashes: " + NL;
                 for (AtomClash ac : clashes)
                 	msg = msg + ac + NL;
                 logger.info(msg);
@@ -366,7 +366,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
             for (IAtom a : mol.atoms())
                 targets.add(a);
         }
-        logger.debug(" Searching clashes among " + targets.size() + " atoms");
+        logger.debug("Searching clashes within " + targets.size() + " atoms");
         logger.trace("List of atoms: " + targets);
 
         //Get custom allowances

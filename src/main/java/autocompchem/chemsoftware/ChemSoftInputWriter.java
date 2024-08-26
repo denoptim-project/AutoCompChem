@@ -295,20 +295,20 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         	if (inFile==null)
         	{
         		outFileNameRoot = "accOutput";
-                logger.debug(" Neither '" 
+                logger.debug("Neither '" 
 	        				 + ChemSoftConstants.PAROUTFILE + "' nor '" 
 	        				 + ChemSoftConstants.PAROUTFILEROOT + "' found and no '"
 	        				 + ChemSoftConstants.PARGEOMFILE + "' found. " + NL
-	                         + " Root of any output file name set to '" 
+	                         + "Root of any output file name set to '" 
 	                         + outFileNameRoot + "'.");
         	} else {
         		outFileNameRoot = FileUtils.getRootOfFileName(
         				inFile.getAbsolutePath());
-                logger.debug(" Neither '" 
+                logger.debug("Neither '" 
                     		+ ChemSoftConstants.PAROUTFILEROOT + "' nor '"
                     		+ ChemSoftConstants.PAROUTFILE 
                     		+ "' parameter found. " + NL
-                            + " Root of any output file name set to '" 
+                            + "Root of any output file name set to '" 
                             + outFileNameRoot + "'.");
         	}
             outFile = new File(outFileNameRoot + inpExtrension);

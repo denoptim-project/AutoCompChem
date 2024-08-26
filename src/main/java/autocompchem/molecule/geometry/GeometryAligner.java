@@ -500,7 +500,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
                 bestAlignment.setRMSDIM(locRMSDIAD);
             }
             
-            logger.trace(" RSMD from the alignmentt: " + locRMSD + 
+            logger.trace("RSMD from the alignmentt: " + locRMSD + 
             		" RSM deviation of intramolecular distances: " 
             		+ locRMSDIAD);
         } //End loop over atom mapping

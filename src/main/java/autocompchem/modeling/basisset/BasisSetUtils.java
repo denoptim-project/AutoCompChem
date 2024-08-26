@@ -59,7 +59,7 @@ public class BasisSetUtils
         boolean isECPSection = false;
         boolean foundBSSection = false;
         CenterBasisSet cbs;
-        logger.debug(" Importing basis set from GBS file " + inFile);
+        logger.debug("Importing basis set from GBS file " + inFile);
         List<String> lines = IOtools.readTXT(inFile);
         for (int i=0; i<lines.size(); i++)
         {

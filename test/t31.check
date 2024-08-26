@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep -q ' Found 1 atom clashes' t31.log
+grep -q 'Found 1 atom clashes' t31.log
 if [ $? != 0 ] ; then
   echo NOT Passed 1
   exit -1

@@ -153,7 +153,7 @@ public class CoordinationGeometryUtils
             lines.add(line);
         }
 
-        String msg = " Comparison between reference geometries (CN=" + cn + ")";
+        String msg = "Comparison between reference geometries (CN=" + cn + ")";
         msg = msg + NL + head + NL;
         for (String s: lines)
         	msg = msg + s + NL;

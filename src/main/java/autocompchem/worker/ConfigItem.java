@@ -142,7 +142,7 @@ public class ConfigItem
 			StringBuilder sb = new StringBuilder();
 			
 			// Make sure the opening sentence fits the maxLineLength
-			String openingSentence = " Settings pertaining " + tag + ": ";
+			String openingSentence = "Settings pertaining " + tag + ": ";
 			int previousRowsLength = 0;
 			int maxLineLength = 76;
 			String[] words = openingSentence.split("[^\\S\\r\\n]"); 

@@ -176,7 +176,7 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
     	{
     		List<Chelant> chelants = analyzeChelation(iac);
     		
-            String record = " Ligands: " + chelants.size() + " Denticity: ";
+            String record = "Ligands: " + chelants.size() + " Denticity: ";
             for (Chelant c : chelants)
             {
                 record = record + c.getDenticity() + " ";

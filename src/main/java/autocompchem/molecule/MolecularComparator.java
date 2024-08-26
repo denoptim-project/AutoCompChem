@@ -290,7 +290,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
         IAtom inAtm = iac.getAtom(centerID);
 
         //For second molecule
-        logger.trace(" Trying to identify the target atom in '"
+        logger.trace("Trying to identify the target atom in '"
                 + MolecularUtils.getNameOrID(referenceMol) + "'.");
         ManySMARTSQuery msqR = new ManySMARTSQuery(referenceMol, SMARTSAllInOne);
         if (msqR.hasProblems())

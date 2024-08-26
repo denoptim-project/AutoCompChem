@@ -1,5 +1,5 @@
 #!/bin/bash
-grep -q ' Found 5 atom clashes' t34.log
+grep -q 'Found 5 atom clashes' t34.log
 if [ $? != 0 ] ; then
   echo NOT Passed 1
   exit -1

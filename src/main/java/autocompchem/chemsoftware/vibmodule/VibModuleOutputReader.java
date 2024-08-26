@@ -198,7 +198,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
          List<String> sortedMasterNames = getSortedSMARTSRefNames(smarts);
 
          Map<String,List<String>> map = new HashMap<String,List<String>>();
-         logger.debug(" Importing options for IC-identifying SMARTS");
+         logger.debug("Importing options for IC-identifying SMARTS");
          String[] lines = allLines.split("\\r?\\n");
          int ii=-1;
          for (int i=0; i<lines.length; i++)
@@ -266,7 +266,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
     private Map<String,SMARTS> getNamedICSMARTS(String allLines)
     {
         Map<String,SMARTS> map = new HashMap<String,SMARTS>();
-        logger.debug(" Importing SMARTS to identify ICs");
+        logger.debug("Importing SMARTS to identify ICs");
         String[] lines = allLines.split("\\r?\\n");
         int ii = -1;
         for (int i=0; i<lines.length; i++)
@@ -896,7 +896,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
                         int icIndex = Integer.parseInt(icff.getName()) - 1;
                         double fk = vmFFKs.get(icIndex);
                         type = ic.getType();
-                        logger.debug(" Force constant for "  
+                        logger.debug("Force constant for "  
                             + type + " term " + ic.getIDs() 
                             + " taken from VibModule IC " + (icIndex+1));
                         saFrcKst.add(fk);
@@ -955,7 +955,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         }
         
         //Print summary of results
-        String summary = " FF-Parameters extracted:" + NL;
+        String summary = "FF-Parameters extracted:" + NL;
         for (ForceFieldParameter ffPar : vmFFPars)
         {
         	summary = summary + " -> " + ffPar.toSimpleString() + NL;

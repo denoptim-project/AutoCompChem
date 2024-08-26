@@ -396,7 +396,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
         // Elemental symbol-based rules
         for (String rulRef : elmnts.keySet())
         {
-            logger.debug(" Setting basis set from rule '"
+            logger.debug("Setting basis set from rule '"
                               + rulRef + "' (Element-based rule).");
             BSMatchingRule rule = rules.get(rulRef);
             String elSymb = rule.getKey();
@@ -541,7 +541,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
         }
         String propName = BasisSetConstants.BSATMPROP + iBS;
         atm.setProperty(propName,rulRef);
-        logger.debug(" Setting basis set from rule '" 
+        logger.debug("Setting basis set from rule '" 
                               + rulRef + "' to atom "
                               + MolecularUtils.getAtomRef(atm,mol));
     }

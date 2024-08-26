@@ -196,7 +196,7 @@ public class ConnectivityUtils
     	double maxDelta = -10000.0;
         if (mol.getAtomCount() == ref.getAtomCount()) 
         {
-        	logger.debug(" Compatison of bond distances:");
+        	logger.debug("Compatison of bond distances:");
             for (IBond refBnd : ref.bonds())
             {
             	int iA = ref.indexOf(refBnd.getAtom(0));
@@ -229,7 +229,7 @@ public class ConnectivityUtils
         				+ "-" 
         				+ MolecularUtils.getAtomRef(refBnd.getAtom(1),ref)
         				+ ": |" + refDist + "-" + molDist + "| = " + delta;
-            	logger.debug("  -> "+line);
+            	logger.debug(line);
             	if (delta > maxDelta)
             	{
             		maxDelta = delta;

@@ -339,12 +339,12 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         for (IAtom src : sources)
         {
             n++;
-            logger.trace(" Attempt to reorder from source-"+n+": " + 
+            logger.trace("Attempt to reorder from source-"+n+": " + 
             		MolecularUtils.getAtomRef(src,iac));
 
             if (src.getProperty(visitedFlag) != null)
             {
-                logger.trace(" Skip: previously visited src atom.");
+                logger.trace("Skip: previously visited src atom.");
                 continue;
             }
 
@@ -384,6 +384,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         Map<Integer,Map<Integer,Integer>> newFromOldID =
                                     new HashMap<Integer,Map<Integer,Integer>>();
         Map<Integer,Integer> fragFromOldID = new HashMap<Integer,Integer>();
+        String record = "";
         for (int id=0; id<iac.getAtomCount(); id++)
         {
             IAtom atm = iac.getAtom(id);
@@ -409,7 +410,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             int frgId = (Integer) atm.getProperty(visitedFlag);
             int newId = (Integer) atm.getProperty(ordCounter);
         
-            logger.debug(" " + s + " frg:" + frgId + " ord:" + newId);
+            record = record + NL + s + " frg:" + frgId + " ord:" + newId;
        
             fragFromOldID.put(id,frgId); 
             if (oldFromNewID.containsKey(frgId))
@@ -428,6 +429,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
                 newFromOldID.put(frgId,o2nMap);
             }
         }
+        logger.debug(record);
 
         List<Integer> sortedFrgIds = new ArrayList<Integer>();
         sortedFrgIds.addAll(oldFromNewID.keySet());
