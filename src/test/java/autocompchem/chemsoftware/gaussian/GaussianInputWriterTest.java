@@ -1,6 +1,8 @@
 package autocompchem.chemsoftware.gaussian;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -27,6 +29,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
@@ -39,9 +42,12 @@ import autocompchem.chemsoftware.Directive;
 import autocompchem.chemsoftware.DirectiveData;
 import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.basisset.BasisSetConstants;
+import autocompchem.modeling.basisset.BasisSetGenerator;
 import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
@@ -58,18 +64,20 @@ import autocompchem.worker.WorkerConstants;
 public class GaussianInputWriterTest 
 {
     private final String SEP = System.getProperty("file.separator");
+    private final String NL = System.getProperty("line.separator");
 
     @TempDir 
     File tempDir;
     
 //-----------------------------------------------------------------------------
 
-    //TODO-gg update or remove @Test
-    public void testJobDetailsSource() throws Exception
+    @Test
+    public void testPrepareInputTask() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory");
         
-        File jdFile = new File(tempDir.getAbsolutePath() + SEP + "ccj.jd");
+        File jdFile = new File(tempDir.getAbsolutePath() + SEP + "ccj" 
+        		+ ChemSoftConstants.JSONJDEXTENSION);
         File parFile = new File(tempDir.getAbsolutePath() + SEP + "acc.par");
     	File molFile = new File(tempDir.getAbsolutePath() + SEP + "mol.sdf");
     	final String INPNAMEROOT = "molinp";
@@ -79,12 +87,17 @@ public class GaussianInputWriterTest
     	mol.addAtom(new Atom("C", new Point3d(1.0,2.0,3.0)));
     	mol.addAtom(new Atom("O", new Point3d(2.5,2.0,3.0)));
     	mol.addBond(0, 1, IBond.Order.TRIPLE);
+    	mol.addAtom(new Atom("He", new Point3d(10.0,2.0,3.0)));
+    	mol.addAtom(new Atom("He", new Point3d(11.0,2.0,3.0)));
+    	mol.addAtom(new Atom("He", new Point3d(12.0,2.0,3.0)));
+    	mol.addAtom(new Atom("He", new Point3d(13.0,2.0,3.0)));
+    	mol.addAtom(new Atom("He", new Point3d(14.0,2.0,3.0)));
+    	mol.addAtom(new Atom("He", new Point3d(15.0,2.0,3.0)));
+    	mol.addAtom(new Atom("He", new Point3d(16.0,2.0,3.0)));
     	IOtools.writeSDFAppend(molFile, mol, false);
     	
     	CompChemJob ccj = createTestJob();
-    	
-    	IOtools.writeTXTAppend(jdFile, 
-    			ccj.toLinesJobDetails(), false);
+    	IOtools.writeJobToJSON(ccj, jdFile);
     	
     	List<String> parLines = new ArrayList<String>();
     	parLines.add(WorkerConstants.PARTASK + ParameterConstants.SEPARATOR
@@ -106,47 +119,39 @@ public class GaussianInputWriterTest
         job.run();
         
         File inpFile = new File(inpRoot + GaussianConstants.GAUINPEXTENSION);
-        //TODO-gg
-        assertTrue(inpFile.exists(),"Xcontrol file exists");
-        assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),"$chrg 0"), 
-        		"Generation of charge information");
-        assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),"$spin 1"), 
-        		"Generation of spin-related information");
-        assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),
-        		"logfile=trajectory.xyz"),"Generation of logfile option");
-        assertTrue(1 == FileAnalyzer.count(inpFile.getAbsolutePath(),
-        		"elements: O,C,P"),"Keyword specific separator");
         
-        List<String> linesInp = IOtools.readTXT(inpFile);
- 
-        //TODO-gg this test is not finished: finish it!
+        assertTrue(inpFile.exists(),"INP file exists");
+        assertEquals(2, FileAnalyzer.count(inpFile.getAbsolutePath(),
+        		GaussianConstants.STEPSEPARATOR));
+        assertEquals(7, FileAnalyzer.count(inpFile.getAbsolutePath(),"LANLMB"));
+        assertEquals(7, FileAnalyzer.count(inpFile.getAbsolutePath(),"He*"));
+        assertEquals(2, FileAnalyzer.count(inpFile.getAbsolutePath(),"3 4 5"));
+        assertEquals(1, FileAnalyzer.count(inpFile.getAbsolutePath(),
+        		" archive npa"));
     }
     
 //------------------------------------------------------------------------------
     
     public CompChemJob createTestJob()
     {
-    	//TODO-gg obsolete: tries to reproduce old JobDetails syntax in directives!
-    	
-    	
     	//
     	// Start definition of first step
     	//
     	
-    	Directive dLink = new Directive(GaussianConstants.KEYLINKSEC);
-    	Directive dRoute = new Directive(GaussianConstants.KEYROUTESEC);
-    	Directive dTitle = new Directive(GaussianConstants.KEYTITLESEC);
+    	Directive dLink = new Directive(GaussianConstants.DIRECTIVELINK0);
+    	Directive dRoute = new Directive(GaussianConstants.DIRECTIVEROUTE);
+    	Directive dTitle = new Directive(GaussianConstants.DIRECTIVETITLE);
     	
     	dLink.setKeyword(new Keyword("chk", true, "randomname.chk"));
     	dLink.setKeyword(new Keyword("Nprocshared", true, "36"));
     	dLink.setKeyword(new Keyword("mem", true, "28GB"));
     	
     	// These are intentionally disordered to verify reordering
-    	dRoute.setKeyword(new Keyword(GaussianConstants.SUBKEYMODELMETHOD, 
+    	dRoute.setKeyword(new Keyword(GaussianConstants.KEYMODELMETHOD, 
     			false, "HF"));
-    	dRoute.setKeyword(new Keyword(GaussianConstants.SUBKEYMODELBASISET,
+    	dRoute.setKeyword(new Keyword(GaussianConstants.KEYMODELBASISET,
     			false, "LANL2MB 5d 7f"));
-    	dRoute.setKeyword(new Keyword(GaussianConstants.SUBKEYJOBTYPE, 
+    	dRoute.setKeyword(new Keyword(GaussianConstants.KEYJOBTYPE, 
     			false, "SP"));
     	dRoute.setKeyword(new Keyword("Print", false, "P"));
 
@@ -168,15 +173,15 @@ public class GaussianInputWriterTest
     	// Start definition of second step
     	//
     	
-    	Directive dRoute2 = new Directive(GaussianConstants.KEYROUTESEC);
-    	Directive dTitle2 = new Directive(GaussianConstants.KEYTITLESEC);
-    	Directive dOpts2 = new Directive(GaussianConstants.KEYOPTSSEC);
+    	Directive dRoute2 = new Directive(GaussianConstants.DIRECTIVEROUTE);
+    	Directive dTitle2 = new Directive(GaussianConstants.DIRECTIVETITLE);
+    	Directive dOpts2 = new Directive(GaussianConstants.DIRECTIVEOPTS);
 
-    	dRoute2.setKeyword(new Keyword(GaussianConstants.SUBKEYMODELMETHOD, 
+    	dRoute2.setKeyword(new Keyword(GaussianConstants.KEYMODELMETHOD, 
     			false, "OLYP"));
-    	dRoute2.setKeyword(new Keyword(GaussianConstants.SUBKEYMODELBASISET,
-    			false, "LANL2MB 5d 7f"));
-    	dRoute2.setKeyword(new Keyword(GaussianConstants.SUBKEYJOBTYPE, 
+    	dRoute2.setKeyword(new Keyword(GaussianConstants.KEYMODELBASISET,
+    			false, "GEN 5d 7f"));
+    	dRoute2.setKeyword(new Keyword(GaussianConstants.KEYJOBTYPE, 
     			false, "OPT"));
     	dRoute2.setKeyword(new Keyword("Print", false, "P"));
     	dRoute2.setKeyword(new Keyword(GaussianConstants.GAUKEYGEOM, 
@@ -191,38 +196,35 @@ public class GaussianInputWriterTest
     	dRoute2.addSubDirective(dSCF2);
 
     	dTitle2.setKeyword(new Keyword("Title", false, "Second step"));
+    	DirectiveData ddNBO = new DirectiveData("NBO");
+    	ddNBO.setValue("$NBO archive npa $END");
+    	dOpts2.addDirectiveData(ddNBO);
     	
-    	Directive dNBO = new Directive("NBO");
-    	dNBO.addDirectiveData(new DirectiveData("NBO", new ArrayList<String>(
-    			Arrays.asList("ARCHIVE","npa"))));
-    	dOpts2.addSubDirective(dNBO);
+    	DirectiveData ddBasisSet = new DirectiveData(GaussianConstants.DDBASISSET);
+    	ParameterStorage atp_basis = new ParameterStorage();
+    	atp_basis.setParameter(ChemSoftConstants.JDACCTASK, 
+    			BasisSetGenerator.GENERATEBASISSETTASKNAME);
+    	atp_basis.setParameter(BasisSetConstants.ATMSPECBS, 
+    					"SMARTS [#8] name STO-3G" + NL
+    					+ "SMARTS [#6] name STO-32G" + NL
+    					+ "SMARTS [!$([#6,#8])] name LANLMB");
+    	ddBasisSet.setTaskParams(atp_basis);
+    	dOpts2.addDirectiveData(ddBasisSet);
     	
-    	Directive dBasisSet = new Directive("Basis");
-    	dBasisSet.addDirectiveData(new DirectiveData("Basis", new ArrayList<String>(
-    			Arrays.asList(ChemSoftConstants.JDLABACCTASK
-    					+ ":"
-    					+ BasisSetConstants.ATMSPECBS,
-    					"SMARTS [#1] name STO-3G",
-    					"SMARTS [#7] name STO-33G",
-    					"SMRTSS [!$([#1,#7])] name LANLMB"
-    					))));
-    	dOpts2.addSubDirective(dBasisSet);
-    	
-    	Directive dModRedundant = new Directive("ModRedundant");
-    	dModRedundant.addKeyword(new Keyword("Basis", false, new ArrayList<String>(
-    			Arrays.asList(ChemSoftConstants.JDLABACCTASK
-    					+ ":"
-    	    			+ ConstraintsGenerator.GENERATECONSTRAINTSTASK.casedID,
-    					"SMARTS: [#7]",
-    					"SMARTS: [$([#6](~[#1])(~[#1])~[#1])]",
-    					"SMARTS: [#6] [#7] [#6] onlybonded",
-    					"SMARTS: [#6] [#8] options:F more",
-    					"AtomIDS: 1",
-    					"AtomIDS: 2 3 A",
-    					"AtomIDS: 2 3 4 126.0 F",
-    					"AtomIDS: 2 3 4 5 -0.123 options:A b c d"
-    					))));
-    	dOpts2.addSubDirective(dModRedundant);
+    	DirectiveData ddModRedundant = new DirectiveData("ModRedundant");
+    	ParameterStorage atp_modRed = new ParameterStorage();
+    	atp_modRed.setParameter(ChemSoftConstants.JDACCTASK, 
+    			 ConstraintsGenerator.GENERATECONSTRAINTSTASKNAME);
+    	atp_modRed.setParameter(AtomTupleConstants.KEYRULETYPESMARTS,
+    					"[$([#6](~[#1])(~[#1])~[#1])]" + NL
+    					+ "[#6] [#7] [#6] onlybonded" + NL
+    					+ "[#6] [#8] suffix:F more");
+    	atp_modRed.setParameter(AtomTupleConstants.KEYRULETYPEATOMIDS, 
+				"1" + NL
+				+ "2 3 4 suffix:126.0 F" + NL
+				+ "2 3 4 5 suffix:-0.123 A b c d");
+    	ddModRedundant.setTaskParams(atp_modRed);
+    	dOpts2.addDirectiveData(ddModRedundant);
     	
     	CompChemJob ccj2 = new CompChemJob();
     	ccj2.setDirective(dOpts2);
@@ -233,18 +235,18 @@ public class GaussianInputWriterTest
     	// Start definition of second step
     	//
     	
-    	Directive dRoute3 = new Directive(GaussianConstants.KEYROUTESEC);
-    	Directive dTitle3 = new Directive(GaussianConstants.KEYTITLESEC);
+    	Directive dRoute3 = new Directive(GaussianConstants.DIRECTIVEROUTE);
+    	Directive dTitle3 = new Directive(GaussianConstants.DIRECTIVETITLE);
     	// The following three are intentionally left empty
-    	Directive dMolSpec3 = new Directive(GaussianConstants.KEYMOLSEC);
-    	Directive dLink3 = new Directive(GaussianConstants.KEYLINKSEC);
-    	Directive dOpts3 = new Directive(GaussianConstants.KEYOPTSSEC);
+    	Directive dMolSpec3 = new Directive(GaussianConstants.DIRECTIVEMOLSPEC);
+    	Directive dLink3 = new Directive(GaussianConstants.DIRECTIVELINK0);
+    	Directive dOpts3 = new Directive(GaussianConstants.DIRECTIVEOPTS);
     	
-    	dRoute3.setKeyword(new Keyword(GaussianConstants.SUBKEYMODELMETHOD, 
+    	dRoute3.setKeyword(new Keyword(GaussianConstants.KEYMODELMETHOD, 
     			false, "HF"));
-    	dRoute.setKeyword(new Keyword(GaussianConstants.SUBKEYMODELBASISET,
+    	dRoute.setKeyword(new Keyword(GaussianConstants.KEYMODELBASISET,
     			false, "LANL2MB 5d 7f"));
-    	dRoute.setKeyword(new Keyword(GaussianConstants.SUBKEYJOBTYPE, 
+    	dRoute.setKeyword(new Keyword(GaussianConstants.KEYJOBTYPE, 
     			false, "OPT"));
     	dRoute.setKeyword(new Keyword("Print", false, "P"));
 
