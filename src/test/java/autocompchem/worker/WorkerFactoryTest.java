@@ -36,7 +36,6 @@ import autocompchem.run.JobFactory;
  * @author Marco Foscato
  */
 
-//TODO-gg rename
 public class WorkerFactoryTest 
 {
     
