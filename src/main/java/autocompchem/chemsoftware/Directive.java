@@ -1135,7 +1135,8 @@ public class Directive implements IDirectiveComponent, Cloneable
      * @throws CloneNotSupportedException 
      */
     
-    private void performACCTask(List<IAtomContainer> mols, ParameterStorage params, 
+    private void performACCTask(List<IAtomContainer> mols, 
+    		ParameterStorage params, 
     		IDirectiveComponent dirComp, Job job, Job masterJob) 
     				throws ClassNotFoundException, CloneNotSupportedException
     {	
@@ -1205,7 +1206,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	}
     }
     
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     @Override
     public boolean equals(Object o)

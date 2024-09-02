@@ -57,11 +57,14 @@ import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
+import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
@@ -881,6 +884,21 @@ public class IOtools
             tb.add(">");
             writeTXTAppend(file, tb, true);
         }
+    }
+    
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Writes the definition of a job in JSON format to a file.
+     * @param job the job to serialize into JSON format.
+     * @param file the file in which to write. Must not exist.
+     */
+    public static void writeJobToJSON(Job job, File file)
+    {
+		FileUtils.mustNotExist(file);
+		Gson writer = ACCJson.getWriter();
+		IOtools.writeTXTAppend(file, writer.toJson(job), true);
     }
 
 //------------------------------------------------------------------------------
