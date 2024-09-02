@@ -152,34 +152,39 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     {
 		super.initialize();
         
-        if (params.contains("RULENAMEROOT"))
+        if (params.contains(AtomTupleConstants.KEYRULENAMEROOT))
         {
-        	ruleRoot = params.getParameter("RULENAMEROOT").getValueAsString();
+        	ruleRoot = params.getParameter(AtomTupleConstants.KEYRULENAMEROOT)
+        			.getValueAsString();
         }
         
-        if (params.contains("VALUEDKEYWORDS"))
+        if (params.contains(AtomTupleConstants.KEYVALUEDKEYWORDS))
         {
         	valuedKeywords.addAll(Arrays.asList(
-        			params.getParameter("VALUEDKEYWORDS").getValueAsString()
+        			params.getParameter(AtomTupleConstants.KEYVALUEDKEYWORDS)
+        			.getValueAsString()
         			.trim().toUpperCase().split("\\s+")));
         }
 
-        if (params.contains("BOOLEANKEYWORDS"))
+        if (params.contains(AtomTupleConstants.KEYBOOLEANKEYWORDS))
         {
         	valuelessKeywords.addAll(Arrays.asList(
-        			params.getParameter("BOOLEANKEYWORDS").getValueAsString()
+        			params.getParameter(AtomTupleConstants.KEYBOOLEANKEYWORDS)
+        			.getValueAsString()
         			.trim().toUpperCase().split("\\s+")));
         }
 
-        if (params.contains("SMARTS"))
+        if (params.contains(AtomTupleConstants.KEYRULETYPESMARTS))
         {
-        	String all = params.getParameter("SMARTS").getValueAsString();
+        	String all = params.getParameter(AtomTupleConstants.KEYRULETYPESMARTS)
+        			.getValueAsString();
         	parseAtomTupleMatchingRules(all);
         }
         
-        if (params.contains("ATOMIDS"))
+        if (params.contains(AtomTupleConstants.KEYRULETYPEATOMIDS))
         {
-        	String all = params.getParameter("ATOMIDS").getValueAsString();
+        	String all = params.getParameter(AtomTupleConstants.KEYRULETYPEATOMIDS)
+        			.getValueAsString();
         	parseAtomTupleMatchingRules(all);
         }
     }

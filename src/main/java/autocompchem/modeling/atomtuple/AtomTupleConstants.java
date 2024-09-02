@@ -1,5 +1,7 @@
 package autocompchem.modeling.atomtuple;
 
+import java.util.Arrays;
+
 import autocompchem.modeling.AtomLabelsGenerator;
 
 /**
@@ -43,7 +45,7 @@ public class AtomTupleConstants
 	 */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
 	public static final String KEYGETATOMLABELS = "GETATOMLABELS";
 	
     /**
@@ -51,7 +53,7 @@ public class AtomTupleConstants
      */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
     public static final String KEYPREFIX = "PREFIX";
     
     /**
@@ -59,7 +61,7 @@ public class AtomTupleConstants
      */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
     public static final String KEYSUFFIX= "SUFFIX";
 	
     /**
@@ -68,7 +70,7 @@ public class AtomTupleConstants
      */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
     public static final String[] DEFAULTVALUEDKEYS = {KEYPREFIX,KEYSUFFIX};
     
     /**
@@ -77,7 +79,50 @@ public class AtomTupleConstants
      */
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/*.json and
-	// inputdefinition/AtomTupleGenerator.jsonv
+	// inputdefinition/AtomTupleGenerator.json
     public static final String[] DEFAULTVALUELESSKEYS = {
     		KEYONLYBONDED, KEYUSECURRENTVALUE, KEYGETATOMLABELS};
+    
+    /**
+     * Key used to define the string used to name {@link AtomTupleMatchingRule}s
+     * as to make the log more understandable. E.g., distinguish rules meant 
+     * to assign basis set from those meant to define constraints.
+     */
+    public static final String KEYRULENAMEROOT = "RULENAMEROOT";
+    
+    /**
+     * Keyword used to provide a string defining keywords meant to be 
+     * associated with a value, i.e., the key in a key:value pair.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYVALUEDKEYWORDS = "VALUEDKEYWORDS";
+    
+    /**
+     * Keyword used to provide a string defining keywords meant to be 
+     * interpreted only in terms of presence/absence (no value associated).
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYBOOLEANKEYWORDS = "BOOLEANKEYWORDS";
+    
+    /**
+     * Keyword used to provide a string defining an {@link AtomTupleMatchingRule} 
+     * based on SMARTS.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYRULETYPESMARTS = "SMARTS";
+    
+    /**
+     * Keyword used to provide a string defining an {@link AtomTupleMatchingRule} 
+     * based on atom indexes.
+     */
+    // WARNING: if you change this list you must update also the documentation
+    // at the resource inputdefinition/*.json and
+	// inputdefinition/AtomTupleGenerator.json
+    public static final String KEYRULETYPEATOMIDS = "ATOMIDS";
 }
