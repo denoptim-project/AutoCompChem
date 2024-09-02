@@ -92,7 +92,43 @@ public class SerialJobsRunnerTest
     
 //-----------------------------------------------------------------------------
 
-    //TODO-gg add other senarios
+    /*
+     * Case tested:
+     * Run of a plain sequence of step, but the second step hits the walltime.
+     */
+    @Test
+    public void testSerialWorkflow_hitWalltime() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+        
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
+        master.setParameter("WALLTIME", "3");
+        for (int i=0; i<3; i++)
+        {
+        	master.addStep(new TestJob(roothName+i, 2, 0, 950, false));
+        }
+        master.run();
+        
+        
+        // First step runs to completion
+        int n = FileAnalyzer.count(roothName+'0', TestJob.ITERATIONKEY+"*");
+    	assertTrue(n>2,"Lines in log 0");
+    	assertTrue(n<5,"Lines in log 0");
+    	assertFalse(master.getStep(0).isInterrupted, 
+    			"Interruption flag on job-0");
+    	
+    	// Second step is interrupted
+        n = FileAnalyzer.count(roothName+'1', TestJob.ITERATIONKEY+"*");
+    	assertTrue(n>0,"Lines in log 1");
+    	assertTrue(n<4,"Lines in log 1");
+    	assertTrue(master.getStep(1).isInterrupted,
+    			"Interruption flag on job-"+1);
+    	
+    	// Third never run
+    	File thirdLog = new File(roothName+'2');
+    	assertFalse(thirdLog.exists(), "No 3rd log");
+    }
     
 //------------------------------------------------------------------------------
 

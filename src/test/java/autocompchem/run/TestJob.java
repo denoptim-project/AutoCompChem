@@ -65,7 +65,7 @@ public class TestJob extends Job
 	 * @param delay time to wait after starting the job and before starting to 
 	 * print the log (milliseconds).
 	 * @param period the period between each printing iteration (milliseconds).
-	 * @param parallel <code>true</code> is the job should be flagged as 
+	 * @param parallel <code>true</code> if the job should be flagged as 
 	 * parallelizable.
 	 */
 	public TestJob(String logPathName, int wallTime, int delay, int period,
