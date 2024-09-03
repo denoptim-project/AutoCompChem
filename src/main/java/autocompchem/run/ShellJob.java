@@ -331,7 +331,7 @@ public class ShellJob extends Job
         {
             JsonObject jsonObject = new JsonObject();
 
-            jsonObject.addProperty(JSONJOVTYPE, job.getClass().getSimpleName());
+            jsonObject.addProperty(JSONJOBTYPE, job.getClass().getSimpleName());
             
             if (!job.params.isEmpty())
             	jsonObject.add(JSONPARAMS, context.serialize(job.params));

@@ -223,7 +223,7 @@ public class Job implements Runnable
 	 * Name of JSON element used to discriminate among implementations of 
 	 * {@link Job}.
 	 */
-	public static final String JSONJOVTYPE = "jobType"; 
+	public static final String JSONJOBTYPE = "jobType"; 
 	
 	/**
 	 * Name of JSON element collecting the parameters given to this job.
@@ -1246,7 +1246,7 @@ public class Job implements Runnable
         {
             JsonObject jsonObject = new JsonObject();
 
-            jsonObject.addProperty(JSONJOVTYPE, job.getClass().getSimpleName());
+            jsonObject.addProperty(JSONJOBTYPE, job.getClass().getSimpleName());
             
             if (!job.params.isEmpty())
             	jsonObject.add(JSONPARAMS, context.serialize(job.params));
@@ -1268,15 +1268,15 @@ public class Job implements Runnable
         {
             JsonObject jsonObject = json.getAsJsonObject();
             
-            if (!jsonObject.has(JSONJOVTYPE))
+            if (!jsonObject.has(JSONJOBTYPE))
             {
-                String msg = "Missing '" + JSONJOVTYPE + "': found a "
+                String msg = "Missing '" + JSONJOBTYPE + "': found a "
                         + "JSON string that cannot be converted into a Job "
                         + "subclass.";
                 throw new JsonParseException(msg);
             }       
 
-            String typ = context.deserialize(jsonObject.get(JSONJOVTYPE),
+            String typ = context.deserialize(jsonObject.get(JSONJOBTYPE),
                     String.class);
             
             Job job = null;
