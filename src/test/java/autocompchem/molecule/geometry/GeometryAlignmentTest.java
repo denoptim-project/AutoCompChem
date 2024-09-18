@@ -22,32 +22,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
-
-import com.google.gson.Gson;
-
-import autocompchem.io.ACCJson;
-import autocompchem.io.IOtools;
-import autocompchem.modeling.basisset.BasisSet;
-import autocompchem.modeling.basisset.CenterBasisSetTest;
-import autocompchem.utils.NumberUtils;
-import uk.ac.ebi.beam.Bond;
-
 /**
  * Unit Test for {@link GeometryAlignment}.
  * 
