@@ -1,0 +1,33 @@
+JOBSTART
+JOBSTART
+APP:ACC
+TASK:MeasureGeomDescriptors
+SMARTS:dist1 [#7] [Ru]
+VERBOSITY:7
+INFILE:../cli14-mol.sdf
+JOBEND
+JOBSTART
+APP:ACC
+TASK:PruneMolecules
+OUTFILE:cli14-pruned.sdf
+SMARTS:[#6]~[#7]
+VERBOSITY:6
+INFILE:../cli14-mol.sdf
+JOBEND
+JOBSTART
+APP:ACC
+TASK:MeasureGeomDescriptors
+SMARTS:$STARTdist2 [$([#6]~[Ru])] [Ru]
+dist3 [#7] [Ru]$END
+VERBOSITY:7
+INFILE:cli14-pruned.sdf
+JOBEND
+JOBSTART
+APP:ACC
+TASK:PruneMolecules
+OUTFILE:cli14-pruned-2.sdf
+SMARTS:[#17]
+VERBOSITY:6
+INFILE:cli14-pruned.sdf
+JOBEND
+JOBEND

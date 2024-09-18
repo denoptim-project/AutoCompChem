@@ -416,15 +416,21 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      * @return the list of lines.
      */
     
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
     	//Collections.sort(directives, new JobDirectiveComparator());
         ArrayList<String> lines = new ArrayList<String>();
         for (String ref : getRefNamesSet())
         {
         	NamedData par = getParameter(ref);
-        	String parStr = par.getReference() + ParameterConstants.SEPARATOR 
-        			+ par.getValueAsString();
+        	String parStr = par.getReference() + ParameterConstants.SEPARATOR;
+        	String valueStr = par.getValueAsString();
+        	if (valueStr.split("\\r?\\n").length > 1)
+        	{
+        		valueStr = ParameterConstants.STARTMULTILINE + valueStr 
+        				+ ParameterConstants.ENDMULTILINE;
+        	}
+        	parStr = parStr + valueStr;
             lines.add(parStr);
         }
         return lines;

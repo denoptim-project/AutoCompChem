@@ -67,16 +67,10 @@ public class JobFactory
 						+ "not allow to create a Job. Cause: " + e.getMessage(),
 						-1, e);
 			}
-    		
-    		//TODO-gg del
-    		IOtools.writeJobToJSON(job, new File("/tmp/j2.json"));
     		break;
     		
     	case TXT:
     		job = buildFromParametersFile(file, imposedStr);
-    		
-    		//TODO-gg del
-    		IOtools.writeJobToJSON(job, new File("/tmp/j.json"));
     		break;
     		
 		default:

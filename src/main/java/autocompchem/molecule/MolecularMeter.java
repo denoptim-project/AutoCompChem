@@ -383,7 +383,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 2)
             	{
-            		logger.debug("Not enough matches for "
+            		logger.info("Not enough matches for "
                         		+ "quantity '" + key + "'. Found only " 
                         		+ atmsForQuantity.size() + " set.");
             		continue;
