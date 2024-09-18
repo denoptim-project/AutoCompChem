@@ -118,8 +118,8 @@ public class BufferedTranslator extends BufferedReader
 
 	@Override
     public int read() throws IOException {
-		//TODO
-		throw new IllegalAccessError("USE OF UNIMPLEMENTED read() in "+this.getClass().getName());
+		throw new IllegalAccessError("USE OF UNIMPLEMENTED read() in " +
+				this.getClass().getName());
 	}
 
 //------------------------------------------------------------------------------
@@ -195,12 +195,7 @@ public class BufferedTranslator extends BufferedReader
 	 * -1 if the end of file has been reached.
 	 */
 	private int pourToTranslatedBuffer() throws IOException
-	{
-		//TODO del
-		boolean debug = false;
-		if (debug)
-			System.out.println(" ---------------------------------------");
-		
+	{	
 		char[] readInBuff = new char[MYBUFFERLENGTH];
 		
 		// Take the left over from previous iteration
@@ -246,15 +241,6 @@ public class BufferedTranslator extends BufferedReader
 			endOfTranslatable = Math.max(endOfLastMatch, endOfTranslatable);
 		}
 		
-		//TODO del
-		if (debug)
-		{
-		System.out.println("-FB-: matches?"+thereIsAnyMatch
-				+" endOfTranslatable:"+endOfTranslatable
-				+" readInLength:"+readInLength);
-		System.out.println("-FB-: readInBuff:"+Arrays.toString(readInBuff));
-		}
-		
 		// Translate the section that can be translated
 		char[] toTranslateBuffer = null;
 		if (thereIsAnyMatch)
@@ -284,25 +270,11 @@ public class BufferedTranslator extends BufferedReader
 			translatedBuffer = toTranslateBuffer;
 		}
 		
-		//TODO del
-		if (debug)
-		{
-		System.out.println("-FB-: translatedBuffer.length:"+translatedBuffer.length);
-		System.out.println("-FB-: translatedBuffer:"+Arrays.toString(translatedBuffer));
-		}
-		
 		// Keep the tail, if any, for next fill iteration
 		leftOverBuffer = Arrays.copyOfRange(readInBuff, endOfTranslatable, 
 				readInLength + endLeftOverBuffer);
 		endLeftOverBuffer = readInLength + endLeftOverBuffer - endOfTranslatable;
 		
-
-		//TODO del
-		if (debug)
-		{
-			System.out.println("-FB-: leftOverBuffer.length:"+leftOverBuffer.length);
-			System.out.println("-FB-: leftOverBuffer:"+Arrays.toString(leftOverBuffer));
-		}
 		return readInLength;
 	}
 	
