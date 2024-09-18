@@ -213,12 +213,16 @@ public class ACCMain
         ParameterStorage params = new ParameterStorage();
         params.setDefault();
         
-        // First, look for the -t/--task, -p/--params, and -v/--verbosity:
-        // either one must be there
+        // First, look for the -t/--task, -j/--job, -p/--params
+        // anyone of these must be there.
+        // Since we are at it, we read also the optional parameters about
+        // verbosity and STRINGFROMCLI.
         boolean foundTask = false;
         String taskStr = null;
         boolean foundParams = false;
         File paramsFile = null;
+        boolean foundJob = false;
+        File jobFile = null;
         String cliString = "";
         for (int iarg=0; iarg<args.length; iarg++)
         {
@@ -227,10 +231,7 @@ public class ACCMain
             {    
                 if (iarg+1 >= args.length)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Option -t (--task)"
-                            + " seems to have no value. I expect to find "
-                            + "something like '-t <taskID>', but I see "
-                            + "only '" + arg + "'.",-1);
+                	cliArgMissingValue(arg, "<taskID>");
                 }
                 taskStr = args[iarg+1];
                 foundTask = true;
@@ -240,23 +241,27 @@ public class ACCMain
             {    
                 if (iarg+1 >= args.length)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Option -p (--params)"
-                            + " seems to have no value. I expect to find "
-                            + "something like '-p <pathname>', but I see "
-                            + "only '" + arg + "'.",-1);
+                	cliArgMissingValue(arg, "<pathname>");
                 }
                 paramsFile = new File(args[iarg+1]);
                 foundParams=true;
+            }
+            
+            if (arg.equalsIgnoreCase("-j") || arg.equalsIgnoreCase("--job"))
+            {    
+                if (iarg+1 >= args.length)
+                {
+                	cliArgMissingValue(arg, "<pathname>");
+                }
+                jobFile = new File(args[iarg+1]);
+                foundJob=true;
             }
             
             if (arg.equalsIgnoreCase("-v") || arg.equalsIgnoreCase("--verbosity"))
             {    
                 if (iarg+1 >= args.length)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Option -v (--verbosity)"
-                            + " seems to have no value. I expect to find an "
-                            + "integer, but I see "
-                            + "only '" + arg + "'.",-1);
+                	cliArgMissingValue(arg, "<integer>");
                 }
                 String verbosity = args[iarg+1];
                 if (!NumberUtils.isNumber(verbosity))
@@ -274,28 +279,25 @@ public class ACCMain
             {    
                 if (iarg+1 >= args.length)
                 {
-                    Terminator.withMsgAndStatus("ERROR! Option " + arg
-                            + " seems to have no value. I expect to find "
-                            + "a string after '" + arg + "'.",-1);
+                	cliArgMissingValue(arg, "<value>");
                 }
                 cliString = args[iarg+1];
             }
         }
         
-        // Check consistency between use of -t and -p
-        if (foundTask && foundParams)
-        {
-            Terminator.withMsgAndStatus("ERROR! Found both -t/--task and "
-                    + "-p/--params options. "
-                    + "You can use only one of the two.",-1);
-        }
-        if (!foundTask && !foundParams)
-        {
-            Terminator.withMsgAndStatus("ERROR! Neither -t/--task nor "
-                    + "-p/--params options found. "
-                    + "You must use either -t/-p, or provide a single argument"
-                    + " that is the pathname to an existing paremeters file.",
-                    -1);
+        // Check consistency between use of -t, -p, and -j
+    	String badCombinationMsg = "";
+    	if (foundTask && foundParams)
+    		badCombinationMsg = "-t/--task and -p/--params ";
+    	else if (foundTask && foundJob)
+    		badCombinationMsg = "-t/--task and -j/--job ";
+    	else if (foundParams && foundJob)
+    		badCombinationMsg = "-p/--params and -j/--job ";
+    	if (!badCombinationMsg.isBlank())
+    	{
+	        Terminator.withMsgAndStatus("ERROR! Found both "
+	        		+ badCombinationMsg + " options. "
+	        		+ "You can use only one of the two.",-1);
         }
         
         if (foundTask)
@@ -305,20 +307,18 @@ public class ACCMain
             // task.
             Task taskObj = Task.getExisting(taskStr, true);
             params.setParameter(WorkerConstants.PARTASK, taskObj.casedID);
-        }
-        
-        if (foundParams)
+        } else if (foundParams)
         {
             //NB: this will kill me with an error if the file is not found
             // or not readable.
             FileUtils.foundAndPermissions(paramsFile, true, false, false);
-            
-            if (cliString.equals(""))
-            {
-                job = JobFactory.buildFromFile(paramsFile);
-            } else {
-                job = JobFactory.buildFromFile(paramsFile,cliString);
-            }
+            job = JobFactory.buildFromFile(paramsFile,cliString);
+        } else if (foundJob)
+        {
+            //NB: this will kill me with an error if the file is not found
+            // or not readable.
+            FileUtils.foundAndPermissions(jobFile, true, false, false);
+            job = JobFactory.buildFromFile(jobFile,cliString);
         }
         
         //Read-in all CLI arguments in parameter storage unit
@@ -347,7 +347,7 @@ public class ACCMain
                 if (foundTask && !foundParams)
                 {
                     params.setParameter(arg);
-                } else if (!foundTask && foundParams)
+                } else if ((!foundTask && foundParams) || (!foundTask && foundJob))
                 {
                     job.setParameter(arg);
                 }
@@ -384,14 +384,14 @@ public class ACCMain
                 if (foundTask && !foundParams)
                 {
                     params.setParameter(paramKey, value);
-                } else if (!foundTask && foundParams)
+                } else if ((!foundTask && foundParams) || (!foundTask && foundJob))
                 {
                     job.setParameter(paramKey, value);
                 }
             }
         }
             
-        if (foundTask && !foundParams)
+        if (foundTask && !foundParams && !foundJob)
         {
             // Finally, pack all into a job
             job = JobFactory.createJob(AppID.ACC);
@@ -401,10 +401,19 @@ public class ACCMain
         if (job == null)
         {
             Terminator.withMsgAndStatus("ERROR! Could not parse command line "
-                    + "arguments to make a job. Check your input.",-1);
+                    + "arguments to make a job. Check your input.", -1);
         }
         
         return job;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private static void cliArgMissingValue(String option, String valueExample)
+    {
+        Terminator.withMsgAndStatus("ERROR! Option " + option
+                + " seems to have no value. I expect to find "
+                + "a something like '" + option + " " + valueExample+ "'.", -1);
     }
 
 //------------------------------------------------------------------------------

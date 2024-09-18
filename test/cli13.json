@@ -1,0 +1,113 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist1 [#7] [Ru]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../STRINGFROMCLI-mol.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "PruneMolecules"
+        },
+        {
+          "reference": "OUTFILE",
+          "value": "STRINGFROMCLI-pruned.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#6]~[#7]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "6"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../STRINGFROMCLI-mol.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist2 [$([#6]~[Ru])] [Ru]\ndist3 [#7] [Ru]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "STRINGFROMCLI-pruned.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "PruneMolecules"
+        },
+        {
+          "reference": "OUTFILE",
+          "value": "STRINGFROMCLI-pruned-2.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#17]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "6"
+        },
+        {
+          "reference": "INFILE",
+          "value": "STRINGFROMCLI-pruned.sdf"
+        }
+      ]
+    }
+  ]
+}
