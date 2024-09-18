@@ -1,6 +1,7 @@
 package autocompchem.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -22,13 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.google.gson.Gson;
+
 import autocompchem.files.FileAnalyzer;
+import autocompchem.perception.situation.Situation;
 
 
 /**
@@ -90,6 +95,42 @@ public class IOtoolsTest
         File f2 = new File(pathnameRoot+2);
         IOtools.writeTXTAppend(f2, lines, false);
         assertEquals(4, FileAnalyzer.count(f2, "**"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @SuppressWarnings("unchecked")
+	@Test
+    public void testReadJesonFile() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        File file = new File(tempDir.getAbsolutePath() + SEP + "file.json");
+        
+        String oldValue = "DATA_TO_CHANGE";
+        String newValue = "NEW-VALUE";
+        
+        List<String> data =new ArrayList<String>(Arrays.asList(
+        		"Data 1 " + oldValue + " 2 3 4 5",
+        		"line 2 with this: " + oldValue,
+        		 oldValue + "1.345"));
+        
+		Gson writer = ACCJson.getWriter();
+		IOtools.writeTXTAppend(file, writer.toJson(data), false);
+		
+		// Read data as it is
+		List<String> recoveredData = (List<String>) IOtools.readJsonFile(file, 
+				List.class);
+		assertEquals(data, recoveredData);
+		
+		// Read translated data
+		recoveredData = (List<String>) IOtools.readJsonFile(file, 
+				List.class, "DATA_TO_CHANGE", "NEW-VALUE");
+		assertEquals(data.size(), recoveredData.size());
+		for (String str : recoveredData)
+		{
+			assertTrue(str.contains(newValue));
+			assertFalse(str.contains(oldValue));
+		}
     }
     
 //------------------------------------------------------------------------------

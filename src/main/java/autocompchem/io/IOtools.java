@@ -28,15 +28,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.EventLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
@@ -51,15 +49,16 @@ import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.chemsoftware.ChemSoftOutputReader;
 import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
-import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.BufferedTranslator;
 import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
@@ -193,22 +192,21 @@ public class IOtools
     
     /**
      * Reads a JSON file
-     * @param jdFile the pathname to the file to read
-     * @param type the expected type
-     * @return
+     * @param file the pathname to the file to read.
+     * @param type the expected type.
+     * @return the deserialized object.
      * @throws IOException
      */
-    public static Object readJsonFile(File jdFile, Type type) throws IOException
+    public static Object readJsonFile(File file, Type type) throws IOException
     {
     	Object result = null;
-    	Gson reader = ACCJson.getReader();
-    	BufferedReader br = null;
+    	Reader br = null;
         try
         {
-            br = new BufferedReader(new FileReader(jdFile));
-            result = reader.fromJson(br, type);
+        	br = new BufferedReader(new FileReader(file));
+            result = readJson(type, br);
         } catch (JsonSyntaxException jse) {
-        	Terminator.withMsgAndStatus("ERROR! JSON file '" + jdFile 
+        	Terminator.withMsgAndStatus("ERROR! JSON file '" + file 
         			+ "' has illegal syntax: " + jse.getMessage(), -1);
         } finally 
         {
@@ -218,6 +216,57 @@ public class IOtools
             }
         }
         return result;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Reads a JSON file upon translation of some of its content.
+     * @param file the pathname to the file to read.
+     * @param type the expected type of object.
+     * @param regexToReplace the pattern to replace, i.e., translate.
+     * @param replacement the string to use instead of the matched pattern.
+     * @return the object read from the file after translation of any 
+     * instance of the pattern.
+     * @throws IOException
+     */
+    public static Object readJsonFile(File file, Type type, 
+    		String regexToReplace, String replacement) throws IOException
+    {
+    	Object result = null;
+    	Gson reader = ACCJson.getReader();
+    	Reader br = null;
+        try
+        {
+        	br = new BufferedTranslator(new FileReader(file), regexToReplace, 
+        			replacement);
+            result = reader.fromJson(br, type);
+        } catch (JsonSyntaxException jse) {
+        	Terminator.withMsgAndStatus("ERROR! JSON file '" + file 
+        			+ "' has illegal syntax: " + jse.getMessage(), -1);
+        } finally 
+        {
+            if (br != null)
+            {
+                br.close();
+            }
+        }
+        return result;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Reads a JSON object from a reader.
+     * @param type the expected type.
+     * @param reader the reader to read.
+     * @return the object in the reader.
+     */
+    public static Object readJson(Type type, Reader reader) 
+    		throws JsonIOException, JsonSyntaxException
+    {
+    	Gson gsonReader = ACCJson.getReader();
+        return gsonReader.fromJson(reader, type);
     }
 
 //------------------------------------------------------------------------------
@@ -627,7 +676,7 @@ public class IOtools
                         + " In this version, you can read multiple "
                         + "chemical entities only from SDF, XYZ files, or "
                         + "any output from any of these: " 
-                        + builder.getRegisteredSoftwareIDs(),-1);
+                        + builder.getRegisteredSoftwareIDs(), -1);
         }
         return mols;
     }
