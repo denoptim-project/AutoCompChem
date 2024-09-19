@@ -116,7 +116,7 @@ public class CompChemJob extends Job implements Cloneable
 	    			ChemSoftConstants.JDOPENBLOCK, 
 	    			ChemSoftConstants.JDCLOSEBLOCK);
 	
-	    	ArrayList<String> linesOfAStep = new ArrayList<String>();
+	    	List<String> linesOfAStep = new ArrayList<String>();
 	        for (int i=0; i<newLines.size(); i++)
 	        {
 	            String line = newLines.get(i).trim();
@@ -873,7 +873,7 @@ public class CompChemJob extends Job implements Cloneable
      * @return the list of lines ready to print a jobDetails file
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    public List<String> toLinesJobDetails()
     {
     	
     	// WARNING: for now we are not considering the possibility of having
