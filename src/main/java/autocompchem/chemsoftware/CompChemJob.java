@@ -872,14 +872,14 @@ public class CompChemJob extends Job implements Cloneable
      * autocompchem's job detail text file.
      * @return the list of lines ready to print a jobDetails file
      */
-
+    
     public List<String> toLinesJobDetails()
     {
     	
     	// WARNING: for now we are not considering the possibility of having
     	// both directives AND sub jobs.
     	
-        ArrayList<String> lines= new ArrayList<String>();
+        List<String> lines= new ArrayList<String>();
         if (getNumberOfSteps()>0 && directives.size()==0)
         {
 	        for (int step = 0; step<steps.size(); step++)
@@ -888,7 +888,17 @@ public class CompChemJob extends Job implements Cloneable
 	            {
 	                lines.add(ChemSoftConstants.JDLABSTEPSEPARATOR);
 	            }
-	            lines.addAll(getStep(step).toLinesJobDetails());
+	            if (getStep(step) instanceof CompChemJob)
+	            {
+	            	lines.addAll(
+	            			((CompChemJob) getStep(step)).toLinesJobDetails());
+	            } else {
+	            	Terminator.withMsgAndStatus("ERROR! Unxpected step of type "
+	            			+ getStep(step).getClass().getSimpleName() 
+	            			+ " within a "
+	            			+ this.getClass().getSimpleName() 
+	            			+ " job.", -1);
+	            }
 	        }
         } else if (getNumberOfSteps()==0 && directives.size()>0) 
         {
@@ -897,7 +907,8 @@ public class CompChemJob extends Job implements Cloneable
         		lines.addAll(d.toLinesJobDetails());
         	}
         } else {
-        	Terminator.withMsgAndStatus("ERROR! Unable to convert CompChemJob "
+        	Terminator.withMsgAndStatus("ERROR! Unable to convert "
+        			+ this.getClass().getSimpleName() + " "
         			+ "to JobDetails lines when it has " + directives.size() 
         			+ " directives and " + getNumberOfSteps() + " sub-jobs. "
         			+ "This functionality is not implemented yet. Please, "

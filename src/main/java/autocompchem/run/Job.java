@@ -1189,18 +1189,18 @@ public class Job implements Runnable
 
     /**
      * Produced a text representation of this job following the format of
-     * autocompchem's JobDetail text file.
-     * @return the list of lines ready to print a jobDetails file.
+     * autocompchem's Parameters text file.
+     * @return the list of lines ready to print a parameters' file.
      */
 
-    public List<String> toLinesJobDetails()
+    public List<String> toLinesJobParameters()
     {
         List<String> lines= new ArrayList<String>();
         lines.add(ParameterConstants.STARTJOB);
         lines.addAll(params.toLinesJobDetails());
         for (int step = 0; step<steps.size(); step++)
         {
-            lines.addAll(getStep(step).toLinesJobDetails());
+            lines.addAll(getStep(step).toLinesJobParameters());
         }
         lines.add(ParameterConstants.ENDJOB);
         return lines;

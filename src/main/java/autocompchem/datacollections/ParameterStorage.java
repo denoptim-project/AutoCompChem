@@ -42,9 +42,16 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
-//TODO-gg are parameters just Directives for ACC. Maybe, but there is a difference 
-// in that the parameters of a job do not figure in the job input for software
-// other than ACC.
+//TODO A "parameter" in this storage is effectively a DirectiveData. 
+// And this storage is a simplified access to the underlying NamedData.
+// Since the parameter storage in the DirectiveComponents is mostly (but NOT ONLY
+// used to define ACC tasks, we "replace" (i.e., add beside) an ACCJob that would 
+// define the tasks to do in/for the DirectiveComponent, and use a NamedDataCollector
+// to collect additional data in the Directive that is used only as runtime 
+// property storage.
+// This way, the definition of an ACCJob could be moved from being a ParameterStorage 
+// to being a job details in all equal to that of any compchemjob, and json.
+
 
 /**
  * Storage of parameters, i.e., information that is collected in a list of 

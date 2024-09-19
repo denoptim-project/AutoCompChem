@@ -72,7 +72,6 @@ public class NamedDataCollector implements Cloneable
         return allData.isEmpty();
     }
     
-
 //------------------------------------------------------------------------------
 
     /**
