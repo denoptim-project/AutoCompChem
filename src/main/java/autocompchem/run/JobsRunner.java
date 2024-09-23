@@ -17,8 +17,7 @@ package autocompchem.run;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 

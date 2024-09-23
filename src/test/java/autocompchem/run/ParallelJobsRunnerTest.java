@@ -460,6 +460,36 @@ public class ParallelJobsRunnerTest
         assertTrue(30<FileAnalyzer.count(roothName+"3", "Iteration"));
     }
     
+  //-----------------------------------------------------------------------------
+
+    /*
+     * Testing reaction to exception in parallel subjob
+     */
+    @Test
+    public void testParallelJobsWithExceptions() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
+
+        
+        Job master = JobFactory.createJob(AppID.ACC, 3, true);
+        master.setParameter(JobsRunner.WALLTIMEPARAM, "5");
+        for (int i=0; i<2; i++)
+        {
+        	master.addStep(new TestJob(roothName+i, 3, true));
+        }
+        master.addStep(new TestJobTriggeringException());
+        
+        boolean triggered = false;
+        try {
+        	master.run();
+        } catch (Throwable t) {
+        	triggered = true;
+			assertTrue(t.getMessage().contains(TestJobTriggeringException.MSG));
+        }
+        assertTrue(triggered);
+    }
+    
 //-----------------------------------------------------------------------------
 
     /*

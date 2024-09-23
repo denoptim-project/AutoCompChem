@@ -1031,7 +1031,7 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
-     * Set the flag signalling that the execution of this job was interrupted
+     * Set the flag signaling that the execution of this job was interrupted
      * @param flag set to <code>true</code> to flag this job as interrupted.
      */
     

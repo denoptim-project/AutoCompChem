@@ -313,8 +313,6 @@ public class ParallelJobsRunner extends JobsRunner
      * @return <code>true</code> if any sub-job returned an exception
      */
 
-    // TODO: perhaps one day we'll read to exceptions
-    @SuppressWarnings("unused")
 	private boolean exceptionInSubJobs()
     {
         boolean found = false;
@@ -322,7 +320,7 @@ public class ParallelJobsRunner extends JobsRunner
         {
             if (submittedJob.foundException())
             {
-            	found = false;
+            	found = true;
                 break;
             }
         }
@@ -331,11 +329,10 @@ public class ParallelJobsRunner extends JobsRunner
         {
             if (submittedJob.foundException())
             {
-            	found = false;
+            	found = true;
                 break;
             }
         }
-
         return found;
     }
 
@@ -478,6 +475,15 @@ public class ParallelJobsRunner extends JobsRunner
 	        	logger.trace("Waiting for parallel jobs - Step " 
 		        			+ ii + " - " + TimeUtils.getTimestamp());
 	        	
+	            // Check for errors
+	            if (exceptionInSubJobs())
+	            {
+	            	logger.error("Exception found in one of the "
+	            			+ "parallel jobs. Shuting down all parallel jobs");
+	            	cancellAllRunningThreadsAndShutDown();
+	            	break;
+	            }
+	            
 	            //Completion clause
 	            if (allSubJobsCompleted())
 	            {

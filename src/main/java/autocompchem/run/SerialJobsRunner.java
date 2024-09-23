@@ -281,7 +281,6 @@ public class SerialJobsRunner extends JobsRunner
 	        	logger.trace("Waiting for serialized workflow- Step " 
 		        			+ ii + " - " + TimeUtils.getTimestamp());
 	        	
-	            //TODO-gg do this in parallel runner?
 	            // Check for errors
 	            if (exceptionInSubJobs())
 	            {
