@@ -43,21 +43,20 @@ public class SerialJobsRunner extends JobsRunner
      * serving notification on the basis of first come, first served.
      */
     private final AtomicInteger notificationId = new AtomicInteger();
-	
+  
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a sequential jobs runner.
-     * @param todoJob the list of jobs to be done. 
+     * Constructor for a sequential jobs runner. 
      * @param master the job that creates this {@link SerialJobsRunner}.
      */
 
-    public SerialJobsRunner(List<Job> todoJobs, Job master)
+    public SerialJobsRunner(Job master)
     {
-    	super(todoJobs, master);
+    	super(master);
         initializeExecutor();
     }
-    
+
 //------------------------------------------------------------------------------
 
     /**
@@ -191,7 +190,8 @@ public class SerialJobsRunner extends JobsRunner
 //------------------------------------------------------------------------------
 
     /**
-     * Runs the workflow 
+     * Runs the workflow in a dynamic fashion. Hence, the workflow gets modified
+     * according to any requests of action coming from the workflow itself.
      */
 
     public void start()
@@ -202,40 +202,21 @@ public class SerialJobsRunner extends JobsRunner
     	{
     		mainIteration();
     		
-    		// This takes care of processing the reaction only in case of 
-    		// restart of the workflow.
+    		// This takes care of processing the requested action only in case  
+    		// of a restart of the workflow. However, note that any part of the 
+        	// action that affects the execution service (e.g., the killing of
+        	// a job) is done already by the SerialJobListener
     		if (requestedAction!=null)
     		{
-    			List<Job> reactionObjectJobs = new ArrayList<Job>();
-				Job evaluatedJob = (Job) jobRequestingAction.exposedOutput
+				Job focusJob = (Job) jobRequestingAction.exposedOutput
 						.getNamedData(JobEvaluator.EVALUATEDJOB).getValue();
-    			switch (requestedAction.getObject()) 
-    			{
-					case FOCUSJOB:
-					{
-						reactionObjectJobs.add(evaluatedJob);
-						break;
-					}
-					
-					case PARALLELJOB:
-					{
-						// Nothing to do, but we do notify the user as this may
-						// be a wrong setting
-						logger.warn("WARNING: ignoring action " 
-								+ requestedAction.getType() + " of " 
-								+ requestedAction.getObject() 
-								+ " because it was triggered by job " 
-								+ jobRequestingAction.getId() + " while "
-								+ "evaluating job " + evaluatedJob.getId() 
-								+ " and both belong to a sequential workflow.");
-						continue;
-					}
-				}
+				int idFocusJob = todoJobs.indexOf(focusJob);
+		    	
+		    	ActionApplier.performActionOnSerialWorkflow(requestedAction, master, 
+		    			idFocusJob, restartCounter.get());
+    			todoJobs = new ArrayList<Job>(master.steps);
     			
-    			ActionApplier.performAction(requestedAction, 
-    					jobRequestingAction, 
-    					reactionObjectJobs, 
-    					restartCounter.get());
+    			// Consume requested action
     			requestedAction = null;
     			jobRequestingAction = null;
     		}
@@ -278,7 +259,7 @@ public class SerialJobsRunner extends JobsRunner
         	{
 	        	ii++;
 	        	
-	        	logger.trace("Waiting for serialized workflow- Step " 
+	        	logger.trace("Waiting for serialized workflow - Step " 
 		        			+ ii + " - " + TimeUtils.getTimestamp());
 	        	
 	            // Check for errors
@@ -288,14 +269,19 @@ public class SerialJobsRunner extends JobsRunner
 	            	break;
 	            }
 	        	
-	            //Completion clause
-	            if (allSubJobsCompleted())
+	            //Completion clauses
+	            if (requestedToStart)
+	            {
+	            	// Premature completion caused by any request to restart the 
+	            	// workflow. The details of the restart must be dealt with 
+	            	// outside this method, i.e., by the ActionApplier.
+	                break;
+	            } else if (allSubJobsCompleted())
 	            {
 	            	logger.info("All " + numSubmittedJobs
 	                    		+ " steps are completed. Serialized workflow "
 	                    		+ "completed.");
-	            	if (!requestedToStart)
-	            		shutDownExecutionService();
+	            	shutDownExecutionService();
 	                break;
 	            }
 	
@@ -327,9 +313,20 @@ public class SerialJobsRunner extends JobsRunner
     
     /**
      * This is a listener that is associated with a specific job in the pool of
-     * jobs run in parallel. Instances of this class are created only after the 
-     * ThreadPoolExecutor has been initialised, so it is safe to assume that
-     * the tpExecutor exists and is capable of accepting new jobs.
+     * jobs. Instances of this class are created only after the 
+     * executor has been initialised, so it is safe to assume that
+     * the executor exists and is capable of accepting new jobs.
+     * This listener is charged with any part of the reaction that involves the
+     * execution service, but should not be doing any alteration of the jobs,
+     * including evaluation and monitoring jobs, or the job sequence 
+     * (i.e., workflow of todo jobs). 
+     * The latter should be done only outside of the 
+     * {@link SerialJobsRunner#mainIteration()}, hence in the
+     * while loop of the {@link SerialJobsRunner#start()} method by the 
+     * {@link ActionApplier} that processes any action. This because
+     * we want to retail all information of the jobs (e.g., the exposed
+     * output) in the status it is when they were evaluated 
+     * (or they did evaluate other jobs).
      */
     
     private class SerialJobListener implements JobNotificationListener
@@ -358,7 +355,7 @@ public class SerialJobsRunner extends JobsRunner
 					// be a wrong setting
 					logger.warn("WARNING: ignoring action " 
 							+ requestedAction.getType() + " of " 
-							+ requestedAction.getObject() 
+							+ requestedAction.getObject() //it's 'PARALLELJOB'
 							+ " because it was triggered by job " 
 							+ jobRequestingAction.getId() + " while "
 							+ "evaluating job " + focusJob.getId() 
@@ -370,19 +367,30 @@ public class SerialJobsRunner extends JobsRunner
 					switch (action.getType())
     				{
 						case REDO:
-						{	
-							//TODO-gg: generate a new workflow and start a new
-							// main iteration
+						{
+							synchronized (lock)
+			            	{
+								cancellAllRunningThreadsAndShutDown();
+								requestedToStart = true;
+			            		lock.notify();
+			            	};
+			            	
+							logger.warn("Action " 
+									+ requestedAction.getType() + " of " 
+									+ requestedAction.getObject() 
+									+ " requested by job " 
+									+ jobRequestingAction.getId() + " upon "
+									+ "evaluating job " + focusJob.getId() 
+									+ ".");
 							
-							throw new IllegalArgumentException("ERROR! Case of "
-									+ action.getType() + " action on " 
-									+ action.getObject() + " not implemented "
-									+ "in " + this.getClass().getSimpleName()
-									+ ". Please, contact the developers.");
+							// Refresh status of runner to prepare for new start
+							initializeExecutor();
+							break;
 						}
 						
 						case STOP:
 						case SKIP:
+						{
 							// Notification occurs at completion of the job 
 							// notifying the request of action, which may or
 							// may not be the focus job. If it is not the focus 
@@ -394,6 +402,7 @@ public class SerialJobsRunner extends JobsRunner
 							// focus job does not do anything, effectively.
 							break;
 						}
+    				}
 				} else {
 					throw new IllegalArgumentException("ERROR! Case of "
 							+ action.getType() + " action on " 

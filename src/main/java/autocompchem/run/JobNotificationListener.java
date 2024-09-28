@@ -20,8 +20,8 @@ import autocompchem.run.jobediting.Action;
  */
 
 /**
- * Interface for anything that wants to listen to notifications from the job 
- * class.
+ * Interface for anything that wants to listen to notifications from the 
+ * {@link Job} class.
  * 
  * @author Marco Foscato
  */

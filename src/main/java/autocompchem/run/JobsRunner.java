@@ -1,5 +1,7 @@
 package autocompchem.run;
 
+import java.util.ArrayList;
+
 /*
  *   Copyright (C) 2014  Marco Foscato
  *
@@ -118,15 +120,15 @@ public abstract class JobsRunner
 
     /**
      * Constructor for a instance that wants to run some jobs.
-     * @param todoJob the list of jobs to be run.
-     * @param master the job that creates this {@link JobsRunner}.
+     * @param master the job that defines the list of {@link Job}s to run 
+     * (i.e., the steps) and creates this {@link JobsRunner} to run them.
      */
 
-    public JobsRunner(List<Job> todoJobs, Job master)
+    public JobsRunner(Job master)
     {
     	logger = LogManager.getLogger(this.getClass());
     	this.master = master;
-        this.todoJobs = todoJobs;
+        this.todoJobs = new ArrayList<Job>(master.steps);
         
         addShutDownHook();
     }

@@ -66,6 +66,13 @@ public class MonitoringJob extends EvaluationJob
 
     /**
      * Constructor
+     * @param jobToEvaluate the job to monitor
+     * @param sitsDB the database of known situations.
+     * @param icDB the definition of the information channels to monitor
+     * @param delay the delay (milliseconds) after which this monitor should  
+     * start monitoring once it is started.
+     * @param period the time (millisecods) between a each monitoring event 
+     * and the next one.
      */
 
     public MonitoringJob(Job jobToEvaluate, SituationBase sitsDB,

@@ -275,17 +275,24 @@ public class Job implements Runnable
 
         if (params.contains(ParameterConstants.VERBOSITY))
         {
-            String str = params.getParameter(
-                    ChemSoftConstants.PARVERBOSITY).getValueAsString();
-            if (!NumberUtils.isNumber(str))
-			{
-				Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "
-						+ "cannot be converted to an integer. Check parameter "
-						+ ParameterConstants.VERBOSITY, -1);
-			}
-            Configurator.setLevel(logger.getName(), 
-            		LogUtils.verbosityToLevel(Integer.parseInt(str)));
+        	processVerbosity(params.getParameter(
+                    ChemSoftConstants.PARVERBOSITY));
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private void processVerbosity(NamedData param)
+    {
+        String str = param.getValueAsString();
+        if (!NumberUtils.isNumber(str))
+		{
+			Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "
+					+ "cannot be converted to an integer. Check parameter "
+					+ ParameterConstants.VERBOSITY, -1);
+		}
+        Configurator.setLevel(logger.getName(), 
+        		LogUtils.verbosityToLevel(Integer.parseInt(str)));
     }
 
 //------------------------------------------------------------------------------
@@ -424,6 +431,10 @@ public class Job implements Runnable
     public void setParameter(NamedData param, boolean recursive)
     {
     	params.setParameter(param);
+        if (param.getReference().equals(ParameterConstants.VERBOSITY))
+        {
+        	processVerbosity(param);
+        }
         if (recursive)
         {
 	        for (Job step : steps)
@@ -897,7 +908,7 @@ public class Job implements Runnable
 
     private void runSubJobsSequentially()
     {
-        SerialJobsRunner serialRun = new SerialJobsRunner(steps, this);
+        SerialJobsRunner serialRun = new SerialJobsRunner(this);
         if (hasParameter(JobsRunner.WALLTIMEPARAM))
         {
         	serialRun.setWallTime(Long.parseLong(
@@ -920,7 +931,7 @@ public class Job implements Runnable
     private void runSubJobsParallely()
     {
         ParallelJobsRunner parallRun = 
-        		new ParallelJobsRunner(steps, nThreads, nThreads, this);
+        		new ParallelJobsRunner(nThreads, nThreads, this);
         if (hasParameter(JobsRunner.WALLTIMEPARAM))
         {
         	parallRun.setWallTime(Long.parseLong(
