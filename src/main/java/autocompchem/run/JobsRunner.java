@@ -25,7 +25,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
+import autocompchem.log.LogUtils;
 import autocompchem.run.jobediting.Action;
 
 
@@ -127,9 +129,11 @@ public abstract class JobsRunner
     public JobsRunner(Job master)
     {
     	logger = LogManager.getLogger(this.getClass());
+        Configurator.setLevel(logger.getName(), master.logger.getLevel());
+        
     	this.master = master;
         this.todoJobs = new ArrayList<Job>(master.steps);
-        
+
         addShutDownHook();
     }
     

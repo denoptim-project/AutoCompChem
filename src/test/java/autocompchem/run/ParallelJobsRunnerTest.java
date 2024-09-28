@@ -100,21 +100,24 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "10");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
-        	master.addStep(new TestJob(roothName+i,3,true));
+        	main.addStep(new TestJob(roothName+i,3,true));
         }
         
-        master.run();
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+        
+        main.run();
         
         for (int i=0; i<3; i++)
         {
         	int n = FileAnalyzer.count(roothName+i, "Iteration*");
         	assertTrue(n>4,"Lines in log "+i);
         	assertTrue(n<8,"Lines in log "+i);
-        	assertFalse(master.getStep(i).isInterrupted,
+        	assertFalse(main.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
     }
@@ -132,21 +135,24 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "3");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "3");
         for (int i=0; i<3; i++)
         {
-        	master.addStep(new TestJob(roothName+i,5,true));
+        	main.addStep(new TestJob(roothName+i,5,true));
         }
         
-        master.run();
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+        
+        main.run();
         
         for (int i=0; i<3; i++)
         {
         	int n = FileAnalyzer.count(roothName+i, "Iteration*");
         	assertTrue(n>4,"Lines in log "+i);
         	assertTrue(n<10,"Lines in log "+i);
-        	assertTrue(master.getStep(i).isInterrupted,
+        	assertTrue(main.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
     }
@@ -164,24 +170,27 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        //Job master = JobFactory.createJob(RunnableAppID.ACC);
-        //master.addStep(new TestJob(roothName+"A"));
+        //Job main = JobFactory.createJob(RunnableAppID.ACC);
+        //main.addStep(new TestJob(roothName+"A"));
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "10");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
         {
-        	master.addStep(new TestJob(roothName+i,3,true));
+        	main.addStep(new TestJob(roothName+i,3,true));
         }
+
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
         
-        master.run();
+        main.run();
         
         for (int i=0; i<6; i++)
         {
         	int n = FileAnalyzer.count(roothName+i, "Iteration*");
         	assertTrue(n>4,"Lines in log "+i);
         	assertTrue(n<8,"Lines in log "+i);
-        	assertFalse(master.getStep(i).isInterrupted,
+        	assertFalse(main.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
     }
@@ -199,31 +208,34 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        //Job master = JobFactory.createJob(RunnableAppID.ACC);
-        //master.addStep(new TestJob(roothName+"A"));
+        //Job main = JobFactory.createJob(RunnableAppID.ACC);
+        //main.addStep(new TestJob(roothName+"A"));
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "5");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "5");
         for (int i=0; i<6; i++)
         {
-        	master.addStep(new TestJob(roothName+i,3,true));
+        	main.addStep(new TestJob(roothName+i,3,true));
         }
         
-        master.run();
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+        
+        main.run();
         
         for (int i=0; i<3; i++)
         {
         	int n = FileAnalyzer.count(roothName+i, "Iteration*");
         	assertTrue(n>4,"Lines in log "+i);
         	assertTrue(n<8,"Lines in log "+i);
-        	assertFalse(master.getStep(i).isInterrupted,
+        	assertFalse(main.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
         for (int i=3; i<6; i++)
         {
         	assertTrue(6>FileAnalyzer.count(roothName+i, "Iteration*"),
             		"Lines in log "+i);
-        	assertTrue(master.getStep(i).isInterrupted,
+        	assertTrue(main.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
     }
@@ -244,12 +256,12 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "6");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "6");
         
         // A "long-lasting" job that will be evaluated
         Job jobToEvaluate = new TestJob(roothName+0,3,0,490,true);
-        master.addStep(jobToEvaluate);
+        main.addStep(jobToEvaluate);
         
         // Prepare ingredients to do perception
         SituationBase sitsDB = new SituationBase();
@@ -260,17 +272,20 @@ public class ParallelJobsRunnerTest
         // Make the job that will monitor the ongoing job and trigger an action
         Job monitoringJob = new MonitoringJob(jobToEvaluate, sitsDB, icDB, 
         		750, 500);
-        master.addStep(monitoringJob);
+        main.addStep(monitoringJob);
         
         // Other 'whatever' jobs (i.e., the siblings) that will be killed too
         for (int i=1; i<6; i++) 
         {
-        	master.addStep(new TestJob(roothName+i,3,0,200,true));
+        	main.addStep(new TestJob(roothName+i,3,0,200,true));
         }
         
-        assertEquals(7,master.getNumberOfSteps(),"Number of parallel jobs");
+        assertEquals(7,main.getNumberOfSteps(),"Number of parallel jobs");
         
-        master.run();
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+        
+        main.run();
         
         int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false).size();
         assertEquals(2, iPingFiles, "Number of initiated TestJobs");
@@ -338,7 +353,6 @@ public class ParallelJobsRunnerTest
         // The main job
         Job main = JobFactory.createJob(AppID.ACC, 5, true);
         main.setParameter("WALLTIME", "10");
-        //main.setParameter(ParameterConstants.VERBOSITY, "1");
         main.addStep(productionJob);
         main.addStep(monitoringJob);
         
@@ -352,6 +366,9 @@ public class ParallelJobsRunnerTest
         }
         
         assertEquals(6,main.getNumberOfSteps(), "Number of parallel jobs");
+        
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
         
         main.run();
         
@@ -386,8 +403,8 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        int walltimeChildJobs = 3;
-        int period = 75;
+        int walltimeChildJobs = 2;
+        int period = 25;
         
         // A job that will be evaluated
         String logOnProductionJob = roothName+"_production";
@@ -410,7 +427,6 @@ public class ParallelJobsRunnerTest
         // Make the job that will monitor the ongoing job and trigger an action
         Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
         		0, period);
-        //monitoringJob.setParameter(ParameterConstants.VERBOSITY,"1");
         monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC,"true");
         
         // The main job
@@ -429,7 +445,11 @@ public class ParallelJobsRunnerTest
         }
         
         assertEquals(5, main.getNumberOfSteps(), "Number of parallel jobs");
-        
+
+        // Comment out these to get some log, in case of debugging
+        // monitoringJob.setParameter(ParameterConstants.VERBOSITY, "3", true);
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+       
         main.run();
         
         /* Job_#0.1 is the monitoring job
@@ -440,21 +460,24 @@ public class ParallelJobsRunnerTest
          * 
          * Job_#0.2 writes the log that is monitored by Job_#0.1. Upon reaching
          * a given number of iterations, the monitoring job triggers a reaction
-         * that stops Job_#0.2 and archives its results.
-         * Therefore, we expect to find the Job_#0.2_0 folder containing the log
-         * of Job_#0.2 which must be substantially shorted than the log of its 
-         * siblings Job_#0.3, Job_#0.4, and Job_#0.5. The latter, in fact, must
-         * not be stopped by the reaction.
+         * that stops Job_#0.2, but does not do more than that.
+         * Therefore, we expect to find no archive folder, but we expect that 
+         * the log of Job_#0.2 is substantially shorted than the log of its 
+         * sibling Job_#0.3, which must not be stopped by the reaction.
+         * 
+         * Jobs Job_#0.4, and Job_#0.5 ran do not fill in the number of parallel
+         * batches so they run afterwards and should not be stopped by the 
+         * reaction to Job_#0.2.
          * 
          * Note that the monitoring job starts before the monitored job. Thus,
          * in the first monitoring iteration, the info channel is not readable,
          * hence the monitoring job has to be tolerant.
          */
         
-        assertEquals(1, FileUtils.findByGlob(tempDir, "Job_#0.2_0", true).size());
-        assertEquals(3, FileUtils.findByGlob(tempDir, "testjob.log*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, "Job_#0.2_0", true).size());
+        assertEquals(4, FileUtils.findByGlob(tempDir, "testjob.log*", true).size());
         assertTrue(16>FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
-        		+ "Job_#0.2_0" + SEP +  "testjob.log_production", "Iteration"));
+        		+ "testjob.log_production", "Iteration"));
         assertTrue(30<FileAnalyzer.count(roothName+"1", "Iteration"));
         assertTrue(30<FileAnalyzer.count(roothName+"2", "Iteration"));
         assertTrue(30<FileAnalyzer.count(roothName+"3", "Iteration"));
@@ -472,17 +495,21 @@ public class ParallelJobsRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter(JobsRunner.WALLTIMEPARAM, "5");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter(JobsRunner.WALLTIMEPARAM, "5");
         for (int i=0; i<2; i++)
         {
-        	master.addStep(new TestJob(roothName+i, 3, true));
+        	main.addStep(new TestJob(roothName+i, 3, true));
         }
-        master.addStep(new TestJobTriggeringException());
+        main.addStep(new TestJobTriggeringException());
+        
+
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
         
         boolean triggered = false;
         try {
-        	master.run();
+        	main.run();
         } catch (Throwable t) {
         	triggered = true;
 			assertTrue(t.getMessage().contains(TestJobTriggeringException.MSG));
@@ -506,19 +533,22 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "6");
-        master.setParameter("WAITSTEP", "7");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "6");
+        main.setParameter("WAITSTEP", "7");
         // Basically the waiting step is much longer than the time it 
         // will take to do the actual jobs, and also to the time given to the
         // ParallelRunner as a wall time. So, check for completion
         // should be triggered by the actual completion of any job.
        
-        master.addStep(new TestJob(roothName+"_A",1,0,200,true));
-        master.addStep(new TestJob(roothName+"_B",2,0,200,true));
-        master.addStep(new TestJob(roothName+"_C",2,0,200,true));
+        main.addStep(new TestJob(roothName+"_A",1,0,200,true));
+        main.addStep(new TestJob(roothName+"_B",2,0,200,true));
+        main.addStep(new TestJob(roothName+"_C",2,0,200,true));
         
-        master.run();
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+        
+        main.run();
 
         int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false).size();
         assertEquals(3,iPingFiles,"Number of initiated TestJobs");
@@ -561,12 +591,15 @@ public class ParallelJobsRunnerTest
             Job job = JobFactory.createJob(AppID.ACC,4);
             for (int i=0; i<10; i++)
             {
-                ShellJob sj = new ShellJob(shellFlvr,script.getAbsolutePath(),
+                ShellJob sj = new ShellJob(shellFlvr, script.getAbsolutePath(),
                 		newFile+i);
                 sj.setParallelizable(true);
                 job.addStep(sj);
             }
 
+            // Comment out these to get some log, in case of debugging
+            job.setParameter(ParameterConstants.VERBOSITY, "0", true);
+            
             // Submit all via the Job
             job.run();
 
@@ -575,7 +608,7 @@ public class ParallelJobsRunnerTest
             {
                 File f = new File(newFile+i);
                 assertTrue(f.exists(),"ShellJob output file exists ("+i+") in "
-                                                   + tempDir.getAbsolutePath());
+                		+ tempDir.getAbsolutePath());
             }
         }
         catch (Throwable t)

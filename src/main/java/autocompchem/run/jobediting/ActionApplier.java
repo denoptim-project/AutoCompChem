@@ -289,14 +289,14 @@ public class ActionApplier
   	 * the workflow. It is used to archive data from 
   	 * previous runs of the workflow.
   	 */
-      public static void performActionOnSerialWorkflow(Action action, 
+    
+    public static void performActionOnSerialWorkflow(Action action, 
     		  Job workflow, int triggeringStepId, int restartCounter)
-      {
-    	  ActionType aType = action.getType();
-    	  
-    	  // No need to archive or edit the workflow if we just stop it.
-    	  if (aType==ActionType.STOP)
-    		  return;
+    {
+    	ActionType aType = action.getType();
+    	// No need to archive or edit the workflow if we just stop it. 
+    	if (aType==ActionType.STOP)
+    		return;
     	
     	// Modify the workflow: Trim steps to have as first step the first one
     	// that should re-run.
@@ -372,6 +372,105 @@ public class ActionApplier
     		
     		job.resetRunStatus();
     	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    public static List<Job> performActionOnParallelBatch(Action action, 
+    		  Job batch, Job jobRequestingAction, int restartCounter)
+    {
+    	ActionType aType = action.getType();
+		
+    	// No need to archive or edit the batch if we just stop or skip. 
+    	if (aType==ActionType.STOP || aType==ActionType.SKIP)
+    		return new ArrayList<Job>();
+
+		List<Job> actionObjects = new ArrayList<Job>();
+		switch (action.getObject()) 
+		{	
+			case PARALLELJOB:
+			{
+				actionObjects.addAll(batch.getSteps());
+				break;
+			}
+			
+			case FOCUSJOB:
+			default:
+			{
+				actionObjects.add((Job) jobRequestingAction
+						.exposedOutput.getNamedData(
+								JobEvaluator.EVALUATEDJOB).getValue());
+				break;
+			}
+		}
+    	
+    	// Modify the batch of parallel job: keep only what should be re run.
+		List<Job> stepsToReRun  = new ArrayList<Job>();
+		switch (aType) 
+		{
+			case REDO:
+			{
+				for (Job j : batch.getSteps())
+	    		{
+	    			if (actionObjects.contains(j) || j==jobRequestingAction)
+	    				stepsToReRun.add(j);
+	    		}
+				break;
+			}
+			
+			// Both SKIP and STOP cannot have been intercepted before, but we 
+			// keep them to facilitate the identification on incomplete switch 
+			// block in case other action types are added in the future,
+			// instead of using the 'default' case.
+			case SKIP:
+			case STOP:
+			{
+				break;
+			}
+		}
+    	
+    	// Archive previous results found on disk for the steps to rerun.
+    	// NB: here we assume that all files in the work directory relate
+    	// to a single master job, i.e., no other independent job is using 
+    	// the same work directory. 
+    	// Also, we assume any of the jobs to rerun, is not running.
+    	// So we archive any of the files that, according to the patterns,
+    	// should be those somehow connected with the jobs to rerun.
+    	archivePreviousResults(stepsToReRun, restartCounter, 
+    			action.getFilenamePatterns(ArchivingTaskType.COPY), 
+    			action.getFilenamePatterns(ArchivingTaskType.MOVE), 
+    			action.getFilenamePatterns(ArchivingTaskType.DELETE));
+    	
+    	// Pre-pend (i.e., added in front) is not possible in parallel batches
+    	if (action.prerefinementSteps != null && 
+    			action.prerefinementSteps.size()>0)
+    	{
+			Terminator.withMsgAndStatus("ERROR: trying to pre-pend steps in a"
+					+ "parallel batch of jobs. This is not possible in this"
+					+ "implementation. If you see the need to pre-pend steps"
+					+ "itno a parallel batch, please, contact the "
+					+ "developers and present your use case.", -1);
+    	}
+    	
+    	// Modify job settings
+    	for (IJobEditingTask jet : action.jobEditTasks)
+    	{
+			for (Job step : actionObjects)
+			{
+				jet.applyChange(step);
+			}
+    	}
+    	
+    	// NB: any data that may be needed to restart of fix things should be 
+    	// taken and used before resetting the jobs.
+    	
+    	// Reset status of all jobs to re-run them.
+    	for (Job job : stepsToReRun)
+    	{
+    		job.resetRunStatus();
+    	}
+    	
+    	return stepsToReRun;
     }
     
 //------------------------------------------------------------------------------

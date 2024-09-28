@@ -62,14 +62,17 @@ public class ParallelJobsRunner extends JobsRunner
      * Number of threads
      */
     private int nThreads;
+    
+    /**
+     * Number of submitted jobs including first submission and re-submissions.
+     */
+    private int numSubmittedJobs = 0;
 	
 //------------------------------------------------------------------------------
 
     /**
      * Constructor. The sizes of pool of threads and queue control the 
      * efficiency in the usage of resources.
-     * @param todoJob the list of jobs to be done. We assume these can be run
-     * in parallel. No validity checking!
      * @param poolSize number of parallel threads. We assume the number is 
      * sensible. No validity checking! If less jobs are available, then this 
      * number is ignored and we'll run as many threads as jobs. In case the
@@ -82,10 +85,9 @@ public class ParallelJobsRunner extends JobsRunner
      * @param master the job that creates this {@link ParallelJobsRunner}.
      */
 
-    public ParallelJobsRunner(List<Job> todoJobs, int poolSize, int queueSize, 
-    		Job master)
+    public ParallelJobsRunner(int poolSize, int queueSize, Job master)
     {
-    	super(todoJobs, master);
+    	super(master);
         this.nThreads = Math.min(poolSize, todoJobs.size());
         
         initializeExecutor(true);
@@ -378,33 +380,21 @@ public class ParallelJobsRunner extends JobsRunner
     	while (requestedToStart && !weRunOutOfTime())
     	{
     		mainIteration();
-    		
-    		// This takes care of processing the reaction only in case of 
-    		// restart of the batch of parallel jobs.
+
+    		// This takes care of processing the requested action only in case  
+    		// of a restart of the parallel batch. However, note that any part 
+        	// of the action that affects the execution service 
+    		// (e.g., the killing of a job) is done already by the 
+    		// ParallelJobListener
     		if (requestedAction!=null)
     		{
-    			List<Job> reactionObjectJobs = new ArrayList<Job>();
-    			switch (requestedAction.getObject()) 
-    			{
-					case FOCUSJOB:
-					{
-						reactionObjectJobs.add((Job) jobRequestingAction
-								.exposedOutput.getNamedData(
-										JobEvaluator.EVALUATEDJOB).getValue());
-						break;
-					}
-					
-					case PARALLELJOB:
-					{
-						reactionObjectJobs.addAll(todoJobs);
-						break;
-					}
-				}
-    			
-    			ActionApplier.performAction(requestedAction, 
-    					jobRequestingAction, 
-    					reactionObjectJobs, 
+    			todoJobs = ActionApplier.performActionOnParallelBatch(
+    					requestedAction, 
+    					master, 
+    					jobRequestingAction,
     					restartCounter.get());
+    			
+    			// Consume requested action
     			requestedAction = null;
     			jobRequestingAction = null;
     		}
@@ -436,7 +426,6 @@ public class ParallelJobsRunner extends JobsRunner
         // Submit all sub-jobs in once. Those that do not fit because of all
         // thread pool is filled-up are dealt with by RejectedExecHandlerImp
         Iterator<Job> it = todoJobs.iterator();
-        int numSubmittedJobs = 0;
         while (it.hasNext())
         {
             
@@ -485,7 +474,13 @@ public class ParallelJobsRunner extends JobsRunner
 	            }
 	            
 	            //Completion clause
-	            if (allSubJobsCompleted())
+	            if (requestedToStart)
+	            {
+	            	// Premature completion caused by any request to restart the 
+	            	// batch. The details of the restart must be dealt with 
+	            	// outside this method, i.e., by the ActionApplier.
+	                break;
+	            } else if (allSubJobsCompleted())
 	            {
 	            	logger.info("All " + numSubmittedJobs
 	                    		+ " sub-jobs are completed. Parallelized "
@@ -600,6 +595,7 @@ public class ParallelJobsRunner extends JobsRunner
 						
 						case STOP:
 						case SKIP:
+						{
 							logger.warn("KILLING job " 
 										+ focusJob.getId()
 										+ " upon request from " 
@@ -607,18 +603,13 @@ public class ParallelJobsRunner extends JobsRunner
 							synchronized (lock)
 			            	{
 								cancelOneRunningThread(focusJob);
-
-				    			ActionApplier.performAction(requestedAction, 
-				    					jobRequestingAction, 
-				    					Arrays.asList(focusJob), 
-				    					focusJob.getRestartCounter()
-				    						.getAndIncrement());
-				    			requestedAction = null;
-				    			jobRequestingAction = null;
+								cancelOneRunningThread(jobRequestingAction);
+								requestedToStart = true;
 			            		lock.notify();
 			            	}
 							break;
 						}
+    				}
 				} else {
 					throw new IllegalArgumentException("ERROR! Case of "
 							+ action.getType() + " action on " 
