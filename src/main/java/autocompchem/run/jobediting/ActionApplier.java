@@ -377,7 +377,7 @@ public class ActionApplier
 //------------------------------------------------------------------------------
     
     public static List<Job> performActionOnParallelBatch(Action action, 
-    		  Job batch, Job jobRequestingAction, int restartCounter)
+    		  Job batch, Job triggerJob, Job jobRequestingAction, int restartCounter)
     {
     	ActionType aType = action.getType();
 		
@@ -397,9 +397,7 @@ public class ActionApplier
 			case FOCUSJOB:
 			default:
 			{
-				actionObjects.add((Job) jobRequestingAction
-						.exposedOutput.getNamedData(
-								JobEvaluator.EVALUATEDJOB).getValue());
+				actionObjects.add(triggerJob);
 				break;
 			}
 		}

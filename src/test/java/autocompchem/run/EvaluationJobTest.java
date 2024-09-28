@@ -49,8 +49,7 @@ public class EvaluationJobTest
     @Test
     public void testConstructorWithParams() throws Exception
     {
-    	ICircumstance c = new MatchText("Iteration 3",
-        		InfoChannelType.LOGFEED);
+    	ICircumstance c = new MatchText("Iteration 3", InfoChannelType.LOGFEED);
         Situation s = new Situation("SituationType","TestSituation", 
         		new ArrayList<ICircumstance>(Arrays.asList(c)));
         SituationBase sitsDB = new SituationBase();
@@ -58,7 +57,8 @@ public class EvaluationJobTest
         InfoChannelBase icDB = new InfoChannelBase();
         icDB.addChannel(new FileAsSource());
     	Job jobToEvaluate = new Job();
-    	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
+    	Job evalJob = new EvaluationJob(jobToEvaluate, jobToEvaluate, 
+    			sitsDB, icDB);
     	
     	Worker w = WorkerFactory.createWorker(evalJob);
     	

@@ -270,7 +270,7 @@ public class ParallelJobsRunnerTest
         icDB.addChannel(new FileAsSource(roothName+0, InfoChannelType.LOGFEED));
         
         // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(jobToEvaluate, sitsDB, icDB, 
+        Job monitoringJob = new MonitoringJob(jobToEvaluate, main, sitsDB, icDB, 
         		750, 500);
         main.addStep(monitoringJob);
         
@@ -345,14 +345,14 @@ public class ParallelJobsRunnerTest
         icDB.addChannel(new FileAsSource(logOnProductionJob, 
         		InfoChannelType.LOGFEED));
         
-        // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
-        		750, 500);
-        //monitoringJob.setParameter(ParameterConstants.VERBOSITY, "1");
-        
         // The main job
         Job main = JobFactory.createJob(AppID.ACC, 5, true);
         main.setParameter("WALLTIME", "10");
+        
+        // Make the job that will monitor the ongoing job and trigger an action
+        Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
+        		750, 500);
+        
         main.addStep(productionJob);
         main.addStep(monitoringJob);
         
@@ -422,16 +422,17 @@ public class ParallelJobsRunnerTest
         sitsDB.addSituation(sit1);
         InfoChannelBase icDB = new InfoChannelBase();
         icDB.addChannel(new FileAsSource(logOnProductionJob, 
-        		InfoChannelType.LOGFEED));
-        
-        // Make the job that will monitor the ongoing job and trigger an action
-        Job monitoringJob = new MonitoringJob(productionJob, sitsDB, icDB, 
-        		0, period);
-        monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC,"true");
-        
+        		InfoChannelType.LOGFEED));        
+
         // The main job
         Job main = JobFactory.createJob(AppID.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
+        
+        // Make the job that will monitor the ongoing job and trigger an action
+        Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
+        		0, period);
+        monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC,"true");
+        
         main.addStep(monitoringJob);
         main.addStep(productionJob);
         

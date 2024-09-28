@@ -390,7 +390,8 @@ public class ParallelJobsRunner extends JobsRunner
     		{
     			todoJobs = ActionApplier.performActionOnParallelBatch(
     					requestedAction, 
-    					master, 
+    					master,
+    					focusJob,
     					jobRequestingAction,
     					restartCounter.get());
     			
@@ -548,6 +549,9 @@ public class ParallelJobsRunner extends JobsRunner
 						Job.ACTIONREQUESTBYSUBJOB, action));
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.SUBJOBREQUESTINGACTION, sender));
+				focusJob = (Job) jobRequestingAction.exposedOutput
+						.getNamedData(JobEvaluator.EVALUATEDJOB)
+						.getValue();
 				
 				if (action.getObject().equals(ActionObject.PARALLELJOB))
 				{
@@ -579,13 +583,11 @@ public class ParallelJobsRunner extends JobsRunner
 					}
 				} else if (action.getObject().equals(ActionObject.FOCUSJOB))
 				{
-					Job focusJob = (Job) jobRequestingAction.exposedOutput
-							.getNamedData(JobEvaluator.EVALUATEDJOB)
-							.getValue();
 					switch (action.getType())
     				{
 						case REDO:
 						{	
+							//TODO-gg do?
 							throw new IllegalArgumentException("ERROR! Case of "
 									+ action.getType() + " action on " 
 									+ action.getObject() + " not implemented "

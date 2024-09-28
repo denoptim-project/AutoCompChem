@@ -143,12 +143,19 @@ public class JobEvaluator extends Worker
 	 * The string used to identify the details of the job being evaluated in the
 	 * exposed job output data structure.
 	 */
+	//TODO-gg duplicate in Parameter?
 	public static final String EVALUATEDJOB = "evaluatedJob";
 	
 	/**
 	 * The string used to identify the exception triggered by perception.
 	 */
 	public static final String EXCEPTION = "exception";
+	
+	/**
+	 * The string used to define a parameter that makes this evaluator run in
+	 * standalone fashion. This is used only for tests.
+	 */
+	protected static final String RUNSTANDALONE = "RUNSTANDALONE";
 	
     /**
      * Situation base: list of known situations/concepts
@@ -166,10 +173,10 @@ public class JobEvaluator extends Worker
     private Job jobBeingEvaluated;
     
     /**
-     * The index of the job step that is last, whether it is failed or not.
-     * By default this value is 0.
+     * The batch or workflow the job being evaluated belongs to, of itself, in
+     * case of self-contained jobs that do not belong to any batch or workflow.
      */
-    private int lastJobStepId = 0;
+    private Job containerOfJobBeingEvaluated;
    
     /**
      * Flags indicating we tolerate missing information channels.
@@ -208,22 +215,6 @@ public class JobEvaluator extends Worker
     @Override
     public Worker makeInstance(Job job) {
         return new JobEvaluator();
-    }
-        
-//-----------------------------------------------------------------------------
-    
-    /**
-     * Constructor defining the knowledge base and source of information.
-     * @param sitsDB the collection of known situations.
-     * @param icDB the collection of information channels.
-     * @param job the job being evaluated.
-     */
-    public JobEvaluator(SituationBase sitsDB, InfoChannelBase icDB, Job job)
-    {
-    	this();
-        this.sitsDB = sitsDB;
-        this.icDB = icDB;
-        this.jobBeingEvaluated = job;
     }
     
 //-----------------------------------------------------------------------------
@@ -374,6 +365,7 @@ public class JobEvaluator extends Worker
 			FileUtils.foundAndPermissions(file, true, false, false);
 			try {
 				jobBeingEvaluated = (Job) IOtools.readJsonFile(file, Job.class);
+				containerOfJobBeingEvaluated = jobBeingEvaluated;
 			} catch (IOException e) {
 				e.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! could not read JSON file "
@@ -385,7 +377,7 @@ public class JobEvaluator extends Worker
 		{
 			if (jobBeingEvaluated!=null)
 			{
-				Terminator.withMsgAndStatus("ERROR! A job to evaluate "
+				Terminator.withMsgAndStatus("ERROR! A job to evaluate has "
 						+ "been provided to the evaluation job, "
 						+ "but there is an attempt to overwrite this data by "
 						+ "using the '" + ParameterConstants.JOBTOEVALUATE 
@@ -393,16 +385,11 @@ public class JobEvaluator extends Worker
 			}
 			jobBeingEvaluated = (Job) params.getParameter(
 					ParameterConstants.JOBTOEVALUATE).getValue();
+			containerOfJobBeingEvaluated = (Job) params.getParameter(
+					ParameterConstants.JOBTOEVALPARENT).getValue();
 		}
     	
 		String whatIsNull = "";
-		/*
-		// Not really a requirement
-		if (job==null)
-		{
-			whatIsNull="the job to evaluate";
-		}
-		*/
 		if (sitsDB==null)
 		{
 			if (!whatIsNull.equals(""))
@@ -460,12 +447,6 @@ public class JobEvaluator extends Worker
 	@Override
 	public void performTask() 
 	{
-		/*
-		 //TODO-gg do some sort of test of consistency bwteen task and worker
-    	if (!task.equals(EVALUATEJOBTASK))
-    		dealWithTaskMistMatch();
-    	*/
-	
 		// Pre-flight checks
 		if (sitsDB.getSituationCount()==0)
 		{
@@ -480,21 +461,25 @@ public class JobEvaluator extends Worker
 		
 		// Detect if this is a standalone cure job.
 		boolean standaloneCureJob = myJob.getObserver()==null 
-				&& CURECOMPCHEMJOBTASKS.contains(task);
+				&& (CURECOMPCHEMJOBTASKS.contains(task) || 
+						hasParameter(RUNSTANDALONE));
 		
 		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setTolerantMissingIC(tolerateMissingIC);
-		
+
+		int lastStepIdInCCJob = -1;
 		if (EVALCOMPCHEMJOBTASKS.contains(task) 
 				|| CURECOMPCHEMJOBTASKS.contains(task)
 				|| jobBeingEvaluated instanceof CompChemJob)
 		{
 			analyzeCompChemJobResults(p);
+			lastStepIdInCCJob = (int) exposedOutputCollector.getNamedData(
+					NUMSTEPSKEY).getValue();
 		}
 		
 		//TODO: need parsing of ACCJob log files to detect number of steps
-		// which is otherwise assumed to be 1 (see lastJobStepId)
+		// which is otherwise assumed to be 1
 		
 		try {
 			p.perceive();
@@ -519,8 +504,29 @@ public class JobEvaluator extends Worker
 			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}
 		
-		exposeOutputData(new NamedData(NUMSTEPSKEY,
-				NamedDataType.INTEGER, lastJobStepId));
+		boolean selfcontainedJob = false;
+		int idxStepEvaluated = -1;
+		if (jobBeingEvaluated!=containerOfJobBeingEvaluated)
+		{
+			if (!containerOfJobBeingEvaluated.getSteps().contains(
+					jobBeingEvaluated))
+			{
+				Terminator.withMsgAndStatus("Job being evaluated is neither "
+						+ "self-contained nor a step in the container declared "
+						+ "upon configuration of the " 
+						+ this.getClass().getSimpleName(), -1);
+			}
+			int idx = containerOfJobBeingEvaluated.getSteps().indexOf(
+					jobBeingEvaluated);
+			if (lastStepIdInCCJob>0 && idx!=lastStepIdInCCJob)
+			{
+				Terminator.withMsgAndStatus("Inconsistent identification of "
+						+ "the job being evaluated.", -1);
+			}
+			idxStepEvaluated = idx;
+		} else {
+			selfcontainedJob = true;
+		}
 		
 		// Expose conclusions of the evaluation
 		if (p.isAware())
@@ -536,6 +542,10 @@ public class JobEvaluator extends Worker
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
 						NamedDataType.ACTION, s.getReaction()));
 				// ...and these are used when performing the action
+				
+				//TODO-do not use this because it is ambiguous: you never know 
+				// if it is the step or the batch/workflow. Either add this 
+				//distinction or get rid of it.
 				exposeOutputData(new NamedData(EVALUATEDJOB,
 						NamedDataType.JOB, jobBeingEvaluated));
 				
@@ -548,21 +558,60 @@ public class JobEvaluator extends Worker
 					logger.info("Attempting to cure job. Reaction: " 
 								+ s.getReaction().getType() + " " 
 								+ s.getReaction().getObject());
-					ActionApplier.performAction(s.getReaction(), myJob, 
-							Arrays.asList(jobBeingEvaluated), 1);
+					
+					Job newJobResultingFromAction = null;
+					if (selfcontainedJob)
+					{
+						logger.fatal(NL+NL+"UNIMPLEMENTED CASE!!!"+NL);
+						//TODO-gg
+						/*
+						 should add possibility to pre-pend steps
+						newJobResultingFromAction = 
+							ActionApplier.performActionOnSelfContained(
+								s.getReaction(),   //action to perform
+								containerOfJobBeingEvaluated, //self-contained job
+								1); // restart counter
+						*/
+					} else {
+						if (containerOfJobBeingEvaluated.runsParallelSubjobs())
+						{
+							List<Job> newJobSteps = 
+									ActionApplier.performActionOnParallelBatch(
+											s.getReaction(),   //action to perform
+											containerOfJobBeingEvaluated, //parallel batch
+											jobBeingEvaluated, //job causing the reaction
+											myJob, //job doing the evaluation 
+											1); // restart counter
+							containerOfJobBeingEvaluated.steps = newJobSteps;
+						} else {
+							ActionApplier.performActionOnSerialWorkflow(
+									s.getReaction(),   //action to perform
+									containerOfJobBeingEvaluated, //serial workflow
+									idxStepEvaluated, //id of step triggering reaction
+									1); // restart counter
+						}
+						newJobResultingFromAction = containerOfJobBeingEvaluated;
+					}
 					
 					// Prepare generation of new input file
 					ParameterStorage makeInputPars = new ParameterStorage();
 					
 					makeInputPars.setParameter(WorkerConstants.PARTASK, 
 							Task.make("prepareInput").casedID);
-					makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
-							exposedOutputCollector.getNamedData(
-									ChemSoftConstants.SOFTWAREID)
-							.getValueAsString());
+					if (exposedOutputCollector.contains(
+							ChemSoftConstants.SOFTWAREID))
+					{
+						makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
+								exposedOutputCollector.getNamedData(
+										ChemSoftConstants.SOFTWAREID)
+								.getValueAsString());
+					} else {
+						makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID,
+								"ACC");
+					}
 					makeInputPars.setParameter(
 							ChemSoftConstants.PARJOBDETAILSOBJ, 
-							NamedDataType.JOB, jobBeingEvaluated);
+							NamedDataType.JOB, newJobResultingFromAction);
 					
 					//TODO-gg this was the wrong way to do this. We need to make
 					// the action control whether or not to update the geometry 
@@ -584,19 +633,6 @@ public class JobEvaluator extends Worker
 							params.getParameter(ChemSoftConstants.PAROUTFILE)
 								.getValueAsString());
 					}
-					
-					/*
-					 * TODO-gg: do like you have done for the output analyzer:
-					 * - use the PREPAREINPUT task that is agnostic
-					 * - that will call the AspecificOutputAnalyzer via WorkerFactory.createInstance()
-					 * - AspecificOutputAnalyzer.makeInstance/jobToDoByInstance)
-					 * - ChemSoftOutputReaderBuilder.makeInstance(outputFile) makes 
-					 *   the instance based on the type detected in the output
-					 *  - The workerFactory initialises the worked
-					 *  - the performTask of the Worker (a concrete impl) 
-					 *  does the actual analysis of the output.
-					 */
-					
 					
 					ChemSoftInputWriter worker;
 					try {
@@ -707,6 +743,9 @@ public class JobEvaluator extends Worker
 				ChemSoftConstants.JOBOUTPUTDATA));
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.SOFTWAREID));
+		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER,
+				outputParser.getStepsFound()));
+		
 		if (jobBeingEvaluated!=null 
 				&& jobBeingEvaluated.hasParameter(ChemSoftConstants.PARGEOM))
 		{
@@ -714,7 +753,6 @@ public class JobEvaluator extends Worker
 					ChemSoftConstants.PARGEOM));
 		}
 		
-		lastJobStepId = outputParser.getStepsFound()-1;
 		/*
 		This is done for any job type, therefore it is done outside this method
 		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 

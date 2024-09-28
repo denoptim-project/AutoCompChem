@@ -38,6 +38,10 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 
@@ -53,18 +57,67 @@ public class JobEvaluatorTest
     
     @TempDir 
     protected File tempDir;
-
     
 //-----------------------------------------------------------------------------
 
     @Test
-    public void testTolerantJobEvaluator() throws Exception
+    public void testJobEvaluator_standalone() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        
+        File existingFile = new File(
+        		tempDir.getAbsolutePath() + SEP + "file.out");
+        IOtools.writeTXTAppend(existingFile, "Text TRIGGERS REACTION", false);
+
+        // NB: this situation is not related to any specific step of the job
+        // being evaluated. Also, without an interpreted of the ICfeed that
+        // can split the ICfeed into steps, the perceptron can only assume that
+        // the situation is triggered by the first subjob of a batch/workflow.
+        Situation situationWithAction = new Situation("SituationType",
+        		"TestSituation", new ArrayList<ICircumstance>(Arrays.asList(
+        				new MatchText(".*TRIGGERS REACTION.*", 
+        						InfoChannelType.LOGFEED))));
+        situationWithAction.setReaction(new Action(ActionType.REDO, 
+        		ActionObject.FOCUSJOB));
+        
+        SituationBase sitsDB = new SituationBase();
+        sitsDB.addSituation(situationWithAction);
+        
+        InfoChannelBase icDB = new InfoChannelBase();
+        icDB.addChannel(new FileAsSource(existingFile.getAbsolutePath(), 
+        		InfoChannelType.LOGFEED));
+        
+        // handling of parallel job
+        
+    	Job batchToEvaluate = new Job();
+    	batchToEvaluate.setNumberOfThreads(2);
+    	batchToEvaluate.addStep(new TestJob("log1", 0, true));
+    	batchToEvaluate.addStep(new TestJob("log2", 0, true));
+    	
+    	Job evalJob = new EvaluationJob(batchToEvaluate.getStep(1), 
+    			batchToEvaluate, sitsDB, icDB);
+    	evalJob.setParameter(JobEvaluator.RUNSTANDALONE);
+    	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
+    	w.performTask();
+    	assertNotNull(evalJob.exposedOutput.getNamedData(
+    			JobEvaluator.SITUATIONOUTKEY,true));
+    	//TODO-gg
+    	
+    	// Handling of sequential job
+    	//TODO-gg
+    	
+    	//TODO-gg and selfcontained
+    }
+    
+//-----------------------------------------------------------------------------
+
+    @Test
+    public void testJobEvaluator_tolerant() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(), "Should be a directory ");
         File existingFile = new File(
         		tempDir.getAbsolutePath() + SEP + "file.out");
         IOtools.writeTXTAppend(existingFile, "Text to match is XYZ", false);
-
 
         SituationBase sitsDB = new SituationBase();
         sitsDB.addSituation( new Situation("SituationType","TestSituation", 
@@ -76,7 +129,7 @@ public class JobEvaluatorTest
         		InfoChannelType.OUTPUTFILE));
         
     	Job jobToEvaluate = new Job();
-    	Job evalJob = new EvaluationJob(jobToEvaluate, sitsDB, icDB);
+    	Job evalJob = new EvaluationJob(jobToEvaluate, jobToEvaluate, sitsDB, icDB);
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "true");
     	
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
@@ -85,7 +138,6 @@ public class JobEvaluatorTest
     	w.performTask();
     	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY,true));
     	
-    	
     	icDB.addChannel(new FileAsSource("non_existing_pathname", 
     			InfoChannelType.OUTPUTFILE));
     	output = new NamedDataCollector();
@@ -93,7 +145,6 @@ public class JobEvaluatorTest
     	w.performTask();
     	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY,true));
     	
-
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "false");
     	
     	w = (JobEvaluator) WorkerFactory.createWorker(evalJob);

@@ -868,7 +868,7 @@ public class Job implements Runnable
         // Then, run the sub-jobs (steps)
         if (steps.size()>0)
         {
-	        if (nThreads > 1 && parallelizableSubJobs())
+	        if (runsParallelSubjobs())
 	        {
 	            //Parallel execution of sub-jobs
 	            runSubJobsParallely();
@@ -886,6 +886,20 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
+     * Defines the conditions that makes this jobs use a parallel or serial
+     * job execution service for the subjobs (i.e., the steps) defined within
+     * this jobs.
+     * @return <code>true</code> is this job would use a parallelized job 
+     * runner.
+     */
+    public boolean runsParallelSubjobs() {
+		return nThreads > 1 && parallelizableSubJobs();
+	}
+
+//------------------------------------------------------------------------------
+
+
+	/**
      * Tries to do the work of this very Job. Does not consider the sub jobs
      * This method is overwritten by subclasses.
      */

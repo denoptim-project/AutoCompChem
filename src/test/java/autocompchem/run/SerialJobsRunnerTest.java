@@ -183,8 +183,8 @@ public class SerialJobsRunnerTest
         main.addStep(productionJob2);
         
         // Make the job that will monitor the 2nd subjob job and trigger an action
-        Job evaluationJob = new EvaluationJob(productionJob2, sitsDB, icDB);
-        main.addStep(evaluationJob);
+        Job evalJob = new EvaluationJob(productionJob2, main, sitsDB, icDB);
+        main.addStep(evalJob);
 
         // Production subjob 3
         TestJob productionJob3 = new TestJob(roothName+"_production_3",

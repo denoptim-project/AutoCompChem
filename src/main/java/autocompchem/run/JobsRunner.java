@@ -87,9 +87,16 @@ public abstract class JobsRunner
     protected Action requestedAction;
 	
 	/**
-	 * The job that requested an action
+	 * The job that requested an action, i.e., an {@link EvaluationJob}
+	 * of some sort.
 	 */
     protected Job jobRequestingAction;
+    
+    /**
+     * The job that produced the situation triggering an action, i.e., a 
+     * step in the job to be evaluated, or such job itself, if self-contained,
+     */
+    protected Job focusJob;
 	
 	/**
 	 * Lock for synchronisation of main thread with notifications from jobs

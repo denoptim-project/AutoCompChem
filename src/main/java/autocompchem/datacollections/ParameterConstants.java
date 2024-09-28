@@ -134,6 +134,11 @@ public class ParameterConstants
 	public static final String JOBTOEVALUATE = "JOBTOEVALUATE";
 	
 	/**
+	 * Keyword defining the parameter defining the container of the job to evaluate.
+	 */
+	public static final String JOBTOEVALPARENT = "JOBTOEVALPARENT";
+	
+	/**
 	 * Keyword of parameter defining a situation
 	 */
 	public static final String SITUATION = "SITUATION";

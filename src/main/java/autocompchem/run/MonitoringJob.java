@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 
 /**
@@ -65,20 +66,28 @@ public class MonitoringJob extends EvaluationJob
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor
-     * @param jobToEvaluate the job to monitor
-     * @param sitsDB the database of known situations.
-     * @param icDB the definition of the information channels to monitor
+     * Constructor.
+     * @param jobToEvaluate the job to be evaluated (single step isolated job, 
+     * or a single step in a workflow, of a job belonging to a batch of jobs).
+     * @param containerOfJobToEvaluate the workflow or batch that contains the
+     * step to be evaluate. This can be the same of the 
+     * <code>jobToEvaluate</code>, meaning that such job is not a part of a 
+     * workflow or batch.
+     * @param sitsDB the collection of {@link Situation}s that this 
+     * {@link EvaluationJob} is made aware of.
+     * @param icDB the collection of means give to this {@link EvaluationJob}
+     * to perceive the {@link Situation}s.
      * @param delay the delay (milliseconds) after which this monitor should  
      * start monitoring once it is started.
-     * @param period the time (millisecods) between a each monitoring event 
+     * @param period the time (millisecods) between each monitoring event 
      * and the next one.
      */
 
-    public MonitoringJob(Job jobToEvaluate, SituationBase sitsDB,
-    		InfoChannelBase icDB, long delay, long period)
+    public MonitoringJob(Job jobToEvaluate, Job containerOfJobToEvaluate, 
+    		SituationBase sitsDB, InfoChannelBase icDB, 
+    		long delay, long period)
     {
-        super(jobToEvaluate, sitsDB, icDB);
+        super(jobToEvaluate, containerOfJobToEvaluate, sitsDB, icDB);
         this.delay = delay;
         this.period = period;
     }
