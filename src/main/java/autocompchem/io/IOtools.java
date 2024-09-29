@@ -53,9 +53,6 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftOutputReader;
-import autocompchem.chemsoftware.ChemSoftReaderWriterFactory;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.BufferedTranslator;
@@ -68,6 +65,10 @@ import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
+import autocompchem.wiro.OutputReader;
+import autocompchem.wiro.ReaderWriterFactory;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
@@ -609,8 +610,8 @@ public class IOtools
      */
     public static List<IAtomContainer> readMultiMolFiles(File file)
     {
-		ChemSoftReaderWriterFactory builder = 
-				ChemSoftReaderWriterFactory.getInstance();
+		ReaderWriterFactory builder = 
+				ReaderWriterFactory.getInstance();
 		
         List<IAtomContainer> mols = new ArrayList<IAtomContainer>();
         if (file.getName().endsWith(".sdf"))
@@ -621,7 +622,16 @@ public class IOtools
             mols = IOtools.readXYZ(file);
         } else {
         	try {
-				ChemSoftOutputReader analyzer = builder.makeOutputReaderInstance(file);
+				OutputReader reader = builder.makeOutputReaderInstance(file);
+				if (!(reader instanceof ChemSoftOutputReader))
+				{
+					Terminator.withMsgAndStatus(
+							"Cannot read chemical systems in file '" + file 
+							+ "' because the only reader that seems to read "
+							+ "such file is not an implementation of " 
+							+ ChemSoftOutputReader.class.getName() + ".", -1);
+				}
+				ChemSoftOutputReader analyzer = (ChemSoftOutputReader) reader;
 				if (analyzer!=null)
 				{
 					ParameterStorage params = new ParameterStorage();

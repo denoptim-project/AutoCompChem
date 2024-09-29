@@ -40,7 +40,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
@@ -48,6 +47,7 @@ import autocompchem.geometry.DistanceMatrix;
 import autocompchem.modeling.AtomSpecificStringGenerator;
 import autocompchem.molecule.AtomContainerInputProcessor.MultiGeomMode;
 import autocompchem.run.Job;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.DummyWorker;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;

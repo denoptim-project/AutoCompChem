@@ -13,13 +13,13 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.IDirectiveComponent;
-import autocompchem.chemsoftware.IValueContainer;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.JobDetailsAsSource;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.IDirectiveComponent;
+import autocompchem.wiro.chem.IValueContainer;
 
 /**
  * Condition satisfied if a directive component exists is a job's step. The 

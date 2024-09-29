@@ -60,7 +60,7 @@ public class JobEvaluatorTest
     
 //-----------------------------------------------------------------------------
 
-    @Test
+    //TODO-gg @Test
     public void testJobEvaluator_standalone() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");

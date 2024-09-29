@@ -1,10 +1,10 @@
 package autocompchem.run.jobediting;
 
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.run.Job;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.IDirectiveComponent;
 
 
 /**

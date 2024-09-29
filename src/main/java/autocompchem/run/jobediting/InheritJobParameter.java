@@ -1,8 +1,8 @@
 package autocompchem.run.jobediting;
 
 
-import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.run.Job;
+import autocompchem.wiro.chem.CompChemJob;
 
 
 /**

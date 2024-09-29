@@ -16,8 +16,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.common.io.Files;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.CompChemJob;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileUtils;
 import autocompchem.perception.situation.SituationBase;
@@ -30,6 +28,8 @@ import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.utils.SetUtils;
 import autocompchem.utils.StringUtils;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.CompChemJob;
 
 /**
  * A tool for performing {@link Action}s that edit a workflow, 

@@ -8,13 +8,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveData;
-import autocompchem.chemsoftware.IDirectiveComponent;
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.run.Job;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.DirectiveData;
+import autocompchem.wiro.chem.IDirectiveComponent;
+import autocompchem.wiro.chem.Keyword;
 
 /**
  * Task setting a {@link IDirectiveComponent} somewhere in the 

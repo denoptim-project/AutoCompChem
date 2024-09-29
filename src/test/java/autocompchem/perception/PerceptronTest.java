@@ -29,10 +29,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.MatchDirComponent;
 import autocompchem.perception.circumstance.MatchText;
@@ -45,6 +41,10 @@ import autocompchem.perception.infochannel.JobDetailsAsSource;
 import autocompchem.perception.infochannel.ShortTextAsSource;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.Keyword;
 
 
 /**

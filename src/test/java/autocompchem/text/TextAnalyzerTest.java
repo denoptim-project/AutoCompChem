@@ -35,7 +35,7 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
+import autocompchem.wiro.chem.ChemSoftConstants;
 
 
 /**

@@ -3,12 +3,12 @@ package autocompchem.run.jobediting;
 
 import java.util.List;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.DirComponentTypeAndName;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.IDirectiveComponent;
 import autocompchem.run.Job;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.DirComponentTypeAndName;
+import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.IDirectiveComponent;
 
 
 /**

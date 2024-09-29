@@ -29,15 +29,15 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveComponentType;
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.ACCJson;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.JobDetailsAsSource;
 import autocompchem.perception.infochannel.ShortTextAsSource;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.DirectiveComponentType;
+import autocompchem.wiro.chem.Keyword;
 
 
 public class MatchDirComponentTest 

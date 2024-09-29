@@ -29,12 +29,12 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.DirectiveData;
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.io.ACCJson;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.DirectiveData;
+import autocompchem.wiro.chem.Keyword;
 
 public class DeleteDirectiveComponentTest 
 {

@@ -42,9 +42,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.Directive;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.log.LogUtils;
@@ -53,6 +50,9 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.jobediting.Action;
 import autocompchem.utils.NumberUtils;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.Directive;
 
 
 /**

@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.DirComponentAddress;
 import autocompchem.io.ACCJson;
+import autocompchem.wiro.chem.DirComponentAddress;
 
 public class IJobSettingInheritTaskTest 
 {

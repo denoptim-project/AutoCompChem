@@ -34,8 +34,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.IValueContainer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
@@ -56,6 +54,8 @@ import autocompchem.smarts.SMARTS;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.IValueContainer;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;

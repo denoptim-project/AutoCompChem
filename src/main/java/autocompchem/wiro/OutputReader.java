@@ -1,0 +1,439 @@
+package autocompchem.wiro;
+
+import java.io.BufferedReader;
+
+/*
+ *   Copyright (C) 2016  Marco Foscato
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.constants.ACCConstants;
+import autocompchem.datacollections.ListOfDoubles;
+import autocompchem.datacollections.ListOfIntegers;
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileFingerprint;
+import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
+import autocompchem.log.LogUtils;
+import autocompchem.modeling.compute.CompChemComputer;
+import autocompchem.molecule.connectivity.ConnectivityUtils;
+import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.perception.TxtQuery;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.Terminator;
+import autocompchem.text.TextBlock;
+import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.AnalysisTask.AnalysisKind;
+import autocompchem.worker.Worker;
+
+/**
+ * Core components of any reader and analyser of software's output files.
+ * 
+ * @author Marco Foscato
+ */
+
+public abstract class OutputReader extends Worker
+{   
+    /**
+     * Name of the log (commonly referred to as the "output") file from 
+     * comp.chem. software, i.e., the input for this class.
+     */
+    protected File inFile;
+    
+    /**
+     * Root pathname for any potential output file
+     */
+    protected String outFileRootName;
+
+    /**
+     * Number steps/jobs/tasks found in job under analysis
+     */
+    protected int numSteps = 0;
+
+    /**
+     * Flag recording normal termination of job under analysis
+     */
+    protected boolean normalTerminated = false;
+
+    /**
+     * Flag recording whether we have read the log or not
+     */
+    protected boolean logHasBeenRead = false;
+    
+    /**
+     * Data structure holding all data parsed from the job output files
+     */
+    protected Map<Integer,NamedDataCollector> stepsData = 
+    		new TreeMap<Integer, NamedDataCollector>();
+    
+    /**
+     * Text-based queries associated to perception of any event that requires
+     * the analysis of a software log.
+     */
+    protected List<TxtQuery> perceptionTxtQueriesForLog;
+    
+    /**
+     * Collection of lines matching the text-based queries associated with 
+     * perception and involving the parsing of a software log.
+     */
+    protected Map<TxtQuery,List<String>> perceptionTQMatches = 
+    		new HashMap<TxtQuery,List<String>>();
+    
+	/**
+	 * Name of data containing the matches to {@link TxtQuery}s involved in 
+	 * perception and detected upon analysis of a software's output files.
+	 */
+	public static final String MATCHESTOTEXTQRYSFORPERCEPTION = 
+			"PERCEPTIONTXTQUERYMATCHES";
+	
+    protected static String NL = System.getProperty("line.separator");
+    
+
+//------------------------------------------------------------------------------
+
+	@Override
+	public String getKnownInputDefinition() {
+		//TODO-gg
+		return "inputdefinition/OutputReader.json";
+	}
+
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialize the worker according to the parameters given to the 
+     * constructor.
+     */
+
+    public void initialize()
+    {
+    	super.initialize();
+
+        //Get and check the input file (which is an output from a software)
+        if (params.contains(ChemSoftConstants.PARJOBOUTPUTFILE))
+        {
+	        String inFileName = params.getParameter(
+	        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
+	        FileUtils.foundAndPermissions(inFileName,true,false,false);
+	        this.inFile = new File(inFileName);
+        } else {
+        	Terminator.withMsgAndStatus("ERROR! No definition of the ouput to "
+        			+ "analyse. Please provide a value for '"
+        			+ ChemSoftConstants.PARJOBOUTPUTFILE + "'.", -1);
+        }
+        
+        //Get and check the output filename
+        if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
+        {
+            outFileRootName = params.getParameter(
+            		ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
+        } else {
+        	if (inFile!=null)
+        	{
+        		outFileRootName = FileUtils.getRootOfFileName(inFile.getName());
+        	}
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Performs any of the analysis tasks set upon initialization.
+     */
+
+    @Override
+    public void performTask()
+    {
+    	// The task is the same for any output kind. This because the actual
+    	// parsing of a specific software output is done by a method that is 
+    	// overwritten by subclasses
+        
+    	analyzeFiles();
+    	
+        if (exposedOutputCollector != null)
+        {
+        	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
+        			perceptionTQMatches));
+        	exposeOutputData(new NamedData(ChemSoftConstants.JOBOUTPUTDATA, 
+        			stepsData));
+        	exposeOutputData(new NamedData(ChemSoftConstants.SOFTWAREID, 
+        			getSoftwareID()));
+/*
+//TODO
+            String refName = "";
+            exposeOutputData(new NamedData(refName,
+                  NamedDataType.DOUBLE, ));
+*/
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * This method allows to alter how to define the log file to
+     * read and interpret.
+     * @return the log file
+     */
+    public File getLogPathName()
+    {
+    	return inFile;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * This method allows to alter how to behave when the log/output file 
+     * defined by {@link #getLogPathName()} is not found. The default is
+     * to throw {@link FileNotFoundException}.
+     * @throws FileNotFoundException
+     */
+    protected void reactToMissingLogFile(File logFile) 
+    		throws FileNotFoundException
+    {
+    	throw new FileNotFoundException("File Not Found: "+logFile);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Reads the output files and parses all data that can be found
+     * on each step/job.
+     */
+
+    protected void analyzeFiles()
+    {	
+        //Read and parse log files (typically called "output file")
+    	File logFile = getLogPathName();
+    	LogReader logReader = null;
+    	try {
+    		if (logFile!=null && logFile.exists())
+    		{
+	    		// This encapsulated any perception-related parsing of strings
+	    		logReader = new LogReader(new FileReader(logFile));
+	    		// This encapsulated any software-specificity in the log format
+				readLogFile(logReader);
+				logHasBeenRead = true;
+    		} else {
+    			reactToMissingLogFile(logFile);
+    		}
+		} catch (FileNotFoundException fnf) {
+        	Terminator.withMsgAndStatus("ERROR! File Not Found: " 
+        			+ logFile.getAbsolutePath(),-1);
+        } catch (IOException ioex) {
+			ioex.printStackTrace();
+        	Terminator.withMsgAndStatus("ERROR! While reading file '" 
+        			+ logFile.getAbsolutePath() + "'. Details: "
+        			+ ioex.getMessage(),-1);
+        } catch (Exception e) {
+			e.printStackTrace();
+			Terminator.withMsgAndStatus("ERROR! Unable to parse data from "
+					+ "file '" + inFile + "'. Cause: " + e.getCause() 
+					+ ". Message: " + e.getMessage(), -1);
+        } finally {
+            try {
+                if (logReader != null)
+                	logReader.close();
+            } catch (IOException ioex2) {
+                Terminator.withMsgAndStatus("ERROR! Unable to close software "
+                		+ "log file reader! " + ioex2.getMessage() ,-1);
+            }
+        }
+    	
+        String strForlog = "NOT ";
+        if (normalTerminated)
+        {
+        	strForlog = "";
+        }
+        
+        numSteps = stepsData.size();
+        
+        // We may have nullified the ref to logFile, if it does not exist.
+        if (logHasBeenRead)
+        {
+        	logger.info("Log file '" + logFile + "' contains " 
+        			+ numSteps + " steps.");
+        	logger.info("The overall run did " + strForlog 
+        			+ "terminate normally!");
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns a flag indicating if the analyzed output describes a normally 
+     * terminated job or not. Calling this method before performing the analysis
+     *  task will always return <code>false</code>.
+     * @return the normal termination flag.
+     */
+    public boolean getNormalTerminationFlag()
+    {
+    	return normalTerminated;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the number of steps found in the analyzed output.
+     * @return the number of steps found in the analyzed output.
+     */
+    public int getStepsFound()
+    {
+    	return stepsData.size();
+    }
+    
+//------------------------------------------------------------------------------
+    
+	/**
+     * Method that parses the log file of a comp.chem. software.
+     * This method is meant to be overwritten by subclasses. 
+     * @param reader the line-by-line reader that reads the log file.
+     */
+    protected abstract void readLogFile(LogReader reader) throws Exception;
+    
+//------------------------------------------------------------------------------
+
+	/**
+	 * Provides info on how to identify software output that can be analyzed
+	 * by this class.
+	 * @return the data structure defining how to identify an output file 
+	 * readable by this class.
+	 */
+	protected abstract Set<FileFingerprint> getOutputFingerprint();
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Return a string that identifies the software that has generated the 
+	 * output that the concrete implementations of this class can analyze.
+	 */
+	public abstract String getSoftwareID();
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Return the implementation of {@link InputWriter} that is meant 
+	 * to prepare input files for the software the output of which can be 
+	 * analyzed by a concrete implementation of this class.
+	 */
+	protected abstract ITextualInputWriter getSoftInputWriter();
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * A text file reader that overwrites the {@link #readLine()} method so that
+     * every line that is read is also checked for matches to any of the
+     * {@link TxtQuery}s associated with perceptions tasks.
+     */
+    public class LogReader extends BufferedReader
+    {
+		public LogReader(Reader in) {
+			super(in);
+		}
+		
+		@Override
+		public String readLine() throws IOException
+		{
+			String line = super.readLine();
+			if (line!=null)
+			{
+				parseLogLineForPerceptionRelevantQueries(line);
+			}
+			return line;
+		}
+    }
+
+//------------------------------------------------------------------------------
+    	
+    /**
+     * Sets a collection of known situations that can be perceived and that may
+     * involve analysis of the log/output file from the software.
+     * When the analysis
+     * of result is associated with automated perception, it is often 
+     * needed to search for strings in a log file. Such 
+     * {@link TxtQuery}s are embedded in the situations and by giving 
+     * the situations here we make the reader aware of the
+     * strings that should be searched in the files. 
+     * This way we search them while parsing the 
+     * log/output, thus avoiding to read the file one or more times after the 
+     * parsing of the output.
+     * @param sitsBase the collection of known situations, each defined by a 
+     * context that may include circumstances involving the matching of test
+     * if the log or output files from a software.
+     */
+	public void setSituationBaseForPerception(SituationBase sitsBase) 
+	{
+		perceptionTxtQueriesForLog = new ArrayList<TxtQuery>(
+				sitsBase.getAllTxTQueriesForICT(InfoChannelType.LOGFEED, 
+						true));
+		for (TxtQuery tq : perceptionTxtQueriesForLog)
+			perceptionTQMatches.put(tq, new ArrayList<String>());
+		
+		//NB: the handling of the output is not yet implemented but will involve
+		// this definition of the TxtQueries.
+		/*
+		perceptionTxtQueriesForOut = new ArrayList<TxtQuery>(
+				sitsBase.getAllTxTQueriesForICT(InfoChannelType.OUTPUTFILE, 
+						true));
+						
+		for (TxtQuery tq : perceptionTxtQueriesForOut)
+			perceptionTQMatchesOut.put(tq, new ArrayList<String>());
+		*/
+	}
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses a single line looking for strings matching any of the 
+     * {@link TxtQuery}s that are associated with perception tasks needed to 
+     * analyze the log of a software.
+     * @param line the line of text to analyze.
+     */
+    protected void parseLogLineForPerceptionRelevantQueries(String line)
+    {
+    	if (perceptionTxtQueriesForLog!=null)
+    	{
+			for (TxtQuery tq : perceptionTxtQueriesForLog)
+			{
+				if (line.matches(".*"+tq.query+".*"))
+				{
+					perceptionTQMatches.get(tq).add(line);
+				}
+			}
+		}
+    }
+    
+//------------------------------------------------------------------------------
+	
+}

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.Keyword;
 
 public class IJobEditingTaskTest 
 {

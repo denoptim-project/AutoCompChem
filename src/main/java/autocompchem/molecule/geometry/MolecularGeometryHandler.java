@@ -28,8 +28,6 @@ import java.util.Set;
 import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
-import autocompchem.chemsoftware.ChemSoftConstants.CoordsType;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData.NamedDataType;
@@ -43,6 +41,8 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.ChemSoftConstants.CoordsType;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;

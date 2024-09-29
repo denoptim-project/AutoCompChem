@@ -27,10 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
-import autocompchem.chemsoftware.CompChemJob;
-import autocompchem.chemsoftware.DirComponentAddress;
-import autocompchem.chemsoftware.Directive;
-import autocompchem.chemsoftware.Keyword;
 import autocompchem.datacollections.NamedData;
 import autocompchem.io.ACCJson;
 import autocompchem.run.AppID;
@@ -39,6 +35,10 @@ import autocompchem.run.JobFactory;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
+import autocompchem.wiro.chem.CompChemJob;
+import autocompchem.wiro.chem.DirComponentAddress;
+import autocompchem.wiro.chem.Directive;
+import autocompchem.wiro.chem.Keyword;
 
 
 /**

@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openscience.cdk.AtomType;
 
-import autocompchem.chemsoftware.tinker.TinkerForceFieldHandler;
-import autocompchem.chemsoftware.vibmodule.VibModuleOutputReader;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
+import autocompchem.wiro.chem.tinker.TinkerForceFieldHandler;
+import autocompchem.wiro.chem.vibmodule.VibModuleOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerFactory;

@@ -45,12 +45,12 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import autocompchem.chemsoftware.ChemSoftConstants;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularMeter;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.WorkerConstants;
 
 

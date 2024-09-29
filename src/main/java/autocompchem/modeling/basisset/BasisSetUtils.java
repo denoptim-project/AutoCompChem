@@ -25,12 +25,12 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
-import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
+import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
+import autocompchem.wiro.chem.nwchem.NWChemInputWriter;
 
 
 /**

@@ -21,20 +21,6 @@ package autocompchem.worker;
 import java.util.HashMap;
 import java.util.Map;
 
-import autocompchem.chemsoftware.AspecificInputWriter;
-import autocompchem.chemsoftware.AspecificOutputReader;
-import autocompchem.chemsoftware.gaussian.GaussianInputWriter;
-import autocompchem.chemsoftware.gaussian.GaussianOutputReader;
-import autocompchem.chemsoftware.gaussian.legacy.GaussianJobDetailsConverter;
-import autocompchem.chemsoftware.nwchem.NWChemInputWriter;
-import autocompchem.chemsoftware.nwchem.NWChemOutputReader;
-import autocompchem.chemsoftware.orca.OrcaInputWriter;
-import autocompchem.chemsoftware.orca.OrcaOutputReader;
-import autocompchem.chemsoftware.spartan.SpartanInputWriter;
-import autocompchem.chemsoftware.spartan.SpartanOutputReader;
-import autocompchem.chemsoftware.vibmodule.VibModuleOutputReader;
-import autocompchem.chemsoftware.xtb.XTBInputWriter;
-import autocompchem.chemsoftware.xtb.XTBOutputReader;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.PathnameEditor;
 import autocompchem.modeling.AtomLabelsGenerator;
@@ -63,6 +49,20 @@ import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
+import autocompchem.wiro.chem.AgnosticInputWriter;
+import autocompchem.wiro.chem.AgnosticOutputReader;
+import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
+import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
+import autocompchem.wiro.chem.gaussian.legacy.GaussianJobDetailsConverter;
+import autocompchem.wiro.chem.nwchem.NWChemInputWriter;
+import autocompchem.wiro.chem.nwchem.NWChemOutputReader;
+import autocompchem.wiro.chem.orca.OrcaInputWriter;
+import autocompchem.wiro.chem.orca.OrcaOutputReader;
+import autocompchem.wiro.chem.spartan.SpartanInputWriter;
+import autocompchem.wiro.chem.spartan.SpartanOutputReader;
+import autocompchem.wiro.chem.vibmodule.VibModuleOutputReader;
+import autocompchem.wiro.chem.xtb.XTBInputWriter;
+import autocompchem.wiro.chem.xtb.XTBOutputReader;
 
 /**
  * Factory building {@link Worker}s. In this factory we chose the worker
@@ -94,8 +94,8 @@ public final class WorkerFactory
 	private WorkerFactory() 
 	{	
 		// Here we add all the workers those implemented in AudoCompChem      
-        registerType(new AspecificInputWriter());      
-        registerType(new AspecificOutputReader());
+        registerType(new AgnosticInputWriter());      
+        registerType(new AgnosticOutputReader());
         registerType(new DummyWorker()); //This is only for tests
         registerType(new AtomClashAnalyzer());
         registerType(new AtomTypeMatcher());
