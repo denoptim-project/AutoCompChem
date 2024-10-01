@@ -64,7 +64,8 @@ import autocompchem.wiro.chem.Directive;
 public class Job implements Runnable
 {
 	/**
-	 * Reference to the parent job. This is null for the outermost, master job.
+	 * Reference to the parent job, i.e., a job that had to create this one to
+	 * take case of some specific task.
 	 */
 	private Job parentJob = null;
 	
@@ -75,18 +76,35 @@ public class Job implements Runnable
 	 * is completed.
 	 */
 	private Set<Job> childJobs = new HashSet<Job>();
+
+	/**
+	 * Reference to the job that contains this one as a step. 
+	 * This is null for the outermost, master job.
+	 */
+	private Job containerJob = null;
+
+    /**
+     * List of steps. Steps are jobs nested in this very job. Each step can,
+     * therefore, have further nesting levels. Steps are long lived, i.e., they
+     * remain part of this workflow (is this job runs them in serial fashion) 
+     * or batch (if this jog runs them in parallel fashion) even when they are 
+     * completed and not running anymore. They can, however, be removed if 
+     * the workflow or batch is edited.
+     */
+    protected List<Job> steps;
 	
 	/**
 	 * A job identifier meant to be unique only within sibling jobs, i.e., jobs
-	 * that belong to the same master job.
+	 * that belong to the same job container.
 	 */
 	protected int jobId = 0;
 	
 	/**
 	 * An integer derived from the hashcode of this instance, but that is only a
 	 * snapshot of the hashcode at construction time. This is used to 
-	 * distinguish jobs that are nor related, i.e., are not siblings nor 
-	 * do they belong to the same family tree (connected by parent-child 
+	 * distinguish jobs that are nor related, i.e., are 
+	 * not contained by the same container, nor 
+	 * do they belong to the same family tree (not connected by parent-child 
 	 * relations).
 	 */
 	private int jobHashCode;
@@ -107,12 +125,6 @@ public class Job implements Runnable
      * and configurations that are not default for a job.
      */
     protected ParameterStorage params;
-
-    /**
-     * List of steps. Steps are jobs nested in this very job. Each step can,
-     * therefore, have further nesting levels.
-     */
-    protected List<Job> steps;
 
     /**
      * Application meant to do the job
@@ -604,7 +616,7 @@ public class Job implements Runnable
         	dir = System.getProperty("user.dir");
         }
         
-        if (parentJob!=null)
+        if (containerJob!=null)
         {
         	if (stdout==null)
         		stdout = new File(dir + SEP + "Job" + getId() +".log");
@@ -643,9 +655,45 @@ public class Job implements Runnable
 
     public void addStep(Job step)
     {
-    	step.setParent(this);
+    	step.setContainer(this);
     	step.setId(idSubJob);
         steps.add(step);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the reference to the job that contains this one.
+     */
+    
+    private void setContainer(Job container)
+    {
+    	this.containerJob = container;
+    	updateStdoutStdErr();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the reference to the job that contains this one among its steps.
+     * @return the containing job.
+     */
+    
+    public Job getContainer()
+    {
+    	return containerJob;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Checks if there is a container job. 
+     * @return <code>true</code> if this job is contained in a workflow or batch
+     * of jobs.
+     */
+    public boolean hasContainer()
+    {
+    	return containerJob != null;
     }
 
 //------------------------------------------------------------------------------
@@ -655,7 +703,7 @@ public class Job implements Runnable
      * this one.
      */
     
-    public void setParent(Job parentJob)
+    private void setParent(Job parentJob)
     {
     	this.parentJob = parentJob;
     	updateStdoutStdErr();
@@ -671,6 +719,7 @@ public class Job implements Runnable
     public void addChild(Job childJob)
     {
     	this.childJobs.add(childJob);
+    	childJob.setParent(this);
     }
     
 //------------------------------------------------------------------------------
@@ -682,14 +731,15 @@ public class Job implements Runnable
     
     public void removeChild(Job childJob)
     {
+    	childJob.parentJob = null;
     	this.childJobs.remove(childJob);
     }
     
 //------------------------------------------------------------------------------
 
     /**
-     * Returns the reference to the parent job, which is the job that contains
-     * this one.
+     * Returns the reference to the parent job, which is the job that launched 
+     * this one for taking case of a task not defined among its job steps.
      * @return the parent job.
      */
     
@@ -706,7 +756,7 @@ public class Job implements Runnable
      */
     public boolean hasParent()
     {
-    	return parentJob!=null;
+    	return parentJob != null;
     }
     
 //------------------------------------------------------------------------------
@@ -760,18 +810,33 @@ public class Job implements Runnable
     
     /**
      * Returns the identifier of this job. This identifier is unique only within
-     * the context of a single master job, i.e., all sub jobs have unique ID.
+     * the context of a single job container, i.e., all sub jobs have unique ID.
+     * The ID differs is this job is 
+     * a child (a job made by a parent job to take care of a task), or
+     * a step in the workflow or batch defined by a job container.
      * @return the string identifying this jobs
      */
     
     public String getId()
     {
     	String idStr = "";
-    	if (parentJob == null)
+    	// NB: a job should have either a parent or a container, but not both
+    	if (containerJob != null)
+    	{
+    		if (parentJob != null)
+        	{
+    			Terminator.withMsgAndStatus("A Job with both parent and "
+    					+ "container should not exist. Check job " + this, -1);
+        	}
+    		idStr = containerJob.getId() + "." + jobId;
+    	} 
+    	else if (parentJob != null)
+    	{
+    		idStr = parentJob.getId() + "." + jobId;
+    	} 
+    	else 
     	{
     		idStr = "#" + jobId;
-    	} else {
-    		idStr = parentJob.getId() + "." + jobId;
     	}
     	return idStr;
     }
@@ -1368,7 +1433,7 @@ public class Job implements Runnable
         	// Reconstruct references to parent/child job
             for (Job step : job.steps)
             {
-            	step.setParent(job);
+            	step.setContainer(job);
             	step.setId(job.idSubJob);
             }
         	

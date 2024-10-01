@@ -2,6 +2,8 @@ package autocompchem.run;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.logging.log4j.core.config.Configurator;
@@ -13,6 +15,7 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
 import autocompchem.text.TextBlockIndexed;
+import autocompchem.wiro.OutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
@@ -367,6 +370,43 @@ public class JobFactory
     	job.setParallelizable(parallelizable);
     	job.setNumberOfThreads(nThreads);
     	return job;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Create an empty job of the same type of the given one.
+     * @param template the job from which to infer the type of the result
+     * @return the new job.
+     */ 
+
+    public static Job createTypedJob(Job template)
+    {
+  		String type = template.getClass().getName();
+  		Job newJob = null;
+  		ClassLoader classLoader = template.getClass().getClassLoader();
+  		try {
+  			@SuppressWarnings("unchecked")
+  			Class<? extends Job> c = 
+              		(Class<? extends Job>) classLoader.loadClass(type);
+  			for (@SuppressWarnings("rawtypes") Constructor constructor : 
+	        	c.getConstructors()) 
+	        {
+  				try {
+					newJob = (Job) constructor.newInstance();
+				} catch (InstantiationException 
+						| IllegalAccessException 
+						| IllegalArgumentException 
+						| InvocationTargetException e) {
+					continue;
+				}
+  				break;
+	        }
+        } catch (NoClassDefFoundError | ClassNotFoundException  e) {
+        	template.logger.error("Could not build job with type '"
+        			+ type + "'.", e);
+        }
+  		return newJob;
     }
 
 //------------------------------------------------------------------------------

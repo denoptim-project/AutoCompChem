@@ -41,9 +41,11 @@ import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
+import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
@@ -468,22 +470,37 @@ public class JobEvaluator extends Worker
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setTolerantMissingIC(tolerateMissingIC);
 
-		int lastStepIdInCCJob = -1;
+		// TODO-gg change it into an attempt to find an output reader: if we
+		// have a suitable reader we use it to analyze the output
+		// even if it is not a CompChemJob.
+		//TODO-gg adjust name of task accordingly
+		int idxFocusJob = -1;
 		if (EVALCOMPCHEMJOBTASKS.contains(task) 
 				|| CURECOMPCHEMJOBTASKS.contains(task)
 				|| jobBeingEvaluated instanceof CompChemJob)
 		{
-			analyzeCompChemJobResults(p);
-			lastStepIdInCCJob = (int) exposedOutputCollector.getNamedData(
-					NUMSTEPSKEY).getValue();
+			if (jobBeingEvaluated != null
+					&& !(jobBeingEvaluated instanceof CompChemJob) 
+					&& jobBeingEvaluated.runsParallelSubjobs()
+					&& jobBeingEvaluated.getNumberOfSteps()>1)
+			{
+				Terminator.withMsgAndStatus("Analysis of paralle batches is "
+						+ "not implemented yet. Please, contact the developers "
+						+ "and present your use case.", -1);
+				// Must define idxFocusJob in here
+			} else {
+				// In here we define what is the "focus job", i.e., the job
+				// that triggers the reaction. It can be jobBeingEvaluated, or
+				// one of its steps.
+				analyzeResultsOfSerialJob(p);
+				idxFocusJob = ((int) exposedOutputCollector.getNamedData(
+						NUMSTEPSKEY).getValue()) - 1;
+			}
 		}
-		
-		//TODO: need parsing of ACCJob log files to detect number of steps
-		// which is otherwise assumed to be 1
 		
 		try {
 			p.perceive();
-			// Minimal log that is done by Perceptron if the verbosity is higher
+			// Minimal log is done by Perceptron according to verbosity
 			if (p.isAware())
 			{
 				Situation sit = p.getOccurringSituations().get(0);
@@ -499,36 +516,13 @@ public class JobEvaluator extends Worker
 				}
 			}
 		} catch (Exception e) {
-			// TODO to log
 			e.printStackTrace();
+			logger.error("Exception while doing perception. "
+					+ "Please, report this to the authors.", e);
 			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}
 		
-		boolean selfcontainedJob = false;
-		int idxStepEvaluated = -1;
-		if (jobBeingEvaluated!=containerOfJobBeingEvaluated)
-		{
-			if (!containerOfJobBeingEvaluated.getSteps().contains(
-					jobBeingEvaluated))
-			{
-				Terminator.withMsgAndStatus("Job being evaluated is neither "
-						+ "self-contained nor a step in the container declared "
-						+ "upon configuration of the " 
-						+ this.getClass().getSimpleName(), -1);
-			}
-			int idx = containerOfJobBeingEvaluated.getSteps().indexOf(
-					jobBeingEvaluated);
-			if (lastStepIdInCCJob>0 && idx!=lastStepIdInCCJob)
-			{
-				Terminator.withMsgAndStatus("Inconsistent identification of "
-						+ "the job being evaluated.", -1);
-			}
-			idxStepEvaluated = idx;
-		} else {
-			selfcontainedJob = true;
-		}
-		
-		// Expose conclusions of the evaluation
+		// Process and expose conclusions of the evaluation
 		if (p.isAware())
 		{
 			Situation s = p.getOccurringSituations().get(0);
@@ -541,107 +535,22 @@ public class JobEvaluator extends Worker
 				// observer (if any observer is present)
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
 						NamedDataType.ACTION, s.getReaction()));
-				// ...and these are used when performing the action
 				
-				//TODO-do not use this because it is ambiguous: you never know 
-				// if it is the step or the batch/workflow. Either add this 
-				//distinction or get rid of it.
-				exposeOutputData(new NamedData(EVALUATEDJOB,
-						NamedDataType.JOB, jobBeingEvaluated));
-				
-				// In case this is a stand-alone CURE-type job, we do the 
-				// action triggered by the jobBeingEvaluated here,
-				// but this is has limited capability: it cannot restart the job,
-				// but it can prepare a new input.
-				if (standaloneCureJob)
+				if (jobBeingEvaluated!=null)
 				{
-					logger.info("Attempting to cure job. Reaction: " 
-								+ s.getReaction().getType() + " " 
-								+ s.getReaction().getObject());
+					// ...and these are used when performing the action
+					exposeOutputData(new NamedData(EVALUATEDJOB,
+							NamedDataType.JOB, jobBeingEvaluated));
+				
 					
-					Job newJobResultingFromAction = null;
-					if (selfcontainedJob)
+					// In case this is a stand-alone CURE-type job, we do the 
+					// action triggered by the jobBeingEvaluated here,
+					// but this is has limited capability: it cannot restart the job,
+					// but it can prepare a new input.
+					if (standaloneCureJob)
 					{
-						logger.fatal(NL+NL+"UNIMPLEMENTED CASE!!!"+NL);
-						//TODO-gg
-						/*
-						 should add possibility to pre-pend steps
-						newJobResultingFromAction = 
-							ActionApplier.performActionOnSelfContained(
-								s.getReaction(),   //action to perform
-								containerOfJobBeingEvaluated, //self-contained job
-								1); // restart counter
-						*/
-					} else {
-						if (containerOfJobBeingEvaluated.runsParallelSubjobs())
-						{
-							List<Job> newJobSteps = 
-									ActionApplier.performActionOnParallelBatch(
-											s.getReaction(),   //action to perform
-											containerOfJobBeingEvaluated, //parallel batch
-											jobBeingEvaluated, //job causing the reaction
-											myJob, //job doing the evaluation 
-											1); // restart counter
-							containerOfJobBeingEvaluated.steps = newJobSteps;
-						} else {
-							ActionApplier.performActionOnSerialWorkflow(
-									s.getReaction(),   //action to perform
-									containerOfJobBeingEvaluated, //serial workflow
-									idxStepEvaluated, //id of step triggering reaction
-									1); // restart counter
-						}
-						newJobResultingFromAction = containerOfJobBeingEvaluated;
+						healJob(jobBeingEvaluated, s.getReaction(), idxFocusJob);
 					}
-					
-					// Prepare generation of new input file
-					ParameterStorage makeInputPars = new ParameterStorage();
-					
-					makeInputPars.setParameter(WorkerConstants.PARTASK, 
-							Task.make("prepareInput").casedID);
-					if (exposedOutputCollector.contains(
-							ChemSoftConstants.SOFTWAREID))
-					{
-						makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
-								exposedOutputCollector.getNamedData(
-										ChemSoftConstants.SOFTWAREID)
-								.getValueAsString());
-					} else {
-						makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID,
-								"ACC");
-					}
-					makeInputPars.setParameter(
-							ChemSoftConstants.PARJOBDETAILSOBJ, 
-							NamedDataType.JOB, newJobResultingFromAction);
-					
-					//TODO-gg this was the wrong way to do this. We need to make
-					// the action control whether or not to update the geometry 
-					// and which geometry to use as the new one (last, initial, 
-					// before oscillation, lowest energy) it 
-					/*
-					if (jobBeingEvaluated instanceof CompChemJob)
-					{
-						// Get geometry/ies for restart
-						List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
-								s.getReaction(), myJob);
-						makeInputPars.setParameter(ChemSoftConstants.PARGEOM, 
-								NamedDataType.UNDEFINED, iacs);
-					}
-					*/
-					if (hasParameter(ChemSoftConstants.PAROUTFILE))
-					{
-						makeInputPars.setParameter(ChemSoftConstants.PAROUTFILE,
-							params.getParameter(ChemSoftConstants.PAROUTFILE)
-								.getValueAsString());
-					}
-					
-					ChemSoftInputWriter worker;
-					try {
-						worker = (ChemSoftInputWriter) 
-								WorkerFactory.createWorker(makeInputPars, myJob);
-					} catch (ClassNotFoundException e) {
-						throw new Error("Unable to make worker for " + task);
-					}
-					worker.performTask();
 				}
 			}
 		}
@@ -649,14 +558,142 @@ public class JobEvaluator extends Worker
 	
 //-----------------------------------------------------------------------------
 	
+	private void healJob(Job jobToHeal, Action cure, int idxFocusJob) 
+	{
+		logger.info("Attempting to cure job. Reaction: " 
+				+ cure.getType() + " " 
+				+ cure.getObject());
+	
+		Job jobResultingFromAction = null;
+		if (jobToHeal.hasContainer())
+		{
+			if (jobToHeal.getContainer().runsParallelSubjobs())
+			{
+				// We have evaluated a job that is a part of a batch
+				// so, any action must be compatible with the lack
+				// of a linear workflow.
+				List<Job> newJobSteps = 
+						ActionApplier.performActionOnParallelBatch(
+								cure,   //action to perform
+								jobToHeal.getContainer(), //parallel batch
+								jobToHeal, //job causing the reaction
+								myJob, //job doing the evaluation 
+								1); // restart counter
+				jobToHeal.getContainer().steps = newJobSteps;
+			} else {
+				int idxStepEvaluated = jobToHeal
+						.getContainer().getSteps().indexOf(
+								jobToHeal);
+				ActionApplier.performActionOnSerialWorkflow(
+						cure,   //action to perform
+						jobToHeal.getContainer(), //serial workflow
+						idxStepEvaluated, //id of step triggering reaction
+						1); // restart counter
+			}
+			jobResultingFromAction = jobToHeal.getContainer();
+		} else {
+			if (jobToHeal.getNumberOfSteps() > 0)
+			{
+				// jobToHeal is a workflow or a batch:
+				if (jobToHeal.runsParallelSubjobs())
+				{
+					// jobToHeal is a batch
+					List<Job> newJobSteps = 
+							ActionApplier.performActionOnParallelBatch(
+									cure,   //action to perform
+									jobToHeal, //parallel batch
+									jobToHeal.getStep(idxFocusJob), //job causing the reaction
+									myJob, //job doing the evaluation 
+									1); // restart counter
+					jobToHeal.steps = newJobSteps;
+				} else {
+					// jobToHeal is a workflow
+					ActionApplier.performActionOnSerialWorkflow(
+							cure,   //action to perform
+							jobToHeal, //serial workflow
+							idxFocusJob, //id of step triggering reaction
+							1); // restart counter
+				}
+				jobResultingFromAction = jobToHeal;
+			} else {
+				// jobToHeal is a single, self-contained job.
+				// We can add any preliminary step only by embedding
+				// it into a workflow.
+				Job embeddingWorkflow = JobFactory.createTypedJob(jobToHeal);
+				embeddingWorkflow.addStep(jobToHeal);
+	
+				ActionApplier.performActionOnSerialWorkflow(
+						cure,   //action to perform
+						embeddingWorkflow, //serial workflow
+						0, //id of step triggering reaction
+						1); // restart counter
+				jobResultingFromAction = embeddingWorkflow;
+			}
+		}
+		
+		// Prepare generation of new input file
+		ParameterStorage makeInputPars = new ParameterStorage();
+		
+		makeInputPars.setParameter(WorkerConstants.PARTASK, 
+				Task.make("prepareInput").casedID);
+		if (exposedOutputCollector.contains(
+				ChemSoftConstants.SOFTWAREID))
+		{
+			makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
+					exposedOutputCollector.getNamedData(
+							ChemSoftConstants.SOFTWAREID)
+					.getValueAsString());
+		} else {
+			makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID,
+					"ACC");
+		}
+		makeInputPars.setParameter(
+				ChemSoftConstants.PARJOBDETAILSOBJ, 
+				NamedDataType.JOB, jobResultingFromAction);
+		
+		//TODO-gg this was the wrong way to do this. We need to make
+		// the action control whether or not to update the geometry 
+		// and which geometry to use as the new one (last, initial, 
+		// before oscillation, lowest energy) it 
+		/*
+		if (jobToHeal instanceof CompChemJob)
+		{
+			// Get geometry/ies for restart
+			List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
+					s.getReaction(), myJob);
+			makeInputPars.setParameter(ChemSoftConstants.PARGEOM, 
+					NamedDataType.UNDEFINED, iacs);
+		}
+		*/
+		if (hasParameter(ChemSoftConstants.PAROUTFILE))
+		{
+			makeInputPars.setParameter(ChemSoftConstants.PAROUTFILE,
+				params.getParameter(ChemSoftConstants.PAROUTFILE)
+					.getValueAsString());
+		}
+		
+		ChemSoftInputWriter worker;
+		try {
+			worker = (ChemSoftInputWriter) 
+					WorkerFactory.createWorker(makeInputPars, myJob);
+		} catch (ClassNotFoundException e) {
+			throw new Error("Unable to make worker for " + task);
+		}
+		worker.performTask();
+	}
+	
+//------------------------------------------------------------------------------
+
 	/**
-	 * Deals with the parsing of data from log/output files of comp. chem jobs.
+	 * Deals with the parsing of data from log/output files of serial jobs.
 	 * For efficiency, we also search for matches for any query that operates on
 	 * such info channels. Thus, we read and collect scores from those 
 	 * information channels before perceptions. Therefore, we need to 
 	 * communicate the findings to the perceptron.
+	 * 
+	 * @return the number of job steps seen in the output. 
 	 */
-	private void analyzeCompChemJobResults(Perceptron p)
+	private void analyzeResultsOfSerialJob(Perceptron p)
 	{
 		ParameterStorage analysisParams = new ParameterStorage();
 		if (EVALCOMPCHEMJOBTASKS.contains(task)
@@ -710,18 +747,18 @@ public class JobEvaluator extends Worker
 			*/
 		} else {
 			// For the moment we do not try to detect the kind of job.
-			Terminator.withMsgAndStatus("ERROR: cannot yet detect type of comp."
-					+ "chem. job. Please, specify one of these tasks to your"
-					+ "JobEvaluator: "
+			Terminator.withMsgAndStatus("ERROR: cannot yet detect type of "
+					+ "serial job. Please, specify one of these tasks to your"
+					+ " " + this.getClass().getSimpleName() + ": "
 					+ StringUtils.mergeListToString(Arrays.asList(
 							EVALCOMPCHEMJOBTASKS), ", ", true), -1);
 		}
 		
 		// Prepare a worker that parses data and searches for strings that may
 		// be requested by the perceptron.
-		ChemSoftOutputReader outputParser;
+		OutputReader outputParser;
 		try {
-			outputParser = (ChemSoftOutputReader) 
+			outputParser = (OutputReader) 
 					WorkerFactory.createWorker(analysisParams, this.getMyJob());
 		} catch (ClassNotFoundException e) {
 			throw new Error("Unable to make worker for " 
@@ -745,6 +782,8 @@ public class JobEvaluator extends Worker
 				ChemSoftConstants.SOFTWAREID));
 		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER,
 				outputParser.getStepsFound()));
+		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
+				outputParser.getStepsFound()));
 		
 		if (jobBeingEvaluated!=null 
 				&& jobBeingEvaluated.hasParameter(ChemSoftConstants.PARGEOM))
@@ -753,13 +792,7 @@ public class JobEvaluator extends Worker
 					ChemSoftConstants.PARGEOM));
 		}
 		
-		/*
-		This is done for any job type, therefore it is done outside this method
-		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
-				outputParser.getStepsFound()));
-		*/
-		
-		//TODO-gg we should put any of the data exposed by the outputParser
+		//TODO we should put any of the data exposed by the outputParser
 		// into info channels, so that it can be used by perception.
 		// This may need to add a data feed-like type of info channel
 		

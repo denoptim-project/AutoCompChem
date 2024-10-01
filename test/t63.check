@@ -8,8 +8,8 @@ if ! grep -q -i "H[[:space:]]*\-4.618275.*[[:space:]]*\-1.819653.*[[:space:]]*\-
   echo NOT Passed ERROR 2 ; exit -1
 fi
 
-n=$(wc -l t63-nwc.nw | awk '{print $1}')
-if [ "$n" != 121 ] ; then
+n=0;n=$(grep -c -i "end" t63-nwc.nw )
+if [ "$n" != 8 ] ; then
   echo NOT Passed ERROR 3
   exit -1
 fi

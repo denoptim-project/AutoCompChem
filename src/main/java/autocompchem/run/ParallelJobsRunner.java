@@ -549,9 +549,14 @@ public class ParallelJobsRunner extends JobsRunner
 						Job.ACTIONREQUESTBYSUBJOB, action));
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.SUBJOBREQUESTINGACTION, sender));
-				focusJob = (Job) jobRequestingAction.exposedOutput
-						.getNamedData(JobEvaluator.EVALUATEDJOB)
-						.getValue();
+				focusJob = null;
+				if (jobRequestingAction.exposedOutput.contains(
+						JobEvaluator.EVALUATEDJOB))
+				{
+					focusJob = (Job) jobRequestingAction.exposedOutput
+							.getNamedData(JobEvaluator.EVALUATEDJOB)
+							.getValue();
+				}
 				
 				if (action.getObject().equals(ActionObject.PARALLELJOB))
 				{

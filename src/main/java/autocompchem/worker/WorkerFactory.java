@@ -241,7 +241,6 @@ public final class WorkerFactory
     	if (mainJob!=null)
     	{
     		mainJob.addChild(subjob);
-    		subjob.setParent(mainJob);
     	}
     	return createWorker(subjob, true);
     }
