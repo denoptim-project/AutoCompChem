@@ -1026,21 +1026,39 @@ public class IOtools
             }
         }
     }
-
+    
 //------------------------------------------------------------------------------
 
     /**
-     * Writes lines of text.
-     * @param file the file where we write.
-     * @param line the line to be written.
+     * Writes lines of text. The last line will also contains a newline 
+     * character.
+     * @param outFile the file where we write.
+     * @param arrayList the line to be written.
      * @param append set to <code>true</code> to append instead of overwrite the
      * target file
      */
 
-    public static void writeTXTAppend(File file, String line,
+    public static void writeLinesAppend(File file, List<String> lines, 
     		boolean append)
     {
-    	writeTXTAppend(file, Arrays.asList(line), append);
+    	writeTXTAppend(file, StringUtils.mergeListToString(lines, newline), 
+    			append);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Writes a line into a file. If the string contains newline characters the
+     * result is writing more than one of line.
+     * @param file the file where we write.
+     * @param txt the text to be written.
+     * @param append set to <code>true</code> to append instead of overwrite the
+     * target file.
+     */
+
+    public static void writeLineAppend(File file, String txt, boolean append)
+    {
+    	writeTXTAppend(file, txt + newline, append);
     }
     
 //------------------------------------------------------------------------------
@@ -1056,11 +1074,27 @@ public class IOtools
     public static void writeTXTAppend(File file, List<String> lines,
     		boolean append)
     {
+    	writeTXTAppend(file,
+    			StringUtils.mergeListToString(lines, newline, false), append);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Writes text into a file.
+     * @param file the file where we write.
+     * @param txt the text to be written.
+     * @param append set to <code>true</code> to append instead of overwrite the
+     * target file.
+     */
+
+    public static void writeTXTAppend(File file, String txt, boolean append)
+    {
         FileWriter writer = null;
         try
         {
             writer = new FileWriter(file, append);
-            writer.write(StringUtils.mergeListToString(lines, newline));
+            writer.write(txt);
         } catch (Throwable t) {
         	Terminator.withMsgAndStatus("Error in writing file '" + file, 
         			-1 , t);

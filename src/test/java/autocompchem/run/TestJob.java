@@ -118,7 +118,7 @@ public class TestJob extends Job
 		public void run() 
 		{
 			i++;
-			IOtools.writeTXTAppend(stdout, 
+			IOtools.writeLineAppend(stdout, 
 					prefix + ITERATIONKEY + " " + i, 
 					true);
 		}

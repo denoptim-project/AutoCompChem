@@ -58,10 +58,10 @@ public class FileAnalyzerTest
         String tmpPathName = tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "tmp.txt";
         File tmpFile = new File(tmpPathName);
-        IOtools.writeTXTAppend(tmpFile,"First line #",false);
-        IOtools.writeTXTAppend(tmpFile,"Second line #",true);
-        IOtools.writeTXTAppend(tmpFile,"Third line #",true);
-        IOtools.writeTXTAppend(tmpFile,"last",true);
+        IOtools.writeLineAppend(tmpFile, "First line #", false);
+        IOtools.writeLineAppend(tmpFile, "Second line #", true);
+        IOtools.writeLineAppend(tmpFile, "Third line #", true);
+        IOtools.writeLineAppend(tmpFile, "last", true);
         
         assertEquals(3,FileAnalyzer.count(tmpFile,"line #"),
         		"Total matches");

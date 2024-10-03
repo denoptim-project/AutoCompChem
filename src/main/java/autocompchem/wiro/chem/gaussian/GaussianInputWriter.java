@@ -310,10 +310,10 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 	            {
 	            	sb.append(GaussianConstants.STEPSEPARATOR).append(NL);
 	            }
-	            sb.append(getTextForStep(stepCcj)).append(NL);
+	            sb.append(getTextForStep(stepCcj));
 	        }
         } else {
-        	sb.append(getTextForStep(job)).append(NL);
+        	sb.append(getTextForStep(job));
         }
         return sb;
     }
@@ -372,7 +372,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
     		Keyword pKey = rouDir.getFirstKeyword(GaussianConstants.KEYPRINT);
     		if (pKey!=null)
     		{
-    			firstLine = "#"+pKey.getValueAsString();
+    			firstLine = "#" + pKey.getValueAsString();
     		}  else {
     			firstLine = "#P";
             }

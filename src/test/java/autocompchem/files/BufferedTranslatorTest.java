@@ -55,8 +55,8 @@ public class BufferedTranslatorTest
         
         File tmpFile = new File(tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "test.txt");
-        IOtools.writeTXTAppend(tmpFile,"1234567890",false);
-        IOtools.writeTXTAppend(tmpFile,"abcdefghij",true);
+        IOtools.writeLineAppend(tmpFile,"1234567890",false);
+        IOtools.writeLineAppend(tmpFile,"abcdefghij",true);
         
         String replacement = "replacement_not_used";
         BufferedTranslator bt = new BufferedTranslator(new FileReader(tmpFile), 
@@ -79,12 +79,12 @@ public class BufferedTranslatorTest
         
         File tmpFile = new File(tempDir.getAbsolutePath() 
         		+ System.getProperty("file.separator") + "test.txt");
-        IOtools.writeTXTAppend(tmpFile,"1234567890",false);
-        IOtools.writeTXTAppend(tmpFile,"abcdefghij_hit1",true);
-        IOtools.writeTXTAppend(tmpFile,"12345hit67890",true);
-        IOtools.writeTXTAppend(tmpFile,"abcdefghij",true);
-        IOtools.writeTXTAppend(tmpFile,"1234567890",true);
-        IOtools.writeTXTAppend(tmpFile,"abcdefghhit3ij",true);
+        IOtools.writeLineAppend(tmpFile,"1234567890",false);
+        IOtools.writeLineAppend(tmpFile,"abcdefghij_hit1",true);
+        IOtools.writeLineAppend(tmpFile,"12345hit67890",true);
+        IOtools.writeLineAppend(tmpFile,"abcdefghij",true);
+        IOtools.writeLineAppend(tmpFile,"1234567890",true);
+        IOtools.writeLineAppend(tmpFile,"abcdefghhit3ij",true);
         
         String replacement = "replacement_used";
         BufferedTranslator bt = new BufferedTranslator(new FileReader(tmpFile), 
@@ -113,9 +113,9 @@ public class BufferedTranslatorTest
         String line1 = "1234567890";  // 10
         String line2 = "abcdefghij "; // 11
         String line3 = " 1234567890"; // 11
-        IOtools.writeTXTAppend(tmpFile,line1,false);
-        IOtools.writeTXTAppend(tmpFile,line2,true);
-        IOtools.writeTXTAppend(tmpFile,line3,true);
+        IOtools.writeLineAppend(tmpFile,line1,false);
+        IOtools.writeLineAppend(tmpFile,line2,true);
+        IOtools.writeLineAppend(tmpFile,line3,true);
         int expectedLength = 35; // 10 + 11 + 11 + (3*newline)
         
         String replacement = "replacement_not_used";
@@ -170,7 +170,7 @@ public class BufferedTranslatorTest
         		"hit2 1234567890 hit0",   // 2 matches
         		" hit21234567890hit0 ",   // 2 matches
         		"hit0hit1hit2hit3"));     // 4 matches
-        IOtools.writeTXTAppend(tmpFile,lines,false);
+        IOtools.writeLinesAppend(tmpFile,lines,false);
         
         String[] replacement = new String[]{"", "@", "@NEWSTR@"};
         
@@ -256,8 +256,8 @@ public class BufferedTranslatorTest
         		+ System.getProperty("file.separator") + "test.txt");
         String line1 = "hhitit";  
         String line2 = "hhitithhitit"; 
-        IOtools.writeTXTAppend(tmpFile,line1,false);
-        IOtools.writeTXTAppend(tmpFile,line2,true);
+        IOtools.writeLineAppend(tmpFile,line1,false);
+        IOtools.writeLineAppend(tmpFile,line2,true);
         
         
         int[] bufferSize = new int[]{1, 2, 4, 6, 10, 1024};
@@ -306,10 +306,10 @@ public class BufferedTranslatorTest
         		+ System.getProperty("file.separator") + "test.txt");
         String line1 = "abchit";  
         String line2 = "hit 123 hit hit"; 
-        IOtools.writeTXTAppend(tmpFile,line1,false);
-        IOtools.writeTXTAppend(tmpFile,line2,true);
-        IOtools.writeTXTAppend(tmpFile,line2,true);
-        IOtools.writeTXTAppend(tmpFile,line2,true);
+        IOtools.writeLineAppend(tmpFile,line1,false);
+        IOtools.writeLineAppend(tmpFile,line2,true);
+        IOtools.writeLineAppend(tmpFile,line2,true);
+        IOtools.writeLineAppend(tmpFile,line2,true);
         
         int[] bufferSize = new int[]{1, 2, 4, 6, 10, 1024};
         int[] readBuffSize = new int[] {1, 2, 10, 1024};
