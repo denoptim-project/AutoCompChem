@@ -152,12 +152,10 @@ public class ActionApplierTest
     	siblingJobB.setUserDirAndStdFiles(tempDir);
     	Job focusJob = JobFactory.createJob(AppID.ACC);
     	focusJob.setUserDirAndStdFiles(tempDir);
-    	//NB: making the jobs be the steps of a parent job would make their IDs
-    	// be unique. Here, we want to test also the capability do deal with 
-    	// a list of jobs that are not related by a common parent jobs.
-    	//Job parentJob = JobFactory.createJob(RunnableAppID.ACC);
-    	List<Job> jobs = new ArrayList<>(Arrays.asList(siblingJobA, siblingJobB,
-    			focusJob));
+    	Job parentJob = JobFactory.createJob(AppID.ACC);
+    	parentJob.addStep(siblingJobA);
+    	parentJob.addStep(siblingJobB);
+    	parentJob.addStep(focusJob);
     	
     	// Create some dummy files as if they had been created by the jobs
     	String labM = "toMv";
@@ -184,6 +182,8 @@ public class ActionApplierTest
     	
     	// Define the action
     	Action action = new Action();
+    	action.setType(ActionType.REDO);
+    	action.setObject(ActionObject.PARALLELJOB);
     	action.addJobArchivingDetails(
     			new DataArchivingRule(ArchivingTaskType.DELETE, "*"+labD+"*"));
     	action.addJobArchivingDetails(
@@ -191,8 +191,13 @@ public class ActionApplierTest
     	action.addJobArchivingDetails(
     			new DataArchivingRule(ArchivingTaskType.COPY, "*"+labC+"*"));
     	
+    	// Dummy job only to satisfy the fingerprint of the method
+    	//TODO-gg is the triggering job really needed? not here...
+    	Job dummy = JobFactory.createJob(AppID.ACC);
+    	
     	// Do the magic
-    	ActionApplier.performAction(action, focusJob, 0, jobs, 1);
+    	ActionApplier.performActionOnParallelBatch(action, parentJob, focusJob, 
+    			dummy, 0);
     	
         assertEquals(3, FileUtils.findByGlob(tempDir, "Job_*", true).size());
         assertEquals(0, FileUtils.findByGlob(tempDir, "*toMv*", true).size());
@@ -244,7 +249,7 @@ public class ActionApplierTest
     	action.addSettingsInheritedTask(new InheritJobParameter("ParamC"));
     	
     	// Do the magic
-    	ActionApplier.performAction(action, parentJob, 1, jobs, 1);
+    	ActionApplier.performActionOnSerialWorkflow(action, parentJob, 1, 1);
     
     	assertEquals(4,parentJob.getNumberOfSteps());
     	
