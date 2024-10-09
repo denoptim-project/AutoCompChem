@@ -5,6 +5,7 @@
 
   <version>3.0.0</version>
   <!-- WARNING: the vesion must be changes also in doc/user_manual.html-->
+  <!-- WARNUNG: the version must be changed also in autocompchem.ui.ACCMain-->
 
   <name>autocompchem</name>
 
