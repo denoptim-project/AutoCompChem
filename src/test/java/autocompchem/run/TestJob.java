@@ -7,23 +7,27 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 
 /**
  * A dummy test job that can be parallelizable and simply logs into a file
  * every ca. half second, by default, but timings can be set. 
  * The job lasts a time defined in the constructor.
+ * 
+ * <p><b>WARNING:this type of {@link Job} is  not meant to be 
+ * JSON-serialized!</b> 
+ * No type adapted is provided in {@link ACCJson}, so attempts to use the
+ *  default JSON-serialization will lead to stack overflow.</p>
  */
 
 public class TestJob extends Job
 {    	
-	protected int i = 0;
-	protected int wallTime = 0;
-	protected int delay = 500;
-	protected int period = 490;
-	protected Date date = new Date();
-	protected SimpleDateFormat df = 
-			new SimpleDateFormat(" HH:mm:ss.SSS ");
+	private int i = 0;
+	private int wallTime = 0;
+	private int delay = 500;
+	private int period = 490;
+	
     /**
      * The name of the parameter determining the prefix in the test job logs.
      */

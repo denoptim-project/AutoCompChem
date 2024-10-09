@@ -89,8 +89,8 @@ public class JobFactory
 //------------------------------------------------------------------------------
 
     /**
-     * Build a {@link Job} from from an existing definition stored in a 
-     * text file adhering to the format of ACC's parameter's file. It also
+     * Build a {@link Job} from from an existing definition stored in a JSON
+     * file. It also
      * allows you to given string that will replace the placeholder (i.e.,
      * {@value ParameterConstants.STRINGFROMCLI}).
      * @param file the file from which to read the definition of the job.

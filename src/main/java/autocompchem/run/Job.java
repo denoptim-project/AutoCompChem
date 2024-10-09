@@ -251,7 +251,7 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an undefined job
+     * Constructor for an undefined job.
      */
     protected Job()
     {

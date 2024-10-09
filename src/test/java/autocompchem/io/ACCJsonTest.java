@@ -1,5 +1,7 @@
 package autocompchem.io;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -28,17 +30,30 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.Gson;
 
+import autocompchem.perception.circumstance.ICircumstance;
+import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.infochannel.FileAsSource;
+import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.infochannel.InfoChannelType;
+import autocompchem.perception.situation.Situation;
+import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.ACCJob;
 import autocompchem.run.AppID;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
+import autocompchem.run.JobEvaluator;
 import autocompchem.run.JobFactory;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
+import autocompchem.run.TestJob;
+import autocompchem.run.jobediting.Action;
+import autocompchem.run.jobediting.Action.ActionObject;
+import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
 import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.wiro.chem.Keyword;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -50,7 +65,6 @@ import autocompchem.wiro.chem.Keyword;
 public class ACCJsonTest 
 {
     private final String SEP = System.getProperty("file.separator");
-    private final String NL = System.getProperty("line.separator");
 
     @TempDir 
     File tempDir;
@@ -92,6 +106,39 @@ public class ACCJsonTest
         Gson writer = ACCJson.getWriter();
         
         IOtools.writeTXTAppend(jsonfile, writer.toJson(job), false);
+        
+        Job job2 = (Job) IOtools.readJsonFile(jsonfile, Job.class);
+        
+        assertTrue(job.equals(job2));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testHandlingOfNestedJobs() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        File jsonfile = new File(tempDir.getAbsolutePath() + SEP + "file.json");
+    	Job nestedJob = JobFactory.createJob(AppID.ACC);
+    	nestedJob.setParameter("nj1", "1.23");
+    	Job nestedNestedJob = JobFactory.createJob(AppID.ACC);
+    	nestedNestedJob.setParameter("nnj", "value 2");
+    	Job nestedJob2 = JobFactory.createJob(AppID.ACC);
+    	nestedJob2.setParameter("nj1", "ABC");
+    	Job nestedNestedJob2 = JobFactory.createJob(AppID.ACC);
+    	nestedNestedJob2.setParameter("nj2a", "a");
+    	nestedNestedJob2.setParameter("nj2b", "b");
+    	nestedNestedJob2.setParameter("nj2c", "c");
+    	nestedNestedJob2.setParameter("nj2d", "d");
+    	Job job = JobFactory.createJob(AppID.ACC);
+    	nestedJob.addStep(nestedNestedJob); 
+    	nestedJob.addStep(nestedNestedJob2); 
+    	job.addStep(nestedJob);
+    	job.addStep(nestedJob2);
+        
+        Gson writer = ACCJson.getWriter();
+        String json = writer.toJson(job);
+        IOtools.writeTXTAppend(jsonfile, json, false);
         
         Job job2 = (Job) IOtools.readJsonFile(jsonfile, Job.class);
         

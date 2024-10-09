@@ -142,6 +142,11 @@ public abstract class InputWriter extends Worker implements ITextualInputWriter
         	outFile = new File(params.getParameter(
         			ChemSoftConstants.PAROUTFILE).getValueAsString());
             outFileNameRoot = FileUtils.getRootOfFileName(outFile);
+            if (outFile.getParentFile()!=null)
+            {
+            	outFileNameRoot = outFile.getParentFile().getAbsolutePath()
+            			+ File.separator + outFileNameRoot;
+            }
         } else {
     		outFileNameRoot = "softiutput";
             logger.debug("Neither '" 

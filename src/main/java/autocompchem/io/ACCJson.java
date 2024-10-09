@@ -3,6 +3,8 @@ package autocompchem.io;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -116,6 +118,13 @@ public class ACCJson
     	        .registerTypeAdapter(ShellJob.class, new ShellJobSerializer())
     	        .registerTypeAdapter(CompChemJob.class, 
     	        		new CompChemJobSerializer())
+    	        /*
+    	         * WARNING: there are extensions of Job that are not meant to
+    	         * be JSON-serialized, so we do not provide any type adapter!
+    	         * However, attempts to JSON-serialize any instance of any of 
+    	         * those types will lead to problems (typically stack overflow
+    	         * of illegal reflective access.
+    	         */
     	        .registerTypeAdapter(DirectiveData.class, 
     	        		new DirectiveDataSerializer())
     	        .registerTypeAdapter(NamedData.class, 
@@ -189,7 +198,6 @@ public class ACCJson
     	        		new ConfigItemTypeDeserializer())
     			.create();
     }
-
 //------------------------------------------------------------------------------
 
     /**

@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /*   
@@ -28,8 +29,12 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.google.gson.Gson;
+
+import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
@@ -41,6 +46,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
@@ -60,8 +66,8 @@ public class JobEvaluatorTest
     
 //-----------------------------------------------------------------------------
 
-    //TODO-gg @Test
-    public void testJobEvaluator_standalone() throws Exception
+    @Test
+    public void testJobEvaluator_standalone_on_serialWorkflow() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
@@ -87,26 +93,100 @@ public class JobEvaluatorTest
         icDB.addChannel(new FileAsSource(existingFile.getAbsolutePath(), 
         		InfoChannelType.LOGFEED));
         
-        // handling of parallel job
+    	Job workflowToEvaluate = new Job();
+    	Job step1 = new ShellJob("command","-opt 1","arg");
+    	step1.setParameter("ENV", "name of envaronment");
+    	workflowToEvaluate.addStep(step1);
+    	final String PARAMNAME = "PPAARRAAMM";
+    	final String PARAMVALUE = "12345 acb ABC";
+    	Job step2 = new ACCJob();
+    	step2.setParameter(PARAMNAME, PARAMVALUE);
+    	workflowToEvaluate.addStep(step2);
+    	
+    	Job evalJob = new EvaluationJob(workflowToEvaluate.getStep(0), 
+    			workflowToEvaluate, sitsDB, icDB);
+    	evalJob.setParameter(JobEvaluator.RUNSTANDALONE);
+
+        File newJobDef = new File(
+        		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
+    	evalJob.setParameter(ChemSoftConstants.PAROUTFILE.toString(), 
+    			newJobDef.getAbsolutePath());
+    	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
+    	w.performTask();
+    	
+    	assertNotNull(evalJob.exposedOutput.getNamedData(
+    			JobEvaluator.SITUATIONOUTKEY,true));
+    	assertTrue(newJobDef.exists());
+    	
+    	Job jobFromReaction = JobFactory.buildFromFile(newJobDef);
+    	assertEquals(2, jobFromReaction.getNumberOfSteps());
+    	assertEquals(AppID.SHELL, jobFromReaction.getStep(0).appID);
+    	assertEquals(AppID.ACC, jobFromReaction.getStep(1).appID);
+    	assertEquals(0, jobFromReaction.getStep(0).getNumberOfSteps());
+    	assertEquals(0, jobFromReaction.getStep(1).getNumberOfSteps());
+    	assertTrue(jobFromReaction.getStep(1).hasParameter(PARAMNAME));
+    }
+      
+//-----------------------------------------------------------------------------
+
+    @Test
+    public void testJobEvaluator_standalone_on_parallelBatch() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        
+        File existingFile = new File(
+        		tempDir.getAbsolutePath() + SEP + "file.out");
+        IOtools.writeTXTAppend(existingFile, "Text TRIGGERS REACTION", false);
+
+        // NB: this situation is not related to any specific step of the job
+        // being evaluated. Also, without an interpreted of the ICfeed that
+        // can split the ICfeed into steps, the perceptron can only assume that
+        // the situation is triggered by the first subjob of a batch/workflow.
+        Situation situationWithAction = new Situation("SituationType",
+        		"TestSituation", new ArrayList<ICircumstance>(Arrays.asList(
+        				new MatchText(".*TRIGGERS REACTION.*", 
+        						InfoChannelType.LOGFEED))));
+        situationWithAction.setReaction(new Action(ActionType.REDO, 
+        		ActionObject.FOCUSJOB));
+        
+        SituationBase sitsDB = new SituationBase();
+        sitsDB.addSituation(situationWithAction);
+        
+        InfoChannelBase icDB = new InfoChannelBase();
+        icDB.addChannel(new FileAsSource(existingFile.getAbsolutePath(), 
+        		InfoChannelType.LOGFEED));
         
     	Job batchToEvaluate = new Job();
     	batchToEvaluate.setNumberOfThreads(2);
-    	batchToEvaluate.addStep(new TestJob("log1", 0, true));
-    	batchToEvaluate.addStep(new TestJob("log2", 0, true));
+    	Job step1 = new ShellJob("command","-opt 1","arg");
+    	step1.setParameter("ENV", "name of envaronment");
+    	batchToEvaluate.addStep(step1);
+    	final String PARAMNAME = "PPAARRAAMM";
+    	final String PARAMVALUE = "12345 acb ABC";
+    	Job step2 = new ACCJob();
+    	step2.setParameter(PARAMNAME, PARAMVALUE);
+    	batchToEvaluate.addStep(step2);
     	
     	Job evalJob = new EvaluationJob(batchToEvaluate.getStep(1), 
     			batchToEvaluate, sitsDB, icDB);
     	evalJob.setParameter(JobEvaluator.RUNSTANDALONE);
+
+        File newJobDef = new File(
+        		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
+    	evalJob.setParameter(ChemSoftConstants.PAROUTFILE.toString(), 
+    			newJobDef.getAbsolutePath());
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	w.performTask();
+    	
     	assertNotNull(evalJob.exposedOutput.getNamedData(
     			JobEvaluator.SITUATIONOUTKEY,true));
-    	//TODO-gg
+    	assertTrue(newJobDef.exists());
     	
-    	// Handling of sequential job
-    	//TODO-gg
-    	
-    	//TODO-gg and selfcontained
+    	Job jobFromReaction = JobFactory.buildFromFile(newJobDef);
+    	assertEquals(1, jobFromReaction.getNumberOfSteps());
+    	assertEquals(AppID.ACC, jobFromReaction.getStep(0).appID);
+    	assertEquals(0, jobFromReaction.getStep(0).getNumberOfSteps());
+    	assertTrue(jobFromReaction.getStep(0).hasParameter(PARAMNAME));
     }
     
 //-----------------------------------------------------------------------------
@@ -136,22 +216,25 @@ public class JobEvaluatorTest
     	NamedDataCollector output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();
-    	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY,true));
+    	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY, true));
     	
     	icDB.addChannel(new FileAsSource("non_existing_pathname", 
     			InfoChannelType.OUTPUTFILE));
     	output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();
-    	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY,true));
+    	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY, true));
     	
     	evalJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "false");
+    	
+    	//To avoid seeing the exception in stdout
+    	evalJob.setParameter(ParameterConstants.VERBOSITY, "0");
     	
     	w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();
-    	assertNotNull(output.getNamedData(JobEvaluator.EXCEPTION,true));
+    	assertNotNull(output.getNamedData(JobEvaluator.EXCEPTION, true));
     }
     
 //------------------------------------------------------------------------------

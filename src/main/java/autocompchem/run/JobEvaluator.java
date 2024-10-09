@@ -516,9 +516,7 @@ public class JobEvaluator extends Worker
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Exception while doing perception. "
-					+ "Please, report this to the authors.", e);
+			logger.error("Exception while doing perception. ", e);
 			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}
 		
@@ -672,9 +670,9 @@ public class JobEvaluator extends Worker
 					.getValueAsString());
 		}
 		
-		ChemSoftInputWriter worker;
+		Worker worker;
 		try {
-			worker = (ChemSoftInputWriter) 
+			worker = (Worker) 
 					WorkerFactory.createWorker(makeInputPars, myJob);
 		} catch (ClassNotFoundException e) {
 			throw new Error("Unable to make worker for " + task);
