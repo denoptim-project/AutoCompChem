@@ -1,7 +1,5 @@
 package autocompchem.modeling.atomtuple;
 
-import java.util.Arrays;
-
 import autocompchem.modeling.AtomLabelsGenerator;
 
 /**

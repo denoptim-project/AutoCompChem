@@ -1,7 +1,5 @@
 package autocompchem.run;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,8 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.utils.TimeUtils;
 import autocompchem.run.jobediting.ActionApplier;
+import autocompchem.utils.TimeUtils;
 
 
 /**
@@ -428,10 +426,7 @@ public class ParallelJobsRunner extends JobsRunner
         // thread pool is filled-up are dealt with by RejectedExecHandlerImp
         Iterator<Job> it = todoJobs.iterator();
         while (it.hasNext())
-        {
-            
-            //TODO: set dedicated logger with dedicated log file
-            
+        {   
             Job job = it.next();
 			job.setJobNotificationListener(new ParallelJobListener());
 			
@@ -584,20 +579,6 @@ public class ParallelJobsRunner extends JobsRunner
 				{
 					switch (action.getType())
     				{
-					//TODO-gg del
-					/*
-						case REDO:
-							
-						{	
-							//TODO-gg do?
-							throw new IllegalArgumentException("ERROR! Case of "
-									+ action.getType() + " action on " 
-									+ action.getObject() + " not implemented "
-									+ "in " + this.getClass().getSimpleName()
-									+ ". Please, contact the developers.");
-						}
-						*/
-					
     					case REDO:
 						case STOP:
 						case SKIP:

@@ -1,48 +1,12 @@
 package autocompchem.wiro;
 
 import java.io.File;
-import java.io.IOException;
 
-/*
- *   Copyright (C) 2016  Marco Foscato
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.EnumUtils;
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import com.google.gson.Gson;
-
-import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.ACCFileType;
-import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;
-import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
-import autocompchem.molecule.AtomContainerInputProcessor;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
-import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.worker.Worker;

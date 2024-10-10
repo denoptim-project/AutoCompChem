@@ -34,13 +34,11 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
-import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
-import autocompchem.wiro.chem.ChemSoftConstants;
 
 //TODO A "parameter" in this storage is effectively a DirectiveData. 
 // And this storage is a simplified access to the underlying NamedData.

@@ -21,48 +21,22 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.ParameterStorage;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.SDFIterator;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
-import autocompchem.modeling.atomtuple.AtomTupleGenerator;
-import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
-import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.MatchingIdxs;
-import autocompchem.smarts.SMARTS;
-import autocompchem.text.TextBlock;
-import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.NumberUtils;
-import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.IValueContainer;
-import autocompchem.wiro.chem.ChemSoftConstants.CoordsType;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 
 /**

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -40,10 +39,8 @@ import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
-import autocompchem.worker.Worker;
 
 /**
  * Core components of any tool writing input files for software packages that

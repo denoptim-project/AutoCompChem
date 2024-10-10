@@ -19,12 +19,10 @@ package autocompchem.run;
 
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
-import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 /**

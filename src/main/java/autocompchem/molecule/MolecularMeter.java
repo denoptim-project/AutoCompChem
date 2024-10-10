@@ -1,6 +1,5 @@
 package autocompchem.molecule;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,8 +36,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;

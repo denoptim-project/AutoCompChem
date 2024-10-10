@@ -1,7 +1,5 @@
 package autocompchem.wiro.chem;
 
-import java.io.BufferedReader;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -20,15 +18,9 @@ import java.io.BufferedReader;
  */
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.openscience.cdk.AtomContainerSet;

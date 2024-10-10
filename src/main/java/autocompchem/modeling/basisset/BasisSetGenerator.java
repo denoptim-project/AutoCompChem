@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
@@ -38,8 +37,6 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.SDFIterator;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
@@ -47,8 +44,6 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
-import autocompchem.utils.StringUtils;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 

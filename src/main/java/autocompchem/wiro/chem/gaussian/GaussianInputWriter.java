@@ -45,7 +45,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
 import autocompchem.utils.StringUtils;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.DirComponentAddress;

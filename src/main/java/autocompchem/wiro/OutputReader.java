@@ -31,32 +31,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.constants.ACCConstants;
-import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileFingerprint;
 import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
-import autocompchem.log.LogUtils;
-import autocompchem.modeling.compute.CompChemComputer;
-import autocompchem.molecule.connectivity.ConnectivityUtils;
-import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Terminator;
-import autocompchem.text.TextBlock;
-import autocompchem.utils.NumberUtils;
-import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.AnalysisTask.AnalysisKind;
 import autocompchem.worker.Worker;
 
 /**

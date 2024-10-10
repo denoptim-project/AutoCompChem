@@ -25,20 +25,13 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
-import autocompchem.utils.StringUtils;
 
 /**
  * Tool for managing files and folder trees
@@ -231,7 +224,8 @@ public class FileUtils
      * @throws IOException
      */
 
-    public static List<File> findByGlob(File root, String pattern, boolean collectFolders)
+    public static List<File> findByGlob(File root, String pattern, 
+    		boolean collectFolders)
     {
     	return find(root, pattern, Integer.MAX_VALUE, collectFolders, "glob");
     }
@@ -268,9 +262,10 @@ public class FileUtils
     			break;
     			
     		default:
-    			Terminator.withMsgAndStatus("ERROR! The mode for finding files can "
-        				+ "only be 'regex' or 'glob', but you arked for '" + mode 
-        				+ "'", -1);
+    			Terminator.withMsgAndStatus("ERROR! "
+    					+ "The mode for finding files can "
+        				+ "only be 'regex' or 'glob', but you arked for '" 
+    					+ mode + "'", -1);
     			break;
     	}
     	
@@ -319,7 +314,7 @@ public class FileUtils
     	return ext;
     }
 
-  //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
     /**
      * Terminates if file exists
@@ -438,7 +433,8 @@ public class FileUtils
         List<String> contents = IOtools.readTXT(file);
         for (int i=0; i<contents.size(); i++)
         {
-        	contents.set(i, regex.matcher(contents.get(i)).replaceAll(newString));
+        	contents.set(i, regex.matcher(contents.get(i)).replaceAll(
+        			newString));
         }
         IOtools.writeTXTAppend(file, contents, false);
 	}

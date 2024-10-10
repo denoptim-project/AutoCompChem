@@ -40,7 +40,6 @@ import autocompchem.modeling.forcefield.ForceFieldConstants;
 import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.modeling.forcefield.ForceFieldParamsSet;
 import autocompchem.run.Terminator;
-import autocompchem.run.jobediting.ActionApplier;
 
 
 /**

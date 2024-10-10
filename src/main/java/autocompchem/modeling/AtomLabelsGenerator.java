@@ -29,9 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomRef;
-import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -41,11 +38,8 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.SDFIterator;
-import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;

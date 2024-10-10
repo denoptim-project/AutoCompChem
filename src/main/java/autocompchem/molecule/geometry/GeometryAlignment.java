@@ -1,17 +1,13 @@
 package autocompchem.molecule.geometry;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.silent.Mapping;
 
-import autocompchem.atom.AtomUtils;
 import autocompchem.io.jsonableatomcontainer.JSONableIAtomContainer;
-import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.utils.NumberUtils;
 

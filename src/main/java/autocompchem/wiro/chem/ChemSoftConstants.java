@@ -2,8 +2,6 @@ package autocompchem.wiro.chem;
 
 import java.util.List;
 
-import org.apache.jena.iri.impl.Force;
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ParameterStorage;

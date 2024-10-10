@@ -25,7 +25,6 @@ import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;

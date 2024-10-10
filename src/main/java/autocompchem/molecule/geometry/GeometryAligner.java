@@ -39,8 +39,6 @@ import org.openscience.cdk.geometry.alignment.KabschAlignment;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.silent.AtomContainerSet;
-import org.openscience.cdk.silent.Mapping;
 import org.openscience.cdk.smsd.Isomorphism;
 import org.openscience.cdk.smsd.interfaces.Algorithm;
 

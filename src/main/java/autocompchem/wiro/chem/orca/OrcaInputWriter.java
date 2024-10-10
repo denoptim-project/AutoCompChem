@@ -57,7 +57,6 @@ import autocompchem.wiro.chem.DirectiveComponentType;
 import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.wiro.chem.IDirectiveComponent;
 import autocompchem.wiro.chem.Keyword;
-import autocompchem.wiro.chem.gaussian.GaussianConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 

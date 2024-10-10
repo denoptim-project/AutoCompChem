@@ -44,11 +44,10 @@ import com.google.gson.reflect.TypeToken;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
-import autocompchem.log.LogUtils;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.jobediting.Action;
+import autocompchem.log.LogUtils;
 import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.CompChemJob;

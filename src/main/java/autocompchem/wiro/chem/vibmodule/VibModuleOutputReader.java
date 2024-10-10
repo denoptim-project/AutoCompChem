@@ -1,6 +1,5 @@
 package autocompchem.wiro.chem.vibmodule;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,29 +11,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.AtomType;
-import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IBond.Order;
 
 import com.google.common.math.StatsAccumulator;
 
-import autocompchem.atom.AtomUtils;
-import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileFingerprint;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.modeling.forcefield.EquilibriumValue;
 import autocompchem.modeling.forcefield.ForceConstant;
 import autocompchem.modeling.forcefield.ForceFieldConstants;
@@ -49,9 +34,7 @@ import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
-import autocompchem.wiro.chem.orca.OrcaConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 

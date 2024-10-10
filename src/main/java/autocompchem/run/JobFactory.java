@@ -15,7 +15,6 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
 import autocompchem.text.TextBlockIndexed;
-import autocompchem.wiro.OutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 

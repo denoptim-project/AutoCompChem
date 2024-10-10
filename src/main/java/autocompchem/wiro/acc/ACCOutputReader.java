@@ -1,34 +1,15 @@
 package autocompchem.wiro.acc;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.ListOfIntegers;
-import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
-import autocompchem.io.IOtools;
-import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
-import autocompchem.run.Terminator;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.ChemSoftInputWriter;
-import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 

@@ -18,7 +18,6 @@ import com.google.common.io.Files;
 
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileUtils;
-import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
