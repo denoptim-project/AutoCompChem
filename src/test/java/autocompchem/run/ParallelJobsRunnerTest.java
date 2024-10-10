@@ -51,6 +51,7 @@ import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.SetJobParameter;
+import autocompchem.utils.NumberUtils;
 
 
 /**
@@ -612,13 +613,6 @@ public class ParallelJobsRunnerTest
     
 //-----------------------------------------------------------------------------
 
-    /*
-     * Here we test the notification hook: if a job terminates with a request 
-     * to kill itself and its siblings (i.e., the jobs running in parallel with
-     * that job, and controlled by the same ParallelRunner), then the 
-     * ParallelRunner wakes up and kills all the running/future tasks 
-     * and shuts down the execution service.
-     */
     @Test
     public void testParallelJobCompletionNotifications() throws Exception
     {
@@ -641,14 +635,25 @@ public class ParallelJobsRunnerTest
         // Comment out these to get some log, in case of debugging
         main.setParameter(ParameterConstants.VERBOSITY, "0", true);
         
+        long startTime = System.nanoTime();
         main.run();
+        long runTimeSec = (System.nanoTime() - startTime) / 1000000000;
+        
+        // According to the previous comment, the main job should be stopped by 
+        // the sub jobs notifying completion and, thus, triggering completion of
+        // the main job, which should, therefore, be elapse much less then the  
+        // waiting step (7 seconds, but to allow for ample fluctuation abode the
+        // more-than-2 sec that main should take, we set 4 sec as the threshold).
+        assertTrue(runTimeSec < 4);
 
+        // check that every job was actually run
         int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false)
         		.size();
-        assertEquals(3,iPingFiles,"Number of initiated TestJobs");
+        assertEquals(3, iPingFiles, "Number of initiated TestJobs");
         
-        //TODO add more checking. This will be made available once we'll
-        // implement job specific logging
+        assertTrue(8 > FileAnalyzer.count(roothName+"_A", "Iteration *"));
+        assertTrue(8 < FileAnalyzer.count(roothName+"_B", "Iteration *"));
+        assertTrue(8 < FileAnalyzer.count(roothName+"_C", "Iteration *"));
     }
     
 //-----------------------------------------------------------------------------
