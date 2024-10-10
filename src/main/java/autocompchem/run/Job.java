@@ -148,7 +148,7 @@ public class Job implements Runnable
      * A listener that can hear notifications from this job (i.e., observer). 
      * Typically, the listener is a master job or the manager of parallel jobs.
      */
-    private JobNotificationListener observer;
+    protected JobNotificationListener observer;
 
     /**
      * Flag signaling that this job has been interrupted
@@ -1143,35 +1143,6 @@ public class Job implements Runnable
     }
     
 //------------------------------------------------------------------------------
-    
-    /**
-     * Checks if this job is requesting any action.
-     * @return <code>true</code> if this job is requesting any action
-     */
-    
-    public boolean requestsAction()
-    {
-    	return exposedOutput.contains(JobEvaluator.REACTIONTOSITUATION);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * @return the requested action or null, if no action is requested
-     */
-    
-    public Action getRequestedAction()
-    {
-    	if (requestsAction())
-    	{
-    		return (Action) exposedOutput.getNamedData(
-    				JobEvaluator.REACTIONTOSITUATION).getValue();
-    	} else {
-    		return null;
-    	}
-    }
-    
-//------------------------------------------------------------------------------
 
     /**
      * @return <code>true</code> if the job has been completed.
@@ -1249,18 +1220,11 @@ public class Job implements Runnable
     	}
     	
     	// Notify observer of any request from this jobs
-    	if (observer!=null && notify)
+    	if (notify)
     	{
-	    	if (requestsAction())
-	        {
-	        	observer.reactToRequestOfAction(getRequestedAction(), this);
-	        } else {
-	        	if (!(this instanceof MonitoringJob))
-	        	{
-	        		observer.notifyTermination(this);
-	        	}
-	        }
+    		notifyObserver();
     	}
+    	
     	// We do this to liberate memory
     	if (hasParent())
     	{
@@ -1273,6 +1237,20 @@ public class Job implements Runnable
     		throw new Error("ERROR! " + thrownExc.getClass().getSimpleName()
     				+ " thrown by job " + getId() + ".", thrownExc);
     	}			
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Manager the notification to the {@link JobNotificationListener}
+     * that might be associated with this job. Subclasses overwrite this method
+     * to adjust the behavior to their needs.
+     */
+    protected void notifyObserver()
+    {
+    	if (observer==null)
+    		return;
+    	observer.notifyTermination(this);
     }
 
 //------------------------------------------------------------------------------

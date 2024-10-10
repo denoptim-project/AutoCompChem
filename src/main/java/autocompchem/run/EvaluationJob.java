@@ -23,6 +23,7 @@ import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.jobediting.Action;
 import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
@@ -34,6 +35,15 @@ import autocompchem.worker.WorkerConstants;
 
 public class EvaluationJob extends ACCJob 
 {
+	/**
+	 * The job that is evaluated by this job.
+	 */
+	private Job focusJob;
+	
+	/**
+	 * The reaction to the results of the evaluation
+	 */
+	private Action reaction;
  
 //------------------------------------------------------------------------------
 	
@@ -69,6 +79,7 @@ public class EvaluationJob extends ACCJob
     		SituationBase sitsDB, InfoChannelBase icDB)
     {
         this();
+        focusJob = jobToEvaluate;
         params.setParameter(ParameterConstants.JOBTOEVALPARENT,
         		NamedDataType.JOB, containerOfJobToEvaluate);
         params.setParameter(ParameterConstants.JOBTOEVALUATE,
@@ -77,6 +88,84 @@ public class EvaluationJob extends ACCJob
         		NamedDataType.SITUATIONBASE, sitsDB);
         params.setParameter(ParameterConstants.INFOCHANNELSDB, 
         		NamedDataType.INFOCHANNELBASE, icDB);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if this job is requesting any action.
+     * @return <code>true</code> if this job is requesting any action
+     */
+    
+    public boolean requestsAction()
+    {
+    	return reaction!=null;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the reaction triggered by the evaluation performed by this job.
+     * @param reaction
+     */
+    public void setRequestedAction(Action reaction)
+    {
+    	this.reaction = reaction;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * @return the requested action or null, if no action is requested
+     */
+    
+    public Action getRequestedAction()
+    {
+    	return reaction;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the job that is evaluated by this one.
+     * @return the job that is evaluated by this one.
+     */
+    public Job getFocusJob()
+    {
+    	return focusJob;
+    }  
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Adjust notification to trigger reaction to the action that this job is 
+     * requesting.
+     */
+    @Override
+	protected void notifyObserver() 
+    {
+    	if (observer!=null)
+    	{
+	    	if (requestsAction())
+	        {
+	        	observer.reactToRequestOfAction(getRequestedAction(), this);
+	        } else {
+	        	observer.notifyTermination(this);
+	        }
+    	}			
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * This method resets any information about the running of this job so that
+     * it looks as if it had never run.
+     */
+    @Override
+    public void resetRunStatus()
+    {
+    	reaction = null;
+    	super.resetRunStatus();
     }
     
 //------------------------------------------------------------------------------

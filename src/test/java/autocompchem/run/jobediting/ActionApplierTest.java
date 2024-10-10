@@ -38,6 +38,7 @@ import org.junit.jupiter.api.io.TempDir;
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.run.AppID;
+import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.jobediting.Action.ActionObject;
@@ -192,8 +193,8 @@ public class ActionApplierTest
     			new DataArchivingRule(ArchivingTaskType.COPY, "*"+labC+"*"));
     	
     	// Dummy job only to satisfy the fingerprint of the method
-    	//TODO-gg is the triggering job really needed? not here...
-    	Job dummy = JobFactory.createJob(AppID.ACC);
+    	EvaluationJob dummy = new EvaluationJob();
+    	
     	
     	// Do the magic
     	ActionApplier.performActionOnParallelBatch(action, parentJob, focusJob, 

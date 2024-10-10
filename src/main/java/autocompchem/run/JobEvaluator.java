@@ -529,10 +529,13 @@ public class JobEvaluator extends Worker
 			
 			if (s.hasReaction())
 			{
+				Action reaction = s.getReaction();
+				
 				// NB: this triggers notification of a request of action on the
 				// observer (if any observer is present)
+				((EvaluationJob) myJob).setRequestedAction(reaction);
 				exposeOutputData(new NamedData(REACTIONTOSITUATION,
-						NamedDataType.ACTION, s.getReaction()));
+						NamedDataType.ACTION, reaction));
 				
 				if (jobBeingEvaluated!=null)
 				{
@@ -547,7 +550,7 @@ public class JobEvaluator extends Worker
 					// but it can prepare a new input.
 					if (standaloneCureJob)
 					{
-						healJob(jobBeingEvaluated, s.getReaction(), idxFocusJob);
+						healJob(jobBeingEvaluated, reaction, idxFocusJob);
 					}
 				}
 			}
@@ -575,7 +578,7 @@ public class JobEvaluator extends Worker
 								cure,   //action to perform
 								jobToHeal.getContainer(), //parallel batch
 								jobToHeal, //job causing the reaction
-								myJob, //job doing the evaluation 
+								(EvaluationJob) myJob, //job doing the evaluation 
 								1); // restart counter
 				jobToHeal.getContainer().steps = newJobSteps;
 			} else {
@@ -601,7 +604,7 @@ public class JobEvaluator extends Worker
 									cure,   //action to perform
 									jobToHeal, //parallel batch
 									jobToHeal.getStep(idxFocusJob), //job causing the reaction
-									myJob, //job doing the evaluation 
+									(EvaluationJob) myJob, //job doing the evaluation 
 									1); // restart counter
 					jobToHeal.steps = newJobSteps;
 				} else {

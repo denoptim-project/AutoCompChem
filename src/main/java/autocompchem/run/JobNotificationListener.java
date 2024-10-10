@@ -33,7 +33,7 @@ interface JobNotificationListener
 	 * @param action the requested action.
 	 * @param sender the job that is placing the request.
 	 */
-	public void reactToRequestOfAction(Action action, Job sender);
+	public void reactToRequestOfAction(Action action, EvaluationJob sender);
 	
 	/**
 	 * Sends a notification that signals the completion of the job

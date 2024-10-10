@@ -528,14 +528,15 @@ public class ParallelJobsRunner extends JobsRunner
     /**
      * This is a listener that is associated with a specific job in the pool of
      * jobs run in parallel. Instances of this class are created only after the 
-     * ThreadPoolExecutor has been initialised, so it is safe to assume that
+     * {@link ThreadPoolExecutor} has been initialised, 
+     * so it is safe to assume that
      * the tpExecutor exists and is capable of accepting new jobs.
      */
     
     private class ParallelJobListener implements JobNotificationListener
     {
 		@Override
-		public void reactToRequestOfAction(Action action, Job sender) 
+		public void reactToRequestOfAction(Action action, EvaluationJob sender) 
 		{
 			if (notificationId.getAndIncrement() == 0)
 			{
@@ -549,14 +550,7 @@ public class ParallelJobsRunner extends JobsRunner
 						Job.ACTIONREQUESTBYSUBJOB, action));
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.SUBJOBREQUESTINGACTION, sender));
-				focusJob = null;
-				if (jobRequestingAction.exposedOutput.contains(
-						JobEvaluator.EVALUATEDJOB))
-				{
-					focusJob = (Job) jobRequestingAction.exposedOutput
-							.getNamedData(JobEvaluator.EVALUATEDJOB)
-							.getValue();
-				}
+				focusJob = jobRequestingAction.getFocusJob();
 				
 				if (action.getObject().equals(ActionObject.PARALLELJOB))
 				{

@@ -87,10 +87,9 @@ public abstract class JobsRunner
     protected Action requestedAction;
 	
 	/**
-	 * The job that requested an action, i.e., an {@link EvaluationJob}
-	 * of some sort.
+	 * The job that requested an action
 	 */
-    protected Job jobRequestingAction;
+    protected EvaluationJob jobRequestingAction;
     
     /**
      * The job that produced the situation triggering an action, i.e., a 

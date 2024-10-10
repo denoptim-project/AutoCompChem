@@ -19,6 +19,7 @@ import com.google.common.io.Files;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileUtils;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.MonitoringJob;
@@ -219,8 +220,24 @@ public class ActionApplier
     
 //------------------------------------------------------------------------------
     
+    /**
+     * Does anything that is defined in the given {@link Action} to the given 
+     * batch of parallel {@link Job}s defined in a {@link Job} that acts as 
+     * container of the parallel batch.
+     * @param action defined what to do
+     * @param batch is the list of jobs that are/were run in parallel and that
+     * contain the job that triggered the action.
+     * @param triggerJob the job that with its behavior triggered the action
+     * @param jobRequestingAction the job that detected the triggering behavior
+     * and created the request for action.
+     * @param restartCounter an index that identifies the iteration on the batch
+     * and is used to archive the files in a way that allows to identify which 
+     * iteration created archives.
+     * @return the altered batch of jobs. 
+     */
     public static List<Job> performActionOnParallelBatch(Action action, 
-    		  Job batch, Job triggerJob, Job jobRequestingAction, int restartCounter)
+    		  Job batch, Job triggerJob, EvaluationJob jobRequestingAction, 
+    		  int restartCounter)
     {
     	ActionType aType = action.getType();
 		

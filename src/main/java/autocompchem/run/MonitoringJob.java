@@ -230,6 +230,21 @@ public class MonitoringJob extends EvaluationJob
   		return (Future<Object>) tpExecutor.scheduleAtFixedRate(this, delay, 
   				period, TimeUnit.MILLISECONDS);
   	}
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Adjust notification to trigger reaction to the action that this job is 
+     * requesting.
+     */
+    @Override
+	protected void notifyObserver()
+    {
+    	if (observer!=null && requestsAction())
+        {
+        	observer.reactToRequestOfAction(getRequestedAction(), this);
+        }			
+    }
 
 //------------------------------------------------------------------------------
 

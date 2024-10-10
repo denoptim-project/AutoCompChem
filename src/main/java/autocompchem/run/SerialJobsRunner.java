@@ -208,8 +208,7 @@ public class SerialJobsRunner extends JobsRunner
         	// a job) is done already by the SerialJobListener
     		if (requestedAction!=null)
     		{
-				Job focusJob = (Job) jobRequestingAction.exposedOutput
-						.getNamedData(JobEvaluator.EVALUATEDJOB).getValue();
+				Job focusJob = jobRequestingAction.getFocusJob();
 				int idFocusJob = todoJobs.indexOf(focusJob);
 		    	
 		    	ActionApplier.performActionOnSerialWorkflow(requestedAction, 
@@ -332,7 +331,7 @@ public class SerialJobsRunner extends JobsRunner
     private class SerialJobListener implements JobNotificationListener
     {
 		@Override
-		public void reactToRequestOfAction(Action action, Job sender) 
+		public void reactToRequestOfAction(Action action, EvaluationJob sender) 
 		{
 			if (notificationId.getAndIncrement() == 0)
 			{
@@ -346,8 +345,7 @@ public class SerialJobsRunner extends JobsRunner
 						Job.ACTIONREQUESTBYSUBJOB, action));
 				master.exposedOutput.putNamedData(new NamedData(
 						Job.SUBJOBREQUESTINGACTION, sender));
-				Job focusJob = (Job) jobRequestingAction.exposedOutput
-						.getNamedData(JobEvaluator.EVALUATEDJOB).getValue();
+				Job focusJob = sender.getFocusJob();
 				
 				if (action.getObject().equals(ActionObject.PARALLELJOB))
 				{
