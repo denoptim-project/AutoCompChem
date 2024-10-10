@@ -584,7 +584,10 @@ public class ParallelJobsRunner extends JobsRunner
 				{
 					switch (action.getType())
     				{
+					//TODO-gg del
+					/*
 						case REDO:
+							
 						{	
 							//TODO-gg do?
 							throw new IllegalArgumentException("ERROR! Case of "
@@ -593,7 +596,9 @@ public class ParallelJobsRunner extends JobsRunner
 									+ "in " + this.getClass().getSimpleName()
 									+ ". Please, contact the developers.");
 						}
-						
+						*/
+					
+    					case REDO:
 						case STOP:
 						case SKIP:
 						{

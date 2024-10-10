@@ -287,7 +287,8 @@ public class ParallelJobsRunnerTest
         
         main.run();
         
-        int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false).size();
+        int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false)
+        		.size();
         assertEquals(2, iPingFiles, "Number of initiated TestJobs");
     }
     
@@ -380,14 +381,103 @@ public class ParallelJobsRunnerTest
          * Job_#0.6 is a sibling but does not run (not enough threads to start it)
          */
         
-        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.1*", true).size());
-        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.3*", true).size());
-        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.4*", true).size());
-        assertEquals(2, FileUtils.findByGlob(tempDir, "Job_#0.5*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, 
+        		"Job_#0.1*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, 
+        		"Job_#0.3*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, 
+        		"Job_#0.4*", true).size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, 
+        		"Job_#0.5*", true).size());
         assertEquals(4, FileUtils.findByGlob(tempDir, "*_1", true).size());
         assertEquals(4, FileUtils.findByGlob(tempDir, "*_2", true).size());
-        assertEquals(1, FileUtils.findByGlob(tempDir, "testjob.log_production").size());
-        assertEquals(2, FileUtils.findByGlob(tempDir, "*/testjob.log_production").size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, 
+        		"testjob.log_production").size());
+        assertEquals(2, FileUtils.findByGlob(tempDir, 
+        		"*/testjob.log_production").size());
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /*
+     * Here we test the request to redo (re-submit) only the focis job while the
+     * other jobs in the batch go on. This is the scenario where a monitoring
+     * job detects a situation that triggers a redo-type of action acting only
+     * on the focus job.
+     */
+    @Test
+    public void testRedoFocusJobUponNotification() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	String baseName ="testjob.log";
+        String roothName = tempDir.getAbsolutePath() + SEP + baseName;
+        
+        // A "long-lasting" job that will be evaluated
+        String logOnProductionJob = roothName + "_production";
+        TestJob productionJob = new TestJob(logOnProductionJob,2,0,100,true);
+        productionJob.setUserDir(tempDir);
+        
+        // Situation to perceive and reaction to it.
+        ICircumstance c = new MatchText("Iteration 4", 
+        		InfoChannelType.LOGFEED);
+        Action act = new Action(ActionType.REDO, ActionObject.FOCUSJOB);
+        String newPrefix = "RESTART-";
+        act.addJobEditingTask(new SetJobParameter(
+        		new NamedData(TestJob.PREFIX, newPrefix)));
+        Situation sit1 = new Situation("SitTyp", "Sit-ONE", 
+        		new ArrayList<ICircumstance>(Arrays.asList(c)),act);
+        SituationBase sitsDB = new SituationBase();
+        sitsDB.addSituation(sit1);
+        InfoChannelBase icDB = new InfoChannelBase();
+        icDB.addChannel(new FileAsSource(logOnProductionJob, 
+        		InfoChannelType.LOGFEED));
+        
+        // The main job that contains the batch of parallel jobs
+        Job main = JobFactory.createJob(AppID.ACC, 4, true);
+        main.setParameter("WALLTIME", "10");
+        
+        // Make the job that will monitor the ongoing job and trigger an action
+        Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
+        		750, 500);
+        
+        main.addStep(productionJob);
+        main.addStep(monitoringJob);
+        
+        // Other 'whatever' jobs (i.e., the siblings) that go on carelessly
+        for (int i=1; i<3; i++) 
+        {
+        	TestJob j = new TestJob(roothName+i, 2, 0, 100, true);
+        	j.setUserDir(tempDir);
+        	main.addStep(j);
+        }
+        
+        assertEquals(4, main.getNumberOfSteps(), "Number of parallel jobs");
+        
+        // Comment out these to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "0", true);
+        
+        main.run();
+        
+        /* 
+         * Job_#0.1 is the production job (the one monitored)
+         * Job_#0.2 is the monitoring job
+         * Job_#0.3 is a sibling writing on testjob.log1
+         * Job_#0.4 is a sibling writing on testjob.log2
+         */
+        
+        assertEquals(1, FileUtils.findByGlob(tempDir, "Job_#0.*", true).size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, "*_1", true).size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, 
+        		"testjob.log_production").size());
+        assertEquals(1, FileUtils.findByGlob(tempDir, 
+        		"*/testjob.log_production").size());
+        assertEquals(0, FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
+        		+ "Job_#0.1_1" + SEP + baseName + "_production", 
+        		newPrefix+"Iteration 18"));
+        assertEquals(1, FileAnalyzer.count(logOnProductionJob, 
+        		newPrefix+"Iteration 18"));
+        assertEquals(1, FileAnalyzer.count(roothName+1, "Iteration 18"));
+        assertEquals(1, FileAnalyzer.count(roothName+2, "Iteration 18"));
     }
     
   //-----------------------------------------------------------------------------
@@ -475,8 +565,10 @@ public class ParallelJobsRunnerTest
          * hence the monitoring job has to be tolerant.
          */
         
-        assertEquals(0, FileUtils.findByGlob(tempDir, "Job_#0.2_0", true).size());
-        assertEquals(4, FileUtils.findByGlob(tempDir, "testjob.log*", true).size());
+        assertEquals(0, FileUtils.findByGlob(tempDir, 
+        		"Job_#0.2_0", true).size());
+        assertEquals(4, FileUtils.findByGlob(tempDir, 
+        		"testjob.log*", true).size());
         assertTrue(16>FileAnalyzer.count(tempDir.getAbsolutePath() + SEP 
         		+ "testjob.log_production", "Iteration"));
         assertTrue(30<FileAnalyzer.count(roothName+"1", "Iteration"));
@@ -551,7 +643,8 @@ public class ParallelJobsRunnerTest
         
         main.run();
 
-        int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false).size();
+        int iPingFiles = FileUtils.findByGlob(tempDir, baseName+"*", false)
+        		.size();
         assertEquals(3,iPingFiles,"Number of initiated TestJobs");
         
         //TODO add more checking. This will be made available once we'll
