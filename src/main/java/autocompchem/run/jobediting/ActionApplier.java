@@ -41,70 +41,7 @@ import autocompchem.wiro.chem.CompChemJob;
 
 public class ActionApplier 
 {
-    
-//------------------------------------------------------------------------------
-    
-	/**
-	 * Takes geometries from the data associated to the job that has been
-	 * evaluated (either produced by it or its input). This assumes that the 
-	 * data exposed by the trigger upon analysis of a {@link CompChemJob}
-	 * contains some geometries either in the form of output or input data.
-	 * Thus, this method has no meaning when the {@link Job} been evaluated
-	 * is not {@link CompChemJob}. 
-	 * @param action
-	 * @param trigger
-	 * @return
-	 */
-	
-	//TODO-gg: consider this as a method of CompChemJob
-	
-    public static List<IAtomContainer> getRestartGeoms(Action action, 
-    		Job trigger)
-    {
-    	@SuppressWarnings("unchecked")
-		Map<Integer, NamedDataCollector> jobOutputData = 
-    			(Map<Integer, NamedDataCollector>) trigger.exposedOutput
-    			.getNamedData(ChemSoftConstants.JOBOUTPUTDATA).getValue();
-    	
-    	int focusJobStepID = (int) trigger.exposedOutput.getNamedData(
-    			JobEvaluator.NUMSTEPSKEY).getValue();
-    	
-    	// Try taking a geometry from the latest data produced by the job
-    	List<IAtomContainer> iacs = new ArrayList<IAtomContainer>();
-    	for (int i=(focusJobStepID); i>-1; i--)
-		{
-    		NamedDataCollector stepData = jobOutputData.get(focusJobStepID);
-        	if (!stepData.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
-        	{
-        		// No geometry from this step. Try previous step
-        		continue;
-        	}
-        	AtomContainerSet acs = (AtomContainerSet) stepData
-    				.getNamedData(ChemSoftConstants.JOBDATAGEOMETRIES)
-    				.getValue();
-
-        	//TODO-gg modify to take any other than the last geometry found
-        	// according to indication from action.
-        	// We should foresee the case where the geometries to return are more
-        	// then one. Thus the JOBDATAGEOMETRIES should rather be
-        	// a list of AtomContainerSet
-        	iacs.add(acs.getAtomContainer(acs.getAtomContainerCount()-1));
-			break;
-		}
-    	
-    	// If none found try to take the input geometries
-    	if (iacs.size()==0 && trigger.exposedOutput.contains(
-    			ChemSoftConstants.PARGEOM))
-    	{
-    		AtomContainerSet acs = (AtomContainerSet) trigger.exposedOutput
-    				.getNamedData(ChemSoftConstants.PARGEOM).getValue();
-    		for (IAtomContainer iac : acs.atomContainers())
-    			iacs.add(iac);
-    	}
-    	
-    	return iacs;
-    }
-	
+  	
 //------------------------------------------------------------------------------
 
     /**

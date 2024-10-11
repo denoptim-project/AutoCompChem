@@ -26,7 +26,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.Gson;
@@ -35,10 +37,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
+import autocompchem.run.JobEvaluator;
 import autocompchem.run.Terminator;
+import autocompchem.run.jobediting.Action;
 import autocompchem.text.TextAnalyzer;
 
 /**
@@ -940,6 +945,61 @@ public class CompChemJob extends Job implements Cloneable
             return jsonObject;
         }
     }
+    
+//------------------------------------------------------------------------------
+      
+  	/**
+  	 * Performs the analysis of the geometries seen in this job and chooses the 
+  	 * one/s that are perceived as the most reliable for submitting a restart of
+  	 * this job.
+  	 * @return the geometries that are considered as a good input for 
+  	 * restarting the job.
+  	 */
+  	
+    public List<IAtomContainer> getRestartGeoms()
+    {
+      	@SuppressWarnings("unchecked")
+  		Map<Integer, NamedDataCollector> jobOutputData = 
+  		(Map<Integer, NamedDataCollector>) exposedOutput.getNamedData(
+  				ChemSoftConstants.JOBOUTPUTDATA).getValue();
+      	
+      	int focusJobStepID = (int) exposedOutput.getNamedData(
+      			JobEvaluator.NUMSTEPSKEY).getValue();
+      	
+      	// Try taking a geometry from the latest data produced by the job
+      	List<IAtomContainer> iacs = new ArrayList<IAtomContainer>();
+      	for (int i=(focusJobStepID); i>-1; i--)
+  		{
+      		NamedDataCollector stepData = jobOutputData.get(focusJobStepID);
+          	if (!stepData.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
+          	{
+          		// No geometry from this step. Try previous step
+          		continue;
+          	}
+          	AtomContainerSet acs = (AtomContainerSet) stepData
+      				.getNamedData(ChemSoftConstants.JOBDATAGEOMETRIES)
+      				.getValue();
+
+          	// TODO:
+          	// We should foresee the case where the geometries to return are
+          	// many. Thus the JOBDATAGEOMETRIES should rather be
+          	// a list of AtomContainerSet
+          	iacs.add(acs.getAtomContainer(acs.getAtomContainerCount()-1));
+  			break;
+  		}
+      	
+      	// If none found try to take the input geometries
+      	if (iacs.size()==0 && exposedOutput.contains(
+      			ChemSoftConstants.PARGEOM))
+      	{
+      		AtomContainerSet acs = (AtomContainerSet) exposedOutput
+      				.getNamedData(ChemSoftConstants.PARGEOM).getValue();
+      		for (IAtomContainer iac : acs.atomContainers())
+      			iacs.add(iac);
+      	}
+      	
+      	return iacs;
+      }
     
 //------------------------------------------------------------------------------
 
