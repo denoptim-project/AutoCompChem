@@ -20,7 +20,6 @@ package autocompchem.run;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +62,6 @@ import autocompchem.worker.WorkerFactory;
 
 public class JobEvaluator extends Worker
 {
-	//TODO-gg use only the general tasks
     /**
      * String defining the task of evaluating any job output
      */
@@ -114,13 +112,6 @@ public class JobEvaluator extends Worker
 	public static final String REACTIONTOSITUATION = "ReactionToSituation";
 	
 	/**
-	 * The string used to identify the details of the job being evaluated in the
-	 * exposed job output data structure.
-	 */
-	//TODO-gg duplicate in Parameter?
-	public static final String EVALUATEDJOB = "evaluatedJob";
-	
-	/**
 	 * The string used to identify the exception triggered by perception.
 	 */
 	public static final String EXCEPTION = "exception";
@@ -145,13 +136,6 @@ public class JobEvaluator extends Worker
      * The job being evaluated
      */
     private Job jobBeingEvaluated;
-    
-    /**
-     * The batch or workflow the job being evaluated belongs to, of itself, in
-     * case of self-contained jobs that do not belong to any batch or workflow.
-     */
-    //TODO-gg consider removing
-    private Job containerOfJobBeingEvaluated;
    
     /**
      * Flags indicating we tolerate missing information channels.
@@ -328,10 +312,6 @@ public class JobEvaluator extends Worker
 		// the same content, but INFOSRCJOBDETAILS allows to include more
 		// so we keep it separated.
 		
-		// Moreover, if JOBDEF==null then we know we are not supposed to perform
-		// any action that changes the focus job.
-		// TODO-gg keep this comment of not?
-		
 		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
 			File file = new File(params.getParameter(
@@ -339,7 +319,6 @@ public class JobEvaluator extends Worker
 			FileUtils.foundAndPermissions(file, true, false, false);
 			try {
 				jobBeingEvaluated = (Job) IOtools.readJsonFile(file, Job.class);
-				containerOfJobBeingEvaluated = jobBeingEvaluated;
 			} catch (IOException e) {
 				e.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! could not read JSON file "
@@ -359,8 +338,6 @@ public class JobEvaluator extends Worker
 			}
 			jobBeingEvaluated = (Job) params.getParameter(
 					ParameterConstants.JOBTOEVALUATE).getValue();
-			containerOfJobBeingEvaluated = (Job) params.getParameter(
-					ParameterConstants.JOBTOEVALPARENT).getValue();
 		}
     	
 		String whatIsNull = "";
@@ -507,11 +484,6 @@ public class JobEvaluator extends Worker
 				
 				if (jobBeingEvaluated!=null)
 				{
-					// ...and these are used when performing the action
-					exposeOutputData(new NamedData(EVALUATEDJOB,
-							NamedDataType.JOB, jobBeingEvaluated));
-				
-					
 					// In case this is a stand-alone CURE-type job, we do the 
 					// action triggered by the jobBeingEvaluated here,
 					// but this is has limited capability: 
