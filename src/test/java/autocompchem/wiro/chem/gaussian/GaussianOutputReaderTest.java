@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 
-public class GaussianOutputAnalyzerTest 
+public class GaussianOutputReaderTest 
 {
 	   
 //------------------------------------------------------------------------------

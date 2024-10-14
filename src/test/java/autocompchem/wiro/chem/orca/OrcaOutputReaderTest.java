@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.chem.orca.OrcaOutputReader;
 
-public class OrcaOutputAnalyzerTest 
+public class OrcaOutputReaderTest 
 {
 	   
 //------------------------------------------------------------------------------

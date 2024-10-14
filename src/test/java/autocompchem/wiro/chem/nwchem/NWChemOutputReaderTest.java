@@ -11,7 +11,7 @@ import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.wiro.chem.nwchem.NWChemOutputReader;
 
-public class NWChemOutputAnalyzerTest 
+public class NWChemOutputReaderTest 
 {
 	   
 //------------------------------------------------------------------------------
