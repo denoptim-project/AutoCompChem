@@ -522,7 +522,7 @@ public class ParallelJobsRunnerTest
         // Make the job that will monitor the ongoing job and trigger an action
         Job monitoringJob = new MonitoringJob(productionJob, main, sitsDB, icDB, 
         		0, period);
-        monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC,"true");
+        monitoringJob.setParameter(ParameterConstants.TOLERATEMISSINGIC, "true");
         
         main.addStep(monitoringJob);
         main.addStep(productionJob);

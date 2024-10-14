@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 6
-TASK: EvaluateNWChemOutput
+TASK: EvaluateJob
 SITUATIONSDBROOT: ../data/knowledgebase/nwchem
 IC-LOGS: ../t55-nwc.out 
 IC-JOBDETAILS: ../t55-jobDetails.json

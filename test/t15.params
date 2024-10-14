@@ -1,7 +1,7 @@
 #
 # Parameters for Automated Computational Chemistry
 #
-TASK: CureGaussianJob
+TASK: CureJob
 IC-LOGS: ../t15-gaussian.out
 JOBDEFINITION: ../t15-jobDetails.json
 SITUATIONSDBROOT: ../data/knowledgebase

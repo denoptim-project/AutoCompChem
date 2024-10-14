@@ -2,6 +2,6 @@
 # Just evaluate the output and identify the error (if any)
 #
 VERBOSITY: 6
-TASK: EvaluateGaussianOutput
+TASK: EvaluateJob
 SITUATIONSDBROOT: ../t1_KB
 IC-LOGS: ../t1-mol.out

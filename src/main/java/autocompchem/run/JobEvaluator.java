@@ -18,6 +18,7 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,11 +44,10 @@ import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.ActionApplier;
-import autocompchem.utils.StringUtils;
 import autocompchem.wiro.OutputReader;
+import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
-import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -87,34 +87,8 @@ public class JobEvaluator extends Worker
      */
     public static final Task CUREJOBTASK;
     static {
-    	//TODO-gg this should not be a test task: replace with this
-    	//CUREJOBTASK = Task.make(CUREJOBTASKNAME);
-    	CUREJOBTASK = Task.make(CUREJOBTASKNAME, true);
+    	CUREJOBTASK = Task.make(CUREJOBTASKNAME);
     }
-    
-	/**
-	 * Tasks about evaluating jobs of computational chemistry software.
-	 */
-	public static final Set<Task> EVALCOMPCHEMJOBTASKS =
-			Collections.unmodifiableSet(new HashSet<Task>(
-					Arrays.asList(Task.make("evaluateGaussianOutput"),
-							Task.make("evaluateNWChemOutput")
-	//TODO-gg add these, after checking them
-					/*
-					Task.make("EVALUATENWCHEMOUTPUT,
-					Task.make("EVALUATEORCAOUTPUT,
-					Task.make("EVALUATEXTBOUTPUT,
-					Task.make("EVALUATESPARTANOUTPUT,
-					*/
-							)));
-	/**
-	 * Tasks about evaluating jobs of computational chemistry software.
-	 */
-	public static final Set<Task> CURECOMPCHEMJOBTASKS =
-			Collections.unmodifiableSet(new HashSet<Task>(
-					Arrays.asList(Task.make("cureGaussianJob"),
-							Task.make("cureNWChemJob"),
-							CUREJOBTASK)));
 	
 	/**
 	 * The string used to identify the kind of termination of the evaluated job.
@@ -176,6 +150,7 @@ public class JobEvaluator extends Worker
      * The batch or workflow the job being evaluated belongs to, of itself, in
      * case of self-contained jobs that do not belong to any batch or workflow.
      */
+    //TODO-gg consider removing
     private Job containerOfJobBeingEvaluated;
    
     /**
@@ -196,10 +171,9 @@ public class JobEvaluator extends Worker
 
     @Override
     public Set<Task> getCapabilities() {
-		Set<Task> tmpSet = new HashSet<Task>(EVALCOMPCHEMJOBTASKS);
-		tmpSet.addAll(CURECOMPCHEMJOBTASKS);
-		tmpSet.add(Task.make("evaluateJob"));
-		//TODO-gg tmpSet.add(Task.make("cureJob"));
+		Set<Task> tmpSet = new HashSet<Task>();
+		tmpSet.add(EVALUATEJOBTASK);
+		tmpSet.add(CUREJOBTASK);
 		return Collections.unmodifiableSet(tmpSet);
     }
 
@@ -217,7 +191,7 @@ public class JobEvaluator extends Worker
         return new JobEvaluator();
     }
     
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 	
 	public void initialize() 
 	{   	
@@ -413,7 +387,7 @@ public class JobEvaluator extends Worker
 		}
 	}
 	
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 	/**
 	 * @return the collection of known situations that this evaluate can use.
@@ -423,7 +397,7 @@ public class JobEvaluator extends Worker
 		return sitsDB;
 	}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 	/**
 	 * @return the collection of information channels that this evaluator can 
@@ -433,7 +407,7 @@ public class JobEvaluator extends Worker
 		return icDB;
 	}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 	/**
 	 * @return the job this evaluation is meant to evaluate.
@@ -442,7 +416,7 @@ public class JobEvaluator extends Worker
 		return jobBeingEvaluated;
 	}
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 	
 	@Override
 	public void performTask() 
@@ -461,36 +435,32 @@ public class JobEvaluator extends Worker
 		
 		// Detect if this is a standalone cure job.
 		boolean standaloneCureJob = myJob.getObserver()==null 
-				&& (CURECOMPCHEMJOBTASKS.contains(task) || 
-						hasParameter(RUNSTANDALONE));
+				&& (CUREJOBTASK.equals(task) || hasParameter(RUNSTANDALONE));
 		
 		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setTolerantMissingIC(tolerateMissingIC);
 
-		// TODO-gg change it into an attempt to find an output reader: if we
-		// have a suitable reader we use it to analyze the output
-		// even if it is not a CompChemJob.
-		//TODO-gg adjust name of task accordingly
-		int idxFocusJob = -1;
-		if (EVALCOMPCHEMJOBTASKS.contains(task) 
-				|| CURECOMPCHEMJOBTASKS.contains(task)
-				|| jobBeingEvaluated instanceof CompChemJob)
+		// NB: by default we think that there is only one step. If we can parse
+		// the log/output and detect which step of the job failed, then we get
+		// an accurate value, otherwise we assume it is only a single-step
+		// job.
+		int idxFocusJob = 0;
+		if (jobBeingEvaluated != null
+				&& jobBeingEvaluated.runsParallelSubjobs()
+				&& jobBeingEvaluated.getNumberOfSteps()>1)
 		{
-			if (jobBeingEvaluated != null
-					&& !(jobBeingEvaluated instanceof CompChemJob) 
-					&& jobBeingEvaluated.runsParallelSubjobs()
-					&& jobBeingEvaluated.getNumberOfSteps()>1)
+			Terminator.withMsgAndStatus("Analysis of paralle batches is "
+					+ "not implemented yet. Please, contact the developers "
+					+ "and present your use case.", -1);
+			// Must define idxFocusJob in here
+		} else {
+			// In here we define what is the "focus job", i.e., the job
+			// that triggers the reaction. It can be jobBeingEvaluated, or
+			// one of its steps.
+			analyzeLogFileaSerialJob(p);
+			if (exposedOutputCollector.contains(NUMSTEPSKEY))
 			{
-				Terminator.withMsgAndStatus("Analysis of paralle batches is "
-						+ "not implemented yet. Please, contact the developers "
-						+ "and present your use case.", -1);
-				// Must define idxFocusJob in here
-			} else {
-				// In here we define what is the "focus job", i.e., the job
-				// that triggers the reaction. It can be jobBeingEvaluated, or
-				// one of its steps.
-				analyzeResultsOfSerialJob(p);
 				idxFocusJob = ((int) exposedOutputCollector.getNamedData(
 						NUMSTEPSKEY).getValue()) - 1;
 			}
@@ -544,7 +514,8 @@ public class JobEvaluator extends Worker
 					
 					// In case this is a stand-alone CURE-type job, we do the 
 					// action triggered by the jobBeingEvaluated here,
-					// but this is has limited capability: it cannot restart the job,
+					// but this is has limited capability: 
+					// it cannot restart the job,
 					// but it can prepare a new input.
 					if (standaloneCureJob)
 					{
@@ -555,7 +526,7 @@ public class JobEvaluator extends Worker
 		}
 	}
 	
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 	
 	private void healJob(Job jobToHeal, Action cure, int idxFocusJob) 
 	{
@@ -687,82 +658,73 @@ public class JobEvaluator extends Worker
 	 * Deals with the parsing of data from log/output files of serial jobs.
 	 * For efficiency, we also search for matches for any query that operates on
 	 * such info channels. Thus, we read and collect scores from those 
-	 * information channels before perceptions. Therefore, we need to 
+	 * information channels before perception. Therefore, we need to 
 	 * communicate the findings to the perceptron.
-	 * 
-	 * @return the number of job steps seen in the output. 
 	 */
-	private void analyzeResultsOfSerialJob(Perceptron p)
+	private void analyzeLogFileaSerialJob(Perceptron p)
+	{
+		List<InfoChannel> logChannels = icDB.getChannelsOfType(
+				InfoChannelType.LOGFEED);
+		for (InfoChannel log : logChannels)
+		{
+			if (!(log instanceof FileAsSource))
+			{
+				Terminator.withMsgAndStatus("ERROR! Information channel '"
+						+ log + "' is not a log/output file I can read.",-1);
+			}
+			analyzeLogFileOfSerialJob(p, (FileAsSource) log);
+		}
+	}
+	
+//------------------------------------------------------------------------------
+
+	/**
+	 * Deals with the parsing of one single log/output feed. The parsing of
+	 * data is done according to the type of log that is detected within this
+	 * method.
+	 */
+	private void analyzeLogFileOfSerialJob(Perceptron p, FileAsSource log)
 	{
 		ParameterStorage analysisParams = new ParameterStorage();
-		if (EVALCOMPCHEMJOBTASKS.contains(task)
-				|| CURECOMPCHEMJOBTASKS.contains(task))
+		analysisParams.setParameter(WorkerConstants.PARTASK, Task.make(
+				"analyseOutput").casedID);
+		
+		// Define the pathname to the file to parse;
+		File fileToParse = new File(log.getPathName());
+		if (fileToParse.exists())
 		{
-			analysisParams.setParameter(WorkerConstants.PARTASK, 
-					Task.make("analyseOutput").casedID);
-			List<InfoChannel> logChannels = icDB.getChannelsOfType(
-					InfoChannelType.LOGFEED);
-			String msg = "";
-			if (logChannels.size()>1)
-			{
-				msg = "more than one";
-			} else if (logChannels.size()>1)
-			{
-				msg = "no";
-			}
-			if (!msg.equals(""))
-			{
-				Terminator.withMsgAndStatus("ERROR: Found "+ msg + " info "
-						+ "channel for type " + InfoChannelType.LOGFEED + ". "
-						+ "This type of channel is expected to contain the log"
-						+ "from a comp. chem. software. "
-						+ "Please, check your input.",-1);
-			}
-
-			String pathname = ((FileAsSource)logChannels.get(0)).getPathName();
-			File fileToParse = new File(pathname);
-			if (fileToParse.exists())
-			{
-				analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
-						pathname);
-				
-			} else {
-				if (!tolerateMissingIC)
-				{
-					Terminator.withMsgAndStatus("ERROR: File '" + pathname 
-							+ "' is listed as " + InfoChannelType.LOGFEED
-							+ " but is not found.", -1);
-				}
-			}
-			p.setInfoChannelAsRead(logChannels.get(0));
-			
-			/*
-			List<AnalysisTask> tasks = new ArrayList<AnalysisTask>();
-			tasks.add(new AnalysisTask(AnalysisKind....));
-			analysisParams.setParameter(ChemSoftConstants.PARANALYSISTASKS,
-					tasks);
-			//TODO-gg add any AnalisisTask? Perhaps, depending on what the 
-			// ICircumbstances want to check during perception.
-			*/
+			analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
+					fileToParse.getAbsolutePath());
 		} else {
-			// For the moment we do not try to detect the kind of job.
-			Terminator.withMsgAndStatus("ERROR: cannot yet detect type of "
-					+ "serial job. Please, specify one of these tasks to your"
-					+ " " + this.getClass().getSimpleName() + ": "
-					+ StringUtils.mergeListToString(Arrays.asList(
-							EVALCOMPCHEMJOBTASKS), ", ", true), -1);
+			if (!tolerateMissingIC)
+			{
+				Terminator.withMsgAndStatus("ERROR: File '" + fileToParse 
+						+ "' is listed as " + InfoChannelType.LOGFEED
+						+ " but is not found.", -1);
+			}
+			return;
 		}
 		
-		// Prepare a worker that parses data and searches for strings that may
-		// be requested by the perceptron.
+		//TODO: add analysis tasks according to the requirements of the 
+		// situations that can be perceived. E.g., extraction of geometries.
+		
+		// Get appropriate parser to use
+		ReaderWriterFactory builder = ReaderWriterFactory.getInstance();
 		OutputReader outputParser;
 		try {
-			outputParser = (OutputReader) 
-					WorkerFactory.createWorker(analysisParams, this.getMyJob());
-		} catch (ClassNotFoundException e) {
-			throw new Error("Unable to make worker for " 
-					+ analysisParams.getParameterValue(WorkerConstants.PARTASK));
+			outputParser = builder.makeOutputReaderInstance(fileToParse);
+		} catch (FileNotFoundException e) {
+			throw new Error("File '" + fileToParse + "' not found.");
 		}
+		if (outputParser==null)
+		{
+			logger.warn("WARNING: "
+					+ "No suitable parser found for log/output file '"
+					+ fileToParse + "'.");
+			return;
+		}
+		outputParser.setParameters(analysisParams);
+		outputParser.initialize();
 		outputParser.setSituationBaseForPerception(sitsDB);
 		NamedDataCollector exposedByAnalzer = new NamedDataCollector();
 		outputParser.setDataCollector(exposedByAnalzer);
@@ -780,8 +742,6 @@ public class JobEvaluator extends Worker
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.SOFTWAREID));
 		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER,
-				outputParser.getStepsFound()));
-		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER, 
 				outputParser.getStepsFound()));
 		
 		if (jobBeingEvaluated!=null 
@@ -802,8 +762,11 @@ public class JobEvaluator extends Worker
 				.getValue();
 		for (TxtQuery tq : matchesByTQ.keySet())
 			p.collectPerceptionScoresForTxtMatchers(tq, matchesByTQ.get(tq));
+		
+
+		p.setInfoChannelAsRead(log);
 	}
 	
-//-----------------------------------------------------------------------------	
+//------------------------------------------------------------------------------
 
 }

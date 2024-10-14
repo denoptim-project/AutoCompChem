@@ -2,7 +2,7 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 6
-TASK: CureGaussianJob
+TASK: CureJob
 SITUATIONSDBROOT: ../data/knowledgebase/gaussian
 IC-LOGS: ../t9-mol.out
 JOBDEFINITION: ../t9-jobDetails.json
