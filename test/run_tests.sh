@@ -86,7 +86,7 @@ cat <<EOF
 
   Usage:
 
-  ./build.sh [options]
+  ./script_name.sh [options]
 
   Options:
 
@@ -169,7 +169,7 @@ function build() {
     fi
  
     mvn clean
-    mvn package
+    mvn package -Dlicense.skipDownloadLicenses
     exitStatus=$?
     # And check
     if [ $exitStatus != 0 ]
