@@ -26,19 +26,26 @@ import java.util.Set;
 
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * Aspecific reader for log/output data files. This is a wrapper that includes
- * both detection of the type of data to read and creation of a suitable 
- * {@link Worker} to read and analyze that data.
+ * This is a utility class that intercepts any attempt to analyze some 
+ * software's output data (i.e., the tasks of any implementation of 
+ * {@link ChemSoftOutputReader}),
+ * and runs detection of the type of data, so that it can
+ * create a suitable {@link OutputReader} to read and analyze that data.
+ * It also intercepts any attempt to get help messages for the 
+ * {@link #ANALYSEOUTPUTTASK} task, so that it can provide unifies instructions
+ * for any implementation of {@link ChemSoftOutputReader}.
+ * 
  * 
  * @author Marco Foscato
  */
 
-public class AgnosticOutputReader extends Worker
+public class AgnosticCompChemOutputReader extends OutputReader
 {
     /**
      * String defining the task for analyzing any job output
@@ -69,7 +76,7 @@ public class AgnosticOutputReader extends Worker
 		if (job==null)
 		{
 			// This happens when requesting the generation of help message
-			return new AgnosticOutputReader();
+			return new AgnosticCompChemOutputReader();
 		}
 		
 		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
@@ -77,13 +84,12 @@ public class AgnosticOutputReader extends Worker
 			logger.warn("WARNING: cannot detect the type of "
 					+ "output to analyze. Make sure the parameter '" 
 					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
-			return new AgnosticOutputReader();
+			return new AgnosticCompChemOutputReader();
 		}
 		
 		String fileName = job.getParameter(
         		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
-		ReaderWriterFactory builder = 
-				ReaderWriterFactory.getInstance();
+		ReaderWriterFactory builder = ReaderWriterFactory.getInstance();
 		
 		try {
 			Worker w = builder.makeOutputReaderInstance(new File(fileName));
@@ -92,7 +98,7 @@ public class AgnosticOutputReader extends Worker
 				Terminator.withMsgAndStatus("ERROR: log/output file '"
 						+ fileName + "' could not be understood as any "
 						+ "log/output "
-						+ "that can be read by AutoCompChem.", -1);	
+						+ "that can be parsed by AutoCompChem.", -1);	
 			}
 			return w;
 		} catch (FileNotFoundException e) {
@@ -101,7 +107,7 @@ public class AgnosticOutputReader extends Worker
 					+ ChemSoftConstants.PARJOBOUTPUTFILE 
 					+ "' but does not exist.", -1);
 		}
-		return new AgnosticOutputReader();
+		return new AgnosticCompChemOutputReader();
 	}
 
 //------------------------------------------------------------------------------

@@ -1,17 +1,5 @@
 [
   {
-    "key": "JOBOUTPUTFILE",
-    "casedKey": "jobOutputFile",
-    "type": "<String>",
-    "doc": "The pathname to the output file that should be analyzed (i.e., the input for a task aiming to analyze the output of a job)."
-  },
-  {
-    "key": "ROOTPATHNAMEOUTPUT",
-    "casedKey": "rootPathnameOutput",
-    "type": "<String>",
-    "doc": "The pathname's root of all output files that should be analyzed  (i.e., the input for a task aiming to analyze the output of a job)."
-  },
-  {
     "key": "PRINTLASTGEOMETRY",
     "casedKey": "printLastGeometry",
     "type": "<Format> [<String>]",
@@ -54,9 +42,7 @@
     "doc": "Requires analysis of the curvature to determine the nature pf the critical point: minimum (all real frequencies), transition state (one imaginary frequency), of saddle point (more than one imaginary frequency). Optionally, the LOWESTFREQ value allows to set the threshold (in 1/cm) for ignoring very soft imaginary modes."
   },
   {
-    "key": "VERBOSITY",
-    "casedKey": "verbosity",
-    "type": "<int>",
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "embeddedWorker": "autocompchem.wiro.OutputReader",
+    "tag": "the definition of the software's output to analyze (i.e., the input to the analyzers)"
   }
 ]

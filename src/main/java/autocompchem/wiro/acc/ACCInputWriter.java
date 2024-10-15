@@ -57,7 +57,7 @@ public class ACCInputWriter extends InputWriter
 //-----------------------------------------------------------------------------
 
     /**
-     * Constructor.
+     * Constructor
      */
     public ACCInputWriter() 
     {

@@ -6,7 +6,7 @@
     "doc": "Specifies the identifier of the molecular model to choose when multiple models are available."
   },
   {
-    "embeddedWorker": "autocompchem.wiro.chem.AgnosticOutputReader",
+    "embeddedWorker": "autocompchem.wiro.chem.AgnosticCompChemOutputReader",
     "tag": "define settings of the output to analyze.",
     "ignorableItems": [
       "rootPathnameOutput",

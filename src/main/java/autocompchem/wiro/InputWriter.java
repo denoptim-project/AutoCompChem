@@ -1,25 +1,33 @@
 package autocompchem.wiro;
 
 import java.io.File;
+import java.util.Set;
+
+import com.google.gson.Gson;
 
 import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
+import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
  * Core components of any worker writing input files for any software 
- * packages that does mainly read a chemical system as input. For the latter,
+ * packages that does not read a chemical system as input. For the latter,
  * see {@link ChemSoftInputWriter}.
+ * This class is not meant to ever be chosen as the worker charged to perform a
+ * task. It only provides general purpose functionality to purpose specific 
+ * implementations.
  *
  * @author Marco Foscato
  */
 
-public abstract class InputWriter extends Worker implements ITextualInputWriter
+public class InputWriter extends Worker implements ITextualInputWriter
 {
     /**
      * Pathname root for output files (i.e., the input for the other software).
@@ -66,6 +74,26 @@ public abstract class InputWriter extends Worker implements ITextualInputWriter
 	public String getKnownInputDefinition() {
 		return "inputdefinition/InputWriter.json";
 	}
+	
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns <code>null</code> as this implementation is not meant to ever be 
+     * chosen as the worker charged to perform a task. 
+     * It only provides general purpose functionality to purpose specific 
+     * implementations.
+     */
+   	@Override
+  	public Set<Task> getCapabilities() {
+  		return null;
+  	}
+
+//-----------------------------------------------------------------------------
+
+ 	@Override
+  	public Worker makeInstance(Job job) {
+  		return new OutputReader();
+  	}
     
 //-----------------------------------------------------------------------------
 
@@ -112,7 +140,7 @@ public abstract class InputWriter extends Worker implements ITextualInputWriter
             			+ File.separator + outFileNameRoot;
             }
         } else {
-    		outFileNameRoot = "softiutput";
+    		outFileNameRoot = "softinput";
             logger.debug("Neither '" 
         				 + ChemSoftConstants.PAROUTFILE + "' nor '" 
         				 + ChemSoftConstants.PAROUTFILEROOT + "' found. " + NL
@@ -134,7 +162,13 @@ public abstract class InputWriter extends Worker implements ITextualInputWriter
      * the one defining what kind of task and setting the software should use
      * to do its job.
      */
-    public abstract StringBuilder getTextForInput(Job job);
+    @Override
+    public StringBuilder getTextForInput(Job job)
+    {
+		StringBuilder sb = new StringBuilder();
+		Gson writer = ACCJson.getWriter();
+    	return sb.append(writer.toJson(job));
+    }
     
 //------------------------------------------------------------------------------
 

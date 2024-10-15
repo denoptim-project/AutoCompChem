@@ -46,7 +46,7 @@ import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.chem.AnalysisTask.AnalysisKind;
 
 /**
- * Core components of any reader and analyser of computational chemistry 
+ * Core components of any reader and analyzer of computational chemistry 
  * software's output files.
  * 
  * @author Marco Foscato
@@ -96,7 +96,6 @@ public abstract class ChemSoftOutputReader extends OutputReader
 
 	@Override
 	public String getKnownInputDefinition() {
-		//TODO-gg adjust file content to softoutputreader
 		return "inputdefinition/ChemSoftOutputReader.json";
 	}
 

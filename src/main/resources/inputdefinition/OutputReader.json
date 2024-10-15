@@ -1,0 +1,20 @@
+[
+  {
+    "key": "JOBOUTPUTFILE",
+    "casedKey": "jobOutputFile",
+    "type": "<String>",
+    "doc": "The pathname to the output file that should be analyzed (i.e., the input for a task aiming to analyze the output of a job)."
+  },
+  {
+    "key": "ROOTPATHNAMEOUTPUT",
+    "casedKey": "rootPathnameOutput",
+    "type": "<String>",
+    "doc": "The pathname's root of all output files that should be analyzed  (i.e., the input for a task aiming to analyze the output of a job)."
+  },
+  {
+    "key": "VERBOSITY",
+    "casedKey": "verbosity",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

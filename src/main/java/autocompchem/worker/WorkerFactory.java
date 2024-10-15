@@ -1,6 +1,9 @@
 package autocompchem.worker;
 
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /*
  *   Copyright (C) 2020  Marco Foscato
  *
@@ -49,8 +52,11 @@ import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
-import autocompchem.wiro.chem.AgnosticInputWriter;
-import autocompchem.wiro.chem.AgnosticOutputReader;
+import autocompchem.wiro.acc.ACCInputWriter;
+import autocompchem.wiro.acc.ACCOutputReader;
+import autocompchem.wiro.chem.AgnosticCompChemInputWriter;
+import autocompchem.wiro.chem.AgnosticCompChemOutputReader;
+import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 import autocompchem.wiro.chem.gaussian.legacy.GaussianJobDetailsConverter;
@@ -93,9 +99,13 @@ public final class WorkerFactory
 	
 	private WorkerFactory() 
 	{	
-		// Here we add all the workers those implemented in AudoCompChem      
-        registerType(new AgnosticInputWriter());      
-        registerType(new AgnosticOutputReader());
+		// Here we add all the workers implemented in AudoCompChem that are 
+		// meant to take care of any task. Workers that are not meant to be 
+		// paired with a task are not registered.
+        registerType(new ACCInputWriter());      
+        registerType(new ACCOutputReader());
+        registerType(new AgnosticCompChemInputWriter());      
+        registerType(new AgnosticCompChemOutputReader());
         registerType(new DummyWorker()); //This is only for tests
         registerType(new AtomClashAnalyzer());
         registerType(new AtomTypeMatcher());
@@ -178,7 +188,7 @@ public final class WorkerFactory
 //-----------------------------------------------------------------------------
 	
 	/**
-     * Create a new {@link Worker} of a given class
+     * Create a new {@link Worker} of a given class.
      * @param className the simple name of the {@link Worker}'s class
      */
 	public static Worker createWorker(Class<? extends Worker> clazz) 
@@ -191,6 +201,22 @@ public final class WorkerFactory
 				return exampleObj.makeInstance(null);
 			}
 		}
+		try {
+	        for (@SuppressWarnings("rawtypes") Constructor constructor : 
+	        	clazz.getConstructors()) 
+	        {
+	        	Worker worker = (Worker) constructor.newInstance();
+	        	return worker;
+	        }
+        } catch (InstantiationException 
+        		| IllegalAccessException 
+        		| IllegalArgumentException 
+        		| InvocationTargetException  exception) {
+	        throw new ClassNotFoundException("No registered worker with type '" 
+					+ clazz.getSimpleName() + "' and failure to instantiate "
+					+ Worker.class.getName() + " with that type.", exception);
+        }
+		
 		throw new ClassNotFoundException("No registered worker with type '" 
 				+ clazz.getSimpleName() + "'.");
 	}

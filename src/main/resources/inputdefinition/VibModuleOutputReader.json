@@ -6,7 +6,7 @@
     "doc": "Specifies the definition of internal coordinates (IC) by SMARTS. A neline-separated list is expected, where ecah line defines a single IC according to the following syntax:\n SMARTS SMARTS [SMARTS [SMARTS]] TYPE\n where each SMARTS identifies an atom deginign the IC, and TYPE is a string among STR (for bond stretching), BND (for angle bending), TOR (for torsion), and OOP (for out-of-plane angle with the central atom being the one in 4th position)."
   },
   {
-    "embeddedWorker": "autocompchem.wiro.chem.AgnosticOutputReader",
+    "embeddedWorker": "autocompchem.wiro.chem.AgnosticCompChemOutputReader",
     "tag": "define settings of the VobModule's job output to analyze.",
     "ignorableItems": [
       "rootPathnameOutput",

@@ -24,7 +24,7 @@ import autocompchem.worker.WorkerConstants;
  * @author Marco Foscato
  */
 
-public class AgnosticInputWriter extends Worker
+public class AgnosticCompChemInputWriter extends Worker
 {
     /**
      * String defining the task of preparing input
@@ -59,7 +59,7 @@ public class AgnosticInputWriter extends Worker
 			logger.warn("WARNING: attempt to make a " 
 					+ ChemSoftInputWriter.class.getSimpleName() 
 					+ " for task '" + taskStr + "', but this is not allowed.");
-			return new AgnosticInputWriter();
+			return new AgnosticCompChemInputWriter();
     	}
     	if (!job.hasParameter(ChemSoftConstants.SOFTWAREID))
 		{
@@ -67,7 +67,7 @@ public class AgnosticInputWriter extends Worker
 					+ "software for which to prepare an input. "
 					+ "Make sure the parameter '" 
 					+ ChemSoftConstants.SOFTWAREID + "' is given.");
-			return new AgnosticInputWriter();
+			return new AgnosticCompChemInputWriter();
 		}
     	
     	String softwareID = job.getParameter(ChemSoftConstants.SOFTWAREID)

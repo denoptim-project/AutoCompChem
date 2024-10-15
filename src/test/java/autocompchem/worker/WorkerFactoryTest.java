@@ -58,17 +58,6 @@ public class WorkerFactoryTest
 	    	assertTrue(triggered);
     	}
     	
-    	// Trying to create a worker for a task that is not registered
-    	triggered = false;
-    	try {
-    		WorkerFactory.createWorker(DummyWorker2.class);
-    	} catch (ClassNotFoundException e)
-    	{
-    		if (e.getMessage().contains("No registered worker with type"))
-    			triggered = true;
-    	}
-    	assertTrue(triggered);
-    	
     	// Now we register that type and try again
     	WorkerFactory.getInstance().registerType(new DummyWorker2());
     	

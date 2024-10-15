@@ -1,0 +1,20 @@
+[
+  {
+    "key": "JOBDETAILSFILE",
+    "casedKey": "jobDetailsFile",
+    "type": "<String>",
+    "doc": "The pathname to a file defining the details of the job for which we are going to generate the input file/s."
+  },
+  {
+    "key": "ROOTPATHNAMEOUTPUT",
+    "casedKey": "rootPathnameOutput",
+    "type": "<String>",
+    "doc": "The path+rootname of any input file for the job for which we are going to generate the input file/s."
+  },
+  {
+    "key": "VERBOSITY",
+    "casedKey": "verbosity",
+    "type": "<int>",
+    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+  }
+]

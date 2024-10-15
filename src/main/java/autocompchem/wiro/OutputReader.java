@@ -25,30 +25,54 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.vecmath.Point3d;
+
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.ListOfDoubles;
+import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
 import autocompchem.files.FileUtils;
+import autocompchem.molecule.vibrations.NormalMode;
+import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.SituationBase;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.wiro.OutputReader.LogReader;
 import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.gaussian.GaussianConstants;
+import autocompchem.wiro.chem.gaussian.GaussianUtils;
+import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
 /**
- * Core components of any reader and analyser of software's output files.
+ * Core components of any reader and analyzer of software's output files. 
+ * It is not meant to ever be chosen as the worker charged to perform a task.
+ * It only provides general purpose functionality to purpose specific 
+ * implementations.
  * 
  * @author Marco Foscato
  */
 
-public abstract class OutputReader extends Worker
+public class OutputReader extends Worker
 {   
     /**
      * Name of the log (commonly referred to as the "output") file from 
@@ -109,10 +133,29 @@ public abstract class OutputReader extends Worker
 
 	@Override
 	public String getKnownInputDefinition() {
-		//TODO-gg
 		return "inputdefinition/OutputReader.json";
 	}
+	
+//------------------------------------------------------------------------------
 
+    /**
+     * Returns <code>null</code> as this implementation is not meant to ever be 
+     * chosen as the worker charged to perform a task.
+     * It only provides general purpose functionality to purpose specific 
+     * implementations.
+     */
+  	@Override
+	public Set<Task> getCapabilities() {
+		return null;
+	}
+
+//-----------------------------------------------------------------------------
+
+	@Override
+	public Worker makeInstance(Job job) {
+		return new OutputReader();
+	}
+	
 //-----------------------------------------------------------------------------
 
     /**
@@ -299,38 +342,59 @@ public abstract class OutputReader extends Worker
 //------------------------------------------------------------------------------
     
 	/**
-     * Method that parses the log file of a comp.chem. software.
-     * This method is meant to be overwritten by subclasses. 
+     * Concrete implementation that does not really do anything more than
+     * driving the reading of the entire log/output file. Software-specific 
+     * subclasses of {@link OutputReader} should override this method to
+     * provide adequate parsing of the log/output file.
      * @param reader the line-by-line reader that reads the log file.
      */
-    protected abstract void readLogFile(LogReader reader) throws Exception;
+    protected void readLogFile(LogReader reader) throws Exception
+    {
+        while ((reader.readLine()) != null) {}
+    }
     
 //------------------------------------------------------------------------------
 
 	/**
 	 * Provides info on how to identify software output that can be analyzed
-	 * by this class.
-	 * @return the data structure defining how to identify an output file 
-	 * readable by this class.
+	 * by this class. However, since {@link OutputReader} is not meant to be
+	 * software specific, the returned value is empty, meaning that no condition
+	 * exists to make {@link OutputReader} be the specific reader for a file.
+	 * @return an empty set, i.e., it is impossible to match the condition that
+	 * if satisfied, qualifies {@link OutputReader} as the reader of choice.
 	 */
-	protected abstract Set<FileFingerprint> getOutputFingerprint();
+	protected Set<FileFingerprint> getOutputFingerprint()
+	{
+		return new HashSet<FileFingerprint>();
+	}
 	
 //------------------------------------------------------------------------------
 	
 	/**
 	 * Return a string that identifies the software that has generated the 
-	 * output that the concrete implementations of this class can analyze.
+	 * output that the concrete implementations of this class can analyze. 
+	 * However, since {@link OutputReader} is not meant to be
+	 * software specific, this returns <code>null</code>.
+	 * @return <code>null</code>
 	 */
-	public abstract String getSoftwareID();
+	public String getSoftwareID()
+	{
+		return null;
+	}
 	
 //------------------------------------------------------------------------------
 
 	/**
 	 * Return the implementation of {@link InputWriter} that is meant 
 	 * to prepare input files for the software the output of which can be 
-	 * analyzed by a concrete implementation of this class.
+	 * analyzed by a concrete implementation of this class. 
+	 * However, since {@link OutputReader} is not meant to be
+	 * software specific, this returns just the base implementation.
 	 */
-	protected abstract ITextualInputWriter getSoftInputWriter();
+	protected ITextualInputWriter getSoftInputWriter()
+	{
+		return new InputWriter();
+	}
     
 //------------------------------------------------------------------------------
     
