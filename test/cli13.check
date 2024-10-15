@@ -7,29 +7,29 @@ fi
 
 # First job measurs distances
 n=0;n=$(grep -c "Dst.dist1" cli13.log)
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+if [ $n -ne 2 ] ; then echo NOT Passed ERROR 5 ; exit -1 ; fi
 
 # Second job removes atoms (prunes a molecule)
 if [ ! -f cli13-pruned.sdf ] ; then echo NOT Passed ERROR 2 ; exit -1 ; fi
 n=0;n=$(grep -c " N " cli13-pruned.sdf)
-if [ $n -ne 0 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+if [ $n -ne 0 ] ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
 n=0;n=$(grep -c " Cl " cli13-pruned.sdf)
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
+if [ $n -ne 2 ] ; then echo NOT Passed ERROR 5 ; exit -1 ; fi
 n=0;n=$(grep -c " C  " cli13-pruned.sdf)
-if [ $n -ne 6 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
+if [ $n -ne 6 ] ; then echo NOT Passed ERROR 6 ; exit -1 ; fi
 
 # Third job measures other distances
 n=0;n=$(grep -c "Dst.dist2" cli13.log)
-if [ $n -ne 2 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
+if [ $n -ne 2 ] ; then echo NOT Passed ERROR 7 ; exit -1 ; fi
 n=0;n=$(grep -c "Dst.dist3" cli13.log)
-if [ $n -ne 0 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
+if [ $n -ne 0 ] ; then echo NOT Passed ERROR 8 ; exit -1 ; fi
 n=0;n=$(grep -c "Not enough matches.*dist3\-1" cli13.log)
-if [ $n -ne 1 ] ; then echo NOT Passes ERROR 9 ; exit -1 ; fi
+if [ $n -ne 1 ] ; then echo NOT Passed ERROR 9 ; exit -1 ; fi
 
 # Fourth job removes Cl atoms
 if [ ! -f cli13-pruned-2.sdf ] ; then echo NOT Passed ERROR 2 ; exit -1 ; fi
 n=0;n=$(grep -c " Cl " cli13-pruned-2.sdf)
-if [ $n -ne 0 ] ; then echo NOT Passes ERROR 10 ; exit -1 ; fi
+if [ $n -ne 0 ] ; then echo NOT Passed ERROR 10 ; exit -1 ; fi
 
 if grep -q 'Termination status: 0' cli13.log ; then
   echo Passed
