@@ -146,14 +146,37 @@ public final class ReaderWriterFactory
 		
 		for (String softwareName : knownOutputReaders.keySet())
 		{
+			// Map of results of the matches by pathname. Conditions acting on 
+			// the same pathname MUST be matched simultaneously, while those
+			// acting on different pathnames are independent.
+			Map<String,Boolean> logicalAND= new HashMap<String,Boolean>();
+			
 			for (FileFingerprint fp : 
 				knownOutputReaders.get(softwareName).getOutputFingerprint())
-			{
-				if (fp.matchedBy(file))
+			{	
+				boolean fpMatched = fp.matchedBy(file);
+
+				if (!logicalAND.containsKey(fp.PATHNAME))
 				{
-					return softwareName;
+					logicalAND.put(fp.PATHNAME, fpMatched);
+				} else {
+					boolean previous = logicalAND.get(fp.PATHNAME);
+					logicalAND.put(fp.PATHNAME, previous && fpMatched);
+					// Fast-failing
+					if (!(previous && fpMatched))
+						break;
 				}
 			}
+			boolean matchesAny = false;
+			for (Boolean combined : logicalAND.values())
+				if (combined)
+				{
+					matchesAny = true;
+					break;
+				}
+				
+			if (matchesAny)
+				return softwareName;
 		}
 		return null;
 	}

@@ -5,11 +5,30 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.vecmath.Point3d;
+
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.AtomContainerSet;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import autocompchem.atom.AtomUtils;
+import autocompchem.datacollections.ListOfDoubles;
+import autocompchem.datacollections.ListOfIntegers;
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
+import autocompchem.molecule.vibrations.NormalMode;
+import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
+import autocompchem.wiro.OutputReader.LogReader;
+import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.chem.gaussian.GaussianConstants;
+import autocompchem.wiro.chem.gaussian.GaussianUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -55,40 +74,69 @@ public class ACCOutputReader extends OutputReader
 //-----------------------------------------------------------------------------
     
     /**
-     * Method that parses the given log file from AutoCompChem and collects all 
-     * possible data in local fields.
-     * @throws CloneNotSupportedException 
+     * No parsing, but this does see beginning of job's steps and normal 
+     * termination flag.
      */
     
     @Override
-    protected void readLogFile(LogReader buffRead) throws Exception
+    protected void readLogFile(LogReader reader) throws Exception
     {
-        //TODO-gg
-    	/*
-		// Store data of last job, which ended with the end of the file
-		stepEndLineNum = lineNum-1;
-		storeDataOfOneStep(stepId, stepData, stepInitLineNum, 
-				stepEndLineNum, stepScfConvSteps, stepScfConvEnergies, 
-				stepGeoms);
-		*/
+        String line = null;
+        NamedDataCollector stepData = new NamedDataCollector();
+    	int stepInitLineNum = 0;
+        int stepId = 0;
+        boolean first = true;
+        int lineNum = -1;
+        while ((line = reader.readLine()) != null)
+        {
+        	lineNum++;
+        	// This is defined in Job.run()
+        	if (line.matches("^Initiating " + AppID.ACC + " Job #.*") 
+        			|| line.matches("^Initiating " + AppID.SHELL + " Job #.*"))
+        	{
+        		normalTerminated = false;
+        		if (first)
+        		{
+        			first = false;
+        		} else {
+        			// NB: we do this here because we do not want this to 
+        			// be dependent on the "Normal termination" line.
+        			
+        			storeDataOfOneStep(stepId, stepData, stepInitLineNum, 
+        					lineNum-1);
+        			
+        			// ...clear local storage...
+        			stepData = new NamedDataCollector();
+                    
+        			stepId++;
+        			stepInitLineNum = lineNum;
+        		}
+        	} 
+        	// This is defined in ACCMain.main()
+        	else if (line.matches("^Final message: Normal Termination$"))
+        	{
+        		normalTerminated = true;
+        	}
+        	 
+        	// NB: we do not yet parse anything from ACC logs because we do not
+        	// yet see any usage case where such parsing would be needed.
+        	
+        }
     }
     
 //-----------------------------------------------------------------------------
     
-    //TODO-gg adjust
-    private void storeDataOfOneStep(int stepId, NamedDataCollector stepData) 
+    private void storeDataOfOneStep(int stepId, NamedDataCollector stepData, 
+    		int stepInitLineNum, int stepEndLineNum) 
     		throws CloneNotSupportedException
     {
-    	/*
 		stepData.putNamedData(new NamedData(
 				ChemSoftConstants.JOBDATAINITLINE,
 				stepInitLineNum));
 		stepData.putNamedData(new NamedData(
 				ChemSoftConstants.JOBDATAENDLINE,
 				stepEndLineNum));
-		*/
-		
-		stepsData.put(stepId,stepData.clone());
+		stepsData.put(stepId, stepData.clone());
     }
 
 //------------------------------------------------------------------------------
@@ -97,9 +145,10 @@ public class ACCOutputReader extends OutputReader
 	public Set<FileFingerprint> getOutputFingerprint() 
 	{
 		Set<FileFingerprint> conditions = new HashSet<FileFingerprint>();
-		conditions.add(new FileFingerprint(".", 10, "REGEX_TODO-gg"));
-			//TODO-gg
-				//"^\\s*\\* O   R   C   A \\*\\s*$"));
+		conditions.add(new FileFingerprint(".", 2,"^\\s*AutoCompChem\\s*$"));
+		conditions.add(new FileFingerprint(".", 3,"^\\s*Version: .*$"));
+		conditions.add(new FileFingerprint(".", 4,"^\\**$"));
+		conditions.add(new FileFingerprint(".", 8, "^Initiating .* Job .*$"));
 	
 		return conditions;
 	}

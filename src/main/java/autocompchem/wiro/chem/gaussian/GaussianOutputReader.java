@@ -71,7 +71,7 @@ public class GaussianOutputReader extends ChemSoftOutputReader
 //-----------------------------------------------------------------------------
     
     /**
-     * Method that parses the given log file from Gaussian and collects all 
+     * Method that parses the content of Gaussian log file and collects all 
      * possible data in local fields.
      * @throws CloneNotSupportedException 
      */

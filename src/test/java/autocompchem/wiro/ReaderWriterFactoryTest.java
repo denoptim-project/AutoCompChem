@@ -104,6 +104,42 @@ public class ReaderWriterFactoryTest
       	
       	writer = factory.makeInstanceInputWriter(gor.getSoftwareID());
        	assertTrue(writer instanceof GaussianInputWriter);
+    } 	
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testMakeInstanceForFile_simultaneousMatches() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	
+    	String query = "Log of MySoftware";
+    	String query2 = "2nd condition to match";
+    	String query3 = "3rd condition to match";
+    	TestOutputAnalyzer analyzer = new TestOutputAnalyzer();
+    	analyzer.outputFingerprints.add(
+    			new FileFingerprint(".", 4, "^" + query+ "$"));
+    	analyzer.outputFingerprints.add(
+    			new FileFingerprint(".", 4, "^" + query2+ "$"));
+    	analyzer.outputFingerprints.add(
+    			new FileFingerprint(".", 4, "^" + query3+ "$"));
+    	
+      	ReaderWriterFactory b = 
+      			ReaderWriterFactory.getInstance();
+      	b.registerOutputReader(analyzer);
+          		
+      	// Simple log/output file
+    	String logFilePath = tempDir.getAbsolutePath() + fileSeparator + "log";
+		File logFile = new File(logFilePath);
+		IOtools.writeTXTAppend(logFile, "some text " + NL
+				+ query3 + NL 
+				+ query + NL
+				+ query2 + NL 
+				+ "more"
+				+ NL + "and more text", false);
+		
+		OutputReader sor = b.makeOutputReaderInstance(logFile);
+      	assertEquals(TestOutputAnalyzer.IDVAL, sor.getLogPathName().getName());
     }
     
 //------------------------------------------------------------------------------
@@ -116,11 +152,7 @@ public class ReaderWriterFactoryTest
     	String query = "Log of MySoftware";
     	TestOutputAnalyzer analyzer = new TestOutputAnalyzer();
     	analyzer.outputFingerprints.add(
-    			new FileFingerprint(".", 3, " something we'll not find"));
-    	analyzer.outputFingerprints.add(
     			new FileFingerprint(".", 2, "^" + query+ "$"));
-    	analyzer.outputFingerprints.add(
-    			new FileFingerprint(".", 3, " more stuff we'll not find"));
     	
       	ReaderWriterFactory b = 
       			ReaderWriterFactory.getInstance();

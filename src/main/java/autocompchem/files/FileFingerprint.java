@@ -27,9 +27,9 @@ import java.util.List;
 /**
  * Data structure defining how to identify a file (i.e., folder or proper file)
  * as a match.
- * This class defines a relative pathname and REGEX string that have 
+ * This class defines a relative pathname and REGEX string that has
  * to be matched into a given size header for the identification to be 
- * successful. The pathname if relative to the file/folder that has to be 
+ * successful. The pathname is relative to the file/folder that has to be 
  * identified. Examples:<ul>
  * <li>to identify a file by looking into it searching for a line containing a
  * given REGEX, the pathname should be "."</li>

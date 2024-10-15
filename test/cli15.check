@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ ! -f "cli15-a.log" ] ; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+if [ ! -f "cli15.log" ] ; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if ! grep -q "contains 3 steps" cli15.log ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
+if ! grep -q "did terminate normally" cli15.log ; then echo NOT Passed ERROR 4 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' cli15.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

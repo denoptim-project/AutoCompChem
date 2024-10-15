@@ -246,7 +246,8 @@ public class Job implements Runnable
 	 * the steps or child jobs.
 	 */
 	public static final String JSONSUBJOBS = "steps";
-    
+	
+	
 //------------------------------------------------------------------------------
 
     /**
@@ -923,6 +924,8 @@ public class Job implements Runnable
     				+ " or extend " + Job.class.getName() + ".");
     	}
     	
+    	// NB: this line in the log is used to detect the beginning of a job's
+    	// step in the log of ACC jobs.
     	logger.info(System.getProperty("line.separator") 
     				+ "Initiating " + appID + " Job " + getId());
     	
@@ -1235,7 +1238,7 @@ public class Job implements Runnable
     	{
     		throw new Error("ERROR! " + thrownExc.getClass().getSimpleName()
     				+ " thrown by job " + getId() + ".", thrownExc);
-    	}			
+    	}
     }
 
 //------------------------------------------------------------------------------

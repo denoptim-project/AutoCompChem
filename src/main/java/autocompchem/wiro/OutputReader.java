@@ -357,8 +357,14 @@ public class OutputReader extends Worker
 
 	/**
 	 * Provides info on how to identify software output that can be analyzed
-	 * by this class. However, since {@link OutputReader} is not meant to be
-	 * software specific, the returned value is empty, meaning that no condition
+	 * by this class. All conditions referring to the same pathname (see 
+	 * {@link FileFingerprint#FileFingerprint(String, int, String)}) must be 
+	 * satisfied simultaneously, while those referring to different pathnames 
+	 * are independent.
+	 * 
+	 * However, since {@link OutputReader} is not meant to be
+	 * software specific, the returned value is empty when this is called from 
+	 * {@link OutputReader}, meaning that no condition
 	 * exists to make {@link OutputReader} be the specific reader for a file.
 	 * @return an empty set, i.e., it is impossible to match the condition that
 	 * if satisfied, qualifies {@link OutputReader} as the reader of choice.
@@ -374,7 +380,8 @@ public class OutputReader extends Worker
 	 * Return a string that identifies the software that has generated the 
 	 * output that the concrete implementations of this class can analyze. 
 	 * However, since {@link OutputReader} is not meant to be
-	 * software specific, this returns <code>null</code>.
+	 * software specific, this returns <code>null</code> when this is called from 
+	 * {@link OutputReader}.
 	 * @return <code>null</code>
 	 */
 	public String getSoftwareID()
@@ -389,7 +396,9 @@ public class OutputReader extends Worker
 	 * to prepare input files for the software the output of which can be 
 	 * analyzed by a concrete implementation of this class. 
 	 * However, since {@link OutputReader} is not meant to be
-	 * software specific, this returns just the base implementation.
+	 * software specific, this returns just the base implementation
+	 * when this is called from 
+	 * {@link OutputReader}.
 	 */
 	protected ITextualInputWriter getSoftInputWriter()
 	{

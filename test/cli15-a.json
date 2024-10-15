@@ -1,0 +1,84 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist1 [#7] [Ru]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../cli15-mol.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "mutateAtoms"
+        },
+        {
+          "reference": "SMARTS",
+          "value": " [$([#6]~[Ru])] Element: Si\n[Ru] Element: Fe"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../cli15-mol.sdf"
+        },
+        {
+          "reference": "OutFile",
+          "value": "cli15-molMod.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist2 [Si] [Fe]\ndist3 [Si] [#7]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "cli15-molMod.sdf"
+        }
+      ]
+    }
+  ]
+}

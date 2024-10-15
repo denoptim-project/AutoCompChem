@@ -1,0 +1,38 @@
+************************* 15-10-2024 15:08:29.058 *************************
+                                AutoCompChem
+                               Version: 3.0.0
+***************************************************************************
+
+
+Initiating ACC Job #0
+Running job container autocompchem.run.ACCJob@1a69561c
+
+Initiating ACC Job #0.1
+#0 t122
+Matching SMARTS queries
+Mol.0 t122  Dst.dist1-0 N15:Ru2 = 3.0965314417909604
+Mol.0 t122  Dst.dist1-0 N16:Ru2 = 2.9551917348964003
+
+Initiating ACC Job #0.2
+#0 t122
+
+Initiating ACC Job #0.3
+Initializing in MolecularMeter.
+Adding parameters to class autocompchem.molecule.MolecularMeter
+#0 t122
+Matching SMARTS queries
+Mol.0 t122  Dst.dist2-0 Si6:Fe2 = 2.047923567909701
+Mol.0 t122  Dst.dist2-0 Si7:Fe2 = 2.1063278068714757
+Mol.0 t122  Dst.dist2-0 Si8:Fe2 = 1.9920125351011222
+Mol.0 t122  Dst.dist3-1 Si6:N15 = 3.643482330134181
+Mol.0 t122  Dst.dist3-1 Si6:N16 = 4.543428442266919
+Mol.0 t122  Dst.dist3-1 Si7:N15 = 4.904050601288694
+Mol.0 t122  Dst.dist3-1 Si7:N16 = 4.834622880846033
+Mol.0 t122  Dst.dist3-1 Si8:N15 = 1.3687412502003438
+Mol.0 t122  Dst.dist3-1 Si8:N16 = 1.3740439476232191
+All 3 steps are completed. Serialized workflow completed.
+************************* 15-10-2024 15:08:29.581 *************************
+Termination status: 0
+Final message: Normal Termination
+Thanks for using AutoCompChem.
+Mandi! ;) 
