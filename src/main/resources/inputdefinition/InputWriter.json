@@ -15,6 +15,6 @@
     "key": "VERBOSITY",
     "casedKey": "verbosity",
     "type": "<int>",
-    "doc": "Sets the amount of log messages. Values larger than 0 will make the worker write more and more detailed log reports."
+    "doc": "Sets the amount of log messages. Larger values result in more detailed log reports."
   }
 ]
