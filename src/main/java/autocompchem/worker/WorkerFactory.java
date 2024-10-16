@@ -52,11 +52,11 @@ import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
+import autocompchem.wiro.InputWriter;
+import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.acc.ACCInputWriter;
 import autocompchem.wiro.acc.ACCOutputReader;
 import autocompchem.wiro.chem.AgnosticCompChemInputWriter;
-import autocompchem.wiro.chem.AgnosticCompChemOutputReader;
-import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 import autocompchem.wiro.chem.gaussian.legacy.GaussianJobDetailsConverter;
@@ -104,8 +104,8 @@ public final class WorkerFactory
 		// paired with a task are not registered.
         registerType(new ACCInputWriter());      
         registerType(new ACCOutputReader());
-        registerType(new AgnosticCompChemInputWriter());      
-        registerType(new AgnosticCompChemOutputReader());
+        registerType(new InputWriter());      
+        registerType(new OutputReader());
         registerType(new DummyWorker()); //This is only for tests
         registerType(new AtomClashAnalyzer());
         registerType(new AtomTypeMatcher());

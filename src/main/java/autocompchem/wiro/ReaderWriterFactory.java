@@ -144,6 +144,7 @@ public final class ReaderWriterFactory
 		if (!file.exists())
 			throw new FileNotFoundException("File '" + file + "' not found.");
 		
+		//TODO-gg make softwarename class that work in case insensitive manner
 		for (String softwareName : knownOutputReaders.keySet())
 		{
 			// Map of results of the matches by pathname. Conditions acting on 

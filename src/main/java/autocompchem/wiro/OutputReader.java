@@ -34,32 +34,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.atom.AtomUtils;
-import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
 import autocompchem.files.FileUtils;
-import autocompchem.molecule.vibrations.NormalMode;
-import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.wiro.OutputReader.LogReader;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.gaussian.GaussianConstants;
-import autocompchem.wiro.chem.gaussian.GaussianUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -74,6 +58,19 @@ import autocompchem.worker.Worker;
 
 public class OutputReader extends Worker
 {   
+    /**
+     * String defining the task for analyzing any job output
+     */
+    public static final String ANALYSEOUTPUTTASKNAME = "analyseOutput";
+
+    /**
+     * Task about analyzing any job output
+     */
+    public static final Task ANALYSEOUTPUTTASK;
+    static {
+    	ANALYSEOUTPUTTASK = Task.make(ANALYSEOUTPUTTASKNAME);
+    }
+    
     /**
      * Name of the log (commonly referred to as the "output") file from 
      * comp.chem. software, i.e., the input for this class.
@@ -138,24 +135,54 @@ public class OutputReader extends Worker
 	
 //------------------------------------------------------------------------------
 
-    /**
-     * Returns <code>null</code> as this implementation is not meant to ever be 
-     * chosen as the worker charged to perform a task.
-     * It only provides general purpose functionality to purpose specific 
-     * implementations.
-     */
   	@Override
 	public Set<Task> getCapabilities() {
-		return null;
+		return Collections.unmodifiableSet(new HashSet<Task>(
+                        Arrays.asList(ANALYSEOUTPUTTASK)));
 	}
-
+  	
 //-----------------------------------------------------------------------------
 
 	@Override
-	public Worker makeInstance(Job job) {
+	public Worker makeInstance(Job job)  
+	{
+		if (job==null)
+		{
+			// This happens when requesting the generation of help message
+			return new OutputReader();
+		}
+		
+		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
+		{
+			logger.warn("WARNING: cannot detect the type of "
+					+ "output to analyze. Make sure the parameter '" 
+					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
+			return new OutputReader();
+		}
+		
+		String fileName = job.getParameter(
+        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
+		ReaderWriterFactory builder = ReaderWriterFactory.getInstance();
+		
+		try {
+			Worker w = builder.makeOutputReaderInstance(new File(fileName));
+			if (w==null)
+			{
+				Terminator.withMsgAndStatus("ERROR: log/output file '"
+						+ fileName + "' could not be understood as any "
+						+ "log/output "
+						+ "that can be parsed by AutoCompChem.", -1);	
+			}
+			return w;
+		} catch (FileNotFoundException e) {
+			Terminator.withMsgAndStatus("ERROR: log/output file '"
+					+ fileName + "' is defined by '" 
+					+ ChemSoftConstants.PARJOBOUTPUTFILE 
+					+ "' but does not exist.", -1);
+		}
 		return new OutputReader();
 	}
-	
+
 //-----------------------------------------------------------------------------
 
     /**

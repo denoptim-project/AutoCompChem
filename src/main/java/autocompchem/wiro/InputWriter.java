@@ -1,6 +1,9 @@
 package autocompchem.wiro;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -15,6 +18,7 @@ import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Core components of any worker writing input files for any software 
@@ -58,7 +62,19 @@ public class InputWriter extends Worker implements ITextualInputWriter
      * Default extension of the software output file
      */
     protected String outExtension;
-    
+
+    /**
+     * String defining the task of preparing input
+     */
+    public static final String PREPAREINPUTTASKNAME = "prepareInput";
+
+    /**
+     * Task about preparing input files
+     */
+    public static final Task PREPAREINPUTTASK;
+    static {
+    	PREPAREINPUTTASK = Task.make(PREPAREINPUTTASKNAME);
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -85,14 +101,48 @@ public class InputWriter extends Worker implements ITextualInputWriter
      */
    	@Override
   	public Set<Task> getCapabilities() {
-  		return null;
+		return Collections.unmodifiableSet(new HashSet<Task>(
+                Arrays.asList(PREPAREINPUTTASK)));
   	}
 
 //-----------------------------------------------------------------------------
 
  	@Override
-  	public Worker makeInstance(Job job) {
-  		return new OutputReader();
+  	public Worker makeInstance(Job job) 
+ 	{
+		if (job==null)
+		{
+			// This happens when requesting the generation of help message
+			return new InputWriter();
+		}
+		
+		if (!job.hasParameter(WorkerConstants.PARTASK))
+		{
+			String taskStr = job.getParameter(WorkerConstants.PARTASK)
+					.getValueAsString();
+	    	if (Task.make(taskStr) != PREPAREINPUTTASK)
+	    	{
+				logger.warn("WARNING: attempt to make a " 
+						+ ChemSoftInputWriter.class.getSimpleName() 
+						+ " for task '" + taskStr + "', but this is not allowed.");
+				return new InputWriter();
+	    	}
+		}
+    	
+    	if (!job.hasParameter(ChemSoftConstants.SOFTWAREID))
+		{
+			logger.warn("WARNING: cannot detect the type of "
+					+ "software for which to prepare an input. "
+					+ "Make sure the parameter '" 
+					+ ChemSoftConstants.SOFTWAREID + "' is given.");
+			return new InputWriter();
+		}    	
+    	String softwareID = job.getParameter(ChemSoftConstants.SOFTWAREID)
+    			.getValueAsString();
+    	
+		ReaderWriterFactory builder = 
+				ReaderWriterFactory.getInstance();
+		return builder.makeInstanceInputWriter(softwareID);
   	}
     
 //-----------------------------------------------------------------------------

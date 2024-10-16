@@ -6,22 +6,10 @@
     "doc": "Provides a space-separated list of strings to be used as geometry names. This overwrites the names imported from molecular structures file."
   },
   {
-    "key": "JOBDETAILSFILE",
-    "casedKey": "jobDetailsFile",
-    "type": "<String>",
-    "doc": "The pathname to a file defining the details of the job for which we are going to generate the input file/s."
-  },
-  {
     "key": "JOBDETAILS",
     "casedKey": "jobDetails",
     "type": "<String>",
     "doc": "The definition of the job for which we are going to generate the input file/s."
-  },
-  {
-    "key": "ROOTPATHNAMEOUTPUT",
-    "casedKey": "rootPathnameOutput",
-    "type": "<String>",
-    "doc": "The path+rootname of any input file for the job for which we are going to generate the input file/s."
   },
   {
     "key": "CHARGE",
@@ -56,5 +44,9 @@
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  },
+  {
+    "embeddedWorker": "autocompchem.wiro.InputWriter",
+    "tag": "the writing of the input for a job"
   }
 ]
