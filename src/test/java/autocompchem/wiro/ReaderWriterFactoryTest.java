@@ -29,6 +29,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
+import autocompchem.run.SoftwareId;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
@@ -89,7 +90,7 @@ public class ReaderWriterFactoryTest
     public void testMakeInputWriterInstance() throws Exception
     {
       	TestOutputAnalyzer outputReader = new TestOutputAnalyzer();
-      	String softwareID = outputReader.getSoftwareID();
+      	SoftwareId softwareID = outputReader.getSoftwareID();
 
       	ReaderWriterFactory factory = 
       			ReaderWriterFactory.getInstance();

@@ -22,6 +22,7 @@ import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -39,6 +40,11 @@ import autocompchem.worker.Worker;
  */
 public class NWChemOutputReader extends ChemSoftOutputReader
 {
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("NWChem");
+	
     /**
      * String defining the task of analyzing NWChem output files
      */
@@ -461,8 +467,8 @@ public class NWChemOutputReader extends ChemSoftOutputReader
 //------------------------------------------------------------------------------
 
   	@Override
-	public String getSoftwareID() {
-  		return "NWChem";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
   	}
 
 //------------------------------------------------------------------------------

@@ -42,6 +42,7 @@ import autocompchem.perception.TxtQuery;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
@@ -411,7 +412,7 @@ public class OutputReader extends Worker
 	 * {@link OutputReader}.
 	 * @return <code>null</code>
 	 */
-	public String getSoftwareID()
+	public SoftwareId getSoftwareID()
 	{
 		return null;
 	}

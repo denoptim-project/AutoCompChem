@@ -26,6 +26,7 @@ import java.util.Set;
 
 import autocompchem.files.FileFingerprint;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
@@ -46,6 +47,11 @@ import autocompchem.worker.Worker;
  */
 class TestOutputAnalyzer extends OutputReader
 {
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("Tester");
+	
 	public static final String IDVAL = "12@4%oi598";
 	
 	public Set<FileFingerprint> outputFingerprints = 
@@ -108,8 +114,8 @@ class TestOutputAnalyzer extends OutputReader
 //------------------------------------------------------------------------------
 
 	@Override
-	public String getSoftwareID() {
-		return "Tester";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
 	}
 
 //------------------------------------------------------------------------------

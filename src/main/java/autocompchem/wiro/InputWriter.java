@@ -13,6 +13,7 @@ import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
@@ -137,8 +138,8 @@ public class InputWriter extends Worker implements ITextualInputWriter
 					+ ChemSoftConstants.SOFTWAREID + "' is given.");
 			return new InputWriter();
 		}    	
-    	String softwareID = job.getParameter(ChemSoftConstants.SOFTWAREID)
-    			.getValueAsString();
+    	SoftwareId softwareID = new SoftwareId(job.getParameter(
+    			ChemSoftConstants.SOFTWAREID).getValueAsString());
     	
 		ReaderWriterFactory builder = 
 				ReaderWriterFactory.getInstance();

@@ -23,6 +23,7 @@ import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.AppID;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.OutputReader.LogReader;
@@ -43,6 +44,11 @@ import autocompchem.worker.Worker;
  */
 public class ACCOutputReader extends OutputReader
 {
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("ACC");
+	
     /**
      * String defining the task of analyzing ACC output files
      */
@@ -156,8 +162,8 @@ public class ACCOutputReader extends OutputReader
 //------------------------------------------------------------------------------
 
 	@Override
-	public String getSoftwareID() {
-		return "ACC";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
 	}
 
 //------------------------------------------------------------------------------

@@ -6,6 +6,7 @@ package autocompchem.run;
  * extent we can define a job for such apps., but we cannot run them directly.
  */
 
+//TODO-gg see SoftwareId
 
 // TODO: consider setting the way to make jobs of external apps (Gaussian etc.)
 // by reading a configuration file that allows to define how to set a ShellJob

@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import autocompchem.files.FileFingerprint;
+import autocompchem.run.SoftwareId;
 import autocompchem.wiro.acc.ACCOutputReader;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
@@ -59,8 +60,8 @@ public final class ReaderWriterFactory
 	 * {@link OutputReader#getSoftInputWriter()}), 
 	 * this is effectively also a registry of input writers.
 	 */
-	private static Map<String, OutputReader> knownOutputReaders = 
-			new HashMap<String, OutputReader>();
+	private static Map<SoftwareId, OutputReader> knownOutputReaders = 
+			new HashMap<SoftwareId, OutputReader>();
 
 	/**
 	 * Singleton instance of this class
@@ -116,7 +117,7 @@ public final class ReaderWriterFactory
 	public OutputReader makeOutputReaderInstance(File file) 
 			throws FileNotFoundException
 	{
-		String detectedSoftwareName = detectOutputFormat(file);
+		SoftwareId detectedSoftwareName = detectOutputFormat(file);
 		
 		if (detectedSoftwareName!=null)
 			return makeOutputReaderInstance(detectedSoftwareName);
@@ -135,7 +136,7 @@ public final class ReaderWriterFactory
 	 * @throws FileNotFoundException  if the output does not exist.
 	 */
 	
-	public static String detectOutputFormat(File file) 
+	public static SoftwareId detectOutputFormat(File file) 
 			throws FileNotFoundException
 	{
     	if (INSTANCE==null)
@@ -144,8 +145,7 @@ public final class ReaderWriterFactory
 		if (!file.exists())
 			throw new FileNotFoundException("File '" + file + "' not found.");
 		
-		//TODO-gg make softwarename class that work in case insensitive manner
-		for (String softwareName : knownOutputReaders.keySet())
+		for (SoftwareId softwareName : knownOutputReaders.keySet())
 		{
 			// Map of results of the matches by pathname. Conditions acting on 
 			// the same pathname MUST be matched simultaneously, while those
@@ -192,7 +192,7 @@ public final class ReaderWriterFactory
 	 * no software-specific implementation is registered for the given 
 	 * identifier.
 	 */
-	public OutputReader makeOutputReaderInstance(String softwareName)
+	public OutputReader makeOutputReaderInstance(SoftwareId softwareName)
 	{
 		if (!knownOutputReaders.containsKey(softwareName))
 		{
@@ -249,31 +249,31 @@ public final class ReaderWriterFactory
 	/**
 	 * Constructs a new instance of the {@link ChemSoftInputWriter} dedicated
 	 * to the given software identifier.
-	 * @param softwareName the string identifying the software for which the
+	 * @param softwareID the string identifying the software for which the
 	 * {@link ChemSoftInputWriter} is able to generate an input.
 	 * @return the software-specific instance, or <code>null</code> if 
 	 * no software-specific implementation is registered for the given 
 	 * identifier.
 	 */
-	public Worker makeInstanceInputWriter(String softwareName)
+	public Worker makeInstanceInputWriter(SoftwareId softwareID)
 	{
-		if (!knownOutputReaders.containsKey(softwareName))
+		if (!knownOutputReaders.containsKey(softwareID))
 		{
 			return null;
 		}
 		ITextualInputWriter target = 
-				knownOutputReaders.get(softwareName).getSoftInputWriter();
+				knownOutputReaders.get(softwareID).getSoftInputWriter();
 
 		Worker result = null;
 		if (target==null)
 		{
 			logger.warn("WARNING: Class " 
-					+ knownOutputReaders.get(softwareName).getClass().getSimpleName()
+					+ knownOutputReaders.get(softwareID).getClass().getSimpleName()
 					+ " declares no linked implementation of " 
 					+ ITextualInputWriter.class.getSimpleName() 
 					+ ". Cannot find a suitable " 
 					+ Worker.class.getSimpleName() + " to prepare input for " 
-					+ "software '" + softwareName + "'.");
+					+ "software '" + softwareID + "'.");
 			return result;
 		}
 		String writerName = target.getClass().getName();
@@ -364,7 +364,7 @@ public final class ReaderWriterFactory
 	 * @return the list of  identifiers of known software for which there is a
 	 * registered reader.
 	 */
-	public synchronized static Set<String> getRegisteredSoftwareIDs() 
+	public synchronized static Set<SoftwareId> getRegisteredSoftwareIDs() 
 	{
     	if (INSTANCE==null)
     		getInstance();

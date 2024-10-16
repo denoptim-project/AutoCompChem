@@ -22,6 +22,7 @@ import autocompchem.files.FileFingerprint;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
@@ -39,6 +40,11 @@ import autocompchem.worker.Worker;
  */
 public class GaussianOutputReader extends ChemSoftOutputReader
 {   
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("Gaussian");
+	
 	/**
      * String defining the task of analyzing Gaussian output files
      */
@@ -302,8 +308,8 @@ public class GaussianOutputReader extends ChemSoftOutputReader
 //------------------------------------------------------------------------------
 
 	@Override
-	public String getSoftwareID() {
-		return "Gaussian";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
 	}
 
 //------------------------------------------------------------------------------

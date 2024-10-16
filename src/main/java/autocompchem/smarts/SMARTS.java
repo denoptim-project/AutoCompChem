@@ -63,7 +63,7 @@ public class SMARTS
     @Override
     public boolean equals(Object o) 
     {
-    	if ( o== null)
+    	if (o == null)
     		return false;
     	
  	    if (o == this)

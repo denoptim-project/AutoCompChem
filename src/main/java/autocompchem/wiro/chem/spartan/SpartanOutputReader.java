@@ -28,6 +28,7 @@ import autocompchem.files.FileFingerprint;
 import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -46,6 +47,11 @@ import autocompchem.worker.Worker;
  */
 public class SpartanOutputReader extends ChemSoftOutputReader
 {
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("Spartan");
+	
     /**
      * The identifier of the molecule/model to focus on, ignoring the rest.
      */
@@ -424,8 +430,8 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 //------------------------------------------------------------------------------
 
 	@Override
-	public String getSoftwareID() {
-		return "Spartan";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
 	}
 
 //------------------------------------------------------------------------------

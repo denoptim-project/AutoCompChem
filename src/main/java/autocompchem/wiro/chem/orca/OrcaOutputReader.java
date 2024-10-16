@@ -23,6 +23,7 @@ import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -40,6 +41,11 @@ import autocompchem.worker.Worker;
  */
 public class OrcaOutputReader extends ChemSoftOutputReader
 {
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("Orca");
+	
     /**
      * String defining the task of analyzing Orca output files
      */
@@ -473,8 +479,8 @@ public class OrcaOutputReader extends ChemSoftOutputReader
 //------------------------------------------------------------------------------
 
 	@Override
-	public String getSoftwareID() {
-		return "Orca";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
 	}
 
 //------------------------------------------------------------------------------

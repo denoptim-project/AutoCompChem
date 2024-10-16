@@ -27,6 +27,7 @@ import autocompchem.modeling.forcefield.ForceFieldParameter;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
@@ -49,7 +50,11 @@ import autocompchem.worker.Worker;
  */
 public class VibModuleOutputReader extends ChemSoftOutputReader
 {
-
+	/**
+	 * Case insensitive software identifier
+	 */
+	public static final SoftwareId SOFTWAREID = new SoftwareId("VibModule");
+	
     /**
      * Storage of SMARTS queries
      */
@@ -1044,8 +1049,8 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
 //------------------------------------------------------------------------------
 
 	@Override
-	public String getSoftwareID() {
-		return "VibModule";
+	public SoftwareId getSoftwareID() {
+		return SOFTWAREID;
 	}
 
 //------------------------------------------------------------------------------
