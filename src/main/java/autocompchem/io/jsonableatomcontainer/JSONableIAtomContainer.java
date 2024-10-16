@@ -17,6 +17,8 @@
 
 package autocompchem.io.jsonableatomcontainer;
 
+import java.util.Objects;
+
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -79,6 +81,14 @@ public class JSONableIAtomContainer
 		}
 		return true;
 	}
+	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(iac);
+    }
 	
 //------------------------------------------------------------------------------
 

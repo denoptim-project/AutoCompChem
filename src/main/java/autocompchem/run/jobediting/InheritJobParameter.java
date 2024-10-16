@@ -1,6 +1,8 @@
 package autocompchem.run.jobediting;
 
 
+import java.util.Objects;
+
 import autocompchem.run.Job;
 import autocompchem.wiro.chem.CompChemJob;
 
@@ -44,6 +46,14 @@ public class InheritJobParameter implements IJobSettingsInheritTask
  	    InheritJobParameter other = (InheritJobParameter) o;
  	    
  	    return this.paramName.equals(other.paramName);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(paramName);
     }
 	
 //------------------------------------------------------------------------------

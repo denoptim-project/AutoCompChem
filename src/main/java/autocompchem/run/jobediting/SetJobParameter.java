@@ -1,6 +1,8 @@
 package autocompchem.run.jobediting;
 
 
+import java.util.Objects;
+
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
 import autocompchem.wiro.chem.CompChemJob;
@@ -46,6 +48,14 @@ public class SetJobParameter implements IJobEditingTask
  	    SetJobParameter other = (SetJobParameter) o;
  	    
  	    return this.parameter.equals(other.parameter);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(parameter);
     }
 	
 //------------------------------------------------------------------------------

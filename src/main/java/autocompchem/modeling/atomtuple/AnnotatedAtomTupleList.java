@@ -4,6 +4,7 @@ package autocompchem.modeling.atomtuple;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An ordered set of atom tuples.
@@ -60,6 +61,14 @@ public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple>
 	   	
 	   	return true;
 	}
+	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(super.hashCode());
+    }
 	
 //-----------------------------------------------------------------------------
 	

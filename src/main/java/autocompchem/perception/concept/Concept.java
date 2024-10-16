@@ -1,5 +1,6 @@
 package autocompchem.perception.concept;
 
+import java.util.Objects;
 
 /*
  *   Copyright (C) 2018  Marco Foscato
@@ -150,6 +151,14 @@ public class Concept implements Cloneable
             return false;
 
         return this.refName.equals(other.refName);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(type, refName);
     }
 
 //------------------------------------------------------------------------------

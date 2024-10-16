@@ -1,6 +1,8 @@
 package autocompchem.molecule.conformation;
 
 
+import java.util.Objects;
+
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 
 
@@ -273,6 +275,14 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
         */
         
         return super.equals(o);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(fold, type);
     }
     
 //-----------------------------------------------------------------------------

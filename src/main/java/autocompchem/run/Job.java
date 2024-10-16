@@ -62,6 +62,7 @@ import autocompchem.wiro.chem.Directive;
 
 public class Job implements Runnable
 {
+
 	/**
 	 * Reference to the parent job, i.e., a job that had to create this one to
 	 * take case of some specific task.
@@ -259,7 +260,7 @@ public class Job implements Runnable
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
         this.appID = AppID.UNDEFINED;
-        this.jobHashCode = hashCode();
+        this.jobHashCode = super.hashCode();
     }
 
 //------------------------------------------------------------------------------
@@ -1304,6 +1305,19 @@ public class Job implements Runnable
 			   && Objects.equals(this.steps, other.steps)
 			   && Objects.equals(this.exposedOutput, other.exposedOutput);
    }
+//-----------------------------------------------------------------------------
+
+	@Override
+	public int hashCode() 
+	{
+	    // NB: this violates the consistency with equals(), but is the only way 
+		// so far to avoid the overflow resulting from doing 
+		// Objects.hash(some fields used in equals).
+		// In particular 'steps' and 'params' may contain references to other 
+		// jobs that may refer to this one, thus creating a loop that leads to
+		// the overflow.
+		return jobHashCode;  
+	}
     
 //------------------------------------------------------------------------------
 

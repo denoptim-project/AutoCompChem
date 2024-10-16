@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -426,6 +427,14 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
  	    }
  	   
  	    return super.equals(o);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(accTaskParams, super.hashCode());
     }
     
 //-----------------------------------------------------------------------------

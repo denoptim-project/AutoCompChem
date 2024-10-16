@@ -2,6 +2,7 @@ package autocompchem.modeling.constraints;
 
 
 import java.util.Iterator;
+import java.util.Objects;
 
 /*
  *   Copyright (C) 2016  Marco Foscato
@@ -30,7 +31,11 @@ import autocompchem.molecule.intcoords.InternalCoord;
  */
 public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 {
-	
+	/**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = 1L;
+
 //------------------------------------------------------------------------------
 
 	@Override
@@ -53,6 +58,14 @@ public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 	   	}
 	   	return true;
 	}
+	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(super.hashCode());
+    }
 	
 //-----------------------------------------------------------------------------
 

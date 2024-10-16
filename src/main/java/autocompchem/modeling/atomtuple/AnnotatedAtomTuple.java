@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -558,6 +559,15 @@ public class AnnotatedAtomTuple implements Cloneable
 		
 		return true;
 	}
+		
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(atmIDs, atmLabels, numAtoms, valuedAttributes,
+    			valuelessAttributes, connectionTable);
+    }
 	
 //------------------------------------------------------------------------------
 	

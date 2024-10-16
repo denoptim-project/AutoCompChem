@@ -1,5 +1,7 @@
 package autocompchem.run.jobediting;
 
+import java.util.Objects;
+
 import autocompchem.run.Job;
 
 public class DeleteJobParameter implements IJobEditingTask
@@ -43,6 +45,14 @@ public class DeleteJobParameter implements IJobEditingTask
 	    
 	    return this.paramName.equals(other.paramName);
 	}
+	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(paramName);
+    }
 	
 //------------------------------------------------------------------------------
 

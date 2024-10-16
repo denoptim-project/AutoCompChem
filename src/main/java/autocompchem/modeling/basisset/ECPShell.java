@@ -18,6 +18,7 @@ package autocompchem.modeling.basisset;
  */
 
 import java.util.Locale;
+import java.util.Objects;
 
 import autocompchem.run.Terminator;
 
@@ -94,6 +95,14 @@ public class ECPShell extends Shell implements Cloneable
     	 ECPShell other = (ECPShell) o;
     	 
     	 return super.equals(other);
+     }
+     
+ //-----------------------------------------------------------------------------
+     
+     @Override
+     public int hashCode()
+     {
+     	return Objects.hash(super.hashCode());
      }
 
 //------------------------------------------------------------------------------

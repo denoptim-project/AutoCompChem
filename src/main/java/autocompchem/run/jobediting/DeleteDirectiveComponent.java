@@ -1,6 +1,8 @@
 package autocompchem.run.jobediting;
 
 
+import java.util.Objects;
+
 import autocompchem.run.Job;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.DirComponentAddress;
@@ -64,7 +66,15 @@ public class DeleteDirectiveComponent implements IJobEditingTask
  	    
  	    return this.path.equals(other.path);
     }
-	
+
+//-----------------------------------------------------------------------------
+      
+      @Override
+      public int hashCode()
+      {
+      	return Objects.hash(path);
+      }
+      
 //------------------------------------------------------------------------------
 
 	@Override

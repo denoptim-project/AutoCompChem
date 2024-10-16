@@ -1,6 +1,7 @@
 package autocompchem.run.jobediting;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -165,6 +166,14 @@ public class DataArchivingRule
  	    	return false;
  	    
  	    return this.pattern.equals(other.pattern);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(type, pattern);
     }
   
 //------------------------------------------------------------------------------

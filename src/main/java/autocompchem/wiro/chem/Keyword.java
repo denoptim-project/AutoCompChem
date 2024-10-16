@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -317,6 +318,14 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
  	    	return false;
  	   
  	    return super.equals(o);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(isLoud, super.hashCode());
     }
     
 //------------------------------------------------------------------------------

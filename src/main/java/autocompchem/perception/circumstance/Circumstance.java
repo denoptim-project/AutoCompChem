@@ -1,5 +1,6 @@
 package autocompchem.perception.circumstance;
 
+import java.util.Objects;
 import java.util.TreeMap;
 
 import com.google.gson.JsonElement;
@@ -105,6 +106,7 @@ public class Circumstance implements ICircumstance
 
     public String toString()
     {
+    	//TODO-gg why super?
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString()).append(" [channelType:").append(ict);
         sb.append("]");
@@ -142,6 +144,14 @@ public class Circumstance implements ICircumstance
             return false;
         
         return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(ict);
     }
 
 //------------------------------------------------------------------------------

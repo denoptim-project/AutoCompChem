@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -1269,6 +1270,14 @@ public class Directive implements IDirectiveComponent, Cloneable
     	}
         
         return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(accTaskParams, keywords, subDirectives, dirData);
     }
 
 //-----------------------------------------------------------------------------

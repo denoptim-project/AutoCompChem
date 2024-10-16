@@ -2,6 +2,7 @@ package autocompchem.run.jobediting;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -81,6 +82,14 @@ public class SetDirectiveComponent extends AddDirectiveComponent
      		return false;
  	    
  	    return super.equals(o);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(super.hashCode());
     }
     
 //------------------------------------------------------------------------------

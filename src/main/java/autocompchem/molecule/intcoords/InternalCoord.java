@@ -20,6 +20,7 @@ package autocompchem.molecule.intcoords;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import autocompchem.utils.NumberUtils;
 
@@ -252,6 +253,14 @@ public class InternalCoord implements Cloneable
   		
   	   	return true;
   	}
+  	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(name, type, ids, value);
+    }
 
 //------------------------------------------------------------------------------
 

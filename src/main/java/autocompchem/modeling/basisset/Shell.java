@@ -21,6 +21,7 @@ package autocompchem.modeling.basisset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import autocompchem.run.Terminator;
 
@@ -212,6 +213,14 @@ public class Shell implements Cloneable
     	 
     	 return this.type.equals(other.type) 
     			 && this.scaleFact == other.scaleFact;
+     }
+          
+//-----------------------------------------------------------------------------
+     
+     @Override
+     public int hashCode()
+     {
+     	return Objects.hash(primitives, type);
      }
      
 //------------------------------------------------------------------------------

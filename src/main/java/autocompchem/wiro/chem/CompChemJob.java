@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -868,6 +869,14 @@ public class CompChemJob extends Job implements Cloneable
  		   return false;
  	   
  	   return super.equals(other);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(directives, super.hashCode());
     }
 
 //------------------------------------------------------------------------------

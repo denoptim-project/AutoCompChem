@@ -2,6 +2,7 @@ package autocompchem.molecule.geometry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 
 import org.openscience.cdk.interfaces.IAtom;
@@ -179,6 +180,14 @@ public class GeometryAlignment
     	
     	return this.firstIAC.equals(other.firstIAC) 
    			 && this.secondIAC.equals(other.secondIAC);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(rmsd, rmsdint, firstIAC, secondIAC);
     }
 	
 //------------------------------------------------------------------------------

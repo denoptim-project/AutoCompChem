@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.openscience.cdk.AtomContainerSet;
@@ -578,6 +579,14 @@ public class NamedData implements Cloneable
  	    return this.reference.equals(other.reference)
  	    		&& this.type == other.type
  	    		&& this.value.equals(other.value);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(reference, type, value);
     }
     
 //------------------------------------------------------------------------------

@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -254,6 +255,14 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
  	    }
  	    
  	    return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(path);
     }
 
 //------------------------------------------------------------------------------

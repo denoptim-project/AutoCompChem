@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -425,6 +426,15 @@ public class CenterBasisSet
     			return false;
     	}
     	return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(tag, id, element, ecpType, maxl, ne, 
+    			namedComponents, shells, ecps);
     }
 
 //------------------------------------------------------------------------------

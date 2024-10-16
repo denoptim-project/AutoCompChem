@@ -19,6 +19,7 @@ package autocompchem.run.jobediting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -369,6 +370,15 @@ public class Action implements Cloneable
                 return false;
         
         return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(type, object, jobEditTasks, jobArchivingRules,
+    			inheritedSettings, prerefinementSteps);
     }
     
 //------------------------------------------------------------------------------

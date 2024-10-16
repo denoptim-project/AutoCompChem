@@ -19,6 +19,7 @@ package autocompchem.datacollections;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import autocompchem.run.Terminator;
 
@@ -272,6 +273,14 @@ public class NamedDataCollector implements Cloneable
  		    	return false;
  	    }
  	    return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(allData);
     }
     
 //------------------------------------------------------------------------------

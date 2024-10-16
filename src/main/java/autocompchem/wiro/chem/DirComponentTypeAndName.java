@@ -1,5 +1,7 @@
 package autocompchem.wiro.chem;
 
+import java.util.Objects;
+
 /**
  * The pair of two bits of info: the type and the reference name of a directive
  * component. This class does not contain any reference to an actual instance of
@@ -46,6 +48,14 @@ public class DirComponentTypeAndName
  	    return this.name.equals(other.name) 
  	    		&& this.type.equals(other.type);
 	}
+	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(name, type);
+    }
 	
 //------------------------------------------------------------------------------
 	

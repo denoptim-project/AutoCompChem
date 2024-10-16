@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import autocompchem.io.ACCJson;
@@ -345,8 +346,7 @@ public class Situation extends Concept
 
                         @Override
                         public int hashCode() {
-                            //Dummy hashcode
-                            return 0;
+                            return Objects.hash(value);
                         }
 
                         @Override
@@ -513,6 +513,15 @@ public class Situation extends Concept
         	return false;
         
         return super.equals(other);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(description, logicalExpression, context, reaction,
+    			super.hashCode());
     }
     
 //------------------------------------------------------------------------------

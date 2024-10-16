@@ -2,6 +2,7 @@ package autocompchem.perception.circumstance;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import com.google.gson.JsonDeserializationContext;
@@ -380,6 +381,14 @@ public class CountTextMatches extends MatchText
             return false;
         
         return super.equals(other);
+    }
+    
+ //-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(min, max, cnstrType, super.hashCode());
     }
 
 //------------------------------------------------------------------------------

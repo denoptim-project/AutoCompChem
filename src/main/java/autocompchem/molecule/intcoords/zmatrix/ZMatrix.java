@@ -19,8 +19,11 @@ package autocompchem.molecule.intcoords.zmatrix;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.openscience.cdk.qsar.descriptors.molecular.KierHallSmartsDescriptor;
 
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Terminator;
@@ -422,6 +425,15 @@ public class ZMatrix implements Cloneable
   		
   	   	return true;
   	}
+  	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(title, zatoms, addBondPointers, delBondPointers,
+    			hasBondsToAdd, hasBondsToDel);
+    }
   	
 //------------------------------------------------------------------------------
   	

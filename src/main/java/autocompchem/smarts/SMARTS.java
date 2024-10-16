@@ -1,5 +1,7 @@
 package autocompchem.smarts;
 
+import java.util.Objects;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -79,6 +81,14 @@ public class SMARTS
  		   return false;
  	   
  	   return this.smartsAsString.equals(other.smartsAsString);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(isSingleAtom, smartsAsString);
     }
 
 //------------------------------------------------------------------------------

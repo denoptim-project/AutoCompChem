@@ -3,6 +3,7 @@ package autocompchem.modeling.basisset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import autocompchem.utils.NumberUtils;
 
@@ -318,6 +319,15 @@ public class Primitive
     			 && this.exponent == other.exponent 
     			 && this.precCoeff == other.precCoeff
     			 && this.precExp == other.precExp;
+     }
+     
+//-----------------------------------------------------------------------------
+     
+     @Override
+     public int hashCode()
+     {
+     	return Objects.hash(coefficient, type, angMmnt, exponent, precCoeff, 
+     			precExp);
      }
      
 //------------------------------------------------------------------------------

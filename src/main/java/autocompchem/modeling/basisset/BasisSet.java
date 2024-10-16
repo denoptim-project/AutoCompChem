@@ -20,6 +20,7 @@ import java.util.ArrayList;
  */
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -245,6 +246,14 @@ public class BasisSet
     			return false;
     	}
     	return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(centerBSs);
     }
 
 //------------------------------------------------------------------------------

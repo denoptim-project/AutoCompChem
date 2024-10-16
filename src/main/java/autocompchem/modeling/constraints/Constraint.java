@@ -1,6 +1,7 @@
 package autocompchem.modeling.constraints;
 
 import java.util.List;
+import java.util.Objects;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
@@ -434,6 +435,14 @@ public class Constraint extends AnnotatedAtomTuple
 	   	
 	   	return super.equals(o);
 	}
+	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(type, getValue(), getPrefix(), getSuffix());
+    }
 	
 //-----------------------------------------------------------------------------
 

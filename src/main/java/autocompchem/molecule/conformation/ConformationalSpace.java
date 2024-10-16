@@ -2,6 +2,7 @@ package autocompchem.molecule.conformation;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -98,6 +99,14 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
   	   	}
   	   	return true;
   	}
+  	
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(CRDID, super.hashCode());
+    }
   	
 //-----------------------------------------------------------------------------
 

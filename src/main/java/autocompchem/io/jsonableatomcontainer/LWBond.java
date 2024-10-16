@@ -23,6 +23,8 @@
 
 package autocompchem.io.jsonableatomcontainer;
 
+import java.util.Objects;
+
 import org.openscience.cdk.interfaces.IBond;
 
 /**
@@ -84,6 +86,14 @@ public class LWBond
     	if (this.bo!=other.bo)
     		return false;
     	return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(atomIds, bo);
     }
     
 //------------------------------------------------------------------------------

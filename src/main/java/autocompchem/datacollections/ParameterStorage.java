@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import com.google.gson.JsonDeserializationContext;
@@ -386,6 +387,14 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
      		return false;
  	   
  	    return super.equals(o);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(super.hashCode());
     }
     
 //------------------------------------------------------------------------------

@@ -25,6 +25,8 @@
 
 package autocompchem.io.jsonableatomcontainer;
 
+import java.util.Objects;
+
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.Atom;
@@ -116,6 +118,14 @@ public class LWAtom
     	if (!NumberUtils.closeEnough(p3d.z,other.p3d.z))
     		return false;
     	return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(elSymbol, p3d);
     }
     
 //------------------------------------------------------------------------------
