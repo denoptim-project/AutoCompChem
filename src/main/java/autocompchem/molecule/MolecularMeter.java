@@ -269,7 +269,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
 	    		{
 	    			String reference = molID + "_" + descRef;
 	  		        exposeOutputData(new NamedData(reference,
-	  		        		NamedDataType.LISTOFDOUBLES, 
 	  		        		new ListOfDoubles(descriptors.get(descRef))));
 	    		}
         	}

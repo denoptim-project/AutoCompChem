@@ -153,33 +153,6 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
         }
         return getParameterOrNull(ref);
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Return the parameter required or the given alternative.
-     * @param refName the reference name of the parameter
-     * @param defKind the parameter type to use for the default parameter
-     * @param defValue the fully qualified name of the class from which
-     * the default value is to be taken
-     * @return the user defined value or the default
-     */
-
-    public NamedData getParameterOrDefault(String refName, NamedDataType defKind, 
-    		Object defValue)
-    {
-    	refName = refName.toUpperCase();
-    	NamedData p;
-        if (this.contains(refName))
-        {
-             p = allData.get(refName);
-        }
-        else
-        {
-        	p = new NamedData(refName, defKind, defValue);
-        }
-        return p;
-    }
     
 //------------------------------------------------------------------------------
 
@@ -244,50 +217,21 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 
     public void setParameter(String ref)
     {
-        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.UNDEFINED, 
-        		null)); 
+        setParameter(new NamedData(ref.toUpperCase(), null)); 
     }
     
 //------------------------------------------------------------------------------
 
     /**
      * Store a parameter with the given reference name and value. 
-     * If the parameter already
-     * exists, it will be overwritten.
+     * If the parameter already exists, it will be overwritten.
      * @param ref the reference name of the parameter.
      * @param value the value of the parameter to be stored.
      */
 
-    public void setParameter(String ref, String value)
+    public void setParameter(String ref, Object value)
     {
-        setParameter(new NamedData(ref.toUpperCase(), NamedDataType.STRING, 
-        		value)); 
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Store a parameter with the given reference name, type, and value. 
-     * If the parameter already
-     * exists, it will be overwritten.
-     * @param ref the reference name of the parameter.
-     * @param type the type of value.
-     * @param value the value of the parameter to be stores.
-     */
-
-    public void setParameter(String ref, NamedDataType type, Object value)
-    {
-        setParameter(new NamedData(ref.toUpperCase(), type, value)); 
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set the default parameters.
-     */
-
-    public void setDefault()
-    {
+        setParameter(new NamedData(ref.toUpperCase(), value)); 
     }
 
 //------------------------------------------------------------------------------
@@ -366,8 +310,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
             String value = signleBlock.get(1);
 
             //All params read from text file are seen as Strings for now
-            NamedData prm = new NamedData(key, NamedData.NamedDataType.STRING,
-            		value);
+            NamedData prm = new NamedData(key, value);
             setParameter(prm);
         }
     }

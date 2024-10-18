@@ -210,7 +210,6 @@ public class ACCMain
         Job job = null;
         
         ParameterStorage params = new ParameterStorage();
-        params.setDefault();
         
         // First, look for the -t/--task, -j/--job, -p/--params
         // anyone of these must be there.

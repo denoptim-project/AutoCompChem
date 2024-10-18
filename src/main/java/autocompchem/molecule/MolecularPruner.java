@@ -166,8 +166,7 @@ public class MolecularPruner extends AtomContainerInputProcessor
 		    if (exposedOutputCollector != null)
 		    {
 	    	    String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(molID,
-		        		NamedDataType.IATOMCONTAINER, pruned));
+		        exposeOutputData(new NamedData(molID, pruned));
 			}
     	} else {
     		dealWithTaskMismatch();

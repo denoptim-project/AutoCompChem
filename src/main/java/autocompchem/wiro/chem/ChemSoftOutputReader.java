@@ -924,7 +924,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
         if (geomsToExpose.getAtomContainerCount()>0)
         {
 	        exposeOutputData(new NamedData(ChemSoftConstants.JOBDATAGEOMETRIES,
-	        		NamedDataType.UNDEFINED, geomsToExpose));
+	        		geomsToExpose));
         }
         
         if (!finalResultsString.toString().isBlank())

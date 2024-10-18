@@ -316,8 +316,7 @@ public class BondEditor extends AtomContainerInputProcessor
             if (exposedOutputCollector != null)
             {
             	String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.IATOMCONTAINER, iac));
+		        exposeOutputData(new NamedData(molID, iac));
             }
             
             if (outFile!=null)

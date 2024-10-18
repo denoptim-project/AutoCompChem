@@ -213,8 +213,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
     	{
 			String molID = "mol-"+i;
 	        exposeOutputData(new NamedData(
-	        		GENERATEBASISSETTASK.ID + "_" + molID, 
-	        		NamedDataType.BASISSET, bs));
+	        		GENERATEBASISSETTASK.ID + "_" + molID,  bs));
     	}
 	}
 

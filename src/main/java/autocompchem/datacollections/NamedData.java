@@ -159,18 +159,19 @@ public class NamedData implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a named data with a given content.
+     * Constructor made to bypass detection of type. While this is faster, is
+     * cannot guarantee the consistency between type and content, so it should
+     * not be made public.
      * @param reference the name of the data.
      * @param type the type of object.
      * @param value the actual data.
      */
 
-    public NamedData(String reference, NamedDataType type, Object value)
+    private NamedData(String reference, NamedDataType type, Object value)
     {
         this.reference = reference;
         this.type = type;
-        //TODO-gg remove this method
-        setValue(value);
+        this.value = value;
     }
 
 //------------------------------------------------------------------------------

@@ -365,8 +365,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 	    
         if (exposedOutputCollector != null)
         {
-        	exposeOutputData(new NamedData(task.ID + "mol-"+i, 
-		      		NamedDataType.ZMATRIX, zmat));
+        	exposeOutputData(new NamedData(task.ID + "mol-"+i, zmat));
         }
     }
 
@@ -693,8 +692,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                 
                 if (exposedOutputCollector != null)
                 {
-                	exposeOutputData(new NamedData(task.ID + "mol-"+i, 
-        		      		NamedDataType.IATOMCONTAINER, iac));
+                	exposeOutputData(new NamedData(task.ID + "mol-"+i, iac));
                 }
             }
             catch (Throwable t)
@@ -716,8 +714,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             
             if (exposedOutputCollector != null)
             {
-            	exposeOutputData(new NamedData("zmat-"+i,
-    		      		NamedDataType.ZMATRIX, zmatRes));
+            	exposeOutputData(new NamedData("zmat-"+i, zmatRes));
             }
         }
     }

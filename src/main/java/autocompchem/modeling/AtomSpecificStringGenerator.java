@@ -184,8 +184,7 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 	    			jj++;
 	  		        exposeOutputData(new NamedData(
 	  		        		GETATOMSPECIFICSTRINGTASK.ID + "_mol-" + i 
-	  		        			+ "_hit-" + jj, 
-	  		        		NamedDataType.STRING, one));
+	  		        			+ "_hit-" + jj, one));
 	    		}
 	    	}
 		} else {

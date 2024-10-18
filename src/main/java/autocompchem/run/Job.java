@@ -412,10 +412,12 @@ public class Job implements Runnable
      * further embedding level recursively.
      */
 
+    //TODO-gg del
+    @Deprecated
     public void setParameter(String ref, NamedDataType type, Object value, 
     		boolean recursive)
     {
-        NamedData param = new NamedData(ref.toUpperCase(), type, value);
+        NamedData param = new NamedData(ref.toUpperCase(), value);
     	setParameter(param, recursive);
     }
     
@@ -629,10 +631,8 @@ public class Job implements Runnable
         	if (stderr==null)
         		stderr = new File(dir + SEP + "Job" + jobHashCode +".err");
         }
-        exposedOutput.putNamedData(
-        		new NamedData("LOG", NamedDataType.FILE, stdout));
-        exposedOutput.putNamedData(
-        		new NamedData("ERR", NamedDataType.FILE, stderr));
+        exposedOutput.putNamedData(new NamedData("LOG", stdout));
+        exposedOutput.putNamedData(new NamedData("ERR", stderr));
     }
     
 //------------------------------------------------------------------------------

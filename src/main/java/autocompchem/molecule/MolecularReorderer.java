@@ -197,8 +197,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             if (exposedOutputCollector != null)
             {
 	    	    String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(molID, 
-		      		NamedDataType.ATOMCONTAINERSET, reordered));
+		        exposeOutputData(new NamedData(molID, reordered));
             }
     	} else {
     		dealWithTaskMismatch();

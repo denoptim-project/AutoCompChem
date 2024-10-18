@@ -288,8 +288,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
             String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID,
-                    NamedDataType.BOOLEAN, result));
+            exposeOutputData(new NamedData(molID, result));
         }
     }
       
@@ -313,8 +312,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
             String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID, 
-                  NamedDataType.ATOMCONTAINERSET, iac));
+            exposeOutputData(new NamedData(molID, iac));
         }
     }
     
@@ -426,8 +424,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
             String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID, 
-                  NamedDataType.ATOMCONTAINERSET, iac));
+            exposeOutputData(new NamedData(molID, iac));
         }
     }
 
@@ -498,8 +495,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
             String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID, 
-                  NamedDataType.IATOMCONTAINER, iac));
+            exposeOutputData(new NamedData(molID, iac));
         }
     }
 

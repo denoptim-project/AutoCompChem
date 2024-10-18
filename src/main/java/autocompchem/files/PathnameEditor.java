@@ -177,8 +177,7 @@ public class PathnameEditor extends Worker
         
         if (exposedOutputCollector != null)
     	{
-	        exposeOutputData(new NamedData(GETPATHNAMETASK.ID, 
-	        		NamedDataType.STRING, result));
+	        exposeOutputData(new NamedData(GETPATHNAMETASK.ID, result));
     	}
         
         return result;

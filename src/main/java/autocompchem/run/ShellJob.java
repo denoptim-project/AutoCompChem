@@ -271,8 +271,8 @@ public class ShellJob extends Job
                 // There is no way (yet) the get the environment after running 
                 // the process... sadly.
                 
-                NamedData nd = new NamedData("INITIALENV", 
-            			NamedDataType.STRING, pb.environment().toString());
+                NamedData nd = new NamedData("INITIALENV"
+                		, pb.environment().toString());
                 exposedOutput.putNamedData(nd);
                 
                 if (pb.directory() != null)
@@ -296,7 +296,7 @@ public class ShellJob extends Job
                 {
                     int exitCode = p.waitFor();
                     exposedOutput.putNamedData(new NamedData("EXITCODE",
-                    		NamedDataType.INTEGER, exitCode));
+                    		exitCode));
                 }
                 catch (InterruptedException ie)
                 {

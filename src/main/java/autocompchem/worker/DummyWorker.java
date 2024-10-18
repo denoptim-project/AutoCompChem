@@ -93,8 +93,7 @@ public class DummyWorker extends Worker
 		// These dummy data are used only for testing
 		// Do not modify them unless you change also the 
 		// WorkerFactoryTest class
-		inputCollector.putNamedData(new NamedData(DATAREF, 
-				NamedDataType.STRING, DATAVALUE));
+		inputCollector.putNamedData(new NamedData(DATAREF, DATAVALUE));
 	}
 	
 //-----------------------------------------------------------------------------

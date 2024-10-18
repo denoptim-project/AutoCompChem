@@ -182,7 +182,6 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 				labelsParams.setParameter(WorkerConstants.PARTASK, 
 	    				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
 				labelsParams.setParameter(ChemSoftConstants.PARGEOM,
-	    				NamedDataType.IATOMCONTAINER, 
 	    				new ArrayList<IAtomContainer>(Arrays.asList(iac)));
 				AtomLabelsGenerator labGenerator = null;
 				try {

@@ -189,11 +189,11 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	        {
 	    	    String molID = "mol-"+i;
 		        exposeOutputData(new NamedData(task.ID + molID + "RMSD",
-		      		NamedDataType.DOUBLE, alignment.getRMSD()));
+		        		alignment.getRMSD()));
 		        exposeOutputData(new NamedData(task.ID + molID + "RMSDIM",
-		      		NamedDataType.DOUBLE, alignment.getRMSDIM()));
+		        		alignment.getRMSDIM()));
 		        exposeOutputData(new NamedData(task.ID + molID,
-		      		NamedDataType.IATOMCONTAINER, alignment.getSecondIAC()));
+		        		alignment.getSecondIAC()));
 	    	}
 		}
     }

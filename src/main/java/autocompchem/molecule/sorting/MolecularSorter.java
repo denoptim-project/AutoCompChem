@@ -155,8 +155,7 @@ public class MolecularSorter extends AtomContainerInputProcessor
         
         if (exposedOutputCollector != null)
         {
-        	exposeOutputData(new NamedData(SORTMOLECULESTASK.ID, 
-		      		NamedDataType.ATOMCONTAINERSET, result));
+        	exposeOutputData(new NamedData(SORTMOLECULESTASK.ID, result));
     	}
     }
 	

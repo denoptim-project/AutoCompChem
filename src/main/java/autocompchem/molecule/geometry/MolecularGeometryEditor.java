@@ -425,7 +425,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             {
 	    	    String molID = "mol-"+i;
 		        exposeOutputData(new NamedData(task.ID + molID, 
-		        		NamedDataType.ATOMCONTAINERSET, result));
+		        		result));
         	}
     	} else {
     		dealWithTaskMismatch();

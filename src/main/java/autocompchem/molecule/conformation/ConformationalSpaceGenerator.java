@@ -125,8 +125,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
         	{
     			String molID = "mol-"+i;
     	        exposeOutputData(new NamedData(
-    	        		GENERATECONFORMATIONALSPACETASK.ID + "-" + molID, 
-    	        		NamedDataType.CONFORMATIONALSPACE, cs));
+    	        		GENERATECONFORMATIONALSPACETASK.ID + "-" + molID, cs));
         	}
     	} else {
     		dealWithTaskMismatch();

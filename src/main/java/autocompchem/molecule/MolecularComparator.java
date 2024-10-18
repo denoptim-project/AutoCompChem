@@ -228,8 +228,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
     	    String molID = "mol-"+i;
-	        exposeOutputData(new NamedData(task.ID + molID,
-	      		NamedDataType.BOOLEAN, consistentConnectivity));
+	        exposeOutputData(new NamedData(task.ID + molID, 
+	        		consistentConnectivity));
     	}
     }
 
@@ -325,8 +325,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
     	    String molID = "mol-"+i;
-	        exposeOutputData(new NamedData(task.ID + molID, 
-	      		NamedDataType.DOUBLE, mad));
+	        exposeOutputData(new NamedData(task.ID + molID, mad));
     	}
     }
 
@@ -460,8 +459,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
         if (exposedOutputCollector != null)
         {
     	    String molID = "mol-"+i;
-	        exposeOutputData(new NamedData(task.ID + molID, 
-	      		NamedDataType.DOUBLE, alignment.getRMSD()));
+	        exposeOutputData(new NamedData(task.ID + molID, alignment.getRMSD()));
     	}
     }
 

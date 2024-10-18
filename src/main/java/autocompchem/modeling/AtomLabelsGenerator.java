@@ -206,8 +206,7 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
                 TextBlock tb = new TextBlock(lst);
     			String molID = "mol-" + i;
   		        exposeOutputData(new NamedData(
-  		        		GENERATEATOMLABELSTASK.ID + "_" + molID, 
-  		        		NamedDataType.TEXTBLOCK, tb));
+  		        		GENERATEATOMLABELSTASK.ID + "_" + molID, tb));
         	}
     	} else {
     		dealWithTaskMismatch();

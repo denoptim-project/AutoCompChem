@@ -196,8 +196,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
             if (exposedOutputCollector != null)
         	{
     	    			String molID = task.ID + "mol-"+i;
-    	  		        exposeOutputData(new NamedData(molID, 
-    	  		        		NamedDataType.IATOMCONTAINER, iac));
+    	  		        exposeOutputData(new NamedData(molID, iac));
         	}
     	} else {
     		dealWithTaskMismatch();

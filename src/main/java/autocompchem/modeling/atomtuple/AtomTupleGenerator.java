@@ -263,8 +263,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	    	{
 				String molID = "mol-"+i;
 		        exposeOutputData(new NamedData(
-		        		GENERATEATOMTUPLESTASK.ID + "_" + molID, 
-		        		NamedDataType.ANNOTATEDATOMTUPLELIST, aatl));
+		        		GENERATEATOMTUPLESTASK.ID + "_" + molID, aatl));
 	    	}
 		} else {
 			dealWithTaskMismatch();

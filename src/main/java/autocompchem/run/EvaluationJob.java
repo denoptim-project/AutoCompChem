@@ -79,13 +79,10 @@ public class EvaluationJob extends ACCJob
         this();
         focusJob = jobToEvaluate;
         params.setParameter(ParameterConstants.JOBTOEVALPARENT,
-        		NamedDataType.JOB, containerOfJobToEvaluate);
-        params.setParameter(ParameterConstants.JOBTOEVALUATE,
-        		NamedDataType.JOB, jobToEvaluate);
-        params.setParameter(ParameterConstants.SITUATIONSDB, 
-        		NamedDataType.SITUATIONBASE, sitsDB);
-        params.setParameter(ParameterConstants.INFOCHANNELSDB, 
-        		NamedDataType.INFOCHANNELBASE, icDB);
+        		containerOfJobToEvaluate);
+        params.setParameter(ParameterConstants.JOBTOEVALUATE, jobToEvaluate);
+        params.setParameter(ParameterConstants.SITUATIONSDB, sitsDB);
+        params.setParameter(ParameterConstants.INFOCHANNELSDB, icDB);
     }
     
 //------------------------------------------------------------------------------

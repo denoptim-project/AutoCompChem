@@ -45,7 +45,7 @@ public class ParameterStorageTest
     public void testCaseInsensitivity() throws Exception
     {
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter("Key1", NamedDataType.STRING, "1.123");
+    	ps.setParameter("Key1", "1.123");
     	
     	assertTrue(ps.contains("KEY1"),"Case insensitive contains method (A)");
     	assertTrue(ps.contains("kEy1"),"Case insensitive contains method (B)");
@@ -57,9 +57,9 @@ public class ParameterStorageTest
     public void testGetRefNamesSet() throws Exception
     {
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter("KEY1", NamedDataType.STRING,"1.123");
-    	ps.setParameter("KEY2", NamedDataType.DOUBLE,1.123);
-    	ps.setParameter("KEY3", NamedDataType.INTEGER,206);
+    	ps.setParameter("KEY1", "1.123");
+    	ps.setParameter("KEY2", 1.123);
+    	ps.setParameter("KEY3", 206);
     	
     	assertEquals(3, ps.getRefNamesSet().size());
     	assertTrue(ps.getRefNamesSet().contains("KEY1"));
@@ -73,9 +73,9 @@ public class ParameterStorageTest
     public void testGetParameterOrNull() throws Exception
     {
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter("KEY1", NamedDataType.STRING, "1.123");
-    	ps.setParameter("KEY2", NamedDataType.DOUBLE, 1.123);
-    	ps.setParameter("KEY3", NamedDataType.INTEGER, 206);
+    	ps.setParameter("KEY1", "1.123");
+    	ps.setParameter("KEY2", 1.123);
+    	ps.setParameter("KEY3", 206);
     	NamedData rp1 = ps.getParameterOrNull("key1");
     	NamedData rp2 = ps.getParameterOrNull("key2");
     	NamedData rp3 = ps.getParameterOrNull("key3");
@@ -92,9 +92,9 @@ public class ParameterStorageTest
     public static ParameterStorage getTestParameterStorage()
     {
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter("KEY1", NamedDataType.STRING, "1.123");
-    	ps.setParameter("KEY2", NamedDataType.DOUBLE, 1.123);
-    	ps.setParameter("KEY3", NamedDataType.INTEGER, 206);
+    	ps.setParameter("KEY1", "1.123");
+    	ps.setParameter("KEY2", 1.123);
+    	ps.setParameter("KEY3", 206);
     	return ps;
     }
     
@@ -143,9 +143,9 @@ public class ParameterStorageTest
     public void testJsonRoundTrip() throws Exception
     {
     	ParameterStorage ps = new ParameterStorage();
-    	ps.setParameter("KEY1", NamedDataType.STRING, "1.123");
-    	ps.setParameter("KEY2", NamedDataType.DOUBLE, 1.123);
-    	ps.setParameter("KEY3", NamedDataType.INTEGER, 206);
+    	ps.setParameter("KEY1", "1.123");
+    	ps.setParameter("KEY2", 1.123);
+    	ps.setParameter("KEY3", 206);
     	
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();

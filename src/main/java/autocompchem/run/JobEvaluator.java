@@ -469,8 +469,7 @@ public class JobEvaluator extends Worker
 		if (p.isAware())
 		{
 			Situation s = p.getOccurringSituations().get(0);
-			exposeOutputData(new NamedData(SITUATIONOUTKEY,
-					NamedDataType.SITUATION, s));
+			exposeOutputData(new NamedData(SITUATIONOUTKEY, s));
 			
 			if (s.hasReaction())
 			{
@@ -479,8 +478,7 @@ public class JobEvaluator extends Worker
 				// NB: this triggers notification of a request of action on the
 				// observer (if any observer is present)
 				((EvaluationJob) myJob).setRequestedAction(reaction);
-				exposeOutputData(new NamedData(REACTIONTOSITUATION,
-						NamedDataType.ACTION, reaction));
+				exposeOutputData(new NamedData(REACTIONTOSITUATION, reaction));
 				
 				if (jobBeingEvaluated!=null)
 				{
@@ -589,9 +587,8 @@ public class JobEvaluator extends Worker
 			makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID,
 					"ACC");
 		}
-		makeInputPars.setParameter(
-				ChemSoftConstants.PARJOBDETAILSOBJ, 
-				NamedDataType.JOB, jobResultingFromAction);
+		makeInputPars.setParameter(ChemSoftConstants.PARJOBDETAILSOBJ, 
+				jobResultingFromAction);
 		
 		//TODO-gg this was the wrong way to do this. We need to make
 		// the action control whether or not to update the geometry 
@@ -707,13 +704,13 @@ public class JobEvaluator extends Worker
 		// JOBOUTPUTDATA, but it is convenient to expose 
 		// it even further to simplify access to some pivotal bit of 
 		// information.
-		exposeOutputData(new NamedData(NORMALTERMKEY, NamedDataType.BOOLEAN, 
+		exposeOutputData(new NamedData(NORMALTERMKEY,
 				outputParser.getNormalTerminationFlag()));
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.JOBOUTPUTDATA));
 		exposeOutputData(exposedByAnalzer.getNamedData(
 				ChemSoftConstants.SOFTWAREID));
-		exposeOutputData(new NamedData(NUMSTEPSKEY, NamedDataType.INTEGER,
+		exposeOutputData(new NamedData(NUMSTEPSKEY,
 				outputParser.getStepsFound()));
 		
 		if (jobBeingEvaluated!=null 

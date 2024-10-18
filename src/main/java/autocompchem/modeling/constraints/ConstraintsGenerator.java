@@ -119,8 +119,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 	    	{
     			String molID = "mol-"+i;
   		        exposeOutputData(new NamedData(
-  		        		GENERATECONSTRAINTSTASK.ID + "_" + molID, 
-  		        		NamedDataType.CONSTRAINTSSET, cs));
+  		        		GENERATECONSTRAINTSTASK.ID + "_" + molID, cs));
 	    	}
     	} else {
     		dealWithTaskMismatch();

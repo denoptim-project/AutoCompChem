@@ -191,8 +191,8 @@ public class DirectiveTest
     	ParameterStorage taskParams = new ParameterStorage();
     	taskParams.setParameter(ChemSoftConstants.JDACCTASK, 
     			DummyWorker.DUMMYTASKTASK.ID);
-    	taskParams.setParameter("Value1", NamedDataType.INTEGER, 1);
-    	taskParams.setParameter("Value2", NamedDataType.DOUBLE, 1.23);
+    	taskParams.setParameter("Value1", 1);
+    	taskParams.setParameter("Value2", 1.23);
     	taskParams.setParameter("Value3", "abc");
     	d.setTaskParams(taskParams);
     	

@@ -209,35 +209,32 @@ public class NamedDataTest
     	List<NamedData> nds = new ArrayList<NamedData>();
     	
     	// first add JSON-able types
-    	nds.add(new NamedData("String", NamedDataType.STRING, "s"));
-    	nds.add(new NamedData("Boolean", NamedDataType.BOOLEAN, false));
-    	nds.add(new NamedData("Integer", NamedDataType.INTEGER, 1));
-    	nds.add(new NamedData("Double", NamedDataType.DOUBLE, 1.23));
-    	nds.add(new NamedData("Double", NamedDataType.DOUBLE, 1.0));
-    	nds.add(new NamedData("File", NamedDataType.FILE, new File("path")));
-    	nds.add(new NamedData("TextBlock", NamedDataType.TEXTBLOCK, 
+    	nds.add(new NamedData("String", "s"));
+    	nds.add(new NamedData("Boolean", false));
+    	nds.add(new NamedData("Integer", 1));
+    	nds.add(new NamedData("Double",  1.23));
+    	nds.add(new NamedData("Double", 1.0));
+    	nds.add(new NamedData("File",  new File("path")));
+    	nds.add(new NamedData("TextBlock", 
     			new ArrayList<String>(Arrays.asList("These","are","3 lines"))));
-    	nds.add(new NamedData("BasisSet", NamedDataType.BASISSET, 
+    	nds.add(new NamedData("BasisSet", 
     			BasisSetTest.getTestBasisSet()));
-    	nds.add(new NamedData("IAtomContainer", NamedDataType.IATOMCONTAINER, 
+    	nds.add(new NamedData("IAtomContainer", 
     			JSONableIAtomContainerTest.getTestIAtomContainer()));
-    	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
+    	nds.add(new NamedData("ConstraintSet", 
     			ConstraintsSetTest.getTestConstraintSet()));
-    	nds.add(new NamedData("ZMatrix", NamedDataType.ZMATRIX,
+    	nds.add(new NamedData("ZMatrix", 
     			ZMatrixTest.getTestZMatrix()));
-    	nds.add(new NamedData("ConstraintSet", NamedDataType.CONSTRAINTSSET,
+    	nds.add(new NamedData("ConstraintSet", 
     			ConstraintsSetTest.getTestConstraintSet()));
     	nds.add(new NamedData("AnnotatedAtomTupleList", 
-    			NamedDataType.ANNOTATEDATOMTUPLELIST,
     			AnnotatedAtomTupleListTest.getTestAnnotatedAtomTupleList()));
     	nds.add(new NamedData("ConformationalSpace", 
-    			NamedDataType.CONFORMATIONALSPACE,
     			ConformationalSpaceTest.getTestConformationalSpace()));
     	
     	// The following ones are non-JSON-able
-    	nds.add(new NamedData("Situation", NamedDataType.SITUATION, 
-    			new Situation()));
-    	nds.add(new NamedData("Undefined", NamedDataType.UNDEFINED, null));
+    	nds.add(new NamedData("Situation", new Situation()));
+    	nds.add(new NamedData("Undefined", null));
 
     	Gson writer = ACCJson.getWriter();
     	Gson reader = ACCJson.getReader();
@@ -275,16 +272,13 @@ public class NamedDataTest
     @Test
     public void testGetValueAsLines() throws Exception
     {
-    	NamedData ndInteger = new NamedData("integer", NamedDataType.INTEGER, 
-    			123);
+    	NamedData ndInteger = new NamedData("integer", 123);
     	assertEquals("123", ndInteger.getValueAsString());
     	
-    	NamedData ndDouble = new NamedData("double", NamedDataType.DOUBLE, 
-    			1.234);
+    	NamedData ndDouble = new NamedData("double", 1.234);
     	assertEquals("1.234", ndDouble.getValueAsString());
     	
     	NamedData ndDoubleLst = new NamedData("doubleLst", 
-    			NamedDataType.LISTOFDOUBLES, 
     			new ListOfDoubles(Arrays.asList(1.2, 3.4, 5.6)));
     	assertEquals("1.2 3.4 5.6", ndDoubleLst.getValueAsString());
     }

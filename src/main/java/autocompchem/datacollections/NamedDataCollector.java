@@ -146,33 +146,6 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Return the {@link NamedData} required or the given alternative.
-     * @param refName the reference name of the {@link NamedData}
-     * @param defKind the {@link NamedData} type to use for the default {@link NamedData}
-     * @param defValue the fully qualified name of the class from which
-     * the default value is to be taken
-     * @return the user defined value or the default
-     */
-
-    public NamedData getNamedDataOrDefault(String refName, 
-    		NamedData.NamedDataType defKind, 
-    		Object defValue)
-    {
-        NamedData p = new NamedData();
-        if (this.contains(refName))
-        {
-             p = allData.get(refName);
-        }
-        else
-        {
-        	p = new NamedData(refName, defKind, defValue);
-        }
-        return p;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Return all the {@link NamedData} stored
      * @return the map with all {@link NamedData}
      */
