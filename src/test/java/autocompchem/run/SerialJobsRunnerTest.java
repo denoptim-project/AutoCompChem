@@ -80,20 +80,24 @@ public class SerialJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "10");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
-        	master.addStep(new TestJob(roothName+i, 1, 0, 200, false));
+        	main.addStep(new TestJob(roothName+i, 1, 0, 200, false));
         }
-        master.run();
+
+        // Comment out this to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "2", true);
+        
+        main.run();
         
         for (int i=0; i<3; i++)
         {
         	int n = FileAnalyzer.count(roothName+i, TestJob.ITERATIONKEY+"*");
         	assertTrue(n>4,"Lines in log "+i);
         	assertTrue(n<8,"Lines in log "+i);
-        	assertFalse(master.getStep(i).isInterrupted,
+        	assertFalse(main.getStep(i).isInterrupted,
         			"Interruption flag on job-"+i);
         }
     }
@@ -110,27 +114,31 @@ public class SerialJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job master = JobFactory.createJob(AppID.ACC, 3, true);
-        master.setParameter("WALLTIME", "3");
+        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        main.setParameter("WALLTIME", "3"); 
         for (int i=0; i<3; i++)
         {
-        	master.addStep(new TestJob(roothName+i, 2, 0, 950, false));
+        	main.addStep(new TestJob(roothName+i, 2, 0, 950, false));
         }
-        master.run();
+
+        // Comment out this to get some log, in case of debugging
+        main.setParameter(ParameterConstants.VERBOSITY, "1", true);
+        
+        main.run();
         
         
         // First step runs to completion
         int n = FileAnalyzer.count(roothName+'0', TestJob.ITERATIONKEY+"*");
     	assertTrue(n>2,"Lines in log 0");
     	assertTrue(n<5,"Lines in log 0");
-    	assertFalse(master.getStep(0).isInterrupted, 
+    	assertFalse(main.getStep(0).isInterrupted, 
     			"Interruption flag on job-0");
     	
     	// Second step is interrupted
         n = FileAnalyzer.count(roothName+'1', TestJob.ITERATIONKEY+"*");
     	assertTrue(n>0,"Lines in log 1");
     	assertTrue(n<4,"Lines in log 1");
-    	assertTrue(master.getStep(1).isInterrupted,
+    	assertTrue(main.getStep(1).isInterrupted,
     			"Interruption flag on job-"+1);
     	
     	// Third never run
@@ -193,9 +201,9 @@ public class SerialJobsRunnerTest
         main.addStep(productionJob3);
         
         // Comment out this to get some log, in case of debugging
-        main.setParameter(ParameterConstants.VERBOSITY, "3", true);
+        main.setParameter(ParameterConstants.VERBOSITY, "2", true);
      
-        // Run master job
+        // Run main job
         main.run();
         
         /*

@@ -66,6 +66,36 @@ import autocompchem.text.TextBlock;
 public class NamedDataTest 
 {
 
+
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testDetectType_List() throws Exception
+    {
+    	NamedData nd = new NamedData();
+    	
+    	List<String> lst = new ArrayList<String>();
+    	nd.setValue(lst);
+    	assertTrue(NamedDataType.UNDEFINED.equals(nd.getType()));	
+
+    	List<String> lstStr= new ArrayList<String>(Arrays.asList("a", "b"));
+    	nd.setValue(lstStr);
+    	assertTrue(NamedDataType.TEXTBLOCK.equals(nd.getType()));
+    	
+    	List<Integer> lstInt = new ArrayList<Integer>(Arrays.asList(1,2,3,4));
+    	nd.setValue(lstInt);
+    	assertTrue(NamedDataType.LISTOFINTEGERS.equals(nd.getType()));
+    	
+    	List<Double> lstDoub = new ArrayList<Double>(Arrays.asList(1.0,2.2,3.3));
+    	nd.setValue(lstDoub);
+    	assertTrue(NamedDataType.LISTOFDOUBLES.equals(nd.getType()));
+    	
+    	List<Boolean> lstBol= new ArrayList<Boolean>(Arrays.asList(true,
+    			false));
+    	nd.setValue(lstBol);
+    	assertTrue(NamedDataType.UNDEFINED.equals(nd.getType()));	
+    }
+
 //------------------------------------------------------------------------------
     
     @Test
@@ -107,11 +137,6 @@ public class NamedDataTest
     	nd.setValue(mols);
     	assertTrue(NamedDataType.ATOMCONTAINERSET.equals(nd.getType()),
     			"Detecting IAtomContainer");
-    	
-    	ArrayList<String> lst = new ArrayList<String>();
-    	nd.setValue(lst);
-    	assertTrue(NamedDataType.TEXTBLOCK.equals(nd.getType()),
-    			"Detecting TextBlock");
     	
     	TextBlock tb = new TextBlock();
     	nd.setValue(tb);

@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -28,6 +31,7 @@ import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.run.Job;
 import autocompchem.run.jobediting.Action;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
@@ -164,8 +168,9 @@ public class NamedData implements Cloneable
     public NamedData(String reference, NamedDataType type, Object value)
     {
         this.reference = reference;
-        this.type = type; 
-        this.value = value;
+        this.type = type;
+        //TODO-gg remove this method
+        setValue(value);
     }
 
 //------------------------------------------------------------------------------
@@ -195,14 +200,73 @@ public class NamedData implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Set the value of this data.
-     * @param value the value to be set to this data.
+     * Set the value of this data. This imposes the type according to what type 
+     * is detected. This to ensure consistent type upon cloning of 
+     * {@link NamedData}. As a result, the type given as argument may not be the
+     * actual type used to store the data within this class. To avoid the 
+     * creation of a new instance with a type that allows storage of the given 
+     * value, provide a value with one of the types listed as values of
+     * {@link NamedDataType}.
+     * @param value the value to be set to this data. The type should be
+     * among those listed in {@link NamedDataType}.
      */
 
     public void setValue(Object value)
     {
     	this.type = detectType(value);
-        this.value = value;
+    	Object tmpValue = value;
+    	if (value instanceof List)
+    	{
+    		List<?> lst = (List<?>) value;
+    		switch (type) {
+	    		case TEXTBLOCK:
+	    		{
+	    			if (value instanceof TextBlock)
+	    				break;
+		    		TextBlock tb = new TextBlock();
+		    		for (int i=0; i<lst.size(); i++)
+		    			tb.add(lst.get(i).toString());
+		    		tmpValue = tb;
+		    		break;
+	    		}
+	    		case LISTOFINTEGERS:
+	    		{
+	    			if (value instanceof ListOfIntegers)
+	    				break;
+	    			ListOfIntegers loi = new ListOfIntegers();
+		    		for (int i=0; i<lst.size(); i++)
+		    			loi.add((Integer) lst.get(i));
+		    		tmpValue = loi;
+		    		break;
+	    		}
+	    		case LISTOFDOUBLES:
+	    		{
+	    			if (value instanceof ListOfDoubles)
+	    				break;
+	    			ListOfDoubles loi = new ListOfDoubles();
+		    		for (int i=0; i<lst.size(); i++)
+		    			loi.add((Double) lst.get(i));
+		    		tmpValue = loi;
+		    		break;
+	    		}
+	    		case ATOMCONTAINERSET:
+	    		{
+	    			if (value instanceof AtomContainerSet)
+	    				break;
+		    		AtomContainerSet acs = new AtomContainerSet();
+		        	for (int i=0; i<lst.size(); i++)
+		        	{
+		        		
+		        		acs.addAtomContainer((IAtomContainer) lst.get(i));
+		        	}
+		        	tmpValue = acs;
+		        	break;
+	    		}
+				default:
+					break;
+	    	}
+    	}
+    	this.value = tmpValue;
     }
     
 //------------------------------------------------------------------------------
@@ -331,6 +395,8 @@ public class NamedData implements Cloneable
     	if (o==null)
     		return tp;
     	
+    	Logger logger = LogManager.getLogger();
+    	
        	String className = o.getClass().getName();
     	className = className.substring(className.lastIndexOf(".")+1);
 
@@ -369,10 +435,46 @@ public class NamedData implements Cloneable
     			break;
 
     		case ("ArrayList"):
-    			// NB: this is meant. I cannot see how to detect the type of
-    			// elements, so we take them as strings.
-    			tp = NamedDataType.TEXTBLOCK;
+    		{
+    			ArrayList<?> list = (ArrayList<?>) o;
+    			if (list.size()>0)
+    			{
+    				Object item = list.get(0);
+    				String itmClass = item.getClass().getName();
+    				itmClass = itmClass.substring(itmClass.lastIndexOf(".")+1);
+    				switch (itmClass) {
+    				case "Integer":
+    					tp = NamedDataType.LISTOFINTEGERS;
+    					break;
+    				case "Double":
+    					tp = NamedDataType.LISTOFDOUBLES;
+    					break;
+    				case "String":
+    					tp = NamedDataType.TEXTBLOCK;
+    					break;
+
+    	    		case ("Molecule"):
+    	    		case ("AtomContainer"):
+    	    		case ("AtomContainer2"):
+    	    			tp = NamedDataType.ATOMCONTAINERSET;
+    	    			break;
+    	    			
+    				default:
+    	    			tp = NamedDataType.UNDEFINED;
+    					logger.warn("WARNING! The type of items in the list is "
+    							+ "none among the expected ones (Integer, "
+    							+ "Double, String, Molecule, IAtomContainer, "
+    							+ "IAtomContainer2). Data of type '"
+    							+ itmClass + "' threated as " + tp + ".");
+    					break;
+    				}
+    			} else {
+        			tp = NamedDataType.UNDEFINED;
+					logger.warn("WARNING! Cannot guess type of list items from "
+							+ "an empty list. Data type is " + tp + ".");
+    			}
     			break;
+    		}
 
     		case ("ListOfDoubles"):
     			tp = NamedDataType.LISTOFDOUBLES;
@@ -432,6 +534,8 @@ public class NamedData implements Cloneable
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
+				logger.warn("WARNING! Unexpected data of type '" 
+						+ className + "' will be treated as " + tp + ".");
     			break;
     	}
     	return tp;
@@ -575,10 +679,25 @@ public class NamedData implements Cloneable
      		return false;
  	   
  	    NamedData other = (NamedData) o;
+ 	    
+ 	    if (!this.reference.equals(other.reference))
+ 	    	return false;
+ 	    
+ 	    if (this.type != other.type)
+ 	    	return false;
  	   
- 	    return this.reference.equals(other.reference)
- 	    		&& this.type == other.type
- 	    		&& this.value.equals(other.value);
+ 	    // NB: special handling of value meant to avoid overflow resulting by 
+ 	    // hashing Jobs that contain references to related Jobs.
+ 	    if (this.value.getClass() != other.value.getClass())
+ 	    	return false;
+ 	    
+ 	    if (this.value instanceof Job)
+ 	    {
+ 	    	return ((Job) this.value).getHashCodeSnapshot() == 
+ 	    			((Job) other.value).getHashCodeSnapshot();
+ 	    }
+ 	    
+ 	    return this.value.equals(other.value);
     }
     
 //-----------------------------------------------------------------------------
@@ -586,7 +705,15 @@ public class NamedData implements Cloneable
     @Override
     public int hashCode()
     {
-    	return Objects.hash(reference, type, value);
+ 	    // NB: special handling of value meant to avoid overflow resulting by 
+ 	    // hashing Jobs that contain references to related Jobs.
+    	if (this.value instanceof Job)
+ 	    {
+ 	    	return Objects.hash(reference, type, 
+ 	    			((Job) value).getHashCodeSnapshot());
+ 	    } else {
+ 	    	return Objects.hash(reference, type, value);
+ 	    }
     }
     
 //------------------------------------------------------------------------------

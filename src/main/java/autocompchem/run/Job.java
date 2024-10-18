@@ -1289,34 +1289,39 @@ public class Job implements Runnable
            return false;
 	   
 	   Job other = (Job) o;
+
+	   // NB: flags like 'isInterrupted', 'hasException', 'completed',
+	   // and 'redirectOutErr' and also 'exposedOutput'
+	   // change during the execution of the job so should not be used to 
+	   // compare jobs otherwise the associated change of hachcode breaks
+	   // consistency required to use Job instances as keys in Hash-based maps
+	   // and similar.
 	   
 	   return this.jobId == other.jobId 
 			   && this.appID == other.appID
 			   && this.parallelizable == other.parallelizable
 			   && this.nThreads == other.nThreads
-			   && this.isInterrupted == other.isInterrupted 
-			   && this.hasException == other.hasException 
-			   && this.completed == other.completed 
 			   && Objects.equals(this.customUserDir, other.customUserDir)
-			   && this.redirectOutErr == other.redirectOutErr
 			   && Objects.equals(this.stdout, other.stdout)
 			   && Objects.equals(this.stderr, other.stderr)
 			   && Objects.equals(this.params, other.params)
-			   && Objects.equals(this.steps, other.steps)
-			   && Objects.equals(this.exposedOutput, other.exposedOutput);
+			   && Objects.equals(this.steps, other.steps);
    }
+   
 //-----------------------------------------------------------------------------
 
 	@Override
 	public int hashCode() 
 	{
-	    // NB: this violates the consistency with equals(), but is the only way 
-		// so far to avoid the overflow resulting from doing 
-		// Objects.hash(some fields used in equals).
-		// In particular 'steps' and 'params' may contain references to other 
-		// jobs that may refer to this one, thus creating a loop that leads to
-		// the overflow.
-		return jobHashCode;  
+	    // NB: flags like 'isInterrupted', 'hasException', 'completed', 
+		// and 'redirectOutErr' and also 'exposedOutput'
+		// change during the execution of the job so should not be used to 
+	    // compare jobs otherwise the associated change of hachcode breaks
+	    // consistency required to use Job instances as keys in Hash-based maps
+	    // and similar.
+		
+		return Objects.hash(jobId, appID, parallelizable, nThreads,
+				customUserDir, stdout, stderr, params, steps);
 	}
     
 //------------------------------------------------------------------------------

@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData;
@@ -137,11 +139,12 @@ public class AtomContainerInputProcessor extends Worker
         }
         if (params.contains(ChemSoftConstants.PARGEOM))
         {
-            inMols = (List<IAtomContainer>) params.getParameter(
-            		ChemSoftConstants.PARGEOM).getValue();
+            inMols = new ArrayList<IAtomContainer>();
+            ((AtomContainerSet) params.getParameter(ChemSoftConstants.PARGEOM)
+            		.getValue()).atomContainers().forEach(i -> inMols.add(i));
+           
             if (params.contains("INFILE"))
             {
-            	//TODO: logging
             	logger.warn("WARNING: found both "
             			+ ChemSoftConstants.PARINFILE + " and "
             			+ ChemSoftConstants.PARGEOM + ". Using geometries from "

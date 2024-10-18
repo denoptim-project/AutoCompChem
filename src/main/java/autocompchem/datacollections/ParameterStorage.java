@@ -377,7 +377,7 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     @Override
     public boolean equals(Object o) 
     {
-    	if ( o== null)
+    	if (o == null)
     		return false;
     	
  	    if (o == this)

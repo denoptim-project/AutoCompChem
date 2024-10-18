@@ -259,7 +259,7 @@ public class NamedDataCollector implements Cloneable
  	   
  	    NamedDataCollector other = (NamedDataCollector) o;
  	    
- 	    if (this.allData.size()!=other.allData.size())
+ 	    if (this.allData.size() != other.allData.size())
  	    	return false;
  	  
  	    for (String nameOfData : this.allData.keySet())

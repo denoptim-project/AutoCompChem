@@ -172,7 +172,7 @@ public class DirectiveTest
     	d.addKeyword(new Keyword("key1", true, 
     			new ArrayList<String>(Arrays.asList("a","b"))));
     	d.addKeyword(new Keyword("key2", true, 
-    			new ArrayList<String>(Arrays.asList("c","d"))));
+    			new TextBlock(Arrays.asList("c","d"))));
     	
     	String ddString = "data" 
     			+ ChemSoftConstants.JDDATAVALSEPARATOR
@@ -185,7 +185,7 @@ public class DirectiveTest
     	
     	Directive embedded = new Directive("embeddedDirective");
     	embedded.addKeyword(new Keyword("key1EMB", true, 
-    			new ArrayList<String>(Arrays.asList("aEMB","bEMB"))));
+    			new TextBlock(Arrays.asList("aEMB","bEMB"))));
     	d.addSubDirective(embedded);
     	
     	ParameterStorage taskParams = new ParameterStorage();
@@ -251,7 +251,6 @@ public class DirectiveTest
     			"filenameRoot_job2.xyz"),
     			"Task changing keyword");
     	
-
     	Directive d3 = getTestDirective();
     	d3.removeACCTasks();
     	d3.deleteComponent(d3.getAllDirectiveDataBlocks().get(0));
@@ -261,6 +260,8 @@ public class DirectiveTest
     			AtomSpecificStringGenerator.GETATOMSPECIFICSTRINGTASK.ID);
     	taskParams.setParameter("SMARTS", "[#6] options:~~@#BLA");
     	taskParams.setParameter("VALUEDKEYWORDS", "options");
+        // Comment out this to get some log, in case of debugging
+    	taskParams.setParameter(ParameterConstants.VERBOSITY, "3");
     	
     	Keyword kWithTask = new Keyword("ATMSPECKW", true, null);
     	kWithTask.setTaskParams(taskParams);
@@ -308,11 +309,11 @@ public class DirectiveTest
     {
     	Directive d = new Directive("testDirective");
     	d.addKeyword(new Keyword("key1", true, 
-    			new ArrayList<String>(Arrays.asList("a","b"))));
+    			new TextBlock(Arrays.asList("a","b"))));
     	d.addKeyword(new Keyword("key1", true, 
-    			new ArrayList<String>(Arrays.asList("x","y"))));
+    			new TextBlock(Arrays.asList("x","y"))));
     	d.addKeyword(new Keyword("key2", true, 
-    			new ArrayList<String>(Arrays.asList("c","d"))));
+    			new TextBlock(Arrays.asList("c","d"))));
     	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
     			Arrays.asList("A","B","C"))));
 
@@ -348,9 +349,9 @@ public class DirectiveTest
     {
     	Directive d = new Directive("testDirective");
     	d.addKeyword(new Keyword("key1", true, 
-    			new ArrayList<String>(Arrays.asList("a","b"))));
+    			new TextBlock(Arrays.asList("a","b"))));
     	d.addKeyword(new Keyword("key2", true, 
-    			new ArrayList<String>(Arrays.asList("c","d"))));
+    			new TextBlock(Arrays.asList("c","d"))));
     	d.addDirectiveData(new DirectiveData("data", new ArrayList<String>(
     			Arrays.asList("A","B","C"))));
     	

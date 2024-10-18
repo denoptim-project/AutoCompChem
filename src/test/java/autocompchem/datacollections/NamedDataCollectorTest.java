@@ -55,12 +55,12 @@ public class NamedDataCollectorTest
     	Atom atm2 = new Atom("O");
     	mol.addAtom(atm1);
     	mol.addAtom(atm2);
-    	ndc.putNamedData(new NamedData("IAC",mol));
+    	ndc.putNamedData(new NamedData("IAC", mol));
     	
     	ListOfDoubles ld = new ListOfDoubles();
     	ld.add(0.1);
     	ld.add(0.2);
-    	ndc.putNamedData(new NamedData("LD",ld));
+    	ndc.putNamedData(new NamedData("LD", ld));
     	
     	NormalMode nm1 = new NormalMode();
     	nm1.append(new Point3d(1,1,1));
@@ -71,10 +71,11 @@ public class NamedDataCollectorTest
     	NormalModeSet nms = new NormalModeSet();
     	nms.add(nm1);
     	nms.add(nm2);
-    	ndc.putNamedData(new NamedData("NMS",nms));
+    	ndc.putNamedData(new NamedData("NMS", nms));
     	
     	NamedDataCollector cndc = ndc.clone();
 
+    	// edit original fields
     	ndc.putNamedData(new NamedData("D", 2.6));
     	Atom atm3 = new Atom("H");
     	mol.addAtom(atm3);
@@ -84,12 +85,14 @@ public class NamedDataCollectorTest
     	
     	assertTrue((1.2-((Double) cndc.getNamedData("D").getValue()))<0.0001,
     			"Checking cloned NamedData with Double");
+    	
     	assertEquals(2, 
     			((IAtomContainer) cndc.getNamedData("IAC").getValue()).getAtomCount(),
     			"Checking cloned IAtomCOntainer");
     	assertEquals(3, 
     			((IAtomContainer) ndc.getNamedData("IAC").getValue()).getAtomCount(),
     			"Checking original IAtomCOntainer");
+    	
     	assertEquals(2, 
     			((ListOfDoubles) cndc.getNamedData("LD").getValue()).size(),
     			"Checking cloned list of doubles");
