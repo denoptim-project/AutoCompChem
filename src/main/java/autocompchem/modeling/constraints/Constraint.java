@@ -166,10 +166,10 @@ public class Constraint extends AnnotatedAtomTuple
      * @return the value or null.
      */
 
-    public double getValue()
+    public Double getValue()
     {
     	return hasValue() ? Double.parseDouble(getValueOfAttribute(
-    			ConstraintDefinition.KEYVALUES)) : null;
+    			ConstraintDefinition.KEYVALUES)) : 0.0;
     }
     
 //------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ public class Constraint extends AnnotatedAtomTuple
      * @return the value or null.
      */
 
-    public double getCurrentValue()
+    public Double getCurrentValue()
     {
     	return hasCurrentValue() ? Double.parseDouble(getValueOfAttribute(
     		    			AtomTupleConstants.KEYCURRENTVALUE)) : null;
@@ -441,7 +441,10 @@ public class Constraint extends AnnotatedAtomTuple
     @Override
     public int hashCode()
     {
-    	return Objects.hash(type, getValue(), getPrefix(), getSuffix());
+    	double value = getValue();
+    	String prefix = getPrefix();
+    	String suffix = getSuffix();
+    	return Objects.hash(type, value, prefix, suffix);
     }
 	
 //-----------------------------------------------------------------------------
