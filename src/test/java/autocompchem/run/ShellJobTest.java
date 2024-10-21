@@ -109,21 +109,4 @@ See {@Link JobTest} for a possible solution.
 
 //------------------------------------------------------------------------------
 
-    //TODO-gg: remove of keep?
-    //@Test
-    //@DisabledOnOs(WINDOWS)
-    public void testParallelizableSubJobs() throws Exception
-    {
-        Job job = JobFactory.createJob(SoftwareId.ACC);
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,true));
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,true));
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,true));
-        assertTrue(job.parallelizableSubJobs());
-
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,false));
-        assertFalse(job.parallelizableSubJobs());
-    }
-
-//------------------------------------------------------------------------------
-
 }

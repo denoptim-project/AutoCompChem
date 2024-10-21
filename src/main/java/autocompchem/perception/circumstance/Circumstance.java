@@ -79,18 +79,17 @@ public class Circumstance implements ICircumstance
 
 //------------------------------------------------------------------------------
 
-    //TODO
     /**
-     * Convert a score from numeric to boolean. Uses a threshold that can be set
-     * by method ___TODO: write method__.
-     * @param dScore the score in numeric double
+     * Convert a score from numeric to boolean. The threshold for switching from
+     * <code>false</code> to <code>true</code> is a score of 1.0.
+     * @param score the score in numeric double
      * @return a true/false value
      */
 
-    public boolean scoreToDecision(double dScore)
+    public boolean scoreToDecision(double score)
     {
         Boolean res = false;
-        if (dScore >= 1.0)
+        if (score >= 1.0)
         {
             res = true;
         }
@@ -103,12 +102,12 @@ public class Circumstance implements ICircumstance
      * Return a human readable representation
      * @return a string
      */
-
+    @Override
     public String toString()
     {
-    	//TODO-gg why super?
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString()).append(" [channelType:").append(ict);
+        sb.append(this.getClass().getSimpleName());
+        sb.append(" [channelType:").append(ict);
         sb.append("]");
         return sb.toString();
     }

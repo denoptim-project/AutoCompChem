@@ -236,14 +236,14 @@ public class JobTest
     	j1.addStep(j1_3);
     	
     	String parName1 = "PARNAME1";
-    	j1.setParameter(parName1, NamedDataType.INTEGER, 123, false);
+    	j1.setParameter(parName1, 123, false);
     	assertTrue(j1.hasParameter(parName1));
     	assertFalse(j1_1.hasParameter(parName1));
     	assertFalse(j1_2.hasParameter(parName1));
     	assertFalse(j1_3.hasParameter(parName1));
 
     	String parName2 = "PARNAME2";
-    	j1.setParameter(parName2, NamedDataType.INTEGER, 456, true);
+    	j1.setParameter(parName2, 456, true);
     	assertTrue(j1.hasParameter(parName2));
     	assertTrue(j1_1.hasParameter(parName2));
     	assertTrue(j1_2.hasParameter(parName2));

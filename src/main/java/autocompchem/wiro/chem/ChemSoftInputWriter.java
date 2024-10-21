@@ -567,8 +567,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     	{
     		cSet.addAtomContainer(iac);
     	}
-    	job.setParameter(ChemSoftConstants.PARGEOM, 
-    			NamedDataType.ATOMCONTAINERSET, cSet);
+    	job.setParameter(ChemSoftConstants.PARGEOM, cSet);
     }
  
 //------------------------------------------------------------------------------
