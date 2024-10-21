@@ -73,10 +73,8 @@ public final class JobFactory
 	{
 		if (object instanceof Job)
 		{
-			knownJobTypes.put(
-					//TODO-gg
-					new SoftwareId(((Job) object).appID.toString()),
-					(Job) object);
+			Job job = (Job) object;
+			knownJobTypes.put(job.appID, job);
 		} else {
 			throw new Error("Registration of " 
 					+ object.getClass().getSimpleName() 
