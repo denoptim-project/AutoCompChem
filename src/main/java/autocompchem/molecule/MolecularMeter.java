@@ -35,7 +35,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;

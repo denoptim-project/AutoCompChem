@@ -24,8 +24,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.tika.Tika;
-import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

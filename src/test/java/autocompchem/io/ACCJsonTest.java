@@ -1,7 +1,5 @@
 package autocompchem.io;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -30,30 +28,17 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.Gson;
 
-import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.infochannel.FileAsSource;
-import autocompchem.perception.infochannel.InfoChannelBase;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.ACCJob;
-import autocompchem.run.AppID;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
-import autocompchem.run.JobEvaluator;
 import autocompchem.run.JobFactory;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.ShellJob;
-import autocompchem.run.TestJob;
-import autocompchem.run.jobediting.Action;
-import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.SoftwareId;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
 import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.wiro.chem.Keyword;
-import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -76,7 +61,7 @@ public class ACCJsonTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         File jsonfile = new File(tempDir.getAbsolutePath() + SEP + "file.json");
-    	Job job = JobFactory.createJob(AppID.ACC);
+    	Job job = JobFactory.createJob(SoftwareId.ACC);
         job.addStep(new ShellJob("/bin/bash", "some/path/name.sh", "-lr --mm"));
         Job nest = new ACCJob();
         nest.addStep(new ACCJob());
@@ -87,7 +72,7 @@ public class ACCJsonTest
         job.addStep(nest);
         job.addStep(new MonitoringJob());
         job.addStep(new EvaluationJob());
-        job.addStep(JobFactory.createJob(AppID.ACC));
+        job.addStep(JobFactory.createJob(SoftwareId.ACC));
         CompChemJob ccj = new CompChemJob();
         ccj.setDirective(new Directive("DUMMY"));
         job.addStep(ccj);
@@ -119,18 +104,18 @@ public class ACCJsonTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         File jsonfile = new File(tempDir.getAbsolutePath() + SEP + "file.json");
-    	Job nestedJob = JobFactory.createJob(AppID.ACC);
+    	Job nestedJob = JobFactory.createJob(SoftwareId.ACC);
     	nestedJob.setParameter("nj1", "1.23");
-    	Job nestedNestedJob = JobFactory.createJob(AppID.ACC);
+    	Job nestedNestedJob = JobFactory.createJob(SoftwareId.ACC);
     	nestedNestedJob.setParameter("nnj", "value 2");
-    	Job nestedJob2 = JobFactory.createJob(AppID.ACC);
+    	Job nestedJob2 = JobFactory.createJob(SoftwareId.ACC);
     	nestedJob2.setParameter("nj1", "ABC");
-    	Job nestedNestedJob2 = JobFactory.createJob(AppID.ACC);
+    	Job nestedNestedJob2 = JobFactory.createJob(SoftwareId.ACC);
     	nestedNestedJob2.setParameter("nj2a", "a");
     	nestedNestedJob2.setParameter("nj2b", "b");
     	nestedNestedJob2.setParameter("nj2c", "c");
     	nestedNestedJob2.setParameter("nj2d", "d");
-    	Job job = JobFactory.createJob(AppID.ACC);
+    	Job job = JobFactory.createJob(SoftwareId.ACC);
     	nestedJob.addStep(nestedNestedJob); 
     	nestedJob.addStep(nestedNestedJob2); 
     	job.addStep(nestedJob);

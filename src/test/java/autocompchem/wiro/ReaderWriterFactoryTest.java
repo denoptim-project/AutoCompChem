@@ -30,8 +30,6 @@ import org.junit.jupiter.api.io.TempDir;
 import autocompchem.files.FileFingerprint;
 import autocompchem.io.IOtools;
 import autocompchem.run.SoftwareId;
-import autocompchem.wiro.OutputReader;
-import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 import autocompchem.worker.Worker;

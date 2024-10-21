@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.wiro.chem.DirectiveComponentType;
-
 
 public class DirectiveComponentTypeTest
 {

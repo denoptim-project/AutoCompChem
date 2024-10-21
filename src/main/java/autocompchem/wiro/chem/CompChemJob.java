@@ -44,7 +44,6 @@ import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.Terminator;
-import autocompchem.run.jobediting.Action;
 import autocompchem.text.TextAnalyzer;
 
 /**

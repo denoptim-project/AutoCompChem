@@ -34,24 +34,15 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.PathnameEditor;
 import autocompchem.modeling.AtomSpecificStringGenerator;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.run.SoftwareId;
 import autocompchem.text.TextBlock;
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.Directive;
-import autocompchem.wiro.chem.DirectiveComponentType;
-import autocompchem.wiro.chem.DirectiveData;
-import autocompchem.wiro.chem.DirectiveFactory;
-import autocompchem.wiro.chem.IDirectiveComponent;
-import autocompchem.wiro.chem.Keyword;
 import autocompchem.worker.DummyWorker;
-import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -227,7 +218,7 @@ public class DirectiveTest
 				+ ParameterConstants.SEPARATOR + ".sfx";
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
     	
-    	Job j = JobFactory.createJob(AppID.ACC);
+    	Job j = JobFactory.createJob(SoftwareId.ACC);
     	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
     	d.performACCTasks(null, j, null);

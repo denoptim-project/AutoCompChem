@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.run.SoftwareId;
 
 public class InheritJobParameterTest 
 {
@@ -75,11 +75,11 @@ public class InheritJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job sourceJob = JobFactory.createJob(AppID.ACC);
+    	Job sourceJob = JobFactory.createJob(SoftwareId.ACC);
     	sourceJob.setParameter("ParamA", "valueA");
     	sourceJob.setParameter("ParamB", "valueB");
     	
-    	Job destinationJob = JobFactory.createJob(AppID.ACC);
+    	Job destinationJob = JobFactory.createJob(SoftwareId.ACC);
     	destinationJob.setParameter("ParamC", "valueC");
     	destinationJob.setParameter("ParamB", "oldValueB");
     	

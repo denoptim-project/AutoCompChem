@@ -56,7 +56,6 @@ import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.acc.ACCInputWriter;
 import autocompchem.wiro.acc.ACCOutputReader;
-import autocompchem.wiro.chem.AgnosticCompChemInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
 import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 import autocompchem.wiro.chem.gaussian.legacy.GaussianJobDetailsConverter;

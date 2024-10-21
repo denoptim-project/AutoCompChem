@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.vecmath.Point3d;
@@ -51,9 +50,6 @@ import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
 import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.wiro.chem.Keyword;
-import autocompchem.wiro.chem.gaussian.GaussianConstants;
-import autocompchem.wiro.chem.gaussian.GaussianInputWriter;
-import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 

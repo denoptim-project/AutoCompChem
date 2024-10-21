@@ -24,7 +24,7 @@ public class TestJobTriggeringException extends Job
 	public TestJobTriggeringException()
 	{
 		super();
-		this.appID = AppID.ACC;
+		this.appID = SoftwareId.ACC;
 		this.setParallelizable(true);
 	}
 	

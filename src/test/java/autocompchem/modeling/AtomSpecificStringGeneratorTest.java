@@ -1,35 +1,19 @@
 package autocompchem.modeling;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.vecmath.Point3d;
-
 import org.junit.jupiter.api.Test;
-import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.modeling.AtomSpecificStringGenerator;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
-import autocompchem.modeling.atomtuple.AtomTupleGenerator;
-import autocompchem.smarts.SMARTS;
-import autocompchem.utils.NumberUtils;
-import autocompchem.utils.StringUtils;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 

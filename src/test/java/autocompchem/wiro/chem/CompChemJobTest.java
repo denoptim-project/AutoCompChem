@@ -27,16 +27,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.CompChemJob;
-import autocompchem.wiro.chem.DirComponentAddress;
-import autocompchem.wiro.chem.Directive;
-import autocompchem.wiro.chem.DirectiveComponentType;
-import autocompchem.wiro.chem.DirectiveData;
-import autocompchem.wiro.chem.IDirectiveComponent;
-import autocompchem.wiro.chem.IValueContainer;
-import autocompchem.wiro.chem.Keyword;
-
 
 /**
  * Unit Test for CompChemJob.

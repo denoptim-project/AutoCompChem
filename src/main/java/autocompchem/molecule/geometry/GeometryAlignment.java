@@ -2,8 +2,8 @@ package autocompchem.molecule.geometry;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;

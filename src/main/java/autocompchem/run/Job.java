@@ -129,7 +129,7 @@ public class Job implements Runnable
     /**
      * Application meant to do the job
      */
-    protected AppID appID;
+    protected SoftwareId appID;
 
     /**
      * Flag defining this job as a parallelizable job, i.e., independent from
@@ -259,7 +259,7 @@ public class Job implements Runnable
     	logger = LogManager.getLogger(this.getClass());
         this.params = new ParameterStorage();
         this.steps = new ArrayList<Job>();
-        this.appID = AppID.UNDEFINED;
+        this.appID = SoftwareId.UNDEFINED;
         this.jobHashCode = super.hashCode();
     }
     
@@ -268,7 +268,7 @@ public class Job implements Runnable
     /**
      * Constructor that may return a subclass
      */
-    public static Job makeInstance()
+    public Job makeInstance()
     {
     	return new Job();
     }
@@ -280,7 +280,7 @@ public class Job implements Runnable
      * @return the enum representing the application.
      */
 
-    public AppID getAppID()
+    public SoftwareId getAppID()
     {
         return appID;
     }

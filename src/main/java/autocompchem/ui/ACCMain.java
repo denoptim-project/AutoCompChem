@@ -30,9 +30,9 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.log.LogUtils;
 import autocompchem.run.ACCJob;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.TimeUtils;
@@ -392,7 +392,7 @@ public class ACCMain
         if (foundTask && !foundParams && !foundJob)
         {
             // Finally, pack all into a job
-            job = JobFactory.createJob(AppID.ACC);
+            job = JobFactory.createJob(SoftwareId.ACC);
             job.setParameters(params);
         }
         

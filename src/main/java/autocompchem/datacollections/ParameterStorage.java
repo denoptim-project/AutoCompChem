@@ -35,7 +35,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;

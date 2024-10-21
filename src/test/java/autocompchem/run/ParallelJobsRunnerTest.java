@@ -24,14 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -51,7 +45,6 @@ import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.SetJobParameter;
-import autocompchem.utils.NumberUtils;
 
 
 /**
@@ -101,7 +94,7 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
@@ -136,7 +129,7 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "3");
         for (int i=0; i<3; i++)
         {
@@ -171,10 +164,10 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        //Job main = JobFactory.createJob(RunnableAppID.ACC);
+        //Job main = JobFactory.createJob(RunnableSoftwareId.ACC);
         //main.addStep(new TestJob(roothName+"A"));
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
         {
@@ -209,10 +202,10 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        //Job main = JobFactory.createJob(RunnableAppID.ACC);
+        //Job main = JobFactory.createJob(RunnableSoftwareId.ACC);
         //main.addStep(new TestJob(roothName+"A"));
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "5");
         for (int i=0; i<6; i++)
         {
@@ -257,7 +250,7 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "6");
         
         // A "long-lasting" job that will be evaluated
@@ -348,7 +341,7 @@ public class ParallelJobsRunnerTest
         		InfoChannelType.LOGFEED));
         
         // The main job
-        Job main = JobFactory.createJob(AppID.ACC, 5, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 5, true);
         main.setParameter("WALLTIME", "10");
         
         // Make the job that will monitor the ongoing job and trigger an action
@@ -434,7 +427,7 @@ public class ParallelJobsRunnerTest
         		InfoChannelType.LOGFEED));
         
         // The main job that contains the batch of parallel jobs
-        Job main = JobFactory.createJob(AppID.ACC, 4, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 4, true);
         main.setParameter("WALLTIME", "10");
         
         // Make the job that will monitor the ongoing job and trigger an action
@@ -516,7 +509,7 @@ public class ParallelJobsRunnerTest
         		InfoChannelType.LOGFEED));        
 
         // The main job
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
         
         // Make the job that will monitor the ongoing job and trigger an action
@@ -589,7 +582,7 @@ public class ParallelJobsRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter(JobsRunner.WALLTIMEPARAM, "5");
         for (int i=0; i<2; i++)
         {
@@ -620,7 +613,7 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "6");
         main.setParameter("WAITSTEP", "7");
         // Basically the waiting step is much longer than the time it 
@@ -687,7 +680,7 @@ public class ParallelJobsRunnerTest
             String shellFlvr = "/bin/sh";
 
             // Nest 4 shell jobs in an undefined job
-            Job job = JobFactory.createJob(AppID.ACC,4);
+            Job job = JobFactory.createJob(SoftwareId.ACC,4);
             for (int i=0; i<10; i++)
             {
                 ShellJob sj = new ShellJob(shellFlvr, script.getAbsolutePath(),

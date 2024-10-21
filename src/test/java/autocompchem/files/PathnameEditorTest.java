@@ -21,17 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import com.google.gson.Gson;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.io.ACCJson;
-import autocompchem.io.IOtools;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;

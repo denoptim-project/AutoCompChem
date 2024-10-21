@@ -34,7 +34,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.atom.AtomUtils;
 import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;

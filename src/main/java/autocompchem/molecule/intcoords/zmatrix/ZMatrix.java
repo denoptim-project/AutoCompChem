@@ -23,8 +23,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openscience.cdk.qsar.descriptors.molecular.KierHallSmartsDescriptor;
-
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.run.Terminator;
 

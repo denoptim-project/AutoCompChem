@@ -18,9 +18,7 @@ import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
 import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.Task;
-import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -218,7 +216,7 @@ public final class JobFactory
         	// as parameters for a single job
         	List<String> lines = IOtools.readTXT(file);
         	lines.add(ParameterConstants.RUNNABLEAPPIDKEY 
-        			+ ParameterConstants.SEPARATOR + AppID.ACC);
+        			+ ParameterConstants.SEPARATOR + SoftwareId.ACC);
         	TextBlockIndexed tb = new TextBlockIndexed(lines, 0, 0, 0);
         	if (imposedStr != null && !imposedStr.isBlank())
         		tb.replaceAll(ParameterConstants.STRINGFROMCLI,imposedStr);
@@ -249,7 +247,7 @@ public final class JobFactory
         }
         else
         {
-        	job = createJob(AppID.ACC);
+        	job = createJob(SoftwareId.ACC);
             for (TextBlockIndexed tb : blocks)
             {
                 Job subJob = createJob(tb);
@@ -303,12 +301,12 @@ public final class JobFactory
     {
         Job job = new Job();
         
-        AppID appId = AppID.ACC;
+        SoftwareId appId = SoftwareId.ACC;
         if (locPar.contains(ParameterConstants.RUNNABLEAPPIDKEY))
         {
         	String app = locPar.getParameter(
         			ParameterConstants.RUNNABLEAPPIDKEY).getValueAsString();
-        	appId = AppID.valueOf(app.trim().toUpperCase());
+        	appId = new SoftwareId(app.trim().toUpperCase());
         }
         job = createJob(appId);
 
@@ -362,7 +360,7 @@ public final class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(AppID appID)
+    public static Job createJob(SoftwareId appID)
     {
     	return createJob(appID, 1, false);
     }
@@ -376,7 +374,7 @@ public final class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(AppID appID, int nThreads)
+    public static Job createJob(SoftwareId appID, int nThreads)
     {
     	return createJob(appID, nThreads, false);
     }
@@ -391,7 +389,7 @@ public final class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(AppID appID, boolean parallelizable)
+    public static Job createJob(SoftwareId appID, boolean parallelizable)
     {
     	return createJob(appID, 1, parallelizable);
     }
@@ -407,27 +405,12 @@ public final class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(AppID appID, int nThreads, 
+    synchronized static Job createJob(SoftwareId appID, int nThreads, 
     		boolean parallelizable)
     {
-    	return createJob(new SoftwareId(appID.toString()), nThreads, parallelizable);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job.
-     * @param nThreads max parallel threads for independent sub-jobs.
-     * @param parallelizable set <code>true</code> if this job can be 
-     * parallelized.
-     * @return the job, possibly including nested sub-jobs.
-     */ 
-
-    @SuppressWarnings("static-access")
-	public static Job createJob(SoftwareId appID, int nThreads, 
-    		boolean parallelizable)
-    {
+    	if (INSTANCE==null)
+    		getInstance();
+    	
     	Job job;
     	if (knownJobTypes.containsKey(appID))
     	{

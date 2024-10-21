@@ -1,5 +1,7 @@
 package autocompchem.log;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -18,14 +20,11 @@ package autocompchem.log;
  */
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -41,7 +41,7 @@ public class ACCJob extends Job
     public ACCJob()
     {
         super();
-        this.appID = AppID.ACC;
+        this.appID = SoftwareId.ACC;
     }
     
 //------------------------------------------------------------------------------
@@ -62,7 +62,8 @@ public class ACCJob extends Job
     /**
      * Constructor that may return a subclass
      */
-    public static Job makeInstance()
+    @Override
+    public Job makeInstance()
     {
     	return new ACCJob();
     }

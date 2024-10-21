@@ -20,16 +20,9 @@ package autocompchem.wiro;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.openscience.cdk.interfaces.IAtomContainer;
-
 import autocompchem.run.Job;
-import autocompchem.wiro.InputWriter;
-import autocompchem.wiro.ReaderWriterFactory;
-import autocompchem.wiro.chem.ChemSoftInputWriter;
-import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 

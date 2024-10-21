@@ -8,8 +8,24 @@ import java.util.Objects;
  * identify a third parties software package when having to state the software 
  * that produced some data or requires some input.
  */
-public class SoftwareId {
+public class SoftwareId 
+{
 
+	/**
+	 * The ID for shell jobs.
+	 */
+	public final static SoftwareId UNDEFINED = new SoftwareId("none");
+	
+	/**
+	 * The software  ID for AutoComopChem jobs.
+	 */
+	public final static SoftwareId ACC = new SoftwareId("ACC");
+	
+	/**
+	 * The ID for shell jobs.
+	 */
+	public final static SoftwareId SHELL = new SoftwareId("Shell");
+	
 	private String name;
 	
 //------------------------------------------------------------------------------

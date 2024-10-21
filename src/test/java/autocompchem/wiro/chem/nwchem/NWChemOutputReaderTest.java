@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
-import autocompchem.wiro.chem.ChemSoftOutputReader;
-import autocompchem.wiro.chem.nwchem.NWChemOutputReader;
 
 public class NWChemOutputReaderTest 
 {

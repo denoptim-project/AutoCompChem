@@ -46,7 +46,6 @@ import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
 import autocompchem.wiro.chem.DirectiveData;
 import autocompchem.wiro.chem.Keyword;
-import autocompchem.wiro.chem.orca.OrcaInputWriter;
 import autocompchem.worker.WorkerConstants;
 
 

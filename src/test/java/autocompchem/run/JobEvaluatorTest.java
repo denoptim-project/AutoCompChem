@@ -29,12 +29,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.google.gson.Gson;
-
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
-import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
@@ -47,7 +43,6 @@ import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 
@@ -120,8 +115,8 @@ public class JobEvaluatorTest
     	
     	Job jobFromReaction = JobFactory.buildFromFile(newJobDef);
     	assertEquals(2, jobFromReaction.getNumberOfSteps());
-    	assertEquals(AppID.SHELL, jobFromReaction.getStep(0).appID);
-    	assertEquals(AppID.ACC, jobFromReaction.getStep(1).appID);
+    	assertEquals(SoftwareId.SHELL, jobFromReaction.getStep(0).appID);
+    	assertEquals(SoftwareId.ACC, jobFromReaction.getStep(1).appID);
     	assertEquals(0, jobFromReaction.getStep(0).getNumberOfSteps());
     	assertEquals(0, jobFromReaction.getStep(1).getNumberOfSteps());
     	assertTrue(jobFromReaction.getStep(1).hasParameter(PARAMNAME));
@@ -184,7 +179,7 @@ public class JobEvaluatorTest
     	
     	Job jobFromReaction = JobFactory.buildFromFile(newJobDef);
     	assertEquals(1, jobFromReaction.getNumberOfSteps());
-    	assertEquals(AppID.ACC, jobFromReaction.getStep(0).appID);
+    	assertEquals(SoftwareId.ACC, jobFromReaction.getStep(0).appID);
     	assertEquals(0, jobFromReaction.getStep(0).getNumberOfSteps());
     	assertTrue(jobFromReaction.getStep(0).hasParameter(PARAMNAME));
     }

@@ -30,7 +30,6 @@ import autocompchem.constants.ACCConstants;
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;

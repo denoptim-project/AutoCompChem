@@ -1,5 +1,7 @@
 package autocompchem.worker;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /*   
  *   Copyright (C) 2018  Marco Foscato 
  *
@@ -19,14 +21,13 @@ package autocompchem.worker;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.run.SoftwareId;
 
 
 /**
@@ -91,7 +92,7 @@ public class WorkerFactoryTest
     @Test
     public void testCreateDummyWorkerFromJob() throws Exception
     {
-    	Job job = JobFactory.createJob(AppID.ACC);
+    	Job job = JobFactory.createJob(SoftwareId.ACC);
     	ParameterStorage params = new ParameterStorage();
     	params.setParameter(WorkerConstants.PARTASK,
     			DummyWorker2.DUMMYTASK2TASK.casedID);

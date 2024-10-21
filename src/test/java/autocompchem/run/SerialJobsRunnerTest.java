@@ -41,9 +41,9 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
-import autocompchem.run.jobediting.SetJobParameter;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
+import autocompchem.run.jobediting.SetJobParameter;
 
 
 /**
@@ -80,7 +80,7 @@ public class SerialJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
@@ -114,7 +114,7 @@ public class SerialJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job main = JobFactory.createJob(AppID.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
         main.setParameter("WALLTIME", "3"); 
         for (int i=0; i<3; i++)
         {
@@ -175,7 +175,7 @@ public class SerialJobsRunnerTest
         		InfoChannelType.LOGFEED));
         
         // The main job
-        Job main = JobFactory.createJob(AppID.ACC);
+        Job main = JobFactory.createJob(SoftwareId.ACC);
         main.setParameter("WALLTIME", "1000");
         
         // Production subjob 1

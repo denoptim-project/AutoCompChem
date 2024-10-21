@@ -32,7 +32,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.utils.StringUtils;
 import autocompchem.utils.TimeUtils;
 
@@ -60,7 +59,7 @@ public class ShellJob extends Job
     public ShellJob()
     {
         super();
-        this.appID = AppID.SHELL;
+        this.appID = SoftwareId.SHELL;
     }
 
 //------------------------------------------------------------------------------
@@ -109,7 +108,7 @@ public class ShellJob extends Job
     public ShellJob(String interpreter, String script, String args, int verbosity)
     {
         super();
-        this.appID = AppID.SHELL;
+        this.appID = SoftwareId.SHELL;
         this.command = new ArrayList<String>();
         this.command.add(interpreter);
         this.command.add(script);
@@ -133,7 +132,7 @@ public class ShellJob extends Job
     		File customUserDir, int verbosity)
     {
         super();
-        this.appID = AppID.SHELL;
+        this.appID = SoftwareId.SHELL;
         this.command = new ArrayList<String>();
         this.command.add(interpreter);
         this.command.add(script);
@@ -146,7 +145,7 @@ public class ShellJob extends Job
     /**
      * Constructor that may return a subclass
      */
-    public static Job makeInstance()
+    public Job makeInstance()
     {
     	return new ShellJob();
     }

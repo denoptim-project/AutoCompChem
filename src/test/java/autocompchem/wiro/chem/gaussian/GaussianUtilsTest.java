@@ -31,8 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.utils.NumberUtils;
-import autocompchem.wiro.chem.gaussian.GaussianConstants;
-import autocompchem.wiro.chem.gaussian.GaussianUtils;
 
 
 /**

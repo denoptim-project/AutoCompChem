@@ -23,10 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.wiro.chem.DirComponentAddress;
-import autocompchem.wiro.chem.DirComponentTypeAndName;
-import autocompchem.wiro.chem.DirectiveComponentType;
-
 
 public class DirComponentTypeAndNameTest 
 {

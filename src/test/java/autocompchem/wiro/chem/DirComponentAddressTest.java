@@ -27,9 +27,6 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.wiro.chem.DirComponentAddress;
-import autocompchem.wiro.chem.DirComponentTypeAndName;
-import autocompchem.wiro.chem.DirectiveComponentType;
 
 /**
  * Unit tests for directive component address

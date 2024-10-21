@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.log.LogUtils;
 import autocompchem.run.Job;

@@ -33,7 +33,6 @@ import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
 
 import autocompchem.files.FileAnalyzer;
-import autocompchem.perception.situation.Situation;
 
 
 /**

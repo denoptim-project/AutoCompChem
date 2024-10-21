@@ -29,8 +29,8 @@ import org.junit.jupiter.api.io.TempDir;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
+import autocompchem.run.SoftwareId;
 import autocompchem.worker.DummyWorker;
 import autocompchem.worker.WorkerConstants;
 
@@ -58,11 +58,17 @@ public class ACCMainTest
     			"-o", "file.out",
     			"--long", "\"many", "words", "all", "quoted\"",
     			"-z", "-z2"};
+
+    	// NB: do this to trigger the generation of the task even if we do not
+    	// use it here. When running all the tests this is not even needed as
+    	// the next test, which runs before this one, will create the task.
+    	@SuppressWarnings("unused")
+		String task = DummyWorker.DUMMYTASKTASK.casedID;
     	
     	Job job = ACCMain.parseCLIArgs(args);
     	ParameterStorage params = job.getParameters();
     	
-    	assertEquals(AppID.ACC, job.getAppID(),"Job APP");
+    	assertEquals(SoftwareId.ACC, job.getAppID(),"Job APP");
     	assertTrue(params.contains("long"),"Parsed long and quoted option.");
     	assertEquals(4,params.getParameter("long").getValue().toString()
     			.split("\\s+").length,"Length of long and quoted option.");
@@ -89,7 +95,7 @@ public class ACCMainTest
         StringBuilder sb = new StringBuilder();
         sb.append(ParameterConstants.RUNNABLEAPPIDKEY
         		+ParameterConstants.SEPARATOR
-        		+AppID.ACC+NL);
+        		+SoftwareId.ACC+NL);
         sb.append(WorkerConstants.PARTASK
         		+ParameterConstants.SEPARATOR
         		+DummyWorker.DUMMYTASKTASK.casedID +NL);
@@ -110,7 +116,7 @@ public class ACCMainTest
     	
     	Job job = ACCMain.parseCLIArgs(args);
     	
-    	assertEquals(AppID.ACC,job.getAppID(),"Job APP");
+    	assertEquals(SoftwareId.ACC,job.getAppID(),"Job APP");
     	assertEquals(DummyWorker.DUMMYTASKTASK.casedID,job.getParameter(
     			WorkerConstants.PARTASK).getValueAsString(),
     			"Task ID");

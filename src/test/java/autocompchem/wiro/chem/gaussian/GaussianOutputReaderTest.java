@@ -7,7 +7,6 @@ import java.io.File;
 import org.junit.jupiter.api.Test;
 
 import autocompchem.wiro.ReaderWriterFactory;
-import autocompchem.wiro.chem.gaussian.GaussianOutputReader;
 
 public class GaussianOutputReaderTest 
 {

@@ -30,7 +30,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.worker.DummyWorker;
-import autocompchem.worker.Task;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -53,22 +52,21 @@ public class JobFactoryTest
     //@Test
     public void testCreateJob() throws Exception
     {
-    	Job job = JobFactory.createJob(AppID.UNDEFINED);
-    	assertTrue(job.getAppID() == AppID.UNDEFINED, 
+    	Job job = JobFactory.createJob(new SoftwareId("something"));
+    	assertTrue("something".equals(job.getAppID()), 
     			"Creation of Undefined job");
     	
-    	job = JobFactory.createJob(AppID.SHELL);
-    	assertTrue(job.getAppID() == AppID.SHELL, 
+    	job = JobFactory.createJob(SoftwareId.SHELL);
+    	assertTrue(SoftwareId.SHELL.equals(job.getAppID()), 
     			"Creation of SHELL job");
 
-    	job = JobFactory.createJob(AppID.ACC);
-    	assertTrue(job.getAppID() == AppID.ACC, 
+    	job = JobFactory.createJob(SoftwareId.ACC);
+    	assertTrue(SoftwareId.ACC.equals(job.getAppID()), 
     			"Creation of ACC job");
     	
     	job = new Job();
-    	assertTrue(job.getAppID() == AppID.UNDEFINED, 
+    	assertTrue(SoftwareId.UNDEFINED.equals(job.getAppID()), 
     			"Creation of Undefined job");
-    	
     }
     
 //-----------------------------------------------------------------------------
@@ -110,7 +108,7 @@ public class JobFactoryTest
 
         assertNotNull(job,"Job is null");
         assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(AppID.ACC, job.getAppID(),
+        assertEquals(SoftwareId.ACC, job.getAppID(),
         		"App for master job");
     }
     
@@ -154,7 +152,7 @@ public class JobFactoryTest
         assertEquals(MonitoringJob.class, job.getClass(), 
         		"Type of job object");
         assertEquals(0, job.getNumberOfSteps(), "Number of sub steps");
-        assertEquals(AppID.ACC, job.getAppID(), "App for job");
+        assertEquals(SoftwareId.ACC, job.getAppID(), "App for job");
         assertEquals(3000, ((MonitoringJob) job).getDelay(),
         		"Value of delay in milliseconds");
         assertEquals(60000, ((MonitoringJob) job).getPeriod(),
@@ -182,7 +180,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ AppID.ACC + NL);
+            		+ SoftwareId.ACC + NL);
             writer.write("keyOne" + ParameterConstants.SEPARATOR 
             		+ "valueOne" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -190,7 +188,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ AppID.SHELL + NL);
+            		+ SoftwareId.SHELL + NL);
             writer.write("keyTwo" + ParameterConstants.SEPARATOR 
             		+ "valueTwo" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -202,7 +200,7 @@ public class JobFactoryTest
             writer.write(ParameterConstants.STARTJOB + NL);
             writer.write(ParameterConstants.RUNNABLEAPPIDKEY 
             		+ ParameterConstants.SEPARATOR 
-            		+ AppID.UNDEFINED + NL);
+            		+ SoftwareId.UNDEFINED + NL);
             writer.write("keyThree" + ParameterConstants.SEPARATOR 
             		+ "valueThree" + NL);
             writer.write(ParameterConstants.ENDJOB + NL);
@@ -211,11 +209,11 @@ public class JobFactoryTest
             Job job = JobFactory.buildFromFile(jdFile);
             
             assertEquals(3, job.getNumberOfSteps(), "Number of steps");
-            assertEquals(job.getStep(0).getAppID(), AppID.ACC,
+            assertEquals(job.getStep(0).getAppID(), SoftwareId.ACC,
             		"App for first step");
-            assertEquals(job.getStep(1).getAppID(), AppID.SHELL,
+            assertEquals(job.getStep(1).getAppID(), SoftwareId.SHELL,
             		"App for second step");
-            assertEquals(job.getStep(2).getAppID(), AppID.UNDEFINED,
+            assertEquals(job.getStep(2).getAppID(), SoftwareId.UNDEFINED,
             		"App for third step");
         }
         catch (Throwable t)

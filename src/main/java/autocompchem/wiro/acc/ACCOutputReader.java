@@ -5,31 +5,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.vecmath.Point3d;
-
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
-import autocompchem.atom.AtomUtils;
-import autocompchem.datacollections.ListOfDoubles;
-import autocompchem.datacollections.ListOfIntegers;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileFingerprint;
-import autocompchem.molecule.vibrations.NormalMode;
-import autocompchem.molecule.vibrations.NormalModeSet;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.OutputReader;
-import autocompchem.wiro.OutputReader.LogReader;
 import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.gaussian.GaussianConstants;
-import autocompchem.wiro.chem.gaussian.GaussianUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -97,8 +80,9 @@ public class ACCOutputReader extends OutputReader
         {
         	lineNum++;
         	// This is defined in Job.run()
-        	if (line.matches("^Initiating " + AppID.ACC + " Job #.*") 
-        			|| line.matches("^Initiating " + AppID.SHELL + " Job #.*"))
+        	if (line.matches("^Initiating " + SoftwareId.ACC + " Job #.*") 
+        			|| line.matches("^Initiating " + SoftwareId.SHELL 
+        					+ " Job #.*"))
         	{
         		normalTerminated = false;
         		if (first)

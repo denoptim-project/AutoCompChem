@@ -6,21 +6,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.common.io.Files;
 
-import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.files.FileUtils;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
-import autocompchem.run.JobEvaluator;
 import autocompchem.run.MonitoringJob;
 import autocompchem.run.Terminator;
 import autocompchem.run.jobediting.Action.ActionObject;
@@ -28,8 +23,6 @@ import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
 import autocompchem.utils.SetUtils;
 import autocompchem.utils.StringUtils;
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.CompChemJob;
 
 /**
  * A tool for performing {@link Action}s that edit a workflow, 

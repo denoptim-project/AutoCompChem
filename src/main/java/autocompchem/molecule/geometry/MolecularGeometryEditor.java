@@ -40,7 +40,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.periodictable.PeriodicTable;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.geometry.DistanceMatrix;

@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.chem.ChemSoftConstants;

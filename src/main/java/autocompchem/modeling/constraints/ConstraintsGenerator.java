@@ -9,7 +9,6 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;

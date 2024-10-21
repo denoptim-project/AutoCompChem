@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.run.AppID;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.run.SoftwareId;
 
 public class DeleteJobParameterTest 
 {
@@ -74,7 +74,7 @@ public class DeleteJobParameterTest
     @Test
     public void testApplyChanges() throws Exception
     {
-    	Job job = JobFactory.createJob(AppID.ACC);
+    	Job job = JobFactory.createJob(SoftwareId.ACC);
     	job.setParameter("ParamA", "valueA");
     	job.setParameter("ParamB", "valueB");
     	

@@ -32,8 +32,6 @@ import com.google.gson.Gson;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.ACCJson;
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.Keyword;
 
 
 /**

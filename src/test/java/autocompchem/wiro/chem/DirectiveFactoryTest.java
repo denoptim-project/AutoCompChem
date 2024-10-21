@@ -26,10 +26,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.Directive;
-import autocompchem.wiro.chem.DirectiveFactory;
-
 
 /**
  * Unit Test for DirectiveFactory

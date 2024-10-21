@@ -22,23 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
-import java.util.Enumeration;
 
 import javax.vecmath.Point3d;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.WriterAppender;
-import org.apache.log4j.spi.ErrorHandler;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.openscience.cdk.Atom;
@@ -84,7 +71,7 @@ public class ACCJobTest
         	// Prepare the parameters for task
         	ParameterStorage params = new ParameterStorage();
         	params.setParameter(ParameterConstants.RUNNABLEAPPIDKEY,
-        			AppID.ACC.toString());
+        			SoftwareId.ACC.toString());
         	params.setParameter(WorkerConstants.PARTASK, 
         			MolecularMeter.MEASUREGEOMDESCRIPTORSTASK.ID);
         	params.setParameter(ChemSoftConstants.PARINFILE,
@@ -101,7 +88,7 @@ public class ACCJobTest
         	IOtools.writeSDFAppend(sdfFile, mol, false);
 
             // Create job
-            Job job = JobFactory.createJob(AppID.ACC);
+            Job job = JobFactory.createJob(SoftwareId.ACC);
             job.setParameters(params);
             
             // Run the job
