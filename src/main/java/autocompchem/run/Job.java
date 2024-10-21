@@ -262,6 +262,16 @@ public class Job implements Runnable
         this.appID = AppID.UNDEFINED;
         this.jobHashCode = super.hashCode();
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor that may return a subclass
+     */
+    public static Job makeInstance()
+    {
+    	return new Job();
+    }
 
 //------------------------------------------------------------------------------
 
@@ -918,12 +928,6 @@ public class Job implements Runnable
     public final void run()
     {
     	started = true;
-    	if (!appID.isRunnableByACC())
-    	{
-    		throw new Error("Cannot run " + appID + " Job (" + getId() + ") "
-    				+ "from ACC. You must define a " + ShellJob.class.getName()
-    				+ " or extend " + Job.class.getName() + ".");
-    	}
     	
     	// NB: this line in the log is used to detect the beginning of a job's
     	// step in the log of ACC jobs.
@@ -977,9 +981,11 @@ public class Job implements Runnable
         // Subclasses overwrites this method, so if we are here
         // it is because we tried to run a job of an app for which there is
         // no implementation of app-specific Job yet.
-        Terminator.withMsgAndStatus("ERROR! Cannot (yet) run Jobs for App '" 
-                    + appID + "'. No subclass implementation of method "
-                    + "running this job.", -1);
+        Terminator.withMsgAndStatus("ERROR! Cannot run '" 
+                    + appID + "' Jobs directy within AutocompChem. "
+                    + "Provide an extension of '" + Job.class.getName() 
+                    + "' that enables running this job from within "
+                    + "AutoCompChem.", -1);
     }
 
 //------------------------------------------------------------------------------

@@ -140,6 +140,16 @@ public class ShellJob extends Job
         this.command.add(args);
         this.customUserDir = customUserDir;
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor that may return a subclass
+     */
+    public static Job makeInstance()
+    {
+    	return new ShellJob();
+    }
 
 //------------------------------------------------------------------------------
 

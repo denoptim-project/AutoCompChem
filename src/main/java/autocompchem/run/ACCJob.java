@@ -56,6 +56,16 @@ public class ACCJob extends Job
         this();
         setParameters(params);
     }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor that may return a subclass
+     */
+    public static Job makeInstance()
+    {
+    	return new ACCJob();
+    }
 
 //------------------------------------------------------------------------------
 

@@ -62,7 +62,7 @@ public class ACCMainTest
     	Job job = ACCMain.parseCLIArgs(args);
     	ParameterStorage params = job.getParameters();
     	
-    	assertEquals(AppID.ACC,job.getAppID(),"Job APP");
+    	assertEquals(AppID.ACC, job.getAppID(),"Job APP");
     	assertTrue(params.contains("long"),"Parsed long and quoted option.");
     	assertEquals(4,params.getParameter("long").getValue().toString()
     			.split("\\s+").length,"Length of long and quoted option.");

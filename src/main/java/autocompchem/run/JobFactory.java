@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -16,7 +18,9 @@ import autocompchem.io.IOtools;
 import autocompchem.log.LogUtils;
 import autocompchem.text.TextBlockIndexed;
 import autocompchem.worker.Task;
+import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
+import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -25,9 +29,65 @@ import autocompchem.worker.WorkerConstants;
  * @author Marco Foscato
  */
 
-public class JobFactory
+public final class JobFactory
 {
+	/**
+	 * The collection of registered types of {@link Job}s by the declared 
+	 * running software identifier.
+	 */
+	private static Map<SoftwareId, Job> knownJobTypes = 
+			new HashMap<SoftwareId, Job>();
 
+	/**
+	 * Singleton instance of this class
+	 */
+	private static JobFactory INSTANCE;
+
+//------------------------------------------------------------------------------
+
+	private JobFactory()
+	{
+		registerType(new ACCJob());
+		registerType(new ShellJob());
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * Returns the singleton instance of this class, i.e., the sole factory of
+	 * {@link Job}s that can be configured and used.
+	 * @return the singleton instance.
+	 */
+	public synchronized static JobFactory getInstance()
+	{
+		if (INSTANCE==null)
+			INSTANCE = new JobFactory();
+		return INSTANCE;
+	}
+
+//-----------------------------------------------------------------------------
+
+	/**
+	 * Registers any type of {@link Job} using a concrete implementation as 
+	 * example. The given object will not be used for any task.
+	 */
+	public synchronized void registerType(Object object)
+	{
+		if (object instanceof Job)
+		{
+			knownJobTypes.put(
+					//TODO-gg
+					new SoftwareId(((Job) object).appID.toString()),
+					(Job) object);
+		} else {
+			throw new Error("Registration of " 
+					+ object.getClass().getSimpleName() 
+					+ " has failed because the given example object is not an "
+					+ "instance of "
+					+ Job.class.getSimpleName() + ".");
+		}
+	}
+	
 //------------------------------------------------------------------------------
 	
     /**
@@ -350,21 +410,30 @@ public class JobFactory
     public static Job createJob(AppID appID, int nThreads, 
     		boolean parallelizable)
     {
+    	return createJob(new SoftwareId(appID.toString()), nThreads, parallelizable);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Create a new job calling the appropriate subclass.
+     * @param appID the application to be used to do the job.
+     * @param nThreads max parallel threads for independent sub-jobs.
+     * @param parallelizable set <code>true</code> if this job can be 
+     * parallelized.
+     * @return the job, possibly including nested sub-jobs.
+     */ 
+
+    @SuppressWarnings("static-access")
+	public static Job createJob(SoftwareId appID, int nThreads, 
+    		boolean parallelizable)
+    {
     	Job job;
-    	switch (appID) 
+    	if (knownJobTypes.containsKey(appID))
     	{
-			case ACC: {
-				job = new ACCJob();
-				break;
-			}
-			case SHELL: {
-				job = new ShellJob();
-				break;
-			}
-			default: {
-				job = new Job();
-				break;
-			}
+    		job = knownJobTypes.get(appID).makeInstance();
+    	} else {
+			job = new Job();
     	}
     	job.setParallelizable(parallelizable);
     	job.setNumberOfThreads(nThreads);
