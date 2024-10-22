@@ -122,7 +122,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
             {
                 ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.PRINTLASTGEOMETRY,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.SAVELASTGEOMETRY, ps);
             analysisAllTasks.add(a);
         }
         
@@ -137,7 +137,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
             {
                 ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.PRINTLASTGEOMETRY,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.SAVELASTGEOMETRY, ps);
             analysisGlobalTasks.add(a);
         }
         
@@ -152,7 +152,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
             {
                 ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
             }
-            AnalysisTask a = new AnalysisTask(AnalysisKind.PRINTALLGEOM, ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.SAVEALLGEOM, ps);
             analysisAllTasks.add(a);
         }
 
@@ -188,7 +188,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
             ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[p.length-1]);
             ps.setParameter(ChemSoftConstants.GENERALINDEXES,
             		StringUtils.mergeListToString(list, " "));
-            AnalysisTask a = new AnalysisTask(AnalysisKind.VIBMODE,ps);
+            AnalysisTask a = new AnalysisTask(AnalysisKind.SAVEVIBMODE,ps);
             analysisAllTasks.add(a);
         }
 
@@ -235,16 +235,15 @@ public abstract class ChemSoftOutputReader extends OutputReader
         	boolean addLastGeom = true;
         	for (AnalysisTask at : analysisGlobalTasks)
         	{
-        		if (at.getKind() == AnalysisKind.PRINTLASTGEOMETRY)
+        		if (at.getKind() == AnalysisKind.SAVELASTGEOMETRY)
         		{
         			addLastGeom = false;
         		}
         	}
         	if (addLastGeom)
         	{
-        		//TODO-gg distinguish between PRINT and GET (which is supposed to get the data without printing to file)
         		analysisGlobalTasks.add(new AnalysisTask(
-        				AnalysisKind.PRINTLASTGEOMETRY));
+        				AnalysisKind.SAVELASTGEOMETRY));
         	}
         	
             AnalysisTask a = new AnalysisTask(
@@ -359,6 +358,45 @@ public abstract class ChemSoftOutputReader extends OutputReader
         		analysisTasks.put(i, analysisAllTasks);
         	}
         }
+        /*
+        //TODO-gg activate
+        // Apply connectivity template, if given
+		if (useTemplateConnectivity)
+		{
+			for (Integer stepId : stepsData.keySet())
+			{
+				NamedDataCollector stepData = stepsData.get(stepId);
+				if (stepData.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
+				{
+					AtomContainerSet acs = (AtomContainerSet) stepData
+							.getNamedData(ChemSoftConstants.JOBDATAGEOMETRIES)
+							.getValue();
+					if (acs.getAtomContainerCount() > 0)
+					{
+						if (acs.getAtomContainer(0).getAtomCount() !=
+								connectivityTemplate.getAtomCount())
+						{
+							Terminator.withMsgAndStatus("ERROR! Number of "
+									+ "atom in template structure does "
+									+ "not correspond to number of atom "
+									+ "in file '" + inFile + "' (" 
+									+ connectivityTemplate.getAtomCount() 
+									+ " vs. "
+									+ acs.getAtomContainer(0).getAtomCount()
+									+ ").", -1);
+						}
+						for (int i=0; i<acs.getAtomContainerCount(); i++)
+						{
+							IAtomContainer iac = acs.getAtomContainer(i);
+							ConnectivityUtils.
+							importConnectivityFromReference(iac, 
+									connectivityTemplate);
+						}
+					}
+				}
+			}
+		}
+		*/
         
         // Analyse one or more steps
         for (Integer stepId : analysisTasks.keySet())
@@ -420,7 +458,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
         		ParameterStorage atParams = at.getParams();
         		switch (at.getKind())
         		{		
-	        		case PRINTALLGEOM:
+	        		case SAVEALLGEOM:
 	        		{
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGEOMETRIES))
@@ -483,7 +521,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        			break;
 	        		}
 	        		
-	        		case PRINTLASTGEOMETRY:
+	        		case SAVELASTGEOMETRY:
 	        		{
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAGEOMETRIES))
@@ -544,7 +582,6 @@ public abstract class ChemSoftOutputReader extends OutputReader
                         		+ " of ")
                         	.append(acs.getAtomContainerCount());
                         resultsString.append(NL);
-
 	        			break;
 	        		}
 	        		
@@ -721,7 +758,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        			break;
 	        		}
 	        		
-	        		case VIBMODE:
+	        		case SAVEVIBMODE:
 	        		{
 	        			if (!stepData.contains(
 	        					ChemSoftConstants.JOBDATAVIBMODES))
@@ -808,7 +845,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
         // Prepare collector of final analysis results
     	StringBuilder finalResultsString = new StringBuilder();
     	
-        // WARNING: the LASTGEOMETRY analysis is expected to run before
+        // WARNING: the SAVELASTGEOMETRY analysis is expected to run before
         // the BLVSCONNECTIVITY
         
         // Analyse the collection of steps takes as a whole
@@ -817,7 +854,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
         	ParameterStorage atParams = at.getParams();
     		switch (at.getKind())
     		{
-				case PRINTLASTGEOMETRY:
+				case SAVELASTGEOMETRY:
 				{
 					String format = "XYZ";
 					format = changeIfParameterIsFound(format,
@@ -919,7 +956,6 @@ public abstract class ChemSoftOutputReader extends OutputReader
     		}
         }
         
-        //TODO-gg expose more
         if (geomsToExpose.getAtomContainerCount()>0)
         {
 	        exposeOutputData(new NamedData(ChemSoftConstants.JOBDATAGEOMETRIES,

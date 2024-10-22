@@ -3,5 +3,5 @@ TASK: AnalyseNWChemOutput
 JOBOUTPUTFILE: ../t114.out
 TEMPLATECONNECTIVITY: ../t114_tmpl.sdf
 getFreeEnergy
-PRINTLASTGEOMETRY: SDF t114_final.sdf
-PRINTVIBMODEs: 0 1 5 6 7 t114_vb.xyz
+SaveLastGeometry: SDF t114_final.sdf
+SaveVibModes: 0 1 5 6 7 t114_vb.xyz

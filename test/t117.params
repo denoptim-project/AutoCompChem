@@ -6,9 +6,9 @@ VERBOSITY: 5
 TASK: AnalyseORCAOutput
 JobOutputFile: ../t117-orca.log
 ROOTPATHNAMEOutput: t117_analysis
-PRINTALLGEOmeTRIES: XYZ t117_allGeoms.xyz
-PRINTLASTGEOmeTRYOFEACHSTEP: SDF t117_lastGeom.sdf
-PRINTVIBModES: 6 7 t117_vibModes_6_7.xyz
+SaveAllGeometries: XYZ t117_allGeoms.xyz
+SaveLastGeometryOfEachStep: SDF t117_lastGeom.sdf
+SaveVibModes: 6 7 t117_vibModes_6_7.xyz
 TEMPLATECOnnECTIVITY: ../t117-tmpl.sdf
 GetFreeEnergy: qhThreshold 123
 DETECTKINDOFcriTICALPOINT: LOwesTFREQ 30

@@ -4,4 +4,4 @@
 VERBOSITY: 5
 TASK: AnalyseOutput
 JOBOUTPUTFILE: ../t62-nwc.out
-PRINTLASTGEOMETRY:  xyz t62-lastgeom
+SaveLastGeometry:  xyz t62-lastgeom

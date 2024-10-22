@@ -21,11 +21,11 @@ public class AnalysisTask
      */
     public enum AnalysisKind {
     	SCFENERGY,
-    	PRINTLASTGEOMETRY,
+    	SAVELASTGEOMETRY,
+    	SAVEALLGEOM,
+    	SAVEVIBMODE,
     	CRITICALPOINTKIND,
-    	VIBMODE,
     	QHTHERMOCHEMISTRY,
-    	PRINTALLGEOM,
     	BLVSCONNECTIVITY}
     
     /**

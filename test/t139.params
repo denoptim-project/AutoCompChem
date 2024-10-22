@@ -3,4 +3,4 @@
 #
 TASK: AnalyseOutput
 JOBOUTPUTFILE: ../t139.out
-PRINTLASTGEOMETRY: XYZ t139_last.xyz
+SaveLastGeometry: XYZ t139_last.xyz

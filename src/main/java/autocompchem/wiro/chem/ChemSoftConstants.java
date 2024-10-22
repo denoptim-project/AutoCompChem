@@ -321,25 +321,25 @@ public class ChemSoftConstants
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */
-	public static final String PARPRINTLASTGEOM = "PRINTLASTGEOMETRY";
+	public static final String PARPRINTLASTGEOM = "SAVELASTGEOMETRY";
 
 	/**
 	 * Key for parameter requesting to print the last geometry from each step of
 	 * a comp.chem job
 	 */
 	public static final String PARPRINTLASTGEOMEACH = 
-			"PRINTLASTGEOMETRYOFEACHSTEP";
+			"SAVELASTGEOMETRYOFEACHSTEP";
 
 	/**
 	 * Key for parameter requesting to print the last geometry from a
 	 * comp.chem job
 	 */
-	public static final String PARPRINTALLGEOM = "PRINTALLGEOMETRIES";
+	public static final String PARPRINTALLGEOM = "SAVEALLGEOMETRIES";
 
 	/**
 	 * Key for parameter requesting to print vibrational modes
 	 */
-	public static final String PARPRINTVIBMODES = "PRINTVIBMODES";
+	public static final String PARPRINTVIBMODES = "SAVEVIBMODES";
 
 	/**
 	 * Key for parameter providing a file to be used as template connectivity

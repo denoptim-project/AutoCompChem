@@ -4,5 +4,5 @@
 VERBOSITY: 5
 TASK: analyseSpartanOutput
 jobOutputFile: ../t81.Conf.mol.spardir
-PRINTLASTGEOMETRY: XYZ t81_conf2.xyz
+SaveLastGeometry: XYZ t81_conf2.xyz
 modelID: Conformer.2

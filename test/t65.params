@@ -3,6 +3,6 @@
 #
 VERBOSITY: 6
 TASK: AnalyseNWChemOutput
-PRINTLASTGEOMETRYOFEACHSTEP: XYZSDF t65_endOfSteps.ggg
-PRINTALLGEOMETRIES: SDFXYZ t65-trj
+SaveLastGeometryOfEachStep: XYZSDF t65_endOfSteps.ggg
+SaveAllGeometries: SDFXYZ t65-trj
 JOBOUTPUTFILE: ../t65-nwc.out

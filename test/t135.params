@@ -4,10 +4,10 @@
 VERBOSITY: 6
 TASK: AnalyseXTBOutput
 JobOutputFile: ../t135-xtb.log
-PRINTALLGEOMETRIES: XYZ t135_allGeoms.xyz
-PRINTLASTGEOMETRY: SDF t135_lastGeom.sdf
+SaveAllGeometries: XYZ t135_allGeoms.xyz
+SaveLastGeometry: SDF t135_lastGeom.sdf
 #TODO-gg: Not implemented yet
-#PRINTVIBMODES: 6 7 t135_vibModes_6_7.xyz
+#SaveVibModes: 6 7 t135_vibModes_6_7.xyz
 TEMPLATECONNECTIVITY: ../t135-tmpl.sdf TOLERANCE=0.20
 GetFreeEnergy: QHTHREshOLD 123
 DETECTKINDOFcriTICALPOINT: LOwesTFREQ 30

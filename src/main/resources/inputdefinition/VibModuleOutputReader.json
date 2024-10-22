@@ -10,10 +10,10 @@
     "tag": "define settings of the VobModule's job output to analyze.",
     "ignorableItems": [
       "rootPathnameOutput",
-      "printLastGeometry",
-      "printLastGeometryOfEachStep",
-      "printAllGeometries",
-      "printVibModes",
+      "saveLastGeometry",
+      "saveLastGeometryOfEachStep",
+      "saveAllGeometries",
+      "saveVibModes",
       "getFreeEnergy",
       "detectKindOfCriticalPoint"
     ]

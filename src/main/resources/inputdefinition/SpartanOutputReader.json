@@ -10,7 +10,7 @@
     "tag": "define settings of the output to analyze.",
     "ignorableItems": [
       "rootPathnameOutput",
-      "printVibModes",
+      "saveVibModes",
       "getFreeEnergy",
       "detectKindOfCriticalPoint"
     ]

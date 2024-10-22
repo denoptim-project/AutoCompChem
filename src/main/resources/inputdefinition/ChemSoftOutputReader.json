@@ -1,21 +1,21 @@
 [
   {
-    "key": "PRINTLASTGEOMETRY",
-    "casedKey": "printLastGeometry",
+    "key": "SAVELASTGEOMETRY",
+    "casedKey": "saveLastGeometry",
     "type": "<Format> [<String>]",
     "doc": "Requires extraction of the last geometry found in the output to analyze and specifies the format and (optionally) pathname of the file where to save such geometry. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
-    "key": "PRINTLASTGEOMETRYOFEACHSTEP",
-    "casedKey": "printLastGeometryOfEachStep",
+    "key": "SAVELASTGEOMETRYOFEACHSTEP",
+    "casedKey": "saveLastGeometryOfEachStep",
     "type": "<Format> [<String>]",
     "doc": "Requires extraction of the last geometry of each step found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
-    "key": "PRINTALLGEOMETRIES",
-    "casedKey": "printAllGeometries",
+    "key": "SAVEALLGEOMETRIES",
+    "casedKey": "saveAllGeometries",
     "type": "<Format> [<String>]",
-    "doc": "Requires extraction ofall geometries found in the output of the job to analyze and specifies the format and (optionally) pathname of the file where such geometries are saved. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
+    "doc": "Requires extraction of all geometries found in the output of the job to analyze and allows to specify the format and pathname of the file where such geometries are saved. Format can be XYZ (default), or SDF, or XYZSDF to require both. In the latter case you want to ecploit the generation of the connectivity, see TEMPLATECONNECTIVITY."
   },
   {
     "key": "TEMPLATECONNECTIVITY",
@@ -24,8 +24,8 @@
     "doc": "Requires assignation to the geometry found in the output to analyze of the connectivity table found in the pathname given as value (must be an SDF file). Optionally, a tolerance (in Å, default = 0.05) can be given to trigger the comparison of the interatomic distances between the geometries in the output to analyze and in the template connectivity file. The distances considered are those that correspond to bonds in the connectivity table. The tolerance value (t) defined the amount of acceptable distance change relative to the distance (refDist) in the template connectivity file (i.e., maxAllowedDeviation = |refDist * t|)."
   },
   {
-    "key": "PRINTVIBMODES",
-    "casedKey": "printVibModes",
+    "key": "SAVEVIBMODES",
+    "casedKey": "saveVibModes",
     "type": "<int> [<int> [<int> ...]] <String>",
     "doc": "Requires extraction of vibrational modes from the output to analyze. The modes are specified by the list of 0-based indexes (any number of indexes). The last string defines the pathname where the modes are saved."
   },
