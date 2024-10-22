@@ -32,7 +32,7 @@ public class AnnotatedAtomTuple implements Cloneable
 	
 	/**
 	 * The atom labels. Have customizable syntax, so their meaning is not meant
-	 * to be general, but it if meaningful to those who requested labels 
+	 * to be general, but it is meaningful to those who requested labels 
 	 * according to a specific syntax.
 	 */
 	private List<String> atmLabels;
@@ -355,7 +355,8 @@ public class AnnotatedAtomTuple implements Cloneable
 //------------------------------------------------------------------------------
    
     /**
-     * @return the list of labels, if defines, or <code>null</code>.
+     * @return the list of labels, if defines, or <code>null</code> if labels
+     * where not generated.
      */
     public List<String> getAtmLabels()
     {

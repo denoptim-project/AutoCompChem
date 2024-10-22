@@ -243,7 +243,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	        {
 	    		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
 	    		{
-	    			labels = generateAtomLabels(iac);
+	    	    	ParameterStorage labMakerParams = params.clone();
+	    			labels = generateAtomLabels(iac, labMakerParams);
 	    			break;
 	    		}
 	        }
@@ -271,15 +272,25 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         
 //------------------------------------------------------------------------------
     
-    private List<String> generateAtomLabels(IAtomContainer iac)
+	/**
+	 * Runs a child task for generating the atom labels according
+	 * to the given parameters.
+	 * @param iac the container of atoms for which to generate the labels.
+	 * @param labMakerParams parameters controlling the generation of the 
+	 * labels. Note that these will be edited to force the {@link Task} to be 
+	 * {@link AtomLabelsGenerator#GENERATEATOMLABELSTASK}.
+	 * @return the list of labels, one per atom, ordered according to the list 
+	 * of atoms in the container.
+	 */
+    protected static List<String> generateAtomLabels(IAtomContainer iac, 
+    		ParameterStorage labMakerParams)
     {
-    	ParameterStorage labMakerParams = params.clone();
 		labMakerParams.setParameter(WorkerConstants.PARTASK, 
 				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
 		AtomLabelsGenerator labGenerator = null;
 		try {
 			labGenerator = (AtomLabelsGenerator) 
-					WorkerFactory.createWorker(labMakerParams, myJob);
+					WorkerFactory.createWorker(labMakerParams, null);
 		} catch (ClassNotFoundException e) {
 			// Cannot happen... unless there is very serious bug!
 			e.printStackTrace();
@@ -458,7 +469,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         				continue;
         		}
         		
-        		if (r.hasValuelessAttribute(
+        		if (labels !=null && r.hasValuelessAttribute(
         				AtomTupleConstants.KEYGETATOMLABELS))
         		{
         			List<String> atmLabels = new ArrayList<String>();

@@ -252,7 +252,9 @@ public final class WorkerFactory
      * it make the worker read the parameters and load the corresponding input
      * and configurations.
      * @param params the parameters that define the task and all related 
-     * settings and input data of the child job.
+     * settings and input data of the child job. Can be <code>null</code> but 
+     * this will make the {@link Worker} orphan, i.e., not connected to any
+     * parent job.
      * @param mainJob the job that needs a task to be performed by a child job.
      * @return a suitable worker for the task.
      * @throws ClassNotFoundException if no suitable {@link Worker} has been 

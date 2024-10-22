@@ -9,7 +9,7 @@
     "key": "LABELTYPE",
     "casedKey": "labelType",
     "type": "<String>",
-    "doc": "Specifies how to create atom labels. Available options are 'ElementBased' (e.g., 'C1', 'C2', 'H1', 'H2'), 'IndexBased' (e.g., 'C1', 'C2', 'H3', 'H4'), and 'AtomicNumber' (e.g., '6', '6', '1', '1')."
+    "doc": "Specifies how to create atom labels. Available options are 'ElementBased' (e.g., 'C1', 'C2', 'H1', 'H2'), 'IndexBased' (e.g., 'C1', 'C2', 'H3', 'H4'), 'IndexOnly' (e.g., '1', '2', '3', '4'), and 'AtomicNumber' (e.g., '6', '6', '1', '1')."
   },
   {
     "key": "ZEROBASED",

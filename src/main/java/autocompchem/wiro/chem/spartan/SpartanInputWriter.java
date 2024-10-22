@@ -70,7 +70,7 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     /**
      * String defining the task of preparing input files for Spartan
      */
-    public static final String PREPAREINPUTSPARTANTASKNAME = "PrepareInputSpartan";
+    public static final String PREPAREINPUTSPARTANTASKNAME = "prepareInputSpartan";
 
     /**
      * Task about preparing input files for Spartan
@@ -418,11 +418,14 @@ public class SpartanInputWriter extends ChemSoftInputWriter
     				.getAllDirectiveDataBlocks().get(0).getValue();
     		for (ConformationalCoordinate coord : cs)
             {
-    			//TODO-gg fixme
-    			sb.append(SpartanConstants.INDENT 
-    					+ coord.getAtomIDsAsString(true, "%5d")
-    					+ String.format(Locale.ENGLISH, "%5d", coord.getFold()))
-    			.append(NL);
+				List<Integer> ints = new ArrayList<Integer>();
+				coord.getAtomIDs().stream().forEach(id -> ints.add(id+1));
+				String intsStr = StringUtils.mergeListToString(ints, " ");
+    			sb.append(SpartanConstants.INDENT)
+    				.append(intsStr) // we expect a " " at the end
+    				.append(String.format(Locale.ENGLISH, "%5d",
+    						coord.getFold()))
+    				.append(NL);
             }
             sb.append(SpartanConstants.CONFDIREND).append(NL);
             

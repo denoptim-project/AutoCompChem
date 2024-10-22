@@ -199,48 +199,6 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
 
 //------------------------------------------------------------------------------
 
-    /**
-     * Prepares a string with the atom IDs defining this coordinate. The IDs 
-     * are sorted according to ascending order.
-     * @param oneBased set to <code>true</code> to request 1-based IDs. The 
-     * default is to return 0-based IDs.
-     * @param format the format (i.e., "%5d")
-     * @return the string containing the IDs
-     */
-
-    @Deprecated
-    public String getAtomIDsAsString(boolean oneBased, String format)
-    {
-        int base = 0;
-        if (oneBased)
-        {
-            base = 1;
-        }
-        StringBuilder sb = new StringBuilder();
-        int i0 = getAtomIDs().get(0);
-        if (getAtomIDs().size() > 1)
-        {
-            int i1 = getAtomIDs().get(1);
-            if (i0 > i1)
-            {
-                sb.append(String.format(format,i1 + base));
-                sb.append(String.format(format,i0 + base));
-            }
-            else
-            {
-                sb.append(String.format(format,i0 + base));
-                sb.append(String.format(format,i1 + base));
-            }        
-        }
-        else
-        {
-            sb.append(String.format(format,i0 + base));
-        }
-        return sb.toString();
-    }
-
-//------------------------------------------------------------------------------
-
     @Override
     public boolean equals(Object o)
     {

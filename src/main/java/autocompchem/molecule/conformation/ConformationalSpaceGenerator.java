@@ -9,7 +9,9 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.modeling.constraints.ConstraintDefinition;
@@ -115,7 +117,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
 	public void processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GENERATECONFORMATIONALSPACETASK))
-    	{
+    	{   
     		ConformationalSpace cs = createConformationalSpace(iac);
             
     		cs.printAll(logger);
@@ -142,7 +144,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
 
     public ConformationalSpace createConformationalSpace(IAtomContainer mol)
     {
-    	return createConformationalSpace(mol, rules);
+    	return createConformationalSpace(mol, rules, params);
     }
     
 //------------------------------------------------------------------------------
@@ -151,15 +153,33 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
      * Define conformational space in a given molecule and using the a given set
      * rules for defining {@link ConformationalCoordinate}s.
      * @param mol the molecular system we create a conformational space for.
+     * @param rules the rules for constructing the 
+     * {@link ConformationalCoordinate}s.
+     * @param params container of general purpose parameters. These may contain 
+     * settings controlling the nuances of the process. E.g., how to generate 
+     * atom labels that define each {@link ConformationalCoordinate}.
      * @return the resulting conformational space.
      */
 
     public static ConformationalSpace createConformationalSpace(
     		IAtomContainer mol, 
-    		List<AtomTupleMatchingRule> rules)
+    		List<AtomTupleMatchingRule> rules, ParameterStorage params)
     {
+
+        // If needed, generate atom labels
+    	List<String> labels = null;
+        for (AtomTupleMatchingRule r : rules)
+        {
+    		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
+    		{
+    	    	ParameterStorage labMakerParams = params.clone();
+    			labels = generateAtomLabels(mol, labMakerParams);
+    			break;
+    		}
+        }
+        
     	ConformationalSpace confSpace = new ConformationalSpace();
-    	List<AnnotatedAtomTuple> tuples = createTuples(mol, rules);
+    	List<AnnotatedAtomTuple> tuples = createTuples(mol, rules, labels);
     	for (AnnotatedAtomTuple tuple : tuples)
     	{
     		confSpace.add(new ConformationalCoordinate(tuple));
