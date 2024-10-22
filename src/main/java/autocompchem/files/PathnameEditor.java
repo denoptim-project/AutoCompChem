@@ -9,7 +9,7 @@ import java.util.Set;
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -98,18 +98,13 @@ public class PathnameEditor extends Worker
         // Multiple ways to define the input pathname are here processes from
         // the lowest priority to the highest. This here we implicitly define
         // the priority order.
-        if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
+        if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
             this.input = new File(
-            		params.getParameter(ChemSoftConstants.PAROUTFILEROOT)
+            		params.getParameter(WIROConstants.PAROUTFILEROOT)
             		.getValueAsString());
         }
-        if (params.contains(ChemSoftConstants.PARPATHNAMEROOT))
-        {
-            this.input = new File(
-            		params.getParameter(ChemSoftConstants.PARPATHNAMEROOT)
-            		.getValueAsString());
-        }
+
         if (params.contains("PATHNAME"))
         {
             this.input = new File(

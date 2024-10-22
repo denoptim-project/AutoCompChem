@@ -34,7 +34,7 @@ import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.wiro.ITextualInputWriter;
-import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -325,9 +325,9 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         {
         	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
         			perceptionTQMatches));
-        	exposeOutputData(new NamedData(ChemSoftConstants.JOBOUTPUTDATA, 
+        	exposeOutputData(new NamedData(WIROConstants.JOBOUTPUTDATA, 
         			stepsData));
-        	exposeOutputData(new NamedData(ChemSoftConstants.SOFTWAREID, 
+        	exposeOutputData(new NamedData(WIROConstants.SOFTWAREID, 
         			getSoftwareID()));
   /*
   //TODO

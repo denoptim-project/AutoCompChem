@@ -24,12 +24,6 @@
     "doc": "Defines the spin multiplicity of the chemical system/s given as input."
   },
   {
-    "key": "NOJSONOUTPUT",
-    "casedKey": "noJsonOutput",
-    "type": "void",
-    "doc": "Prevents the writing of JSON job details files."
-  },
-  {
     "key": "NOCHARGE",
     "casedKey": "noCharge",
     "type": "void",

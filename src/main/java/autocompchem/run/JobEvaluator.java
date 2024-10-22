@@ -44,6 +44,7 @@ import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
@@ -576,17 +577,17 @@ public class JobEvaluator extends Worker
 		makeInputPars.setParameter(WorkerConstants.PARTASK, 
 				Task.make("prepareInput").casedID);
 		if (exposedOutputCollector.contains(
-				ChemSoftConstants.SOFTWAREID))
+				WIROConstants.SOFTWAREID))
 		{
-			makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID, 
+			makeInputPars.setParameter(WIROConstants.SOFTWAREID, 
 					exposedOutputCollector.getNamedData(
-							ChemSoftConstants.SOFTWAREID)
+							WIROConstants.SOFTWAREID)
 					.getValueAsString());
 		} else {
-			makeInputPars.setParameter(ChemSoftConstants.SOFTWAREID,
+			makeInputPars.setParameter(WIROConstants.SOFTWAREID,
 					"ACC");
 		}
-		makeInputPars.setParameter(ChemSoftConstants.PARJOBDETAILSOBJ, 
+		makeInputPars.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
 				jobResultingFromAction);
 		
 		//TODO-gg this was the wrong way to do this. We need to make
@@ -603,10 +604,10 @@ public class JobEvaluator extends Worker
 					NamedDataType.UNDEFINED, iacs);
 		}
 		*/
-		if (hasParameter(ChemSoftConstants.PAROUTFILE))
+		if (hasParameter(WIROConstants.PAROUTFILE))
 		{
-			makeInputPars.setParameter(ChemSoftConstants.PAROUTFILE,
-				params.getParameter(ChemSoftConstants.PAROUTFILE)
+			makeInputPars.setParameter(WIROConstants.PAROUTFILE,
+				params.getParameter(WIROConstants.PAROUTFILE)
 					.getValueAsString());
 		}
 		
@@ -661,7 +662,7 @@ public class JobEvaluator extends Worker
 		File fileToParse = new File(log.getPathName());
 		if (fileToParse.exists())
 		{
-			analysisParams.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE, 
+			analysisParams.setParameter(WIROConstants.PARJOBOUTPUTFILE, 
 					fileToParse.getAbsolutePath());
 		} else {
 			if (!tolerateMissingIC)
@@ -706,9 +707,9 @@ public class JobEvaluator extends Worker
 		exposeOutputData(new NamedData(NORMALTERMKEY,
 				outputParser.getNormalTerminationFlag()));
 		exposeOutputData(exposedByAnalzer.getNamedData(
-				ChemSoftConstants.JOBOUTPUTDATA));
+				WIROConstants.JOBOUTPUTDATA));
 		exposeOutputData(exposedByAnalzer.getNamedData(
-				ChemSoftConstants.SOFTWAREID));
+				WIROConstants.SOFTWAREID));
 		exposeOutputData(new NamedData(NUMSTEPSKEY,
 				outputParser.getStepsFound()));
 		

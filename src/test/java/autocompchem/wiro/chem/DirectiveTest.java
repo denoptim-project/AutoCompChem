@@ -42,6 +42,7 @@ import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.SoftwareId;
 import autocompchem.text.TextBlock;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.worker.DummyWorker;
 import autocompchem.worker.WorkerConstants;
 
@@ -219,7 +220,7 @@ public class DirectiveTest
     	d.addDirectiveData(DirectiveData.makeFromJDLine(ddString));
     	
     	Job j = JobFactory.createJob(SoftwareId.ACC);
-    	j.setParameter(ChemSoftConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
+    	j.setParameter(WIROConstants.PAROUTFILEROOT,"/path/t/filenameRoot");
     	
     	d.performACCTasks(null, j, null);
     	

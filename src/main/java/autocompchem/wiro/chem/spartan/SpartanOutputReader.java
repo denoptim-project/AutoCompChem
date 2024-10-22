@@ -31,6 +31,7 @@ import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
@@ -113,7 +114,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     	{
     		Terminator.withMsgAndStatus("ERROR! " 
     				+ this.getClass().getSimpleName() + " requires the "
-    				+ "value of " + ChemSoftConstants.PARJOBOUTPUTFILE 
+    				+ "value of " + WIROConstants.PARJOBOUTPUTFILE 
     				+ " to be a pathname to a Spartan directory, but '"
     				+ inFile + "' is not.", -1);
     	}

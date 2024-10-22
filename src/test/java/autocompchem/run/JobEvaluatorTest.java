@@ -42,7 +42,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.Action.ActionObject;
 import autocompchem.run.jobediting.Action.ActionType;
-import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.worker.WorkerFactory;
 
 
@@ -104,7 +104,7 @@ public class JobEvaluatorTest
 
         File newJobDef = new File(
         		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
-    	evalJob.setParameter(ChemSoftConstants.PAROUTFILE.toString(), 
+    	evalJob.setParameter(WIROConstants.PAROUTFILE.toString(), 
     			newJobDef.getAbsolutePath());
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	w.performTask();
@@ -168,7 +168,7 @@ public class JobEvaluatorTest
 
         File newJobDef = new File(
         		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
-    	evalJob.setParameter(ChemSoftConstants.PAROUTFILE.toString(), 
+    	evalJob.setParameter(WIROConstants.PAROUTFILE.toString(), 
     			newJobDef.getAbsolutePath());
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	w.performTask();

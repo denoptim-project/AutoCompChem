@@ -127,21 +127,6 @@ public class ChemSoftConstants
      */
 	public static final String INPEXTENSION = ".inp";
 	
-    /**
-     * Extension for computational chemistry job details file
-     */
-	public static final String JDEXTENSION = ".jd";
-	
-	/**
-	 * Extension for computational chemistry job details file in JSON format
-	 */
-	public static final String JSONJDEXTENSION = ".jd.json";
-
-	/**
-	 * Key for parameter defining the verbosity level
-	 */
-	public static final String PARVERBOSITY = "VERBOSITY";
-	
 	/**
 	 * Key for parameter defining the pathname to molecular geometries
 	 */
@@ -174,52 +159,10 @@ public class ChemSoftConstants
 	public static final String PARPRECISION = "CARTESIANCOORDSFORMAT";
 	
 	/**
-	 * Key for parameter defining the pathname to the file defining the details
-	 * of the computational chemistry job.
-	 */
-	public static final String PARJOBDETAILSFILE = "JOBDETAILSFILE";
-	
-	/**
 	 * Key for parameter defining the details
 	 * of the computational chemistry job in terms of {@link ParameterStorage}.
 	 */
 	public static final String PARJOBDETAILS = "JOBDETAILS";
-	
-	/**
-	 * Key for parameter defining the details
-	 * of the computational chemistry job and a {@link CompChemJob} instance.
-	 */
-	public static final String PARJOBDETAILSOBJ = "PARJOBDETAILSOBJ";
-
-	/**
-	 * Key for parameter defining the pathname's root, i.e., a pathname without
-	 * extension that can be used a root pathname for generating pathnames
-	 * that are meant to be related. E.g., the string
-	 * <code>dir/filename</code> is pathname's root of files such 
-	 * <code>dir/filename.inp</code>, <code>dir/filename.log</code>,
-	 * <code>dir/filename_tmp1.out</code>, etc.
-	 */
-	public static final String PARPATHNAMEROOT = "PATHNAMEROOT";
-	
-	//TODO-gg PARPATHNAMEROOT should replace PAROUTFILEROOT in compchem job processing
-	
-	/**
-	 * Key for parameter defining the pathname's root for any output file (i.e.,
-	 * the input for the computational chemistry software).
-	 */
-	public static final String PAROUTFILEROOT = "ROOTPATHNAMEOUTPUT";
-	
-	/**
-	 * Key for parameter defining the pathname of the main output file (i.e.,
-	 * the input for the computational chemistry software).
-	 */
-	public static final String PAROUTFILE = "PATHNAMEOUTPUT";
-	
-	/**
-	 * Key for parameter requiring to skip generation of the json file with 
-	 * the definition of a mol/s-specific job.
-	 */
-	public static final String PARNOJSONOUTPUT = "NOJSONOUTPUT";
 	
 	/**
 	 * Key for parameter defining the charge of the system.
@@ -307,12 +250,6 @@ public class ChemSoftConstants
 	public static final String DIRGEOMETRY = "GEOMETRY";
 
 	/**
-	 * Key for parameter defining the pathname to an output from a comp.
-	 * chem. job.
-	 */
-	public static final String PARJOBOUTPUTFILE = "JOBOUTPUTFILE";
-	
-	/**
 	 * Key for parameter collecting analysis tasks for comp.chem. output files.
 	 */
 	public static final String PARANALYSISTASKS = "ANALYSISTASKS";
@@ -363,12 +300,6 @@ public class ChemSoftConstants
 	 */
 	public static final String PARCRITICALPOINTKIND = 
 			"DETECTKINDOFCRITICALPOINT";
-	
-	/**
-	 * Name of data storing any data from a job. This is the entire
-	 * data structure produced upon analyzing a job output.
-	 */
-	public static final String JOBOUTPUTDATA = "JOBOUTPUTDATA";
 	
 	/**
 	 * Name for data storing the line number where a job begins.
@@ -539,12 +470,5 @@ public class ChemSoftConstants
 	 * the geometries.
 	 */
 	public static final String EXTERNALFILEGEOMETRIES = "EXTERNALGEOMSFILE";
-
-	/**
-	 * Name of data containing an identifier of a software, i.e., the
-	 * computational chemistry software that created some output data.
-	 */
-	public static final String SOFTWAREID = "SOFTWAREID";
 	
-
 }

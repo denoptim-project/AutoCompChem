@@ -15,7 +15,6 @@ import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftInputWriter;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -130,16 +129,16 @@ public class InputWriter extends Worker implements ITextualInputWriter
 	    	}
 		}
     	
-    	if (!job.hasParameter(ChemSoftConstants.SOFTWAREID))
+    	if (!job.hasParameter(WIROConstants.SOFTWAREID))
 		{
 			logger.warn("WARNING: cannot detect the type of "
 					+ "software for which to prepare an input. "
 					+ "Make sure the parameter '" 
-					+ ChemSoftConstants.SOFTWAREID + "' is given.");
+					+ WIROConstants.SOFTWAREID + "' is given.");
 			return new InputWriter();
 		}    	
     	SoftwareId softwareID = new SoftwareId(job.getParameter(
-    			ChemSoftConstants.SOFTWAREID).getValueAsString());
+    			WIROConstants.SOFTWAREID).getValueAsString());
     	
 		ReaderWriterFactory builder = 
 				ReaderWriterFactory.getInstance();
@@ -157,33 +156,33 @@ public class InputWriter extends Worker implements ITextualInputWriter
     {
     	super.initialize();
        
-    	if (params.contains(ChemSoftConstants.PARJOBDETAILSFILE))
+    	if (params.contains(WIROConstants.PARJOBDETAILSFILE))
         {
             File jdFile = new File(params.getParameter(
-                    ChemSoftConstants.PARJOBDETAILSFILE).getValueAsString());
+                    WIROConstants.PARJOBDETAILSFILE).getValueAsString());
             logger.debug("Job details from JD file '" + jdFile + "'.");
             
             FileUtils.foundAndPermissions(jdFile,true,false,false);
             this.jobToInput = JobFactory.buildFromFile(jdFile);
-        } else if (params.contains(ChemSoftConstants.PARJOBDETAILSOBJ)) {
+        } else if (params.contains(WIROConstants.PARJOBDETAILSOBJ)) {
         	this.jobToInput = (Job) params.getParameter(
-                    ChemSoftConstants.PARJOBDETAILSOBJ).getValue();
+                    WIROConstants.PARJOBDETAILSOBJ).getValue();
         } else {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
-                    + "Neither '" + ChemSoftConstants.PARJOBDETAILSFILE
-                    + "' nor '" + ChemSoftConstants.PARJOBDETAILSOBJ 
+                    + "Neither '" + WIROConstants.PARJOBDETAILSFILE
+                    + "' nor '" + WIROConstants.PARJOBDETAILSOBJ 
                     + "'found in parameters.",-1);
         }
 
-        if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
+        if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
             outFileNameRoot = params.getParameter(
-                    ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
+                    WIROConstants.PAROUTFILEROOT).getValueAsString();
             outFile = new File(outFileNameRoot + inpExtrension);
-        } else if (params.contains(ChemSoftConstants.PAROUTFILE))
+        } else if (params.contains(WIROConstants.PAROUTFILE))
         {
         	outFile = new File(params.getParameter(
-        			ChemSoftConstants.PAROUTFILE).getValueAsString());
+        			WIROConstants.PAROUTFILE).getValueAsString());
             outFileNameRoot = FileUtils.getRootOfFileName(outFile);
             if (outFile.getParentFile()!=null)
             {
@@ -193,14 +192,14 @@ public class InputWriter extends Worker implements ITextualInputWriter
         } else {
     		outFileNameRoot = "softinput";
             logger.debug("Neither '" 
-        				 + ChemSoftConstants.PAROUTFILE + "' nor '" 
-        				 + ChemSoftConstants.PAROUTFILEROOT + "' found. " + NL
+        				 + WIROConstants.PAROUTFILE + "' nor '" 
+        				 + WIROConstants.PAROUTFILEROOT + "' found. " + NL
                          + "Root of any output file name set to '" 
                          + outFileNameRoot + "'.");
         	outFile = new File(outFileNameRoot + inpExtrension);
         }
         
-        if (params.contains(ChemSoftConstants.PARNOJSONOUTPUT))
+        if (params.contains(WIROConstants.PARNOJSONOUTPUT))
         {
         	writeJobSpecificJDOutput = false;
         }
@@ -230,7 +229,7 @@ public class InputWriter extends Worker implements ITextualInputWriter
 		if (writeJobSpecificJDOutput)
 		{
 			IOtools.writeJobToJSON(jobToInput, new File(
-					outFileNameRoot + ChemSoftConstants.JSONJDEXTENSION));
+					outFileNameRoot + WIROConstants.JSONJDEXTENSION));
 		}
 	}
 	

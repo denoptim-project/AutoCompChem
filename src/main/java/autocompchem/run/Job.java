@@ -298,8 +298,7 @@ public class Job implements Runnable
 
         if (params.contains(ParameterConstants.VERBOSITY))
         {
-        	processVerbosity(params.getParameter(
-                    ChemSoftConstants.PARVERBOSITY));
+        	processVerbosity(params.getParameter(ParameterConstants.VERBOSITY));
         }
     }
     

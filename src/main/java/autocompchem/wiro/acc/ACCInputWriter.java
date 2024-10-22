@@ -29,7 +29,7 @@ import com.google.gson.Gson;
 import autocompchem.io.ACCJson;
 import autocompchem.run.Job;
 import autocompchem.wiro.InputWriter;
-import autocompchem.wiro.chem.ChemSoftConstants;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -61,7 +61,7 @@ public class ACCInputWriter extends InputWriter
      */
     public ACCInputWriter() 
     {
-		inpExtrension = ChemSoftConstants.JSONJDEXTENSION;
+		inpExtrension = WIROConstants.JSONJDEXTENSION;
 	}
   
 //------------------------------------------------------------------------------

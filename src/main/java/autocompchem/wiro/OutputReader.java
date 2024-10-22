@@ -44,7 +44,6 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -153,16 +152,16 @@ public class OutputReader extends Worker
 			return new OutputReader();
 		}
 		
-		if (!job.hasParameter(ChemSoftConstants.PARJOBOUTPUTFILE))
+		if (!job.hasParameter(WIROConstants.PARJOBOUTPUTFILE))
 		{
 			logger.warn("WARNING: cannot detect the type of "
 					+ "output to analyze. Make sure the parameter '" 
-					+ ChemSoftConstants.PARJOBOUTPUTFILE + "' is given.");
+					+ WIROConstants.PARJOBOUTPUTFILE + "' is given.");
 			return new OutputReader();
 		}
 		
 		String fileName = job.getParameter(
-        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
+        		WIROConstants.PARJOBOUTPUTFILE).getValueAsString();
 		ReaderWriterFactory builder = ReaderWriterFactory.getInstance();
 		
 		try {
@@ -178,7 +177,7 @@ public class OutputReader extends Worker
 		} catch (FileNotFoundException e) {
 			Terminator.withMsgAndStatus("ERROR: log/output file '"
 					+ fileName + "' is defined by '" 
-					+ ChemSoftConstants.PARJOBOUTPUTFILE 
+					+ WIROConstants.PARJOBOUTPUTFILE 
 					+ "' but does not exist.", -1);
 		}
 		return new OutputReader();
@@ -196,23 +195,23 @@ public class OutputReader extends Worker
     	super.initialize();
 
         //Get and check the input file (which is an output from a software)
-        if (params.contains(ChemSoftConstants.PARJOBOUTPUTFILE))
+        if (params.contains(WIROConstants.PARJOBOUTPUTFILE))
         {
 	        String inFileName = params.getParameter(
-	        		ChemSoftConstants.PARJOBOUTPUTFILE).getValueAsString();
+	        		WIROConstants.PARJOBOUTPUTFILE).getValueAsString();
 	        FileUtils.foundAndPermissions(inFileName,true,false,false);
 	        this.inFile = new File(inFileName);
         } else {
         	Terminator.withMsgAndStatus("ERROR! No definition of the ouput to "
         			+ "analyse. Please provide a value for '"
-        			+ ChemSoftConstants.PARJOBOUTPUTFILE + "'.", -1);
+        			+ WIROConstants.PARJOBOUTPUTFILE + "'.", -1);
         }
         
         //Get and check the output filename
-        if (params.contains(ChemSoftConstants.PAROUTFILEROOT))
+        if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
             outFileRootName = params.getParameter(
-            		ChemSoftConstants.PAROUTFILEROOT).getValueAsString();
+            		WIROConstants.PAROUTFILEROOT).getValueAsString();
         } else {
         	if (inFile!=null)
         	{
@@ -240,16 +239,10 @@ public class OutputReader extends Worker
         {
         	exposeOutputData(new NamedData(MATCHESTOTEXTQRYSFORPERCEPTION, 
         			perceptionTQMatches));
-        	exposeOutputData(new NamedData(ChemSoftConstants.JOBOUTPUTDATA, 
+        	exposeOutputData(new NamedData(WIROConstants.JOBOUTPUTDATA, 
         			stepsData));
-        	exposeOutputData(new NamedData(ChemSoftConstants.SOFTWAREID, 
+        	exposeOutputData(new NamedData(WIROConstants.SOFTWAREID, 
         			getSoftwareID()));
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
         }
     }
 

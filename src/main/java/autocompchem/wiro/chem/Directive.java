@@ -44,6 +44,7 @@ import autocompchem.modeling.constraints.ConstraintsGenerator;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -1153,7 +1154,7 @@ public class Directive implements IDirectiveComponent, Cloneable
     	embeddeJobPars.setParameter(new NamedData(
     			ChemSoftConstants.PARGEOM, mols));
     	embeddeJobPars.setParameter(job.getParameter(
-    			ChemSoftConstants.PAROUTFILEROOT));
+    			WIROConstants.PAROUTFILEROOT));
     	
     	// We run the embedded job, specifying that we want to receive the 
     	// resulting data.

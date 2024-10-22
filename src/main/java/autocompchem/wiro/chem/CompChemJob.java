@@ -45,6 +45,7 @@ import autocompchem.run.Job;
 import autocompchem.run.JobEvaluator;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
+import autocompchem.wiro.WIROConstants;
 
 /**
  * Object representing an computational chemistry job to be run by an 
@@ -969,7 +970,7 @@ public class CompChemJob extends Job implements Cloneable
       	@SuppressWarnings("unchecked")
   		Map<Integer, NamedDataCollector> jobOutputData = 
   		(Map<Integer, NamedDataCollector>) exposedOutput.getNamedData(
-  				ChemSoftConstants.JOBOUTPUTDATA).getValue();
+  				WIROConstants.JOBOUTPUTDATA).getValue();
       	
       	int focusJobStepID = (int) exposedOutput.getNamedData(
       			JobEvaluator.NUMSTEPSKEY).getValue();

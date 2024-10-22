@@ -329,7 +329,7 @@ public abstract class Worker implements IOutputExposer
         if (params.contains(ParameterConstants.VERBOSITY))
         {
             String str = params.getParameter(
-                    ChemSoftConstants.PARVERBOSITY).getValueAsString();
+            		ParameterConstants.VERBOSITY).getValueAsString();
             if (!NumberUtils.isNumber(str))
 			{
 				Terminator.withMsgAndStatus("ERROR! Value '" + str + "' "

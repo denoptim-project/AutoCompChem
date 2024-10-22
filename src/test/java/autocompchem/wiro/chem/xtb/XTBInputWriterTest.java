@@ -40,6 +40,7 @@ import autocompchem.files.FileAnalyzer;
 import autocompchem.io.IOtools;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
@@ -122,9 +123,9 @@ public class XTBInputWriterTest
         		+ XTBInputWriter.PREPAREINPUTXTBTASK.casedID);
     	parLines.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR + molFile.getAbsolutePath());
-    	parLines.add(ChemSoftConstants.PAROUTFILEROOT
+    	parLines.add(WIROConstants.PAROUTFILEROOT
     			+ ParameterConstants.SEPARATOR + inpRoot);
-    	parLines.add(ChemSoftConstants.PARJOBDETAILSFILE
+    	parLines.add(WIROConstants.PARJOBDETAILSFILE
         		+ ParameterConstants.SEPARATOR + jdFile.getAbsolutePath());
     	
         IOtools.writeTXTAppend(parFile, parLines, false);
@@ -161,7 +162,7 @@ public class XTBInputWriterTest
         		+ XTBInputWriter.PREPAREINPUTXTBTASK.casedID);
     	parLines2.add(ChemSoftConstants.PARGEOMFILE 
         		+ ParameterConstants.SEPARATOR +  molFile.getAbsolutePath());
-    	parLines2.add(ChemSoftConstants.PAROUTFILEROOT
+    	parLines2.add(WIROConstants.PAROUTFILEROOT
     			+ ParameterConstants.SEPARATOR + inpRoot2);
     	parLines2.add(ChemSoftConstants.PARJOBDETAILS
         		+ ParameterConstants.SEPARATOR 

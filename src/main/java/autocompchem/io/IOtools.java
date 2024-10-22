@@ -66,6 +66,7 @@ import autocompchem.text.TextBlock;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
@@ -634,7 +635,7 @@ public class IOtools
 				if (analyzer!=null)
 				{
 					ParameterStorage params = new ParameterStorage();
-					params.setParameter(ChemSoftConstants.PARJOBOUTPUTFILE,
+					params.setParameter(WIROConstants.PARJOBOUTPUTFILE,
 							file.getAbsolutePath());
 					params.setParameter(WorkerConstants.PARTASK,
 							Task.make("analyseOutput").casedID);
@@ -647,7 +648,7 @@ public class IOtools
 					@SuppressWarnings("unchecked")
 					Map<Integer, NamedDataCollector> dataByStep =
 							(Map<Integer, NamedDataCollector>) 
-								allData.getNamedData(ChemSoftConstants
+								allData.getNamedData(WIROConstants
 										.JOBOUTPUTDATA).getValue();
 					
 					for (Integer stepId : dataByStep.keySet())
