@@ -688,16 +688,24 @@ public class NamedData implements Cloneable
  	   
  	    // NB: special handling of value meant to avoid overflow resulting by 
  	    // hashing Jobs that contain references to related Jobs.
- 	    if (this.value.getClass() != other.value.getClass())
- 	    	return false;
- 	    
- 	    if (this.value instanceof Job)
+ 	    if (this.value != null && other.value != null)
  	    {
- 	    	return ((Job) this.value).getHashCodeSnapshot() == 
- 	    			((Job) other.value).getHashCodeSnapshot();
- 	    }
+ 	    	if (this.value.getClass() != other.value.getClass())
+ 	    		return false;
  	    
- 	    return this.value.equals(other.value);
+	 	    if (this.value instanceof Job)
+	 	    {
+	 	    	return ((Job) this.value).getHashCodeSnapshot() == 
+	 	    			((Job) other.value).getHashCodeSnapshot();
+	 	    }
+	 	    
+	 	    return this.value.equals(other.value);
+ 	    } else if ((this.value != null && other.value == null)
+ 	    	|| (this.value == null && other.value != null)) 
+ 	    {
+ 	    	return false;
+ 	    }
+ 	    return true;
     }
     
 //-----------------------------------------------------------------------------

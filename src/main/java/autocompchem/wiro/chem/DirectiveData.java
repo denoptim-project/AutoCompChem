@@ -141,8 +141,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
 					accTaskParams.getParameterValue(
 							ChemSoftConstants.JDLABACCTASK));
 			accTaskParams.removeData(ChemSoftConstants.JDLABACCTASK);
-			//TODO-gg uncomment once handling of tasks is finished
-			//super.removeValue();
+			super.removeValue();
 	    }
     }
 
