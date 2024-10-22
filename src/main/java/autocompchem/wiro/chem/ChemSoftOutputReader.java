@@ -358,8 +358,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
         		analysisTasks.put(i, analysisAllTasks);
         	}
         }
-        /*
-        //TODO-gg activate
+
         // Apply connectivity template, if given
 		if (useTemplateConnectivity)
 		{
@@ -396,7 +395,6 @@ public abstract class ChemSoftOutputReader extends OutputReader
 				}
 			}
 		}
-		*/
         
         // Analyse one or more steps
         for (Integer stepId : analysisTasks.keySet())
@@ -411,42 +409,6 @@ public abstract class ChemSoftOutputReader extends OutputReader
         	NamedDataCollector stepData = stepsData.get(stepId);
         	resultsString.append(NL + "Step " + stepId + ":" + NL);
         	
-        	//TODO-gg move outside of loop over analysis: do it as long as a 
-        	// templateconnectivity has been given.
-            // We inherit connectivity here so all analysis of geometries can
-            // make use of the connectivity
-    		if (useTemplateConnectivity)
-    		{
-    			if (stepData.contains(ChemSoftConstants.JOBDATAGEOMETRIES))
-    			{
-    				AtomContainerSet acs = (AtomContainerSet) stepData
-    						.getNamedData(ChemSoftConstants.JOBDATAGEOMETRIES)
-    						.getValue();
-    				if (acs.getAtomContainerCount() > 0)
-    				{
-	    				if (acs.getAtomContainer(0).getAtomCount() !=
-	    						connectivityTemplate.getAtomCount())
-	    				{
-	    					Terminator.withMsgAndStatus("ERROR! Number of "
-	    							+ "atom in template structure does "
-	    							+ "not correspond to number of atom "
-	    							+ "in file '" + inFile + "' (" 
-	    							+ connectivityTemplate.getAtomCount() 
-	    							+ " vs. "
-	    							+ acs.getAtomContainer(0).getAtomCount()
-	    							+ ").", -1);
-	    				}
-	    				for (int i=0; i<acs.getAtomContainerCount(); i++)
-	    				{
-	    					IAtomContainer iac = acs.getAtomContainer(i);
-	    					ConnectivityUtils.
-	    					importConnectivityFromReference(iac, 
-	    							connectivityTemplate);
-	    				}
-    				}
-    			}
-    		}
-    		
         	// What do we have to do on the current step?
         	List<AnalysisTask> todoList = analysisTasks.get(stepId);
         	if (todoList.size()==0)
