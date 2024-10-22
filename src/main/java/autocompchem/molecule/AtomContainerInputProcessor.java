@@ -168,7 +168,6 @@ public class AtomContainerInputProcessor extends Worker
         	if (multiGeomMode!=MultiGeomMode.INDEPENDENTJOBS)
         	{
 	        	multiGeomMode = MultiGeomMode.INDEPENDENTJOBS;
-	        	//TODO: logging
 	        	logger.warn("WARNING: found parameter "
 	        			+ ChemSoftConstants.PARMULTIGEOMID + ". Ignoring any "
 	        			+ "value given for "
