@@ -534,7 +534,7 @@ public class NamedData implements Cloneable
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
-				logger.warn("WARNING! Unexpected data of type '" 
+				logger.trace("WARNING! Unexpected data of type '" 
 						+ className + "' will be treated as " + tp + ".");
     			break;
     	}
