@@ -316,7 +316,14 @@ public class FileUtils
     
 //------------------------------------------------------------------------------
     
-    public static String getIdentitalizedPathName(File f, String id)
+    public static String getIdSpecPathName(String pathName, String id)
+    {
+    	return getIdSpecPathName(new File(pathName), id);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    public static String getIdSpecPathName(File f, String id)
     {
     	String ext = "";
     	String fname = f.getName();
