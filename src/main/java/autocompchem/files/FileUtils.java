@@ -313,6 +313,27 @@ public class FileUtils
     	
     	return ext;
     }
+    
+//------------------------------------------------------------------------------
+    
+    public static String getIdentitalizedPathName(File f, String id)
+    {
+    	String ext = "";
+    	String fname = f.getName();
+    	String newPathName = fname;
+    	
+    	if (fname.contains("."))
+    	{
+    		ext = fname.substring(fname.lastIndexOf("."));
+    		newPathName = fname.substring(0,fname.lastIndexOf("."));
+    	}
+    	
+    	String parent = f.getParent();
+    	if (parent!=null)
+    		newPathName = parent + File.separator + newPathName;
+    	
+    	return newPathName + "_" + id + ext;
+    }
 
 //------------------------------------------------------------------------------
 

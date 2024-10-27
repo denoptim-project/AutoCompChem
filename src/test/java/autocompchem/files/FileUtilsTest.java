@@ -323,4 +323,22 @@ sub2_abc/subsub2_abc
     
 //------------------------------------------------------------------------------
     
+    @Test
+    public void testGetIdentitalizedPathName() throws Exception
+    {
+    	String fn = "dummy_file name";
+    	assertEquals(fn+"_"+2, FileUtils.getIdentitalizedPathName(
+    			new File(fn),"2"));
+    	assertEquals(fn+"_"+2+".sdr", FileUtils.getIdentitalizedPathName(
+    			new File(fn+".sdr"),"2"));
+    	
+    	fn = "/usr/local/dummy_file name";
+    	assertEquals(fn+"_"+2, FileUtils.getIdentitalizedPathName(
+    			new File(fn),"2"));
+    	assertEquals(fn+"_"+2+".sdr", FileUtils.getIdentitalizedPathName(
+    			new File(fn+".sdr"),"2"));
+    }
+    
+//------------------------------------------------------------------------------
+    
 }
