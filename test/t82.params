@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 4
+TASK: analyseOutput
+jobOutputFile: ../t82-models
+SaveLastGeometry: XYZ t82_results.xyz

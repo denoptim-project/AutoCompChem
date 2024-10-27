@@ -196,10 +196,17 @@ public class ChemSoftConstants
 	public static final String PARMULTIGEOMID = "USEGEOMATINDEX";
 	
 	/**
-	 * Key for the parameter defining which molecular model to use when dealing 
+	 * Key for the parameter reflecting the user's intention to focus on a 
+	 * single molecular (sub) model to use when dealing 
 	 * collections of multiple models.
 	 */
 	public static final String PARMODELID = "MODELID";
+	
+	/**
+	 *  Key for the parameter requiring model specific behavior. This implies
+	 *  things like altering output filenames to make them model-specific.
+	 */
+	public static final String PARMODELSPECIFIC = "MODELSPECIFIC";
 	
 	/**
 	 * Parameter specifying which type of atom label to use. 

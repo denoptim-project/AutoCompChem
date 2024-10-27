@@ -37,11 +37,14 @@ import autocompchem.io.IOtools;
 import autocompchem.modeling.compute.CompChemComputer;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.run.Job;
+import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.OutputReader;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.AnalysisTask.AnalysisKind;
 
 /**
@@ -53,6 +56,7 @@ import autocompchem.wiro.chem.AnalysisTask.AnalysisKind;
 
 public abstract class ChemSoftOutputReader extends OutputReader
 {
+    
     /**
      * List of analysis to perform on all steps
      */
@@ -89,6 +93,17 @@ public abstract class ChemSoftOutputReader extends OutputReader
      * seen as incompatible. Default <i>t = 0.05</i>.
      */
     private double connectivityCheckTol = 0.05;
+
+    /**
+     * The identifier of the molecule/model to focus on, ignoring the rest.
+     */
+    protected String selectedMolID;
+    
+    /**
+     * Flag requesting any alteration that is specific to a single model in a
+     * pool of models (e.g., altering filenames to contain model identifier)
+     */
+    protected boolean modelSpecific;
     
 
 //------------------------------------------------------------------------------
@@ -109,6 +124,17 @@ public abstract class ChemSoftOutputReader extends OutputReader
     public void initialize()
     {
     	super.initialize();
+    	
+    	if (params.contains(ChemSoftConstants.PARMODELID))
+        {
+    		selectedMolID = params.getParameter(
+            		ChemSoftConstants.PARMODELID).getValueAsString();
+        }
+    	
+    	if (params.contains(ChemSoftConstants.PARMODELSPECIFIC))
+        {
+    		modelSpecific = true;
+        }
 
         if (params.contains(ChemSoftConstants.PARPRINTLASTGEOMEACH))
         {
@@ -337,7 +363,16 @@ public abstract class ChemSoftOutputReader extends OutputReader
 
 	@Override
     protected void analyzeFiles()
-    {	
+    {
+		// Consider possibility to spin out multiple readers for output data
+		// that contains multiple models
+		List<File> subModelsOutFiles = getSubModelOutputFiles();
+		if (subModelsOutFiles.size()>0)
+		{
+			dealWithMultiModelContainers(subModelsOutFiles);
+			return;
+		}
+		
     	super.analyzeFiles();
     	
         // Prepare collector of analysis results
@@ -436,6 +471,11 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        					+ format.toLowerCase();
 	        			outFileName = changeIfParameterIsFound(outFileName,
 	        					ChemSoftConstants.GENERALFILENAME,atParams);
+	        			if (modelSpecific)
+	        			{
+	        				outFileName = FileUtils.getIdSpecPathName(
+	        						outFileName, selectedMolID);
+	        			}
 	        			File outFile = new File(outFileName);
 	        			
 	        			AtomContainerSet acs = (AtomContainerSet) 
@@ -499,6 +539,11 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        					+ format.toLowerCase();
 	        			outFileName= changeIfParameterIsFound(outFileName,
 	        					ChemSoftConstants.GENERALFILENAME,atParams);
+	        			if (modelSpecific)
+	        			{
+	        				outFileName = FileUtils.getIdSpecPathName(
+	        						outFileName, selectedMolID);
+	        			}
 	        			File outFile = new File(outFileName);
 	        			
 	        			AtomContainerSet acs = (AtomContainerSet) 
@@ -735,6 +780,11 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        			String outFileName = outFileRootName + "_nm.xyz";
 	        			outFileName = changeIfParameterIsFound(outFileName, 
 	        					ChemSoftConstants.GENERALFILENAME, atParams);
+	        			if (modelSpecific)
+	        			{
+	        				outFileName = FileUtils.getIdSpecPathName(
+	        						outFileName, selectedMolID);
+	        			}
 	        			File outFile = new File (outFileName);
 	        			
 	        			String idxsStr = "";
@@ -825,6 +875,11 @@ public abstract class ChemSoftOutputReader extends OutputReader
 							+ format.toLowerCase();
 					outFileName = changeIfParameterIsFound(outFileName,
 							ChemSoftConstants.GENERALFILENAME,atParams);
+        			if (modelSpecific)
+        			{
+        				outFileName = FileUtils.getIdSpecPathName(
+        						outFileName, selectedMolID);
+        			}
 					File outFile = new File(outFileName);
 					
 					IAtomContainer lastGeom = null;
@@ -930,6 +985,56 @@ public abstract class ChemSoftOutputReader extends OutputReader
         			+ finalResultsString.toString());
         }
     }
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * This is where we intercept the possibility of an output file to contain 
+	 * multiple chemical models (e.g., multiple conformations, reaction species).
+	 * By default we detect whether there are multiple models, which may be made
+	 * software-dependent by overwriting {@link #getSubModelOutputFiles()},
+	 * and if we see 
+	 * @param subModelsOutFiles the unordered list of model-specific output 
+	 * files/folders.
+	 */
+	protected void dealWithMultiModelContainers(List<File> subModelsOutFiles)
+	{
+		logger.info("Multi-model ouptut detected. Spinning multiple "
+				+ "readers from '" + inFile + "'");
+		for (File subModelOutFile : subModelsOutFiles)
+		{
+			String subModelID = subModelOutFile.getName();
+			//NB: the list of files is not bound to follow any order 
+			// so do not rely on the index of the item in the list.
+			ParameterStorage subModPars = myJob.getParameters().clone();
+			subModPars.setParameter(WIROConstants.PARJOBOUTPUTFILE, 
+					subModelOutFile);
+			subModPars.setParameter(ChemSoftConstants.PARMODELID, subModelID);
+			subModPars.setParameter(ChemSoftConstants.PARMODELSPECIFIC);
+			
+			Job subModelJob = JobFactory.createTypedJob(myJob);
+			subModelJob.setParameters(subModPars);
+			subModelJob.run();
+
+	        exposeOutputData(new NamedData(WIROConstants.JOBOUTPUTDATA + "_" 
+	        		+ subModelID, subModelJob.exposedOutput));
+		}
+	}	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Finds the output files corresponding to submodels (i.e., models being 
+	 * part of the same software output, for instance, multiple conformations 
+	 * produced by the same run). Subclasses can override this method
+	 * create the capability to spin out multiple readers, one per each of
+	 * the submodels, which is then processed independently.
+	 * @return always an empty list unless it is overwritten by subclasses, in 
+	 * which case this documentation should be overwridden as well.
+	 */
+	protected List<File> getSubModelOutputFiles()
+	{
+		return new ArrayList<File>();
+	}
     
 //------------------------------------------------------------------------------
     

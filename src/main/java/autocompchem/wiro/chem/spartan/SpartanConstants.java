@@ -248,7 +248,7 @@ public class SpartanConstants
     /**
      * String defining normal termination in status file
      */
-    public final static String NORMALCOMPLSTATUS = "COMPLETED";
+    public final static String NORMALCOMPLSTATUS = "Successful completion";
 
     /**
      * Name of the archive file

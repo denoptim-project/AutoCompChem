@@ -54,16 +54,6 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 	public static final SoftwareId SOFTWAREID = new SoftwareId("Spartan");
 	
     /**
-     * The identifier of the molecule/model to focus on, ignoring the rest.
-     */
-    private String selectedMolID;
-    
-    /**
-     * The list of model identifiers
-     */
-    private List<String> modelIDs;
-    
-    /**
      * String defining the task of analyzing Spartan output files, which are 
      * actually folders.
      */
@@ -104,12 +94,6 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     {
     	super.initialize();
     	
-    	if (params.contains(ChemSoftConstants.PARMODELID))
-        {
-    		selectedMolID = params.getParameter(
-            		ChemSoftConstants.PARMODELID).getValueAsString();
-        }
-    	
     	if (!inFile.isDirectory())
     	{
     		Terminator.withMsgAndStatus("ERROR! " 
@@ -119,52 +103,111 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     				+ inFile + "' is not.", -1);
     	}
     	
+    	List<File> allModelDirs = FileUtils.findByGlob(inFile, "*", true)
+    			.stream()
+    			.filter(f -> f.isDirectory())
+    			.collect(Collectors.toList());
     	if (selectedMolID==null)
-    	{
-	    	List<File> allFIles = FileUtils.findByGlob(inFile, "*", true);
-			modelIDs = new ArrayList<String>(); 
-			allFIles.stream()
-				.filter(f -> f.isDirectory())
-				.forEach(d -> modelIDs.add(d.getName()));
-			if (modelIDs.size()==1)
+    	{	
+	    	if (allModelDirs.size() == 1)
 			{
-				selectedMolID = modelIDs.get(0);
+				inFile = allModelDirs.get(0);
+			}
+    	} else {
+    		// This condition is to avoid adding the problems of a redundant 
+    		// info on model identifier both as parameter AND in the pathname 
+    		// leading to a model-specific folder (which does NOT contain any 
+    		// subfolfers)
+    		if (allModelDirs.size()>1)
+			{
+				inFile = new File(inFile + File.separator + selectedMolID);
 			}
     	}
     }
 
 //------------------------------------------------------------------------------
 
-      @Override
-      public String getKnownInputDefinition() {
-          return "inputdefinition/SpartanOutputReader.json";
-      }
+    @Override
+    public String getKnownInputDefinition() {
+        return "inputdefinition/SpartanOutputReader.json";
+    }
+      
+//------------------------------------------------------------------------------
+  	
+    @Override
+    protected List<File> getSubModelOutputFiles()
+  	{
+    	List<File> sumModels = new ArrayList<File>();
+  		if (inFile.isDirectory())
+    	{
+  			List<File> allDirectories = getSpartanSubModelDirectories();
+  			if (allDirectories.size()==1)
+  			{
+  				// This is a multi-model container that contains only one model
+  				// so, we fall back into the single model scenario by changing 
+  				// the pathname to the file accordingly.
+  				inFile =allDirectories.get(0);
+  				// but we still return an empty list, as not to trigger the 
+  				// launching of model-specific output readers
+  			} else if (allDirectories.size()>1)
+    		{
+    			sumModels = allDirectories;
+    		}
+    	}
+  		return sumModels;
+  	}
+    
+//------------------------------------------------------------------------------
+    
+  	private List<File> getSpartanSubModelDirectories()
+  	{
+		List<File> allFiles = FileUtils.findByGlob(inFile, "*", true);
+		return allFiles.stream()
+			.filter(f -> f.isDirectory())
+			.collect(Collectors.toList());
+  	}
     
 //------------------------------------------------------------------------------
 
-    /**
-     * We override how to define the file to read and interpret as log.
-     * This because in Spartan the log contains little information on geometries
-     * @return the log file
-     */
+    @Override
     public File getLogPathName()
     {
     	if (inFile.isDirectory())
     	{
-    		// Search for Spartan model/molecule-specific data
-    		List<File> allFiles = FileUtils.findByGlob(inFile, "*", true);
-    		List<File> allDirectories = allFiles.stream()
-    			.filter(f -> f.isDirectory())
-    			.collect(Collectors.toList());
-    		if (allDirectories.size()==1)
+    		return new File(inFile.getAbsoluteFile() + File.separator 
+	    			+ SpartanConstants.OUTPUTFILENAME);
+    		/*
+    		List<File> allDirectories = getSpartanSubModelDirectories();
+    		if (allDirectories.size()==0)
     		{
+    			// inFile is a submodel folder that might have an output of its
+    			// own, but might also have no output
+    			return new File(inFile.getAbsoluteFile() + File.separator 
+    	    			+ SpartanConstants.OUTPUTFILENAME);
+    		} else if (allDirectories.size()==1)
+    		{
+    			// We see a single model so we ignore the structure that could 
+    			// hold multiple models
     	    	return new File(inFile.getAbsoluteFile() + File.separator 
     	    			+ allDirectories.get(0).getName() + File.separator 
     	    			+ SpartanConstants.OUTPUTFILENAME);
+    		} else
+    		{
+    			// We have a multi-model Spartan output
+    			if (selectedMolID!=null)
+    			{
+    				inFile = new File(inFile.getAbsoluteFile() + File.separator 
+        	    			+ selectedMolID);
+        	    	return new File(inFile.getAbsoluteFile() + File.separator 
+        	    			+ SpartanConstants.OUTPUTFILENAME);
+    			}
+    			throw new Error("Spartan ouput file '" + inFile + "' is a "
+	            			+ "directory containing multiple models, but there "
+	            			+ "is also no request to focus on a model and "
+	            			+ "we anded up ignoring the molti-model nature. "
+	            			+ "Please, report this to the authors");
     		}
-    		logger.info("Sprtan ouput file '" + inFile + "' is a "
-            			+ "directory containing multiple models.");
-	    	return null;
+    		*/
     	} else {
     		return inFile;
     	}
@@ -175,7 +218,8 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     /**
      * We override the behavior on missing log file because Spartan produced
      * structured data that one may call "output", but that does not contain
-     * any log to read. 
+     * any log to read. Effectively we ignore the lack of a log file but we do
+     * parse the data that we can find.
      * @return the log file
      */
     protected void reactToMissingLogFile(File logFile)
@@ -184,7 +228,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 			logger.info("Log file '" + logFile + "' not found. "
 					+ "Interpreting '" + inFile + "' as a data folder.");
     	
-    	parseSpartanDir();
+		parseModelDir(inFile);
     }
     
 //------------------------------------------------------------------------------
@@ -213,54 +257,27 @@ public class SpartanOutputReader extends ChemSoftOutputReader
         	}
         }
     	
-    	parseSpartanDir();
-    }
-   
-//-----------------------------------------------------------------------------
-    
-    private void parseSpartanDir()
-    {   
-    	if (selectedMolID!=null)
-    	{
-    		parseModelDir(selectedMolID);
-    	} else {
-    		 Terminator.withMsgAndStatus("ERROR! Handling of Spartan output "
-    		 		+ "including multiple models is not yet implemented.", -1);
-    		 
-    		//TODO: we could do this only if we make the analysis tasks work on
-    		// any NamedData that starts with the expected constant but also 
-    		// include in the key the molID
-    		/*
-    		// Search for Spartan model/molecule-specific data
-    		List<File> allFIles = FileUtils.find(inFile, "", true);
-    		List<File> allDirectories = allFIles.stream()
-    			.filter(f -> f.isDirectory())
-    			.collect(Collectors.toList());
-    		
-    		// We parse all molecules/models
-    		for (File dir : allDirectories)
-    		{
-    			parseSpartanDir(dir.getName());
-    		}
-    		*/
-    	}
+    	parseModelDir(inFile);
     }
     
 //-----------------------------------------------------------------------------
     
     /**
      * Reads all data that we know how to parse from a model/molecule specific
-     * Spartan directory. 
-     * @param molID the identifier of the molecule/model, i.e., the name of the 
-     * Spartan directory to read.
+     * Spartan directory that contains an 
+     * {@value SpartanConstants#INPUTFILENAME} file and an
+     * {@value SpartanConstants#ARCHIVEFILENAME} file
+     * @param the folder that contains the files to parse, which also 
+     * corresponds to the identified of the model.
      */
     
-    private void parseModelDir(String molID)
+    private void parseModelDir(File moleculeDirectory)
     {
-        String sprtArchFile = inFile + File.separator + molID + File.separator
-        		+ SpartanConstants.ARCHIVEFILENAME;
-        String sprtInpFile = inFile + File.separator + molID + File.separator
-        		+ SpartanConstants.INPUTFILENAME;
+    	String molID = moleculeDirectory.getName();
+        String sprtArchFile = moleculeDirectory.getAbsolutePath() 
+        		+ File.separator + SpartanConstants.ARCHIVEFILENAME;
+        String sprtInpFile = moleculeDirectory.getAbsolutePath() 
+        		+ File.separator + SpartanConstants.INPUTFILENAME;
         FileUtils.foundAndPermissions(sprtArchFile,true,false,false);
         FileUtils.foundAndPermissions(sprtInpFile,true,false,false);
         
@@ -370,11 +387,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 	    }
 	    
 	    stepsData.get(0).putNamedData(new NamedData(
-	    		//TODO-gg this is a possibility to use only when the analysis 
-	    		// tasks have been adapted to process multi-model output
-				//ChemSoftConstants.JOBDATAGEOMETRIES + "_" + molID, molList));
 				ChemSoftConstants.JOBDATAGEOMETRIES, acs));
-	    
     }
     
 //------------------------------------------------------------------------------
@@ -423,8 +436,17 @@ public class SpartanOutputReader extends ChemSoftOutputReader
 	protected Set<FileFingerprint> getOutputFingerprint() 
 	{
 		Set<FileFingerprint> conditions = new HashSet<FileFingerprint>();
+		
+		//These are meant for folder that may contain multiple models
 		conditions.add(new FileFingerprint("./*/_spartan", 1, 
-				"^spartan directory$"));
+				"^\\s*[sS]partan .*[dD]irectory$"));
+		conditions.add(new FileFingerprint("./*/_spartandir", 1, 
+				"^$"));
+		
+		// This is meant for submodel directories
+		conditions.add(new FileFingerprint("./_spartan", 1, 
+				"^\\s*[sS]partan .*[dD]irectory$"));
+		
 		return conditions;
 	}
 

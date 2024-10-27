@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ ! -f "t82_results_Conformer.1.xyz" ]; then echo NOT Passes ERROR 1 ; exit -1 ; fi
+if [ ! -f "t82_results_Conformer.2.xyz" ]; then echo NOT Passes ERROR 2 ; exit -1 ; fi
+if [ ! -f "t82_results_Conformer.3.xyz" ]; then echo NOT Passes ERROR 3 ; exit -1 ; fi
+
+n=$(wc -l t82_results_Conformer.1.xyz | awk '{print $1}')
+if [ $n != 66 ] ; then echo NOT Passes ERROR 4a ; exit -1 ; fi
+
+n=$(wc -l t82_results_Conformer.2.xyz | awk '{print $1}')
+if [ $n != 66 ] ; then echo NOT Passes ERROR 4b ; exit -1 ; fi
+
+n=$(wc -l t82_results_Conformer.3.xyz | awk '{print $1}')
+if [ $n != 66 ] ; then echo NOT Passes ERROR 4c ; exit -1 ; fi
+
+n=$(grep -c -i "Ru.*-0\.2354.*0\.4925.*-2\.5659" t82_results_Conformer.1.xyz)
+if [ $n != 1 ] ; then echo NOT Passed ERROR 5a ; exit -1 ; fi
+
+n=$(grep -c -i "Ru.*-0\.0833.*0\.5126.*-2\.5050" t82_results_Conformer.2.xyz)
+if [ $n != 1 ] ; then echo NOT Passed ERROR 5b ; exit -1 ; fi
+
+n=$(grep -c -i "Ru.*1\.3969.*0\.7910.*-1\.9279" t82_results_Conformer.3.xyz)
+if [ $n != 1 ] ; then echo NOT Passed ERROR 5c ; exit -1 ; fi
+
+
+if grep -q 'Termination status: 0' t82.log ; then 
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi
