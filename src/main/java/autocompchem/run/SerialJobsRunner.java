@@ -240,7 +240,7 @@ public class SerialJobsRunner extends JobsRunner
         int numSubmittedJobs = 0;
         while (it.hasNext())
         {
-            //TODO: set dedicated logger with dedicated log file
+            //We could use a dedicated log file for each job
             Job job = it.next();
 			job.setJobNotificationListener(new SerialJobListener());
 		    submittedJobs.put(job, job.submitThread(executor));
