@@ -9,7 +9,7 @@
           "keywords": [
             {
               "reference": "functional",
-              "value": "BP86",
+              "value": "B3LYP",
               "isLoud": false
             },
             {
@@ -19,7 +19,7 @@
             },
             {
               "reference": "JobType",
-              "value": "Opt Freq",
+              "value": "Opt",
               "isLoud": false
             },
             {
@@ -34,7 +34,7 @@
           "keywords": [
             {
               "reference": "coordType",
-              "value": "int",
+              "value": "gzmt",
               "isLoud": false
             }
           ],

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t27-mol.inp" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^\*[[:space:]]*gzmt[[:space:]]*0[[:space:]]*1" t27-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*C[[:space:]]*$" t27-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*C[[:space:]]*1[[:space:]]*1\.52..[[:space:]]*$" t27-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*N[[:space:]]*" t27-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*O[[:space:]]*" t27-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*C[[:space:]]*" t27-mol.inp )
+if [ 5 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*H[[:space:]]*" t27-mol.inp )
+if [ 11 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "^[[:space:]]*H[[:space:]]*15[[:space:]]*1\.0.*[[:space:]]*9[[:space:]]*120\.0.*17[[:space:]]*-179\.99.*" t27-mol.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t27.log" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t27.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

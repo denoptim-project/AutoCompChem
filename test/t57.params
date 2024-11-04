@@ -1,0 +1,7 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 4
+TASK: PrepareInputOrca
+INPUTGEOMETRIESFILE: ../t57-mol.sdf
+JOBDETAILSFILE: ../t57-jobDetails.json

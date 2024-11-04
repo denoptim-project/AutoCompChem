@@ -43,6 +43,7 @@ import autocompchem.modeling.basisset.Shell;
 import autocompchem.modeling.constraints.Constraint;
 import autocompchem.modeling.constraints.Constraint.ConstraintType;
 import autocompchem.modeling.constraints.ConstraintsSet;
+import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.run.Job;
@@ -138,7 +139,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     
     private List<String> getTextForInput(Directive d, boolean outmost)
     {	
-    	ArrayList<String> lines = new ArrayList<String>();
+    	List<String> lines = new ArrayList<String>();
     	
     	String dirName = d.getName();
     	if (dirName.startsWith("#"))
@@ -213,13 +214,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			case ("*"): // OrcaConstants.STARDIRNAME //TODO-gg
+			case (OrcaConstants.STARDIRNAME):
 			{
 				lines.addAll(getTextForCoordsBlock(d,true));
 				break;
 			}
 			
-			case ("COORDS"): // OrcaConstants.COORDSDIRNAME
+			case ("COORDS"): // OrcaConstants.COORDSDIRNAME TODO-gg
 			{
 				String pre = "";
 				if (outmost)
@@ -444,7 +445,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     private List<String> getTextForCoordsBlock(Directive d, 
     		boolean useStar)
     {
-    	ArrayList<String> lines = new ArrayList<String>();
+    	List<String> lines = new ArrayList<String>();
 		String line = "";
 		if (useStar)
 		{
@@ -453,9 +454,21 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			line = "coords";
 		}
 		
+		// NB: while we write the also detect which format of internal coords to
+		// use, is not Cartesian
+		boolean foundGZMT = false;
+		boolean foundInt = false;
+		
 		d.sortKeywordsBy(new CoordsKeywordsComparator());
 		for (Keyword k : d.getAllKeywords())
 		{
+			if ("INTERNAL".equals(k.getValueAsString().toUpperCase())
+					|| "INT".equals(k.getValueAsString().toUpperCase()))
+			{
+				foundInt = true;
+			} else if ("GZMT".equals(k.getValueAsString().toUpperCase())) {
+				foundGZMT = true;
+			}
 			line = line + " " + k.toString(" ");
 		}
 		lines.add(line);
@@ -483,11 +496,11 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 								+ String.format(Locale.ENGLISH, " %3s", 
 										atm.getSymbol())
 								+ String.format(Locale.ENGLISH, " " 
-										+ precision, p3d.x)
+										+ formatCartCoord, p3d.x)
 								+ String.format(Locale.ENGLISH, " " 
-										+ precision, p3d.y)
+										+ formatCartCoord, p3d.y)
 								+ String.format(Locale.ENGLISH, " " 
-										+ precision, p3d.z));
+										+ formatCartCoord, p3d.z));
 						Object bsProps = atm.getProperty(ATMSPECBSPROP);
 						if (bsProps != null)
 						{
@@ -505,13 +518,104 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				}
 				
 				case ZMATRIX:
-				{
-					//TODO-gg
-					Terminator.withMsgAndStatus("ERROR! Writing of "
-							+ "ZMatrix in Orca input file is not yet"
-							+ "implemented... sorry!",-1);
-					//TODO-gg
-					//write atom-spec basis set
+				{	
+					ZMatrix zmat = (ZMatrix) o;
+					String errMsg = "";
+					if (!foundInt && !foundGZMT) 
+					{
+						errMsg = "Neither 'int' nor 'gzmt'";
+					} else if (foundInt && foundGZMT) 
+					{
+						errMsg = "Both 'int' and 'gzmt'";
+					}
+					if (!errMsg.isEmpty()) 
+					{
+						throw new Error("WARNING! " + errMsg
+								+ "were found among the keywords, "
+								+ "but Z-Matrix found as a way to "
+								+ "define geometry in internal coordinates. "
+								+ "This is inconsistent, check your input.");
+					} 
+					String format = " " + formatIC + " ";
+					if (foundInt)
+					{
+				        for (int i=0; i<zmat.getZAtomCount(); i++)
+				        {
+				        	ZMatrixAtom atm = zmat.getZAtom(i);
+				        	StringBuilder sbAtom = new StringBuilder();
+				        	sbAtom.append(atm.getName()).append(" ");
+				            int idI = 0;
+				            int idJ = 0;
+				            int idK = 0;
+				            String vI = "0.0";
+				            String vJ = "0.0";
+				            String vK = "0.0";
+				            if (atm.getIdRef(0) != -1)
+				            {
+				            	//NB: Orca here uses 1-based indexing breaking 
+				            	// Orca's own conventions!
+				            	idI = atm.getIdRef(0) + 1;
+				            	vI = String.format(Locale.ENGLISH, format,
+				            			atm.getIC(0).getValue());
+				            }
+				            if (atm.getIdRef(1) != -1)
+				            {
+				            	idJ = atm.getIdRef(1) + 1;
+				            	vJ = String.format(Locale.ENGLISH, format,
+				            			atm.getIC(1).getValue());
+				            }
+				            if (atm.getIdRef(2) != -1)
+				            {
+				            	idK = atm.getIdRef(2) + 1;
+				            	vK = String.format(Locale.ENGLISH, format,
+				            			atm.getIC(2).getValue());
+				            }
+				            lines.add(OrcaConstants.INDENT
+				            		+ atm.getName() + " " 
+				            		+ idI + " " 
+				            		+ idJ + " " 
+				            		+ idK + " "
+				            		+ vI + " "
+				            		+ vJ + " "
+				            		+ vK);    
+						}
+					}
+					if (foundGZMT) 
+					{
+				        for (int i=0; i<zmat.getZAtomCount(); i++)
+				        {
+				        	ZMatrixAtom atm = zmat.getZAtom(i);
+				        	StringBuilder sbAtom = new StringBuilder();
+				        	sbAtom.append(atm.getName()).append(" ");
+				            int idI = atm.getIdRef(0);
+				            int idJ = atm.getIdRef(1);
+				            int idK = atm.getIdRef(2);
+				            InternalCoord icI = atm.getIC(0);
+				            InternalCoord icJ = atm.getIC(1);
+				            InternalCoord icK = atm.getIC(2);
+				            if (atm.getIdRef(0) != -1)
+				            {
+				            	//NB: Orca here uses 1-based indexing breaking 
+				            	// Orca's own conventions!
+				            	sbAtom.append(idI + 1).append(" ");
+				            	sbAtom.append(String.format(Locale.ENGLISH, 
+		                    			" " + formatIC + " ", icI.getValue()));
+				                if (idJ != -1)
+				                {
+				                	sbAtom.append(idJ + 1).append(" ");
+				                	sbAtom.append(String.format(Locale.ENGLISH, 
+			                    			" " + formatIC + " ", icJ.getValue()));
+				                    if (idK != -1)
+				                    {
+				                    	sbAtom.append(idK + 1).append(" ");
+				                    	sbAtom.append(String.format(Locale.ENGLISH, 
+				                    			" " + formatIC, icK.getValue()));
+				                    }
+				                }
+				            }
+				            lines.add(sbAtom.toString());    
+						}
+					}
 					break;
 				}
 				
@@ -775,7 +879,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 			}
     	} else if (job.getNumberOfSteps()==1) {
     		logger.warn("WARNING! Found a multistep job with only "
-    				+ "one step. I assume you menat to prepare the input for"
+    				+ "one step. I assume you meant to prepare the input for "
     				+ "a single step job.");
     		CompChemJob step = (CompChemJob) job.getStep(0);
     		preProcessingJob(step);
