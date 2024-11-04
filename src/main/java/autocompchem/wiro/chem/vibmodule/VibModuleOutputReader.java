@@ -394,7 +394,7 @@ public class VibModuleOutputReader extends ChemSoftOutputReader
         	if (key.equals(VibModuleConstants.PARAMDATA))
         		continue;
         	sb.append(" Found ").append(vmICcounter.get(key))
-        		.append("ICs of type ").append(key);  
+        		.append(" ICs of type ").append(key).append(NL);  
         }
         sb.append(" Total number of parsed parameters: " 
         		+ vmICcounter.get(VibModuleConstants.PARAMDATA) + NL);
