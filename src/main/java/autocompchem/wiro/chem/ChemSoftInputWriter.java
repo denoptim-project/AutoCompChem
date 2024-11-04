@@ -122,7 +122,12 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     /**
      * Format for writing Cartesian coordinates 
      */
-    protected String precision = "%10.8f";
+    protected String formatCartCoord = "%10.8f";
+    
+    /**
+     * Format for writing Cartesian coordinates 
+     */
+    protected String formatIC = "%4.4f";
     
 
 //-----------------------------------------------------------------------------
@@ -151,17 +156,31 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     {
     	super.initialize();
         
-        if (params.contains(ChemSoftConstants.PARPRECISION))
+        if (params.contains(ChemSoftConstants.PARCARTCOORDSFORMAT))
         {
-        	precision = params.getParameter(
-                    ChemSoftConstants.PARPRECISION).getValueAsString();
+        	formatCartCoord = params.getParameter(
+                    ChemSoftConstants.PARCARTCOORDSFORMAT).getValueAsString();
         	try {
-        		String.format(precision, -123456.12345);
+        		String.format(formatCartCoord, -123456.12345);
         	} catch (Throwable t) {
 				t.printStackTrace();
 				Terminator.withMsgAndStatus("ERROR! Could not use string '"
-						+ precision + "' as a floating point format definition"
-						+ ". Please, check your input.", -1); 
+						+ formatCartCoord + "' as a floating point format "
+						+ "definition. Please, check your input.", -1); 
+        	}
+        }
+        
+        if (params.contains(ChemSoftConstants.PARINTERNALCOORDSFORMAT))
+        {
+        	formatIC = params.getParameter(
+                    ChemSoftConstants.PARINTERNALCOORDSFORMAT).getValueAsString();
+        	try {
+        		String.format(formatIC, -126.12345);
+        	} catch (Throwable t) {
+				t.printStackTrace();
+				Terminator.withMsgAndStatus("ERROR! Could not use string '"
+						+ formatIC + "' as a floating point format definition. "
+						+ "Please, check your input.", -1); 
         	}
         }
 
@@ -394,7 +413,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         	fileRootName = outFileNameRoot + "-" + geomName;
         }
         
-        logger.info("Writing input file for molecule #" 
+        logger.debug("Writing input file for molecule #" 
                     + (i+1) + ": " 
             		+ MolecularUtils.getNameOrID(iac));
         

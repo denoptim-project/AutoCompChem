@@ -36,6 +36,18 @@
     "doc": "Prevents the specification the spin multiplicity of the system, if possible. This is often used when inheriting the spin multiplicity information from a previous job."
   },
   {
+    "key": "CARTESIANCOORDSFORMAT",
+    "casedKey": "CartesianCoordsFormat",
+    "type": "<String>",
+    "doc": "Defines the format to use for writing Cartesian coordinates (e.g., '%10.8f'). The string must follow the syntax defined by the official formatted printing for the Java language syntax. See documentation of java.util.Formatter."
+  },
+  {
+    "key": "INTERNALCOORDSFORMAT",
+    "casedKey": "InternalCoordsFormat",
+    "type": "<String>",
+    "doc": "Defines the format to use for writing internal coordinates (e.g., '%4.4f'). The string must follow the syntax defined by the official formatted printing for the Java language syntax. See documentation of java.util.Formatter."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)"
   },

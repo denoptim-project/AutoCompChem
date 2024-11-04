@@ -156,7 +156,12 @@ public class ChemSoftConstants
 	/**
 	 * Key of parameter defining the format for reporting Cartesian coordinates.
 	 */
-	public static final String PARPRECISION = "CARTESIANCOORDSFORMAT";
+	public static final String PARCARTCOORDSFORMAT = "CARTESIANCOORDSFORMAT";
+	
+	/**
+	 * Key of parameter defining the format for reporting Internal coordinates.
+	 */
+	public static final String PARINTERNALCOORDSFORMAT = "INTERNALCOORDSFORMAT";
 	
 	/**
 	 * Key for parameter defining the details

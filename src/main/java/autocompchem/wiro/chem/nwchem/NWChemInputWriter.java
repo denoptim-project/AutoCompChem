@@ -286,11 +286,11 @@ public class NWChemInputWriter extends ChemSoftInputWriter
 					Point3d p3d = AtomUtils.getCoords3d(atm);
 					ddLines.add(String.format(Locale.ENGLISH," %3s", atmId)
 							+ String.format(Locale.ENGLISH, " " 
-									+ precision, p3d.x)
+									+ formatCartCoord, p3d.x)
 							+ String.format(Locale.ENGLISH, " " 
-									+ precision, p3d.y)
+									+ formatCartCoord, p3d.y)
 							+ String.format(Locale.ENGLISH, " " 
-									+ precision, p3d.z));
+									+ formatCartCoord, p3d.z));
 				}
 				break;
 				

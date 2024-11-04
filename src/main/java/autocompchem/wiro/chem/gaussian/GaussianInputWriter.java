@@ -560,11 +560,11 @@ public class GaussianInputWriter extends ChemSoftInputWriter
 		    					sb.append(String.format(Locale.ENGLISH,"%s", el)
 
 										+ String.format(Locale.ENGLISH, " " 
-												+ precision, p3d.x)
+												+ formatCartCoord, p3d.x)
 										+ String.format(Locale.ENGLISH, " " 
-												+ precision, p3d.y)
+												+ formatCartCoord, p3d.y)
 										+ String.format(Locale.ENGLISH, " " 
-												+ precision, p3d.z)).append(NL);
+												+ formatCartCoord, p3d.z)).append(NL);
 		    				}
 		    				break;
 		    			
