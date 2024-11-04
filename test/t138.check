@@ -22,10 +22,10 @@ if [ $n -ne 6 ] ; then echo NOT Passes ERROR 5 ; exit -1 ; fi
 n=0;n=$(grep -c "NewECP" t138-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 6 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^ *CTyp * xyz" t138-mol.inp)
+n=0;n=$(grep -c -i "^ *CTyp * xyz" t138-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 7 ; exit -1 ; fi
 
-n=0;n=$(grep -c "^ *Mult * 1" t138-mol.inp)
+n=0;n=$(grep -c -i "^ *Mult * 1" t138-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 8 ; exit -1 ; fi
 
 n=0;n=$(grep -c "D3A2 * 5\.93895" t138-mol.inp)
