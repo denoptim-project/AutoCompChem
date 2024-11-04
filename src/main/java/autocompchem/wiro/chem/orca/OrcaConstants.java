@@ -161,26 +161,33 @@ public class OrcaConstants
 	/**
 	 * Name of the 'coords' {@link Directive} defining the chemical system.
 	 */
-	public static final String COORDSDIRNAME = "coords";
+	public static final String COORDSDIRNAME = "COORDS";
 	
 	/**
 	 * Name of the sub{@link Directive} of 'coords' defining the type of 
 	 * coordinates defining the chemical system.
 	 */
-	public static final String COORDSCTYPDIRNAME = "CTyp";
+	public static final String COORDSCTYPDIRNAME = "CTYP";
+	
+
+	/**
+	 * Name of the {@link Directive} defining the constraints applied to the 
+	 * chemical system.
+	 */
+	public static final String CONSTRAINTSDIRNAME = "CONSTRAINTS";
 	
 	/**
 	 * Name of the sub{@link Directive} of 'coords' defining the charge of
 	 * the chemical system.
 	 */
-	public static final String COORDSCHARGEDIRNAME = "Charge";
+	public static final String COORDSCHARGEDIRNAME = "CHARGE";
 	
 	/**
 	 * Name of the sub{@link Directive} of 'coords' defining the spin
 	 * multiplicity of
 	 * the chemical system.
 	 */
-	public static final String COORDSMULTDIRNAME = "Mult";
+	public static final String COORDSMULTDIRNAME = "MULT";
 	
 
 	/**
@@ -191,6 +198,6 @@ public class OrcaConstants
 	/**
 	 * Name of the {@link Directive} defining the basis set.
 	 */
-	public static final String BASISSETDIRNAME = "basis";	
+	public static final String BASISSETDIRNAME = "BASIS";	
 
 }

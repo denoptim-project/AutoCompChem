@@ -220,7 +220,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			case ("COORDS"): // OrcaConstants.COORDSDIRNAME TODO-gg
+			case (OrcaConstants.COORDSDIRNAME): 
 			{
 				String pre = "";
 				if (outmost)
@@ -233,13 +233,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				break;
 			}
 			
-			case ("CONSTRAINTS"):
+			case (OrcaConstants.CONSTRAINTSDIRNAME):
 			{
 				lines.addAll(getTextForConstraintsBlock(d));
 				break;
 			}
 			
-			case ("BASIS"): // OrcaConstants.BASISSETDIRNAME
+			case (OrcaConstants.BASISSETDIRNAME):
 			{
 			    // NB: here we deal with any basis set information that is not 
 			    // specific to a center identified by index in the list of atoms.
