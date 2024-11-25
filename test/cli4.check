@@ -14,7 +14,7 @@ fi
 n=0;n=$(grep -c "^\* *xyzfile *0 *1 *cli4-mol.xyz.*$" cli4-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c " InHessName  \"cli4-mol.hess\"" cli4-mol.inp)
+n=0;n=$(grep -c " InHessName \"cli4-mol.hess\"" cli4-mol.inp)
 if [ $n -ne 1 ] ; then echo NOT Passes ERROR 4 ; exit -1 ; fi
 
 n=0;n=$(grep -c "^ *{ C 0 1 10 11 12 16 17 18 29 30 31 42 46 50 C } *" cli4-mol.inp)

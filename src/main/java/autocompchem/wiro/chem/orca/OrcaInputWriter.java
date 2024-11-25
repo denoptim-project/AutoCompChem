@@ -257,7 +257,7 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 				{
 					line = "%";
 				}
-				line = line + dirName + " ";
+				line = line + dirName;
 				
 				for (Keyword k : d.getAllKeywords())
 				{
