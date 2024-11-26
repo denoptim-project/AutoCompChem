@@ -54,12 +54,7 @@ import autocompchem.worker.Worker;
 
 
 public class AtomEditor extends AtomContainerInputProcessor
-{
-    /**
-     * Name of the output file
-     */
-    private File outFile;
-    
+{   
     /**
      * List of atom-matching rules for definition of the atoms to edit and 
      * the relevant attributes.
@@ -165,14 +160,6 @@ public class AtomEditor extends AtomContainerInputProcessor
     public void initialize()
     {
     	super.initialize();
-    	
-        //Get and check output file
-        if (params.contains("OUTFILE"))
-        {
-            this.outFile = new File(
-            		params.getParameter("OUTFILE").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
-        }
 
         //Get the list of SMARTS to be matched
         if (params.contains("SMARTS"))
@@ -293,25 +280,15 @@ public class AtomEditor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
       	if (task.equals(EDITATOMSTASK))
       	{
       		editAtoms(iac, smarts, editorObjectives);
-            
-            if (exposedOutputCollector != null)
-            {
-            	String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(molID, iac));
-            }
-            
-            if (outFile!=null)
-            {
-				IOtools.writeSDFAppend(outFile, iac, true);
-            }
       	} else {
       		dealWithTaskMismatch();
         }
+      	return iac;
     }
 
 //------------------------------------------------------------------------------

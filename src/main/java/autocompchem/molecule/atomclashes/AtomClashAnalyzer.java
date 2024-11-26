@@ -65,11 +65,6 @@ import autocompchem.worker.Worker;
 
 public class AtomClashAnalyzer extends AtomContainerInputProcessor
 {
-	/**
-	 * File where to print the results
-	 */
-    private File outFile;
-
     /**
      * List target atoms to consider when searching for clashes.
      */
@@ -151,13 +146,6 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
     public void initialize()
     {
     	super.initialize();
-    	  
-        if (params.contains("OUTFILE"))
-        {
-            this.outFile = new File(
-            		params.getParameter("OUTFILE").getValue().toString());
-            FileUtils.mustNotExist(this.outFile);
-        }
 
         //Get the list of SMARTS to be matched
         if (params.contains("TARGETSMARTS"))
@@ -251,7 +239,7 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
   	@Override
-    public void processOneAtomContainer(IAtomContainer iac, int i) 
+    public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
     {
   		if (task.equals(ANALYZEVDWCLASHESTASK))
   		{
@@ -265,13 +253,14 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
 
                 if (outFile!=null)
                 {
-                    //store results in output SDF
+                	outFileAlreadyUsed = true;
                     writeAtmClashToSDFFields(iac, clashes, i, outFile);
                 }
             }
   		} else {
   			dealWithTaskMismatch();
   		}
+  		return iac;
     }
   
 //-----------------------------------------------------------------------------

@@ -54,12 +54,7 @@ import autocompchem.worker.Worker;
 
 
 public class AtomLabelsGenerator extends AtomContainerInputProcessor
-{
-    /**
-     * The name of the output file, if any
-     */
-    private File outFile;
-    
+{   
     /**
      * Specified which policy to use when generating atom labels.
      */
@@ -138,15 +133,6 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
     {
     	super.initialize();
 
-        // Name of output file
-        if (params.contains("OUTFILE"))
-        {
-            //Get and check output file
-            this.outFile = new File(
-                        params.getParameter("OUTFILE").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
-        }
-
         if (params.contains(ChemSoftConstants.PARATMLABELTYPE))
         {
         	this.mode = EnumUtils.getEnumIgnoreCase(AtomLabelMode.class, 
@@ -183,7 +169,7 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GENERATEATOMLABELSTASK))
     	{
@@ -194,6 +180,7 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
             
             if (outFile!=null)
             {
+            	outFileAlreadyUsed = true;
             	IOtools.writeTXTAppend(outFile, 
             			txt + System.getProperty("line.separator"),
             			true);
@@ -201,7 +188,6 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
             
     		if (exposedOutputCollector != null)
         	{
-
                 TextBlock tb = new TextBlock(lst);
     			String molID = "mol-" + i;
   		        exposeOutputData(new NamedData(
@@ -210,6 +196,7 @@ public class AtomLabelsGenerator extends AtomContainerInputProcessor
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
 
 //------------------------------------------------------------------------------

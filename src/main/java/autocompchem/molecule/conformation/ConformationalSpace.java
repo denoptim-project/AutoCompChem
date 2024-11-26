@@ -132,6 +132,19 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
   	
   	public void printAll(Logger logger) 
   	{
+  		logger.info(toPrintableString());
+  	}
+  	
+//-----------------------------------------------------------------------------
+
+  	/**
+  	 * Prepares an {@value Level.INFO} message with all the conformational 
+  	 * coordinates defining this conformational space and sends it to the given 
+  	 * logger.
+  	 */
+  	
+  	public String toPrintableString() 
+  	{
   		String NL = System.getProperty("line.separator");
   		String numConformers = "is TOO LARGE TO COMPUTE!";
   		int size = getSize(); 
@@ -143,7 +156,7 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
   		{
   			 msg = msg + " -> " + c + NL;
   		}
-  		logger.info(msg);
+  		return msg;
   	}
 
 //------------------------------------------------------------------------------

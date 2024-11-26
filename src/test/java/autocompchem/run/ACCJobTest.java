@@ -96,11 +96,16 @@ public class ACCJobTest
             
             // Check that results are present
             NamedDataCollector results = job.getOutputCollector();
-            assertEquals(1, results.size());
+            assertEquals(2, results.size());
+            
+            // Get the right result
+            String key = "";
+            for (String candKey : results.getAllNamedData().keySet())
+            	if (candKey.contains(label))
+            		key = candKey;
             
             // Check the actual value
-            String name = results.getAllNamedData().keySet().iterator().next();
-            String valueStr = results.getNamedData(name).getValueAsLines().get(0);
+            String valueStr = results.getNamedData(key).getValueAsLines().get(0);
             double dist = 0.0;
 			try {
 				dist = Double.parseDouble(valueStr);

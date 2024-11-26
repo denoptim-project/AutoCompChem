@@ -59,11 +59,6 @@ import autocompchem.worker.Worker;
 public class MolecularReorderer extends AtomContainerInputProcessor
 {
     /**
-     * Name of the output file
-     */
-    private File outFile;
-
-    /**
      * Flag indicating SMARTS-controlled reorganisation (default: NO)
      */
     private boolean useSmarts = false;
@@ -139,14 +134,6 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     {
     	super.initialize();
     	
-        //Get and check output file
-        if (params.contains("OUTFILE"))
-        {
-            this.outFile =  new File(
-            		params.getParameter("OUTFILE").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
-        }
-
         //Get the list of SMARTS to be matched
         if (params.contains("SOURCESMARTS"))
         {
@@ -180,27 +167,17 @@ public class MolecularReorderer extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
+		IAtomContainer result = null;
     	if (task.equals(REORDERATOMLISTTASK))
     	{
     		List<IAtom> sources = identifySourceAtoms(iac);
-
-            IAtomContainer reordered = reorderContainer(iac, sources);
-
-            if (outFile!=null)
-            {
-            	IOtools.writeSDFAppend(outFile, reordered, true);
-            }
-            
-            if (exposedOutputCollector != null)
-            {
-	    	    String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(molID, reordered));
-            }
+    		result = reorderContainer(iac, sources);
     	} else {
     		dealWithTaskMismatch();
         }
+    	return result;
     }
 
 //-----------------------------------------------------------------------------

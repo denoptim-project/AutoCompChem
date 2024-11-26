@@ -1,11 +1,5 @@
 [
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the file where to print the results."
-  },
-  {
     "key": "LABELTYPE",
     "casedKey": "labelType",
     "type": "<String>",

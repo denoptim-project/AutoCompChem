@@ -10,6 +10,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
@@ -131,7 +132,7 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GETATOMSPECIFICSTRINGTASK))
     	{
@@ -174,6 +175,21 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 	    			}
 	    		}
 	    	}
+	    	
+            if (outFile!=null)
+            {
+            	outFileAlreadyUsed = true;
+            	StringBuilder sb = new StringBuilder();
+	    		int jj = 0;
+	    		for (String one : atomStringsForThisMol)
+	    		{
+	    			jj++;
+	    			sb.append("mol-").append(i).append("_hit-").append(jj)
+	    				.append(": ").append(one)
+	    				.append(System.getProperty("line.separator"));
+	    		}
+            	IOtools.writeTXTAppend(outFile, sb.toString(), true);
+            }
 	
 	        if (exposedOutputCollector != null)
 	    	{
@@ -189,8 +205,9 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 		} else {
 			dealWithTaskMismatch();
 	    }
+    	return iac;
     }
-    
+	
 //------------------------------------------------------------------------------
     
     /**
@@ -200,6 +217,22 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
      * @return the resulting string.
      */
     public String convertTupleToAtomSpecString(AnnotatedAtomTuple tuple)
+    {
+    	return convertTupleToAtomSpecString(tuple, idSeparator, fieldSeparator);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Generated the string representation of the tuple.
+     * @param tuple the atom tuple to process
+     * @param idSeparator string used to separate item identifiers
+     * @param fieldSeparator string used to separate prefix/suffix and item 
+     * identifiers.
+     * @return the resulting string.
+     */
+    public static String convertTupleToAtomSpecString(AnnotatedAtomTuple tuple,
+    		String idSeparator, String fieldSeparator)
     {
     	String ids = null;
     	if (tuple.getAtmLabels()!=null)

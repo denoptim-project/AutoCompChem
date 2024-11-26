@@ -54,10 +54,7 @@ import autocompchem.worker.Worker;
 
 
 public class MolecularPruner extends AtomContainerInputProcessor
-{   
-    //Filenames
-    private File outFile;
-
+{
     //List (with string identifier) of smarts
     private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
     
@@ -114,15 +111,9 @@ public class MolecularPruner extends AtomContainerInputProcessor
     public void initialize()
     {
     	super.initialize();
-    	
-        //Get and check output file
-        this.outFile = new File(
-        		params.getParameter("OUTFILE").getValue().toString());
-        FileUtils.mustNotExist(this.outFile);
-
+        
         //Get the list of SMARTS to be matched
         String allSamrts = params.getParameter("SMARTS").getValue().toString();
-        
         logger.debug("Importing SMARTS queries ");
         
         String[] parts = allSamrts.split("\\s+");
@@ -151,25 +142,16 @@ public class MolecularPruner extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
+		IAtomContainer result = null;
     	if (task.equals(PRUNEMOLECULESTASK))
     	{
-    		IAtomContainer pruned = prune(iac, smarts);
-    		
-            if (outFile!=null)
-            {
-            	IOtools.writeSDFAppend(outFile, pruned, true);
-            }
-        
-		    if (exposedOutputCollector != null)
-		    {
-	    	    String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(molID, pruned));
-			}
+    		result = prune(iac, smarts);
     	} else {
     		dealWithTaskMismatch();
         }
+    	return result;
     }
 
 //------------------------------------------------------------------------------

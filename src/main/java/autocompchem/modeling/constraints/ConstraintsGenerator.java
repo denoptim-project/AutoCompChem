@@ -9,6 +9,7 @@ import java.util.Set;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
@@ -106,13 +107,19 @@ public class ConstraintsGenerator extends AtomTupleGenerator
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GENERATECONSTRAINTSTASK))
     	{
 	    	ConstraintsSet cs = createConstraints(iac);
 	        
 	        logger.debug(cs.toString());
+	        
+	        if (outFile!=null)
+            {
+            	outFileAlreadyUsed = true;
+            	IOtools.writeTXTAppend(outFile, cs.toString(), true);
+            }
 	        
 	        if (exposedOutputCollector != null)
 	    	{
@@ -123,6 +130,7 @@ public class ConstraintsGenerator extends AtomTupleGenerator
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
 
 //------------------------------------------------------------------------------

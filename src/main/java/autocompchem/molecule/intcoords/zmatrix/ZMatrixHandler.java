@@ -70,11 +70,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     private ZMatrix zmat2;
 
     /**
-     * Name of the output file
-     */
-    private File outFile;
-
-    /**
      * Template ZMatrix
      */
     private ZMatrix tmplZMat;
@@ -235,14 +230,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             }
         }
         
-        //Get and check output file
-        if (params.contains("OUTFILE"))
-        {
-            this.outFile = new File(
-            		params.getParameter("OUTFILE").getValue().toString());
-            FileUtils.mustNotExist(this.outFile);
-        }
-        
         if (params.contains("INFILE2"))
         {
             File inFile2 = new File(
@@ -327,15 +314,15 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-		// NB: tasks use only ZMatrix input
     	if (task.equals(CONVERTTOZMATTASK))
     	{
     		makeZMatrix(iac, i);
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
 
 //------------------------------------------------------------------------------
@@ -359,6 +346,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
 	    
 	    if (outFile!=null)
 	    {
+	    	outFileAlreadyUsed = true;
 	    	IOtools.writeZMatAppend(outFile,zmat,true);
 	    }
 	    

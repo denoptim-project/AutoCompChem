@@ -1,0 +1,643 @@
+{
+  "jobType": "CompChemJob",
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "MODEL_METHOD",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "Def2TZVPP",
+              "isLoud": false
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "VSHIFT",
+                  "value": "1000"
+                },
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "4"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "180"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 1 - PBEPBE-GD3MBJ-PCM(benzene) mixDZ",
+              "isLoud": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3BJ"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "Free1",
+              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "SP",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "200"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "500"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "SCRF",
+              "keywords": [
+                {
+                  "reference": "MODEL",
+                  "value": "PCM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "SOLVENT",
+                  "value": "BENZENE"
+                },
+                {
+                  "reference": "OPTS",
+                  "value": "READ",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 2 - PBEPBE-GD3MBJ-PCM(benzene) mixDZ",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "reference": "PCM",
+              "type": "TEXTBLOCK",
+              "value": [
+                "radii=UFF",
+                "pcmdoc",
+                "Dis",
+                "Rep",
+                "Cav"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3BJ"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "Free1",
+              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "250"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "300"
+                },
+                {
+                  "reference": "VARACC",
+                  "value": "NOVARACC",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "STABLE",
+              "keywords": [
+                {
+                  "reference": "GENERAL",
+                  "value": "RRHF",
+                  "isLoud": false
+                },
+                {
+                  "reference": "WFREOPT",
+                  "value": "OPT",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "SCRF",
+              "keywords": [
+                {
+                  "reference": "MODEL",
+                  "value": "PCM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "SOLVENT",
+                  "value": "BENZENE"
+                },
+                {
+                  "reference": "OPTS",
+                  "value": "READ",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 3 - PBEPBE-GD3MBJ-PCM(benzene) mixDZ",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "reference": "PCM",
+              "type": "TEXTBLOCK",
+              "value": [
+                "radii=UFF",
+                "pcmdoc",
+                "Dis",
+                "Rep",
+                "Cav"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3BJ"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "Free1",
+              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "CONVER",
+                  "value": "9"
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "250"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "300"
+                }
+              ]
+            },
+            {
+              "name": "SCRF",
+              "keywords": [
+                {
+                  "reference": "MODEL",
+                  "value": "PCM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "SOLVENT",
+                  "value": "BENZENE"
+                },
+                {
+                  "reference": "OPTS",
+                  "value": "READ",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "OPT",
+              "keywords": [
+                {
+                  "reference": "CONVERGENCE",
+                  "value": "TIGHT",
+                  "isLoud": false
+                },
+                {
+                  "reference": "FORCECONSTANTS",
+                  "value": "CALCFC",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLES",
+                  "value": "150"
+                },
+                {
+                  "reference": "ModRedundant",
+                  "value": "ModRedundant",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 4 - PBEPBE-GD3MBJ-PCM(benzene) mixDZ",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "accTaskParams": [
+                {
+                  "reference": "TASK",
+                  "value": "GENERATECONSTRAINTS"
+                },
+                {
+                  "reference": "SMARTS",
+                  "value": "[!$([F]CP)] suffix=F"
+                }
+              ],
+              "reference": "MODREDUNDANT"
+            },
+            {
+              "reference": "PCM",
+              "type": "TEXTBLOCK",
+              "value": [
+                "radii=UFF",
+                "pcmdoc",
+                "Dis",
+                "Rep",
+                "Cav"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "Link0"
+        },
+        {
+          "name": "Route",
+          "keywords": [
+            {
+              "reference": "EMPIRICALDISPERSION",
+              "value": "GD3BJ"
+            },
+            {
+              "reference": "MODEL_METHOD",
+              "value": "PBEPBE",
+              "isLoud": false
+            },
+            {
+              "reference": "SYMMETRY",
+              "value": "NOSYMM",
+              "isLoud": false
+            },
+            {
+              "reference": "GUESS",
+              "value": "READ"
+            },
+            {
+              "reference": "PRINT",
+              "value": "P",
+              "isLoud": false
+            },
+            {
+              "reference": "Free1",
+              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "isLoud": false
+            },
+            {
+              "reference": "GEOM",
+              "value": "CHECK"
+            },
+            {
+              "reference": "INT",
+              "value": "ULTRAFINE"
+            },
+            {
+              "reference": "MODEL_BASISSET",
+              "value": "CHKBASIS",
+              "isLoud": false
+            },
+            {
+              "reference": "JOBTYPE",
+              "value": "FREQ",
+              "isLoud": false
+            }
+          ],
+          "subDirectives": [
+            {
+              "name": "CPHF",
+              "keywords": [
+                {
+                  "reference": "GRID",
+                  "value": "ULTRAFINE"
+                }
+              ]
+            },
+            {
+              "name": "SCF",
+              "keywords": [
+                {
+                  "reference": "SYMM",
+                  "value": "NOSYM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "MAXCYCLE",
+                  "value": "250"
+                },
+                {
+                  "reference": "VSHIFT",
+                  "value": "300"
+                }
+              ]
+            },
+            {
+              "name": "SCRF",
+              "keywords": [
+                {
+                  "reference": "MODEL",
+                  "value": "PCM",
+                  "isLoud": false
+                },
+                {
+                  "reference": "SOLVENT",
+                  "value": "BENZENE"
+                },
+                {
+                  "reference": "OPTS",
+                  "value": "READ",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Title",
+          "keywords": [
+            {
+              "reference": "title",
+              "value": " Step 5 - PBEPBE-GD3MBJ-PCM(benzene) mixDZ",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "dirData": [
+            {
+              "reference": "PCM",
+              "type": "TEXTBLOCK",
+              "value": [
+                "radii=UFF",
+                "pcmdoc",
+                "Dis",
+                "Rep",
+                "Cav"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

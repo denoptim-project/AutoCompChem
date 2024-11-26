@@ -14,6 +14,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.molecule.AtomContainerInputProcessor.MultiGeomMode;
 import autocompchem.wiro.chem.ChemSoftConstants;
@@ -64,7 +65,8 @@ public class AtomContainerInputProcessorTest
     	ParameterStorage ps = new ParameterStorage();
     	String taskId = AtomContainerInputProcessor.READIACSTASK.ID;
         ps.setParameter(WorkerConstants.PARTASK, taskId);
-        ps.setParameter(new NamedData(ChemSoftConstants.PARGEOM, iacs));   
+        ps.setParameter(new NamedData(ChemSoftConstants.PARGEOM, iacs));  
+        ps.setParameter(ParameterConstants.VERBOSITY, 0); 
     	
     	NamedDataCollector results = new NamedDataCollector();
     	
@@ -73,7 +75,10 @@ public class AtomContainerInputProcessorTest
     	tester.setDataCollector(results);
     	tester.performTask();
     	
-    	assertEquals(3, results.size());
+    	// Since we deal with the geoms one by one only the last one will be 
+    	// present in the main exposed geometry, but all three will be added to
+    	// task-specific exposed output. So 4 items in total
+    	assertEquals(4, results.size());
     	
         // Reading only a specific one from param storage
         ps.setParameter(ChemSoftConstants.PARMULTIGEOMID, "1");
@@ -83,7 +88,10 @@ public class AtomContainerInputProcessorTest
     	tester.setDataCollector(results);
     	tester.performTask();
     	
-    	assertEquals(1, results.size());
+    	// Since we deal with the mols all in one the main exposed geometry
+    	// contains all three mols, but the chosen geometry is also saved as one
+    	// task-specific exposed output. So 2 items.
+    	assertEquals(2, results.size());
     	assertEquals(2, ((IAtomContainer)
     			results.getNamedData(taskId+1).getValue()).getAtomCount());
     	
@@ -98,7 +106,10 @@ public class AtomContainerInputProcessorTest
     	tester.setDataCollector(results);
     	tester.performTask();
     	
-    	assertEquals(3, results.size());
+    	// Since we deal with the geoms one by one only the last one will be 
+    	// present in the main exposed geometry, but all three will be added to
+    	// task-specific exposed output. So 4 items in total
+    	assertEquals(4, results.size());
     	assertEquals(6, ((IAtomContainer)
     			results.getNamedData(taskId+0).getValue()).getAtomCount());
     	assertEquals(2, ((IAtomContainer)
@@ -113,8 +124,11 @@ public class AtomContainerInputProcessorTest
         tester = WorkerFactory.createWorker(ps, null);
     	tester.setDataCollector(results);
     	tester.performTask();
-    	
-    	assertEquals(1, results.size());
+
+    	// Since we deal with the mols all in one the main exposed geometry
+    	// contains all three mols, but the chosen geometry is also saved as one
+    	// task-specific exposed output. So 2 items.
+    	assertEquals(2, results.size());
     	assertEquals(2, ((IAtomContainer)
     			results.getNamedData(taskId+1).getValue()).getAtomCount());
 	}

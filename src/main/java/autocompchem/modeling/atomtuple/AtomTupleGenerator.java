@@ -18,6 +18,7 @@ import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.AtomLabelsGenerator;
 import autocompchem.modeling.atomtuple.AtomTupleMatchingRule.RuleType;
 import autocompchem.molecule.AtomContainerInputProcessor;
@@ -233,7 +234,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GENERATEATOMTUPLESTASK))
     	{
@@ -259,6 +260,21 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 		        aatl= new AnnotatedAtomTupleList(tuples);
 	        }
 	        
+            if (outFile!=null)
+            {
+            	outFileAlreadyUsed = true;
+            	StringBuilder sb = new StringBuilder();
+	    		int jj = 0;
+	    		for (AnnotatedAtomTuple aat : aatl)
+	    		{
+	    			jj++;
+	    			sb.append("mol-").append(i).append("_tuple-").append(jj)
+	    				.append(": ").append(aat)
+	    				.append(System.getProperty("line.separator"));
+	    		}
+            	IOtools.writeTXTAppend(outFile, sb.toString(), true);
+            }
+	        
 	        if (exposedOutputCollector != null)
 	    	{
 				String molID = "mol-"+i;
@@ -268,6 +284,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 		} else {
 			dealWithTaskMismatch();
 	    }
+    	return iac;
     }
         
 //------------------------------------------------------------------------------

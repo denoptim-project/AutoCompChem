@@ -407,6 +407,67 @@ public abstract class Worker implements IOutputExposer
 //------------------------------------------------------------------------------
 	
 	/**
+	 * Returns any {@link NamedData} from the {@link Job} that precedes this one
+	 * in the job that contains this one, i.e., the container job. 
+	 * This method assumes the container job defined a sequential workflow, so
+	 * it refers to the job with index immediately preceding the index of the 
+	 * job this worked is charged with.
+	 * @param refName the name of the data to fetch.
+	 * @param tolerant use <code>true</code> to allow returning 
+	 * <code>null</code>, or <code>false</code> to trigger errors explaining
+	 * why no data can be returned.
+	 * @return the data to fetch or <code>null</code> is none was found or if 
+	 * there is no preceding job.
+	 */
+	public NamedData getOutputOfPrevStep(String refName, boolean tolerant)
+	{
+		Job container = myJob.getContainer();
+		if (container == null)
+		{
+			if (!tolerant)
+			{
+				throw new Error("No previous data to process. Job " 
+						+ myJob.getId() + " is not contained in any workflow.");
+			} else {
+				return null;
+			}
+		}
+		
+		Job previous = null;
+		int myJobIdx = container.getSteps().indexOf(myJob);
+		if (myJobIdx < 1)
+		{
+			if (!tolerant)
+			{
+				throw new Error("No previous data to process. Job " 
+						+ myJob.getId() 
+						+ " is the first step in the workflow defined in job " 
+						+ container.getId() + ".");
+			} else {
+				return null;
+			}
+		}
+		
+		previous = container.getStep(myJobIdx - 1);
+		if (!previous.exposedOutput.contains(refName))
+		{
+			if (!tolerant)
+			{
+				throw new Error("No previous data to process. Job " 
+						+ container.getId() 
+						+ " does not contained data labelled '" + 
+						refName + "'.");
+			} else {
+				return null;
+			}
+		}
+		
+		return previous.exposedOutput.getNamedData(refName);
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
 	 * Triggers the reaction to a request to perform a {@link Task} that is not
 	 * among those declared by this implementation.
 	 */

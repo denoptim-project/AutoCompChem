@@ -50,6 +50,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -66,16 +67,6 @@ import autocompchem.worker.WorkerFactory;
 
 public class MolecularGeometryEditor extends AtomContainerInputProcessor
 {
-    /**
-     * The output file
-     */
-    private File outFile;
-    
-    /**
-     * Format of the output file
-     */
-    private String outFormat = "SDF";
-
     /**
      * The SDF file with reference substructure
      */
@@ -215,19 +206,6 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     public void initialize()
     {
     	super.initialize();
-    	
-        //Get and check output file
-        if (params.contains("OUTFILE"))
-        {
-            this.outFile = new File(
-            		params.getParameter("OUTFILE").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
-        }
-        
-        if (params.contains("OUTFORMAT"))
-        {
-            this.outFormat = params.getParameter("OUTFORMAT").getValueAsString();
-        }
 
         // Get the Cartesian move
         if (params.contains("CARTESIANMOVE"))
@@ -391,7 +369,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
 		AtomContainerSet result = null;
     	if (task.equals(MODIFYGEOMETRYTASK))
@@ -420,6 +398,13 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                         + "a Cartesian or a ZMatrix move.", -1);
             }
     		
+    		if (outFile!=null)
+    		{
+    			outFileAlreadyUsed = true;
+    			IOtools.writeAtomContainerSetToFile(outFile, result, outFormat, 
+    	            		true);
+    		}
+    		
     		if (exposedOutputCollector != null)
             {
 	    	    String molID = "mol-"+i;
@@ -429,6 +414,21 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     	} else {
     		dealWithTaskMismatch();
         }
+    	
+    	if (result.getAtomContainerCount()==1)
+    	{
+    		return result.getAtomContainer(0);
+    	} else {
+    		if (outFile==null)
+    		{
+    			logger.warn("Multiple resulting geometries are exposed as "
+    					+ "'" + task.ID + "' data. The initial geometry is "
+    					+ "exposed as main output. You can save the multiple "
+    					+ "geometries to file by using parameter '" 
+    					+ ChemSoftConstants.PAROUTFILE + "'.");
+    		}
+    		return iac;
+    	}
     }
    
 //------------------------------------------------------------------------------
@@ -531,18 +531,6 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             		+ scaleFactors.get(j) + "x(Cartesian_move)";
             outMol.setProperty(CDKConstants.TITLE,outMolName);
             results.addAtomContainer(outMol); 
-        }
-        
-        if (outFile==null)
-        {
-            logger.warn("WARNING! No output file produced (use OUTFILE "
-                + " to write the results into a new SDF file");
-        }
-        
-        if (outFile!=null)
-        {
-            IOtools.writeAtomContainerSetToFile(outFile, results, outFormat, 
-            		false);
         }
         
         return results;
@@ -1058,18 +1046,6 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
             		+ scaleFactors.get(j) + "x(ZMatrixMove)";
             outMol.setProperty(CDKConstants.TITLE,outMolName);
             results.addAtomContainer(outMol);
-        }
-        
-        if (outFile==null)
-        {
-            logger.warn("WARNING! No output file produced (use OUTFILE "
-                + " to write the results into a new SDF file");
-        }
-        
-        if (outFile!=null)
-        {
-            IOtools.writeAtomContainerSetToFile(outFile, results, outFormat, 
-            		false);
         }
         
         return results;

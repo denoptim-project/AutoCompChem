@@ -35,6 +35,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
+import autocompchem.io.IOtools;
+import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
@@ -254,13 +256,26 @@ public class MolecularMeter extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(MEASUREGEOMDESCRIPTORSTASK))
     	{
     		Map<String,List<Double>> descriptors = measureAllQuantities(iac,
     				smarts, sortedKeys, atmIds, onlyBonded, i);
-    		
+
+    		if (outFile!=null)
+            {
+            	outFileAlreadyUsed = true;
+            	StringBuilder sb = new StringBuilder();
+            	for (String descRef : descriptors.keySet())
+	    		{
+            		sb.append("mol-").append(i).append("_").append(descRef)
+    					.append(": ").append(descriptors.get(descRef))
+	    				.append(System.getProperty("line.separator"));
+	    		}
+            	IOtools.writeTXTAppend(outFile, sb.toString(), true);
+            }
+            
             if (exposedOutputCollector != null)
         	{
     			String molID = "mol-"+i;
@@ -274,6 +289,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
   	}
   
 //------------------------------------------------------------------------------

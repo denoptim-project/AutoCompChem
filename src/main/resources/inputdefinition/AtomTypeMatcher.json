@@ -6,19 +6,16 @@
     "doc": "The pathname to a file defining the atom types. This is a text file where each line respects the following syntax: <int> <String> <String> where the integer is the atom type, the first string is currently not used, and the last string is a SMARTS query used to identify the atoms belonging to the type."
   },
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the file where to print the assigned atom types."
-  },
-  {
-    "key": "FORMAT",
+    "key": "OUTFORMAT",
     "casedKey": "format",
     "type": "<String>",
     "doc": "The format for writing basis set. Possible values are 'TXYZ' for Tinker-XYZ format, or 'List'."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "outformat"
+    ]
   }
 ]

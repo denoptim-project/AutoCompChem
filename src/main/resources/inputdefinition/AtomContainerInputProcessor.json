@@ -28,5 +28,17 @@
     "casedKey": "useGeomAtIndex",
     "type": "<int>",
     "doc": "Specifies which geometry to use by the index of that item in the given list of geometries. If this parameter is given, the value of MULTIGEOMMODE is ignored."
+  },
+  {
+    "key": "OUTFILE",
+    "casedKey": "outFile",
+    "type": "<String>",
+    "doc": "The pathname to the file where to save the results."
+  },
+  {
+    "key": "OUTFORMAT",
+    "casedKey": "outFormat",
+    "type": "<String>",
+    "doc": "Format for output file. Acceptable values are 'SDF', 'XYZ', and 'ORCATRAJECTORY'."
   }
 ]

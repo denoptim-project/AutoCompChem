@@ -59,27 +59,10 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
      * The name of the atom type map
      */
     private File atMapFile;
-
-    /**
-     * The name of the output file, if any
-     */
-    private File outFile;
-
     /**
      * List of atom type-matching smarts with string identifiers
      */
     private Map<String,SMARTS> smarts = new HashMap<String,SMARTS>();
-
-    /**
-     * Flag controlling no-output mode
-     */
-    //TODO: obsolete: remove
-    private boolean noOutput = false;
-
-    /**
-     * The format for output
-     */
-    private String outForm;
     
     /**
      * String defining the task of assigning atom types
@@ -140,30 +123,6 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
         		params.getParameter( "ATOMTYPESMAP").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 
-        //Optional parameters
-        if (params.contains("OUTFILE"))
-        {
-            //Get and check output file
-            this.outFile = new File(
-                        params.getParameter("OUTFILE").getValue().toString());
-            FileUtils.mustNotExist(this.outFile);
-        } else {
-            noOutput=true;
-        }
-
-        if (params.contains("OUTFORMAT"))
-        {
-            if (noOutput)
-            {
-                String cause = "ERROR! AtomTypeMatcher: OUTFORMAT defined"
-                                + " while running in no-output mode";
-                Terminator.withMsgAndStatus("ERROR! " +cause,-1);
-            }
-            //Get format for reporting output
-            this.outForm = 
-                        params.getParameter("OUTFORMAT").getValue().toString();
-        }
-
         importAtomTypeMap();
     }
 
@@ -183,23 +142,27 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
 		if (task.equals(ASSIGNATOMTYPESTASK))
     	{
             assignAtomTypes(iac);
 
             if (outFile!=null)
+            {
+            	outFileAlreadyUsed = true;
             	writeOut(iac);
+            }
             
             if (exposedOutputCollector != null)
         	{
-    	    			String molID = task.ID + "mol-"+i;
-    	  		        exposeOutputData(new NamedData(molID, iac));
+            	String molID = task.ID + "mol-"+i;
+  		        exposeOutputData(new NamedData(molID, iac));
         	}
     	} else {
     		dealWithTaskMismatch();
         }
+		return iac;
 	}
 
 //------------------------------------------------------------------------------
@@ -313,7 +276,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
 
     private void writeOut(IAtomContainer mol)
     {
-        switch (outForm) {
+        switch (outFormat) {
             case "TXYZ":
                 Terminator.withMsgAndStatus("ERROR! Output format 'TXYZ' "
                    + "is still under development. ", -1);
@@ -334,7 +297,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
                 break;
 
             default:
-                Terminator.withMsgAndStatus("ERROR! Format '" + outForm + "'"
+                Terminator.withMsgAndStatus("ERROR! Format '" + outFormat + "'"
                                 + " not known! Check the option OUTFORMAT.",-1);
         }
     }

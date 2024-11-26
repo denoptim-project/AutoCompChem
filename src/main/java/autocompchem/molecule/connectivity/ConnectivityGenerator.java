@@ -53,12 +53,6 @@ import autocompchem.worker.Worker;
 
 public class ConnectivityGenerator extends AtomContainerInputProcessor
 {
-    //TODO: document code
-    
-    //Files we work with
-    private File outFile;
-    private File refFile;
-
     //Default bond order
     private String defBO = "SINGLE";
 
@@ -205,15 +199,8 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (params.contains("REFERENCE"))
         {
             String str = params.getParameter("REFERENCE").getValueAsString();
-            this.refFile = new File(str);
+            this.templatePathName = new File(str);
             FileUtils.foundAndPermissions(str,true,false,false);
-        }
-
-        if (params.contains("OUTFILE"))
-        {
-             String str = params.getParameter("OUTFILE").getValueAsString();
-            this.outFile = new File(str);
-            FileUtils.mustNotExist(this.outFile);
         }
     }
     
@@ -233,20 +220,21 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     @Override
-    public void processOneAtomContainer(IAtomContainer iac, int i) 
+    public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
     {
         if (task.equals(RICALCULATECONNECTIVITYTASK))
-          {
-            ricalculateConnectivity(iac, i);
+        {
+        	ricalculateConnectivity(iac, i);
         } else if (task.equals(ADDBONDSFORSINGLEELEMENTTASK)) {
-            addBondsOnSingleElement(iac, i);
+        	addBondsOnSingleElement(iac);
         } else if (task.equals(IMPOSECONNECTIONTABLETASK)) {
-            imposeConnectionTable(iac, i);
+        	imposeConnectionTable(iac);
         } else if (task.equals(CHECKBONDLENGTHSTASK)) {
-            checkBondLengthsAgainstConnectivity(iac, i);
+        	checkBondLengthsAgainstConnectivity(iac, i);
         } else {
-              dealWithTaskMismatch();
+        	dealWithTaskMismatch();
         }
+        return iac;
     }
 
 //------------------------------------------------------------------------------
@@ -266,10 +254,10 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         List<IAtomContainer> refMols = new ArrayList<IAtomContainer>();
         try 
         {
-            refMols = IOtools.readMultiMolFiles(refFile);
+            refMols = IOtools.readMultiMolFiles(templatePathName);
         } catch (Throwable t) {
             Terminator.withMsgAndStatus("ERROR! Exception returned while "
-                    + "reading " + refFile, -1);
+                    + "reading " + templatePathName, -1);
         }
           
         //TODO: possibility of allowing one different reference for each entry
@@ -277,7 +265,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         if (refMols.size() > 1)
         {
             logger.warn("WARNING: multiple references found in '" 
-                    + refFile + "'. We'll use only the first one.");
+                    + templatePathName + "'. We'll use only the first one.");
         }
         IAtomContainer ref = refMols.get(0); 
          
@@ -295,24 +283,16 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 
     /**
      * Add bonds on all the target elements of the given molecule according to
-     * the relation between interatomic distance and sum of van der Waals radii.
+     * the relation between interatomic distance and sum of Van der Waals radii.
+     * @param iac the atom container to be edited.
      */
 
-    public void addBondsOnSingleElement(IAtomContainer iac, int i)
+    public void addBondsOnSingleElement(IAtomContainer iac)
     {   
         addConnectionsByVDWRadius(iac, 
                 targetEl, 
                 tolerance,
                 tolerance2ndShell);
-
-        if (outFile!=null)
-            IOtools.writeSDFAppend(outFile, iac, true);
-        
-        if (exposedOutputCollector != null)
-        {
-            String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID, iac));
-        }
     }
     
 //------------------------------------------------------------------------------
@@ -408,30 +388,22 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Recalculate molecular connectivity for all molecules in the SDF file.
+     * Recalculate molecular connectivity for the given atom container.
      * This method works on all the atoms of the molecule (ignores any given 
-     * target element symbol)
+     * target element symbol), but used the tolerance configured in this worker.
+     * @param iac the atom container to alter.
      */
 
     public void ricalculateConnectivity(IAtomContainer iac, int i)
     {
-        ricalculateConnectivity(iac, tolerance); 
-        
-        if (outFile!=null)
-            IOtools.writeSDFAppend(outFile, iac, true);
-        
-        if (exposedOutputCollector != null)
-        {
-            String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID, iac));
-        }
+        ricalculateConnectivity(iac, tolerance);
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Recalculate connectivity 
-     * @param mol the molecular object to modify
+     * @param mol the atom container to modify
      * @param tolerance the tolerance (% as 0.0-1.0) in comparing vdW radii 
      * radii
      */
@@ -480,22 +452,11 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
      * molecules in the input.
      */
     
-    private void imposeConnectionTable(IAtomContainer iac, int i)
+    private void imposeConnectionTable(IAtomContainer iac)
     {
         List<IAtomContainer> tmpl = IOtools.readMultiMolFiles(templatePathName);
-        
         //TODO: what to do when there is more than one template?
-
         ConnectivityUtils.importConnectivityFromReference(iac, tmpl.get(0));
-
-        if (outFile!=null)
-            IOtools.writeSDFAppend(outFile, iac, true);
-        
-        if (exposedOutputCollector != null)
-        {
-            String molID = "mol-"+i;
-            exposeOutputData(new NamedData(molID, iac));
-        }
     }
 
 //------------------------------------------------------------------------------

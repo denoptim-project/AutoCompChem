@@ -10,15 +10,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 public class AtomSpecificStringGeneratorTest 
 {
+
+	private static IChemObjectBuilder chemBuilder = 
+    		DefaultChemObjectBuilder.getInstance();
 
 //------------------------------------------------------------------------------
 
@@ -65,7 +73,6 @@ public class AtomSpecificStringGeneratorTest
     			assg.convertTupleToAtomSpecString(tupleB));
     	assertEquals("pre pre : 10after : ", 
     			assg.convertTupleToAtomSpecString(tupleC));
-    	
     	ParameterStorage ps = new ParameterStorage();
         ps.setParameter(WorkerConstants.PARTASK,
         		AtomSpecificStringGenerator.GETATOMSPECIFICSTRINGTASK.ID);

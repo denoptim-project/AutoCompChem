@@ -845,6 +845,26 @@ public class IOtools
 		  			break;
 	  	}
 	}
+	
+//------------------------------------------------------------------------------
+    
+    /**
+     * Writes atom containers to file
+     * file or appends to an existing one.
+     * @param filename target file (new or existing).
+     * @param acs set of atom containers to be written on the output file.
+     * @param format the format to use. Available formats are 'SDF', 'XYZ, and 
+     * 'ORCATRAJECTORY'.
+     * @param append <code>true</code> to append to existing file
+     */
+
+    public static void writeAtomContainerSetToFile(File file, 
+    		List<IAtomContainer> lst, String format, boolean append)
+    {
+    	IAtomContainerSet acs = new AtomContainerSet();
+    	lst.forEach(iac -> acs.addAtomContainer(iac));
+    	writeAtomContainerSetToFile(file, acs, format, append);
+    }
     
 //------------------------------------------------------------------------------
     

@@ -1,11 +1,5 @@
 [
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the file where to print the ZMatrix."
-  },
-  {
     "key": "TEMPLATEZMAT",
     "casedKey": "templateZMat",
     "type": "<String>",
@@ -19,6 +13,9 @@
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "outFormat"
+    ]
   }
 ]

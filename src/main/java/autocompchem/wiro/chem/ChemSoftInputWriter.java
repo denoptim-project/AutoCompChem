@@ -67,12 +67,12 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     /**
      * Pathname root for output files (input for comp.chem. software).
      */
-    protected String outFileNameRoot;
+    protected String ccJobInputNameRoot;
     
     /**
      * Output name (input for comp.chem. software).
      */
-    protected File outFile;
+    protected File ccJobInputFile;
     
     /**
      * Flag deciding if we write the specific job-details file or not.
@@ -305,35 +305,35 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 
         if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
-            outFileNameRoot = params.getParameter(
+            ccJobInputNameRoot = params.getParameter(
                     WIROConstants.PAROUTFILEROOT).getValueAsString();
-            outFile = new File(outFileNameRoot + inpExtrension);
+            ccJobInputFile = new File(ccJobInputNameRoot + inpExtrension);
         } else if (params.contains(WIROConstants.PAROUTFILE))
         {
-        	outFile = new File(params.getParameter(
+        	ccJobInputFile = new File(params.getParameter(
         			WIROConstants.PAROUTFILE).getValueAsString());
-            outFileNameRoot = FileUtils.getRootOfFileName(outFile);
+            ccJobInputNameRoot = FileUtils.getRootOfFileName(ccJobInputFile);
         } else {
         	if (inFile==null)
         	{
-        		outFileNameRoot = "accOutput";
+        		ccJobInputNameRoot = "accOutput";
                 logger.debug("Neither '" 
 	        				 + WIROConstants.PAROUTFILE + "' nor '" 
 	        				 + WIROConstants.PAROUTFILEROOT + "' found and no '"
 	        				 + ChemSoftConstants.PARGEOMFILE + "' found. " + NL
 	                         + "Root of any output file name set to '" 
-	                         + outFileNameRoot + "'.");
+	                         + ccJobInputNameRoot + "'.");
         	} else {
-        		outFileNameRoot = FileUtils.getRootOfFileName(
+        		ccJobInputNameRoot = FileUtils.getRootOfFileName(
         				inFile.getAbsolutePath());
                 logger.debug("Neither '" 
                     		+ WIROConstants.PAROUTFILEROOT + "' nor '"
                     		+ WIROConstants.PAROUTFILE 
                     		+ "' parameter found. " + NL
                             + "Root of any output file name set to '" 
-                            + outFileNameRoot + "'.");
+                            + ccJobInputNameRoot + "'.");
         	}
-            outFile = new File(outFileNameRoot + inpExtrension);
+        	ccJobInputFile = new File(ccJobInputNameRoot + inpExtrension);
         }
         
         if (params.contains(WIROConstants.PARNOJSONOUTPUT))
@@ -381,7 +381,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     		// details to make the input files.
     		// To this end, we set the list of input molecules to an empty list
     		inMols = new ArrayList<IAtomContainer>();
-    		produceSingleJobInputFiles(inMols, outFile, outFileNameRoot);
+    		produceSingleJobInputFiles(inMols, ccJobInputFile, ccJobInputNameRoot);
     	} else {
     		// Here we read atom containers from whatever input we have, which
     		// could be a file to be read in, or a collection of objects stored 
@@ -393,9 +393,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-		String fileRootName = outFileNameRoot;
+		String fileRootName = ccJobInputNameRoot;
 		if (inMols!=null && inMols.size()>1)
 		{ 
 			fileRootName = fileRootName + "-" + i;
@@ -410,7 +410,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             }
         	String geomName = geomNames.get(i);
         	iac.setTitle(geomName);
-        	fileRootName = outFileNameRoot + "-" + geomName;
+        	fileRootName = ccJobInputNameRoot + "-" + geomName;
         }
         
         logger.debug("Writing input file for molecule #" 
@@ -423,15 +423,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         		new File(fileRootName+inpExtrension),
         		fileRootName);
         
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
-        }
+        return iac;
 	}
     
 //------------------------------------------------------------------------------
@@ -444,7 +436,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 	 */
 	
 	@Override
-	public void processAllAtomContainer(List<IAtomContainer> iacs) 
+	public List<IAtomContainer> processAllAtomContainer(List<IAtomContainer> iacs) 
 	{
 		// NB: do not use inMols, i.e., the field of the AtomContainer superclass
 	    logger.info("Writing input file for " + iacs.size() + " geometries");
@@ -459,17 +451,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 	    }
 	    
 	    produceSingleJobInputFiles(iacs, 
-	    		new File(outFileNameRoot + inpExtrension), outFileNameRoot);
+	    		new File(ccJobInputNameRoot + inpExtrension), ccJobInputNameRoot);
     	
-        if (exposedOutputCollector != null)
-        {
-/*
-//TODO
-            String refName = "";
-            exposeOutputData(new NamedData(refName,
-                  NamedDataType.DOUBLE, ));
-*/
-        }
+	    return iacs;
     }
     
 //------------------------------------------------------------------------------
@@ -489,21 +473,21 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * <br>
      * <b>WARNING</b>: Changes in the number of electrons or in spin 
      * multiplicity among the geometries are not supported (yet).
-     * @param outFile the job's main input file.
-     * @param outFileNameRoot the root of the 
+     * @param ccJobInput the job's main input file.
+     * @param ccJobInputNameRoot the root of the 
      * pathname to any job input file that will be
      * produced. Extensions and suffixed are defined by software specific 
      * constants.
      */
     private void produceSingleJobInputFiles(List<IAtomContainer> mols, 
-    		File outFile,	String outFileNameRoot)
+    		File ccJobInput,	String ccJobInputNameRoot)
     {
     	// We customize a copy of the master job
 		CompChemJob molSpecJob = ccJob.clone();
 		
 		// Define the name's root for any input file created
 		molSpecJob.setParameter(WIROConstants.PAROUTFILEROOT, 
-				outFileNameRoot, true);
+				ccJobInputNameRoot, true);
 		
 		// Add atom coordinates to the so-far possibly molecule-agnostic job
 		setChemicalSystem(molSpecJob, mols);
@@ -542,19 +526,19 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 		setSpinMultiplicityIfUnset(molSpecJob, spinMult+"", omitSpinMult);
 		
 		// Manage output consisting of multiple files and/or folder trees
-		outFile = manageOutputFileStructure(mols, outFile);
+		ccJobInput = manageOutputFileStructure(mols, ccJobInput);
 		
 		// Produce the actual main input file
-		FileUtils.mustNotExist(outFile);
-		IOtools.writeTXTAppend(outFile, getTextForInput(molSpecJob).toString(), 
-				false);
+		FileUtils.mustNotExist(ccJobInput);
+		IOtools.writeTXTAppend(ccJobInput, 
+				getTextForInput(molSpecJob).toString(), false);
 		
 		// Produce a specific job-details file
 		if (writeJobSpecificJDOutput)
 		{
 			CompChemJob cleanCCJ = molSpecJob.clone();
 			cleanCCJ.removeACCTasks();
-			File jdFileOut = new File(outFileNameRoot 
+			File jdFileOut = new File(ccJobInputNameRoot 
 					+ WIROConstants.JSONJDEXTENSION);
 			FileUtils.mustNotExist(jdFileOut);
 			Gson writer = ACCJson.getWriter();

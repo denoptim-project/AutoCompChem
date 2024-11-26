@@ -23,7 +23,6 @@
     "embeddedWorker": "autocompchem.modeling.AtomLabelsGenerator",
     "tag": "generation of atom labels",
     "ignorableItems": [
-      "outFile",
       "separator"
     ],
     "ignorableWorkers": [

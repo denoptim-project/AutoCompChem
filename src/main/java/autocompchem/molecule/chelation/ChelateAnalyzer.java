@@ -55,10 +55,6 @@ import autocompchem.worker.Worker;
 
 public class ChelateAnalyzer extends AtomContainerInputProcessor
 {
-    /**
-     * Name of the output file
-     */
-    private File outFile;
 
     /**
      * List of named SMARTS queries used to identify the chelating systems 
@@ -118,15 +114,6 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
     {
     	super.initialize();
 
-        //Get optional parameter
-        //Get and check output file
-        if (params.contains("OUTFILE"))
-        {
-            this.outFile = new File(
-            		params.getParameter("OUTFILE").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
-        }
-
         //Get the list of SMARTS to be matched
         if (params.contains("TARGETSMARTS"))
         {
@@ -167,7 +154,7 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(ANALYZECHELATESTASK))
     	{
@@ -182,6 +169,7 @@ public class ChelateAnalyzer extends AtomContainerInputProcessor
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
 
 //-----------------------------------------------------------------------------

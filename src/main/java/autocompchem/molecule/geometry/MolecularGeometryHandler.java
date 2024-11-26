@@ -168,12 +168,12 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
+		IAtomContainer iacPossiblyLabelled = iac;
 		if (task.equals(GETMOLECULARGEOMETRYTASK))
     	{
 			Object output = null;
-			IAtomContainer iacPossiblyLabelled = iac;
 			
 			if (useAtomTags)
 			{
@@ -278,6 +278,7 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
     	} else {
     		dealWithTaskMismatch();
         }
+		return iacPossiblyLabelled;
 	}
     
 //-----------------------------------------------------------------------------

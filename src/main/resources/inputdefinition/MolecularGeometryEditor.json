@@ -1,17 +1,5 @@
 [
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the file where to print the resulting chemical system."
-  },
-  {
-    "key": "OUTFORMAT",
-    "casedKey": "outFormat",
-    "type": "<String>",
-    "doc": "Format for output file. Acceptable values are 'SDF', 'XYZ', and 'ORCATRAJECTORY'."
-  },
-  {
     "key": "CARTESIANMOVE",
     "casedKey": "cartesianMove",
     "type": "<String>",

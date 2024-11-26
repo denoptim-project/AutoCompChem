@@ -286,7 +286,7 @@ public class GaussianInputWriter extends ChemSoftInputWriter
      */
     protected void setSystemSpecificNames(CompChemJob ccj)
     {
-    	File pathnameRoot = new File(outFileNameRoot);
+    	File pathnameRoot = new File(ccJobInputNameRoot);
     	addNewKeyword(ccj, GaussianConstants.DIRECTIVELINK0,
     			"chk", true, pathnameRoot.getName());
     }

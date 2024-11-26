@@ -1,11 +1,5 @@
 [
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the SDF file where to print the reordered list of chemical systems."
-  },
-  {
     "key": "SDFPROPERTY",
     "casedKey": "SDFProperty",
     "type": "<String>",

@@ -10,6 +10,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.IOtools;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.modeling.atomtuple.AtomTupleConstants;
 import autocompchem.modeling.atomtuple.AtomTupleGenerator;
@@ -114,13 +115,20 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GENERATECONFORMATIONALSPACETASK))
     	{   
     		ConformationalSpace cs = createConformationalSpace(iac);
             
     		cs.printAll(logger);
+    		
+
+    		if (outFile!=null)
+            {
+            	outFileAlreadyUsed = true;
+            	IOtools.writeTXTAppend(outFile, cs.toPrintableString(), true);
+            }
             
             if (exposedOutputCollector != null)
         	{
@@ -131,6 +139,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
     
 //------------------------------------------------------------------------------

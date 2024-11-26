@@ -12,19 +12,16 @@
     "doc": "Set the value to True to permit that some atoms are not matched by basis set assignation rules."
   },
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the file where to print the basis set."
-  },
-  {
-    "key": "FORMAT",
-    "casedKey": "format",
+    "key": "OUTFORMAT",
+    "casedKey": "outFormat",
     "type": "<String>",
     "doc": "The format for writing basis set. Possible values are 'Gaussian', or 'NWChem'."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "outFormat"
+    ]
   }
 ]

@@ -2,4 +2,4 @@ VERBOSITY: 5
 TASK: CompareTwoMolecules
 INFILE: ../t17mol.sdf
 REFERENCE: ../t17ref.sdf
-ROTATEDOUT: t17_rot.sdf
+outFile: t17_rot.sdf

@@ -63,11 +63,6 @@ import autocompchem.worker.Worker;
 public class GeometryAligner extends AtomContainerInputProcessor
 {   
     /**
-     * Pathname to the file where to colelct the aligned structures.
-     */
-    private File outFile;
-    
-    /**
      * Molecular representation of the reference substructure
      */
     private IAtomContainer reference;
@@ -138,14 +133,6 @@ public class GeometryAligner extends AtomContainerInputProcessor
             }
 	        reference = lst.get(0);
         }
-    	
-        //Get and check optional file for rotated output
-        if (params.contains("ROTATEDOUT")) 
-        {
-            this.outFile = new File(
-                        params.getParameter("ROTATEDOUT").getValueAsString());
-            FileUtils.mustNotExist(this.outFile);
-        }
     }
 
 //-----------------------------------------------------------------------------
@@ -165,8 +152,9 @@ public class GeometryAligner extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
+		IAtomContainer result = null;
 		if (task.equals(ALIGNGEOMETRIESTASK))
 		{
 			GeometryAlignment alignment = null;
@@ -178,11 +166,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
 						+ MolecularUtils.getNameOrID(reference)+ "'.", -1, e);
 			}
 			
-			if (outFile!=null)
-			{
-				IOtools.writeSDFAppend(outFile, alignment.getSecondIAC().iac, 
-						true);
-			}
+			result = alignment.getSecondIAC().iac;
 			
 			if (exposedOutputCollector != null)
 	        {
@@ -195,6 +179,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
 		        		alignment.getSecondIAC()));
 	    	}
 		}
+		return result;
     }
 	
 //-----------------------------------------------------------------------------

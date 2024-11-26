@@ -61,11 +61,6 @@ import autocompchem.worker.Worker;
 public class BasisSetGenerator extends AtomContainerInputProcessor
 {
     /**
-     * The output file, if any
-     */
-    private File outFile;
-
-    /**
      * Format for reporting basis set (Default: Gaussian)
      */
     private String format = "GAUSSIAN";
@@ -155,15 +150,6 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             }
         }
 
-        // Name of output file
-        if (params.contains("OUTFILE"))
-        {
-            //Get and check output file
-            this.outFile = new File(
-                        params.getParameter("OUTFILE").getValue().toString());
-            FileUtils.mustNotExist(this.outFile);
-        }
-
         // Format with which to report basis sets
         if (params.contains("FORMAT"))
         {
@@ -187,7 +173,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(GENERATEBASISSETTASK))
     	{
@@ -195,6 +181,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
         } else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
     
 //------------------------------------------------------------------------------
@@ -205,6 +192,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
 
         if (outFile!=null)
         {
+        	outFileAlreadyUsed = true;
         	BasisSetUtils.writeFormattedBS(bs, format, outFile);
         }
         

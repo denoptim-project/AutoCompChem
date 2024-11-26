@@ -187,7 +187,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(COMPARETWOMOLECULESTASK))
     	{
@@ -199,6 +199,7 @@ public class MolecularComparator extends AtomContainerInputProcessor
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
 
 //------------------------------------------------------------------------------
@@ -210,9 +211,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
 	
     private void compareTwoConnectivities(IAtomContainer iac, int i)
     {
-        ConnectivityUtils cu = new ConnectivityUtils();
-        boolean consistentConnectivity = cu.compareWithReference(iac, 
-        		referenceMol, logger);
+        boolean consistentConnectivity = ConnectivityUtils.compareWithReference(
+        		iac, referenceMol, logger);
         
         if (!consistentConnectivity)
         {

@@ -653,7 +653,8 @@ public class Job implements Runnable
 
     /**
      * Returns the reference to the job that contains this one among its steps.
-     * @return the containing job.
+     * @return the containing job or <code>null</code> if this job is not
+     * contained.
      */
     
     public Job getContainer()

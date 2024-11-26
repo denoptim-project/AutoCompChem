@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -41,7 +42,11 @@ import autocompchem.worker.Worker;
 
 
 /**
- * General worker that processes molecular definition as input.
+ * General {@link Worker} that processes atom containers definitions as input. 
+ * The nature of the processing is defined in subclasses of this class, but 
+ * this class ensures that the containers resulting from the processing, if
+ * any processing is done, are exposed so that they become usable outside this 
+ * class. See {@link Worker#exposeOutputData(NamedData)}.
  * 
  * @author Marco Foscato
  */
@@ -50,9 +55,26 @@ public class AtomContainerInputProcessor extends Worker
 {
     
     /**
-     * The input file, i.e., any molecular structure file
+     * The input file, i.e., any molecular structure file to read from.
      */
     protected File inFile;
+   
+    /**
+     * The output file, i.e., any molecular structure file to wrote into.
+     */
+    protected File outFile;
+    
+    /**
+     * Flag indicated whether the main output file has already been used for 
+     * something else and should not be used for reporting the processed atom
+     * container.
+     */
+    protected boolean outFileAlreadyUsed = false;
+    
+    /**
+     * Format of the output file
+     */
+    protected String outFormat = "SDF";
 
     /**
      * The input molecules
@@ -86,7 +108,7 @@ public class AtomContainerInputProcessor extends Worker
     public static final String READIACSTASKNAME = "readAtomContainers";
 
     /**
-     * Task about generating tuples of atoms
+     * Task about importing a container of atoms
      */
     public static final Task READIACSTASK;
     static {
@@ -175,11 +197,46 @@ public class AtomContainerInputProcessor extends Worker
 	        			+ "multiGeomMode to " + multiGeomMode + ".");
         	}
         }
+        
+        if (params.contains(ChemSoftConstants.PAROUTFILE))
+        {
+	        this.outFile = new File(params.getParameter(
+	        		ChemSoftConstants.PAROUTFILE).getValue().toString());
+	        FileUtils.mustNotExist(this.outFile);
+        } else {
+        	logger.debug("WARNING: No " + ChemSoftConstants.PAROUTFILE 
+        			+ " parameter given. "
+        			+ "Results will be kept in the memory for further use.");
+        }
+        
+        if (params.contains(ChemSoftConstants.PAROUTFORMAT))
+        {
+        	this.outFormat = params.getParameter(
+        			ChemSoftConstants.PAROUTFORMAT).getValueAsString();
+        }
+        
+        // If no other input channel is used, then get input from memory of 
+        // previous step
+        if (inMols==null)
+        {
+        	inMols = new ArrayList<IAtomContainer>();
+        	NamedData dataFromPrevStep = getOutputOfPrevStep(
+        			ChemSoftConstants.JOBDATAGEOMETRIES, true);
+        	if (dataFromPrevStep != null)
+        	{
+        		AtomContainerSet prevData = (AtomContainerSet) 
+        				dataFromPrevStep.getValue();
+            	prevData.atomContainers().forEach(i -> inMols.add(i));
+        	} else {
+        		logger.debug("No previous data to process. Running '" 
+        				+ this.getClass().getSimpleName() 
+        				+ "' without any input atom container");
+        	}
+        }
     }
 	
 //-----------------------------------------------------------------------------
 	
-
 	/**
 	 * NB: if we are reading a huge file, this code will cause problems, but
 	 * we can assume no huge file will be read here.
@@ -267,8 +324,21 @@ public class AtomContainerInputProcessor extends Worker
 	            		}
 		            }
 	            	IAtomContainer iac = inMols.get(i);
-	      			logger.info("#" + i + " " + MolecularUtils.getNameOrID(iac));
-	            	processOneAtomContainer(iac, i);
+	      			if (inMols.size()>1)
+	            	{
+	      				logger.info("#" + i + " " + MolecularUtils.getNameOrID(
+	      						iac));
+	            	}
+	            	IAtomContainer result = processOneAtomContainer(iac, i);
+	                if (exposedOutputCollector != null)
+	                {
+	    	        	exposeAtomContainer(result);
+	                }
+	                if (outFile!=null && !outFileAlreadyUsed)
+	                {
+	        			IOtools.writeAtomContainerToFile(outFile, result, outFormat, true);
+	                }
+	                
 	            	if (breakAfterThis)
 	            		break;
 	            }
@@ -277,7 +347,17 @@ public class AtomContainerInputProcessor extends Worker
 			
 		case ALLINONEJOB:
 			{
-				processAllAtomContainer(inMols);
+				AtomContainerSet results = new AtomContainerSet();
+				List<IAtomContainer> iacs = processAllAtomContainer(inMols);
+				iacs.forEach(iac -> results.addAtomContainer(iac));
+	            if (exposedOutputCollector != null)
+	            {
+		        	exposeAtomContainers(results);
+	            }
+                if (outFile!=null && !outFileAlreadyUsed)
+                {
+        			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+                }
 			}
 		}
     }
@@ -285,38 +365,80 @@ public class AtomContainerInputProcessor extends Worker
 //------------------------------------------------------------------------------
     
     /**
-     * Takes the atom container available in the input specified by the settings
-     * of this instance and places it in the
-     * {@link Worker#exposedOutputCollector}. 
+     * Takes the given {@link AtomContainer} and does nothing else to it than
+     * returning it.
      * Subclasses should overwrite this method to do what they want with the 
-     * selected atom container and produce what they like as output data to be
-     * placed in the {@link Worker#exposedOutputCollector}. 
-     * @param iac the atom container to be processes
+     * given {@link AtomContainer} and produce what they like. Any output data 
+     * should be placed placed in the {@link Worker#exposedOutputCollector} by
+     * using {@link Worker#exposeOutputData(NamedData)}.
+     * @param iac the atom container to be processed
      * @param i the index of this atom container. This is usually used for 
      * logging purposes and creation of labels specific to the atom container.
      */
-    public void processOneAtomContainer(IAtomContainer iac, int i)
+    public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i)
     {
-		exposeOutputData(new NamedData(READIACSTASK.ID+i,iac));
+    	exposeOutputData(new NamedData(READIACSTASK.ID+i,iac));
+    	return iac;
     }
-    
     
 //------------------------------------------------------------------------------
 
   	/**
-  	 * Does nothing else than doing the same task on each container.
+  	 * Takes the given list of {@link AtomContainer}s and processes one item at
+  	 * the time independently by sending it to
+  	 * {@link #processOneAtomContainer(IAtomContainer, int)}.
+     * Subclasses should overwrite this method to do what they want with the 
+     * given list and produce what they like as output. Any output data 
+     * should be placed placed in the {@link Worker#exposedOutputCollector} by
+     * using {@link Worker#exposeOutputData(NamedData)}.
+     * @param iacs the list of atom containers to be processed.
   	 */
     
-  	public void processAllAtomContainer(List<IAtomContainer> iacs) 
+  	public List<IAtomContainer> processAllAtomContainer(
+  			List<IAtomContainer> iacs) 
   	{   
+  		List<IAtomContainer>  outputList = new ArrayList<IAtomContainer>();
   		for (int molId = 0; molId<iacs.size(); molId++)
         {
   			IAtomContainer iac = iacs.get(molId);
-  			logger.info("#" + molId + " " + MolecularUtils.getNameOrID(iac));
-        	processOneAtomContainer(iac, molId);
+  			if (iacs.size()>1)
+  			{
+  				logger.info("#" + molId + " " + MolecularUtils.getNameOrID(iac));
+  			}
+  			outputList.add(processOneAtomContainer(iac, molId));
   		}
+  		return outputList;
     }
+  	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Put the given atom container in the exposed output named, by internal 
+  	 * convention, according to {@link ChemSoftConstants#JOBDATAGEOMETRIES}
+  	 * 
+  	 * @param iacs the collection of atom containers to expose
+  	 */
+  	protected void exposeAtomContainer(IAtomContainer iac)
+  	{
+    	AtomContainerSet iacs = new AtomContainerSet();
+    	iacs.addAtomContainer(iac);
+    	exposeAtomContainers(iacs);
+  	}
+  	
+//------------------------------------------------------------------------------
     
-//-----------------------------------------------------------------------------
+  	/**
+  	 * Put the given atom containers in the exposed output named, by internal 
+  	 * convention, according to {@link ChemSoftConstants#JOBDATAGEOMETRIES}
+  	 * 
+  	 * @param iacs the collection of atom containers to expose
+  	 */
+  	protected void exposeAtomContainers(AtomContainerSet iacs)
+  	{
+        exposeOutputData(new NamedData(ChemSoftConstants.JOBDATAGEOMETRIES,
+        		iacs));
+  	}
+  	
+//------------------------------------------------------------------------------
 
 }

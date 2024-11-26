@@ -1,0 +1,85 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "imposeConnectionTable"
+        },
+        {
+          "reference": "reference",
+          "value": "../cli16-ref.sdf"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../STRINGFROMCLI.xyz"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "PruneMolecules"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[$([#1][#6]1([#1])[#6]([#1])([#15])AAA1)] [$([#6]1([#1])([#1])A[#6]([#1])([#15])AA1)] [$([#1][#6]1([#1])A[#6]([#1])([#15])AA1)] [$([#6]1([#1])([#1])AA[#6]([#1])([#15])A1)] [$([#1][#6]1([#1])AA[#6]([#1])([#15])A1)]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "mutateAtoms"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[$([#6;X1]-[#6]-[#15])] element F"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "prepareInputGaussian"
+        },
+        {
+          "reference": "pathnameOutput",
+          "value": "truncated_STRINGFROMCLI.inp"
+        },
+        {
+          "reference": "jobDetailsFile",
+          "value": "../cli16-g16.json"
+        },
+        {
+          "reference": "noJsonOutput",
+          "value": "false"
+        }
+      ]
+    }
+  ]
+}

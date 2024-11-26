@@ -83,7 +83,7 @@ public class ConstraintsSet extends TreeSet<Constraint> implements Cloneable
 //-----------------------------------------------------------------------------
 
 	/**
-	 * Prints all the constraints into stdout.
+	 * Prints all the constraints into a string.
 	 */
 	
 	public String toString() 

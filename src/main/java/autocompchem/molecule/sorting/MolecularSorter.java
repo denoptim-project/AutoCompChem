@@ -47,11 +47,10 @@ import autocompchem.worker.Worker;
 
 public class MolecularSorter extends AtomContainerInputProcessor
 {
-    
-    //Filenames
-    private File outFile;
 
-    //Property
+    /**
+     * Name of the property used to sort
+     */
     private String propertyName;
     
     /**
@@ -107,10 +106,6 @@ public class MolecularSorter extends AtomContainerInputProcessor
     public void initialize()
     {
     	super.initialize();
-    	
-        this.outFile = new File(params.getParameter("OUTFILE")
-        		.getValueAsString());
-        FileUtils.mustNotExist(this.outFile);
 
         this.propertyName = params.getParameter("SDFPROPERTY")
         		.getValueAsString();
@@ -133,7 +128,7 @@ public class MolecularSorter extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
 		throw new IllegalStateException(this.getClass().getSimpleName() 
 				+ " should not call this method.");
@@ -142,20 +137,9 @@ public class MolecularSorter extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processAllAtomContainer(List<IAtomContainer> iacs) 
+	public List<IAtomContainer> processAllAtomContainer(List<IAtomContainer> iacs) 
 	{
-        AtomContainerSet result = sort(iacs, propertyName);
-        
-        if (outFile!=null)
-        {
-	        IOtools.writeAtomContainerSetToFile(outFile, result, 
-	        		"SDF", false);
-        }
-        
-        if (exposedOutputCollector != null)
-        {
-        	exposeOutputData(new NamedData(SORTMOLECULESTASK.ID, result));
-    	}
+        return sort(iacs, propertyName);
     }
 	
 //-----------------------------------------------------------------------------
@@ -167,7 +151,7 @@ public class MolecularSorter extends AtomContainerInputProcessor
 	 * @param propertyName the identifier of the property to use for sorting.
 	 * @return the sorted list of atom containers.
 	 */
-	public static AtomContainerSet sort(List<IAtomContainer> iacs, 
+	public static List<IAtomContainer> sort(List<IAtomContainer> iacs, 
 			String propertyName)
 	{
 		List<SortableMolecule> smols = new ArrayList<SortableMolecule>();
@@ -187,10 +171,10 @@ public class MolecularSorter extends AtomContainerInputProcessor
 
         Collections.sort(smols, new SortableMoleculeComparator());
 
-        AtomContainerSet result = new AtomContainerSet();
+        List<IAtomContainer> result = new ArrayList<IAtomContainer>();
         for (SortableMolecule smol : smols)
     	{
-        	result.addAtomContainer(smol.getIAtomContainer());
+        	result.add(smol.getIAtomContainer());
     	}
         return result;
 	}

@@ -1,11 +1,5 @@
 [
   {
-    "key": "OUTFILE",
-    "casedKey": "outFile",
-    "type": "<String>",
-    "doc": "The pathname to the SDF file where to store the resulting chemical system with connectivity."
-  },
-  {
     "key": "TOLERANCE",
     "casedKey": "tolerance",
     "type": "<float>",

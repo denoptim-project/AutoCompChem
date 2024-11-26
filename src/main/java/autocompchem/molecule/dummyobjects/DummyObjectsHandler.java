@@ -62,11 +62,6 @@ import autocompchem.worker.Worker;
 public class DummyObjectsHandler extends AtomContainerInputProcessor
 {
     /**
-     * Pathname to output file
-     */
-    private File outFile;
-
-    /**
      * Pathname to file containing the template
      */
     private File tmplFile;
@@ -220,15 +215,6 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
             }
             this.template = inTmpls.get(0);
         }
-
-        //Get and check the output file name
-        if (params.contains("OUTFILE"))
-        {
-	        this.outFile =  new File(
-	        		params.getParameter("OUTFILE").getValueAsString());
-	        FileUtils.mustNotExist(this.outFile);
-        }
-
     }
 
 //-----------------------------------------------------------------------------
@@ -247,29 +233,31 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
 	@Override
-	public void processOneAtomContainer(IAtomContainer iac, int i) 
+	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
     	if (task.equals(ADDDUMMYATOMSTASK))
     	{
-    		addDummyAtoms(iac, i);
+    		addDummyAtoms(iac);
     	} else if (task.equals(REMOVEDUMMYATOMSTASK)){
-    		removeDummyAtoms(iac, i);
+    		removeDummyAtoms(iac);
     	} else {
     		dealWithTaskMismatch();
         }
+    	return iac;
     }
 
 //------------------------------------------------------------------------------
 
     /**
      * Add dummy atoms according to parameters given to constructor.
+     * @param iac the atom container to be edited
      */
 
-    private void addDummyAtoms(IAtomContainer iac, int i)
+    private void addDummyAtoms(IAtomContainer iac)
     {
 	    if (template != null)
 	    {
-	        copypasteDummyAtoms(iac,template);
+	        copypasteDummyAtoms(iac, template);
 	    }
 	    else
 	    {
@@ -296,15 +284,6 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 	            this.activeSrcAtmIds.clear();
 	        }
 	    }
-
-        if (outFile!=null)
-        	IOtools.writeSDFAppend(outFile, iac, true);
-        
-        if (exposedOutputCollector != null)
-        {
-    	    String molID = "mol-"+i;
-	        exposeOutputData(new NamedData(molID, iac));
-    	}
     }
 
 //------------------------------------------------------------------------------
@@ -313,7 +292,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * Add linearity- and planarity-breaking dummy atoms according to a given 
      * template. WARNING! Assumes consistent atom list. Therefore, the dummies
      * must be all at end of the atom list of the template.
-     * @param mol the molecule to work with
+     * @param mol the molecule to be edited.
      * @param tmpl the template
      */
 
@@ -358,10 +337,11 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
 
     /**
      * Remove dummy atoms and alter connectivity accordingly to the stored
-     * parameters
+     * parameters.
+     * @param iac the atom container to be edited
      */
 
-    private void removeDummyAtoms(IAtomContainer iac, int i)
+    private void removeDummyAtoms(IAtomContainer iac)
     {
         if (doLinearities)
         {
@@ -378,15 +358,6 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
         {
         	removeSpecialDummyAtoms(iac, elm, DummyAtomType.MULTIHAPTO);
         }
-
-        if (outFile!=null)
-        	IOtools.writeSDFAppend(outFile, iac, true);
-        
-        if (exposedOutputCollector != null)
-        {
-    	    String molID = "mol-"+i;
-	        exposeOutputData(new NamedData(molID, iac));
-    	}
     }
 
 //-----------------------------------------------------------------------------
@@ -395,7 +366,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
      * Append dummy atoms to the atom list and in proximity of linear systems.
      * The placement of the dummy aim to allow definition
      * reasonable internal coordinates
-     * @param mol the molecular object to be modified
+     * @param mol the molecular object to be modified.
      */
 
     public void addDummiesOnLinearities(IAtomContainer mol)
