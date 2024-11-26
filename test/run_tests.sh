@@ -97,12 +97,12 @@ cat <<EOF
   -b         request to rebuilt AutoCompChem.
 
   -c [args]  runs command line interface (CLI) testing. If followed by one 
-             or more integer numbers, then runs only the corresponding CLI 
+             integer or a range (i.e., 3-4), then runs only the corresponding CLI 
              tests.
 
   -f [args]  runs functionality tests after building AutoCompChem. If 
-             followed by one or more integer numbers, then runs only the 
-             corresponding functionality tests.
+             followed by one or more integer  or a range (i.e., 3-4), then runs 
+             only the corresponding functionality tests.
 
   -l          prints the log of any functionality test that is run.
 
@@ -256,7 +256,7 @@ function cliTesting() {
       mkdir $tst/results
     fi
     cd $tst/results
-    rm -rf $tst/results/cli*
+    rm -rf $tst/results/*
 
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenCliTests[@]} -eq 0 ]
@@ -303,6 +303,8 @@ function cliTesting() {
     echo " "   
 }
 
+
+
 ###############################################################################
 #
 # Main
@@ -332,7 +334,13 @@ do
                   getArg "$j" "$#"
                   if [[ "none" != "$argument" ]]
                   then
-                      chosenTests+=($argument)
+                      chosenTests=()
+                      if [[ "$argument" == *"-"* ]]; then
+                          IFS=- read beginId endId <<< "$argument"
+                          chosenTests=($(seq $beginId $endId))
+                      else
+                          chosenTests+=($argument)
+                      fi
                   else
                       break
                   fi
@@ -343,7 +351,13 @@ do
                   getArg "$j" "$#"
                   if [[ "none" != "$argument" ]]
                   then
-                      chosenCliTests+=($argument)
+                      chosenCliTests=()
+                      if [[ "$argument" == *"-"* ]]; then
+                          IFS=- read beginId endId <<< "$argument"
+                          chosenCliTests=($(seq $beginId $endId))
+                      else
+                          chosenCliTests+=($argument)
+                      fi
                   else
                       break
                   fi
