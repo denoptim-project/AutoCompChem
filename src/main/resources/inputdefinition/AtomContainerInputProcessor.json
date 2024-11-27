@@ -39,6 +39,6 @@
     "key": "OUTFORMAT",
     "casedKey": "outFormat",
     "type": "<String>",
-    "doc": "Format for output file. Acceptable values are 'SDF', 'XYZ', and 'ORCATRAJECTORY'."
+    "doc": "Format for output file. By default, the most appropriated file format is chosen for the specific kind of output. Otherwise, when the output is one or more molecular geometries, acceptable values for this parameters are 'SDF', 'XYZ', and 'ORCATRAJECTORY'."
   }
 ]
