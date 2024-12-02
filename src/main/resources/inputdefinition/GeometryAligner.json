@@ -13,7 +13,7 @@
   },
   {
     "key": "WEIGHTS",
-    "casedKey": "atomIdMap",
+    "casedKey": "weights",
     "type": "<double>,<double>,<double>...",
     "doc": "When aligning atom sets, this parameter gives the weights of each atom mapping used for the alignment."
   },
