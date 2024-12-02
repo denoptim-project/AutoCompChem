@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,18 +67,39 @@ public class GeometryAligner extends AtomContainerInputProcessor
      * Molecular representation of the reference substructure
      */
     private IAtomContainer reference;
+    
+    /**
+     * Mapping atom indexes to be used for alignment
+     */
+    private Map<Integer,Integer> mappingIDs;
+    
+    /**
+     * Weights for atom indexes to be used for alignment
+     */
+    private double[] weights;
 
     /**
-     * String defining the task of sorting molecules
+     * String defining the task of aligning structures
      */
     public static final String ALIGNGEOMETRIESTASKNAME = "alignGeometries";
 
     /**
-     * Task about sorting molecules
+     * String defining the task of aligning structures
+     */
+    public static final String ALIGNATOMSETSTASKNAME = "alignAtoms";
+
+    /**
+     * Task about aligning structures my isomorphism
      */
     public static final Task ALIGNGEOMETRIESTASK;
+    
+    /**
+     * Task about aligning structures by atom mapping
+     */
+    public static final Task ALIGNATOMSETSTASK;
     static {
     	ALIGNGEOMETRIESTASK = Task.make(ALIGNGEOMETRIESTASKNAME);
+    	ALIGNATOMSETSTASK = Task.make(ALIGNATOMSETSTASKNAME);
     }
 
 //-----------------------------------------------------------------------------
@@ -93,7 +115,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(ALIGNGEOMETRIESTASK)));
+             Arrays.asList(ALIGNGEOMETRIESTASK, ALIGNATOMSETSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -133,6 +155,44 @@ public class GeometryAligner extends AtomContainerInputProcessor
             }
 	        reference = lst.get(0);
         }
+    	
+    	if (params.contains("ATOMIDMAP"))
+        {
+	        String mapStr = params.getParameter("ATOMIDMAP").getValueAsString();
+	        String[] keyVal = mapStr.split("\\s+");
+	        String[] keys = keyVal[0].split(",");
+	        String[] vals = keyVal[0].split(",");
+	        if (keys.length != vals.length)
+	        {
+	        	Terminator.withMsgAndStatus("Different number of indexes in "
+	        			+ "the two sets given to parameter 'ATOMMAP'.", -1);
+	        }
+	        mappingIDs = new LinkedHashMap<Integer,Integer>();
+	        for (int i=0; i<keys.length; i++)
+	        {
+	        	mappingIDs.put(Integer.parseInt(keys[i]), 
+	        			Integer.parseInt(vals[i]));
+	        }
+
+	        weights = new double[mappingIDs.size()];
+			Arrays.fill(weights, 1.0);
+        }
+    	
+    	if (params.contains("WEIGHTS"))
+        {
+	        String valsStr = params.getParameter("WEIGHTS").getValueAsString();
+	        String[] vals = valsStr.split(",");
+	        if (vals.length != mappingIDs.size())
+	        {
+	        	Terminator.withMsgAndStatus("Different number of atoms in "
+	        			+ "parameter 'ATOMMAP' and 'WEIGHTS'.", -1);
+	        }
+	        weights = new double[vals.length];
+			for (int i=0; i<vals.length; i++)
+		    {
+				weights[i] = Double.parseDouble(vals[i]);
+		    }
+        }
     }
 
 //-----------------------------------------------------------------------------
@@ -155,34 +215,80 @@ public class GeometryAligner extends AtomContainerInputProcessor
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
 		IAtomContainer result = null;
-		if (task.equals(ALIGNGEOMETRIESTASK))
-		{
-			GeometryAlignment alignment = null;
-			try {
+
+		GeometryAlignment alignment = null;
+		try {
+			if (task.equals(ALIGNGEOMETRIESTASK))
+			{
 				alignment = alignGeometries(reference, iac);
-			} catch (IllegalArgumentException | CloneNotSupportedException e) {
-				Terminator.withMsgAndStatus("ERROR! Could not align geometries "
-						+ "'" + MolecularUtils.getNameOrID(iac) + "' and '" 
-						+ MolecularUtils.getNameOrID(reference)+ "'.", -1, e);
+			} else if (task.equals(ALIGNATOMSETSTASK))
+			{
+				alignment = alignAtomSets(reference, iac, mappingIDs, weights);
+			} else {
+				throw new IllegalStateException("Unimplemented task '" + task 
+						+ "'. Please report this to the authors.");
 			}
-			
-			result = alignment.getSecondIAC().iac;
-			
-			if (exposedOutputCollector != null)
-	        {
-	    	    String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(task.ID + molID + "RMSD",
-		        		alignment.getRMSD()));
-		        exposeOutputData(new NamedData(task.ID + molID + "RMSDIM",
-		        		alignment.getRMSDIM()));
-		        exposeOutputData(new NamedData(task.ID + molID,
-		        		alignment.getSecondIAC()));
-	    	}
+		} catch (IllegalStateException | IllegalArgumentException 
+				| CloneNotSupportedException e) {
+			Terminator.withMsgAndStatus("ERROR! Could not align geometries "
+					+ "'" + MolecularUtils.getNameOrID(iac) + "' and '" 
+					+ MolecularUtils.getNameOrID(reference)+ "'.", -1, e);
 		}
+		
+		result = alignment.getSecondIAC().iac;
+		
+		logger.info("Alignement done: RMSD = " + alignment.getRMSD() 
+				+ "  -  RMSDIM = " + alignment.getRMSDIM());
+		
+		if (exposedOutputCollector != null)
+        {
+    	    String molID = "mol-"+i;
+    	    exposeOutputData(new NamedData(task.ID + molID + "RMSD",
+	        		alignment.getRMSD()));
+	        exposeOutputData(new NamedData(task.ID + molID + "RMSDIM",
+	        		alignment.getRMSDIM()));
+			exposeOutputData(new NamedData(task.ID + molID,
+	        		alignment.getSecondIAC()));
+    	}
+		
 		return result;
     }
 	
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Aligns two structures according to the mapping given as parameter
+	 * @throws CloneNotSupportedException 
+	 */
+	public static GeometryAlignment alignAtomSets(IAtomContainer reference, 
+			IAtomContainer iac,  Map<Integer,Integer> mappingIDs, 
+			double[] weights) 
+					throws CloneNotSupportedException
+	{
+		IAtomContainer refClone = reference.clone();
+		IAtomContainer iacClone = iac.clone();
+		
+		Map<IAtom,IAtom> atmMapping = new LinkedHashMap<IAtom,IAtom>();
+		for (Integer key : mappingIDs.keySet())
+		{
+			atmMapping.put(refClone.getAtom(key), 
+					iacClone.getAtom(mappingIDs.get(key)));
+		}
+		
+		double locRMSD = alignMolsWithMapping(refClone, iacClone, atmMapping, 
+				weights);
+
+		double locRMSDIAD = getRMSDevIntramolecularDistances(atmMapping);
+
+		GeometryAlignment alignment = new GeometryAlignment(refClone, iacClone, 
+				atmMapping);
+		alignment.setRMSD(locRMSD);
+		alignment.setRMSDIM(locRMSDIAD);
+        
+		return alignment;
+	}
+	
+//------------------------------------------------------------------------------
 	
     /**
      * Calculates and return the best atom mapping between two structures:
@@ -431,7 +537,6 @@ public class GeometryAligner extends AtomContainerInputProcessor
         IAtomContainer inMolAlgn = structure;
         IAtomContainer refMolAlgn = reference;
         
-
         int bestAtomMapping = 0;
         double rmsd = Double.MAX_VALUE;
         double rmsDevIntAtmDist = Double.MAX_VALUE;
@@ -894,6 +999,30 @@ public class GeometryAligner extends AtomContainerInputProcessor
 
         return result;
     }
+    
+    
+//------------------------------------------------------------------------------
+
+	/**
+	 * Align (or superpose) two molecules as rigid bodies. The RMSD of the
+	 * superposition is defined by the list of atoms that has to be fitted one 
+	 * to the other.
+	 * @param molA the reference molecule 
+	 * @param molB the molecule to be fitted
+	 * @param mapping atom mapping defining the correspondence between atoms in
+	 * the reference molecule (entry KEY) and in the molecule to be fitted 
+	 * (entry VALUE). 
+	 * @return the root mean square distance from <code>KabschAlignment</code>.
+	 */
+	
+	public static double alignMolsWithMapping(IAtomContainer molA,
+	                                    IAtomContainer molB,
+	                                    Map<IAtom,IAtom> mapping)
+	{
+		double[] weigths = new double[mapping.size()];
+		Arrays.fill(weigths, 1.0);
+		return alignMolsWithMapping(molA, molB, mapping, weigths);
+	}
         
 //------------------------------------------------------------------------------
 
@@ -906,12 +1035,14 @@ public class GeometryAligner extends AtomContainerInputProcessor
      * @param mapping atom mapping defining the correspondence between atoms in
      * the reference molecule (entry KEY) and in the molecule to be fitted 
      * (entry VALUE). 
+     * @param weights the weights of each atom in the alignment.
      * @return the root mean square distance from <code>KabschAlignment</code>.
      */
 
     public static double alignMolsWithMapping(IAtomContainer molA,
                                         IAtomContainer molB,
-                                        Map<IAtom,IAtom> mapping)
+                                        Map<IAtom,IAtom> mapping,
+                                        double[] weigths)
     {
         //Get Lists of atoms in format suitable for KabschAlignment
         IAtom[] lstA = new IAtom[mapping.size()];
@@ -928,7 +1059,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
         KabschAlignment sa = null;
         try
         {
-            sa = new KabschAlignment(lstA, lstB);
+            sa = new KabschAlignment(lstA, lstB, weigths);
             sa.align();
         }
         catch (Throwable t)
@@ -936,20 +1067,20 @@ public class GeometryAligner extends AtomContainerInputProcessor
             Terminator.withMsgAndStatus("ERROR! KabschAlignment failed.", -1, t);
         }
 
-        //Translation of molecule A (ref)
+        //Rototranslation of molecule B (origin is in A's center of mass!!!)
+        sa.rotateAtomContainer(molB);
+       
+        // Translate B to to actual coordinates of A (instead of c.o.m.)
         Point3d cm = sa.getCenterOfMass();
-        for (int ia = 0; ia < molA.getAtomCount(); ia++)
+        for (int ib = 0; ib < molB.getAtomCount(); ib++)
         {
-            IAtom a = molA.getAtom(ia);
+            IAtom a = molB.getAtom(ib);
             Point3d oldPlace = AtomUtils.getCoords3d(a);
-            Point3d newPlace = new Point3d(oldPlace.x - cm.x,
-                                               oldPlace.y - cm.y,
-                                               oldPlace.z - cm.z);
+            Point3d newPlace = new Point3d(oldPlace.x + cm.x,
+                                               oldPlace.y + cm.y,
+                                               oldPlace.z + cm.z);
             a.setPoint3d(newPlace);
         }
-
-        //Rototranslation of molecule B
-        sa.rotateAtomContainer(molB);
 
         //Get RMSD for structure superposition
         double locRMSD = sa.getRMSD();

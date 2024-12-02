@@ -1,3 +1,43 @@
 #!/bin/bash
-echo "Skipped" #unfinished development
-exit 0
+if [ ! -f t110.log ]; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+if ! grep -q 'RMSD = 0\.0218' t110.log ; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+if [ ! -f t110-oriented.sdf ]; then
+  echo NOT Passed ERROR 3
+  exit -1
+fi
+
+if ! grep -q '^ 80 84  0  0  0  0  0  0  0' t110-oriented.sdf ; then
+  echo NOT Passed ERROR 4
+  exit -1
+fi
+
+if ! grep -q '^   -0.0171   -0.0019    0.0000 Ni ' t110-oriented.sdf ; then
+  echo NOT Passed ERROR 5
+  exit -1
+fi
+
+if ! grep -q '^    2.1503    0.0184   -0.0000 P ' t110-oriented.sdf ; then
+  echo NOT Passed ERROR 6
+  exit -1
+fi
+
+if ! grep -q '^    0.0218    2.1253    0.0000 P ' t110-oriented.sdf ; then
+  echo NOT Passed ERROR 7
+  exit -1
+fi
+
+if grep -q 'Termination status: 0' t110.log ; then
+  echo Passed 
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

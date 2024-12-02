@@ -6,8 +6,20 @@
     "doc": "The pathname to the file with the reference chemical system. Only SDF files with ONE molecule are acceptable."
   },
   {
+    "key": "ATOMIDMAP",
+    "casedKey": "atomIdMap",
+    "type": "<int>,<int>,<int>... <int>,<int>,<int>...",
+    "doc": "When aligning atom sets, this parameter gives the mapping of atom indexes to be used for the alignment. First, the comma-separated list of the atom indexes in the reference, then one or more spaces, and finally the comma-separated list of indexes in the input. Ignored when aligning based on isomorphism."
+  },
+  {
+    "key": "WEIGHTS",
+    "casedKey": "atomIdMap",
+    "type": "<double>,<double>,<double>...",
+    "doc": "When aligning atom sets, this parameter gives the weights of each atom mapping used for the alignment."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "tag": "the input/output of chemical objects (e.g., molecular geometries)",
     "ignorableItems": [
       "multiGeomMode",
       "inputGeometries"

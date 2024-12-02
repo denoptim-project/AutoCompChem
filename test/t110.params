@@ -2,7 +2,8 @@
 # Parameters for Automated Computational Chemistry
 #
 VERBOSITY: 6
-TASK: AlignAtomLists
+TASK: AlignAtoms
 INFILE: ../t110-mol.sdf
-REFFILE: ../t110-ref.sdf
-OUTFILE:  t110-aligned.sdf
+REFERENCE: ../t110-ref.sdf
+ATOMIDMAP: 0,2,1 0,1,2
+OUTFILE:  t110-oriented.sdf
