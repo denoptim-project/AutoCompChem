@@ -1,0 +1,1 @@
+"$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -t ModifyGeometry --infile ../cli17-mol.sdf --cartesianMove ../cli17-crtMove --scalingFactors "-2.0 -1.5 -1.0 -0.5 -0.25 -0.1" --outfile cli17-modified.xyz

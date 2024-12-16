@@ -6,10 +6,10 @@
     "doc": "Pathname to a file defining the Cartesian components of the geometric change. The file format consists of a list of translation vectors in Cartesian coordinates, where each vector is reported as a space-separated  (X Y Z) tupla. The Cartesian move is orientation-dependent. Unless a reference substructure is also provided (see keyword REFERENCESUBSTRUCTURE), it is assumed that the 1-to-N vectors refer to the 1-to-N atoms in the molecular system provided as input and that the orientation of the molecule is consistent with that of the Cartesian move. When a reference substructure is provided (see parameter REFERENCESUBSTRUCTURE), the orientation of the Cartesian move is assumed to be consistent with that of the reference substructure."
   },
   {
-    "key": "CARTESIANSCALINGFACTORS",
-    "casedKey": "cartesianScalingFactors",
+    "key": "SCALINGFACTORS",
+    "casedKey": "scalingFactors",
     "type": "<float> [<float> [<float> [...]]]",
-    "doc": "One or more scaling factors (real numbers) to be applied to the Cartesian move. The Cartesian move is applied on the initial structure per each given scaling factor. The default is 1.0."
+    "doc": "One or more scaling factors (real numbers, positive or negative) to be applied to the given Cartesian of ZMatrix move. The scaled move is applied on the initial structure per each given scaling factor. The default is 1.0."
   },
   {
     "key": "OPTIMIZESCALINGFACTORS",

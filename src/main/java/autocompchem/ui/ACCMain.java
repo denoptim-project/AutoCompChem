@@ -222,6 +222,12 @@ public class ACCMain
         boolean foundJob = false;
         File jobFile = null;
         String cliString = "";
+
+        // WARNING: ASSUMPTION ON SHORT OPTIONS
+        // The only short options (i.e., using one "-") are h, t, p, j, v.
+        // They are hard coded and not listed anywhere. So, search for other 
+        // comments like this one in this file.
+        
         for (int iarg=0; iarg<args.length; iarg++)
         {
             String arg = args[iarg];
@@ -339,7 +345,7 @@ public class ACCMain
                 
             //Read-in the option or the key:value pair
             arg = arg.replaceFirst("^-*", "");
-            if ((iarg+1 >= args.length) || args[iarg+1].startsWith("-"))
+            if ((iarg+1 >= args.length) || isAnOption(args[iarg+1]))
             {
                 // A value-less parameter
                 if (foundTask && !foundParams)
@@ -403,6 +409,34 @@ public class ACCMain
         }
         
         return job;
+    }
+    
+//------------------------------------------------------------------------------
+    
+
+    // WARNING: ASSUMPTION ON SHORT OPTIONS
+    // The only short options (i.e., using one "-") are h, t, p, j, v.
+    // They are hard coded and not listed anywhere. So, search for other 
+    // comments like this one in this file.
+    
+    private static boolean isAnOption(String str)
+    {
+    	if (str.startsWith("-"))
+    	{
+    		if (str.startsWith("--"))
+        	{
+        		return true;
+        	} else {
+        		String upStr = str.toUpperCase();
+        		if (CLIHELPSHORT.equals(upStr) 
+        				|| "-P".equals(upStr)
+        				|| "-T".equals(upStr)
+        				|| "-J".equals(upStr)
+        				|| "-V".equals(upStr))
+        			return true;
+        	}
+    	}
+    	return false;
     }
     
 //------------------------------------------------------------------------------

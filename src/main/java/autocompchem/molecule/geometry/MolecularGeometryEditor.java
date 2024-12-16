@@ -239,10 +239,10 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         }
 
         // Get sequence of scaling factors
-        if (params.contains("CARTESIANSCALINGFACTORS"))
+        if (params.contains("SCALINGFACTORS"))
         {
-            String line = params.getParameter("CARTESIANSCALINGFACTORS")
-                                                         .getValue().toString();
+            String line = params.getParameter("SCALINGFACTORS")
+                                                         .getValueAsString();
             scaleFactors.clear();
             String[] parts = line.trim().split("\\s+");
             for (int i=0; i<parts.length; i++)
@@ -265,7 +265,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         if (params.contains("OPTIMIZESCALINGFACTORS"))
         {
         	String line = params.getParameter("OPTIMIZESCALINGFACTORS")
-                    .getValue().toString();
+                    .getValueAsString();
         	optimizeScalingFactors = true;
             scaleFactors.clear();
             String[] words = line.trim().split("\\s+");
