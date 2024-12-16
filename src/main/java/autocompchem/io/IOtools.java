@@ -31,9 +31,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
@@ -83,6 +85,11 @@ public class IOtools
 {
     public static String newline = System.getProperty("line.separator");
     
+    /**
+     * Identifiers for known output format for atom containers.
+     */
+    public static enum IACOutFormat {SDF , XYZ, ORCATRAJECTORY};
+    
 //------------------------------------------------------------------------------
 
     /**
@@ -104,7 +111,7 @@ public class IOtools
      * Reads TXT files (Suitable for small files - do NOT use this for huge 
      * files!)
      * @param file file to be read
-     * @param escape set tu <code>true</code> to escape special characters
+     * @param escape set to <code>true</code> to escape special characters
      * @return all the lines as a list.
      */
 
@@ -873,31 +880,35 @@ public class IOtools
      * file or appends to an existing one.
      * @param filename target file (new or existing).
      * @param acs set of atom containers to be written on the output file.
-     * @param format the format to use. Available formats are 'SDF', 'XYZ, and 
-     * 'ORCATRAJECTORY'.
+     * @param format the format to use in the output file.
      * @param append <code>true</code> to append to existing file
      */
 
     public static void writeAtomContainerSetToFile(File file, 
-    		IAtomContainerSet acs, String format, boolean append)
+    		IAtomContainerSet acs, String formatStr, boolean append)
     {
-    	switch(format.toUpperCase())
+    	if (!EnumUtils.isValidEnum(IACOutFormat.class, formatStr.toUpperCase()))
+		{
+    		Terminator.withMsgAndStatus("ERROR! Format '" + formatStr + "' is "
+    				+ "not a known format for writing atom containers ("
+    				+ StringUtils.mergeListToString(
+    						Arrays.asList(IACOutFormat.values()), ",", true)
+    				+ ")", -1);
+		}
+    	IACOutFormat format =  IACOutFormat.valueOf(formatStr.toUpperCase());
+    	
+    	switch(format)
     	{
-    		case "ORCATRAJECTORY":
+    		case ORCATRAJECTORY:
     			writeOrcaTrj(file, acs, append);
     			break;
     			
-    		case "XYZ":
+    		case XYZ:
     			writeXYZAppendSet(file, acs, append);
     			break;
     			
-    		case "SDF":
+    		case SDF:
     			writeSDFAppendSet(file, acs, append);
-    			break;
-    		
-    		default:
-    			Terminator.withMsgAndStatus("ERROR! Format '" + format + "' is "
-    					+ "not a known format for writing atom containers", -1);
     			break;
     	}
     }

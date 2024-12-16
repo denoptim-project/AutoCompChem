@@ -299,7 +299,8 @@ public class FileUtils
     /**
      * Extracts the extension from the file name
      * @param f the file.
-     * @return the extension or null is the filename does not contain any dot.
+     * @return the extension starting with a dot or <code>null</code> if the 
+     * filename does not contain any dot.
      */
     
     public static String getFileExtension(File f)

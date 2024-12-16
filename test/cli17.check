@@ -10,10 +10,10 @@ if [ ! -f "cli17-modified.xyz" ] ; then
   exit -1
 fi
 
-n=0;n=$(grep -c " O " cli17-modified.xyz)
+n=0;n=$(grep -c "^O[[:space:]]" cli17-modified.xyz)
 if [ $n -ne 6 ] ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
 
-n=0;n=$(grep -c " C " cli17-modified.xyz)
+n=0;n=$(grep -c "^C[[:space:]]" cli17-modified.xyz)
 if [ $n -ne 30 ] ; then echo NOT Passed ERROR 4 ; exit -1 ; fi
 
 if grep -q 'Termination status: 0' cli17.log ; then

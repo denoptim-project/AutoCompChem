@@ -33,6 +33,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.io.IOtools.IACOutFormat;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
@@ -203,6 +204,13 @@ public class AtomContainerInputProcessor extends Worker
 	        this.outFile = new File(params.getParameter(
 	        		ChemSoftConstants.PAROUTFILE).getValue().toString());
 	        FileUtils.mustNotExist(this.outFile);
+	        String ext = FileUtils.getFileExtension(outFile)
+	        		.replaceFirst("\\.","");
+	        if (ext != null && EnumUtils.isValidEnum(IACOutFormat.class, 
+	        		ext.toUpperCase()))
+	        {
+	        	this.outFormat = ext.toUpperCase();
+	        }
         } else {
         	logger.debug("WARNING: No " + ChemSoftConstants.PAROUTFILE 
         			+ " parameter given. "
@@ -230,7 +238,7 @@ public class AtomContainerInputProcessor extends Worker
         	} else {
         		logger.debug("No previous data to process. Running '" 
         				+ this.getClass().getSimpleName() 
-        				+ "' without any input atom container");
+        				+ "' without any input atom container.");
         	}
         }
     }
