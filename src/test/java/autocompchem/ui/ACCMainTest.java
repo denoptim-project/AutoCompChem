@@ -55,9 +55,9 @@ public class ACCMainTest
     {
     	String[] args = {"-00", "-t", "DummyTask", 
     			"--input", "~/path/input.in", 
-    			"-o", "file.out",
+    			"--out", "file.out",
     			"--long", "\"many", "words", "all", "quoted\"",
-    			"-z", "-z2"};
+    			"--z", "--z2"};
 
     	// NB: do this to trigger the generation of the task even if we do not
     	// use it here. When running all the tests this is not even needed as
@@ -70,11 +70,11 @@ public class ACCMainTest
     	
     	assertEquals(SoftwareId.ACC, job.getAppID(),"Job APP");
     	assertTrue(params.contains("long"),"Parsed long and quoted option.");
-    	assertEquals(4,params.getParameter("long").getValue().toString()
+    	assertEquals(4,params.getParameter("long").getValueAsString()
     			.split("\\s+").length,"Length of long and quoted option.");
 
-    	assertEquals("file.out",params.getParameter("o").getValue().toString(),
-    			"Value of option '-o'.");
+    	assertEquals("file.out",params.getParameter("out").getValueAsString(),
+    			"Value of option '--out'.");
     	assertTrue(params.contains("00"),"Parsed value-less option (first)");
     	assertTrue(params.contains("z2"),"Parsed value-less option (last)");
     }
