@@ -41,10 +41,13 @@ import autocompchem.io.IOtools;
 
 public class BufferedTranslatorTest 
 {
-    @TempDir 
+
+	@TempDir 
     File tempDir;
-    
-    public static String NL = System.getProperty("line.separator");
+
+    public static final String PS = System.getProperty("file.separator");
+    public static final String NL = System.getProperty("line.separator");
+    private static final int NEWLINECHARLENGTH = NL.length();
     
 //------------------------------------------------------------------------------
 
@@ -53,8 +56,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() 
-        		+ System.getProperty("file.separator") + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
         IOtools.writeLineAppend(tmpFile,"1234567890",false);
         IOtools.writeLineAppend(tmpFile,"abcdefghij",true);
         
@@ -77,8 +79,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() 
-        		+ System.getProperty("file.separator") + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
         IOtools.writeLineAppend(tmpFile,"1234567890",false);
         IOtools.writeLineAppend(tmpFile,"abcdefghij_hit1",true);
         IOtools.writeLineAppend(tmpFile,"12345hit67890",true);
@@ -108,16 +109,16 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() 
-        		+ System.getProperty("file.separator") + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
         String line1 = "1234567890";  // 10
         String line2 = "abcdefghij "; // 11
         String line3 = " 1234567890"; // 11
         IOtools.writeLineAppend(tmpFile,line1,false);
         IOtools.writeLineAppend(tmpFile,line2,true);
         IOtools.writeLineAppend(tmpFile,line3,true);
-        int expectedLength = 35; // 10 + 11 + 11 + (3*newline)
-        
+        int expectedLength = line1.length() + line2.length() + line3.length()
+        	+ 3 * NEWLINECHARLENGTH;
+
         String replacement = "replacement_not_used";
         
         int[] bufferSize = new int[]{1, 2, 4, 6, 10, 1024};
@@ -146,6 +147,7 @@ public class BufferedTranslatorTest
 			        assertTrue(whole.contains(line2));
 			        assertTrue(whole.contains(line3));
 			        assertFalse(whole.contains(replacement));
+			        
 			        assertEquals(expectedLength, whole.length());
 			        bt.close();
         		}
@@ -160,8 +162,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() 
-        		+ System.getProperty("file.separator") + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
         List<String> lines = new ArrayList<String>(Arrays.asList(
         		"hit1234567890",          // 1 match
         		"abchit2defg_ij ",        // 1 match
@@ -208,8 +209,8 @@ public class BufferedTranslatorTest
 				        List<String> translatedLines = new ArrayList<String>(
 				        		Arrays.asList(whole.split("\\r?\\n",-1)));
 				        
-				        // +1 because the writing to file adds a newline char
-				        assertEquals(lines.size()+1, translatedLines.size());
+				        // +1 because the writing to file adds a newline char, hence a line
+				        assertEquals(lines.size() + 1, translatedLines.size());
 				        
 				        int expectedTotLenght = 0;
 				        for (int iLine=0; iLine<lines.size(); iLine++)
@@ -226,7 +227,7 @@ public class BufferedTranslatorTest
 				        			translatedLines.get(iLine).length(), msg);
 				        	expectedTotLenght = expectedTotLenght 
 				        			+ expectedLineLength 
-				        			+ 1; // counting the newline char
+				        			+ NEWLINECHARLENGTH;
 				        	assertEquals(lines.get(iLine).replaceAll(
 				        			regex[iRegex], replacement[iRepl]),
 				        			translatedLines.get(iLine), msg);
@@ -252,8 +253,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() 
-        		+ System.getProperty("file.separator") + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
         String line1 = "hhitit";  
         String line2 = "hhitithhitit"; 
         IOtools.writeLineAppend(tmpFile,line1,false);
@@ -302,8 +302,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() 
-        		+ System.getProperty("file.separator") + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath()+ PS + "test.txt");
         String line1 = "abchit";  
         String line2 = "hit 123 hit hit"; 
         IOtools.writeLineAppend(tmpFile,line1,false);
