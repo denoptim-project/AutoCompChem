@@ -12,39 +12,54 @@ autocompchem -h
 ```
 
 ## Installation from Source
-1) Make sure you have [Maven](https://maven.apache.org/), which is used to build AutoCompChem. The following command should return the version of Maven
-    ```
-    mvn -version
-    ```
-2) Make sure you have a version of JAVA that is &ge;11. To this end try the following command
-    ```
-    javac -version
-    ```
-3) Download the latest release and unzip/untar-gz the resulting archive. Alternatively, clone this github repository.
+Download and extract the <a href="https://github.com/denoptim-project/AutoCompChem/releases/latest">latest release</a> to create a folder we'll call `ACC_HOME`. In the following, remember to replace `$ACC_HOME` with the pathname leading to the extracted distribution of AutoCompChem.
 
-3) move inside the resulting folder. The pathname of this folder is here represented by `<your_path_to_ACC>`. Remember to replace `<your_path_to_ACC>` with the appropriate pathname in any following command.
-    ```
-    cd <your_path_to_ACC>
-    ```
-4) Build the project and run all tests.
-    ```
-    ./test/run_tests.sh
-    ```
-5) If the above command terminates successfully, you are done. AutoCompChem is ready to be used.
+Make sure you have an environment that includes JAVA and Maven. Such environment, which we call `acc_devel`, can be created by manual installation of both JAVA and Maven, or it can be created using conda:
+```
+cd $ACC_HOME
+conda env create -f environment.yml
+conda activate acc_devel
+```
+
+Verify the requirements by running the two commands: Both should return a message declaring which version has been installed.
+```
+javac -version
+mvn -version
+```
+
+Now, you can build AutoCompChem with
+```
+mvn package
+```
+
+Finally, you can call AutoCompChem using a command like the following (NB: replace `$ACC_HOME` and `${VERSION}` as with the values that apply to version you have installed):
+On Linux/Mac terminals and Windows GitBash:
+```
+java -jar $ACC_HOME/target/autocompchem-${VERSION}-jar-with-dependencies.jar
+```
+Instead, on Windows Anaconda prompt:
+```
+java -jar $ACC_HOME\target\autocompchem-${VERSION}-jar-with-dependencies.jar
+```
+You should create an alias so the appropriate command, depending on your operating system. For example, on a BASH 
+```
+autocompchem="java -jar $ACC_HOME/target/autocompchem-${VERSION}-jar-with-dependencies.jar"
+```
+
+## Testing
+Many self-evaluating functionality tests are available and can also be used as examples of usage. See under the `test` folder or run them all to verify the functionality of your installation by running 
+```
+cd $ACC_HOME
+./test/run_tests.sh
+```
 
 ## Usage
-If you have installed AutoCompChem with Conda, then you have the `autocompchem` command. The following will give you the usage instructions:
+Run the following to get the silt of supported tasks
 ```
 autocompchem -h
 ```
-
-Otherwise, say you have installed AutoCompChem inside a folder that we'll refer to as the `$ACC_HOME` folder. This is how to launch any functionality of the tool by executing the Main class if the `$version` you have installed:
-
-    java -jar $ACC_HOME/target/autocompchem-${version}-jar-with-dependencies.jar -h
-
-Executing the above command will print the usage instructions.
-
-Examples of usage are available in the [test folder](test). There, each `*.params` files contains the keywords that control AutoCompChem. See the [users' manual](https://htmlpreview.github.io/?https://github.com/denoptim-project/AutoCompChem/blob/making_conda_package/doc/user_manual.html).
+appending any `-t <task>` will give the complete documentation on any available options and argument that are relevant for the specific `<task>`. 
+Options and arguments can be specified in any order. Notably, a list of command line arguments can also be written into a text file using exactly the same syntax. Such text file is internally referred as a *parameters' file*. Many examples of such files are available under the [test folder](test) folder. Note however that while command line processing can exploit all command line functionality (e.g., use environmental variables and wildcards in pathnames), while this cannot be done in *parameters' files*.
 
 
 ## Acknowledgments
