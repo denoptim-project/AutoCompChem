@@ -27,8 +27,10 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -112,7 +114,7 @@ sub2_abc/subsub2_abc
 		String[] pattern = {".*", ".*/.*", ".*", ".*/.*", ".*/.*/.*",
 				".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*",
 				"file.*", "file.*", ".*file.*", ".*file.*", ".*file.*", ".*file.*",
-				"file_abc", ".*/file_abc", ".*/file_abc",};
+				"file_abc", ".*/file_abc", ".*/file_abc"};
 		int[] depth = {1, 2, 1, 2, 3,
 				1, 2, 3, 1, 2, 3,
 				Integer.MAX_VALUE, 2, 3, 1, 2, 3,
@@ -120,7 +122,7 @@ sub2_abc/subsub2_abc
 		boolean[] countFldrs = {true, true, false, false, false, //  0-4
 				true, true, true, false, false, false,           //  5-10
 				true, true, true, false, false, false,           // 11-16
-				true, true, true,                                // 17-
+				true, true, true                                // 17-
 				};
 		int[] expected = {6, 13, 2, 5, 9,
 				3, 9, 12, 1, 4, 7,
@@ -130,15 +132,19 @@ sub2_abc/subsub2_abc
 		boolean debugLog = false;
 		for (int i=0; i<expected.length; i++)
 		{
+			String osSpec = FilenameUtils.separatorsToSystem(pattern[i]);
 			List<File> matches = FileUtils.findByREGEX(tempDir, 
-					pattern[i], depth[i], countFldrs[i]);
+					osSpec, depth[i], countFldrs[i]);
 			if (debugLog)
 			{
 				System.out.println("Pattern: '" + pattern[i]+"'");
+				System.out.println("OSSpecP: '" + osSpec+"'");
 				System.out.println("Depth: " + depth[i]);
 				System.out.println("Count Folders: "+ countFldrs[i]);
 				final String label = i + " ->"; 
 				matches.forEach(f -> System.out.println(label + f));
+				System.out.println("Assertion: " + expected[i] + " vs. " 
+						+ matches.size());
 			}
 			assertEquals(expected[i], matches.size());
 		}
@@ -181,52 +187,58 @@ sub2_abc/subsub2_abc
 	/*
 	 * This is only meant to test the differences between regex- and glob-based
 	 * path matcher.
+	 * NOte the extensive use of Matcher.quoteReplacement() was introduced to 
+	 * make it work on Windows
 	 */
 	@Test
 	public void testPathMatcher() throws Exception
 	{
 		String filename = "name";
 		String pathStr = "_sep_first_sep_second_sep_third_sep_" + filename;
-		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		pathStr = pathStr.replaceAll("_sep_", Matcher.quoteReplacement(
+				File.separator));
 		File file = new File(pathStr);
 		Path path = file.toPath();
 		
 		// Both work with query that is the abs pathname (only directed)
 		PathMatcher regexMatch = FileSystems.getDefault().getPathMatcher(
-    			"regex:" + pathStr);
+    			"regex:" + Matcher.quoteReplacement(pathStr));
 		assertTrue(regexMatch.matches(path));
 		PathMatcher globMatch = FileSystems.getDefault().getPathMatcher(
-    			"glob:" + pathStr);
+    			"glob:" + Matcher.quoteReplacement(pathStr));
 		assertTrue(globMatch.matches(path));
 		
 		// Pathname with dots
 		filename = "name-1.ext";
 		pathStr = "_sep_first_sep_second_sep_other_sep_.._sep_third_sep_" + filename;
-		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		pathStr = pathStr.replaceAll("_sep_", Matcher.quoteReplacement(
+				File.separator));
 		file = new File(pathStr);
 		path = file.toPath();
 		regexMatch = FileSystems.getDefault().getPathMatcher(
-    			"regex:" + pathStr);
+    			"regex:" + Matcher.quoteReplacement(pathStr));
 		assertTrue(regexMatch.matches(path));
 		globMatch = FileSystems.getDefault().getPathMatcher(
-    			"glob:" + pathStr);
+    			"glob:" + Matcher.quoteReplacement(pathStr));
 		assertTrue(globMatch.matches(path));
 		
 		// Relative pathname 
 		pathStr = ".._sep_.._sep_second_sep_third_sep_" + filename;
-		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		pathStr = pathStr.replaceAll("_sep_", Matcher.quoteReplacement(
+				File.separator));
 		file = new File(pathStr);
 		path = file.toPath();
 		regexMatch = FileSystems.getDefault().getPathMatcher(
-    			"regex:" + pathStr);
+    			"regex:" + Matcher.quoteReplacement(pathStr));
 		assertTrue(regexMatch.matches(path));
 		globMatch = FileSystems.getDefault().getPathMatcher(
-    			"glob:" + pathStr);
+    			"glob:" + Matcher.quoteReplacement(pathStr));
 		assertTrue(globMatch.matches(path));
 		
 		// Wildcard pathname 
 		pathStr = ".._sep_.._sep_second_sep_third_sep_" + filename;
-		pathStr = pathStr.replaceAll("_sep_", File.separator);
+		pathStr = pathStr.replaceAll("_sep_", Matcher.quoteReplacement(
+				File.separator));
 		file = new File(pathStr);
 		path = file.toPath();
 		regexMatch = FileSystems.getDefault().getPathMatcher(
@@ -250,11 +262,10 @@ sub2_abc/subsub2_abc
     			+ "*" + File.separator + "*name*");
 		assertFalse(globMatch.matches(path));
 		globMatch = FileSystems.getDefault().getPathMatcher(
-    			"glob:"
+    			"glob:" + Matcher.quoteReplacement("*" + File.separator 
     			+ "*" + File.separator 
     			+ "*" + File.separator 
-    			+ "*" + File.separator 
-    			+ "*" + File.separator + "*name*");
+    			+ "*" + File.separator + "*name*"));
 		assertTrue(globMatch.matches(path));
 	}
 	

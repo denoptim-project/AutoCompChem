@@ -253,7 +253,7 @@ public class FileUtils
     	switch (mode.toUpperCase())
     	{
     		case "REGEX":
-    			// Nothing
+    			pattern = pattern.replace("\\", "\\\\");
     			break;
     			
     		case "GLOB":
@@ -264,7 +264,7 @@ public class FileUtils
     		default:
     			Terminator.withMsgAndStatus("ERROR! "
     					+ "The mode for finding files can "
-        				+ "only be 'regex' or 'glob', but you arked for '" 
+        				+ "only be 'regex' or 'glob', but you asked for '" 
     					+ mode + "'", -1);
     			break;
     	}
