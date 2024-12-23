@@ -45,7 +45,7 @@ public class BufferedTranslatorTest
 	@TempDir 
     File tempDir;
 
-    public static final String PS = System.getProperty("file.separator");
+    public static final String FS = System.getProperty("file.separator");
     public static final String NL = System.getProperty("line.separator");
     private static final int NEWLINECHARLENGTH = NL.length();
     
@@ -56,7 +56,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + FS + "test.txt");
         IOtools.writeLineAppend(tmpFile,"1234567890",false);
         IOtools.writeLineAppend(tmpFile,"abcdefghij",true);
         
@@ -79,7 +79,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + FS + "test.txt");
         IOtools.writeLineAppend(tmpFile,"1234567890",false);
         IOtools.writeLineAppend(tmpFile,"abcdefghij_hit1",true);
         IOtools.writeLineAppend(tmpFile,"12345hit67890",true);
@@ -109,7 +109,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + FS + "test.txt");
         String line1 = "1234567890";  // 10
         String line2 = "abcdefghij "; // 11
         String line3 = " 1234567890"; // 11
@@ -162,7 +162,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + FS + "test.txt");
         List<String> lines = new ArrayList<String>(Arrays.asList(
         		"hit1234567890",          // 1 match
         		"abchit2defg_ij ",        // 1 match
@@ -253,7 +253,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath() + PS + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath() + FS + "test.txt");
         String line1 = "hhitit";  
         String line2 = "hhitithhitit"; 
         IOtools.writeLineAppend(tmpFile,line1,false);
@@ -302,7 +302,7 @@ public class BufferedTranslatorTest
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         
-        File tmpFile = new File(tempDir.getAbsolutePath()+ PS + "test.txt");
+        File tmpFile = new File(tempDir.getAbsolutePath()+ FS + "test.txt");
         String line1 = "abchit";  
         String line2 = "hit 123 hit hit"; 
         IOtools.writeLineAppend(tmpFile,line1,false);

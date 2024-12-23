@@ -30,9 +30,8 @@ import autocompchem.io.IOtools;
 
 public class FileFingerprintTest 
 {
-	
-	private static String fileSeparator = System.getProperty("file.separator");
-	private static String NL = System.getProperty("line.separator");
+    public static final String FS = System.getProperty("file.separator");
+    public static final String NL = System.getProperty("line.separator");
 
     @TempDir 
     protected File tempDir;
@@ -48,11 +47,11 @@ public class FileFingerprintTest
 		
     	
     	// Simple file in "."
-    	String testPathA = tempDir.getAbsolutePath() + fileSeparator + "t_A";
+    	String testPathA = tempDir.getAbsolutePath() + FS + "t_A";
 		File testFileA = new File(testPathA);
 		IOtools.writeTXTAppend(testFileA, NL + " QUERY " + NL, false);
 		
-		String testPathB = tempDir.getAbsolutePath() + fileSeparator + "t_B";
+		String testPathB = tempDir.getAbsolutePath() + FS + "t_B";
 		File testFileB = new File(testPathB);
 		IOtools.writeTXTAppend(testFileB, NL + " BLA", false);
 		
@@ -62,7 +61,8 @@ public class FileFingerprintTest
 		
 
 		// Any file located at "."
-		FileFingerprint fngrprC = new FileFingerprint("./*", 3, "^ QUERY $");
+		FileFingerprint fngrprC = new FileFingerprint("." + FS + "*", 3, 
+				"^ QUERY $");
 		
 		assertFalse(fngrprC.matchedBy(testFileA));
 		assertFalse(fngrprC.matchedBy(testFileB));
@@ -70,12 +70,13 @@ public class FileFingerprintTest
 		
 		
 		// Nested file with given name
-		FileFingerprint fngrprD = new FileFingerprint("./dir/t_D", 3, "^ Q $");
+		FileFingerprint fngrprD = new FileFingerprint("." + FS + "dir" + FS 
+				+ "t_D", 3, "^ Q $");
 		
-		String subDirPath = tempDir.getAbsolutePath() + fileSeparator + "dir";
+		String subDirPath = tempDir.getAbsolutePath() + FS + "dir";
 		new File(subDirPath).mkdir();
 		
-		String testPathD = subDirPath + fileSeparator + "t_D";
+		String testPathD = subDirPath + FS + "t_D";
 		File testFileD = new File(testPathD);
 		IOtools.writeTXTAppend(testFileD, NL + " Q " + NL, false);
 
@@ -87,14 +88,14 @@ public class FileFingerprintTest
 		
 		
 		// Nested file with wild cards in path and name
-		FileFingerprint fngrprE = new FileFingerprint("./*/*_D", 3, "^ Q $");
+		FileFingerprint fngrprE = new FileFingerprint("." + FS + "*" + FS 
+				+ "*_D", 3, "^ Q $");
 
 		assertFalse(fngrprE.matchedBy(testFileA));
 		assertFalse(fngrprE.matchedBy(testFileB));
 		assertFalse(fngrprE.matchedBy(testFileD));
 		
 		assertTrue(fngrprE.matchedBy(tempDir));
-	
     }
 
 //------------------------------------------------------------------------------

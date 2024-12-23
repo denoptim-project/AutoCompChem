@@ -257,8 +257,8 @@ public class FileUtils
     			break;
     			
     		case "GLOB":
-    			pattern = pattern.replace("\\", "\\\\");
     			pattern = root.getPath() + File.separator + pattern;
+    			pattern = pattern.replace("\\", "\\\\");
     			break;
     			
     		default:

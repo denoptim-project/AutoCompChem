@@ -84,7 +84,8 @@ public class FileFingerprint
      * @param file the file or folder that is a candidate match for this 
      * fingerprint.
      * @return <code>true</code> if the file/folder is a match. 
-     * <code>false</code> if there is no such file or if the  file is not a match.
+     * <code>false</code> if there is no such file or if the  file is not a
+     * match.
      */
     public boolean matchedBy(File file)
     {
