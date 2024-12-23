@@ -344,6 +344,7 @@ sub2_abc/subsub2_abc
     			new File(fn+".sdr"),"2"));
     	
     	fn = "/usr/local/dummy_file name";
+    	fn = FilenameUtils.separatorsToSystem(fn);
     	assertEquals(fn+"_"+2, FileUtils.getIdSpecPathName(
     			new File(fn),"2"));
     	assertEquals(fn+"_"+2+".sdr", FileUtils.getIdSpecPathName(
