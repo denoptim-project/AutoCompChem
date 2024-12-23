@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -85,7 +86,7 @@ public class Perceptron
     private boolean iamaware = false;
 
     /**
-     * Flas enabling tolerance towards missing info channels
+     * Flag enabling tolerance towards missing info channels
      */
     private boolean tolerateMissingIC = false;
 
@@ -108,7 +109,7 @@ public class Perceptron
 
     public Perceptron() 
     {
-    	this.logger = LogManager.getLogger(Perceptron.class);
+    	logger = LogManager.getLogger(Perceptron.class);
         this.scoreCollector = new ScoreCollector();
         this.occurringSituations = new ArrayList<Situation>();
     }

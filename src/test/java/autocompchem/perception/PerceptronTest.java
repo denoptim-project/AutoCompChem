@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.MatchDirComponent;
@@ -55,7 +57,11 @@ import autocompchem.wiro.chem.Keyword;
 
 public class PerceptronTest 
 {
-    private final String NL = System.getProperty("line.separator");
+
+	@TempDir 
+    File tempDir;
+    private static final String NL = System.getProperty("line.separator");
+    public static final String FS = System.getProperty("file.separator");
     
 //------------------------------------------------------------------------------
     
@@ -110,6 +116,8 @@ public class PerceptronTest
     @Test
     public void testSourceStreams() throws Exception
     {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        
         ArrayList<String> a = new ArrayList<String>();
         a.add("Text in array");
         a.add("array contains blabla...");
@@ -128,7 +136,8 @@ public class PerceptronTest
 
         String sInFile = "PATH and blabla in file";
         InfoChannel icFile;
-        String fileName = "/tmp/tmpTxtFileForJUnitTestingOfPerceptron";
+        String fileName = this.tempDir + FS
+        		+ "tmpTxtFileForJUnitTestingOfPerceptron";
         FileWriter writer = new FileWriter(fileName);
         writer.write(sInFile + NL);
         writer.close();
@@ -140,8 +149,11 @@ public class PerceptronTest
         Situation sit1 = new Situation("case", "");
         sit1.addCircumstance(new MatchText(".*blabla.*",
                                        InfoChannelType.OUTPUTFILE));
+        // Disabled because of poor portability across OSs
+        /*
         sit1.addCircumstance(new MatchText(".*PATH.*bin.*",
                                        InfoChannelType.ENVIRONMENT));
+                                       */
         sit1.addCircumstance(new MatchText(".*PATH.*",
                                        InfoChannelType.ANY));
 
@@ -151,17 +163,20 @@ public class PerceptronTest
         Perceptron prc = new Perceptron(sitsBase1,icb);
         prc.perceive();
 
-        assertEquals(true,prc.isAware(),"Perception awareness");
+        assertEquals(true, prc.isAware(), "Perception awareness");
         assertEquals(1,prc.getOccurringSituations().size(),
-                                              "Number of occurring situations");
+        		"Number of occurring situations");
         assertEquals(sit1,prc.getOccurringSituations().get(0),
-                                                         "Occurring situation");
+        		"Occurring situation");
 
         Situation sit2 = new Situation("case", "");
         sit2.addCircumstance(new MatchText(".*not-in-out.*",true,
                                        InfoChannelType.OUTPUTFILE));
+        // Disabled because of poor portability across OSs
+        /*
         sit2.addCircumstance(new MatchText(".*not-in-env.*",true,
                                        InfoChannelType.ENVIRONMENT));
+                                       */
         sit2.addCircumstance(new MatchText(".*not-in-any.*",true,
                                        InfoChannelType.ANY));
 
@@ -172,7 +187,7 @@ public class PerceptronTest
 
         assertEquals(false,prc.isAware(),"Perception awareness (2)");
         assertEquals(2,prc.getOccurringSituations().size(),
-                                          "Number of occurring situations (2)");
+        		"Number of occurring situations (2)");
         
         
         InfoChannel icToNonExistingFile = new FileAsSource("non_existing_path");

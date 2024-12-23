@@ -53,7 +53,7 @@ public class JobFactoryTest
     public void testCreateJob() throws Exception
     {
     	Job job = JobFactory.createJob(new SoftwareId("something"));
-    	assertTrue("something".equals(job.getAppID()), 
+    	assertTrue("something".equals(job.getAppID().toString()), 
     			"Creation of Undefined job");
     	
     	job = JobFactory.createJob(SoftwareId.SHELL);
