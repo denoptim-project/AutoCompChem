@@ -139,22 +139,6 @@ public class JobTest
 
     @Test
     @DisabledOnOs(WINDOWS)
-    public void testParallelizableSubJobs() throws Exception
-    {
-        Job job = JobFactory.createJob(SoftwareId.ACC);
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,true));
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,true));
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,true));
-        assertTrue(job.parallelizableSubJobs());
-
-        job.addStep(JobFactory.createJob(SoftwareId.ACC,false));
-        assertFalse(job.parallelizableSubJobs());
-    }
-
-//------------------------------------------------------------------------------
-
-    @Test
-    @DisabledOnOs(WINDOWS)
     public void testParallelizedJob() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
@@ -180,19 +164,15 @@ public class JobTest
             Job job = JobFactory.createJob(SoftwareId.ACC,nThreads);
             Job subJob1 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+1);
-            subJob1.setParallelizable(true);
             job.addStep(subJob1);
             Job subJob2 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+2);
-            subJob2.setParallelizable(true);
             job.addStep(subJob2);
             Job subJob3 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+3);
-            subJob3.setParallelizable(true);
             job.addStep(subJob3);
             Job subJob4 = new ShellJob(shellFlvr,script.getAbsolutePath(),
                     newFile+4);
-            subJob4.setParallelizable(true);
             job.addStep(subJob4);
             
             //Run the job with parallel sub-jobs

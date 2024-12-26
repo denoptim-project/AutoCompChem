@@ -77,7 +77,7 @@ public class ParallelJobsRunnerTest
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
-    	Job job = new TestJob(roothName,6,3000,500,true);
+    	Job job = new TestJob(roothName,6,3000,500);
     	job.run();
     }
 
@@ -94,11 +94,11 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
-        	main.addStep(new TestJob(roothName+i,3,true));
+        	main.addStep(new TestJob(roothName+i,3));
         }
         
         // Comment out these to get some log, in case of debugging
@@ -129,11 +129,11 @@ public class ParallelJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "3");
         for (int i=0; i<3; i++)
         {
-        	main.addStep(new TestJob(roothName+i,5,true));
+        	main.addStep(new TestJob(roothName+i,5));
         }
         
         // Comment out these to get some log, in case of debugging
@@ -167,11 +167,11 @@ public class ParallelJobsRunnerTest
         //Job main = JobFactory.createJob(RunnableSoftwareId.ACC);
         //main.addStep(new TestJob(roothName+"A"));
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "10");
         for (int i=0; i<6; i++)
         {
-        	main.addStep(new TestJob(roothName+i,3,true));
+        	main.addStep(new TestJob(roothName+i,3));
         }
 
         // Comment out these to get some log, in case of debugging
@@ -205,11 +205,11 @@ public class ParallelJobsRunnerTest
         //Job main = JobFactory.createJob(RunnableSoftwareId.ACC);
         //main.addStep(new TestJob(roothName+"A"));
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "5");
         for (int i=0; i<6; i++)
         {
-        	main.addStep(new TestJob(roothName+i,3,true));
+        	main.addStep(new TestJob(roothName+i,3));
         }
         
         // Comment out these to get some log, in case of debugging
@@ -250,11 +250,11 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "6");
         
         // A "long-lasting" job that will be evaluated
-        Job jobToEvaluate = new TestJob(roothName+0,3,0,490,true);
+        Job jobToEvaluate = new TestJob(roothName+0,3,0,490);
         main.addStep(jobToEvaluate);
         
         // Prepare ingredients to do perception
@@ -271,7 +271,7 @@ public class ParallelJobsRunnerTest
         // Other 'whatever' jobs (i.e., the siblings) that will be killed too
         for (int i=1; i<6; i++) 
         {
-        	main.addStep(new TestJob(roothName+i,3,0,200,true));
+        	main.addStep(new TestJob(roothName+i,3,0,200));
         }
         
         assertEquals(7,main.getNumberOfSteps(),"Number of parallel jobs");
@@ -302,7 +302,7 @@ public class ParallelJobsRunnerTest
         
         // A "long-lasting" job that will be evaluated
         String logOnProductionJob = roothName+"_production";
-        TestJob productionJob = new TestJob(logOnProductionJob,5,0,100,true);
+        TestJob productionJob = new TestJob(logOnProductionJob,5,0,100);
         productionJob.setUserDir(tempDir);
         
         // Conditional rerun 1
@@ -341,7 +341,7 @@ public class ParallelJobsRunnerTest
         		InfoChannelType.LOGFEED));
         
         // The main job
-        Job main = JobFactory.createJob(SoftwareId.ACC, 5, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 5);
         main.setParameter("WALLTIME", "10");
         
         // Make the job that will monitor the ongoing job and trigger an action
@@ -355,7 +355,7 @@ public class ParallelJobsRunnerTest
         // and restarted too
         for (int i=1; i<5; i++) 
         {
-        	TestJob j = new TestJob(roothName+i,3,0,100,true);
+        	TestJob j = new TestJob(roothName+i,3,0,100);
         	j.setUserDir(tempDir);
         	main.addStep(j);
         }
@@ -408,7 +408,7 @@ public class ParallelJobsRunnerTest
         
         // A "long-lasting" job that will be evaluated
         String logOnProductionJob = roothName + "_production";
-        TestJob productionJob = new TestJob(logOnProductionJob,2,0,100,true);
+        TestJob productionJob = new TestJob(logOnProductionJob,2,0,100);
         productionJob.setUserDir(tempDir);
         
         // Situation to perceive and reaction to it.
@@ -427,7 +427,7 @@ public class ParallelJobsRunnerTest
         		InfoChannelType.LOGFEED));
         
         // The main job that contains the batch of parallel jobs
-        Job main = JobFactory.createJob(SoftwareId.ACC, 4, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 4);
         main.setParameter("WALLTIME", "10");
         
         // Make the job that will monitor the ongoing job and trigger an action
@@ -440,7 +440,7 @@ public class ParallelJobsRunnerTest
         // Other 'whatever' jobs (i.e., the siblings) that go on carelessly
         for (int i=1; i<3; i++) 
         {
-        	TestJob j = new TestJob(roothName+i, 2, 0, 100, true);
+        	TestJob j = new TestJob(roothName+i, 2, 0, 100);
         	j.setUserDir(tempDir);
         	main.addStep(j);
         }
@@ -493,7 +493,7 @@ public class ParallelJobsRunnerTest
         // A job that will be evaluated
         String logOnProductionJob = roothName+"_production";
         TestJob productionJob = new TestJob(logOnProductionJob,
-        		walltimeChildJobs, 0, period, true); 
+        		walltimeChildJobs, 0, period); 
         productionJob.setUserDir(tempDir);
         
         ICircumstance c = new MatchText("Iteration 10", 
@@ -509,7 +509,7 @@ public class ParallelJobsRunnerTest
         		InfoChannelType.LOGFEED));        
 
         // The main job
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "10");
         
         // Make the job that will monitor the ongoing job and trigger an action
@@ -523,8 +523,7 @@ public class ParallelJobsRunnerTest
         // Sibling jobs that will NOT be stopped
         for (int i=1; i<4; i++) 
         {
-        	TestJob j = new TestJob(roothName+i, walltimeChildJobs, 0, period, 
-        			true);
+        	TestJob j = new TestJob(roothName+i, walltimeChildJobs, 0, period);
         	j.setUserDir(tempDir);
         	main.addStep(j);
         }
@@ -582,11 +581,11 @@ public class ParallelJobsRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
 
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter(JobsRunner.WALLTIMEPARAM, "5");
         for (int i=0; i<2; i++)
         {
-        	main.addStep(new TestJob(roothName+i, 3, true));
+        	main.addStep(new TestJob(roothName+i, 3));
         }
         main.addStep(new TestJobTriggeringException());
         
@@ -613,7 +612,7 @@ public class ParallelJobsRunnerTest
     	String baseName ="testjob.log";
         String roothName = tempDir.getAbsolutePath() + SEP + baseName;
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "6");
         main.setParameter("WAITSTEP", "7");
         // Basically the waiting step is much longer than the time it 
@@ -621,9 +620,9 @@ public class ParallelJobsRunnerTest
         // ParallelRunner as a wall time. So, check for completion
         // should be triggered by the actual completion of any job.
        
-        main.addStep(new TestJob(roothName+"_A",1,0,200,true));
-        main.addStep(new TestJob(roothName+"_B",2,0,200,true));
-        main.addStep(new TestJob(roothName+"_C",2,0,200,true));
+        main.addStep(new TestJob(roothName+"_A",1,0,200));
+        main.addStep(new TestJob(roothName+"_B",2,0,200));
+        main.addStep(new TestJob(roothName+"_C",2,0,200));
         
         // Comment out these to get some log, in case of debugging
         main.setParameter(ParameterConstants.VERBOSITY, "0", true);
@@ -685,7 +684,6 @@ public class ParallelJobsRunnerTest
             {
                 ShellJob sj = new ShellJob(shellFlvr, script.getAbsolutePath(),
                 		newFile+i);
-                sj.setParallelizable(true);
                 job.addStep(sj);
             }
 
