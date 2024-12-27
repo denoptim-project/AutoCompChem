@@ -95,9 +95,12 @@ public class ACCJob extends Job
         Worker worker = null;
 		try {
 			worker = WorkerFactory.createWorker(this);
-		} catch (ClassNotFoundException e) {
-			throw new Error("Unable to make worker for " 
-					+ params.getParameterValue(WorkerConstants.PARTASK));
+		} catch (Throwable t) {
+			t.printStackTrace();
+			hasException = true;
+			thrownExc = new Error("Unable to make worker for " 
+					+ params.getParameterValue(WorkerConstants.PARTASK), t);
+			stopJob();
 		}
 		try {
 			worker.performTask();
