@@ -61,7 +61,7 @@ autocompchem -h
 The execution of a task by AutoCompChem is called a *Job*. AutoCompChem can perform single jobs or multiple jobs in a single call.
 
 ### Single Job
-From the "help" command, choose a task you are interested in, say `<chosen_task>`, and repeate the "help" command adding `-t <chosen_task>`:
+From the message writted by running the "help" command, choose a task you are interested in, say `<chosen_task>`, and repeate the "help" command adding `-t <chosen_task>` (NB: in this document we use `<...>` to indicate any unspecified string. For example, `<chosen_task>` could be replaced by `mutateAtoms` or any other task name):
 ```
 autocompchem -h -t <chosen_task>
 ```
@@ -117,7 +117,7 @@ There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whethe
   ...
   JOBEND
   ```
-  This parameters file defines a two-step *sequential* job in which AutoCompChem is first tasked to change some atoms and then to alter some bonds. Notably, the container job is effectively omitted from this syntax unless there are some settings that alter such container job. For instance, we may request a parallel execution as follows (NB: empty lines are only used to increase readability, but they are not needed):
+  This parameters file defines a two-step *sequential* job in which AutoCompChem is first tasked to change some atoms and then to alter some bonds. Notably, the container job is effectively omitted from this syntax unless it needs to be altered in some way. For instance, you may alter the container job by requesting to run its subjobs in parallel as follows (NB: empty lines are only used to increase readability, but they are not needed):
   ```
   JOBSTART
   PARALLELIZE: 2
