@@ -40,8 +40,8 @@ public class TestJobTest
     	job.run();
     	
     	int n = FileAnalyzer.count(log, TestJob.ITERATIONKEY+"*");
-    	assertTrue(n>8);
-    	assertTrue(n<12);
+    	assertTrue(n>8, "Found " + n + " instead of x>8");
+    	assertTrue(n<12, "Found " + n + " instead of x<12");
     	assertFalse(job.isInterrupted);
     	assertTrue(job.isCompleted());
     }
