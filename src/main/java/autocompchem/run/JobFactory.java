@@ -173,7 +173,9 @@ public final class JobFactory
     				+ "not allow to create a Job. Deseralized object is '"
     				+ obj.getClass().getName() + "'.", -1);
     	}
-		return (Job) obj;
+    	Job job = (Job) obj;
+    	job = procesParametersUponJobCreation(job);
+		return job;
     }
 
 //------------------------------------------------------------------------------
@@ -307,41 +309,59 @@ public final class JobFactory
         	appId = new SoftwareId(app.trim().toUpperCase());
         }
         job = createJob(appId);
+        
+        job.setParameters(locPar);
+        
+        job = procesParametersUponJobCreation(job);
 
-        if (locPar.contains(WorkerConstants.PARTASK))
+        return job;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * We need to process some of the parameters read-in upon creation of the 
+     * job.
+     */
+    private static Job procesParametersUponJobCreation(Job job)
+    {
+    	ParameterStorage params = job.getParameters();
+    
+    	Job newJob = job;
+        if (params.contains(WorkerConstants.PARTASK))
         {
-        	Task task = Task.make(locPar.getParameterValue(
+        	Task task = Task.make(params.getParameterValue(
         			WorkerConstants.PARTASK));
         	if (new JobEvaluator().getCapabilities().contains(task))
 	        {
-	        	if (locPar.contains(MonitoringJob.PERIODPAR) 
-	        			|| locPar.contains(MonitoringJob.DELAYPAR))
+	        	if (params.contains(MonitoringJob.PERIODPAR) 
+	        			|| params.contains(MonitoringJob.DELAYPAR))
 	        	{
-	        		job = new MonitoringJob();
+	        		newJob = new MonitoringJob();
 	        	} else {
-	        		job = new EvaluationJob();
+	        		newJob = new EvaluationJob();
 	        	}
+
+	            newJob.setParameters(params);
 	        }
         }
+        //TODO-gg test input from json
         
-        if (locPar.contains(ParameterConstants.VERBOSITY))
+        if (params.contains(ParameterConstants.VERBOSITY))
         {
         	Configurator.setLevel(job.logger.getName(),
             		LogUtils.verbosityToLevel(Integer.parseInt(
-            				locPar.getParameter(ParameterConstants.VERBOSITY)
+            				params.getParameter(ParameterConstants.VERBOSITY)
             					.getValueAsString())));
         }
         
-        if (locPar.contains(ParameterConstants.PARALLELIZE))
+        if (params.contains(ParameterConstants.PARALLELIZE))
         {
-        	int nThreadsPerSubJob = Integer.parseInt(locPar.getParameter(
+        	int nThreadsPerSubJob = Integer.parseInt(params.getParameter(
         			ParameterConstants.PARALLELIZE).getValueAsString());
         	job.setNumberOfThreads(nThreadsPerSubJob);
         }
-        
-        job.setParameters(locPar);
-
-        return job;
+        return newJob;
     }
 
 //------------------------------------------------------------------------------
