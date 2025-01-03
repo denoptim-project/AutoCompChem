@@ -1,0 +1,20 @@
+JOBSTART
+PARALLELIZE: 2
+
+JOBSTART
+TASK: mutateAtoms
+parallelizable
+INFILE: mol.sdf
+SMARTS: [Cl] element Br
+OUTFILE: mol_atomEdited.sdf
+JOBEND
+
+JOBSTART
+TASK: editBonds
+parallelizable
+INFILE: mol.sdf
+SMARTS: [$([#6]~[#7])]-[Ru] order: Double
+OUTFILE: mol_bondEdited.sdf
+JOBEND
+
+JOBEND

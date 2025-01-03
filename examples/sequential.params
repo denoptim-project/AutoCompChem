@@ -1,0 +1,13 @@
+JOBSTART
+TASK: mutateAtoms
+INFILE: mol.sdf
+SMARTS: [Cl] element Br
+OUTFILE: mol_atomEdited.sdf
+JOBEND
+
+JOBSTART
+TASK: editBonds
+INFILE: mol.sdf
+SMARTS: [$([#6]~[#7])]-[Ru] order: 2
+OUTFILE: mol_bondEdited.sdf
+JOBEND

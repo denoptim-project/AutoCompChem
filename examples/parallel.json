@@ -1,0 +1,53 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "parallelize",
+      "value": 2
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "task",
+          "value": "mutateAtoms"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[Cl] element Br"
+        },
+        {
+          "reference": "inFile",
+          "value": "mol.sdf"
+        },
+        {
+          "reference": "outFile",
+          "value": "mol_atomEdited.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "task",
+          "value": "editBonds"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[$([#6]~[#7])]-[Ru] order: Double"
+        },
+        {
+          "reference": "inFile",
+          "value": "mol.sdf"
+        },
+        {
+          "reference": "outFile",
+          "value": "mol_bondEdited.sdf"
+        }
+      ]
+    }
+  ]
+}

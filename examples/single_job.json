@@ -1,0 +1,21 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "task",
+      "value": "mutateAtoms"
+    },
+    {
+      "reference": "SMARTS",
+      "value": "[Cl] element Br"
+    },
+    {
+      "reference": "inFile",
+      "value": "mol.sdf"
+    },
+    {
+      "reference": "outFile",
+      "value": "mol_atomEdited.sdf"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+TASK: mutateAtoms
+INFILE: mol.sdf
+SMARTS: [Cl] element Br
+OUTFILE: mol_atomEdited.sdf
