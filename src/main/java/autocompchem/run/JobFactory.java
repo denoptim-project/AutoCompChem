@@ -336,13 +336,7 @@ public final class JobFactory
         {
         	int nThreadsPerSubJob = Integer.parseInt(locPar.getParameter(
         			ParameterConstants.PARALLELIZE).getValueAsString());
-        	job.setParallelizable(true);
         	job.setNumberOfThreads(nThreadsPerSubJob);
-        }
-        
-        if (locPar.contains(ParameterConstants.PARALLELIZABLE))
-        {
-        	job.setParallelizable(true);
         }
         
         job.setParameters(locPar);
@@ -360,7 +354,7 @@ public final class JobFactory
 
     public static Job createJob(SoftwareId appID)
     {
-    	return createJob(appID, 1, false);
+    	return createJob(appID, 1);
     }
     
 //------------------------------------------------------------------------------
@@ -372,39 +366,7 @@ public final class JobFactory
      * @return the job, possibly including nested sub-jobs.
      */ 
 
-    public static Job createJob(SoftwareId appID, int nThreads)
-    {
-    	return createJob(appID, nThreads, false);
-    }
-
-  //------------------------------------------------------------------------------
-
-    /**
-     * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job.
-     * @param parallelizable set <code>true</code> if this job can be 
-     * parallelized.
-     * @return the job, possibly including nested sub-jobs.
-     */ 
-
-    public static Job createJob(SoftwareId appID, boolean parallelizable)
-    {
-    	return createJob(appID, 1, parallelizable);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Create a new job calling the appropriate subclass.
-     * @param appID the application to be used to do the job.
-     * @param nThreads max parallel threads for independent sub-jobs.
-     * @param parallelizable set <code>true</code> if this job can be 
-     * parallelized.
-     * @return the job, possibly including nested sub-jobs.
-     */ 
-
-    synchronized static Job createJob(SoftwareId appID, int nThreads, 
-    		boolean parallelizable)
+    synchronized static Job createJob(SoftwareId appID, int nThreads)
     {
     	if (INSTANCE==null)
     		getInstance();
@@ -416,7 +378,6 @@ public final class JobFactory
     	} else {
 			job = new Job();
     	}
-    	job.setParallelizable(parallelizable);
     	job.setNumberOfThreads(nThreads);
     	return job;
     }

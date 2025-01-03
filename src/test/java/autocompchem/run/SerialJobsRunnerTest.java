@@ -80,11 +80,11 @@ public class SerialJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 3);
         main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
-        	main.addStep(new TestJob(roothName+i, 1, 0, 200, false));
+        	main.addStep(new TestJob(roothName+i, 1, 0, 200));
         }
 
         // Comment out this to get some log, in case of debugging
@@ -114,11 +114,11 @@ public class SerialJobsRunnerTest
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
-        Job main = JobFactory.createJob(SoftwareId.ACC, 3, true);
+        Job main = JobFactory.createJob(SoftwareId.ACC, 1);
         main.setParameter("WALLTIME", "3"); 
         for (int i=0; i<3; i++)
         {
-        	main.addStep(new TestJob(roothName+i, 2, 0, 950, false));
+        	main.addStep(new TestJob(roothName+i, 2, 0, 950));
         }
 
         // Comment out this to get some log, in case of debugging
@@ -180,13 +180,13 @@ public class SerialJobsRunnerTest
         
         // Production subjob 1
         TestJob productionJob1 = new TestJob(roothName+"_production_1",
-        		1,0,90,false);
+        		1,0,90);
         productionJob1.setUserDir(tempDir);
         main.addStep(productionJob1);
         
         // Production subjob 2
         TestJob productionJob2 = new TestJob(roothName+"_production_2",
-        		1,0,90,false);
+        		1,0,90);
         productionJob2.setUserDir(tempDir);
         main.addStep(productionJob2);
         
@@ -196,7 +196,7 @@ public class SerialJobsRunnerTest
 
         // Production subjob 3
         TestJob productionJob3 = new TestJob(roothName+"_production_3",
-        		1,0,90,false);
+        		1,0,90);
         productionJob3.setUserDir(tempDir);
         main.addStep(productionJob3);
         

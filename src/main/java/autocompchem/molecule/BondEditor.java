@@ -45,6 +45,7 @@ import autocompchem.run.Job;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.smarts.SMARTSUtils;
+import autocompchem.utils.NumberUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -256,7 +257,13 @@ public class BondEditor extends AtomContainerInputProcessor
         	String bndOrderObjective = getValueOfAttribute(KEYORDER);
         	if (bndOrderObjective!=null)
         	{
-        		return IBond.Order.valueOf(bndOrderObjective.toUpperCase());
+        		if (NumberUtils.isParsableToInt(bndOrderObjective))
+        		{
+            		return MolecularUtils.intToBondOrder(
+            				Integer.parseInt(bndOrderObjective));
+        		} else {
+        			return IBond.Order.valueOf(bndOrderObjective.toUpperCase());
+        		}
         	}
         	
         	String stereoDscrpObjective = getValueOfAttribute(KEYSTEREO);

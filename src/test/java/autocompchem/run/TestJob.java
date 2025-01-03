@@ -43,16 +43,13 @@ public class TestJob extends Job
 	 * that simply print a line into a file.
 	 * @param logPathName pathname where the job should log.
 	 * @param wallTime max run time for the job (seconds)
-	 * @param parallel <code>true</code> is the job should be flagged as 
-	 * parallelizable.
 	 */
-	public TestJob(String logPathName, int wallTime, boolean parallel)
+	public TestJob(String logPathName, int wallTime)
 	{
 		super();
 		this.appID = SoftwareId.ACC;
 		stdout = new File(logPathName);
 		this.wallTime = wallTime;
-		setParallelizable(parallel);
 		setNumberOfThreads(1);
 		setParameter(PREFIX, "");
 	}
@@ -67,13 +64,10 @@ public class TestJob extends Job
 	 * @param delay time to wait after starting the job and before starting to 
 	 * print the log (milliseconds).
 	 * @param period the period between each printing iteration (milliseconds).
-	 * @param parallel <code>true</code> if the job should be flagged as 
-	 * parallelizable.
 	 */
-	public TestJob(String logPathName, int wallTime, int delay, int period,
-			boolean parallel)
+	public TestJob(String logPathName, int wallTime, int delay, int period)
 	{
-		this(logPathName, wallTime, parallel);
+		this(logPathName, wallTime);
 		this.delay = delay;
 		this.period = period;
 		setNumberOfThreads(1);

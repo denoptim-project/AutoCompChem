@@ -132,15 +132,8 @@ public class Job implements Runnable
     protected SoftwareId appID;
 
     /**
-     * Flag defining this job as a parallelizable job, i.e., independent from
-     * any of its parent or sibling jobs.
-     */
-    private boolean parallelizable = false;
-
-    /**
      * Number of parallel threads for sub-jobs. This controls whether we'll try
-     * to run sub-jobs in parallel. To this end, each sub-job must also be 
-     * parallelizable.
+     * to run sub-jobs in parallel.
      */
     private int nThreads = 1;
     
@@ -452,19 +445,7 @@ public class Job implements Runnable
     	}
         return false;
     }
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Set this job as parallelizable
-     * @param flag set to <code>true</code> to allow parallelization
-     */
     
-    public void setParallelizable(boolean flag)
-    {
-        this.parallelizable = flag;
-    }
-
 //------------------------------------------------------------------------------
 
     /**
@@ -857,34 +838,6 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
-     * Returns parallelizable flag
-     * @return <code>true</code> if this job can be parallelized
-     */
-    public boolean isParallelizable()
-    {
-        return parallelizable;
-    }
-
-//-----------------------------------------------------------------------------
-
-    /**
-     * Check if all the subjobs are parallelizable
-     * @return true is subjobs are all parallelizable
-     */
-
-    public boolean parallelizableSubJobs()
-    {
-        boolean res = true;
-        for (Job j : steps)
-        {
-            res = res && j.isParallelizable();
-        }
-        return res;
-    }
-
-//------------------------------------------------------------------------------
-
-    /**
      * Method that runs this job and its sub-jobs. This is the only method
      * that can label this job as 'completed'.
      * Also, this method is only implemented in the super-class, and 
@@ -932,7 +885,7 @@ public class Job implements Runnable
      * runner.
      */
     public boolean runsParallelSubjobs() {
-		return nThreads > 1 && parallelizableSubJobs();
+		return nThreads > 1;
 	}
 
 //------------------------------------------------------------------------------
@@ -1272,7 +1225,6 @@ public class Job implements Runnable
 	   
 	   return this.jobId == other.jobId 
 			   && this.appID == other.appID
-			   && this.parallelizable == other.parallelizable
 			   && this.nThreads == other.nThreads
 			   && Objects.equals(this.customUserDir, other.customUserDir)
 			   && Objects.equals(this.stdout, other.stdout)
@@ -1293,7 +1245,7 @@ public class Job implements Runnable
 	    // consistency required to use Job instances as keys in Hash-based maps
 	    // and similar.
 		
-		return Objects.hash(jobId, appID, parallelizable, nThreads,
+		return Objects.hash(jobId, appID, nThreads,
 				customUserDir, stdout, stderr, params, steps);
 	}
     

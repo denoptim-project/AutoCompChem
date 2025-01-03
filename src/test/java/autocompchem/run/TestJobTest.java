@@ -36,7 +36,7 @@ public class TestJobTest
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
         String log = tempDir.getAbsolutePath() + SEP + "testjob.log";
-    	Job job = new TestJob(log, 1, 80, 99, false);
+    	Job job = new TestJob(log, 1, 80, 99);
     	job.run();
     	
     	int n = FileAnalyzer.count(log, TestJob.ITERATIONKEY+"*");

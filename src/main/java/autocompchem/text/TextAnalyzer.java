@@ -1378,8 +1378,7 @@ public class TextAnalyzer
             //Check parameter
             if (key.equals(""))
             {
-                Terminator.withMsgAndStatus("ERROR: no key found in line '" 
-                		+ lines.get(i) + "'. Cannot import key:value pair.",-1);
+                continue;
             }
 
             //Store
