@@ -202,7 +202,7 @@ public class AtomContainerInputProcessor extends Worker
         if (params.contains(ChemSoftConstants.PAROUTFILE))
         {
 	        this.outFile = new File(params.getParameter(
-	        		ChemSoftConstants.PAROUTFILE).getValue().toString());
+	        		ChemSoftConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
 	        String ext = FileUtils.getFileExtension(outFile)
 	        		.replaceFirst("\\.","");

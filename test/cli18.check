@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ ! -f "cli18.log" ] ; then
+  echo NOT Passed ERROR 1
+  exit -1
+fi
+
+if [ ! -f "cli18.json" ] ; then
+  echo NOT Passed ERROR 2
+  exit -1
+fi
+
+n=0;n=$(grep -i -c "jobType.*ACCJob" cli18.json)
+if [ $n -ne 7 ] ; then echo NOT Passed ERROR 3 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "TASK:" cli18.json)
+if [ $n -ne 0 ] ; then echo NOT Passed ERROR 4 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "TASK" cli18.json)
+if [ $n -ne 6 ] ; then echo NOT Passed ERROR 5 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "measure" cli18.json)
+if [ $n -ne 4 ] ; then echo NOT Passed ERROR 6 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "{" cli18.json)
+if [ $n -ne 40 ] ; then echo NOT Passed ERROR 7 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "}" cli18.json)
+if [ $n -ne 40 ] ; then echo NOT Passed ERROR 8 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "params" cli18.json)
+if [ $n -ne 6 ] ; then echo NOT Passed ERROR 9 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "steps" cli18.json)
+if [ $n -ne 2 ] ; then echo NOT Passed ERROR 10 ; exit -1 ; fi
+
+if grep -q 'Termination status: 0' cli18.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 99
+  exit -1
+fi

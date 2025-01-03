@@ -72,11 +72,6 @@ public class ParameterConstants
 	public static final String PARALLELIZE = "PARALLELIZE";
 	
 	/**
-	 * Keyword of parameter identifying a jobs as possibly runnable in parallel
-	 */
-	public static final String PARALLELIZABLE = "PARALLELIZABLE";
-	
-	/**
 	 * Keyword of parameter defining input files as source of information, i.e.,
 	 * info channels. With 'input' we mean one or more input files of the job
 	 * that is being evaluated.
