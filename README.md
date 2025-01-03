@@ -119,7 +119,7 @@ The result is saved into file `mol_atomEdited.sdf`, which you can visualize with
 Many examples of parameters files are available under the [test folder](test), where they are named `*.params`.
 
 #### Job Details File
-Parameters may also be provided by definign jobs in [JSON format](https://en.wikipedia.org/wiki/JSON). This format is slightly more verbose than that of the parameters' file, but is a standard format. To define a job in a JSON file use the following syntax:
+Parameters may also be provided by definign jobs in [JSON format](https://en.wikipedia.org/wiki/JSON). This format is slightly more verbose than that of the parameters' file, but is a standard format that can be manipulated by other software. To define an AutoCompChem job (i.e., an *ACCJob*) in a JSON file use the following syntax:
 ```
 {
   "jobType": "ACCJob",
@@ -190,10 +190,51 @@ There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whethe
   For example, files [examples/sequential.params](examples/sequential.params) and [examples/parallel.params](examples/parallel.params) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples).
   
 * **Job details files**:
-  The jobs contained in a job container are listed under the ´steps´ name, irrespectively on whether the execution is serial or parallel.
-
-  TODO
-
+  The jobs contained in a job container are listed under the ´steps´ name, irrespectively on whether the execution is meant to be serial or parallel.
+  ```
+  {
+    "jobType": "ACCJob",
+    "steps": [
+      {
+        "jobType": "ACCJob",
+        "params": [
+          {
+            "reference": "task",
+            "value": "<task1>"
+          },
+          ...
+        ]
+      },
+      {
+        "jobType": "ACCJob",
+        "params": [
+          {
+            "reference": "task",
+            "value": "<task2>"
+          },
+          ...
+        ]
+      }
+    ]
+  }
+  ```
+  Adding the JSON-formatted version of the `PARALLELIZE: <threads>` parameter to the job container will make the contained jobs run in parallel using the given number of threads:
+  ```
+  {
+    "jobType": "ACCJob",
+    "params": [
+      {
+        "reference": "parallelize",
+        "value": 2
+      }
+    ], 
+    "steps": [
+      ...
+    ]
+  }
+  ```
+  
+  For example, see files [examples/sequential.json](examples/sequential.json) and [examples/parallel.json](examples/parallel.json) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples).
 
 ## Acknowledgments
 The Research Council of Norway (RCN) is acknowledged for financial support.
