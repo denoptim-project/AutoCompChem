@@ -15,7 +15,7 @@ public class TimeUtils
 //------------------------------------------------------------------------------
 
     /**
-     * Returns a string with a time stamp in a line filled with asteriscs.
+     * Returns a string with a time stamp in a line filled with asterisks.
      */
 
     public static String getTimestampLine()
@@ -23,8 +23,8 @@ public class TimeUtils
     	LocalDateTime date = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
         		  "dd-MM-yyyy HH:mm:ss.SSS");
-    	return "************************* " + date.format(formatter)
-               + " *************************";
+    	return "*************************** " + date.format(formatter)
+               + " ***************************";
     }
     
 //------------------------------------------------------------------------------

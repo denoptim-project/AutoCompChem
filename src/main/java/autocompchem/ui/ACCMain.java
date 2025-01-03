@@ -457,10 +457,10 @@ public class ACCMain
     private static void printInit()
     {
     	logger.info(TimeUtils.getTimestampLine()
-                + NL + "                                AutoCompChem"
-                + NL + "                               Version: " + version
+                + NL + "                                  AutoCompChem"
+                + NL + "                                 Version: " + version
                 + NL + "**********************************************"
-                + "*****************************" + NL);
+                + "*********************************" + NL);
     }
 
 //------------------------------------------------------------------------------
@@ -475,19 +475,23 @@ public class ACCMain
             + NL + " java -jar AutoCompChem.jar <parameters_file>"
             + NL + " java -jar AutoCompChem.jar -t/--task <task> [more args]"
             + NL + " java -jar AutoCompChem.jar -p/--params "
-                    + "<file> [more args]"
+                    + "<parameters_file> [more args]"
             + NL + " java -jar AutoCompChem.jar -j/--job "
-                    + "<file> [more args]"
+                    + "<job_details_file> [more args]"
             + NL + NL + " Where:" + NL
             + NL + "  -t/--task, -p/--params, -j/--job "
             		+ "indicate options that can be specified"
             + NL + "         using either a long (e.g., --task) "
             		+ "or short "
             + "(e.g., -t) version." + NL
-            + NL + "  <file> is the filename or pathname to a file "
-            + "containing job settings." + NL
-            + NL + "  <task> is any string among the following ones. "
-            + "(case-insensitive).";
+            + NL + "  <parameters_file> is the filename or pathname to a file "
+            + "adhering to the"
+            + NL + "          parameters' file format." + NL
+            + NL + "  <job_details_file> is the filename or pathname to a file "
+            + "adhering to the"
+            + NL + "         JSON job details format." + NL
+            + NL + "  <task> is any string among the following ones "
+            + "(case-insensitive):" + NL;
         
         String indent ="          -> ";
         for (Task t : Task.getRegisteredTasks())
