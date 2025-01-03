@@ -476,13 +476,16 @@ public class ACCMain
             + NL + " java -jar AutoCompChem.jar -t/--task <task> [more args]"
             + NL + " java -jar AutoCompChem.jar -p/--params "
                     + "<file> [more args]"
+            + NL + " java -jar AutoCompChem.jar -j/--job "
+                    + "<file> [more args]"
             + NL + NL + " Where:" + NL
-            + NL + "  -t/--task and -p/--params indicate that these options"
-            + " can be specified "
-            + NL + "         using either a long (e.g., --task) or short "
+            + NL + "  -t/--task, -p/--params, -j/--job "
+            		+ "indicate options that can be specified"
+            + NL + "         using either a long (e.g., --task) "
+            		+ "or short "
             + "(e.g., -t) version." + NL
             + NL + "  <file> is the filename or pathname to a file "
-            + "containing the job details." + NL
+            + "containing job settings." + NL
             + NL + "  <task> is any string among the following ones. "
             + "(case-insensitive).";
         
@@ -504,7 +507,7 @@ public class ACCMain
                 + "  [more args] are optional arguments that depend on the "
                 + "task at hand. " + NL 
                 + "  To see documentation on task-specific options, run the "
-                + "follofing:" + NL
+                + "following:" + NL
                 + "    -t <task_you_are_interested_in> -h " + NL;
         logger.info(s);
     }
