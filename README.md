@@ -58,10 +58,7 @@ AutoCompChem can perform a number of tasks, i.e., operations useful in various c
 ```
 autocompchem -h
 ```
-The execution of a task by AutoCompChem is called a *Job*. AutoCompChem can perform single jobs or multiple jobs in a single call.
-
-### Single Job
-From the message writted by running the "help" command, choose a task you are interested in, say `<chosen_task>`, and repeate the "help" command adding `-t <chosen_task>` (NB: in this document we use `<...>` to indicate any unspecified string. For example, `<chosen_task>` could be replaced by `mutateAtoms` or any other task name):
+From the message writted by running the "help" command, choose a task you are interested in, say `<chosen_task>`, and repeate the above "help" command adding `-t <chosen_task>` (NB: in this document we use `<...>` to indicate any unspecified string. For example, `<chosen_task>` could be replaced by `mutateAtoms` or any other task name):
 ```
 autocompchem -h -t <chosen_task>
 ```
@@ -75,6 +72,9 @@ for any argument that does not require a value, and
 ```
 for those requiring a value. Quotation marks should be used as usual, when the value may contain spaces or other characters that the command line would interprete in unintended ways. E.g., `--<keyword> "<value1> <value2> <value3>"`. 
 
+The actual execution of a task by AutoCompChem is called a *job*. AutoCompChem can perform single jobs or multiple jobs in a single call, i.e., workflows, where AutoCompChem performs a series of possibly nested tasks in sequence or in parallel. The settings of any job can be defined in three ways: as command line arguments, or in a [parameters' file](#parameters-file), or in a [JOSN job details file](#job-details-file). The choice between these three ways to control AutoCompChem depends on the complexity of the job: for getting help or running simple jobs, the command line interface is the most effective, but becomes impractical if many complex arguments have to be used. In the latter case, the [parameters' file](#parameters-file) becomes more suitable than the command line interface, but if the complexity increases by nesting multiple jobs into a workflow, then a [JOSN job details file](#job-details-file) allows to exploit the functionality of any good text editor to easily navigate the details of each part of the workflow.
+
+### Single Job
 #### Parameters File
 Any list of command line arguments needed to perform a task can also be written into a text file, which is internally referred as a *parameters' file*. The following syntax appies:
 ```
@@ -83,7 +83,7 @@ TASK: <chosen_task>
 <keywordB>: <value1> <value2> <value3>
 ...
 ```
-The order of the lines is irrelevant. Each line is meant to hold a single *keyword* or a single *keyword:value* pair, unless the value constains newline characters, in which case the `$START` and `$END` strings can be used to identify a multiline block of text that will be interpreted as a single line when parsing the perameters file. For example:
+The order of the lines is irrelevant. Each line is meant to hold a single *keyword* or a single *keyword:value* pair, unless the value constains newline characters, in which case the `$START` and `$END` strings should be used to identify a multiline block of text that will be interpreted as a single line when parsing the perameters file. For example:
 ```
 TASK: <chosen_task>
 $START<keywordC>: <value1>
@@ -119,7 +119,7 @@ The result is saved into file `mol_atomEdited.sdf`, which you can visualize with
 Many examples of parameters files are available under the [test folder](test), where they are named `*.params`.
 
 #### Job Details File
-Parameters may also be provided by definign jobs in [JSON format](https://en.wikipedia.org/wiki/JSON). This format is slightly more verbose than that of the parameters' file, but is a standard format that can be manipulated by other software. To define an AutoCompChem job (i.e., an *ACCJob*) in a JSON file use the following syntax:
+Parameters may also be provided by defining jobs in [JSON format](https://en.wikipedia.org/wiki/JSON). This format is slightly more verbose than the parameters' file format, but is a standard format that can be manipulated by other software. For instance, it allows text editors to efficiently navigate the nested structure of the data stored in a JSON format. To define an AutoCompChem job (i.e., an *ACCJob*) in a JSON file use the following syntax:
 ```
 {
   "jobType": "ACCJob",
@@ -142,21 +142,24 @@ Parameters may also be provided by definign jobs in [JSON format](https://en.wik
   ]
 }
 ```
+Note that any command line argument is defined in terms of a `reference`, i.e., the string identifying the argument, and `value`, which is the actual value of that argument, if any. 
 To use a job details file, call AutoCompChem and give it the pathname to the job details file as value of the `-j` (`--job`) argument:
 ```
 autocompchem -j <path_to_job_details_file>
 ```
 
 The job details file [examples/single_job.json](examples/single_job.json) defines the same job performed in the previour example, i.e., a job meant to change the identity of any Cl atom into Br in a given SDF file. 
-Many other examples are available under the [test folder](test). However, note that the JSON format can be used to define many kinds on objects, including jobs that are not meant to be performed by AutoCompChem, e.g., any molecular modeling job. Therefore, not all ´.json´ files define AutoCompChem jobs.
+Many other examples are available under the [test folder](test). However, note that the JSON format can be used to define many kinds on objects, including jobs that are not meant to be performed by AutoCompChem, e.g., any molecular modeling job. Therefore, not all ´.json´ files in the test folder define ACCJobs.
+
+JSON job details files can be conveniently generated from parameter's file (and vice cersa) by the `convertJobDefinition` task.
 
 ### Multiple Jobs
-AutoCompChem can also perform multiple tasks, hence *jobs*, whether in a sequence (i.e., a workflow), or in parallel (i.e., a batch). Either way, the list of jobs to perform, whether steps of a workflow or independent jobs to be performed in parallel, can be defined in a job that acts as a container. Such container may itself be contained in a parent job allowing for a recursive structure. 
+AutoCompChem can also perform multiple tasks, hence *jobs*, whether in a sequence (i.e., a workflow), or in parallel (i.e., a batch). Either way, the list of jobs to perform, whether steps of a workflow or independent jobs to be performed in parallel, are defined within a job that acts as a container. Such container may itself be contained in a parent job resulting in a recursive structure. 
 The distinction between serial and parallel execution is controlled by the jobs' container: if the container defines the `PARALLELIZE: <threads>` key-value pair, then the contained jobs will be executed in parallel using a number of asynchronous threads equal to the value specified by `<threads>`.
 
-There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whether serial or parallel: 
+Here are the two ways to define AutoCompChem jobs meant to contain sub-jobs, whether serial or parallel, in parameter's file format or job details file format:
 
-* **Parameters files**: the settings of each single job are defined using the [syntax for parameter files](#parameters-file) and are surrounded by the `JOBSTART` and `JOBEND` keyword (NB: empty lines are only used to increase readability, but they are not needed):
+* **Parameters files**: the `JOBSTART` and `JOBEND` keyword are used to surround the settings and content of a single job (NB: empty lines are only used to increase readability, but they are not needed):
   ```
   JOBSTART
   TASK: <task1>
@@ -168,7 +171,7 @@ There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whethe
   ...
   JOBEND
   ```
-  This parameters file defines a two-step *sequential* job. Notably, the container job can be effectively omitted from this syntax unless it needs to be altered in some way. For instance, you may alter the container job by requesting to run its subjobs in parallel as follows (NB: empty lines are only used to increase readability, but they are not needed):
+  This parameters file defines a two-step *sequential* job. Notably, the container job can be effectively omitted from this syntax unless it needs to be altered in some way. For instance, you may alter the container job by requesting to run its subjobs in parallel:
   ```
   JOBSTART
   PARALLELIZE: 2
@@ -185,12 +188,12 @@ There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whethe
   
   JOBEND
   ```
-  Now, the two tasks will be executed in parallel.
+  Now, the two tasks will be executed in parallel within the parent job that acts as a container.
 
   For example, files [examples/sequential.params](examples/sequential.params) and [examples/parallel.params](examples/parallel.params) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples) folder.
   
 * **Job details files**:
-  The jobs contained in a job container are listed under the ´steps´ name, irrespectively on whether the execution is meant to be serial or parallel.
+  The jobs contained in a job container are listed under the ´steps´ section, irrespectively on whether the execution is meant to be serial or parallel.
   ```
   {
     "jobType": "ACCJob",
