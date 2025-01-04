@@ -187,7 +187,7 @@ There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whethe
   ```
   Now, the two tasks will be executed in parallel.
 
-  For example, files [examples/sequential.params](examples/sequential.params) and [examples/parallel.params](examples/parallel.params) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples).
+  For example, files [examples/sequential.params](examples/sequential.params) and [examples/parallel.params](examples/parallel.params) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples) folder.
   
 * **Job details files**:
   The jobs contained in a job container are listed under the ´steps´ name, irrespectively on whether the execution is meant to be serial or parallel.
@@ -234,7 +234,7 @@ There are two ways to define AutoCompChem jobs meant to contain sub-jobs, whethe
   }
   ```
   
-  For example, see files [examples/sequential.json](examples/sequential.json) and [examples/parallel.json](examples/parallel.json) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples).
+  For example, see files [examples/sequential.json](examples/sequential.json) and [examples/parallel.json](examples/parallel.json) can be used to perform the same tasks either sequentially or in parallel under the [examples](examples) folder.
 
 ## Acknowledgments
 The Research Council of Norway (RCN) is acknowledged for financial support.
