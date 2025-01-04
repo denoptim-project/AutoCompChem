@@ -5,7 +5,6 @@ import java.util.List;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.worker.Worker;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 
@@ -132,24 +131,6 @@ public class ChemSoftConstants
 	 * Key for parameter defining the pathname to molecular geometries
 	 */
 	public static final String PARGEOMFILE = "INPUTGEOMETRIESFILE";
-	
-	/**
-	 * Key for parameter defining the pathname to any input file.
-	 */
-	public static final String PARINFILE = "INFILE";
-
-	/**
-	 * Key for parameter defining the pathname to the main output file. If more
-	 * output files are needed these are dealt with by the specific 
-	 * {@link Worker} implementations.
-	 */
-	public static final String PAROUTFILE = "OUTFILE";
-	
-	/**
-	 * Key of parameter defining the format to be used for writing molecular 
-	 * structure representations of processes atom containers.
-	 */
-	public static final String PAROUTFORMAT = "OUTFORMAT";
 	
 	/**
 	 * Key for parameter defining the molecular geometries as 

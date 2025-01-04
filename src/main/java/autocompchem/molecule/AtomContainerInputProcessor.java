@@ -40,6 +40,7 @@ import autocompchem.utils.NumberUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -147,9 +148,9 @@ public class AtomContainerInputProcessor extends Worker
     public void initialize()
     {
     	super.initialize();
-        if (params.contains(ChemSoftConstants.PARINFILE))
+        if (params.contains(WorkerConstants.PARINFILE))
         {
-        	String value = params.getParameter(ChemSoftConstants.PARINFILE)
+        	String value = params.getParameter(WorkerConstants.PARINFILE)
             		.getValueAsString();
         	processInputFileParameter(value);
         }
@@ -168,7 +169,7 @@ public class AtomContainerInputProcessor extends Worker
             if (params.contains("INFILE"))
             {
             	logger.warn("WARNING: found both "
-            			+ ChemSoftConstants.PARINFILE + " and "
+            			+ WorkerConstants.PARINFILE + " and "
             			+ ChemSoftConstants.PARGEOM + ". Using geometries from "
             			+ ChemSoftConstants.PARGEOM + " as input for "
             			+ this.getClass().getSimpleName() + ".");
@@ -199,10 +200,10 @@ public class AtomContainerInputProcessor extends Worker
         	}
         }
         
-        if (params.contains(ChemSoftConstants.PAROUTFILE))
+        if (params.contains(WorkerConstants.PAROUTFILE))
         {
 	        this.outFile = new File(params.getParameter(
-	        		ChemSoftConstants.PAROUTFILE).getValueAsString());
+	        		WorkerConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
 	        String ext = FileUtils.getFileExtension(outFile)
 	        		.replaceFirst("\\.","");
@@ -212,15 +213,15 @@ public class AtomContainerInputProcessor extends Worker
 	        	this.outFormat = ext.toUpperCase();
 	        }
         } else {
-        	logger.debug("WARNING: No " + ChemSoftConstants.PAROUTFILE 
+        	logger.debug("WARNING: No " + WorkerConstants.PAROUTFILE 
         			+ " parameter given. "
         			+ "Results will be kept in the memory for further use.");
         }
         
-        if (params.contains(ChemSoftConstants.PAROUTFORMAT))
+        if (params.contains(WorkerConstants.PAROUTFORMAT))
         {
         	this.outFormat = params.getParameter(
-        			ChemSoftConstants.PAROUTFORMAT).getValueAsString();
+        			WorkerConstants.PAROUTFORMAT).getValueAsString();
         }
         
         // If no other input channel is used, then get input from memory of 

@@ -29,6 +29,24 @@ public class WorkerConstants
     /**
      * Key for parameter defining the task of the worker 
      */
-    public final static String PARTASK = "TASK";
+    public static final String PARTASK = "TASK";
+    
+	/**
+	 * Key for parameter defining the pathname to any input file.
+	 */
+	public static final String PARINFILE = "INFILE";
+	
+	/**
+	 * Key for parameter defining the pathname to the main output file. If more
+	 * output files are needed these are dealt with by the specific 
+	 * {@link Worker} implementations.
+	 */
+	public static final String PAROUTFILE = "OUTFILE";
+	
+	/**
+	 * Key of parameter defining the format to be used for writing molecular 
+	 * structure representations of processes atom containers.
+	 */
+	public static final String PAROUTFORMAT = "OUTFORMAT";
 
 }

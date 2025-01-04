@@ -37,7 +37,6 @@ import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.MolecularMeter;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.WorkerConstants;
 
 
@@ -74,7 +73,7 @@ public class ACCJobTest
         			SoftwareId.ACC.toString());
         	params.setParameter(WorkerConstants.PARTASK, 
         			MolecularMeter.MEASUREGEOMDESCRIPTORSTASK.ID);
-        	params.setParameter(ChemSoftConstants.PARINFILE,
+        	params.setParameter(WorkerConstants.PARINFILE,
         			sdfFile.getAbsolutePath());
         	params.setParameter(ParameterConstants.VERBOSITY, "7");
         	params.setParameter("ATOMINDEXES", label + " 1 2");

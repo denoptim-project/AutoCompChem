@@ -50,9 +50,9 @@ import autocompchem.molecule.intcoords.InternalCoord;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.StringUtils;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -653,7 +653,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             }
         } else {
             Terminator.withMsgAndStatus("ERROR! Expecting an input ZMatrix "
-            		+ "file. Please use '" + ChemSoftConstants.PARINFILE 
+            		+ "file. Please use '" + WorkerConstants.PARINFILE 
             		+ "' keyord to provide a pathname to your ZMatrix input.",
             		-1);
         }

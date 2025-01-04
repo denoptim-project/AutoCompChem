@@ -50,7 +50,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -425,7 +424,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
     					+ "'" + task.ID + "' data. The initial geometry is "
     					+ "exposed as main output. You can save the multiple "
     					+ "geometries to file by using parameter '" 
-    					+ ChemSoftConstants.PAROUTFILE + "'.");
+    					+ WorkerConstants.PAROUTFILE + "'.");
     		}
     		return iac;
     	}

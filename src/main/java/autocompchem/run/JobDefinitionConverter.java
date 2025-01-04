@@ -27,9 +27,9 @@ import org.apache.commons.lang3.EnumUtils;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -106,23 +106,21 @@ public class JobDefinitionConverter extends Worker
 	{   	
     	super.initialize();
     	
-    	//TODO-gg make a more general version than ChemSoftConstants
-    	if (params.contains(ChemSoftConstants.PARINFILE))
+    	if (params.contains(WorkerConstants.PARINFILE))
         {
-         	String pathname = params.getParameter(ChemSoftConstants.PARINFILE)
+         	String pathname = params.getParameter(WorkerConstants.PARINFILE)
              		.getValueAsString();
             FileUtils.foundAndPermissions(pathname,true,false,false);
             this.inFile = new File(pathname);
         } else {
 			Terminator.withMsgAndStatus("ERROR! Missing '" 
-					+ ChemSoftConstants.PARINFILE + "'.", -1);
+					+ WorkerConstants.PARINFILE + "'.", -1);
         }
     	
-    	//TODO-gg make a more general version than ChemSoftConstants
-    	if (params.contains(ChemSoftConstants.PAROUTFILE))
+    	if (params.contains(WorkerConstants.PAROUTFILE))
         {
 	        this.outFile = new File(params.getParameter(
-	        		ChemSoftConstants.PAROUTFILE).getValueAsString());
+	        		WorkerConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
 	        String ext = FileUtils.getFileExtension(this.outFile)
 	        		.replaceFirst("\\.","");
@@ -133,13 +131,13 @@ public class JobDefinitionConverter extends Worker
 	        }
         } else {
 			Terminator.withMsgAndStatus("ERROR! Missing '" 
-					+ ChemSoftConstants.PAROUTFILE + "'.", -1);
+					+ WorkerConstants.PAROUTFILE + "'.", -1);
         }
         
-        if (params.contains(ChemSoftConstants.PAROUTFORMAT))
+        if (params.contains(WorkerConstants.PAROUTFORMAT))
         {
         	this.outFormat = ACCFileType.valueOf(params.getParameter(
-        			ChemSoftConstants.PAROUTFORMAT).getValueAsString()
+        			WorkerConstants.PAROUTFORMAT).getValueAsString()
         			.toUpperCase());
         }
 	}
