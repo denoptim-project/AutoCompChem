@@ -1,0 +1,169 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist [#7] [Ru]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../cli19-mol.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "PruneMolecules"
+        },
+        {
+          "reference": "OUTFILE",
+          "value": "cli19-pruned.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#6]~[#7]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "6"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../cli19-mol.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist [$([#6]~[Ru])] [Ru]\ndist [#7] [Ru]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "cli19-pruned.sdf"
+        }
+      ],
+      "steps": [
+        {
+          "jobType": "ACCJob",
+          "params": [
+            {
+              "reference": "APP",
+              "value": "ACC"
+            },
+            {
+              "reference": "TASK",
+              "value": "MeasureGeomDescriptors"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "dist [#17] [#7]\ndist [#17] [Ru]"
+            },
+            {
+              "reference": "VERBOSITY",
+              "value": "7"
+            },
+            {
+              "reference": "INFILE",
+              "value": "cli19-pruned.sdf"
+            }
+          ]
+        },
+        {
+          "jobType": "ACCJob",
+          "params": [
+            {
+              "reference": "APP",
+              "value": "ACC"
+            },
+            {
+              "reference": "TASK",
+              "value": "MeasureGeomDescriptors"
+            },
+            {
+              "reference": "SMARTS",
+              "value": "dist [#6] [$([#1]-C)]"
+            },
+            {
+              "reference": "VERBOSITY",
+              "value": "7"
+            },
+            {
+              "reference": "ONLYBONDED",
+              "value": "true"
+            },
+            {
+              "reference": "INFILE",
+              "value": "cli19-pruned.sdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "PruneMolecules"
+        },
+        {
+          "reference": "OUTFILE",
+          "value": "cli19-pruned-2.sdf"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "[#17]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "6"
+        },
+        {
+          "reference": "INFILE",
+          "value": "cli19-pruned.sdf"
+        }
+      ]
+    }
+  ]
+}
