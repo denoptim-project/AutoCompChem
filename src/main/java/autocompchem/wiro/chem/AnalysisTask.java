@@ -105,7 +105,7 @@ public class AnalysisTask
     {
     	StringBuilder sb = new StringBuilder();
     	sb.append("[AnalysisTask: ").append(kind).append(" ");
-    	sb.append(params.toLinesJobDetails()).append("]");
+    	sb.append(params.toLinesParametersFileFormat()).append("]");
     	return sb.toString();
     }
     

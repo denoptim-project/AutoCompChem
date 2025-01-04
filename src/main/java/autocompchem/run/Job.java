@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1194,7 +1195,7 @@ public class Job implements Runnable
     {
         List<String> lines= new ArrayList<String>();
         lines.add(ParameterConstants.STARTJOB);
-        lines.addAll(params.toLinesJobDetails());
+        lines.addAll(params.toLinesParametersFileFormat());
         for (int step = 0; step<steps.size(); step++)
         {
             lines.addAll(getStep(step).toLinesJobParameters());

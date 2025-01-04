@@ -34,6 +34,32 @@ if [ $n -ne 6 ] ; then echo NOT Passed ERROR 9 ; exit -1 ; fi
 n=0;n=$(grep -i -c "steps" cli18.json)
 if [ $n -ne 2 ] ; then echo NOT Passed ERROR 10 ; exit -1 ; fi
 
+if [ ! -f "cli18.par2" ] ; then
+  echo NOT Passed ERROR 12
+  exit -1
+fi
+
+n=0;n=$(grep -i -c "JOBSTART" cli18.par2)
+if [ $n -ne 7 ] ; then echo NOT Passed ERROR 13 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "JOBEND" cli18.par2)
+if [ $n -ne 7 ] ; then echo NOT Passed ERROR 14 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "TASK:" cli18.par2)
+if [ $n -ne 6 ] ; then echo NOT Passed ERROR 15 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "measure" cli18.par2)
+if [ $n -ne 4 ] ; then echo NOT Passed ERROR 16 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c ":" cli18.par2)
+if [ $n -ne 33 ] ; then echo NOT Passed ERROR 17 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "params" cli18.par2)
+if [ $n -ne 0 ] ; then echo NOT Passed ERROR 19 ; exit -1 ; fi
+
+n=0;n=$(grep -i -c "steps" cli18.par2)
+if [ $n -ne 0 ] ; then echo NOT Passed ERROR 20 ; exit -1 ; fi
+
 if grep -q 'Termination status: 0' cli18.log ; then
   echo Passed
   exit 0

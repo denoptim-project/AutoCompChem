@@ -111,7 +111,7 @@ public class DummyWorker extends Worker
 		LogUtils.scanLogLevels(logger);
 		
 		logger.info("Parameters for dummy task: " 
-				+ params.toLinesJobDetails());
+				+ params.toLinesParametersFileFormat());
 	}
 	
 //-----------------------------------------------------------------------------	

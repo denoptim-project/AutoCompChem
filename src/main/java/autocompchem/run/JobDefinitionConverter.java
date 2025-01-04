@@ -161,6 +161,11 @@ public class JobDefinitionConverter extends Worker
 	    	case JSON:
 	    		IOtools.writeJobToJSON(job, outFile);
 	    		break;
+	    		
+	    	case TXT:
+	    	case PAR:
+	    		IOtools.writeJobToPAR(job, outFile);
+	    		break;
     		
     		default:
     			Terminator.withMsgAndStatus("ERROR! Format '" + outFormat 

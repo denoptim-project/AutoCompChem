@@ -367,15 +367,14 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
-     * Returns a block of lines with the parameters stored in here formatted for
-     * a job details file.
-     * @return the list of lines.
+     * Returns a block of lines that can be used to define the parameters 
+     * in a parameters' file format.
+     * @return the text as a list of lines.
      */
     
-    public List<String> toLinesJobDetails()
+    public List<String> toLinesParametersFileFormat()
     {
-    	//Collections.sort(directives, new JobDirectiveComparator());
-        ArrayList<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<String>();
         for (String ref : getRefNamesSet())
         {
         	NamedData par = getParameter(ref);

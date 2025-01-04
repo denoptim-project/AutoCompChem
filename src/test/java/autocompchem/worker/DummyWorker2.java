@@ -113,7 +113,7 @@ public class DummyWorker2 extends Worker
 				// In some tests we might want to check that the input has been 
 				// read
 				// properly, so we echo the content of the param. storage
-				System.out.println(params.toLinesJobDetails());
+				System.out.println(params.toLinesParametersFileFormat());
 			} 
 		}
 	}

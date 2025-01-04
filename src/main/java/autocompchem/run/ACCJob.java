@@ -1,5 +1,10 @@
 package autocompchem.run;
 
+import java.util.Map.Entry;
+
+import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.ParameterConstants;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *

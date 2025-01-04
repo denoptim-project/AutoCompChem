@@ -662,6 +662,10 @@ public class FileAnalyzer
 	    		//TODO: could make custom parser for SDF
 	    		if (file.getName().toUpperCase().endsWith(".SDF"))
 	    			type = ACCFileType.SDF;
+	    		//TODO: could make custom parser for parameters file
+	    		if (file.getName().toUpperCase().endsWith(".PAR")
+	    				|| file.getName().toUpperCase().endsWith(".PARAMS"))
+	    			type = ACCFileType.PAR;
 	    		break;
     	}
 	    

@@ -61,6 +61,7 @@ import autocompchem.files.FileUtils;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixConstants;
+import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
@@ -976,6 +977,25 @@ public class IOtools
         }
     }
     
+//------------------------------------------------------------------------------
+    
+    /**
+     * Writes the definition of a job in parameter's file format to a file.
+     * @param job the job to serialize into parameters file format.
+     * @param file the file in which to write. Must not exist.
+     */
+    public static void writeJobToPAR(Job job, File file)
+    {
+		FileUtils.mustNotExist(file);
+		if (! (job instanceof ACCJob))
+		{
+        	Terminator.withMsgAndStatus("ERROR: cannot write "
+        			+ job.getClass().getSimpleName() 
+        			+ " into parameters' file format.", -1);
+		}
+		IOtools.writeTXTAppend(file, StringUtils.mergeListToString(
+				job.toLinesJobParameters(), newline), true);
+    }  
     
 //------------------------------------------------------------------------------
     
@@ -1003,7 +1023,7 @@ public class IOtools
      */
 
     public static void writeXYZAppendSet(File file, IAtomContainerSet acs,
-                                                                 boolean append)
+    		boolean append)
     {
         //There is currently no way to write a set to XYZ files so we force it
     	//First, we write one molecule. Then we append the rest.

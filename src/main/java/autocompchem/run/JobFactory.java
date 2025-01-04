@@ -127,6 +127,7 @@ public final class JobFactory
 			}
     		break;
     		
+    	case PAR:
     	case TXT:
     		job = buildFromParametersFile(file, imposedStr);
     		break;
