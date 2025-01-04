@@ -49,7 +49,7 @@ public class GaussianJobDetailsConverter extends Worker
     /**
      * String defining the task of converting job details
      */
-    public static final String CONVERTJOBDETAILSTASKNAME = "convertJobDetails";
+    public static final String CONVERTJOBDETAILSTASKNAME = "convertGaussianJobDetails";
 
     /**
      * Task about converting job details
