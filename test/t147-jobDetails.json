@@ -1,0 +1,172 @@
+{
+  "jobType": "CompChemJob",
+  "directives": [
+    {
+      "name": "*",
+      "keywords": [
+        {
+          "reference": "coordtype",
+          "value": "xyz",
+          "isLoud": false
+        }
+      ],
+      "dirData": [
+        {
+          "accTaskParams": [
+            {
+              "reference": "TASK",
+              "value": "getMolecularGeometry"
+            },
+            {
+              "reference": "useGeomAtIndex",
+              "value": "0"
+            }
+          ],
+          "reference": "geometry"
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "!",
+          "keywords": [
+            {
+              "reference": "method",
+              "value": "HF",
+              "isLoud": false
+            },
+            {
+              "reference": "SCFconvergence",
+              "value": "SlowConv",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "scf",
+          "subDirectives": [
+            {
+              "name": "maxiter",
+              "keywords": [
+                {
+                  "reference": "value",
+                  "value": "1000",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "!",
+          "keywords": [
+            {
+              "reference": "method",
+              "value": "RKS r2scan-3c",
+              "isLoud": false
+            },
+            {
+              "reference": "SCFconvergence",
+              "value": "TightSCF SlowConv",
+              "isLoud": false
+            },
+            {
+              "reference": "jobType",
+              "value": "Stab",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "scf",
+          "subDirectives": [
+            {
+              "name": "maxiter",
+              "keywords": [
+                {
+                  "reference": "value",
+                  "value": "500",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobType": "CompChemJob",
+      "directives": [
+        {
+          "name": "!",
+          "keywords": [
+            {
+              "reference": "method",
+              "value": "RKS r2scan-3c",
+              "isLoud": false
+            },
+            {
+              "reference": "SCFconvergence",
+              "value": "TightSCF SlowConv",
+              "isLoud": false
+            },
+            {
+              "reference": "jobType",
+              "value": "Opt Freq",
+              "isLoud": false
+            }
+          ]
+        },
+        {
+          "name": "geom",
+          "subDirectives": [
+            {
+              "name": "maxiter",
+              "keywords": [
+                {
+                  "reference": "value",
+                  "value": "600",
+                  "isLoud": false
+                }
+              ]
+            },
+            {
+              "name": "Calc_Hess",
+              "keywords": [
+                {
+                  "reference": "value",
+                  "value": "true",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "scf",
+          "subDirectives": [
+            {
+              "name": "maxiter",
+              "keywords": [
+                {
+                  "reference": "value",
+                  "value": "500",
+                  "isLoud": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

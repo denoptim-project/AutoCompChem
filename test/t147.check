@@ -1,0 +1,35 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t147.inp" ] ; then not_passed $LINENO ; fi
+
+# check that we deal with setting of charge and spin multiplicity were appropriate
+n=0; n=$(grep -c "^\*[[:space:]]*xyz[[:space:]]*0[[:space:]]*1" t147.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "charge" t147.inp )
+if [ 0 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "mult" t147.inp )
+if [ 0 != "$n" ] ; then not_passed $LINENO ; fi
+
+# Check that we used compoun job syntax
+n=0; n=$(grep -c -i "%compound" t147.inp )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "new_step" t147.inp )
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "step_end" t147.inp )
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t147.log" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t147.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

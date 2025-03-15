@@ -1,6 +1,7 @@
 JOBSTART
 JOBSTART
 TASK: PrepareInputORCA
+UseNewJobSyntax
 InputGeometriesFile: STRINGFROMCLI.sdf
 JOBDETAILS: $START$DIR_! $MT_model=XTB2
 $DIR_! $MT_calculation=NumFreq

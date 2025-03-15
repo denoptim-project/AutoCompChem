@@ -99,6 +99,13 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	PREPAREINPUTORCATASK = Task.make(PREPAREINPUTORCATASKNAME);
     }
     
+	/**
+	 * Flag requesting use of deprecated "new_job" separator instead of using
+	 * the compound's job syntax for defining multiple steps in a single 
+	 * Orca input file.
+	 */
+	public static boolean useNewJobSyntax = false;
+	
 //-----------------------------------------------------------------------------
 
     /**
@@ -109,6 +116,23 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     {
 		inpExtrension = OrcaConstants.INPEXTENSION;
 	}
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * Initialise the worker according to the parameters provided in the 
+     * collection of input parameters.
+     */
+
+    @Override
+    public void initialize()
+    {
+    	super.initialize();
+    	if (params.contains(OrcaConstants.PARNEWJOBSYNTAX))
+        {
+    		useNewJobSyntax = true;
+        }
+    }
   
 //------------------------------------------------------------------------------
 
@@ -721,51 +745,55 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		if (omitIfPossible)
 			return;
 		
-		if (ccj.getNumberOfSteps()>0)
-    	{
-    		for (Job stepJob : ccj.getSteps())
-    		{
-        		setCharge((CompChemJob) stepJob, charge);
-    		}
-    	} else {
-    		setCharge(ccj, charge);
-    	}
+		setCharge(ccj, charge);
 	}
 	
 //------------------------------------------------------------------------------
 	
+	/**
+	 * Sets the charge controlling directives if not previously present.
+	 * @param ccj
+	 * @param charge
+	 */
 	private static void setCharge(CompChemJob ccj, String charge)
 	{
-		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
-		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
-		if (dCoords==null && dStar==null)
-		{
-	    	DirComponentAddress adrs = new DirComponentAddress();
+		List<Directive> coordDirs = ccj.getDirectives(
+				OrcaConstants.COORDSDIRNAME, true);
+		int numCoordDirs = coordDirs.size();
+		List<Directive> starDirs = ccj.getDirectives(
+				OrcaConstants.STARDIRNAME, true);
+		int numStarDirs = starDirs.size();
+		if (numCoordDirs==0 && numStarDirs==0) {
+			DirComponentAddress adrs = new DirComponentAddress();
 	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
 	    			DirectiveComponentType.DIRECTIVE);
 	    	adrs.addStep(OrcaConstants.COORDSCHARGEDIRNAME, 
 	    			DirectiveComponentType.DIRECTIVE);
+	    	// NB: this adds at any level of embedding in nested jobs, but does
+	    	// not overwrite existing components.
 	    	addNewValueContainer(ccj, adrs, new Keyword(
 	    			ChemSoftConstants.PARCHARGE, false, charge));
-		} else if (dCoords!=null && dStar==null)
+		}
+		for (Directive starDir : starDirs)
 		{
-	    	DirComponentAddress adrs = new DirComponentAddress();
-	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
-	    			DirectiveComponentType.DIRECTIVE);
-	    	adrs.addStep(OrcaConstants.COORDSCHARGEDIRNAME, 
-	    			DirectiveComponentType.DIRECTIVE);
-	    	addNewValueContainer(ccj, adrs, new Keyword(
+			if (!starDir.hasComponent(ChemSoftConstants.PARCHARGE, 
+					DirectiveComponentType.KEYWORD))
+			{
+				starDir.setKeyword(new Keyword(ChemSoftConstants.PARCHARGE, 
+						false, charge));
+			}
+		}
+		for (Directive coordDir : coordDirs)
+		{
+			if (!coordDir.hasComponent(OrcaConstants.COORDSCHARGEDIRNAME, 
+					DirectiveComponentType.DIRECTIVE))
+			{
+				Directive chargeDir = new Directive(
+						OrcaConstants.COORDSCHARGEDIRNAME);
+				chargeDir.addKeyword(new Keyword(
 	    			ChemSoftConstants.PARCHARGE, false, charge));
-		} else if (dCoords==null && dStar!=null)
-		{
-			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
-					ChemSoftConstants.PARCHARGE, false, charge);
-		} else {
-			Terminator.withMsgAndStatus("ERROR! Neither '"
-				+ OrcaConstants.COORDSDIRNAME + "' nor '"
-				+ OrcaConstants.STARDIRNAME + "' directive found. "
-				+ "Cannot place charge info onto the"
-				+ "definition of the system.", -1);
+				coordDir.addSubDirective(chargeDir);
+			}
 		}
 	}
 
@@ -785,52 +813,51 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		if (omitIfPossible)
 			return;
 		
-		if (ccj.getNumberOfSteps()>0)
-    	{
-    		for (Job stepJob : ccj.getSteps())
-    		{
-    			setSpinMultiplicity((CompChemJob) stepJob, sm);
-    		}
-    	} else {
-    		setSpinMultiplicity(ccj, sm);
-    	}
+		setSpinMultiplicity(ccj, sm);
 	}
 	
 //------------------------------------------------------------------------------
 
-	public static void setSpinMultiplicity(CompChemJob ccj, String sm)
-	{
-		Directive dCoords = ccj.getDirective(OrcaConstants.COORDSDIRNAME);
-		Directive dStar = ccj.getDirective(OrcaConstants.STARDIRNAME);
-		if (dCoords==null && dStar==null)
-		{
-	    	DirComponentAddress adrs = new DirComponentAddress();
+	private static void setSpinMultiplicity(CompChemJob ccj, String sm)
+	{	
+		List<Directive> coordDirs = ccj.getDirectives(
+				OrcaConstants.COORDSDIRNAME, true);
+		int numCoordDirs = coordDirs.size();
+		List<Directive> starDirs = ccj.getDirectives(
+				OrcaConstants.STARDIRNAME, true);
+		int numStarDirs = starDirs.size();
+		if (numCoordDirs==0 && numStarDirs==0) {
+			DirComponentAddress adrs = new DirComponentAddress();
 	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
 	    			DirectiveComponentType.DIRECTIVE);
 	    	adrs.addStep(OrcaConstants.COORDSMULTDIRNAME, 
 	    			DirectiveComponentType.DIRECTIVE);
+	    	// NB: this adds at any level of embedding in nested jobs, but does
+	    	// not overwrite existing components.
 	    	addNewValueContainer(ccj, adrs, new Keyword(
 	    			ChemSoftConstants.PARSPINMULT, false, sm));
-		} else if (dCoords!=null && dStar==null)
+		}
+		for (Directive starDir : starDirs)
 		{
-	    	DirComponentAddress adrs = new DirComponentAddress();
-	    	adrs.addStep(OrcaConstants.COORDSDIRNAME, 
-	    			DirectiveComponentType.DIRECTIVE);
-	    	adrs.addStep(OrcaConstants.COORDSMULTDIRNAME, 
-	    			DirectiveComponentType.DIRECTIVE);
-	    	addNewValueContainer(ccj, adrs, new Keyword(
-	    			ChemSoftConstants.PARSPINMULT, false, sm));
-		} else if (dCoords==null && dStar!=null)
-		{
-			addNewKeyword(ccj, OrcaConstants.STARDIRNAME, 
-					ChemSoftConstants.PARSPINMULT, false, sm);
-		} else {
-			Terminator.withMsgAndStatus("ERROR! Neither '"
-					+ OrcaConstants.COORDSDIRNAME + "' nor '"
-					+ OrcaConstants.STARDIRNAME + "' directive found. "
-					+ "Cannot place multiplicity info onto the"
-					+ "definition of the system.", -1);
+			if (!starDir.hasComponent(ChemSoftConstants.PARSPINMULT, 
+					DirectiveComponentType.KEYWORD))
+			{
+				starDir.setKeyword(new Keyword(ChemSoftConstants.PARSPINMULT, 
+						false, sm));
 			}
+		}
+		for (Directive coordDir : coordDirs)
+		{
+			if (!coordDir.hasComponent(OrcaConstants.COORDSMULTDIRNAME, 
+					DirectiveComponentType.DIRECTIVE))
+			{
+				Directive chargeDir = new Directive(
+						OrcaConstants.COORDSMULTDIRNAME);
+				chargeDir.addKeyword( new Keyword(
+	    			ChemSoftConstants.PARSPINMULT, false, sm));
+				coordDir.addSubDirective(chargeDir);
+			}
+		}
 	}
 	
 //------------------------------------------------------------------------------
@@ -859,24 +886,57 @@ public class OrcaInputWriter extends ChemSoftInputWriter
     	StringBuilder sb = new StringBuilder();
     	if (job.getNumberOfSteps()>1)
     	{
-	    	for (int i=0; i<job.getNumberOfSteps(); i++)
-			{
-				CompChemJob step = (CompChemJob) job.getStep(i);
-				
-	    		preProcessingJob(step);
-	    		
-				Iterator<Directive> it = step.directiveIterator();
-				while (it.hasNext())
+    		if (useNewJobSyntax) {
+		    	for (int i=0; i<job.getNumberOfSteps(); i++)
 				{
-					Directive d = it.next();
-					sb.append(StringUtils.mergeListToString(
-							getTextForInput(d, true), NL));
+					CompChemJob step = (CompChemJob) job.getStep(i);
+					
+		    		preProcessingJob(step);
+		    		
+					Iterator<Directive> it = step.directiveIterator();
+					while (it.hasNext())
+					{
+						Directive d = it.next();
+						sb.append(StringUtils.mergeListToString(
+								getTextForInput(d, true), NL));
+					}
+					if (i<(job.getNumberOfSteps()-1))
+					{
+						sb.append(OrcaConstants.JOBSEPARATOR).append(NL);
+					}
 				}
-				if (i<(job.getNumberOfSteps()-1))
+    		} else {
+    			preProcessingJob(job);
+        		Iterator<Directive> itOut = job.directiveIterator();
+    			while (itOut.hasNext())
+    			{
+    				Directive d = itOut.next();
+    				sb.append(StringUtils.mergeListToString(
+    						getTextForInput(d, true), NL));
+    			}
+    			sb.append("%" + OrcaConstants.COMPOUNDDIRNAME).append(NL);
+    			for (int i=0; i<job.getNumberOfSteps(); i++)
 				{
-					sb.append(OrcaConstants.JOBSEPARATOR).append(NL);
+        			sb.append(OrcaConstants.INDENT ).append(
+        					OrcaConstants.COMPOUNDSTEPSTART).append(NL);
+					CompChemJob step = (CompChemJob) job.getStep(i);
+					
+		    		preProcessingJob(step);
+		    		
+					Iterator<Directive> it = step.directiveIterator();
+					while (it.hasNext())
+					{
+						Directive d = it.next();
+						for (String line : getTextForInput(d, true))
+						{
+							sb.append(OrcaConstants.INDENT).append(line).append(NL);
+						}
+					}
+	    			sb.append(OrcaConstants.INDENT).append(
+        					OrcaConstants.COMPOUNDSTEPEND).append(NL);
 				}
-			}
+    			sb.append(OrcaConstants.COMPOUNDEND).append(NL);
+    		}
     	} else if (job.getNumberOfSteps()==1) {
     		logger.warn("WARNING! Found a multistep job with only "
     				+ "one step. I assume you meant to prepare the input for "

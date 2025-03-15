@@ -679,11 +679,32 @@ public class CompChemJob extends Job implements Cloneable
     
     public Directive getDirective(String name, boolean recursive)
     {
+    	List<Directive> list = getDirectives(name, recursive);
+    	if (list.size()>0)
+    		return list.get(0);
+    	else
+    		return null;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    /**
+     * Finds and return the all directive that matches the given name. 
+     * This method can search also embedded jobs, if recursion is required. 
+     * @param name of the directive to return (case insensitive).
+     * @param recursive use <code>true</code> to allow recursion into embedded
+     * jobs.
+     * @return the directives or an empty list, if none is found with that name.
+     */
+    
+    public List<Directive> getDirectives(String name, boolean recursive)
+    {
+    	List<Directive> result = new ArrayList<Directive>();
     	for (Directive d : directives)
     	{
     		if (d.getName().toUpperCase().equals(name.toUpperCase()))
     		{
-    			return d;
+    			result.add(d);
     		}
     	}
     	if (recursive)
@@ -693,10 +714,10 @@ public class CompChemJob extends Job implements Cloneable
 	    	{
 	    		d= ((CompChemJob)step).getDirective(name, true);
 	    		if (d!=null)
-	    			return d;
+	    			result.add(d);
 	    	}
     	}
-    	return null;
+    	return result;
     }
     
 //-----------------------------------------------------------------------------

@@ -1,0 +1,8 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+# Creation input file for a compound Orca job
+VERBOSITY: 5
+TASK: PrepareInputORCA
+InputGeometriesFile: ../t147.xyz
+JOBDETAILSFILE: ../t147-jobDetails.json

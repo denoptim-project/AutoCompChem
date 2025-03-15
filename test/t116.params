@@ -6,3 +6,4 @@ VERBOSITY: 5
 TASK: PrepareInputORCA
 InputGeometriesFile: ../t116-mol.sdf
 JOBDETAILSFILE: ../t116-jobDetails.json
+UseNewJobSyntax

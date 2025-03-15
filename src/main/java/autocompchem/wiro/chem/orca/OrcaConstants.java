@@ -26,10 +26,17 @@ import autocompchem.wiro.chem.Directive;
  */
 
 public class OrcaConstants
-{
-
+{	
 	/**
-	 * The separator used in Orca input files to identify the end of the input
+	 * Key for parameter requesting to use the old "new_job" syntax 
+	 * (declared deprecated from version Orca 6) for
+	 * reporting multiple steps in a single Orca input file.
+	 */
+	public static final String PARNEWJOBSYNTAX = "USENEWJOBSYNTAX";
+	
+	/**
+	 * The old (declared deprecated from version Orca 6) separator used in Orca 
+	 * input files to identify the end of the input
 	 * of a single job, and the beginning of the input of the next job.
 	 */
 	public static final String JOBSEPARATOR = "$new_job";
@@ -157,6 +164,29 @@ public class OrcaConstants
 	 */
 	public static final String LOGJOBEXTNAMESPACE = 
 			"calculation namespace ";
+	
+	/**
+	 * Name of the 'compound' {@link Directive} defining the steps of a 
+	 * compound job.
+	 */
+	public static final String COMPOUNDDIRNAME = "Compound";	
+	
+	/**
+	 * Tail of the 'compound' {@link Directive} defining the steps of a 
+	 * compound job.
+	 */
+	public static final String COMPOUNDEND = "end";
+	
+	/**
+	 * Header (practically a directive name) of the step defining block in a 
+	 * compound job.
+	 */
+	public static final String COMPOUNDSTEPSTART = "New_Step";
+	
+	/**
+	 * Tail of the step defining block in a compound job.
+	 */
+	public static final String COMPOUNDSTEPEND = "Step_end";
 	
 	/**
 	 * Name of the 'coords' {@link Directive} defining the chemical system.
