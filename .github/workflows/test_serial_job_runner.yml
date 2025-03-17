@@ -18,5 +18,8 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn test --file pom.xml -Dtest="autocompchem.run.SerialJobsRunnerTest" 
+    - name: Build and Test almost all
+      run: mvn test --file pom.xml -Dtest="autocompchem.run.SerialJobsRunnerTest"
+    - name: Build and Test SerialJobRunner
+      run: mvn test --file pom.xml -Dtest="!autocompchem.run.SerialJobsRunnerTest" 
+
