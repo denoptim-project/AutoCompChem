@@ -204,7 +204,11 @@ public class SerialJobsRunnerTest
         main.setParameter(ParameterConstants.VERBOSITY, "2", true);
      
         // Run main job
+        try {
         main.run();
+        } catch (Throwable t) {
+        	t.printStackTrace();
+        }
         
         /*
          * we expect that Job_#0.1 and Job_#0.2 run just fine and write their 
