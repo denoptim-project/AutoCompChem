@@ -269,7 +269,7 @@ public class SerialJobsRunner extends JobsRunner
 			job.setJobNotificationListener(new SerialJobListener());
 
             //TODO-del
-            System.err.println("Submitting to executor "+executor.hashCode());
+            System.err.println("Submitting to executor "+executor.hashCode() + " job " + job.hashCode());
 		    submittedJobs.put(job, job.submitThread(executor));
 		    numSubmittedJobs++;
         }
@@ -394,9 +394,6 @@ public class SerialJobsRunner extends JobsRunner
 							synchronized (lock)
 			            	{
 								cancellAllRunningThreadsAndShutDown();
-								requestedToStart = true;
-			            		lock.notify();
-			            	};
 			            	
 							logger.warn("Action " 
 									+ requestedAction.getType() + " of " 
@@ -406,8 +403,11 @@ public class SerialJobsRunner extends JobsRunner
 									+ "evaluating job " + focusJob.getId() 
 									+ ".");
 							
-							// Refresh status of runner to prepare for new start
-							initializeExecutor();
+								// Refresh status of runner to prepare for new start
+								initializeExecutor();
+								requestedToStart = true;
+			            		lock.notify();
+			            	};
 							break;
 						}
 						
