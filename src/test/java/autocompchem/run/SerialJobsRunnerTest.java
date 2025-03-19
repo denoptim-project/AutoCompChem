@@ -127,18 +127,17 @@ public class SerialJobsRunnerTest
         
         main.run();
         
-        
         // First step runs to completion
         int n = FileAnalyzer.count(roothName+'0', TestJob.ITERATIONKEY+"*");
-    	assertTrue(n>2,"Lines in log 0");
-    	assertTrue(n<5,"Lines in log 0");
+    	assertTrue(n>2,"Lines in log 0: "+n);
+    	assertTrue(n<5,"Lines in log 0: "+n);
     	assertFalse(main.getStep(0).isInterrupted, 
     			"Interruption flag on job-0");
     	
     	// Second step is interrupted
         n = FileAnalyzer.count(roothName+'1', TestJob.ITERATIONKEY+"*");
-    	assertTrue(n>0,"Lines in log 1");
-    	assertTrue(n<4,"Lines in log 1");
+    	assertTrue(n>0,"Lines in log 1: "+n);
+    	assertTrue(n<4,"Lines in log 1: "+n);
     	assertTrue(main.getStep(1).isInterrupted,
     			"Interruption flag on job-"+1);
     	
