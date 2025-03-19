@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import autocompchem.datacollections.NamedData;
@@ -103,7 +105,7 @@ public class ParallelJobsRunner extends JobsRunner
     }
     
 //------------------------------------------------------------------------------
-
+    
     private void initializeExecutor(boolean reserveThreadsForMonitors)
     {
     	notificationId.set(0);

@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -68,12 +71,23 @@ public class SerialJobsRunner extends JobsRunner
     
 //------------------------------------------------------------------------------
 
+    /**
+     * Initializes a single thread executor with a queue that can hold at most
+     * Integer.MAX_VALUE tasks, so that the rejection of tasks will practically
+     * occur only when submitted tasks start their execution after a request 
+     * of shutting down (and this does happen when the executor is shut down
+     * by a request to restart the workflow!). The rejection strategy is
+     * the {@link DiscardPolicy} so that, the tasks that are not executed before
+     * shutting down are simply discarded without throwing an exception.
+     */
     private void initializeExecutor()
     {
     	notificationId.set(0);
     	submittedJobs = new HashMap<Job,Future<Object>>();
         
-        executor = Executors.newSingleThreadExecutor();
+    	executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, 
+    			new LinkedBlockingQueue<Runnable>(),
+    			Executors.defaultThreadFactory(), new DiscardPolicy());
     }
     
 //------------------------------------------------------------------------------
