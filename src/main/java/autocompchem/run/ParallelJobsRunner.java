@@ -560,10 +560,10 @@ public class ParallelJobsRunner extends JobsRunner
 		            	{
 							cancellAllRunningThreadsAndShutDown();
 							requestedToStart = true;
+							// Refresh status of runner to prepare for new start
+							initializeExecutor(false);
 		            		lock.notify();
 		            	}
-						// Refresh status of runner to prepare for new start
-						initializeExecutor(false);
 						break;
 						
 					case STOP:
