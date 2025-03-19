@@ -73,12 +73,7 @@ public class SerialJobsRunner extends JobsRunner
 
     /**
      * Initializes a single thread executor with a queue that can hold at most
-     * Integer.MAX_VALUE tasks, so that the rejection of tasks will practically
-     * occur only when submitted tasks start their execution after a request 
-     * of shutting down (and this does happen when the executor is shut down
-     * by a request to restart the workflow!). The rejection strategy is
-     * the {@link DiscardPolicy} so that, the tasks that are not executed before
-     * shutting down are simply discared without throwing an exception.
+     * Integer.MAX_VALUE tasks.
      */
     private void initializeExecutor()
     {
@@ -86,8 +81,7 @@ public class SerialJobsRunner extends JobsRunner
     	submittedJobs = new HashMap<Job,Future<Object>>();
         
     	executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, 
-    			new LinkedBlockingQueue<Runnable>(),
-    			Executors.defaultThreadFactory(), new DiscardPolicy());
+    			new LinkedBlockingQueue<Runnable>());
         //TODO-del
         System.err.println("Started executor "+executor.hashCode());
     }
