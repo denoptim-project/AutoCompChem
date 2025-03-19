@@ -82,8 +82,6 @@ public class SerialJobsRunner extends JobsRunner
         
     	executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, 
     			new LinkedBlockingQueue<Runnable>());
-        //TODO-del
-        System.err.println("Started executor "+executor.hashCode());
     }
     
 //------------------------------------------------------------------------------
@@ -98,16 +96,12 @@ public class SerialJobsRunner extends JobsRunner
         @Override
         public void run()
         {
-            //TODO-del
-            System.err.println("Shutting down executor (0): "+executor.hashCode());
         	executor.shutdown();
             try
             {
                 // Wait a while for existing tasks to terminate
                 if (!executor.awaitTermination(30, TimeUnit.SECONDS))
                 {
-                    //TODO-del
-                    System.err.println("Shutting down executor (1): "+executor.hashCode());
                 	executor.shutdownNow(); // Cancel running asks
                 }
             }
@@ -116,8 +110,6 @@ public class SerialJobsRunner extends JobsRunner
                 // remove traces and cleanup
                 cancellAllRunningThreadsAndShutDown();
                 // (Re-)Cancel if current thread also interrupted
-                //TODO-del
-                System.err.println("Shutting down executor (2):"+executor.hashCode());
                 executor.shutdownNow();
                 // and stop possibly alive thread
                 Thread.currentThread().interrupt();
@@ -132,8 +124,6 @@ public class SerialJobsRunner extends JobsRunner
      */
     private void shutDownExecutionService()
     {
-        //TODO-del
-        System.err.println("Shutting down executor (3(:"+executor.hashCode());
     	executor.shutdownNow();
     }
 
@@ -261,9 +251,6 @@ public class SerialJobsRunner extends JobsRunner
             //We could use a dedicated log file for each job
             Job job = it.next();
 			job.setJobNotificationListener(new SerialJobListener());
-
-            //TODO-del
-            System.err.println("Submitting to executor "+executor.hashCode() + " job " + job.hashCode());
 		    submittedJobs.put(job, job.submitThread(executor));
 		    numSubmittedJobs++;
         }
