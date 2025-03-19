@@ -316,7 +316,7 @@ public class ParallelJobsRunnerTest
         		new ArrayList<ICircumstance>(Arrays.asList(c)),act);
         
         // Conditional rerun 2
-        ICircumstance c2 = new MatchText("RESTART-Iteration 10", 
+        ICircumstance c2 = new MatchText("RESTART-Iteration 20", 
         		InfoChannelType.LOGFEED);
         Action act2 = new Action(ActionType.REDO, ActionObject.PARALLELJOB);
         newPrefix = "LAST-";
@@ -360,7 +360,7 @@ public class ParallelJobsRunnerTest
         	main.addStep(j);
         }
         
-        assertEquals(6,main.getNumberOfSteps(), "Number of parallel jobs");
+        assertEquals(6, main.getNumberOfSteps(), "Number of parallel jobs");
         
         // Comment out these to get some log, in case of debugging
         main.setParameter(ParameterConstants.VERBOSITY, "0", true);
