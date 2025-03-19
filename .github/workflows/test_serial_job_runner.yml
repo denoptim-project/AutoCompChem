@@ -24,6 +24,4 @@ jobs:
       run: mvn test --file pom.xml -Dtest="autocompchem.run.ParallelJobsRunnerTest"
     - name: Build and Test without runners
       run: mvn test --file pom.xml -Dtest="!autocompchem.run.SerialJobsRunnerTest,!autocompchem.run.ParallelJobsRunnerTest" 
-    - name: Build and Test all
-      run: mvn test --file pom.xml 
 

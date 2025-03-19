@@ -1,7 +1,5 @@
 package autocompchem.run;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -20,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
