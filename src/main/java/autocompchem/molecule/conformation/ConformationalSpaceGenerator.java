@@ -120,10 +120,8 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
     	if (task.equals(GENERATECONFORMATIONALSPACETASK))
     	{   
     		ConformationalSpace cs = createConformationalSpace(iac);
-            
-    		cs.printAll(logger);
+            cs.printAll(logger);
     		
-
     		if (outFile!=null)
             {
             	outFileAlreadyUsed = true;

@@ -1,6 +1,7 @@
 package autocompchem.molecule.conformation;
 
 
+import java.util.Map;
 import java.util.Objects;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;

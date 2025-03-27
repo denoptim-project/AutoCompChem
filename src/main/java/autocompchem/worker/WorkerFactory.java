@@ -42,6 +42,7 @@ import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.atomclashes.AtomClashAnalyzer;
 import autocompchem.molecule.chelation.ChelateAnalyzer;
 import autocompchem.molecule.conformation.ConformationalSpaceGenerator;
+import autocompchem.molecule.conformation.ConformersGenerator;
 import autocompchem.molecule.connectivity.ConnectivityGenerator;
 import autocompchem.molecule.dummyobjects.DummyObjectsHandler;
 import autocompchem.molecule.geometry.GeometryAligner;
@@ -147,6 +148,7 @@ public final class WorkerFactory
         registerType(new AtomContainerInputProcessor());
         registerType(new GeometryAligner());
         registerType(new JobDefinitionConverter());
+        registerType(new ConformersGenerator());
 	}
 
 //-----------------------------------------------------------------------------

@@ -2,6 +2,7 @@ package autocompchem.molecule.conformation;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +25,11 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
 	implements Cloneable
 {
     /**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
      * Unique counter for coordinates names
      */
     private final AtomicInteger CRDID = new AtomicInteger(0);  
@@ -158,6 +164,21 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
   		}
   		return msg;
   	}
+  	
+//-----------------------------------------------------------------------------
+
+  	/**
+  	 * Changes all the atom identifiers as to reflect the given atom list 
+  	 * reordering map.
+  	 * @param atomReorderingMap mapping of OLD index (key) to NEW index (value).
+  	 */
+  	
+	public void applyReorderingMap(Map<Integer, Integer> atomReorderingMap) {
+		for(ConformationalCoordinate coord : this)
+  	   	{
+  	   		coord.applyReorderingMap(atomReorderingMap);
+  	   	}
+	}
 
 //------------------------------------------------------------------------------
     

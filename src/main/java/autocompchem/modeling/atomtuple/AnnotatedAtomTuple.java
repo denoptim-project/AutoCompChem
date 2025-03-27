@@ -188,6 +188,25 @@ public class AnnotatedAtomTuple implements Cloneable
 	{
 		return atmIDs;
 	}
+  	
+//-----------------------------------------------------------------------------
+
+  	/**
+  	 * Changes all the atom identifiers as to reflect the given atom list 
+  	 * reordering map.
+  	 * @param atomReorderingMap mapping of OLD index (key) to NEW index (value).
+  	 */
+	public void applyReorderingMap(Map<Integer, Integer> atomReorderingMap) 
+	{
+		for (int i=0; i<atmIDs.size(); i++)
+		{
+			int intId = atmIDs.get(i).intValue();
+			if (atomReorderingMap.containsKey(intId))
+			{
+				atmIDs.set(i, atomReorderingMap.get(intId));
+			}
+		}
+	}
 	
 //------------------------------------------------------------------------------
 
@@ -198,7 +217,6 @@ public class AnnotatedAtomTuple implements Cloneable
 	{
 		return atmIDs.size();
 	}
-	
 	
 //-----------------------------------------------------------------------------
 	

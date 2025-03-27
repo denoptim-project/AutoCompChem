@@ -156,6 +156,11 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     static {
     	SUBTRACTZMATRICESTASK = Task.make(SUBTRACTZMATRICESTASKNAME);
     }
+    
+    /**
+     * Parameter requesting exclusive use of torsions as 3rd internal coordinate.
+     */
+    public static final String TORSIONONLY = "TORSIONONLY";
 
 //-----------------------------------------------------------------------------
     
@@ -220,7 +225,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         }
 
         //Get the template ZMatrix
-        if (params.contains("TORSIONONLY"))
+        if (params.contains(TORSIONONLY))
         {
             this.onlyTors = true;
             if (this.useTmpl)
@@ -863,7 +868,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                     {
                         // 4rd IC is angle
                         double rIK = pI.distance(pK);
-                        Point3d dIK= new Point3d(pI.x-pK.x,pI.y-pK.y,pI.z-pK.z);                        dIK.scale(1.0/rIK);
+                        Point3d dIK= new Point3d(pI.x-pK.x,pI.y-pK.y,pI.z-pK.z);
+                        dIK.scale(1.0/rIK);
 
                         Point3d dt = new Point3d(-dIJ.z*dIK.y + dIJ.y*dIK.z,
                                                  -dIJ.x*dIK.z + dIJ.z*dIK.x,

@@ -71,12 +71,17 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     /**
      * Name of the atom property used to stamp a visited atom
      */
-    private static final String visitedFlag = "VISITEDBYREORDERER";
+    private static final String VISITEDFLAG = "VISITEDBYREORDERER";
 
     /**
      * Name of the atom property used to record the order of the visits
      */
-    private static final String ordCounter = "ORDERLABEL";
+    private static final String NEWATMINDEX = "NEWATMINDEX";
+
+    /**
+     * Name of the atom property used to record the original atom order
+     */
+    private static final String OLDATMINDEX = "OLDATMINDEX";
     
     /**
      * String defining the task of reordering atom list
@@ -309,6 +314,12 @@ public class MolecularReorderer extends AtomContainerInputProcessor
     public IAtomContainer reorderContainer(IAtomContainer iac, 
     		List<IAtom> sources)
     {
+    	// Record original order
+    	for (int i=0; i<iac.getAtomCount(); i++)
+    	{
+    		iac.getAtom(i).setProperty(OLDATMINDEX, i);
+    	}
+    	
         //Try using source atoms to reorder the container
         int n=0;
         for (IAtom src : sources)
@@ -317,7 +328,7 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             logger.trace("Attempt to reorder from source-"+n+": " + 
             		MolecularUtils.getAtomRef(src,iac));
 
-            if (src.getProperty(visitedFlag) != null)
+            if (src.getProperty(VISITEDFLAG) != null)
             {
                 logger.trace("Skip: previously visited src atom.");
                 continue;
@@ -331,8 +342,8 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             // and explores them according to the given comparator of seeds
             ConnectivityUtils.exploreContinuoslyConnectedFromSource(iac, 
                                                                 sources, 
-                                                            visitedFlag,
-                                                             ordCounter, 
+                                                            VISITEDFLAG,
+                                                             NEWATMINDEX, 
                                                                priority);
         }
 
@@ -365,8 +376,8 @@ public class MolecularReorderer extends AtomContainerInputProcessor
             IAtom atm = iac.getAtom(id);
             String s = MolecularUtils.getAtomRef(atm,iac);
 
-            if (atm.getProperty(visitedFlag) == null ||
-                atm.getProperty(ordCounter) == null)
+            if (atm.getProperty(VISITEDFLAG) == null ||
+                atm.getProperty(NEWATMINDEX) == null)
             {
                 s = "ERROR! Atom " + s + " does not belong to any visited "
                     + "network of bonds (i.e., isolated fragment). ";
@@ -382,8 +393,8 @@ public class MolecularReorderer extends AtomContainerInputProcessor
                 Terminator.withMsgAndStatus(s,-1);
             }
 
-            int frgId = (Integer) atm.getProperty(visitedFlag);
-            int newId = (Integer) atm.getProperty(ordCounter);
+            int frgId = (Integer) atm.getProperty(VISITEDFLAG);
+            int newId = (Integer) atm.getProperty(NEWATMINDEX);
         
             record = record + NL + s + " frg:" + frgId + " ord:" + newId;
        
@@ -482,6 +493,29 @@ public class MolecularReorderer extends AtomContainerInputProcessor
         return orderedIAC;
     }
 
+//------------------------------------------------------------------------------
+
+    /**
+     * Produces a atom index mapping to trace the reordered atoms. Works only
+     * on {@link IAtomContainer}s produced by methods like 
+     * {@link MolecularReorderer#reorderContainer} because it relied on the
+     * existence of atom properties 
+     * @return the map of OLD index (key) to NEW index (value).
+     */
+
+    public static Map<Integer,Integer> getAtomReorderingMap(IAtomContainer iac)
+    {
+    	Map<Integer,Integer> reorderingMap = new HashMap<Integer,Integer>();
+		for (IAtom atm : iac.atoms())
+		{
+			Integer oldIxs = atm.getProperty(OLDATMINDEX, Integer.class);
+			Integer newIxs = atm.getProperty(NEWATMINDEX, Integer.class);
+			if (oldIxs != null || newIxs != null)
+				reorderingMap.put(oldIxs, newIxs);
+		}
+    	return reorderingMap;
+    }
+    
 //------------------------------------------------------------------------------
 
 }

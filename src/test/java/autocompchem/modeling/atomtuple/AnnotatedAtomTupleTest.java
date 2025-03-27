@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.vecmath.Point3d;
@@ -241,6 +242,43 @@ public class AnnotatedAtomTupleTest
     	assertEquals(1, tuples.size());
     	assertEquals(SUFFIX, tuples.get(0).getSuffix());
     	assertEquals(PREFIX, tuples.get(0).getPrefix());
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testApplyReorderingMap() throws Exception
+    {
+    	AnnotatedAtomTuple original = getTestAnnotatedAtomTuple();
+    	AnnotatedAtomTuple changing = original.clone();
+    	
+    	Map<Integer,Integer> map = new HashMap<Integer,Integer>();
+    	map.put(1, 2);
+    	map.put(2, 1);
+    	map.put(5, 10);
+    	map.put(10, 9);
+    	map.put(6, 0);
+    	changing.applyReorderingMap(map);
+    	
+    	List<Integer> expected = new ArrayList<Integer>(Arrays.asList(
+    			2, 1, 3, 4, 10, 0));
+    	assertEquals(changing.getAtomIDs().size(), expected.size());
+    	for (int i=0; i<expected.size(); i++)
+    		assertEquals(changing.getAtomIDs().get(i), expected.get(i));
+    	
+    	Map<Integer,Integer> mapReverse = new HashMap<Integer,Integer>();
+    	for (Entry<Integer,Integer> e : map.entrySet())
+    	{
+    		mapReverse.put(e.getValue(), e.getKey());
+    	}
+
+    	changing.applyReorderingMap(mapReverse);
+    	assertEquals(changing.getAtomIDs().size(), 
+    			original.getAtomIDs().size());
+    	for (int i=0; i<changing.getAtomIDs().size(); i++)
+    	{
+    		assertEquals(changing.getAtomIDs().get(i), original.getAtomIDs().get(i));
+    	}
     }
     
 //------------------------------------------------------------------------------
