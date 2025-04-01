@@ -151,7 +151,7 @@ public class ConfigItem
 			int currentRowLength = 0;
 			for (int i=0; i<words.length; i++) 
 			{
-				String[] splittedWords = words[i].split("[\\r\\n]",-1);
+				String[] splittedWords = words[i].split("[\\r\\n]+",-1);
 				for (int j=0; j<splittedWords.length; j++)
 				{
 					if (j>0)
@@ -224,16 +224,17 @@ public class ConfigItem
 		String[] words = doc.split("[^\\S\\r\\n]"); 
 		StringBuilder sbHeader = new StringBuilder();
 		sbHeader.append(" -> ").append(casedKey).append(" ").append(type);
-		String indent = "        ";
 		sbHeader.append(System.getProperty("line.separator"));
 		
 		StringBuilder sb = new StringBuilder();
+
+		String indent = "        ";
 		sb.append(indent);
+		int currentRowLength = indent.length();
 		
-		int currentRowLength = 0;
 		for (int i=0; i<words.length; i++) 
 		{
-			String[] splittedWords = words[i].split("[\\r\\n]",-1);
+			String[] splittedWords = words[i].split("[\\r\\n]+",-1);
 			for (int j=0; j<splittedWords.length; j++)
 			{
 				if (j>0)
@@ -251,7 +252,7 @@ public class ConfigItem
 				if (possibleLength < MAXLINELENGTH)
 				{
 					sb.append(word);
-					currentRowLength = possibleLength;
+					currentRowLength = currentRowLength + word.length();
 				} else {
 					sb.append(System.getProperty("line.separator"));
 					sb.append(indent).append(word);

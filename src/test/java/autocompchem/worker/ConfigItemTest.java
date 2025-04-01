@@ -69,7 +69,7 @@ public class ConfigItemTest
         
     	String str = knownParams.get(0).getStringForHelpMsg();
     	
-    	String[] lines = str.split("[\\r\\n]");
+    	String[] lines = str.split("[\\r\\n]+");
     	assertEquals(12, lines.length);
     	
     	for (int i=0; i<lines.length; i++)
