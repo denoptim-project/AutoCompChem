@@ -76,7 +76,7 @@ public class ConfigItem
 	
 	/**
 	 * The specific task of the embedded worker. This may be empty, in which 
-	 * case it indicated to produce the documentation for the worker class
+	 * case it indicates to produce the documentation for the worker class
 	 * rather than its task-specific version.
 	 */
 	final String task;
@@ -108,6 +108,9 @@ public class ConfigItem
 	 */
 	final List<String> ignorableWorkers;
 	
+	
+	public static final int MAXLINELENGTH = 80;
+	
 //------------------------------------------------------------------------------
 	  
 	public ConfigItem(String key, String type, String casedKey, String doc, 
@@ -134,38 +137,47 @@ public class ConfigItem
 	 * item in a list of items.
 	 * @return a string formatted to optimize printing in CLI's help message.
 	 */
-	public Object getStringForHelpMsg() {
+	public String getStringForHelpMsg() {
 		if (embeddedWorker!=null)
 		{
 			// When we have the embeddedWorker it means this configuration item 
 			// is a container for items that control the embedded worker.
 			StringBuilder sb = new StringBuilder();
 			
-			// Make sure the opening sentence fits the maxLineLength
+			// Make sure the opening sentence fits the max line length
 			String openingSentence = "Settings pertaining " + tag + ": ";
-			int previousRowsLength = 0;
-			int maxLineLength = 76;
+
 			String[] words = openingSentence.split("[^\\S\\r\\n]"); 
+			int currentRowLength = 0;
 			for (int i=0; i<words.length; i++) 
 			{
-				int currentRowLength = sb.length() - (previousRowsLength);
-				int possibleLength = currentRowLength + words[i].length();
-				
-				if (possibleLength < maxLineLength)
+				String[] splittedWords = words[i].split("[\\r\\n]",-1);
+				for (int j=0; j<splittedWords.length; j++)
 				{
-					sb.append(words[i]);
-					currentRowLength = possibleLength;
-				} else {
-					previousRowsLength = previousRowsLength + currentRowLength;
-					sb.append(System.getProperty("line.separator"));
-					sb.append(" ").append(words[i]);
-				}
-				if (words[i].matches(".*[\\r\\n]+"))
-				{
-					previousRowsLength = previousRowsLength + currentRowLength;
-					sb.append(" ");
-				} else {
-					sb.append(" ");
+					if (j>0)
+					{
+						sb.append(System.getProperty("line.separator"));
+					}
+					String word = splittedWords[j];
+					int possibleLength = currentRowLength + word.length();
+					if (!word.isEmpty())
+					{
+						possibleLength = possibleLength + 1;
+					}
+					if (possibleLength < MAXLINELENGTH)
+					{
+						sb.append(word);
+						currentRowLength = possibleLength;
+					} else {
+						sb.append(System.getProperty("line.separator"));
+						sb.append(word);
+						currentRowLength = word.length();
+					} 
+					if (!word.isEmpty())
+					{
+						sb.append(" ");
+						currentRowLength = currentRowLength + 1;
+					}
 				}
 			}
 			
@@ -215,33 +227,44 @@ public class ConfigItem
 		String indent = "        ";
 		sbHeader.append(System.getProperty("line.separator"));
 		
-		int previousRowsLength = 0;
-		int maxLineLength = 76;
-
 		StringBuilder sb = new StringBuilder();
 		sb.append(indent);
+		
+		int currentRowLength = 0;
 		for (int i=0; i<words.length; i++) 
 		{
-			int currentRowLength = sb.length() - (previousRowsLength);
-			int possibleLength = currentRowLength + words[i].length();
-			
-			if (possibleLength < maxLineLength)
+			String[] splittedWords = words[i].split("[\\r\\n]",-1);
+			for (int j=0; j<splittedWords.length; j++)
 			{
-				sb.append(words[i]);
-				currentRowLength = possibleLength;
-			} else {
-				previousRowsLength = previousRowsLength + currentRowLength;
-				sb.append(System.getProperty("line.separator"));
-				sb.append(indent).append(words[i]);
-			}
-			if (words[i].matches(".*[\\r\\n]+"))
-			{
-				previousRowsLength = previousRowsLength + currentRowLength;
-				sb.append(indent);
-			} else {
-				sb.append(" ");
+				if (j>0)
+				{
+					sb.append(System.getProperty("line.separator"));
+					sb.append(indent);
+					currentRowLength = indent.length();
+				}
+				String word = splittedWords[j];
+				int possibleLength = currentRowLength + word.length();
+				if (!word.isEmpty())
+				{
+					possibleLength = possibleLength + 1;
+				}
+				if (possibleLength < MAXLINELENGTH)
+				{
+					sb.append(word);
+					currentRowLength = possibleLength;
+				} else {
+					sb.append(System.getProperty("line.separator"));
+					sb.append(indent).append(word);
+					currentRowLength = (indent + word).length();
+				} 
+				if (!word.isEmpty())
+				{
+					sb.append(" ");
+					currentRowLength = currentRowLength + 1;
+				}
 			}
 		}
+		
 		sb.append(System.getProperty("line.separator"));
 		sbHeader.append(sb.toString());
 		return sbHeader.toString();
@@ -259,9 +282,6 @@ public class ConfigItem
 		{
   	        JsonObject jsonObject = json.getAsJsonObject();
   	        
-  	        ConfigItem ci = context.deserialize(
-  	        		jsonObject.get("address"), DirComponentAddress.class);
-  	      	
   	        String key = null;
   	        if (jsonObject.has("key"))
 			{

@@ -1,0 +1,12 @@
+[
+  {
+    "key": "ATOMIDS",
+    "casedKey": "atomIDs",
+    "type": "<String>",
+    "doc": "The order of the indexes is retained. Recognized keywords are (case-insensitive):\n --> 'Fold=<value>': to specify the extent to which this conformational coordinate should be exploredsdfa sadfasdf asdfasdf asf adfg adfgsdfgsdfg sdfsdgsdg sdgsdghsdgh.\n--> 'GetCurrentValue': requests the determination of the value of the internal coordinate defined by the tuple: distance, angle, or dihedral angle dfasdfa sdfasdf SDfsf. \n --> 'Value=<number>': \n--> last: sdfsDF adfdF dfsDF sdfSDFASDF sef sDFsdf aD AS FDVA A AFBdfgdfgh  dfg  df hn ntly from the current value."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  }
+]
