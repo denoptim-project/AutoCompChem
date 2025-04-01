@@ -562,9 +562,22 @@ public class ZMatrixAtom implements Cloneable
     @Override
     public ZMatrixAtom clone()
     {
-    	ZMatrixAtom zma = new ZMatrixAtom(name, idI, idJ, idK, icI.clone(), 
-    			icJ.clone(), icK.clone());
-    	return zma;
+    	InternalCoord clnICI = null;
+    	InternalCoord clnICJ = null;
+    	InternalCoord clnICK = null;
+    	if (icI != null)
+    	{
+    		clnICI = icI.clone();
+    	}
+    	if (icJ != null)
+    	{
+    		clnICJ = icJ.clone();
+    	}
+    	if (icK != null)
+    	{
+    		clnICK = icK.clone();
+    	}
+    	return new ZMatrixAtom(name, idI, idJ, idK, clnICI,  clnICJ, clnICK);
     }
     
 //------------------------------------------------------------------------------

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t148_conformers.xyz" ] ; then not_passed $LINENO ; fi
+
+# We expect 36 conformations, i.e., 36 blocka of text
+n=0; n=$(grep -c "^59$" t148_conformers.xyz )
+if [ 36 != "$n" ] ; then not_passed $LINENO ; fi
+
+# All conformers are reordered so that the first atom is a nitrogen
+# and all come from conversion of ZMatrix to XYS, so the first atom
+# is located at the centroid of the Cartesian coords ref system
+n=0; n=$(grep -c -i "N[[:space:]]*0.0*[[:space:]]*0.0*[[:space:]]*0.0*" t148_conformers.xyz )
+if [ 36 != "$n" ] ; then not_passed $LINENO ; fi
+
+# Ensure all systems have the last atom
+n=0; n=$(awk 'NR % 61 == 0' t148_conformers.xyz | wc -l | awk '{print $1}' )
+if [ 36 != "$n" ] ; then not_passed $LINENO ; fi
+
+# Only 6 unique positions for the la atom
+n=0; n=$(awk 'NR % 61 == 0' t148_conformers.xyz | sort -u | wc -l | awk '{print $1}')
+if [ 6 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t148.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

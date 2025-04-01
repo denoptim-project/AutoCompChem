@@ -1171,7 +1171,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         }
 
         List<ZAtomCandidate> candidates = new ArrayList<ZAtomCandidate>();
-        if (zmat.findTorsion(idI,idJ) 
+        if (zmat.usesTorsion(idI,idJ) 
            ||  countDefinedNeighbours(idC,atmJ,mol) == 1)
         {
             typK = "1";

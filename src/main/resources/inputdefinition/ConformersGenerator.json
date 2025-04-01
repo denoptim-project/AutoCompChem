@@ -1,0 +1,10 @@
+[
+  {
+    "embeddedWorker": "autocompchem.molecule.conformation.ConformationalSpaceGenerator",
+    "tag": "the definition of the conformational space",
+    "ignorableItems": [
+      "outFile",
+      "outFormat"
+    ]
+  }
+]

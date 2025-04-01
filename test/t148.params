@@ -5,3 +5,4 @@ SMARTS:$START[Ru]~[$([#6;X3]([#7;X3])[#6;X4])] fold=2
 [$([#7;X3]([#6;X4])~[#6;X3]~[Ru])]-!@[!$([#6;X3]~[Ru])] fold=2
 [#6;X4;!$([#6;H3])]-!@[#6;!$([#6;H3])] fold=3
 $END
+outFile: t148_conformers.xyz

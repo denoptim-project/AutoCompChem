@@ -304,7 +304,7 @@ public class ZMatrix implements Cloneable
      * @return <code>true</code> if the torsion is found in the z-matrix
      */
 
-    public boolean findTorsion(int idI, int idJ)
+    public boolean usesTorsion(int idI, int idJ)
     {
         boolean res = false;
         for (ZMatrixAtom zatm : zatoms)
@@ -316,6 +316,30 @@ public class ZMatrix implements Cloneable
             }
         }
         return res;
+    }
+    
+//-----------------------------------------------------------------------------
+
+    /**
+     * REturns all {@link ZMatrixAtom} of which the internal
+     * coordinates include the torsion angle corresponding
+     * to the rotation along the bond/axes defined by two given centers.
+     * @param idI index of the first center defining the target bond/axes
+     * @param idJ index of the second center defining the target bond/axes.
+     * @return the list of {@link ZMatrixAtom}
+     */
+
+    public List<ZMatrixAtom> findAllTorsions(int idI, int idJ)
+    {
+    	List<ZMatrixAtom> matches = new ArrayList<ZMatrixAtom>();
+        for (ZMatrixAtom zatm : zatoms)
+        {
+            if (zatm.usesTorsion(idI, idJ))
+            {
+            	matches.add(zatm);
+            }
+        }
+        return matches;
     }
 
 //------------------------------------------------------------------------------

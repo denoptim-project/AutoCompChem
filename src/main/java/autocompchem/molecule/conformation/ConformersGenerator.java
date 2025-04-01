@@ -1,34 +1,29 @@
 package autocompchem.molecule.conformation;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openscience.cdk.interfaces.IAtom;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.AtomContainerSet;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
-import autocompchem.modeling.atomtuple.AtomTupleConstants;
-import autocompchem.modeling.atomtuple.AtomTupleGenerator;
-import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
-import autocompchem.modeling.constraints.ConstraintDefinition;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularReorderer;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
+import autocompchem.molecule.intcoords.zmatrix.ZMatrixAtom;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
+import autocompchem.run.Terminator;
 import autocompchem.utils.ListOfListsCombinations;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
@@ -69,8 +64,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
      * Constructor.
      */
     public ConformersGenerator()
-    {
-    }
+    {}
     
 //------------------------------------------------------------------------------
 
@@ -84,7 +78,6 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 
     @Override
     public String getKnownInputDefinition() {
-    	//TODO-gg
         return "inputdefinition/ConformersGenerator.json";
     }
 
@@ -108,7 +101,6 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     		IAtomContainer orderedIAC = reorderer.reorderContainer(iac);
     		
     		// Generate the conformational space definition
-    		//TODO-gg consider making only one conf space generator and re-running the mol-depepndent part
     		ParameterStorage confSpaceParams = params.clone();
     		confSpaceParams.setParameter(WorkerConstants.PARTASK, 
     				ConformationalSpaceGenerator.GENERATECONFORMATIONALSPACETASKNAME);
@@ -125,11 +117,12 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     		ConformationalSpace cs = csg.createConformationalSpace(iac);
     		
     		// Adjust to reordered atom list
-    		Map<Integer, Integer> reorderingMap = MolecularReorderer.getAtomReorderingMap(orderedIAC);
+    		Map<Integer, Integer> reorderingMap = 
+    				MolecularReorderer.getAtomReorderingMap(orderedIAC);
     		cs.applyReorderingMap(reorderingMap);
     		
     		// Generate the actual conformers
-    		conformers = generateConformers(orderedIAC, cs);
+    		conformers = generateConformers(orderedIAC, cs, logger);
     		
     		if (outFile != null)
             {
@@ -174,34 +167,43 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 	 * @param confSpace the definition of the degrees of freedom to consider
 	 * @return the list of non-optimized conformers.
 	 */
-	public AtomContainerSet generateConformers(IAtomContainer iac, 
-			ConformationalSpace confSpace) 
+	public static AtomContainerSet generateConformers(IAtomContainer iac, 
+			ConformationalSpace confSpace, Logger logger) 
 	{
 		AtomContainerSet conformers = new AtomContainerSet();
 		
-		// TODO-gg log
-		System.out.println("TODO-gg: generate conformers for mol " 
-		+ MolecularUtils.getNameOrID(iac));
-		System.out.println(confSpace.toPrintableString());
+		String msg = "Generating conformers for " + MolecularUtils.getNameOrID(
+				iac) + NL + confSpace.toPrintableString();
+		logger.info(msg);
 		
 		// Make the initial ZMatrix which we can then use to produce conformers
 		ParameterStorage zmahParams = new ParameterStorage();
 		zmahParams.setParameter(WorkerConstants.PARTASK, 
 				ZMatrixHandler.CONVERTTOZMATNAME);
-		zmahParams.setParameter(ZMatrixHandler.TORSIONONLY);
 		ZMatrixHandler zmh;
 		try {
-			//TODO-gg should try to prioritize bonds in the conf.space.
+			//TODO should try to prioritize bonds in the conf.space.
 			zmh = (ZMatrixHandler) WorkerFactory.createWorker(zmahParams, null);
 		} catch (ClassNotFoundException e) {
 			// This should never happen unless things are deeply broken
 			throw new IllegalStateException(e);
 		}
-		ZMatrix zmat = zmh.makeZMatrix(iac, null);
+		ZMatrix originalZMat = zmh.makeZMatrix(iac, null);
 		
 		// Convert conformational coordinates into torsional steps
 		// WARNING: assumption that we have only torsional degrees of freedom!
-		// TODO-gg check if assumption is satisfied!
+		if (!confSpace.containsOnlyTorsions())
+		{
+			String msgTors = "Can only generate conformers using "
+					+ "torsional degree offreedom. The given conformational "
+					+ "includes: ";
+			for (ConformationalCoordinate cc : confSpace)
+		    {
+				msgTors = msgTors + NL + cc.getType();
+		    }
+					
+			Terminator.withMsgAndStatus(msgTors, -1);
+		}
         List<List<Double>> listsOfConfSteps = new ArrayList<List<Double>>();
         List<ConformationalCoordinate> sortedCoords = 
         		new ArrayList<ConformationalCoordinate>();
@@ -232,24 +234,42 @@ public class ConformersGenerator extends AtomContainerInputProcessor
         {
         	counter++;
         	List<Double> steps = iterator.next();
-        	//TODO-gg log
-        	System.out.println("Ateration "+counter+": "+StringUtils.mergeListToString(steps, "   ", true));
         	
-        	//TODO-gg make ZmatMove
+        	logger.debug("Generating conformer for alteration " + counter 
+        			+ ": " + StringUtils.mergeListToString(steps, "   ", true));
         	
-        	// Apply ZMatMove
+        	// Make ZmatMove
+        	ZMatrix editedZMat = originalZMat.clone();
+        	int i=0;
+        	for (ConformationalCoordinate coord : confSpace)
+            {
+        		double step = steps.get(i);
+        		// WARNING assumption we have only two atoms
+        		int atmA = coord.getAtomIDs().get(0);
+        		int atmB = coord.getAtomIDs().get(1);
+        		for (ZMatrixAtom za : editedZMat.findAllTorsions(atmA, atmB))
+        		{
+        			za.getIC(2).setValue(za.getIC(2).getValue() + step);
+        		}
+        		for (ZMatrixAtom za : editedZMat.findAllTorsions(atmB, atmA))
+        		{
+        			za.getIC(2).setValue(za.getIC(2).getValue() + step);
+        		}
+        		i++;
+            }
         	
         	// Store conformer
+        	try {
+        		IAtomContainer conformer = zmh.convertZMatrixToIAC(editedZMat, 
+        				iac);
+        		conformers.addAtomContainer(conformer);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				Terminator.withMsgAndStatus("Could not convert ZMatrix "
+						+ "representation to XYZ.", -1, e);
+			}
         }
         
-		/*
-		
-		ListOfListsCombinations
-		Iterator<List<Double>> iterator = null;
-        if (useMultiAtomMAtches)
-		*/
-		//
-		
 		return conformers;
 	}
 

@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.Logger;
 
+import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
+
 
 /**
  * The conformational space as the ordered list of non-redundant conformational
@@ -82,6 +84,25 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
         }
         return sz;
     }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if all {@link ConformationalCoordinate}s contained here 
+     * are of type {@link ConformationalCoordType#TORSION}.
+     * @return <code>true</code> if all the {@link ConformationalCoordinate}s
+     * are of type {@link ConformationalCoordType#TORSION}.
+     */
+
+	public boolean containsOnlyTorsions() 
+	{
+		for (ConformationalCoordinate cc : this)
+	    {
+			if (cc.getType() != ConformationalCoordType.TORSION)
+				return false;
+	    }
+		return true;
+	}
 	
 //------------------------------------------------------------------------------
 
