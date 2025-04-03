@@ -27,6 +27,7 @@ import org.apache.commons.lang3.EnumUtils;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.io.IOtools.IACOutFormat;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -122,12 +123,15 @@ public class JobDefinitionConverter extends Worker
 	        this.outFile = new File(params.getParameter(
 	        		WorkerConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
-	        String ext = FileUtils.getFileExtension(this.outFile)
-	        		.replaceFirst("\\.","");
-	        if (ext != null && EnumUtils.isValidEnum(ACCFileType.class, 
-	        		ext.toUpperCase()))
+	        String ext = FileUtils.getFileExtension(outFile);
+	        if (ext != null)
 	        {
-	        	this.outFormat = ACCFileType.valueOf(ext.toUpperCase());
+	        	ext = ext.replaceFirst("\\.","");
+		        if (EnumUtils.isValidEnum(ACCFileType.class, 
+		        		ext.toUpperCase()))
+		        {
+		        	this.outFormat =  ACCFileType.valueOf(ext.toUpperCase());
+		        }
 	        }
         } else {
 			Terminator.withMsgAndStatus("ERROR! Missing '" 

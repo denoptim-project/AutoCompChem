@@ -205,12 +205,15 @@ public class AtomContainerInputProcessor extends Worker
 	        this.outFile = new File(params.getParameter(
 	        		WorkerConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
-	        String ext = FileUtils.getFileExtension(outFile)
-	        		.replaceFirst("\\.","");
-	        if (ext != null && EnumUtils.isValidEnum(IACOutFormat.class, 
-	        		ext.toUpperCase()))
+	        String ext = FileUtils.getFileExtension(outFile);
+	        if (ext != null)
 	        {
-	        	this.outFormat = ext.toUpperCase();
+	        	ext = ext.replaceFirst("\\.","");
+		        if (EnumUtils.isValidEnum(IACOutFormat.class, 
+		        		ext.toUpperCase()))
+		        {
+		        	this.outFormat = ext.toUpperCase();
+		        }
 	        }
         } else {
         	logger.debug("WARNING: No " + WorkerConstants.PAROUTFILE 
