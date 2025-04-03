@@ -1,7 +1,7 @@
 #!/bin/bash
 
 totAdded=$(grep -c "Adding bond between atom" t18.log )
-if [ $totAdded != 135 ] ; then 
+if [ $totAdded != 122 ] ; then 
 echo NOT Passed
 exit -1
 fi

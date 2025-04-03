@@ -3,6 +3,7 @@
 #
 VERBOSITY: 7
 TASK: RicalculateConnectivity
-TOLERANCE: 0.333
+TOLERANCE: 0.3
+TOLERANCE2NDSHELL: 0.05
 INFILE: ../t18mol.sdf
 OUTFILE: t18_newConn.sdf

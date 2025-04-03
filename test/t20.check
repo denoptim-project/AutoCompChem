@@ -1,6 +1,6 @@
 #!/bin/bash
 
-totDone=$(grep -c "Adding a bond between" t20.log)
+totDone=$(grep -c "Adding bond between" t20.log)
 if [ $totDone != 6 ] ; then
   echo NOT Passed - Error 1
   exit -1

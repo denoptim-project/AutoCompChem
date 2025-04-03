@@ -55,7 +55,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
 {
     //Tolerance with respect to vdW radii
     private double tolerance = 0.33;
-    private double tolerance2ndShell = 0.07;
+    private double tolerance2ndShell = 0.05;
 
     //Target elements on which bonds are to be added
     private String targetEl = "";
