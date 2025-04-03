@@ -53,12 +53,9 @@ import autocompchem.worker.Worker;
 
 public class ConnectivityGenerator extends AtomContainerInputProcessor
 {
-    //Default bond order
-    private String defBO = "SINGLE";
-
     //Tolerance with respect to vdW radii
-    private double tolerance = 0.10;
-    private double tolerance2ndShell = 0.05;
+    private double tolerance = 0.33;
+    private double tolerance2ndShell = 0.07;
 
     //Target elements on which bonds are to be added
     private String targetEl = "";
@@ -185,8 +182,8 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         //Define target element
         if (params.contains("TARGETELEMENT"))
         {
-            String ts = 
-                    params.getParameter("TARGETELEMENT").getValueAsString();
+            String ts = params.getParameter("TARGETELEMENT").getValueAsString();
+            task = ADDBONDSFORSINGLEELEMENTTASK;
             this.targetEl = ts;
         }
         
@@ -325,63 +322,71 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
             if (!atmA.getSymbol().equals(el))
                 continue;
 
-            //get van der Waals radius
-            double rA = AtomUtils.getVdwRradius(el);
-
-            //Already connected atoms
-            List<IAtom> nbrs = mol.getConnectedAtomsList(atmA);
-            //And second shell (atoms connected to one in nbrs)
-            List<IAtom> secShell = new ArrayList<IAtom>();
-            for (IAtom nbr : nbrs)
-            {
-                List<IAtom> nbrsOfNbr = mol.getConnectedAtomsList(nbr);
-                for (IAtom nbrOfNbr : nbrsOfNbr)
-                {
-                    //Skip central
-                    if (nbrOfNbr.equals(atmA))
-                        continue;
-        
-                    secShell.add(nbrOfNbr);
-                }
-            }
-
             for (IAtom atmB : mol.atoms())
             {
                 if (atmB.equals(atmA))
                     continue;
-
-                //get van der Waals radius
-                String sB = atmB.getSymbol();
-                double rB = AtomUtils.getVdwRradius(sB);
-
-                //Evaluate possibility of generating a new bond
-                if (!nbrs.contains(atmB))
-                {
-                    double dist = 
-                        MolecularUtils.calculateInteratomicDistance(atmA,atmB);
-                    double refDist = rA + rB;
-
-                    if (secShell.contains(atmB))
-                    {
-                        //Apply extra tolerance for second layer of atoms
-                        refDist = refDist - (refDist * 
-                                        (tolerance + extraTollSecShell));
-                    } else {
-                        refDist = refDist - (refDist * tolerance);
-                    }
-                    if (dist < refDist)
-                    {
-                        logger.info("Adding a bond between '" 
-                                        + MolecularUtils.getAtomRef(atmA,mol)
-                                        + "' and '" 
-                                        + MolecularUtils.getAtomRef(atmB,mol)
-                                        + "'.");
-                        IBond b = new Bond(atmA, atmB,
-                                                IBond.Order.valueOf("SINGLE"));
-                        mol.addBond(b);
-                    }
-                }
+                ricalculateConnectivity(atmA, mol, atmB);
             }
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Recalculate connectivity for the given pair of atoms belonging to 
+     * the given container.
+     */
+    public void ricalculateConnectivity(IAtom atmA, IAtomContainer mol, IAtom atmB)
+    {
+    	if (atmB.equals(atmA))
+            return;
+    	if (!mol.contains(atmA) || !mol.contains(atmB))
+    		return;
+
+        //get van der Waals radius
+        String sA = atmA.getSymbol();
+        double rA = AtomUtils.getVdwRradius(sA);
+        String sB = atmB.getSymbol();
+        double rB = AtomUtils.getVdwRradius(sB);
+        
+        List<IAtom> nbrsA = mol.getConnectedAtomsList(atmA);
+        if (nbrsA.contains(atmB))
+        	return;
+        
+        List<IAtom> secShell = new ArrayList<IAtom>();
+        for (IAtom nbr : nbrsA)
+        {
+            List<IAtom> nbrsOfNbr = mol.getConnectedAtomsList(nbr);
+            for (IAtom nbrOfNbr : nbrsOfNbr)
+            {
+                if (nbrOfNbr.equals(atmA))
+                    continue;
+                secShell.add(nbrOfNbr);
+            }
+        }
+        
+        double dist = MolecularUtils.calculateInteratomicDistance(atmA,atmB);
+        double refDist = rA + rB;
+
+        if (secShell.contains(atmB))
+        {
+            refDist = refDist - (refDist * (tolerance + tolerance2ndShell));
+        } else {
+            refDist = refDist - (refDist * tolerance);
+        }
+        if (dist < refDist)
+        {
+
+            logger.trace("Adding bond between atom '" 
+                                        + MolecularUtils.getAtomRef(atmA,mol)
+                                        + "' and '"
+                                        + MolecularUtils.getAtomRef(atmB,mol)
+                                        + "' (dist=" + dist + " - refDist="
+                                        + refDist + "). ");
+            //TODO: guess bond order
+            IBond b = new Bond(atmA, atmB, IBond.Order.valueOf("SINGLE"));
+            mol.addBond(b);
         }
     }
 
@@ -421,26 +426,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
             for (int j=(i+1); j<nAtms; j++)
             {
                 IAtom b = mol.getAtom(j);
-                double ab = MolecularUtils.calculateInteratomicDistance(a, b);
-                double minNBD = ConnectivityUtils.getMinNonBondedDistance(
-                                                        a.getSymbol(),
-                                                        b.getSymbol(),
-                                                        tolerance);
-
-                if ((ab < minNBD) && (!nbrs.contains(b)))
-                {
-                    logger.trace("Adding bond between atom '" 
-                                                + MolecularUtils.getAtomRef(a,mol)
-                                                + "' and '"
-                                                + MolecularUtils.getAtomRef(b,mol)
-                                                + "' (dist=" + ab + " - minNBD="
-                                                + minNBD + "). ");
-
-                    //TODO: add attempt to guess bond order
-
-                    IBond newBnd = new Bond(a,b,IBond.Order.valueOf(defBO));
-                    mol.addBond(newBnd);
-                }
+            	ricalculateConnectivity(a, mol, b);
             }
         }
     }

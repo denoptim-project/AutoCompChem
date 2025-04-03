@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli20.log" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli20_RuOnly.sdf" ] ; then not_passed $LINENO ; fi
+if ! head -n 4 "cli20_RuOnly.sdf" | grep -q -i "^230 10  0  0  0  0  0" ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]]*3 .* 1  0  0  0  0" "cli20_RuOnly.sdf")
+if [ 5 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]]*29 .* 1  0  0  0  0" "cli20_RuOnly.sdf")
+if [ 5 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli20_all.sdf" ] ; then not_passed $LINENO ; fi
+if ! head -n 4 "cli20_all.sdf" | grep -q -i "^230248  0  0  0  0  0" ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c -i "^[[:space:]]*6 .* 1  0  0  0  0" "cli20_all.sdf")
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli20.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
