@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonParseException;
+
+import autocompchem.worker.Worker;
 
 
 /**
@@ -89,6 +94,76 @@ public class ListOfListsCombinationsTest
     	for (int i=0; i<expected.size(); i++)
     		assertEquals(expected.get(i), results.get(i));
     	
+    	// From here we test iteration over selected combinations
+    	
+    	List<int[]> selectedCombos = new ArrayList<int[]>();
+    	selectedCombos.add(new int[]{0, 0, 3, 0});
+    	selectedCombos.add(new int[]{2, 1, 3, 0});
+    	selectedCombos.add(new int[]{1, 0, 1, 0});
+    	
+    	expected = Arrays.asList(
+    			"A1d@",
+    			"C2d@",
+    			"B1b@");
+    	
+    	results = new ArrayList<String>();
+    	
+    	Iterator<List<String>> iterSel = new ListOfListsCombinations<String>(
+    			listOfLists, selectedCombos);
+    	while (iterSel.hasNext())
+    	{
+    		List<String> combination = iterSel.next();
+    		String s = StringUtils.mergeListToString(combination, "");
+    		results.add(s);
+    	}
+    	
+    	assertEquals(expected.size(), results.size());
+    	for (int i=0; i<expected.size(); i++)
+    		assertEquals(expected.get(i), results.get(i));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testInconsistentArgs() throws Exception
+    {
+    	List<List<String>> listOfLists = new ArrayList<List<String>>();
+    	listOfLists.add(Arrays.asList("A","B","C"));
+    	listOfLists.add(Arrays.asList("1","2"));
+    	listOfLists.add(Arrays.asList("a","b","c","d"));
+    	listOfLists.add(Arrays.asList("@"));    	
+
+    	// Test inconsistent size of the combination identifier (too short)
+    	List<int[]> selectedCombos = new ArrayList<int[]>();
+    	selectedCombos.add(new int[2]);
+    	
+        assertThrows(IllegalArgumentException.class, 
+        		() -> new ListOfListsCombinations<String>(listOfLists, 
+        				selectedCombos)); 	
+
+    	// Test inconsistent size of the combination identifier (too long)
+    	List<int[]> selectedCombos2 = new ArrayList<int[]>();
+    	selectedCombos2.add(new int[5]);
+    	
+        assertThrows(IllegalArgumentException.class, 
+        		() -> new ListOfListsCombinations<String>(listOfLists, 
+        				selectedCombos2));
+
+    	// Test inconsistent index in the combination identifier (negative)
+    	List<int[]> selectedCombos3 = new ArrayList<int[]>();
+    	selectedCombos3.add(new int[] {0, -1, 0, 0});
+    	
+        assertThrows(IndexOutOfBoundsException.class, 
+        		() -> new ListOfListsCombinations<String>(listOfLists, 
+        				selectedCombos3));
+
+    	// Test inconsistent index in the combination identifier (out of range)
+    	List<int[]> selectedCombos4 = new ArrayList<int[]>();
+    	selectedCombos4.add(new int[] {0, 0, 4, 0});
+    	
+        assertThrows(IndexOutOfBoundsException.class, 
+        		() -> new ListOfListsCombinations<String>(listOfLists, 
+        				selectedCombos4));
     }
 
 //------------------------------------------------------------------------------

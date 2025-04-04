@@ -25,6 +25,16 @@ public class ListOfListsCombinations<T> implements Iterator<List<T>>
 	 * The indexes of the next iteration
 	 */
     private int[] nextIndixes;
+    
+    /**
+     * Selection of combinations to produce
+     */
+    private final List<int[]> selectedCombinations;
+    
+    /**
+     * Index of the next selected combination
+     */
+    private int nextSelectedCombIndex = -1;
 
     /**
      * Flag signaling the next combination is available.
@@ -39,17 +49,72 @@ public class ListOfListsCombinations<T> implements Iterator<List<T>>
      */
     public ListOfListsCombinations(List<List<T>> listOfLists) 
     {
+    	this(listOfLists, null);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Constructor defining which list of list to iterate over.
+     * @param listOfLists the list of lists on which we iterate.
+     * @param selectedCombinations a list of arrays of indexes defining which 
+	 * indexes to visit. Each array must have the same size of the 
+	 * list of lists.
+     */
+    public ListOfListsCombinations(List<List<T>> listOfLists, 
+    		List<int[]> selectedCombinations) 
+    {
         this.listOfLists = listOfLists;
-        this.nextIndixes = new int[listOfLists.size()];
+        this.selectedCombinations = selectedCombinations;
         if (listOfLists.size()!=0)
         {
-        	for (List<T> inner : listOfLists)
+        	if (selectedCombinations!=null)
         	{
-        		if (inner.size()>0)
+        		// Check for consistency
+        		for (int[] combo : selectedCombinations)
         		{
-        			this.hasNext = true;
-        			break;
+        			if (combo.length != listOfLists.size())
+        			{
+        				throw new IllegalArgumentException("Combination "
+        						+ "specifies " + combo.length + " indices, but " 
+        						+ "there are " + listOfLists.size() 
+        						+ " lists.");
+        			}
+        			for (int i=0; i<combo.length; i++)
+        			{
+        				if (combo[i] < 0)
+        				{
+        					throw new IndexOutOfBoundsException("Combination "
+        							+ "identifier contains negative index '" 
+        							+ combo[i] + "' at position " + i + ".");
+        				}
+        				if (combo[i] >= listOfLists.get(i).size())
+        				{
+        					throw new IndexOutOfBoundsException("Combination "
+        							+ "identifier contains index '" + combo[i] 
+        							+ "' for a list of items with size " 
+        							+ listOfLists.get(i).size() + ".");
+        				}
+        			}
         		}
+        		
+        		// Now initialize iterations
+        		if (selectedCombinations.size()>0)
+        		{
+                	this.nextSelectedCombIndex = 0;
+                	this.nextIndixes = selectedCombinations.get(0);
+        			this.hasNext = true;
+        		}
+        	} else {
+                this.nextIndixes = new int[listOfLists.size()];
+	        	for (List<T> inner : listOfLists)
+	        	{
+	        		if (inner.size()>0)
+	        		{
+	        			this.hasNext = true;
+	        			break;
+	        		}
+	        	}
         	}
         }	
     }
@@ -74,24 +139,36 @@ public class ListOfListsCombinations<T> implements Iterator<List<T>>
         	combination.add(listOfLists.get(i).get(nextIndixes[i]));
         }
         
-        // This defined the next combination by increasing the indexes.
-        for (int i=listOfLists.size()-1; i>=0; i--) 
+        // This defines the next combination by increasing the indexes.
+        if (selectedCombinations != null)
         {
-        	int candidateIndex = nextIndixes[i] + 1;
-        	int maxIndex = listOfLists.get(i).size();
-        	if (candidateIndex >= maxIndex) 
-            {
-        		if (i==0)
-        		{
-        			// End of all combinations
-        			hasNext = false;
-        			break;
-        		}
-        		nextIndixes[i] = 0;
-            } else {
-            	nextIndixes[i] = candidateIndex;
-            	break;
-            }
+        	nextSelectedCombIndex++;
+        	if (nextSelectedCombIndex < selectedCombinations.size())
+        	{
+        		nextIndixes = selectedCombinations.get(nextSelectedCombIndex);
+        	} else {
+    			// End of all combinations
+    			hasNext = false;
+        	}
+        } else {
+	        for (int i=listOfLists.size()-1; i>=0; i--) 
+	        {
+	        	int candidateIndex = nextIndixes[i] + 1;
+	        	int maxIndex = listOfLists.get(i).size();
+	        	if (candidateIndex >= maxIndex) 
+	            {
+	        		if (i==0)
+	        		{
+	        			// End of all combinations
+	        			hasNext = false;
+	        			break;
+	        		}
+	        		nextIndixes[i] = 0;
+	            } else {
+	            	nextIndixes[i] = candidateIndex;
+	            	break;
+	            }
+	        }
         }
         return combination;
 	}
