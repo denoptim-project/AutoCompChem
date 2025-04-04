@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t149_conformers.sdf" ] ; then not_passed $LINENO ; fi
+
+# We expect 3 conformations, i.e., 3 blocka of text
+n=0; n=$(grep -c '$$$$' t149_conformers.sdf )
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+# All conformers are reordered so that the first atom is a nitrogen
+# and all come from conversion of ZMatrix to XYS, so the first atom
+# is located at the centroid of the Cartesian coords ref system
+n=0; n=$(grep -c -i "[[:space:]]*0.0*[[:space:]]*0.0*[[:space:]]*0.0 N " t149_conformers.sdf )
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t149.log" ] ; then not_passed $LINENO ; fi
+if grep -q "Generating .* 32\.7.*[[:space:]]*180\.0[[:space:]]*180\.0" t149_conformers.sdf ; then not_passed $LINENO ; fi
+if grep -q "Generating .*65\.4.*[[:space:]]*180\.0[[:space:]]*180\.0" t149_conformers.sdf ; then not_passed $LINENO ; fi
+if grep -q "Generating .*322\.7.*[[:space:]]*180\.0[[:space:]]*180\.0" t149_conformers.sdf ; then not_passed $LINENO ; fi
+if grep -q "Conformational space is defined by 4 coordinates" t149_conformers.sdf ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t149.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

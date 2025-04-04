@@ -1,10 +1,13 @@
 package autocompchem.molecule.conformation;
 
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
+import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 
 
 /**
@@ -168,6 +171,68 @@ public class ConformationalCoordinate extends AnnotatedAtomTuple
     public void setFold(int fold)
     {
         this.fold = fold;
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the selected steps to consider for this coordinate.
+     * @return the selected steps to consider for this coordinate or 
+     * <code>null</code>.
+     */
+
+    public int[] getSteps()
+    {
+    	if (hasValueledAttribute(ConformationalCoordDefinition.KEYSTEPS))
+    	{
+    		return NumberUtils.parseArrayOfInt(getValueOfAttribute(
+	  				ConformationalCoordDefinition.KEYSTEPS));
+    	}
+        return null;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the selected steps to consider for this coordinate.
+     * @param steps the selected steps to consider for this coordinate
+     */
+
+    public void setSteps(int[] steps)
+    {
+        this.setValueOfAttribute(ConformationalCoordDefinition.KEYSTEPS,
+        		Arrays.toString(steps));
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the selected steps to consider for this coordinate.
+     * @return the selected steps to consider for this coordinate or 
+     * <code>null</code> if no values are available.
+     */
+
+    public double[] getValues()
+    {
+    	if (this.hasValueledAttribute(ConformationalCoordDefinition.KEYVALUES))
+    	{
+            return NumberUtils.parseArrayOfDouble(this.getValueOfAttribute(
+            		ConformationalCoordDefinition.KEYVALUES));
+    	}
+    	return null;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the selected steps to consider for this coordinate.
+     * @param steps the selected steps to consider for this coordinate
+     */
+
+    public void setValues(double[] values)
+    {
+        this.setValueOfAttribute(ConformationalCoordDefinition.KEYVALUES,
+        		Arrays.toString(values));
     }
     
 //------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.ListOfListsCombinations;
+import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -169,7 +170,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 	 */
 	public static AtomContainerSet generateConformers(IAtomContainer iac, 
 			ConformationalSpace confSpace, Logger logger) 
-	{
+	{	
 		AtomContainerSet conformers = new AtomContainerSet();
 		
 		String msg = "Generating conformers for " + MolecularUtils.getNameOrID(
@@ -204,31 +205,116 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 					
 			Terminator.withMsgAndStatus(msgTors, -1);
 		}
+		
+		// In case of conformation space with selected conformers, determine the 
+		// desired combinations. A null list will make the selection be ignored
+		List<int[]> selectedCombinations = null;
         List<List<Double>> listsOfConfSteps = new ArrayList<List<Double>>();
         List<ConformationalCoordinate> sortedCoords = 
         		new ArrayList<ConformationalCoordinate>();
-        for (ConformationalCoordinate coord : confSpace)
-        {
-        	int fold = coord.getFold();
-        	List<Double> stepsOnThisCoord = new ArrayList<Double>();
-        	if (fold == 0)
-        	{
-        		// Just in case that for some reason we have coordinates that 
-        		// are actually not doing anything.
-        		stepsOnThisCoord.add(0.0);
-        	} else {
-	        	for (int step = 0; step < fold; step++)
+		if (confSpace.hasConstraints())
+		{
+			List<List<Integer>> stepIdToCombine = new ArrayList<List<Integer>>();
+			for (ConformationalCoordinate coord : confSpace)
+	        {
+				boolean isCoordActive = false;
+	        	int[] steps = coord.getSteps();
+	        	double[] values = coord.getValues();
+	        	if (steps == null && values == null)
 	        	{
-	        		stepsOnThisCoord.add(360.0 * step / fold);
+	        		// Skip coordinate that is not requesting any change
+	        		continue;
+	        	} else if (steps != null && values != null)
+	        	{
+	        		throw new IllegalArgumentException("Cannot combine steps "
+	        				+ "and constrained.");
 	        	}
-        	}
-        	listsOfConfSteps.add(stepsOnThisCoord);
-        	sortedCoords.add(coord);
-        }
+	        	
+	        	List<Integer> stepsIds = new ArrayList<Integer>();
+	        	List<Double> stepsOnThisCoord = new ArrayList<Double>();
+	        	
+	        	if (steps != null) // values is null
+	        	{
+		        	int fold = coord.getFold();
+	        		if (fold == 0 || (steps.length == 1 && steps[0] == 0))
+		        	{
+		        		// Just in case that for some reason we have coordinates that 
+		        		// are actually not doing anything.
+	        			logger.info("Ignoring ineffective coordinate with fold="
+	        					+ fold + " and steps " 
+	        					+ Arrays.toString(steps) + ".");
+	        			continue;
+		        	} else {
+			        	for (int stepId = 0; stepId < steps.length; stepId++)
+			        	{
+			        		stepsIds.add(stepId);
+			        		stepsOnThisCoord.add(360.0 * steps[stepId] / fold);
+			        	}
+			        	isCoordActive = true;
+		        	}
+	        	}
+	        	
+	        	if (values != null) // steps is null
+	        	{
+	        		for (int valId=0; valId<values.length; valId++)
+	        		{
+		        		stepsIds.add(valId);
+		        		stepsOnThisCoord.add(values[valId]);
+	        		}
+		        	isCoordActive = true;
+	        	}
+	        	
+	        	if (isCoordActive)
+	        	{
+	        		stepIdToCombine.add(stepsIds);
+		        	listsOfConfSteps.add(stepsOnThisCoord);
+		        	sortedCoords.add(coord);
+	        	}
+	        }
+			Iterator<List<Integer>> stepIterator = 
+					new ListOfListsCombinations<Integer>(stepIdToCombine);
+			selectedCombinations = new ArrayList<int[]>();
+	        while (stepIterator.hasNext())
+	        {
+	        	// Just doing type conversion to store the comb of step ids
+	        	List<Integer> combOfStepIds = stepIterator.next();
+	        	int[] comdOfIntIds = new int[combOfStepIds.size()];
+	        	for (int istep=0; istep<combOfStepIds.size(); istep++)
+	        	{
+	        		comdOfIntIds[istep] = combOfStepIds.get(istep).intValue();
+	        	}
+	        	selectedCombinations.add(comdOfIntIds);
+	        }
+	        logger.info("Constrained exploration of conformational search will "
+	        		+ "consider " + selectedCombinations.size() 
+	        		+ " conformers.");
+		} else {
+			// selectedCombinations should remain null so that the Iterator
+			// will ignore it.
+			for (ConformationalCoordinate coord : confSpace)
+	        {
+	        	int fold = coord.getFold();
+	        	List<Double> stepsOnThisCoord = new ArrayList<Double>();
+	        	if (fold == 0)
+	        	{
+	        		// Just in case that for some reason we have coordinates that 
+	        		// are actually not doing anything. This coordinate is
+	        		// effectively removed from the definition of the space
+	        		continue;
+	        	} else {
+		        	for (int step = 0; step < fold; step++)
+		        	{
+		        		stepsOnThisCoord.add(360.0 * step / fold);
+		        	}
+	        	}
+	        	listsOfConfSteps.add(stepsOnThisCoord);
+	        	sortedCoords.add(coord);
+	        }
+		}
         
         // Generate modified geometries
         Iterator<List<Double>> iterator = new ListOfListsCombinations<Double>(
-        		listsOfConfSteps);
+            		listsOfConfSteps, selectedCombinations);
         int counter = -1;
         while (iterator.hasNext())
         {
@@ -241,7 +327,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
         	// Make ZmatMove
         	ZMatrix editedZMat = originalZMat.clone();
         	int i=0;
-        	for (ConformationalCoordinate coord : confSpace)
+        	for (ConformationalCoordinate coord : sortedCoords)
             {
         		double step = steps.get(i);
         		// WARNING assumption we have only two atoms
@@ -269,6 +355,9 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 						+ "representation to XYZ.", -1, e);
 			}
         }
+        
+        logger.info("Generated " + conformers.getAtomContainerCount() 
+        	+ " conformers.");
         
 		return conformers;
 	}

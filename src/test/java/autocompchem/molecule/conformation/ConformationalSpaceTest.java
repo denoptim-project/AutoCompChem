@@ -22,7 +22,6 @@ public class ConformationalSpaceTest
 	 */
     public static ConformationalSpace getTestConformationalSpace()
     {
-
     	ConformationalSpace cs = new ConformationalSpace();
     	ConformationalCoordinate cc1 = new ConformationalCoordinate(
     			new int[] {3});
@@ -91,6 +90,41 @@ public class ConformationalSpaceTest
     	cs.add(cc8);
     	cs.add(cc9);
     	assertEquals(4, cs.size());
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testHasConstraints() throws Exception
+    {
+    	ConformationalSpace cs = getTestConformationalSpace();
+    	assertFalse(cs.hasConstraints());
+    	
+    	cs.first().setSteps(new int[] {});
+    	assertFalse(cs.hasConstraints());
+    	
+    	cs.first().setSteps(new int[] {1});
+    	assertTrue(cs.hasConstraints());
+    	
+    	cs.first().setSteps(new int[] {1, 2});
+    	assertTrue(cs.hasConstraints());
+    	
+    	cs.first().setSteps(new int[] {});
+    	assertFalse(cs.hasConstraints());
+    	
+    	cs.last().setValueOfAttribute(ConformationalCoordDefinition.KEYVALUES, 
+    			"0.1");
+    	assertTrue(cs.hasConstraints());
+    	
+    	cs.last().setValueOfAttribute(ConformationalCoordDefinition.KEYVALUES, 
+    			null);
+    	assertFalse(cs.hasConstraints());
+    	
+    	cs.last().setValues(new double[] {1.2, 2.3, 3.4});
+    	assertTrue(cs.hasConstraints());
+    	
+    	cs.last().setValues(null);
+    	assertFalse(cs.hasConstraints());
     }
     
 //------------------------------------------------------------------------------

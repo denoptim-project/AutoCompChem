@@ -2,6 +2,7 @@ package autocompchem.molecule.conformation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import com.google.gson.Gson;
 import autocompchem.io.ACCJson;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
+import autocompchem.utils.NumberUtils;
 
 public class ConformationalCoordinateTest 
 {
@@ -87,6 +89,22 @@ public class ConformationalCoordinateTest
         		mol.getAtom(1), mol.getAtom(2), mol.getAtom(4), mol.getAtom(3)),
         		mol));
         assertEquals(ConformationalCoordType.IMPROPERTORSION, cc.getType());
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testHandlingOfValues() throws Exception
+    {
+    	ConformationalCoordinate cc = getTestConformationalCoordinate();
+    	assertNull(cc.getValues());
+    	
+    	cc.setValues(new double[] {0.1, -2.2, 0.0});
+    	double[] arr = cc.getValues();
+    	assertEquals(3, arr.length);
+    	assertTrue(NumberUtils.closeEnough(0.1, arr[0]));
+    	assertTrue(NumberUtils.closeEnough(-2.2, arr[1]));
+    	assertTrue(NumberUtils.closeEnough(0.0, arr[2]));
     }
     
 //------------------------------------------------------------------------------

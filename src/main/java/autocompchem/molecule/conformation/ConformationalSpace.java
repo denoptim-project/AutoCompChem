@@ -103,6 +103,62 @@ public class ConformationalSpace extends TreeSet<ConformationalCoordinate>
 	    }
 		return true;
 	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Checks is there are constraints of any kind: values of steps
+	 * @return <code>true</code> if this space is constrained to consider either
+	 * specific values or steps.
+	 */
+
+	public boolean hasConstraints() 
+	{
+		if (hasSelectedValues() || hasSelectedSteps())
+			return true;
+		return false;
+	}
+		
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Checks is there are constraints by given values along any coordinate.
+	 * @return <code>true</code> if this space is constrained to consider 
+	 * specific values along any of its coordinates.
+	 */
+
+	public boolean hasSelectedValues() 
+	{
+		for (ConformationalCoordinate cc : this)
+		{
+			String valueAsString = cc.getValueOfAttribute(
+					ConformationalCoordDefinition.KEYVALUES);
+			if (valueAsString != null 
+					&& !valueAsString.toUpperCase().equals("NULL"))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Checks is there are constraints in terms of steps along coordinates.
+	 * @return <code>true</code> if this space is constrained to consider 
+	 * specific steps along any of its coordinates.
+	 */
+
+	public boolean hasSelectedSteps() 
+	{
+		for (ConformationalCoordinate cc : this)
+		{
+			if (cc.getSteps() != null && cc.getSteps().length > 0)
+				return true;
+		}
+		return false;
+	}
 	
 //------------------------------------------------------------------------------
 

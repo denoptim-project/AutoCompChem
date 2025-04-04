@@ -28,6 +28,11 @@ public class ConformationalCoordDefinition extends AtomTupleMatchingRule
      * Keyword used to identify the fold number.
      */
     public static final String KEYFOLD = "FOLD";
+   
+    /**
+     * Keyword used to identify the selected steps to take along this coordinate
+     */
+    public static final String KEYSTEPS = "STEPS";
     
     /**
      * Keyword used to identify prefixes
@@ -45,7 +50,7 @@ public class ConformationalCoordDefinition extends AtomTupleMatchingRule
     // WARNING: if you change this list you must update also the documentation
     // at the resource inputdefinition/ConformationalSpaceGenerator.json.
 	public static final List<String> DEFAULTVALUEDKEYS = Arrays.asList(
-			KEYVALUES, KEYFOLD, KEYPREFIX, KEYSUFFIX);
+			KEYVALUES, KEYFOLD, KEYSTEPS, KEYPREFIX, KEYSUFFIX);
 
 	/**
 	 * Keywords that do not expect values and are used to annotate constraints.

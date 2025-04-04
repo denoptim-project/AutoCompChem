@@ -1,0 +1,36 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+
+if [ ! -f "t150_conformers.sdf" ] ; then not_passed $LINENO ; fi
+
+# We expect 3 conformations, i.e., 3 blocka of text
+n=0; n=$(grep -c '$$$$' t150_conformers.sdf )
+if [ 18 != "$n" ] ; then not_passed $LINENO ; fi
+
+# All conformers are reordered so that the first atom is a nitrogen
+# and all come from conversion of ZMatrix to XYS, so the first atom
+# is located at the centroid of the Cartesian coords ref system
+n=0; n=$(grep -c -i "[[:space:]]*0.0*[[:space:]]*0.0*[[:space:]]*0.0 N " t150_conformers.sdf )
+if [ 18 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t150.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "Generating .* 33\.0 " t150.log )
+if [ 18 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Generating .* 50\.5 " t150.log )
+if [ 9 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Generating .* 100\.0 " t150.log )
+if [ 9 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Generating .* 10\.0" t150.log )
+if [ 10 != "$n" ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Generating .* 30\.0" t150.log )
+if [ 10 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t150.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
