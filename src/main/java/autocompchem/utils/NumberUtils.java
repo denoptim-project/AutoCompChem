@@ -616,6 +616,57 @@ public class NumberUtils
           
           return newValue;
   	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Parses strings like '[int, int, int, ...]' into the corresponding array
+  	 * of int.
+  	 * @param string
+  	 * @return the corresponding int[].
+  	 */
+  	
+  	public static int[] parseArrayOfInt(String string)
+  	{
+  		String noSpaces = string.replaceAll("\\s", "");
+  		if  ("[]".equals(noSpaces))
+  		{
+  			return new int[] {};
+  		}
+  		String[] items = noSpaces.replaceAll("\\[", "")
+    			.replaceAll("\\]", "").split(",");
+    	int[] array = new int[items.length];
+    	for (int i = 0; i < items.length; i++) 
+		{
+    		array[i] = Integer.parseInt(items[i]);
+    	}
+  		return array;
+  	}
+  	
+//------------------------------------------------------------------------------
+  	
+  	/**
+  	 * Parses strings like '[double, double, double, ...]' into the 
+  	 * corresponding array of double.
+  	 * @param string
+  	 * @return the corresponding double[].
+  	 */
+  	public static double[] parseArrayOfDouble(String string)
+  	{
+  		String noSpaces = string.replaceAll("\\s", "");
+  		if  ("[]".equals(noSpaces))
+  		{
+  			return new double[] {};
+  		}
+  		String[] items = noSpaces.replaceAll("\\[", "")
+    			.replaceAll("\\]", "").replaceAll("\\s", "").split(",");
+    	double[] array = new double[items.length];
+    	for (int i = 0; i < items.length; i++) 
+		{
+    		array[i] = Double.parseDouble(items[i]);
+    	}
+  		return array;
+  	}
 
 //------------------------------------------------------------------------------    
     

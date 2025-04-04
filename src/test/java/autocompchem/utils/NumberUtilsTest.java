@@ -284,5 +284,41 @@ public class NumberUtilsTest
     }
     
 //------------------------------------------------------------------------------
+    
+    @Test
+    public void testParseArrayOfInt() throws Exception
+    {
+    	int[] array = NumberUtils.parseArrayOfInt("[100, 2, -3]");
+    	assertEquals(3, array.length);
+    	assertEquals(100, array[0]);
+    	assertEquals(2, array[1]);
+    	assertEquals(-3, array[2]);
+    	
+    	array = NumberUtils.parseArrayOfInt(" [   100,2, -3 ]   ");
+    	assertEquals(3, array.length);
+    	assertEquals(100, array[0]);
+    	assertEquals(2, array[1]);
+    	assertEquals(-3, array[2]);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testParseArrayOfDouble() throws Exception
+    {
+    	double[] array = NumberUtils.parseArrayOfDouble("[10.0, 2.2, -3.3]");
+    	assertEquals(3, array.length);
+    	assertTrue(NumberUtils.closeEnough(10.0, array[0]));
+    	assertTrue(NumberUtils.closeEnough(2.2, array[1]));
+    	assertTrue(NumberUtils.closeEnough(-3.3, array[2]));
+    	
+    	array = NumberUtils.parseArrayOfDouble("  [  10.0  , 2.2  ,  -3.3  ] ");
+    	assertEquals(3, array.length);
+    	assertTrue(NumberUtils.closeEnough(10.0, array[0]));
+    	assertTrue(NumberUtils.closeEnough(2.2, array[1]));
+    	assertTrue(NumberUtils.closeEnough(-3.3, array[2]));
+    }
+    
+//------------------------------------------------------------------------------
 
 }
