@@ -201,7 +201,7 @@ public class SpartanOutputReader extends ChemSoftOutputReader
         	    	return new File(inFile.getAbsoluteFile() + File.separator 
         	    			+ SpartanConstants.OUTPUTFILENAME);
     			}
-    			throw new Error("Spartan ouput file '" + inFile + "' is a "
+    			throw new Error("Spartan output file '" + inFile + "' is a "
 	            			+ "directory containing multiple models, but there "
 	            			+ "is also no request to focus on a model and "
 	            			+ "we anded up ignoring the molti-model nature. "

@@ -55,7 +55,7 @@ public class ShellJobTest
 
     @Test
     @DisabledOnOs(WINDOWS)
-    public void testExposeShellOuputEnv() throws Exception
+    public void testExposeShellOutputEnv() throws Exception
     {
         assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
 

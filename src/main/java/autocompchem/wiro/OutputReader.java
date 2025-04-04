@@ -202,7 +202,7 @@ public class OutputReader extends Worker
 	        FileUtils.foundAndPermissions(inFileName,true,false,false);
 	        this.inFile = new File(inFileName);
         } else {
-        	Terminator.withMsgAndStatus("ERROR! No definition of the ouput to "
+        	Terminator.withMsgAndStatus("ERROR! No definition of the output to "
         			+ "analyse. Please provide a value for '"
         			+ WIROConstants.PARJOBOUTPUTFILE + "'.", -1);
         }

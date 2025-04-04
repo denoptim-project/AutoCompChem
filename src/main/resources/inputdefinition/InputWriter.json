@@ -9,7 +9,7 @@
     "key": "PATHNAMEOUTPUT",
     "casedKey": "pathnameOutput",
     "type": "<String>",
-    "doc": "The pathname of theouput of the input writing taks, i.e., the input file for the job for which we are going to generate the input file/s."
+    "doc": "The pathname of the output of the input writing taks, i.e., the input file for the job for which we are going to generate the input file/s."
   },
   {
     "key": "ROOTPATHNAMEOUTPUT",
