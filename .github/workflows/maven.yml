@@ -27,4 +27,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build package
-      run: mvn -B package --file pom.xml
+      # Runtime-dependent unit tests are too ofter unreproducible in GitHub runners,
+      # so they are explided from this CI  workflow 
+      run: mvn -B package --file pom.xml -Dtest="!autocompchem.run.SerialJobsRunnerTest,!autocompchem.run.ParallelJobsRunnerTest"

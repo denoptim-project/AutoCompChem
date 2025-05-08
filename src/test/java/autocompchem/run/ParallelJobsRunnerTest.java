@@ -394,7 +394,7 @@ public class ParallelJobsRunnerTest
 //-----------------------------------------------------------------------------
 
     /*
-     * Here we test the request to redo (re-submit) only the focis job while the
+     * Here we test the request to redo (re-submit) only the focus job while the
      * other jobs in the batch go on. This is the scenario where a monitoring
      * job detects a situation that triggers a redo-type of action acting only
      * on the focus job.
