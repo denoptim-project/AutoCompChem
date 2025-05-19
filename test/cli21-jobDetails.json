@@ -1,0 +1,52 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "prepareInputGaussian"
+        },
+        {
+          "reference": "jobDetailsFile",
+          "value": "../cli21-gaussianJob.json"
+        },
+        {
+          "reference": "inFile",
+          "value": "../STRINGFROMCLI.sdf"
+        }
+      ]
+    },
+    {
+      "jobType": "ShellJob",
+      "params": [
+        {
+          "reference": "CMD",
+          "value": "../cli21/run_gaussian.sh STRINGFROMCLI.inp > cli21_cmd.log"
+        }
+      ]
+    },
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "analyseGaussianOutput"
+        },
+        {
+          "reference": "jobOutputFile",
+          "value": "STRINGFROMCLI.out"
+        },
+        {
+          "reference": "SaveLastGeometry",
+          "value": "STRINGFROMCLI_lastFromDFT.sdf"
+        },
+        {
+          "reference": "templateConnectivity",
+          "value": "../STRINGFROMCLI.sdf"
+        }
+      ]
+    }
+  ]
+}
