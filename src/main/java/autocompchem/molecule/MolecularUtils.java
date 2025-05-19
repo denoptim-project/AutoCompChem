@@ -42,6 +42,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import autocompchem.atom.AtomUtils;
@@ -95,6 +96,20 @@ public class MolecularUtils
         }
         return formula;
     }
+
+//------------------------------------------------------------------------------
+
+      /**
+       * Get the string version of a molecular formula using CDK engine.
+       * @param mol the molecule to analyse
+       * @return the molecular formula
+       */
+
+      public static String getMolecularFormula(IAtomContainer mol)
+      {
+    	  return MolecularFormulaManipulator.getString(
+			MolecularFormulaManipulator.getMolecularFormula(mol));
+      }	
 
 //------------------------------------------------------------------------------
 

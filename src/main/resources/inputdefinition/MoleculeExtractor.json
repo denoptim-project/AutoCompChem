@@ -1,0 +1,18 @@
+[
+  {
+    "key": "REQUIREDSMARTS",
+    "casedKey": "requiredSMARTS",
+    "type": "<String> [<String> [...]]",
+    "doc": "List of SMARTS queries (space separated) that must be matched for molecule to be kept in the output collection."
+  },
+  {
+    "key": "EXCLUDEDSMARTS",
+    "casedKey": "excludedSMARTS",
+    "type": "<String> [<String> [...]]",
+    "doc": "List of SMARTS queries (space separated) that cause the exclusion of molecule from the output collection."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  }
+]
