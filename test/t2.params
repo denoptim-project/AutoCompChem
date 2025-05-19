@@ -6,3 +6,7 @@ $STARTSMARTS: [Ru]~[#6] ORDER: SINGLE
 [Br]~[Ru] STEREO:UP
 [I] [$([#6]1~[#6]~[#7;X3]~[#6;X3]~[#7;X3]~1)] ORDER:double
 $END
+$STARTATOMIDS: 42 50 ORDER:double
+50 55 REMOVE
+50 51 STEREO:up
+$END
