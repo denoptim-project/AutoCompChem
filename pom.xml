@@ -4,8 +4,7 @@
   <artifactId>autocompchem</artifactId>
 
   <version>3.0.0</version>
-  <!-- WARNING: the vesion must be changes also in doc/user_manual.html-->
-  <!-- WARNUNG: the version must be changed also in autocompchem.ui.ACCMain-->
+  <!-- WARNUNG: the version must be changed also in src/main/java/autocompchem/ui/ACCMain.java-->
 
   <name>autocompchem</name>
 
