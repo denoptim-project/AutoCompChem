@@ -563,7 +563,7 @@ public class ConnectivityUtils
 
     public static List<IAtomContainer> getConnectedFrags(IAtomContainer iac)
     {
-        return getConnectedFrags(iac,1);
+        return getConnectedFrags(iac, 1);
     }
 
 //------------------------------------------------------------------------------

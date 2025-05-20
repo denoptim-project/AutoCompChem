@@ -1,0 +1,5 @@
+TASK: extractMolecules
+INFILE: ../t151-mols.sdf
+OUTFILE:  t151-fragments.sdf
+requiredSMARTS: C-C CO
+excludedSMARTS: [Fe] [He] [Ar]

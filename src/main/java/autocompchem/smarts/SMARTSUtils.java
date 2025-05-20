@@ -121,7 +121,7 @@ public class SMARTSUtils
         if (msq.getTotalMatches() == 0)
         {
         	logger.warn("No SMARTS among " + StringUtils.mergeListToString(
-        		Arrays.asList(smarts.keySet()), ", ") 
+        		Arrays.asList(smarts.keySet()), ", ", true) 
         		+ " matched anything.");
         	return allIDsForEachTuple;
         }

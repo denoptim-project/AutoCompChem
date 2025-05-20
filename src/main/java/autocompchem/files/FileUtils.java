@@ -153,7 +153,8 @@ public class FileUtils
      * @throws IOException
      */
 
-    public static List<File> findByREGEX(File root, String pattern, boolean collectFolders)
+    public static List<File> findByREGEX(File root, String pattern, 
+    		boolean collectFolders)
     {
     	return findByREGEX(root, pattern, Integer.MAX_VALUE, collectFolders);
     }
@@ -173,8 +174,8 @@ public class FileUtils
      * See {@link FileSystem#getPathMatcher(String)}
      * @return the list of file that match the criteria.
      */
-    public static List<File> findByREGEX(File root, String pattern, Integer maxdepth, 
-    		boolean collectFolders)
+    public static List<File> findByREGEX(File root, String pattern, 
+    		Integer maxdepth, boolean collectFolders)
     {
     	return find(root, pattern, maxdepth, collectFolders, "regex");
     }
@@ -316,7 +317,17 @@ public class FileUtils
     }
     
 //------------------------------------------------------------------------------
-    
+
+    /**
+     * Creates an id-specific pathname from a given pathname and an id. Adds the
+     * identifier to the last location in the
+     * original pathname before the last extension (i.e., last ".").
+     * @param f original pathname to be modified.
+     * @param id the identifier making the original pathname unique. NB: this
+     * method does not check for uniqueness.
+     * @return the pathname resulting from appending the identifier to the 
+     * original pathname before the extension (i.e., last ".").
+     */
     public static String getIdSpecPathName(String pathName, String id)
     {
     	return getIdSpecPathName(new File(pathName), id);
@@ -324,6 +335,16 @@ public class FileUtils
     
 //------------------------------------------------------------------------------
     
+    /**
+     * Creates an id-specific pathname from a given pathname and an id. Adds the
+     * identifier to the last location in the
+     * original pathname before the last extension (i.e., last ".").
+     * @param f original pathname to be modified.
+     * @param id the identifier making the original pathname unique. NB: this
+     * method does not check for uniqueness.
+     * @return the pathname resulting from appending the identifier to the 
+     * original pathname before the extension (i.e., last ".").
+     */
     public static String getIdSpecPathName(File f, String id)
     {
     	String ext = "";

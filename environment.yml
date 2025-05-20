@@ -2,5 +2,5 @@ name: acc_devel
 channels:
   - conda-forge
 dependencies:
-  - openjdk=11.0*
+  - openjdk=17.0*
   - maven
