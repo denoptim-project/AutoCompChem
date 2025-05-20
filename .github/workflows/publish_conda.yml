@@ -29,8 +29,9 @@ jobs:
         echo ${GITHUB_REF#refs/tags/v}
 
     - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v3
       with:
+        miniconda-version: "latest"
         auto-update-conda: true
         auto-activate-base: false
         activate-environment: anaconda-client-env
