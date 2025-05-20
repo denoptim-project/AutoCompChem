@@ -12,6 +12,12 @@
     "doc": "List of SMARTS queries (space separated) that cause the exclusion of molecule from the output collection."
   },
   {
+    "key": "SINGLEMOLOUTPUT",
+    "casedKey": "singleMolOutput",
+    "type": "",
+    "doc": "Use this option to request that each resulting molecule to be written in a specific file. The pathname of these files is constructed by adding an indentifier at the end of the value of OUTFILE parameter (before extension)."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }

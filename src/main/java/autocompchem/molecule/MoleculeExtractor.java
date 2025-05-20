@@ -21,6 +21,7 @@ package autocompchem.molecule;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import org.openscience.cdk.silent.AtomContainerSet;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
@@ -66,6 +68,12 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
      * of a molecule from the output.
      */
     private Map<String,SMARTS> excludedSmarts = null;
+    
+    /**
+     * Flag controlling whether we put all resulting molecules in one file 
+     * (default), or each in a dedicated file.
+     */
+    private boolean singleMolOutput = false;
     
     /**
      * String defining the task of reordering atom list
@@ -140,6 +148,7 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
                 		new SMARTS(singleSmarts));
             }
         }
+        
         if (params.contains("EXCLUDEDSMARTS"))
         {
             String txt = params.getParameter("EXCLUDEDSMARTS").getValueAsString();
@@ -153,6 +162,12 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
                 this.excludedSmarts.put("EXCLUDED-"+Integer.toString(i), 
                 		new SMARTS(singleSmarts));
             }
+        }
+        
+        if (params.contains("SINGLEMOLOUTPUT"))
+        {
+        	this.singleMolOutput = true;
+        	
         }
     }
     
@@ -184,9 +199,23 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
     		
     		if (outFile != null)
             {
-            	outFileAlreadyUsed = true;
-            	IOtools.writeAtomContainerSetToFile(outFile, molecules, 
-            			outFormat, true);
+    			if (singleMolOutput)
+    			{
+    				for (int j=0; j< molecules.getAtomContainerCount(); j++)
+    				{
+    					File singleMolOutFile = new File
+    							(FileUtils.getIdSpecPathName(outFile, i+"_"+j));
+    					IAtomContainer mol = molecules.getAtomContainer(j);
+    	            	IOtools.writeAtomContainerToFile(singleMolOutFile, 
+    	            			mol, outFormat, true);
+    	            	logger.info("Writing " + mol.getTitle() + " to '" 
+    	            			+ singleMolOutFile.getAbsolutePath() + "'");
+    				}
+    			} else {
+	            	outFileAlreadyUsed = true;
+	            	IOtools.writeAtomContainerSetToFile(outFile, molecules, 
+	            			outFormat, true);
+    			}
             }
             
             if (exposedOutputCollector != null)
