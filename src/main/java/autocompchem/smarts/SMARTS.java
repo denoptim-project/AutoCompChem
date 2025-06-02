@@ -93,6 +93,11 @@ public class SMARTS
 
 //------------------------------------------------------------------------------
 
+    /**
+     * Returns the string version of this SMARTS, which corresponds to 
+     * how a human would write this SMARTS. For example, <code>[#6]</code>.
+     * @return a sting version of this SMARTS.
+     */
     public String getString()
     {
     	return smartsAsString;

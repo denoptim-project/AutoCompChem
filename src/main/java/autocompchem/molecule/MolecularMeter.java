@@ -86,11 +86,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
      * Flag: consider only bonded atoms
      */
     private boolean onlyBonded = false;
-
-    /**
-     * Flag notifying that the meter has run 
-     */
-    private boolean alreadyRun = false;
     
     /**
      * String defining the task of measuring geometric descriptors
@@ -154,7 +149,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
             String[] lines = allSmarts.split("\\r?\\n");
             for (int i=0; i<lines.length; i++)
             {
-                addRule(lines[i],"S");
+                addRule(lines[i], "S");
             }
         }
 
@@ -166,7 +161,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
             String[] lines = allIDs.split("\\r?\\n");
             for (int i=0; i<lines.length; i++)
             {
-                addRule(lines[i],"A");
+                addRule(lines[i], "A");
             }
         }
         
@@ -181,9 +176,10 @@ public class MolecularMeter extends AtomContainerInputProcessor
         //Get optional parameter
         if (params.contains("ONLYBONDED"))
         {
-            String val = 
-                params.getParameter("ONLYBONDED").getValue().toString();
-            if (val.toUpperCase().equals("TRUE"))
+            String val = params.getParameter("ONLYBONDED").getValueAsString();
+            if (val.toUpperCase().equals("TRUE") 
+            		|| val.toUpperCase().equals("NULL")
+            		|| val.toUpperCase().equals("ONLYBONDED"))
             {
                 this.onlyBonded = true;
             }
@@ -215,7 +211,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
                 if (singleSmarts.equals(""))
                     continue;
                 String k2 = key + "_" + Integer.toString(j-1);
-                this.smarts.put(k2,new SMARTS(singleSmarts));
+                this.smarts.put(k2, new SMARTS(singleSmarts));
             }
         }
         else if (type.equals("A"))
@@ -322,8 +318,8 @@ public class MolecularMeter extends AtomContainerInputProcessor
                 if (msq.getNumMatchesOfQuery(key) == 0)
                 {
                     logger.warn("WARNING! No match for SMARTS "
-                                           + "query " + smarts.get(key)
-                                           + " in molecule " + i + ".");
+                            + "query '" + smarts.get(key).getString()
+                            + "' in molecule " + i + ".");
                     break;
                 }
                 MatchingIdxs allMatches = msq.getMatchingIdxsOfSMARTS(key);
@@ -394,9 +390,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 2)
             	{
-            		logger.info("Not enough matches for "
-                        		+ "quantity '" + key + "'. Found only " 
-                        		+ atmsForQuantity.size() + " set.");
+            		logger.info("Unexpected number of matched atom sets ("
+            				+ atmsForQuantity.size()
+            				+ ") for quantity '" + key + "'.");
             		continue;
             	}
             	
@@ -444,9 +440,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 3)
             	{
-            		logger.info("Not enough matches for "
-                        		+ "quantity '" + key + "'. Found only " 
-                        		+ atmsForQuantity.size() + " set.");
+            		logger.info("Unexpected number of matched atom sets ("
+            				+ atmsForQuantity.size()
+            				+ ") for quantity '" + key + "'.");
             		continue;
             	}
             	
@@ -509,9 +505,9 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
             	if (atmsForQuantity.size() != 4)
             	{
-            		logger.info("Not enough matches for "
-                        		+ "quantity '" + key + "'. Found only " 
-                        		+ atmsForQuantity.size() + " set.");
+            		logger.info("Unexpected number of matched atom sets ("
+            				+ atmsForQuantity.size()
+            				+ ") for quantity '" + key + "'.");
             		continue;
             	}
             	
@@ -590,13 +586,12 @@ public class MolecularMeter extends AtomContainerInputProcessor
 
                 //Store results for this molecule
                 resThisMol.put(key,dihedrals);
-
             } 
             else 
             {
                 Terminator.withMsgAndStatus("ERROR! What do you mean "
                   + "with '" + key + "'? Unable to identify the type "
-                  + "of quantity to measure.",-1);
+                  + "of quantity to measure.", -1);
             }
         }
 

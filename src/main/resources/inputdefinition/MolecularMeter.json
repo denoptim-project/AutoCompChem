@@ -3,19 +3,19 @@
     "key": "SMARTS",
     "casedKey": "SMARTS",
     "type": "<String>",
-    "doc": "Lines defining the quantities to measure. Each line must adhere to the following syntax: <String> <String> [<String> [<String>]] where each string is a SMARTS query identifying atoms used to calculate values. The number of SMARTS defines the type of quantity measured: two for a distance, three for an angle, and four for an dihedral angle."
+    "doc": "Lines defining the quantities to measure. Each line must adhere to the following syntax: <String> <String> <String> [<String> [<String>]] where the first string is any measure identifier that must beging with DIST, ANG, or DIH to indicate the kind of measure (i.e., distance, angle, dihedral) and each following string is a SMARTS query identifying atoms used to calculate values."
   },
   {
     "key": "ATOMINDEXES",
     "casedKey": "atomIndexes",
     "type": "<String>",
-    "doc": "Lines defining the quantities to measure. Each line must adhere to the following syntax: <int> <int> [<int> [<int>]] where each string is a SMARTS query identifying atoms used to calculate values. The number of SMARTS defines the type of quantity measured: two for a distance, three for an angle, and four for an dihedral angle."
+    "doc": "Lines defining the quantities to measure. Each line must adhere to the following syntax: <String> <int> <int> [<int> [<int>]] where the first string is any measure identifier that must beging with DIST, ANG, or DIH to indicate the kind of measure (i.e., distance, angle, dihedral) and each following each string is a SMARTS query identifying atoms used to calculate values."
   },
   {
     "key": "ONLYBONDED",
     "casedKey": "onlyBonded",
-    "type": "<boolean>",
-    "doc": "If the value is 'True', only the tuples corresponding to chains of bonded atoms will be considered as measurable quantities. For example, is 3 SMARTS are given, we'll measure only the angles that correspond to triplets of atoms A-B-C where A and B are bonded and B and C are bonded."
+    "type": "void",
+    "doc": "If this option is given, then only the tuples corresponding to chains of bonded atoms will be considered as measurable quantities. For example, is 3 SMARTS are given, we'll measure only the angles that correspond to triplets of atoms A-B-C where A and B are bonded and B and C are bonded."
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",

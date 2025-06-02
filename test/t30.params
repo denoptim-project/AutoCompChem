@@ -11,4 +11,4 @@ ang [$([#6;X2]~[#8;X1])] [Fe] [$([#6;X2]~[#8;X1])]
 dihBLA [$([#6;X2]~[#8;X1])] [Fe] [$([#6;X2]~[#8;X1])] [$([#8;X1]~[#6;X2])]
 dist [Fe] [#16]
 $END
-ONLYBONDED: true
+ONLYBONDED
