@@ -3,6 +3,7 @@ package autocompchem.api.controller;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +77,7 @@ public class AutoCompChemController {
      */
     @PostMapping("/tasks/{taskName}/execute")
     @Operation(summary = "Execute task", description = "Executes a computational chemistry task with given parameters")
-    public ResponseEntity<String> executeTask(
+    public ResponseEntity<Map<String, Object>> executeTask(
             @PathVariable("taskName") String taskName,
             @RequestBody Map<String, Object> parameters) {
         try {
@@ -84,10 +85,12 @@ public class AutoCompChemController {
             ParameterStorage params = new ParameterStorage();
             parameters.forEach((key, value) -> params.setParameter(key, value.toString()));
             
-            String result = autoCompChemService.executeTask(taskName, params);
+            Map<String, Object> result = autoCompChemService.executeTask(taskName, params);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error executing task: " + e.getMessage());
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("error", "Error executing task: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResult);
         }
     }
 

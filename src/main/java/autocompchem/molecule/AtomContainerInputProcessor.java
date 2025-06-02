@@ -343,6 +343,7 @@ public class AtomContainerInputProcessor extends Worker
 	      				logger.info("#" + i + " " + MolecularUtils.getNameOrID(
 	      						iac));
 	            	}
+					//TODO-gg the decision on whether to expose the result should be taken only by the subclasses of this class.
 	            	IAtomContainer result = processOneAtomContainer(iac, i);
 	                if (exposedOutputCollector != null)
 	                {

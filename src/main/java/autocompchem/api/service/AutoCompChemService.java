@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.datacollections.NamedData;
 import autocompchem.io.IOtools;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
@@ -51,10 +55,10 @@ public class AutoCompChemService {
      * Execute a task with given parameters.
      * @param taskName the name of the task to execute
      * @param parameters the parameters for the task
-     * @return the result of the task execution
+     * @return the result of the task execution including exposed output data
      * @throws Exception if task execution fails
      */
-    public String executeTask(String taskName, ParameterStorage parameters) throws Exception {
+    public Map<String, Object> executeTask(String taskName, ParameterStorage parameters) throws Exception {
         // Add the task to parameters if not present
         if (!parameters.contains(WorkerConstants.PARTASK)) {
             parameters.setParameter(WorkerConstants.PARTASK, taskName);
@@ -64,7 +68,32 @@ public class AutoCompChemService {
         Job job = new ACCJob(parameters);
         job.run();
 
-        return "Task '" + taskName + "' completed successfully";
+        // Capture the result
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "Task '" + taskName + "' completed successfully");
+        
+        // Get exposed output data
+        Collection<NamedData> exposedData = job.getOutputDataSet();
+        if (exposedData != null && !exposedData.isEmpty()) {
+            Map<String, Object> outputData = new HashMap<>();
+            logger.debug("Found {} exposed data items", exposedData.size());
+            
+            for (NamedData data : exposedData) {
+                String key = data.getReference();
+                Object value = data.getValue();
+                outputData.put(key, value);
+                logger.debug("Exposed data: {} = {}", key, value);
+            }
+            
+            result.put("exposedData", outputData);
+            result.put("exposedDataCount", exposedData.size());
+        } else {
+            logger.debug("No exposed data found");
+            result.put("exposedData", new HashMap<>());
+            result.put("exposedDataCount", 0);
+        }
+
+        return result;
     }
 
     /**
