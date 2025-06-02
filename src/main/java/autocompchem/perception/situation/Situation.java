@@ -30,11 +30,13 @@ import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.concept.Concept;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.run.jobediting.Action;
+import jakarta.el.CompositeELResolver;
 import jakarta.el.ELContext;
 import jakarta.el.ELException;
 import jakarta.el.ELResolver;
 import jakarta.el.ExpressionFactory;
 import jakarta.el.FunctionMapper;
+import jakarta.el.MapELResolver;
 import jakarta.el.ValueExpression;
 import jakarta.el.VariableMapper;
 
@@ -368,8 +370,9 @@ public class Situation extends Concept
        
             @Override
             public ELResolver getELResolver() {
-                //None
-                return null;
+                CompositeELResolver resolver = new CompositeELResolver();
+                resolver.add(new MapELResolver());
+                return resolver;
             }
 
             @Override

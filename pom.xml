@@ -12,9 +12,59 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    <spring-boot.version>3.2.0</spring-boot.version>
   </properties>
   
   <dependencies>
+    <!-- Spring Boot Dependencies with Log4j2 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>${spring-boot.version}</version>
+        <exclusions>
+            <!-- Exclude default Logback logging -->
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <!-- Add Log4j2 starter instead -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-log4j2</artifactId>
+        <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+        <version>${spring-boot.version}</version>
+        <exclusions>
+            <!-- Exclude default Logback logging -->
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+        <version>${spring-boot.version}</version>
+        <exclusions>
+            <!-- Exclude default Logback logging -->
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.3.0</version>
+    </dependency>
+    
     <dependency>
         <artifactId>cdk-bundle</artifactId>
         <groupId>org.openscience.cdk</groupId>
@@ -103,11 +153,6 @@
         <artifactId>jakarta.el</artifactId>
         <version>5.0.0-M1</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.23.0</version>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
     <dependency>
         <groupId>net.sf.py4j</groupId>
@@ -120,13 +165,6 @@
         <artifactId>tika-core</artifactId>
         <version>3.1.0</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-nop -->
-    <!-- This silences logging from SLF4J. See https://www.slf4j.org/codes.html#noProviders-->
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-nop</artifactId>
-        <version>2.1.0-alpha1</version>
-    </dependency>
   </dependencies>
   
   <build>
@@ -137,7 +175,80 @@
       </resource>
     </resources>
     <plugins>
+      <!-- Maven Shade Plugin - runs first to create flat JAR -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.3</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
+            <version>0.1.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>shade-jar-with-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>autocompchem-3.0.0-jar-with-dependencies</finalName>
+              <filters>
+                <filter>
+                  <artifact>*</artifact>
+                  <excludes>
+                    <exclude>module-info.class</exclude>
+                    <exclude>header.txt</exclude>
+                    <exclude>log4j.properties</exclude>
+                    <exclude>META-INF/DEPENDENCIES</exclude>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>  
+                    <Main-Class>autocompchem.ui.AutoCompChemLauncher</Main-Class>
+                    <Multi-Release>true</Multi-Release>
+                  </manifestEntries>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                  <addHeader>false</addHeader>
+                </transformer>
+              </transformers>
+              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Spring Boot Plugin - runs after to create Spring Boot JAR -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+        <configuration>
+          <mainClass>autocompchem.ui.AutoCompChemLauncher</mainClass>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+<!-- Use only to update the licenses included in the package
+      <plugin>
+
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>2.0.0</version>
@@ -160,6 +271,7 @@
           <cleanLicensesOutputDirectory>true</cleanLicensesOutputDirectory>
         </configuration>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.2.0</version>
@@ -177,84 +289,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.5.3</version>
       </plugin>
-<!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-          <configuration>
-            <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-            <archive>
-              <manifest>
-                <mainClass>autocompchem.ui.ACCMain</mainClass>
-              </manifest>
-            </archive>
-          </configuration>
-          <executions>
-            <execution>
-              <id>make-assembly</id>
-              <phase>package</phase>
-              <goals>
-                <goal>single</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
--->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.5.3</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.logging.log4j</groupId>
-              <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
-              <version>0.1.0</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>shade-jar-with-dependencies</id>
-              <phase>package</phase>
-              <goals>
-                <goal>shade</goal>
-              </goals>
-              <configuration>
-                <filters>
-		          <filter>
-		            <artifact>*</artifact>
-		            <excludes>
-		              <exclude>module-info.class</exclude>
-		              <exclude>header.txt</exclude>
-		              <exclude>log4j.properties</exclude>
-		              <exclude>META-INF/DEPENDENCIES</exclude>
-		              <exclude>META-INF/MANIFEST.MF</exclude>
-		            </excludes>
-		          </filter>
-		        </filters>
-                <transformers>
-                  <transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
-                  <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                  <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                    <manifestEntries>  
-                      <Main-Class>autocompchem.ui.ACCMain</Main-Class>
-                      <Multi-Release>true</Multi-Release>
-                    </manifestEntries>
-                  </transformer>
-                  <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
-                  <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
-                    <addHeader>false</addHeader>
-                  </transformer>
-                </transformers>
-                <shadedArtifactAttached>true</shadedArtifactAttached>
-                <!--  you might want to check the dependency-reduced pom from time to time -->
-                <createDependencyReducedPom>false</createDependencyReducedPom>
-                <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
     </plugins>
   </build>
 </project>

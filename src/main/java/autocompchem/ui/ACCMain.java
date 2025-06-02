@@ -42,8 +42,7 @@ import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
- * Main for AtomCompChem (Automated Computational Chemist). The entry point
- * for both CLI and GUI based runs.
+ * Main class for AtomCompChem (Automated Computational Chemist) CLI.
  *
  * @author Marco Foscato
  */
@@ -92,7 +91,7 @@ public class ACCMain
         Job job = null;
         if (args.length < 1)
         {
-            //TODO eventually here we will launch the gui.
+            //TODO eventually here we will launch the GUI.
             printUsage();
             Terminator.withMsgAndStatus("ERROR! No input or command line "
                 + "argument given. " + NL

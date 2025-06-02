@@ -2,4 +2,6 @@ bin
 test/results/*
 .settings
 target/
+logs/
 *.swp
+.vscode/

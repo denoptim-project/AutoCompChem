@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoCompChem REST API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .api-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .api-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 5px;
+        }
+        .endpoint-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 AutoCompChem REST API</h1>
+        <p>Computational Chemistry Automation - Web Interface</p>
+        <p><span class="status-indicator"></span>Service is running on port 8080</p>
+    </div>
+
+    <div class="card">
+        <h2>API Documentation & Tools</h2>
+        <div class="button-grid">
+            <a href="/swagger-ui.html" class="api-button">
+                📖 Interactive API Documentation<br>
+                <small>Swagger UI - Test endpoints directly</small>
+            </a>
+            <a href="/api-docs" class="api-button">
+                📋 OpenAPI Specification<br>
+                <small>JSON format API documentation</small>
+            </a>
+            <a href="/actuator/health" class="api-button">
+                ❤️ Health Check<br>
+                <small>Service status and monitoring</small>
+            </a>
+            <a href="/actuator/info" class="api-button">
+                ℹ️ Service Information<br>
+                <small>Application details and metrics</small>
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Key Features</h2>
+        <ul class="feature-list">
+            <li>Execute computational chemistry tasks via REST API</li>
+            <li>Upload and convert molecular structure files (SDF, XYZ, MOL, PDB)</li>
+            <li>Generate input files for Gaussian, Orca, NWChem, XTB, Spartan</li>
+            <li>Parse and analyze output files from quantum chemistry packages</li>
+            <li>Job evaluation and healing capabilities</li>
+            <li>Molecular geometry analysis and manipulation</li>
+            <li>Basis set generation and constraint handling</li>
+            <li>Conformational space exploration</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Quick Start Examples</h2>
+        
+        <div class="endpoint-info">
+            <strong>Get Available Tasks</strong>
+            <div class="code">GET /api/v1/autocompchem/tasks</div>
+        </div>
+
+        <div class="endpoint-info">
+            <strong>Upload Molecular File</strong>
+            <div class="code">POST /api/v1/molecules/upload
+Content-Type: multipart/form-data
+Body: file=your_molecule.sdf</div>
+        </div>
+
+        <div class="endpoint-info">
+            <strong>Generate Gaussian Input</strong>
+            <div class="code">POST /api/v1/compchem/software/gaussian/input
+Content-Type: application/json
+{
+  "inputFile": "molecule.sdf",
+  "outputFile": "gaussian.com",
+  "method": "B3LYP",
+  "basisSet": "6-31G*"
+}</div>
+        </div>
+
+        <div class="endpoint-info">
+            <strong>Execute Custom Task</strong>
+            <div class="code">POST /api/v1/autocompchem/tasks/{taskName}/execute
+Content-Type: application/json
+{
+  "parameter1": "value1",
+  "parameter2": "value2"
+}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Supported Software</h2>
+        <div class="button-grid">
+            <div style="background: #e3f2fd; color: #1565c0; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>Gaussian</strong><br>
+                Input generation & output parsing
+            </div>
+            <div style="background: #e8f5e8; color: #2e7d32; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>Orca</strong><br>
+                Input generation & output parsing
+            </div>
+            <div style="background: #fff3e0; color: #f57c00; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>NWChem</strong><br>
+                Input generation & output parsing
+            </div>
+            <div style="background: #fce4ec; color: #c2185b; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>XTB</strong><br>
+                Input generation & output parsing
+            </div>
+            <div style="background: #f3e5f5; color: #7b1fa2; padding: 1rem; border-radius: 8px; text-align: center;">
+                <strong>Spartan</strong><br>
+                Input generation & output parsing
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Getting Started</h2>
+        <p>
+            The AutoCompChem REST API provides a modern, web-based interface to the powerful computational chemistry automation capabilities of AutoCompChem. 
+            You can interact with the API using any HTTP client, programming language, or the interactive Swagger documentation.
+        </p>
+        <p>
+            <strong>To get started:</strong>
+        </p>
+        <ol>
+            <li>Visit the <a href="/swagger-ui.html">Swagger UI</a> to explore and test the API endpoints</li>
+            <li>Check the <a href="/api/v1/autocompchem/tasks">available tasks</a> endpoint to see what operations you can perform</li>
+            <li>Upload a molecular structure file to test the file I/O capabilities</li>
+            <li>Generate input files for your preferred quantum chemistry software</li>
+        </ol>
+    </div>
+
+    <script>
+        // Simple script to verify the API is accessible
+        fetch('/api/v1/autocompchem/health')
+            .then(response => response.json())
+            .then(data => {
+                console.log('AutoCompChem API is running:', data);
+            })
+            .catch(error => {
+                console.log('API connection test failed:', error);
+            });
+    </script>
+</body>
+</html> 

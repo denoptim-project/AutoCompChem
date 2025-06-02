@@ -1,28 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
-  <Appenders>
-    <Console name="ConsoleLevelSpecific" target="SYSTEM_OUT">
-      <PatternLayout>
-        <LevelPatternSelector defaultPattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %msg%n">
-          <PatternMatch key="INFO" pattern="%msg%n"/>
-          <PatternMatch key="DEBUG" pattern="%msg%n"/>
-          <PatternMatch key="TRACE" pattern="%msg%n"/>
-        </LevelPatternSelector>
-      </PatternLayout>
-    </Console>
-    <Console name="ConsoleUndecorated" target="SYSTEM_OUT">
-      <PatternLayout pattern="%msg%n" />
-    </Console>
-  </Appenders>
-  <Loggers>
-    <Root level="INFO">
-      <AppenderRef ref="ConsoleLevelSpecific"/>
-    </Root>
-    <logger name="autocompchem.ui.ACCMain" level="INFO" additivity="false">
-      <AppenderRef ref="ConsoleUndecorated" />
-    </logger>
-    <logger name="autocompchem.run.Terminator" level="INFO" additivity="false">
-      <AppenderRef ref="ConsoleUndecorated" />
-    </logger>
-  </Loggers>
+<Configuration status="WARN">
+    <Properties>
+        <!-- Define log file location -->
+        <Property name="LOG_FILE">logs/autocompchem-api.log</Property>
+        <Property name="CONSOLE_PATTERN">%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Property>
+        <Property name="FILE_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${CONSOLE_PATTERN}"/>
+        </Console>
+
+        <!-- File Appender -->
+        <RollingFile name="FileAppender" fileName="${LOG_FILE}" 
+                     filePattern="logs/autocompchem-api-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${FILE_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!-- Console with level-specific patterns -->
+        <Console name="ConsoleLevelSpecific" target="SYSTEM_OUT">
+            <PatternLayout>
+                <LevelPatternSelector defaultPattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} %msg%n">
+                    <PatternMatch key="INFO" pattern="%msg%n"/>
+                    <PatternMatch key="DEBUG" pattern="%msg%n"/>
+                    <PatternMatch key="TRACE" pattern="%msg%n"/>
+                </LevelPatternSelector>
+            </PatternLayout>
+        </Console>
+        
+        <!-- Undecorated console for clean CLI output -->
+        <Console name="ConsoleUndecorated" target="SYSTEM_OUT">
+            <PatternLayout pattern="%msg%n" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- AutoCompChem CLI loggers (clean output) -->
+        <Logger name="autocompchem.ui.ACCMain" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleUndecorated" />
+        </Logger>
+        
+        <Logger name="autocompchem.run.Terminator" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleUndecorated" />
+        </Logger>
+
+        <!-- AutoCompChem API loggers -->
+        <Logger name="autocompchem.ui.AutoCompChemApplication" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        
+        <!-- Spring Framework loggers -->
+        <Logger name="org.springframework" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        
+        <!-- Spring Boot specific loggers -->
+        <Logger name="org.springframework.boot" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        
+        <!-- HTTP request logging for API monitoring -->
+        <Logger name="org.springframework.web" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        
+        <!-- Reduce noise from CDK -->
+        <Logger name="org.openscience.cdk" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- Root logger -->
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleLevelSpecific"/>
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+    </Loggers>
 </Configuration>
