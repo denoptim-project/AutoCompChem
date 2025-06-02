@@ -1,4 +1,8 @@
-## AutoCompChem
+# AutoCompChem
+
+![Anaconda_Version](https://anaconda.org/denoptim-project/autocompchem/badges/version.svg) ![Anaconda_last](https://anaconda.org/denoptim-project/autocompchem/badges/latest_release_date.svg) ![Anaconda_Platforms](https://anaconda.org/denoptim-project/autocompchem/badges/platforms.svg) ![Anaconda_License](https://anaconda.org/denoptim-project/autocompchem/badges/license.svg) ![Anaconda_downloads](
+https://anaconda.org/denoptim-project/autocompchem/badges/downloads.svg)
+
 AutoCompChem (or ACC) is a collection of tools used to automatize computational chemistry tasks.
 
 ## Installation from Conda
