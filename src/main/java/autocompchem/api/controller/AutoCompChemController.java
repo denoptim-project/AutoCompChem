@@ -2,7 +2,6 @@ package autocompchem.api.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,16 +91,6 @@ public class AutoCompChemController {
             errorResult.put("error", "Error executing task: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResult);
         }
-    }
-
-    /**
-     * Get all worker capabilities.
-     */
-    @GetMapping("/capabilities")
-    @Operation(summary = "Get worker capabilities", description = "Returns all capability names of registered workers (excluding test tasks)")
-    public ResponseEntity<Set<String>> getAllCapabilities() {
-        Set<String> capabilities = autoCompChemService.getAllCapabilities();
-        return ResponseEntity.ok(capabilities);
     }
 
     /**

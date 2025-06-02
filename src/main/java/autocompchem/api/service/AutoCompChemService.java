@@ -1,24 +1,19 @@
 package autocompchem.api.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData;
-import autocompchem.io.IOtools;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
-import autocompchem.run.JobFactory;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -106,27 +101,6 @@ public class AutoCompChemService {
     }
 
     /**
-     * Read molecular structures from a file.
-     * @param file the file to read
-     * @return list of molecular structures
-     */
-    public List<IAtomContainer> readMolecularStructures(File file) {
-        return IOtools.readMultiMolFiles(file);
-    }
-
-    /**
-     * Write molecular structures to a file.
-     * @param molecules the molecular structures to write
-     * @param file the output file
-     * @param format the output format (SDF, XYZ, etc.)
-     * @param append whether to append to existing file
-     */
-    public void writeMolecularStructures(List<IAtomContainer> molecules, File file, 
-                                         String format, boolean append) {
-        IOtools.writeAtomContainerSetToFile(file, molecules, format, append);
-    }
-
-    /**
      * Get help information for a specific task.
      * @param taskName the name of the task
      * @return help text for the task
@@ -141,26 +115,5 @@ public class AutoCompChemService {
         } else {
             return "No help available for task: " + taskName;
         }
-    }
-
-    /**
-     * Create a job from a parameter file.
-     * @param parameterFile the parameter file
-     * @return the created job
-     * @throws Exception if job creation fails
-     */
-    public Job createJobFromFile(File parameterFile) throws Exception {
-        return JobFactory.buildFromFile(parameterFile);
-    }
-
-    /**
-     * Get the capabilities of all registered workers.
-     * @return set of all available task names (only non-test tasks)
-     */
-    public Set<String> getAllCapabilities() {
-        return Task.getRegisteredTasks().stream()
-                .filter(task -> !task.testOnly)
-                .map(task -> task.casedID)
-                .collect(java.util.stream.Collectors.toSet());
     }
 } 
