@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.io.IOtools;
@@ -27,12 +29,22 @@ import autocompchem.worker.WorkerFactory;
 @Service
 public class AutoCompChemService {
 
+    private static final Logger logger = LogManager.getLogger(AutoCompChemService.class);
+
     /**
      * Get all available tasks that can be performed by workers.
      * @return list of available tasks
      */
     public List<Task> getAvailableTasks() {
-        return Task.getRegisteredTasks();
+        // Ensure WorkerFactory is initialized
+        WorkerFactory.getInstance();
+        
+        List<Task> tasks = Task.getRegisteredTasks();
+        logger.debug("Found {} registered tasks", tasks.size());
+        for (Task task : tasks) {
+            logger.debug("Registered task: {}", task.casedID);
+        }
+        return tasks;
     }
 
     /**

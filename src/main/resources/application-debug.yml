@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+spring:
+  web:
+    resources:
+      add-mappings: true
+  
+  mvc:
+    log-request-details: true
+    log-resolved-exception: true
+
+# Debug Logging Configuration
+logging:
+  level:
+    root: INFO
+    autocompchem: DEBUG
+    autocompchem.ui: DEBUG
+    autocompchem.service: DEBUG
+    autocompchem.controller: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.web: DEBUG
+    org.springframework.boot.autoconfigure: INFO
+    org.springframework.security: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.springframework.web.servlet.mvc: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.apache.tomcat: INFO
+    org.apache.catalina: INFO
+  
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  
+  file:
+    name: logs/autocompchem-debug.log
+
+# Management and Actuator for debugging
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    loggers:
+      enabled: true
+    beans:
+      enabled: true
+    env:
+      enabled: true
+
+# Debug-specific settings
+debug: true
+trace: false
+
+# Spring Boot Developer Tools (if available)
+spring.devtools:
+  restart:
+    enabled: true
+  livereload:
+    enabled: true 

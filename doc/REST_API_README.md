@@ -79,6 +79,19 @@ curl -X POST \
   http://localhost:8080/api/v1/autocompchem/tasks/readAtomContainers/execute
 ```
 
+### 4. Measure Geometrical Descriptors (VERIFIED!)
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "inFile": "test/cli21-mol.sdf",
+    "SMARTS": "dih [#1] [Ru] [#6] [#7]",
+    "onlybonded": "true"
+  }' \
+  http://localhost:8080/api/v1/autocompchem/tasks/measureGeomDescriptors/execute
+```
+
 
 ## 🔍 Supported Features
 

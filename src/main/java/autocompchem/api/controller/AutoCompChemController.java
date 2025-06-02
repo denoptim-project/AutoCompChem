@@ -42,7 +42,7 @@ public class AutoCompChemController {
         Map<String, String> info = Map.of(
             "name", "AutoCompChem REST API",
             "version", "3.0.0",
-            "description", "RESTful interface for computational chemistry automation"
+            "description", "RESTful interface for computational chemistry task automation"
         );
         return ResponseEntity.ok(info);
     }
@@ -62,7 +62,7 @@ public class AutoCompChemController {
      */
     @GetMapping("/tasks/{taskName}/help")
     @Operation(summary = "Get task help", description = "Returns help information for a specific task")
-    public ResponseEntity<String> getTaskHelp(@PathVariable String taskName) {
+    public ResponseEntity<String> getTaskHelp(@PathVariable("taskName") String taskName) {
         try {
             String help = autoCompChemService.getTaskHelp(taskName);
             return ResponseEntity.ok(help);
@@ -77,7 +77,7 @@ public class AutoCompChemController {
     @PostMapping("/tasks/{taskName}/execute")
     @Operation(summary = "Execute task", description = "Executes a computational chemistry task with given parameters")
     public ResponseEntity<String> executeTask(
-            @PathVariable String taskName,
+            @PathVariable("taskName") String taskName,
             @RequestBody Map<String, Object> parameters) {
         try {
             // Convert map to ParameterStorage
