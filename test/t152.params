@@ -1,0 +1,4 @@
+TASK: extractMolecules
+INFILE: ../t152-mols.sdf
+OUTFILE:  t152-fragments.sdf
+singleMolOutput

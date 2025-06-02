@@ -167,7 +167,6 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
         if (params.contains("SINGLEMOLOUTPUT"))
         {
         	this.singleMolOutput = true;
-        	
         }
     }
     
@@ -201,6 +200,9 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
             {
     			if (singleMolOutput)
     			{
+        			// We set even if we write singe-frag files to avoid producing
+        			// also a file that collects all fragments in the super class
+                	outFileAlreadyUsed = true;
     				for (int j=0; j< molecules.getAtomContainerCount(); j++)
     				{
     					File singleMolOutFile = new File
@@ -212,7 +214,7 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
     	            			+ singleMolOutFile.getAbsolutePath() + "'");
     				}
     			} else {
-	            	outFileAlreadyUsed = true;
+                	outFileAlreadyUsed = true;
 	            	IOtools.writeAtomContainerSetToFile(outFile, molecules, 
 	            			outFormat, true);
     			}
@@ -281,7 +283,7 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
     		Logger logger)
     {
     	List<IAtomContainer> requiredMols = new ArrayList<IAtomContainer>();
-    	if (requiredSmarts.size()>0)
+    	if (requiredSmarts!=null && requiredSmarts.size()>0)
     	{
 	    	for (IAtomContainer mol : mols)
 	    	{
@@ -317,36 +319,41 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
     	}
   
     	List<IAtomContainer> keptMols = new ArrayList<IAtomContainer>();
-    	for (IAtomContainer mol : requiredMols)
+    	if (excludedSmarts!=null && excludedSmarts.size()>0)
     	{
-            ManySMARTSQuery exclMsq = new ManySMARTSQuery(mol, excludedSmarts);
-            if (exclMsq.hasProblems())
-            {
-                String cause = exclMsq.getMessage();
-                Terminator.withMsgAndStatus("ERROR! Unable to use required "
-                		+ "SMARTS. Details: " + cause,-1);
-            }
-            if (exclMsq.getTotalMatches() == 0)
-            {
-            	 keptMols.add(mol);
-            } else {
-            	if (logger!=null)
-            	{
-	            	Map<String, Integer> matchesCounts = 
-	            			exclMsq.getNumMatchesMap();
-	            	for (String key : matchesCounts.keySet())
-	                {
-	                    if (matchesCounts.get(key) > 0)
-	                    {
-	                    	logger.info(mol.getTitle() + " (" 
-	                    			+ MolecularUtils.getMolecularFormula(mol)
-	                    			+ ") matches '" + key +"'.");
-	                        break;
-	                    }
-	                }
-            	}
-            }
-        } 
+	    	for (IAtomContainer mol : requiredMols)
+	    	{
+	            ManySMARTSQuery exclMsq = new ManySMARTSQuery(mol, excludedSmarts);
+	            if (exclMsq.hasProblems())
+	            {
+	                String cause = exclMsq.getMessage();
+	                Terminator.withMsgAndStatus("ERROR! Unable to use required "
+	                		+ "SMARTS. Details: " + cause,-1);
+	            }
+	            if (exclMsq.getTotalMatches() == 0)
+	            {
+	            	 keptMols.add(mol);
+	            } else {
+	            	if (logger!=null)
+	            	{
+		            	Map<String, Integer> matchesCounts = 
+		            			exclMsq.getNumMatchesMap();
+		            	for (String key : matchesCounts.keySet())
+		                {
+		                    if (matchesCounts.get(key) > 0)
+		                    {
+		                    	logger.info(mol.getTitle() + " (" 
+		                    			+ MolecularUtils.getMolecularFormula(mol)
+		                    			+ ") matches '" + key +"'.");
+		                        break;
+		                    }
+		                }
+	            	}
+	            }
+	        }
+    	} else {
+    		keptMols = requiredMols;
+    	}
 
         return keptMols;
     }

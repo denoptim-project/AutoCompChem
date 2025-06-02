@@ -1,0 +1,36 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+for srcId in 0 1
+do
+  for fragId in 0 1 2
+  do
+    if [ ! -f "t152-fragments_${srcId}_${fragId}.sdf" ] ; then not_passed $LINENO ; fi
+  done
+done
+
+if [ -f "t152-fragments.sdf" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q " Kr " t152-fragments_0_0.sdf ; then not_passed $LINENO ; fi
+if ! grep -q " He " t152-fragments_0_1.sdf ; then not_passed $LINENO ; fi
+if ! grep -q " Ar " t152-fragments_0_2.sdf ; then not_passed $LINENO ; fi
+
+if ! grep -q " S " t152-fragments_1_0.sdf ; then not_passed $LINENO ; fi
+if  grep -q " Cl " t152-fragments_1_0.sdf ; then not_passed $LINENO ; fi
+if  grep -q " Rn " t152-fragments_1_0.sdf ; then not_passed $LINENO ; fi
+
+if grep -q " S " t152-fragments_1_1.sdf ; then not_passed $LINENO ; fi
+if ! grep -q " Cl " t152-fragments_1_1.sdf ; then not_passed $LINENO ; fi
+if grep -q " Rn " t152-fragments_1_1.sdf ; then not_passed $LINENO ; fi
+
+if grep -q " S " t152-fragments_1_2.sdf ; then not_passed $LINENO ; fi
+if grep -q " Cl " t152-fragments_1_2.sdf ; then not_passed $LINENO ; fi
+if ! grep -q " Rn " t152-fragments_1_2.sdf ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t152.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
