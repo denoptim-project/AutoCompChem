@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -605,7 +606,23 @@ public class FileAnalyzer
     /**
      * Find matches line by line
      * @param inFile the file to analyze
-     * @param patterns the list of patterns to find
+     * @param pattern the pattern to search for
+     * @return a list of the matches: each entry is a line matching the pattern
+     */
+   
+    public static List<String> grep(String inFile, String pattern)
+    {
+    	Set<String> set = new HashSet<String>();
+    	set.add(pattern);
+    	return grep(inFile, set);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Find matches line by line
+     * @param inFile the file to analyze
+     * @param patterns the list of patterns to search for
      * @return a list of the matches: each entry is a line matching any of the 
      * queries
      */

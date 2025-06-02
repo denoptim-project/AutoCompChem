@@ -1,0 +1,6 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 5
+TASK: analyseSpartanOutput
+jobOutputFile: ../t153.spardir

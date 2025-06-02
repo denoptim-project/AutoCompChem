@@ -1,0 +1,76 @@
+SPARTAN'20 MECHANICS PROGRAM:   (Linux/P4E)                           build  20.1.4
+
+ Changing atom  C11 to match global charge. 'C+'->'C-' 
+ Run Type            :       Frequency
+ Method              :          MMFF94 (with extensions)
+ Stoichiometry       : C33 H41 Cl2 I2 N O Ru
+ Number of Atoms     :              81
+ Point Group         :              C1
+ Degrees of Freedom  :             201
+
+
+Cycle    E           Gmax    maxDist   MaxTors      
+   0   35.72572e+6 344.92e+6
+
+
+  Turning off symmetry/constraints for frequency calculation
+ Changing atom  C11 to match global charge. 'C+'->'C-' 
+ Run Type            :       Frequency
+ Method              :          MMFF94 (with extensions)
+ Stoichiometry       : C33 H41 Cl2 I2 N O Ru
+ Number of Atoms     :              81
+ Point Group         :              C1
+ Degrees of Freedom  :             237
+
+
+Cycle    E           Gmax    maxDist   MaxTors      
+   0   35.72572e+6 344.92e+6
+  Adjusted 20 (out of 243) low frequency modes
+          Net Charge :    0.000
+       Dipole Moment :   20.764 Debye
+          components :  -19.7093   -3.7736   -5.3325
+
+
+ Final molecular symmetry is C1 
+
+  Reason for exit: Successful completion 
+  Mechanics CPU Time :        0.210
+  Mechanics Wall Time:        0.218
+
+
+
+SPARTAN'20 Semi-Empirical Program:  (Linux/P4E)            build  20.1.4       
+
+  t153                                                          
+
+  Run type: Geometry optimization 
+           (Analytical Gradient)
+  Model: RHF/PM6   
+  Number of shells: 126
+    81 S shells
+    40 P shells
+     5 5D shells
+  Number of basis functions:  226
+  Number of electrons:  220
+  Use of molecular symmetry disabled
+  Molecular charge:      0
+  Spin multiplicity:     1
+  Partial minimization performed
+
+  Point Group = C1  Order =  1 Nsymop =  1
+  This system has  237 degrees of freedom
+
+  Atoms  80 and  25 are too close
+
+
+  Atoms  81 and  26 are too close
+
+  Memory Used:         29.129 Mb
+   
+
+  Reason for exit: Atoms found too close together 
+  Semi-Empirical Program CPU Time :      0.01000
+  Semi-Empirical Program Wall Time:      0.00971
+
+
+RC=30

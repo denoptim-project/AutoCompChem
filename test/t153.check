@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if ! grep -q "overall run did NOT terminate normally" t153.log ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t153.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

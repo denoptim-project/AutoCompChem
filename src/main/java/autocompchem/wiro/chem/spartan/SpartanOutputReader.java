@@ -247,15 +247,28 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     @Override
     protected void readLogFile(LogReader reader) throws Exception
     {
-    	// Take the overall "normal termination" flag from the status file
     	String line = null;
+    	boolean foundNormalEndInLog = false;
     	while ((line = reader.readLine()) != null)
         {
-        	if (line.matches(".*" + SpartanConstants.NORMALCOMPLSTATUS + ".*"))
+        	if (line.matches(".*" + SpartanConstants.LOGNORMALTERM + ".*"))
         	{
-        		normalTerminated = true;
+        		foundNormalEndInLog = true;
         	}
         }
+    	
+    	// Make sure the status output is consistent with the log, as there are 
+    	// cases of log files reporting "Successful completion" while
+        // the job has actually failed, as reported in the status file
+    	// See <a href="https://github.com/denoptim-project/AutoCompChem/issues/21">issue #21</a>
+    	String statusFile = inFile.getAbsoluteFile() + File.separator + ".."
+    			+ File.separator + SpartanConstants.STATUSFILENAME;
+    			
+    	boolean foundNormalEndStatus = FileAnalyzer.grep(statusFile, 
+    			SpartanConstants.NORMALCOMPLSTATUS).size() > 0;
+    	
+    	if (foundNormalEndInLog && foundNormalEndStatus)
+    		normalTerminated = true;
     	
     	parseModelDir(inFile);
     }
