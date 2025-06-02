@@ -62,14 +62,14 @@ public class ComputationalChemistryController {
      */
     @PostMapping("/software/{softwareName}/input")
     @Operation(summary = "Generate input file", description = "Generate input file for specified quantum chemistry software")
-    public ResponseEntity<String> generateInputFile(
+    public ResponseEntity<Map<String, Object>> generateInputFile(
             @PathVariable String softwareName,
             @RequestBody Map<String, Object> parameters) {
         try {
             // Map software name to task
             String taskName = getInputTask(softwareName);
             if (taskName == null) {
-                return ResponseEntity.badRequest().body("Unsupported software: " + softwareName);
+                return ResponseEntity.badRequest().body(Map.of("error", "Unsupported software: " + softwareName));
             }
 
             // Convert map to ParameterStorage
@@ -77,10 +77,10 @@ public class ComputationalChemistryController {
             parameters.forEach((key, value) -> params.setParameter(key, value.toString()));
             params.setParameter(WorkerConstants.PARTASK, taskName);
 
-            String result = autoCompChemService.executeTask(taskName, params);
+            Map<String, Object> result = autoCompChemService.executeTask(taskName, params);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error generating input: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "Error generating input: " + e.getMessage()));
         }
     }
 
@@ -89,14 +89,14 @@ public class ComputationalChemistryController {
      */
     @PostMapping("/software/{softwareName}/output")
     @Operation(summary = "Read output file", description = "Parse output file from specified quantum chemistry software")
-    public ResponseEntity<String> readOutputFile(
+    public ResponseEntity<Map<String, Object>> readOutputFile(
             @PathVariable String softwareName,
             @RequestBody Map<String, Object> parameters) {
         try {
             // Map software name to task
             String taskName = getOutputTask(softwareName);
             if (taskName == null) {
-                return ResponseEntity.badRequest().body("Unsupported software: " + softwareName);
+                return ResponseEntity.badRequest().body(Map.of("error", "Unsupported software: " + softwareName));
             }
 
             // Convert map to ParameterStorage
@@ -104,10 +104,10 @@ public class ComputationalChemistryController {
             parameters.forEach((key, value) -> params.setParameter(key, value.toString()));
             params.setParameter(WorkerConstants.PARTASK, taskName);
 
-            String result = autoCompChemService.executeTask(taskName, params);
+            Map<String, Object> result = autoCompChemService.executeTask(taskName, params);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error reading output: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "Error reading output: " + e.getMessage()));
         }
     }
 
@@ -132,15 +132,15 @@ public class ComputationalChemistryController {
      */
     @PostMapping("/job/evaluate")
     @Operation(summary = "Evaluate job", description = "Evaluate the results of a computational chemistry job")
-    public ResponseEntity<String> evaluateJob(@RequestBody Map<String, Object> parameters) {
+    public ResponseEntity<Map<String, Object>> evaluateJob(@RequestBody Map<String, Object> parameters) {
         try {
             ParameterStorage params = new ParameterStorage();
             parameters.forEach((key, value) -> params.setParameter(key, value.toString()));
             
-            String result = autoCompChemService.executeTask("evaluateJob", params);
+            Map<String, Object> result = autoCompChemService.executeTask("evaluateJob", params);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error evaluating job: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "Error evaluating job: " + e.getMessage()));
         }
     }
 

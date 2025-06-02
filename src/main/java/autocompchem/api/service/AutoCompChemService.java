@@ -37,18 +37,27 @@ public class AutoCompChemService {
 
     /**
      * Get all available tasks that can be performed by workers.
-     * @return list of available tasks
+     * @return list of available task names (only non-test tasks)
      */
-    public List<Task> getAvailableTasks() {
+    public List<String> getAvailableTasks() {
         // Ensure WorkerFactory is initialized
         WorkerFactory.getInstance();
         
-        List<Task> tasks = Task.getRegisteredTasks();
-        logger.debug("Found {} registered tasks", tasks.size());
-        for (Task task : tasks) {
-            logger.debug("Registered task: {}", task.casedID);
+        List<Task> allTasks = Task.getRegisteredTasks();
+        logger.debug("Found {} registered tasks total", allTasks.size());
+        
+        // Filter to only include tasks with testOnly=false and extract casedID
+        List<String> availableTaskNames = allTasks.stream()
+                .filter(task -> !task.testOnly)
+                .map(task -> task.casedID)
+                .collect(java.util.stream.Collectors.toList());
+        
+        logger.debug("Found {} non-test tasks", availableTaskNames.size());
+        for (String taskName : availableTaskNames) {
+            logger.debug("Available task: {}", taskName);
         }
-        return tasks;
+        
+        return availableTaskNames;
     }
 
     /**
@@ -146,10 +155,12 @@ public class AutoCompChemService {
 
     /**
      * Get the capabilities of all registered workers.
-     * @return set of all available tasks
+     * @return set of all available task names (only non-test tasks)
      */
-    public Set<Task> getAllCapabilities() {
+    public Set<String> getAllCapabilities() {
         return Task.getRegisteredTasks().stream()
+                .filter(task -> !task.testOnly)
+                .map(task -> task.casedID)
                 .collect(java.util.stream.Collectors.toSet());
     }
 } 

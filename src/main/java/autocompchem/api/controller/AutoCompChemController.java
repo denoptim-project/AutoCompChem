@@ -52,9 +52,9 @@ public class AutoCompChemController {
      * Get all available tasks.
      */
     @GetMapping("/tasks")
-    @Operation(summary = "Get available tasks", description = "Returns a list of all available computational tasks")
-    public ResponseEntity<List<Task>> getAvailableTasks() {
-        List<Task> tasks = autoCompChemService.getAvailableTasks();
+    @Operation(summary = "Get available tasks", description = "Returns a list of all available computational task names (excluding test tasks)")
+    public ResponseEntity<List<String>> getAvailableTasks() {
+        List<String> tasks = autoCompChemService.getAvailableTasks();
         return ResponseEntity.ok(tasks);
     }
 
@@ -98,9 +98,9 @@ public class AutoCompChemController {
      * Get all worker capabilities.
      */
     @GetMapping("/capabilities")
-    @Operation(summary = "Get worker capabilities", description = "Returns all capabilities of registered workers")
-    public ResponseEntity<Set<Task>> getAllCapabilities() {
-        Set<Task> capabilities = autoCompChemService.getAllCapabilities();
+    @Operation(summary = "Get worker capabilities", description = "Returns all capability names of registered workers (excluding test tasks)")
+    public ResponseEntity<Set<String>> getAllCapabilities() {
+        Set<String> capabilities = autoCompChemService.getAllCapabilities();
         return ResponseEntity.ok(capabilities);
     }
 
