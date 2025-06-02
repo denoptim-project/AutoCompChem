@@ -89,7 +89,7 @@ import autocompchem.text.TextBlockIndexed;
  * @author Marco Foscato
  */
 
-public class ParameterStorage extends NamedDataCollector implements Cloneable
+public class ParameterStorage extends NamedDataCollector
 {
 	
 //------------------------------------------------------------------------------
