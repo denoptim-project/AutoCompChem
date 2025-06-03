@@ -4,5 +4,4 @@
 VERBOSITY: 5
 TASK: PrepareInputSpartan
 INPUTGEOMETRIESFILE: ../t85-mol.sdf
-ROOTPATHNAMEOUTPUT: t85
 JOBDETAILSFILE: ../t85-jobDetails.json

@@ -146,7 +146,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
             		p[0]);
             if (p.length>1)
             {
-                ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
+                ps.setParameter(ChemSoftConstants.GENERALFILENAME, 
+                		resolvePathname(p[1]));
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.SAVELASTGEOMETRY, ps);
             analysisAllTasks.add(a);
@@ -161,7 +162,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
             ps.setParameter(ChemSoftConstants.GENERALFORMAT, p[0]);
             if (p.length>1)
             {
-                ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
+                ps.setParameter(ChemSoftConstants.GENERALFILENAME, 
+                		resolvePathname(p[1]));
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.SAVELASTGEOMETRY, ps);
             analysisGlobalTasks.add(a);
@@ -176,7 +178,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
             ps.setParameter(ChemSoftConstants.GENERALFORMAT, p[0]);
             if (p.length>1)
             {
-                ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[1]);
+                ps.setParameter(ChemSoftConstants.GENERALFILENAME, 
+                		resolvePathname(p[1]));
             }
             AnalysisTask a = new AnalysisTask(AnalysisKind.SAVEALLGEOM, ps);
             analysisAllTasks.add(a);
@@ -211,7 +214,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
                 list.add(w);
             }
             ParameterStorage ps = new ParameterStorage();
-            ps.setParameter(ChemSoftConstants.GENERALFILENAME, p[p.length-1]);
+            ps.setParameter(ChemSoftConstants.GENERALFILENAME, 
+            		resolvePathname(p[p.length-1]));
             ps.setParameter(ChemSoftConstants.GENERALINDEXES,
             		StringUtils.mergeListToString(list, " "));
             AnalysisTask a = new AnalysisTask(AnalysisKind.SAVEVIBMODE,ps);

@@ -49,4 +49,11 @@ public class WorkerConstants
 	 */
 	public static final String PAROUTFORMAT = "OUTFORMAT";
 
+	/**
+	 * Key for parameter defining the work directory that any Worker can use 
+	 * as the working directory for its operations. This parameter can be 
+	 * provided in any API request and will be available to all Workers.
+	 */
+	public static final String PARWORKDIR = "WORKDIR";
+
 }

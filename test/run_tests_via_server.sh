@@ -77,10 +77,11 @@ run_single_test() {
     local json_file="$1"
     local test_name="$2"
     
-    echo -e "${BLUE}🔄 Running test: $test_name${NC}"
-    
     # Extract task and params from JSON file
     task=$(jq -r '.task' "$json_file")
+
+    echo -e "${BLUE}🔄 Running test:${NC} $test_name - Task: $task"
+
     original_params=$(jq -c '.params' "$json_file")
     
     # Check if extraction was successful
@@ -94,15 +95,14 @@ run_single_test() {
     json_dir=$(dirname "$(realpath "$json_file")")
     params=$(convert_paths_to_absolute "$original_params" "$json_dir")
     
+    # Add WORKDIR parameter with the value of RESULTS_DIR
+    params=$(echo "$params" | jq --arg workdir "$(realpath "$RESULTS_DIR")" '. + {"WORKDIR": $workdir}')
+    
     # Construct API URL
     api_url="$BASE_URL/api/v1/autocompchem/tasks/$task/execute"
     
-    echo "   📋 Task: $task"
-    echo "   🔗 URL: $api_url"
-    
     # Show if paths were converted (for debugging)
     if [ "$original_params" != "$params" ]; then
-        echo "   🔄 Converted relative paths to absolute"
         echo "   📋 Sending JSON: $params"
     fi
     

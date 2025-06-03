@@ -1,22 +1,22 @@
 #!/bin/bash
 
-if [ ! -f "t69-sp14.spardir/_spartandir" ]
+if [ ! -f "t69-mol.spardir/_spartandir" ]
 then
   echo NOT Passes ERROR 1
   exit -1
 fi
 
-if [ ! -f "t69-sp14.spardir/t69_mol1/_spartan" ] ; then
+if [ ! -f "t69-mol.spardir/t69_mol1/_spartan" ] ; then
   echo NOT Passes ERROR 2
   exit -1
 fi
 
-if ! grep -q "cdk:Title=t69_mol1" t69-sp14.spardir/t69_mol1/cell; then
+if ! grep -q "cdk:Title=t69_mol1" t69-mol.spardir/t69_mol1/cell; then
   echo NOT Passed ERROR 3
   exit -1
 fi
 
-inputFile="t69-sp14.spardir/t69_mol1/input"
+inputFile="t69-mol.spardir/t69_mol1/input"
 
 if ! head -n 1 "$inputFile" | grep -q "SCONFANAL"; then
   echo NOT Passed ERROR 4a

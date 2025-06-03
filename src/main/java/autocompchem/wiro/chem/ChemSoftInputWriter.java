@@ -42,6 +42,7 @@ import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.WIROConstants;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Core components of any tool writing input files for software packages that
@@ -314,25 +315,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         			WIROConstants.PAROUTFILE).getValueAsString());
             ccJobInputNameRoot = FileUtils.getRootOfFileName(ccJobInputFile);
         } else {
-        	if (inFile==null)
-        	{
-        		ccJobInputNameRoot = "accOutput";
-                logger.debug("Neither '" 
-	        				 + WIROConstants.PAROUTFILE + "' nor '" 
-	        				 + WIROConstants.PAROUTFILEROOT + "' found and no '"
-	        				 + ChemSoftConstants.PARGEOMFILE + "' found. " + NL
-	                         + "Root of any output file name set to '" 
-	                         + ccJobInputNameRoot + "'.");
-        	} else {
-        		ccJobInputNameRoot = FileUtils.getRootOfFileName(
-        				inFile.getAbsolutePath());
-                logger.debug("Neither '" 
-                    		+ WIROConstants.PAROUTFILEROOT + "' nor '"
-                    		+ WIROConstants.PAROUTFILE 
-                    		+ "' parameter found. " + NL
-                            + "Root of any output file name set to '" 
-                            + ccJobInputNameRoot + "'.");
-        	}
+        	ccJobInputNameRoot = decideRootPathName(inFile);
         	ccJobInputFile = new File(ccJobInputNameRoot + inpExtrension);
         }
         
