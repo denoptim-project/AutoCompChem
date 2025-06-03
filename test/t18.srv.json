@@ -1,0 +1,9 @@
+{
+  "task": "RicalculateConnectivity",
+  "params": {
+    "tolerance": "0.3",
+    "tolerance2ndshell": "0.05",
+    "inFile": "../t18mol.sdf",
+    "outFile": "t18_newConn.sdf"
+  }
+}

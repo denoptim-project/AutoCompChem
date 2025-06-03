@@ -1,0 +1,10 @@
+{
+  "task": "PrepareInputNWChem",
+  "params": {
+    "inputGeometriesFile": "../t54-mol.sdf",
+    "outFile": "t54.nw",
+    "jobdetailsfile": "../t54-jobDetails.json",
+    "charge": "0",
+    "spinMultiplicity": "1"
+  }
+}

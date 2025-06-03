@@ -1,0 +1,9 @@
+{
+  "task": "RemoveDummyAtoms",
+  "params": {
+    "multihapto": "n",
+    "dusymbol": "ATO",
+    "inFile": "../t47-mol.sdf",
+    "outFile": "t47-out.sdf"
+  }
+}

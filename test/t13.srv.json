@@ -1,0 +1,9 @@
+{
+  "task": "CureJob",
+  "params": {
+    "ic-logs": "../t13-fake.out",
+    "jobdefinition": "../t11-jobDetails.json",
+    "situationsdbroot": "../data/knowledgebase",
+    "pathnameoutput": "t14_restart.inp"
+  }
+}

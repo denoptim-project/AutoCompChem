@@ -1,0 +1,8 @@
+{
+  "task": "analyseSpartanOutput",
+  "params": {
+    "jobOutputFile": "../t81.Conf.mol.spardir",
+    "SaveLastGeometry": "XYZ t81_conf2.xyz",
+    "modelID": "Conformer.2"
+  }
+}

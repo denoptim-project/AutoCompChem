@@ -1,0 +1,12 @@
+{
+  "task": "AnalyseGaussianOutput",
+  "params": {
+    "joboutputfile": "../t113_g16.out",
+    "templateconnectivity": "../t113_tmpl.sdf",
+    "detectkindofcriticalpoint": "LOWESTFREQ 0.01",
+    "getfreeenergy": "QHTHRESHOLD 100",
+    "SaveLastGeometry": "SDF t113_final.sdf",
+    "SaveLastGeometryOfEachStep": "xyz t113_trj.xyz",
+    "SaveVibModes": "0 22 23 t113_modes.xyz"
+  }
+}

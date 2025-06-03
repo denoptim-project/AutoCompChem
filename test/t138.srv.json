@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputORCA",
+  "params": {
+    "inputGeometriesFile": "../t138-mol.xyz",
+    "jobdetailsfile": "../t138-jobDetails.json"
+  }
+}

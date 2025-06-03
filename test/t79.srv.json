@@ -1,0 +1,8 @@
+{
+  "task": "GenerateBasisSet",
+  "params": {
+    "inFile": "../t74-mol.sdf",
+    "outFile": "t79.nwcbs",
+    "format": "nwchem"
+  }
+}

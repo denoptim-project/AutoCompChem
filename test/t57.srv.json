@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputOrca",
+  "params": {
+    "inputGeometriesFile": "../t57-mol.sdf",
+    "jobdetailsfile": "../t57-jobDetails.json"
+  }
+}

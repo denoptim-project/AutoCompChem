@@ -1,0 +1,8 @@
+{
+  "task": "GenerateBasisSet",
+  "params": {
+    "inFile": "../t75-mol.sdf",
+    "outFile": "t75.gbs",
+    "format": "Gaussian"
+  }
+}

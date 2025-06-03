@@ -1,0 +1,10 @@
+{
+  "task": "AnalyzeVDWClashes",
+  "params": {
+    "inFile": "../t36.sdf",
+    "allowance13": "1.0",
+    "cutoff": "0.70",
+    "allowance": "0.40",
+    "outFile": "t36-out.sdf"
+  }
+}

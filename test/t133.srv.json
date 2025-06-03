@@ -1,0 +1,7 @@
+{
+  "task": "AnalyseORCAOutput",
+  "params": {
+    "JobOutputFile": "../t133-orca.log",
+    "templateconnectivity": "../t133-tmpl.sdf TOLERANCE=0.20"
+  }
+}

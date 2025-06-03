@@ -1,0 +1,7 @@
+{
+  "task": "ConvertFromZMatrix",
+  "params": {
+    "inFile": "../t101.zmat",
+    "outFile": "t101.sdf"
+  }
+}

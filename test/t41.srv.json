@@ -1,0 +1,10 @@
+{
+  "task": "PrepareInputGaussian",
+  "params": {
+    "inputGeometriesFile": "../t41-mols.sdf",
+    "jobdetailsfile": "../t41-jobDetails.json",
+    "multigeomnames": "rrr ppp TSguess",
+    "multigeommode": "allInOneJob",
+    "pathnameoutput": "t41_qst3.inp"
+  }
+}

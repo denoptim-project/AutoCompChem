@@ -1,0 +1,9 @@
+{
+  "task": "extractMolecules",
+  "params": {
+    "inFile": "../t151-mols.sdf",
+    "outFile": "t151-fragments.sdf",
+    "requiredSMARTS": "C-C CO",
+    "excludedSMARTS": "[Fe] [He] [Ar]"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "task": "PrepareInputNWChem",
+  "params": {
+    "inputGeometriesFile": "../t63-nwc.out last",
+    "jobdetailsfile": "../t63-jobDetails.json",
+    "charge": "0",
+    "spinMultiplicity": "1"
+  }
+}

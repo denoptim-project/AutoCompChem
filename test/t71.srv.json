@@ -1,0 +1,7 @@
+{
+  "task": "analyseSpartanOutput",
+  "params": {
+    "joboutputfile": "../t71.spartan",
+    "SaveAllGeometries": "XYZ t71.xyz"
+  }
+}

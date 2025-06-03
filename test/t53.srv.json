@@ -1,0 +1,11 @@
+{
+  "task": "AnalyseNWChemOutput",
+  "params": {
+    "joboutputfile": "../t53-nwc.out",
+    "SaveAllGeometries": "XYZ t53_allGeoms.xyz",
+    "SaveLastGeometry": "SDF t53_lastGeom.sdf",
+    "SaveVibModes": "0 6 7 164 t53_vibModes_0_6_7_164.xyz",
+    "templateconnectivity": "../t53-mol.sdf",
+    "DETECTKINDOFcriTICALPOINT": "LOwesTFREQ 30"
+  }
+}

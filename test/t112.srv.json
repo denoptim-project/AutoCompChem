@@ -1,0 +1,9 @@
+{
+  "task": "CureJob",
+  "params": {
+    "jobdefinition": "../t112-jobDetails.json",
+    "ic-logs": "../t112-nwc.out",
+    "pathnameoutput": "restart-t112.nw",
+    "situationsdbroot": "../data/knowledgebase/nwchem"
+  }
+}

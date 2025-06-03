@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputORCA",
+  "params": {
+    "inputGeometriesFile": "../t147.xyz",
+    "jobdetailsfile": "../t147-jobDetails.json"
+  }
+}

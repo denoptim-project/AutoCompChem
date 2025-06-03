@@ -1,0 +1,10 @@
+{
+  "task": "ModifyGeometry",
+  "params": {
+    "inFile": "../t104-mol.sdf",
+    "zmatrixmove": "../t104-zmatMove",
+    "templatezmat": "../t104.tmpl",
+    "scalingFactors": "0.0 0.2 0.4 0.6 0.8 1.0",
+    "outFile": "t104-path.sdf"
+  }
+}

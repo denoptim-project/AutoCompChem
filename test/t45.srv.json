@@ -1,0 +1,8 @@
+{
+  "task": "RemoveDummyAtoms",
+  "params": {
+    "linearities": "m",
+    "inFile": "../t45-mol.sdf",
+    "outFile": "t45-out.sdf"
+  }
+}

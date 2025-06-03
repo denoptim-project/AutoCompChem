@@ -1,0 +1,10 @@
+{
+  "task": "generateAtomTuples",
+  "params": {
+    "inFile": "../t142-mol.sdf",
+    "SMARTS": "[#7] prefix:FFHINT: suffix=~~999\n[#17] getatomlabels prefix:FFHINT: suffix=~~999",
+    "atomIDs": "2 3 prefix:Bond: suffix=post\n4 6 getAtomLabels",
+    "labelType": "elementbased",
+    "zeroBased": "false"
+  }
+}

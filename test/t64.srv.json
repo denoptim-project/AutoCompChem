@@ -1,0 +1,6 @@
+{
+  "task": "AnalyseNWChemOutput",
+  "params": {
+    "joboutputfile": "../t64-nwc.out"
+  }
+}

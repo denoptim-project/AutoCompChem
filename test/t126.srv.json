@@ -1,0 +1,8 @@
+{
+  "task": "GENERATECONSTRAINTS",
+  "params": {
+    "inFile": "../t126-mol.sdf",
+    "SMARTS": "[#7]\n[#7] [#17] value:1.234\n[Ru] [#7] onlyBonded value:5.678\n[$([#6;X3](~[Ru])~[#7])] [Ru] [#17] onlyBonded value:180 getcurrentvalue\n[#6;X3;$([#6](~[#7])(~[#1])~[#6])] [#7] [$([#6;X3]~[Ru])] [Ru] value:-123.09 onlyBonded\n[#6]~[#7]~!@[#6]~[#6] value=999999\n[$([#6]~[Ru])]~[#7](~!@[#6])~[#6] value=111111",
+    "atomIDs": "2 3\n4 5 value:99.0\n2 3 4 5 getcurrentvalue\n0 1 2 3 value=999.0\n24"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "task": "AnalyseNWChemOutput",
+  "params": {
+    "joboutputfile": "../t114.out",
+    "templateconnectivity": "../t114_tmpl.sdf",
+    "getFreeEnergy": true,
+    "SaveLastGeometry": "SDF t114_final.sdf",
+    "SaveVibModes": "0 1 5 6 7 t114_vb.xyz"
+  }
+}

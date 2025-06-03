@@ -1,0 +1,6 @@
+{
+  "task": "MeasureGeomDescriptors",
+  "params": {
+    "inFile": "../t121-mol.sdf"
+  }
+}

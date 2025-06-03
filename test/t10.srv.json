@@ -1,0 +1,8 @@
+{
+  "task": "PrepareInputGaussian",
+  "params": {
+    "inputGeometriesFile": "../t10-mol.sdf",
+    "jobdetailsfile": "../t10-jobDetails.json",
+    "pathnameoutput": "10byhand.inp"
+  }
+}

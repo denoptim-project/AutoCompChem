@@ -1,0 +1,13 @@
+{
+  "task": "AnalyseORCAOutput",
+  "params": {
+    "JobOutputFile": "../t118-orca.log",
+    "rootpathnameoutput": "t118_analysis",
+    "SaveAllGeometries": "XYZ t118_allGeoms.xyz",
+    "SaveLastGeometry": "SDF t118_lastGeom.sdf",
+    "SaveVibModes": "6 7 t118_vibModes_6_7.xyz",
+    "templateconnectivity": "../t118-tmpl.sdf",
+    "GetFreeEnergy": "QHTHREshOLD 123",
+    "DETECTKINDOFcriTICALPOINT": "LOwesTFREQ 30"
+  }
+}

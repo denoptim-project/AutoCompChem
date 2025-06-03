@@ -1,0 +1,8 @@
+{
+  "task": "AnalyseNWChemOutput",
+  "params": {
+    "joboutputfile": "../t83-nwc.out",
+    "getfreeenergy": true,
+    "DETECTKINDOFcriTICALPOINT": "LOWESTFREQ 0.01"
+  }
+}

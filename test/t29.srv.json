@@ -1,0 +1,6 @@
+{
+  "task": "MeasureGeomDescriptors",
+  "params": {
+    "inFile": "../t29.sdf"
+  }
+}

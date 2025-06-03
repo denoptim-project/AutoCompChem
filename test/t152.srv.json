@@ -1,0 +1,8 @@
+{
+  "task": "extractMolecules",
+  "params": {
+    "inFile": "../t152-mols.sdf",
+    "outFile": "t152-fragments.sdf",
+    "singleMolOutput": true
+  }
+}

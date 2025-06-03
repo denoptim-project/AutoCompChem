@@ -1,0 +1,8 @@
+{
+  "task": "CompareTwoGeometries",
+  "params": {
+    "targetatomsquery": "[Ti]",
+    "inFile": "../t25mol.sdf",
+    "reference": "../t25ref.sdf"
+  }
+}

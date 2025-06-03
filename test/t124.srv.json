@@ -1,0 +1,14 @@
+{
+  "task": "EvaluateJob",
+  "params": {
+    "jobstart": true,
+    "parallelize": "1",
+    "situationsdbroot": "../t124_KB",
+    "ic-logs": "../t124.appLog:../t124.appLog2",
+    "jobdefinition": "../t124_jobToEvaluate.json",
+    "jobend": true,
+    "app": "SHELL",
+    "exe": "/bin/bash",
+    "script": "../t124b.sh"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputSpartan",
+  "params": {
+    "inputGeometriesFile": "../t70-mol.sdf",
+    "jobdetailsfile": "../t70-jobDetails.json"
+  }
+}

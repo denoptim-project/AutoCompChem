@@ -1,0 +1,9 @@
+{
+  "task": "ModifyGeometry",
+  "params": {
+    "inFile": "../t99-mol.sdf",
+    "zmatrixmove": "../t99-zmatMove",
+    "scalingFactors": "0.0 0.25 0.50 0.75 1.0 1.25 1.5 1.75",
+    "outFile": "t99-mod.sdf"
+  }
+}

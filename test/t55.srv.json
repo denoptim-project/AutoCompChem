@@ -1,0 +1,8 @@
+{
+  "task": "EvaluateJob",
+  "params": {
+    "situationsdbroot": "../data/knowledgebase/nwchem",
+    "ic-logs": "../t55-nwc.out",
+    "ic-jobdetails": "../t55-jobDetails.json"
+  }
+}

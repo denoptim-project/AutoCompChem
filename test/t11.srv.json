@@ -1,0 +1,10 @@
+{
+  "task": "CureJob",
+  "params": {
+    "situationsdbroot": "../data/knowledgebase/gaussian",
+    "ic-logs": "../t11-mol.out",
+    "jobdefinition": "../t11-jobDetails.json",
+    "templateconnectivity": "../t11-mol.sdf",
+    "pathnameoutput": "11restarted.inp"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "task": "CompareTwoMolecules",
+  "params": {
+    "inFile": "../t17mol.sdf",
+    "reference": "../t17ref.sdf",
+    "outFile": "t17_rot.sdf"
+  }
+}

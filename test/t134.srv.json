@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputXTB",
+  "params": {
+    "inputGeometriesFile": "../t134-mol.sdf",
+    "jobdetailsfile": "../t134-jobDetails.json"
+  }
+}

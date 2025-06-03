@@ -1,0 +1,10 @@
+{
+  "task": "AddBondsForSingleElement",
+  "params": {
+    "targetelement": "Ru",
+    "tolerance": "0.30",
+    "tolerance2ndshell": "0.10",
+    "inFile": "../t20mol.sdf",
+    "outFile": "t20results.sdf"
+  }
+}

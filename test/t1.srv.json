@@ -1,0 +1,7 @@
+{
+  "task": "EvaluateJob",
+  "params": {
+    "situationsdbroot": "../t1_KB",
+    "ic-logs": "../t1-mol.out"
+  }
+}

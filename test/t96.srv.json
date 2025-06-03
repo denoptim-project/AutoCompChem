@@ -1,0 +1,9 @@
+{
+  "task": "PrepareInputNWChem",
+  "params": {
+    "inputGeometriesFile": "../t96-mol.sdf",
+    "jobdetailsfile": "../t96-jobDetails.json",
+    "nocharge": true,
+    "nospin": true
+  }
+}

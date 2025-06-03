@@ -1,0 +1,6 @@
+{
+  "task": "analyseSpartanOutput",
+  "params": {
+    "jobOutputFile": "../t153.spardir"
+  }
+}

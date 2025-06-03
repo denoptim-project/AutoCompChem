@@ -1,0 +1,15 @@
+{
+  "task": "MeasureGeomDescriptors",
+  "params": {
+    "jobstart": true,
+    "parallelize": "1",
+    "app": "ACC",
+    "exe": "/bin/bash",
+    "script": "../t123.sh",
+    "jobend": true,
+    "inFile": "t123-pruned-2.sdf",
+    "outFile": "t123-pruned-2.sdf",
+    "SMARTS": "[#17]",
+    "onlybonden": "true"
+  }
+}

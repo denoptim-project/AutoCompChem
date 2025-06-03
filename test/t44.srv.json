@@ -1,0 +1,8 @@
+{
+  "task": "RemoveDummyAtoms",
+  "params": {
+    "multihapto": "n",
+    "inFile": "../t44-mol.sdf",
+    "outFile": "t44-out.sdf"
+  }
+}

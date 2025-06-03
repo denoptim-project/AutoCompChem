@@ -1,0 +1,10 @@
+{
+  "task": "ModifyGeometry",
+  "params": {
+    "inFile": "../t115-mol.sdf",
+    "cartesianMove": "../t115-crtMove",
+    "optimizescalingfactors": "balanced 17 0.85 0.9",
+    "referenceSubstructureFile": "../t115-ref.sdf",
+    "outFile": "t115-path.sdf"
+  }
+}

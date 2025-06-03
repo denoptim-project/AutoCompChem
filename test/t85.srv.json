@@ -1,0 +1,8 @@
+{
+  "task": "PrepareInputSpartan",
+  "params": {
+    "inputGeometriesFile": "../t85-mol.sdf",
+    "rootpathnameoutput": "t85",
+    "jobdetailsfile": "../t85-jobDetails.json"
+  }
+}

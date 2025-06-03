@@ -1,0 +1,11 @@
+{
+  "task": "ModifyGeometry",
+  "params": {
+    "inFile": "../t119-mol.sdf",
+    "cartesianMove": "../t119-crtMove",
+    "optimizescalingfactors": "balanced 19 0.75 0.75 0.8",
+    "referenceSubstructureFile": "../t119-ref.sdf",
+    "outFile": "t119-path.xyz",
+    "outformat": "ORCATRAJECTORY"
+  }
+}

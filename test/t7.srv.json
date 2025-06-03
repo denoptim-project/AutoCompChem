@@ -1,0 +1,7 @@
+{
+  "task": "GenerateConformationalSpace",
+  "params": {
+    "inFile": "../t7-mol.sdf",
+    "SMARTS": "[#7] fold=2\n[#7] [#7]\n[#6]-[#6] fold=3\n[#6]~[Ru] fold=4\nC=COC fold=5"
+  }
+}

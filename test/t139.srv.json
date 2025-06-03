@@ -1,0 +1,7 @@
+{
+  "task": "AnalyseOutput",
+  "params": {
+    "joboutputfile": "../t139.out",
+    "SaveLastGeometry": "XYZ t139_last.xyz"
+  }
+}

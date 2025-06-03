@@ -1,0 +1,8 @@
+{
+  "task": "AddDummyAtoms",
+  "params": {
+    "template": "../t107-tmpl.sdf",
+    "inFile": "../t107-mol.sdf",
+    "outFile": "t107-out.sdf"
+  }
+}

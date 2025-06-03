@@ -1,0 +1,8 @@
+{
+  "task": "SortMolecules",
+  "params": {
+    "inFile": "../t37-mol.sdf",
+    "outFile": "t37sorted.sdf",
+    "sdfproperty": "WorstOverlap"
+  }
+}

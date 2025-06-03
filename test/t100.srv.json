@@ -1,0 +1,8 @@
+{
+  "task": "MeasureGeomDescriptors",
+  "params": {
+    "inFile": "../t100-mol.xyz",
+    "SMARTS": "dist [N] [Fe]",
+    "atomindexes": "dih 7 1 4 8"
+  }
+}

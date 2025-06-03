@@ -1,0 +1,16 @@
+{
+  "task": "EvaluateJob",
+  "params": {
+    "jobstart": true,
+    "parallelize": "1",
+    "initialdelay": "1500",
+    "initialdelay-timeunits": "MILLISECONDS",
+    "period": "1",
+    "situation": "{\n\"type\": \"ERROR\",\n\"refName\": \"LimitReached\",\n\"context\": [\n{\n\"circumstance\": \"MatchText\",\n\"channel\": \"LOGFEED\",\n\"pattern\": \"BASH-A: 2\"\n}\n],\n\"reaction\": {\n\"type\": \"STOP\",\n\"object\": \"paralleljob\"\n}\n}",
+    "ic-logs": "t125a.log",
+    "jobend": true,
+    "app": "SHELL",
+    "exe": "/bin/bash",
+    "script": "../t125.sh"
+  }
+}

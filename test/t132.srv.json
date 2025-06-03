@@ -1,0 +1,8 @@
+{
+  "task": "CheckBondLengths",
+  "params": {
+    "inFile": "../t132-mol.sdf",
+    "reference": "../t132-ref.sdf",
+    "Tolerance": "0.5"
+  }
+}

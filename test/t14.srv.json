@@ -1,0 +1,9 @@
+{
+  "task": "CureJob",
+  "params": {
+    "ic-logs": "../t14-gaussian.out",
+    "jobdefinition": "../t14-jobDetails.json",
+    "situationsdbroot": "../data/knowledgebase",
+    "pathnameoutput": "t14_restart.inp"
+  }
+}

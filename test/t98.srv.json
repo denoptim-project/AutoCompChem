@@ -1,0 +1,8 @@
+{
+  "task": "convertToZMATRIX",
+  "params": {
+    "inFile": "../t98-mol.sdf",
+    "templatezmat": "../t98.tmpl",
+    "outFile": "t98-mol.zmat"
+  }
+}

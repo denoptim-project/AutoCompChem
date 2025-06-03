@@ -1,0 +1,7 @@
+{
+  "task": "mutateAtoms",
+  "params": {
+    "inFile": "../t66-mol.sdf",
+    "outFile": "t66-mol_mutated.sdf"
+  }
+}

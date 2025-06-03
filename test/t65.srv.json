@@ -1,0 +1,8 @@
+{
+  "task": "AnalyseNWChemOutput",
+  "params": {
+    "SaveLastGeometryOfEachStep": "XYZSDF t65_endOfSteps.ggg",
+    "SaveAllGeometries": "SDFXYZ t65-trj",
+    "joboutputfile": "../t65-nwc.out"
+  }
+}

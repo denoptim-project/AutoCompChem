@@ -1,0 +1,6 @@
+{
+  "task": "AnalyzeVDWClashes",
+  "params": {
+    "inFile": "../t31-mol.sdf"
+  }
+}

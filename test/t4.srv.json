@@ -1,0 +1,8 @@
+{
+  "task": "AlignGeometries",
+  "params": {
+    "inFile": "../t4-mol.sdf",
+    "reference": "../t4-ref.sdf",
+    "outFile": "t4-rot.sdf"
+  }
+}

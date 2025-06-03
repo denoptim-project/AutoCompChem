@@ -1,0 +1,8 @@
+{
+  "task": "PrepareInputNWChem",
+  "params": {
+    "inputGeometriesFile": "../t92-mol.sdf",
+    "multigeommode": "allInOneJob",
+    "jobdetailsfile": "../t92-jobDetails.json"
+  }
+}

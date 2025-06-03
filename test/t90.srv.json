@@ -1,0 +1,10 @@
+{
+  "task": "ModifyGeometry",
+  "params": {
+    "inFile": "../t90-mol.sdf",
+    "cartesianMove": "../t90-crtMove",
+    "scalingFactors": "-10.0 -5.0 0.0 5.0 10.0",
+    "referenceSubstructureFile": "../t90-ref.sdf",
+    "outFile": "t90-mod.sdf"
+  }
+}

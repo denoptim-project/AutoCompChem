@@ -1,0 +1,8 @@
+{
+  "task": "SUBTRACTZMATRICES",
+  "params": {
+    "inFile": "../t108-A.zmat",
+    "infile2": "../t108-B.zmat",
+    "outFile": "t108-res.zmat"
+  }
+}

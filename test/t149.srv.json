@@ -1,0 +1,8 @@
+{
+  "task": "generateConformers",
+  "params": {
+    "inFile": "../t149-mol.sdf",
+    "SMARTS": "[Ru]~[$([#6;X3]([#7;X3])[#6;X4])] fold=11 steps=1,2,10\n[$([#7;X3]([#6;X4])~[#6;X3]~[Ru])]-!@[!$([#6;X3]~[Ru])] fold=15 steps=0\n[#6;X4;!$([#6;H3])]-!@[#6;!$([#6;H3])] fold=20 steps=10",
+    "outFile": "t149_conformers.sdf"
+  }
+}

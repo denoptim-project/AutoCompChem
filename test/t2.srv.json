@@ -1,0 +1,7 @@
+{
+  "task": "editBonds",
+  "params": {
+    "inFile": "../t2-mol.sdf",
+    "outFile": "t2-mol_mutated.sdf"
+  }
+}

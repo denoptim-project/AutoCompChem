@@ -1,0 +1,10 @@
+{
+  "task": "AddDummyAtoms",
+  "params": {
+    "linearities": "do linearities",
+    "planarities": "do planarities",
+    "sourceatoms": "16",
+    "inFile": "../t106-mol.sdf",
+    "outFile": "t106-out.sdf"
+  }
+}

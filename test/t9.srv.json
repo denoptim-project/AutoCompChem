@@ -1,0 +1,8 @@
+{
+  "task": "CureJob",
+  "params": {
+    "situationsdbroot": "../data/knowledgebase/gaussian",
+    "ic-logs": "../t9-mol.out",
+    "jobdefinition": "../t9-jobDetails.json"
+  }
+}

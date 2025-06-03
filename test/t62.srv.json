@@ -1,0 +1,7 @@
+{
+  "task": "AnalyseOutput",
+  "params": {
+    "joboutputfile": "../t62-nwc.out",
+    "SaveLastGeometry": "xyz t62-lastgeom"
+  }
+}

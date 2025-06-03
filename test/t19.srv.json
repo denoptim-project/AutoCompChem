@@ -1,0 +1,8 @@
+{
+  "task": "CompareTwoGeometries",
+  "params": {
+    "targetatomsquery": "[Ru]",
+    "inFile": "../t19mol.sdf",
+    "reference": "../t19ref.sdf"
+  }
+}

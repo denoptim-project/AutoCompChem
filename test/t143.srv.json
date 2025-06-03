@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputNWChem",
+  "params": {
+    "inputGeometriesFile": "../t143-mol.sdf",
+    "jobdetailsfile": "../t143-jobDetails.json"
+  }
+}

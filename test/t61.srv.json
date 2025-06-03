@@ -1,0 +1,10 @@
+{
+  "task": "PrepareInputNWChem",
+  "params": {
+    "inputGeometriesFile": "../t61-mol.sdf",
+    "jobdetailsfile": "../t61-jobDetails.json",
+    "CoordinatesType": "Cartesian",
+    "charge": "0",
+    "spinMultiplicity": "1"
+  }
+}

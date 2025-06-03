@@ -1,0 +1,7 @@
+{
+  "task": "CompareTwoConnectivities",
+  "params": {
+    "inFile": "../t23mol.sdf",
+    "reference": "../t23ref.sdf"
+  }
+}

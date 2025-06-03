@@ -1,0 +1,8 @@
+{
+  "task": "PrepareInputORCA",
+  "params": {
+    "inputGeometriesFile": "../t145-mol.xyz",
+    "jobdetailsfile": "../t145-jobDetails.json",
+    "CartesianCoordsFormat": "%2.4E"
+  }
+}

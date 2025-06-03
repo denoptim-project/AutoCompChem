@@ -1,0 +1,9 @@
+{
+  "task": "RemoveDummyAtoms",
+  "params": {
+    "linearities": "m",
+    "dusymbol": "ATM",
+    "inFile": "../t46-mol.sdf",
+    "outFile": "t46-out.sdf"
+  }
+}

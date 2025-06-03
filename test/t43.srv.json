@@ -1,0 +1,6 @@
+{
+  "task": "AnalyzeChelates",
+  "params": {
+    "inFile": "../t43-mol.sdf"
+  }
+}

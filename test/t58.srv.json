@@ -1,0 +1,7 @@
+{
+  "task": "ReorderAtomList",
+  "params": {
+    "inFile": "../t58-mol.sdf",
+    "outFile": "t59-reordered.sdf"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "task": "PruneMolecules",
+  "params": {
+    "jobstart": true,
+    "app": "ACC",
+    "inFile": "t122-pruned.sdf",
+    "jobend": true,
+    "this is a comment because it is outside of any block defining a job": true,
+    "outFile": "t122-pruned-2.sdf",
+    "SMARTS": "[#17]",
+    "onlybonded": "true"
+  }
+}

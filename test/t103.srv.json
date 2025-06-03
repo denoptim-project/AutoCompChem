@@ -1,0 +1,7 @@
+{
+  "task": "convertToZMATRIX",
+  "params": {
+    "inFile": "../t103-mol.sdf",
+    "outFile": "t103.zmat"
+  }
+}

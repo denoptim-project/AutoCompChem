@@ -1,0 +1,7 @@
+{
+  "task": "PrepareInputGaussian",
+  "params": {
+    "inputGeometriesFile": "../t95-mol.sdf",
+    "jobdetailsfile": "../t95-jobDetails.json"
+  }
+}

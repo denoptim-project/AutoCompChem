@@ -1,0 +1,8 @@
+{
+  "task": "AnalyzeVDWClashes",
+  "params": {
+    "inFile": "../t31-mol.sdf",
+    "cutoff": "0.60",
+    "allowance": "0.35"
+  }
+}

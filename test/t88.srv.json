@@ -1,0 +1,7 @@
+{
+  "task": "ExtractVibModuleForceConstants",
+  "params": {
+    "templateconnectivity": "../t88.sdf",
+    "joboutputfile": "../t88.vmout"
+  }
+}

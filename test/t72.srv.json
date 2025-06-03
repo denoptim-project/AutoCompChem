@@ -1,0 +1,7 @@
+{
+  "task": "analyseSpartanOutput",
+  "params": {
+    "jobOutputFile": "../t72.spartan",
+    "SaveLastGeometry": "SDFXYZ t72_last"
+  }
+}

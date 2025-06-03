@@ -1,0 +1,7 @@
+{
+  "task": "analyseOutput",
+  "params": {
+    "jobOutputFile": "../t82-models",
+    "SaveLastGeometry": "XYZ t82_results.xyz"
+  }
+}

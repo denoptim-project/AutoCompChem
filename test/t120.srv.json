@@ -1,0 +1,8 @@
+{
+  "task": "ImposeConnectionTable",
+  "params": {
+    "inFile": "../t120-mol.sdf",
+    "template": "../t120-tmpl.sdf",
+    "outFile": "t120-new-ct.sdf"
+  }
+}

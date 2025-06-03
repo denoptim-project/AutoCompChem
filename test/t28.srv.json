@@ -1,0 +1,9 @@
+{
+  "task": "AssignAtomTypes",
+  "params": {
+    "inFile": "../t28.sdf",
+    "outFile": "t28_at.txyz",
+    "outformat": "TXYZ",
+    "atomtypesmap": "../t28_AtomTypesMap"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "task": "AnalyseXTBOutput",
+  "params": {
+    "JobOutputFile": "../t135-xtb.log",
+    "SaveAllGeometries": "XYZ t135_allGeoms.xyz",
+    "SaveLastGeometry": "SDF t135_lastGeom.sdf",
+    "templateconnectivity": "../t135-tmpl.sdf TOLERANCE=0.20",
+    "GetFreeEnergy": "QHTHREshOLD 123",
+    "DETECTKINDOFcriTICALPOINT": "LOwesTFREQ 30"
+  }
+}
