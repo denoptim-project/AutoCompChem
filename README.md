@@ -42,10 +42,10 @@ autocompchem -t prepareInputGaussian -h
 ```
 
 ### Server Mode (REST API)
-The server mode allows to start a backend web server that exposes the services of AutoCompChem for HTTP API access:
+The server mode allows to start a backend web server that exposes the services of AutoCompChem for REST API access. Start the server with one of these alternatives depending on the intended usage:
 
 ```bash
-# Using either JAR
+# Basic usage: starts a server from a previously built installation
 autocompchem --server
 
 # Start server on custom port
@@ -53,6 +53,12 @@ autocompchem --server --server.port=9090
 
 # Server with custom configuration
 autocompchem --server --spring.profiles.active=production
+
+# Using Maven (development)
+mvn spring-boot:run -Dspring-boot.run.arguments="--server"
+
+# Debug mode with various options
+./debug-server.sh
 ```
 
 Once the server is running (default port: 8080):
