@@ -7,6 +7,7 @@ BASE_URL="http://localhost:8080"
 TEST_DIR="."
 RESULTS_DIR="results_from_sever"
 JSONSUFFIX=".srv.json"
+VERBOSE=false
 
 # Colors for output
 RED='\033[0;31m'
@@ -17,7 +18,7 @@ NC='\033[0m' # No Color
 
 # Function to show usage
 show_usage() {
-    echo "Usage: $0 [TEST_NAME]"
+    echo "Usage: $0 [OPTIONS] [TEST_NAME]"
     echo ""
     echo "AutoCompChem REST API Test Runner"
     echo ""
@@ -25,13 +26,16 @@ show_usage() {
     echo "  TEST_NAME    Optional. Run a specific test (without .srv.json extension)"
     echo "               If not provided, runs all tests in the directory"
     echo ""
-    echo "Examples:"
-    echo "  $0           # Run all tests"
-    echo "  $0 t150      # Run only the t150 test"
-    echo "  $0 t2        # Run only the t2 test"
-    echo ""
     echo "Options:"
-    echo "  -h, --help   Show this help message"
+    echo "  -v, --verbose   Enable verbose mode (shows JSON payloads)"
+    echo "  -h, --help      Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $0                # Run all tests"
+    echo "  $0 -v             # Run all tests with verbose output"
+    echo "  $0 t150           # Run only the t150 test"
+    echo "  $0 -v t2          # Run only the t2 test with verbose output"
+    echo "  $0 --verbose t150 # Run only the t150 test with verbose output"
 }
 
 # Function to convert relative paths to absolute paths in JSON
@@ -101,9 +105,10 @@ run_single_test() {
     # Construct API URL
     api_url="$BASE_URL/api/v1/autocompchem/tasks/$task/execute"
     
-    # Show if paths were converted (for debugging)
-    if [ "$original_params" != "$params" ]; then
-        echo "   📋 Sending JSON: $params"
+    # Show JSON payload if verbose mode is enabled
+    if [ "$VERBOSE" = true ]; then
+        echo "   📋 Sending JSON payload:"
+        echo "      $params" | jq .
     fi
     
     # Make the curl request and capture response
@@ -149,20 +154,34 @@ run_single_test() {
 }
 
 # Parse command line arguments
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    show_usage
-    exit 0
-fi
-
-# Check for specific test argument
 SPECIFIC_TEST=""
-if [ $# -eq 1 ]; then
-    SPECIFIC_TEST="$1"
-elif [ $# -gt 1 ]; then
-    echo -e "${RED}❌ Too many arguments${NC}"
-    show_usage
-    exit 1
-fi
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        -*)
+            echo -e "${RED}❌ Unknown option: $1${NC}"
+            show_usage
+            exit 1
+            ;;
+        *)
+            if [ -n "$SPECIFIC_TEST" ]; then
+                echo -e "${RED}❌ Too many arguments${NC}"
+                show_usage
+                exit 1
+            fi
+            SPECIFIC_TEST="$1"
+            shift
+            ;;
+    esac
+done
 
 # Create results directory
 mkdir -p "$RESULTS_DIR"
