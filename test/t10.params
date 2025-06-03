@@ -1,8 +1,0 @@
-#
-# Parameters for Automated Computational Chemistry
-#
-VERBOSITY: 6
-TASK: PrepareInputGaussian
-INPUTGEOMETRIESFILE: ../t10-mol.sdf
-JOBDETAILSFILE: ../t10-jobDetails.json
-PATHNAMEOUTPUT: 10byhand.inp

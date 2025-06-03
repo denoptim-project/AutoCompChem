@@ -4,5 +4,4 @@
 VERBOSITY: 7
 TASK: PrepareInputSpartan
 INPUTGEOMETRIESFILE: ../t69-mol.sdf
-ROOTPATHNAMEOUTPUT: t69-sp14
 JOBDETAILSFILE: ../t69-jobDetails.json

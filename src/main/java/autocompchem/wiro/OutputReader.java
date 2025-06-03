@@ -44,8 +44,10 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
+import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Core components of any reader and analyzer of software's output files. 
@@ -217,6 +219,14 @@ public class OutputReader extends Worker
         	{
         		outFileRootName = FileUtils.getRootOfFileName(inFile.getName());
         	}
+        }
+        
+        if (params.contains(WIROConstants.PAROUTFILEROOT))
+        {
+        	outFileRootName = params.getParameter(
+                    WIROConstants.PAROUTFILEROOT).getValueAsString();
+        } else {
+        	outFileRootName = decideRootPathName(inFile);
         }
     }
     

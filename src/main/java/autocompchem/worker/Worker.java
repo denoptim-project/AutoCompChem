@@ -18,6 +18,7 @@ package autocompchem.worker;
  */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,12 +38,14 @@ import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
 import autocompchem.log.LogUtils;
 import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
+import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.ChemSoftConstants;
 
 
@@ -153,6 +156,107 @@ public abstract class Worker implements IOutputExposer
     public Job getMyJob()
     {
     	return myJob;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Gets the work directory for this worker. Returns the work directory 
+     * set for this worker's job, or null if no work directory is set.
+     * @return the work directory as a File object, or null if not set
+     */
+    public File getWorkDirectory()
+    {
+        if (myJob != null)
+        {
+            return myJob.getUserDir();
+        }
+        return null;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Gets the work directory path for this worker as a string.
+     * @return the work directory path as a string, or the current working 
+     *         directory if no work directory is specifically set
+     */
+    public String getWorkDirectoryPath()
+    {
+        File workDir = getWorkDirectory();
+        if (workDir != null)
+        {
+            return workDir.getAbsolutePath();
+        }
+        return System.getProperty("user.dir");
+    }
+    
+//------------------------------------------------------------------------------
+    
+    protected String decideRootPathName(File inFile)
+    {   
+        String pathname = "";
+        
+    	// We take the inFile as a source for finding the work directory 
+    	// only if there is no explicit setting of the work directory
+    	if (getWorkDirectory()==null)
+    	{
+        	if (inFile!=null)
+        	{
+        		File tmp = new File(FileUtils.getRootOfFileName(inFile));
+        		pathname = tmp.getAbsolutePath();
+        	} else {
+        		// We have no way to set the pathname of output files;
+        		// we are left with what is given by the JVM
+        		pathname = getMyJob().getUserDir().getAbsolutePath();
+        	}
+    	} else {
+    		// No matter the path of the inFile, we take only its name
+    		// as a basename of the output files
+    		pathname = resolvePathname(FileUtils.getRootOfFileName(
+    				inFile));
+    	}
+        return pathname;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Resolves a pathname by making it relative to the worker's work directory
+     * if the pathname is relative and the work directory is not null.
+     * 
+     * @param pathname the pathname to resolve
+     * @return the resolved pathname; if the pathname is relative and a work
+     *         directory is set, returns the pathname relative to the work
+     *         directory; otherwise returns the original pathname unchanged
+     */
+    protected String resolvePathname(String pathname)
+    {
+        if (pathname == null)
+        {
+            return null;
+        }
+        
+        File path = new File(pathname);
+        
+        // If the pathname is absolute, return it unchanged
+        if (path.isAbsolute())
+        {
+            return pathname;
+        }
+        
+        // Get the work directory from the worker
+        File workDir = getWorkDirectory();
+        
+        // If no work directory is set, return the original pathname
+        if (workDir == null)
+        {
+            return pathname;
+        }
+        
+        // Resolve the relative pathname against the work directory
+        File resolvedPath = new File(workDir, pathname);
+        return resolvedPath.getPath();
     }
     
 //------------------------------------------------------------------------------
@@ -338,6 +442,33 @@ public abstract class Worker implements IOutputExposer
 			}
             Configurator.setLevel(logger.getName(), 
             		LogUtils.verbosityToLevel(Integer.parseInt(str)));
+        }
+        
+        // Handle work directory parameter if provided
+        if (params.contains(WorkerConstants.PARWORKDIR))
+        {
+            String workDirPath = params.getParameter(
+                    WorkerConstants.PARWORKDIR).getValueAsString();
+            File workDir = new File(workDirPath);
+            
+            // Create directory if it doesn't exist
+            if (!workDir.exists() && !workDir.mkdirs())
+            {
+                Terminator.withMsgAndStatus("ERROR! Could not create work "
+                        + "directory '" + workDir.getAbsolutePath() + "'.", -1);
+            }
+            
+            // Set the work directory for this worker's job
+            if (myJob != null)
+            {
+                logger.info("Setting work directory to: " 
+                        + workDir.getAbsolutePath());
+                myJob.setUserDirAndStdFiles(workDir);
+            }
+            else
+            {
+                logger.warn("WARNING: Cannot set work directory - worker job is null");
+            }
         }
     }
     

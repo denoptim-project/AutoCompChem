@@ -2,7 +2,6 @@
   "task": "PrepareInputSpartan",
   "params": {
     "inputGeometriesFile": "../t69-mol.sdf",
-    "rootpathnameoutput": "t69-sp14",
     "jobdetailsfile": "../t69-jobDetails.json"
   }
 }

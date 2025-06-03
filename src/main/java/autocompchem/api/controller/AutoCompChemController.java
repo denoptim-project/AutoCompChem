@@ -75,7 +75,11 @@ public class AutoCompChemController {
      * Execute a computational task.
      */
     @PostMapping("/tasks/{taskName}/execute")
-    @Operation(summary = "Execute task", description = "Executes a computational chemistry task with given parameters")
+    @Operation(summary = "Execute task", 
+               description = "Executes a computational chemistry task with given parameters. " +
+                           "All tasks support the optional 'WORKDIR' parameter to specify a " +
+                           "working directory where the task will be executed. If WORKDIR is " +
+                           "provided, the directory will be created if it doesn't exist.")
     public ResponseEntity<Map<String, Object>> executeTask(
             @PathVariable("taskName") String taskName,
             @RequestBody Map<String, Object> parameters) {
