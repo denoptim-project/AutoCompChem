@@ -14,6 +14,7 @@ import autocompchem.datacollections.ParameterStorage;
 import autocompchem.datacollections.NamedData;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
+import autocompchem.run.Terminator;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -63,57 +64,68 @@ public class AutoCompChemService {
      * @throws Exception if task execution fails
      */
     public Map<String, Object> executeTask(String taskName, ParameterStorage parameters) throws Exception {
-        // Add the task to parameters if not present
-        if (!parameters.contains(WorkerConstants.PARTASK)) {
-            parameters.setParameter(WorkerConstants.PARTASK, taskName);
-        }
-
-        // Create and run the job
-        Job job = new ACCJob(parameters);
-        job.run();
-
-        // Capture the result
-        Map<String, Object> result = new HashMap<>();
-        result.put("status", "Task '" + taskName + "' completed successfully");
-        
-        // Get exposed output data
-        Collection<NamedData> exposedData = job.getOutputDataSet();
-        if (exposedData != null && !exposedData.isEmpty()) {
-            Map<String, Object> outputData = new HashMap<>();
-            logger.debug("Found {} exposed data items", exposedData.size());
-            
-            for (NamedData data : exposedData) {
-                String key = data.getReference();
-                Object value = data.getValue();
-                outputData.put(key, value);
-                logger.debug("Exposed data: {} = {}", key, value);
+        try {
+            // Add the task to parameters if not present
+            if (!parameters.contains(WorkerConstants.PARTASK)) {
+                parameters.setParameter(WorkerConstants.PARTASK, taskName);
             }
-            
-            result.put("exposedData", outputData);
-            result.put("exposedDataCount", exposedData.size());
-        } else {
-            logger.debug("No exposed data found");
-            result.put("exposedData", new HashMap<>());
-            result.put("exposedDataCount", 0);
-        }
 
-        return result;
+            // Create and run the job
+            Job job = new ACCJob(parameters);
+            job.run();
+
+            // Capture the result
+            Map<String, Object> result = new HashMap<>();
+            result.put("status", "Task '" + taskName + "' completed successfully");
+            
+            // Get exposed output data
+            Collection<NamedData> exposedData = job.getOutputDataSet();
+            if (exposedData != null && !exposedData.isEmpty()) {
+                Map<String, Object> outputData = new HashMap<>();
+                logger.debug("Found {} exposed data items", exposedData.size());
+                
+                for (NamedData data : exposedData) {
+                    String key = data.getReference();
+                    Object value = data.getValue();
+                    outputData.put(key, value);
+                    logger.debug("Exposed data: {} = {}", key, value);
+                }
+                
+                result.put("exposedData", outputData);
+                result.put("exposedDataCount", exposedData.size());
+            } else {
+                logger.debug("No exposed data found");
+                result.put("exposedData", new HashMap<>());
+                result.put("exposedDataCount", 0);
+            }
+
+            return result;
+            
+        } catch (Terminator.TaskTerminationException tte) {
+            // Handle termination exception from web service context
+            String errorMsg = "Task '" + taskName + "' terminated with status " + tte.getExitStatus() + 
+                            ": " + tte.getMessage();
+            logger.error(errorMsg, tte);
+            throw new Exception(errorMsg, tte);
+        } catch (Exception e) {
+            String errorMsg = "Failed to execute task '" + taskName + "': " + e.getMessage();
+            logger.error(errorMsg, e);
+            throw new Exception(errorMsg, e);
+        }
     }
 
     /**
      * Get help information for a specific task.
      * @param taskName the name of the task
      * @return help text for the task
-     * @throws Exception if task is not found
      */
-    public String getTaskHelp(String taskName) throws Exception {
-        Task task = Task.make(taskName);
-        Worker worker = WorkerFactory.createWorker(task);
-        
-        if (worker != null) {
-            return worker.getTaskSpecificHelp();
-        } else {
-            return "No help available for task: " + taskName;
+    public String getTaskHelp(String taskName) {
+        try {
+            // Just return a basic help message for now
+            return "Help for task: " + taskName + "\nPlease refer to the documentation for detailed usage.";
+        } catch (Exception e) {
+            logger.error("Error getting help for task '{}': {}", taskName, e.getMessage());
+            return "Error retrieving help for task: " + taskName + " - " + e.getMessage();
         }
     }
 } 
