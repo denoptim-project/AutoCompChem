@@ -80,7 +80,7 @@
                     },
                     {
                       "reference": "TASK",
-                      "value": "getpathname"
+                      "value": "getBaseName"
                     },
                     {
                       "reference": "QUOTATION",
@@ -154,7 +154,7 @@
                 },
                 {
                   "reference": "TASK",
-                  "value": "getpathname"
+                  "value": "getBaseName"
                 }
               ]
             }

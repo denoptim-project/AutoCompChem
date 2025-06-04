@@ -71,7 +71,7 @@ if ! grep -A2 "^FROZEN" t85-mol.spardir/M0001/input | grep -q "^ * 22 * 27$" ; t
   exit -1
 fi
 
-if grep -q 'Termination status: 0' t85-mol.log ; then
+if grep -q 'Termination status: 0' t85.log ; then
   echo Passed
   exit 0
 else

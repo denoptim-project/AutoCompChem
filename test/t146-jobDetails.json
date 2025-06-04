@@ -32,7 +32,7 @@
                 },
                 {
                   "reference": "TASK",
-                  "value": "getpathname"
+                  "value": "getBaseName"
                 }
               ]
             }

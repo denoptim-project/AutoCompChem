@@ -50,12 +50,25 @@ public class PathnameEditor extends Worker
      * String defining the task of getting and possibly editing a pathname.
      */
     public static final String GETPATHNAMETASKNAME = "getPathName";
+   
+    /**
+     * String defining the task of getting and possibly editing a file basename,
+     * i.e., a pathname without a path.
+     */
+    public static final String GETBASENAMETASKNAME = "getBaseName";
 
     /**
      * Task about getting and possibly editing a pathname.
      */
     public static final Task GETPATHNAMETASK;
+    
+    /**
+     * Task about getting and possibly editing a basename.
+     */
+    public static final Task GETBASENAMETASK;
+    
     static {
+    	GETBASENAMETASK = Task.make(GETBASENAMETASKNAME);
     	GETPATHNAMETASK = Task.make(GETPATHNAMETASKNAME);
     }
 
@@ -72,7 +85,7 @@ public class PathnameEditor extends Worker
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(GETPATHNAMETASK)));
+             Arrays.asList(GETPATHNAMETASK, GETBASENAMETASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -141,6 +154,9 @@ public class PathnameEditor extends Worker
     	if (task.equals(GETPATHNAMETASK))
     	{
     		getPathName();
+    	} else if (task.equals(GETBASENAMETASK))
+    	{
+    		getBaseName();
     	} else {
     		dealWithTaskMismatch();
         }
@@ -172,6 +188,37 @@ public class PathnameEditor extends Worker
         if (exposedOutputCollector != null)
     	{
 	        exposeOutputData(new NamedData(GETPATHNAMETASK.ID, result));
+    	}
+        
+        return result;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Processes the input given upon initialization to produce a processed
+     * basename.
+     */
+
+    public String getBaseName()
+    {
+        if (input==null)
+        {
+            Terminator.withMsgAndStatus("ERROR! Missing input pathname. "
+                + "Nothing to do",-1);
+        }
+        
+        String processedPathname = processPathname(input.getName());
+        
+        String result = quotationMark
+        		+ prefix 
+        		+ processedPathname 
+        		+ suffix
+        		+ quotationMark;
+        
+        if (exposedOutputCollector != null)
+    	{
+	        exposeOutputData(new NamedData(GETBASENAMETASK.ID, result));
     	}
         
         return result;
