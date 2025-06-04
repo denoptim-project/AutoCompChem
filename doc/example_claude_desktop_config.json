@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "autocompchem": {
+            "command": "python3",
+            "args": [
+                "/ABSOLUTE/PATH/TO/AutoCompChem/src/main/python/mcp_server/autocompchem_mcp_server.py"
+            ],
+            "env": {
+                "AUTOCOMPCHEM_BASE_URL": "http://localhost:8080"
+            }
+        }
+    }
+} 

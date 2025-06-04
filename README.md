@@ -22,7 +22,7 @@ See [dedicated instruction](doc/installation_from_source.md)
 
 ## Usage Modes
 
-AutoCompChem provides a dual-mode approach that maintains full backward compatibility with traditional CLI usage while adding modern REST API capabilities.
+AutoCompChem provides a triple-mode approach that maintains full backward compatibility with traditional CLI usage while adding modern web capabilities and AI integration.
 
 ### CLI Mode (Traditional)
 Run computational chemistry tasks from the command line using the `autocompchem` command (see  [Installation](#Installation)):
@@ -42,9 +42,12 @@ autocompchem -t prepareInputGaussian -h
 ```
 
 ### Server Mode (REST API)
-The server mode allows to start a backend web server that exposes the services of AutoCompChem for REST API access. Start the server with one of these alternatives depending on the intended usage:
+The server mode allows to start a backend web server that exposes the services of AutoCompChem for REST API access. Start the server with one of these alternatives depending on the intended usage (for details see [server scripts documentation](doc/SERVER_SCRIPTS_GUIDE.md)):
 
 ```bash
+# Production mode: starts server in background
+./start-server.sh start
+
 # Basic usage: starts a server from a previously built installation
 autocompchem --server
 
@@ -61,6 +64,17 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--server"
 ./debug-server.sh
 ```
 
+**Server Management (Production)**:
+```bash
+./start-server.sh start     # Start in background
+./start-server.sh stop      # Stop server  
+./start-server.sh status    # Check status
+./start-server.sh logs      # View logs
+./start-server.sh restart   # Restart server
+./start-server.sh version   # Show version info
+./start-server.sh health    # Check health endpoint
+```
+
 Once the server is running (default port: 8080):
 
 - **Web Interface**: http://localhost:8080/
@@ -68,6 +82,37 @@ Once the server is running (default port: 8080):
 - **Health Check**: http://localhost:8080/api/v1/autocompchem/health
 - **Available Tasks**: http://localhost:8080/api/v1/autocompchem/tasks
 
+### MCP Mode (Claude Integration)
+The **Model Context Protocol (MCP)** integration allows Claude and other AI assistants to directly use AutoCompChem's computational chemistry tools through natural language conversations.
+
+```bash
+# Start the AutoCompChem server (required first)
+./start-server.sh start
+
+# Launch the MCP server for Claude integration
+./mcp-server-launcher.sh
+```
+
+**Features available to Claude:**
+- 🧪 **Generate input files** for Gaussian, ORCA, NWChem, XTB, Spartan
+- 📊 **Parse output files** from quantum chemistry calculations  
+- 🔬 **Create molecules** from SMILES strings
+- ⚙️ **Set up calculations** (geometry optimization, frequency analysis)
+- 🎯 **Evaluate job quality** and suggest improvements
+- 📋 **List available tasks** and get help for specific operations
+
+**Quick Setup for Claude Desktop:**
+1. Start AutoCompChem server: `./start-server.sh start`
+2. Install Python dependencies: `pip install -r src/main/python/mcp_server/requirements.txt`
+3. Configure Claude Desktop (see [MCP Server Guide](doc/MCP_SERVER_GUIDE.md))
+4. Ask Claude: *"What computational chemistry tasks are available?"*
+
+**Example Claude Conversations:**
+- *"Generate a Gaussian input file for water molecule optimization using B3LYP/6-31G*"*
+- *"Convert the SMILES 'CCO' to a 3D structure and set up a frequency calculation"*
+- *"Analyze my Gaussian output file and check if the calculation converged"*
+
+See the [**detailed MCP integration guide**](doc/MCP_SERVER_GUIDE.md) for complete setup instructions and usage examples.
 
 ## Usage Instructions
 See the [dedicated page](doc/usage_instructions.md)
