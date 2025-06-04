@@ -207,8 +207,9 @@ public abstract class Worker implements IOutputExposer
         		pathname = tmp.getAbsolutePath();
         	} else {
         		// We have no way to set the pathname of output files;
-        		// we are left with what is given by the JVM
-        		pathname = getMyJob().getUserDir().getAbsolutePath();
+        		// So, we just decide on a name and let the JVM deal with
+        		// work directory
+        		pathname = "accOutput";
         	}
     	} else {
     		// No matter the path of the inFile, we take only its name
