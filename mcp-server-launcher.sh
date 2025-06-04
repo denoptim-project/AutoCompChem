@@ -21,7 +21,7 @@ check_autocompchem_server() {
         echo "Please ensure AutoCompChem server is running:"
         echo ""
         echo "🚀 Production mode (recommended):"
-        echo "   ./start-server.sh start"
+        echo "   ./server-manager.sh start"
         echo ""
         echo "🐛 Development/Debug mode:"
         echo "   ./debug-server.sh"

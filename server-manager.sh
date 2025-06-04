@@ -380,7 +380,7 @@ show_status() {
         
         # Show additional info based on mode
         if [[ "$has_pid_file" == "true" ]]; then
-            echo "   Control: Use './start-server.sh stop' to stop"
+            echo "   Control: Use './server-manager.sh stop' to stop"
         else
             echo "   Control: Running in foreground (use Ctrl+C to stop)"
         fi

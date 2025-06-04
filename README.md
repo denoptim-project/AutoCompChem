@@ -42,11 +42,11 @@ autocompchem -t prepareInputGaussian -h
 ```
 
 ### Server Mode (REST API)
-The server mode allows to start a backend web server that exposes the services of AutoCompChem for REST API access. Start the server with one of these alternatives depending on the intended usage (for details see [server scripts documentation](doc/SERVER_SCRIPTS_GUIDE.md)):
+The server mode allows to start a backend web server that exposes the services of AutoCompChem for REST API access. Start the server with one of these alternatives depending on the intended usage:
 
 ```bash
 # Production mode: starts server in background
-./start-server.sh start
+./server-manager.sh start
 
 # Basic usage: starts a server from a previously built installation
 autocompchem --server
@@ -66,13 +66,13 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--server"
 
 **Server Management (Production)**:
 ```bash
-./start-server.sh start     # Start in background
-./start-server.sh stop      # Stop server  
-./start-server.sh status    # Check status
-./start-server.sh logs      # View logs
-./start-server.sh restart   # Restart server
-./start-server.sh version   # Show version info
-./start-server.sh health    # Check health endpoint
+./server-manager.sh start     # Start in background
+./server-manager.sh stop      # Stop server  
+./server-manager.sh status    # Check status
+./server-manager.sh logs      # View logs
+./server-manager.sh restart   # Restart server
+./server-manager.sh version   # Show version info
+./server-manager.sh health    # Check health endpoint
 ```
 
 Once the server is running (default port: 8080):
@@ -87,7 +87,7 @@ The **Model Context Protocol (MCP)** integration allows Claude and other AI assi
 
 ```bash
 # Start the AutoCompChem server (required first)
-./start-server.sh start
+./server-manager.sh start
 
 # Launch the MCP server for Claude integration
 ./mcp-server-launcher.sh
@@ -102,7 +102,7 @@ The **Model Context Protocol (MCP)** integration allows Claude and other AI assi
 - 📋 **List available tasks** and get help for specific operations
 
 **Quick Setup for Claude Desktop:**
-1. Start AutoCompChem server: `./start-server.sh start`
+1. Start AutoCompChem server: `./server-manager.sh start`
 2. Install Python dependencies: `pip install -r src/main/python/mcp_server/requirements.txt`
 3. Configure Claude Desktop (see [MCP Server Guide](doc/MCP_SERVER_GUIDE.md))
 4. Ask Claude: *"What computational chemistry tasks are available?"*

@@ -41,7 +41,7 @@ The AutoCompChem MCP server provides Claude with access to:
 1. **Start AutoCompChem Server**:
    ```bash
    # Production mode (recommended for MCP integration)
-   ./start-server.sh start
+   ./server-manager.sh start
    
    # Development mode (for debugging)
    ./debug-server.sh
@@ -70,32 +70,32 @@ The AutoCompChem MCP server provides Claude with access to:
 
 ### Production Server Script
 
-The **`start-server.sh`** script provides production-ready server management:
+The **`server-manager.sh`** script provides production-ready server management:
 
 ```bash
 # Start server in background
-./start-server.sh start
+./server-manager.sh start
 
 # Stop server
-./start-server.sh stop
+./server-manager.sh stop
 
 # Restart server
-./start-server.sh restart
+./server-manager.sh restart
 
 # Check server status
-./start-server.sh status
+./server-manager.sh status
 
 # View logs
-./start-server.sh logs
+./server-manager.sh logs
 
 # Check health endpoint
-./start-server.sh health
+./server-manager.sh health
 
 # Start on custom port
-./start-server.sh start --port 9090
+./server-manager.sh start --port 9090
 
 # Start with more memory
-./start-server.sh start --max-memory 4g --min-memory 1g
+./server-manager.sh start --max-memory 4g --min-memory 1g
 ```
 
 ### Development Server Script
