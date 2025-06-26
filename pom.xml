@@ -137,6 +137,7 @@
       </resource>
     </resources>
     <plugins>
+<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
@@ -160,6 +161,7 @@
           <cleanLicensesOutputDirectory>true</cleanLicensesOutputDirectory>
         </configuration>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.2.0</version>
