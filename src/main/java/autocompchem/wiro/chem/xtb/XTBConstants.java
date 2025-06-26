@@ -136,10 +136,7 @@ public class XTBConstants
 	 * String identifying the Gibbs free energy including 
 	 * thermochemical corrections
 	 */
-	public static final String LOGGIBBSFREEENERGY = "\\| TOTAL FREE ENERGY";
-	
-	
-	
-	
+	// NB xTB v6.7 changed format compare to v6.4
+	public static final String LOGGIBBSFREEENERGY = " total free energy ";
 	
 }

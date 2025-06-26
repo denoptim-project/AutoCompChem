@@ -20,6 +20,11 @@ n=0; n=$(grep -c "\$\$\$\$" t154_lastGeom.sdf)
 if [ 1 != "$n" ];then not_passed $LINENO ; fi
 n=0; n=$(grep -c "Ru" t154_lastGeom.sdf)
 if [ 1 != "$n" ];then not_passed $LINENO ; fi
+n=0; n=$(grep -c "> <SCF_ENERGY>" t154_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+
+nrg=$(grep -A 1 "> <SCF_ENERGY>" t154_lastGeom.sdf | tail -n 1)
+if [ "-21.621281660016" != "$nrg" ];then not_passed $LINENO ; fi
 
 if grep -q 'Termination status: 0' "t154.log" ; then echo Passed ; exit 0 ; fi
 not_passed $LINENO

@@ -295,11 +295,17 @@ public class ChemSoftConstants
 	 * Key for parameter defining the tolerance value
 	 */
 	public static final String PARBONDLENGTHTOLETANCE = "TOLERANCE";
+	
+	/**
+	 * Key for parameter requesting to extract energy, the nature of which may 
+	 * depend on the actual file (e.g., SCF, Strain).
+	 */
+	public static final String PARGETENERGY = "GETENERGY";
 
 	/**
 	 * Key for parameter requesting to calculate free energy
 	 */
-	public static final String PARGETENERGY = "GETFREEENERGY";
+	public static final String PARGETFREEENERGY = "GETFREEENERGY";
 
 	/**
 	 * Key for parameter requesting analysis of the kind of critical point
@@ -329,6 +335,11 @@ public class ChemSoftConstants
 	public static final String JOBDATASCFENERGIES = "SCFCONVENERGIES";
 
 	/**
+	 * Name of data storing the last SCF energies
+	 */
+	public static final String JOBDATAFINALSCFENERGY = "FINALSCFENERGY";
+
+	/**
 	 * Name of data storing the number of  SCF steps
 	 */
 	public static final String JOBDATASCFSTEPS = "SCFSTEPS";
@@ -337,6 +348,11 @@ public class ChemSoftConstants
 	 * Name of data indicating that the geometry optimisation has converged
 	 */
 	public static final String JOBGEOMOPTCONVERGED = "GEOMOPTCONVERGED";
+	
+	/**
+	 * Name of data storing the kind of critical point, if detected
+	 */
+	public static final String JOBDATACRITICALPOINTKIND = "CRITICALPOINTKIND";
 	
 	/**
 	 * Name of data storing the vibrational frequencies
@@ -358,6 +374,12 @@ public class ChemSoftConstants
 	 * the thermochemical corrections (a.u.).
 	 */
 	public static final String JOBDATAGIBBSFREEENERGY = "GIBBSFREEENERGY";
+	
+	/**
+	 * Name of data containing quasi-harmonic recomputed Gibbs free energy 
+	 * already containing all the thermochemical corrections (a.u.).
+	 */
+	public static final String JOBDATAQHGIBBSFREEENERGY = "QHGIBBSFREEENERGY";
 	
 	/**
 	 * Name of data containing the temperature for thermochemical corrections.

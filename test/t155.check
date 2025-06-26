@@ -1,0 +1,32 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t155.log ] ; then not_passed $LINENO ; fi
+if [ ! -f t155_lastGeom.sdf ] ; then not_passed $LINENO ; fi
+
+# Only one geometry in the final geometry with SDF format
+n=0; n=$(grep -c "\$\$\$\$" t155_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Ru" t155_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "> <SCF_ENERGY>" t155_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+nrg=$(grep -A 1 "> <SCF_ENERGY>" t155_lastGeom.sdf | tail -n 1)
+if [ "-21.62128166002" != "$nrg" ];then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "MINIMUM" t155_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c "> <GIBBS_FREE_ENERGY>" t155_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+nrg=$(grep -A 1 "> <GIBBS_FREE_ENERGY>" t155_lastGeom.sdf | tail -n 1)
+if [ "-21.624928428864" != "$nrg" ];then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t155.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

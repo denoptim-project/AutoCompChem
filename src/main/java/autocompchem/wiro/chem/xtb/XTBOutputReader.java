@@ -383,26 +383,42 @@ public class XTBOutputReader extends ChemSoftOutputReader
         // written to file if there are no steps taken (i.e., the input is
         // already converged). In such case, the only source of geometry is the
         // file where the optimized geometry is written
-        if (!foundOptTrajectory && xtbopt!=null)
+        if (!foundOptTrajectory)
         {
-    		if (!xtbopt.exists())
-    		{
-    			logger.warn("WARNING! Found redirection"
-        					+ " to additional output file, " 
-        					+ "but '"
-        					+ xtbopt.getAbsolutePath() + "' could "
-        					+ "be found! " + System.getProperty(
-        							"line.separator") 
-        					+ "I cannot find optimized geometry for step "
-					+  (stepId+1) + "!");
-    		} else {
-    			// There should be only one geometry!
-    			List<IAtomContainer> mols = IOtools.readMultiMolFiles(xtbopt);
-    			for (IAtomContainer mol : mols)
-    			{
-    				stepGeoms.addAtomContainer(mol);
-    			}
-            }
+        	// We look for the files that XTB creates with the final geometry, 
+        	// but this practice is often inconsistent among versions
+        	if (xtbopt==null)
+        	{
+        		// The xtbopt file is created also by Hessian jobs in cTB v6.7
+        		xtbopt = new File(path + "xtbopt.sdf");
+        		if (!xtbopt.exists())
+        		{	
+        			xtbopt = new File(path + "xtbopt.xyz");
+	        		if (!xtbopt.exists())
+	        			xtbopt = null;
+        		}
+        	}
+        	if (xtbopt!=null)
+        	{
+	    		if (!xtbopt.exists())
+	    		{
+	    			logger.warn("WARNING! Found redirection"
+	        					+ " to additional output file, " 
+	        					+ "but '"
+	        					+ xtbopt.getAbsolutePath() + "' could "
+	        					+ "be found! " + System.getProperty(
+	        							"line.separator") 
+	        					+ "I cannot find optimized geometry for step "
+						+  (stepId+1) + "!");
+	    		} else {
+	    			// There should be only one geometry!
+	    			List<IAtomContainer> mols = IOtools.readMultiMolFiles(xtbopt);
+	    			for (IAtomContainer mol : mols)
+	    			{
+	    				stepGeoms.addAtomContainer(mol);
+	    			}
+	            }
+        	}
         }
         
         //TOTO read vib modes from g98.out (a.k.a. the fake output)

@@ -6,7 +6,5 @@ TASK: AnalyseXTBOutput
 JobOutputFile: ../t154-xtb/t154.out
 SaveAllGeometries: XYZ t154_allGeoms.xyz
 SaveLastGeometry: SDF t154_lastGeom.sdf
-#TODO-gg: Not implemented yet
-#SaveVibModes: 6 7 t154_vibModes_6_7.xyz
 TEMPLATECONNECTIVITY: ../t154-tmpl.sdf
-#GetEnergy: 
+GetEnergy

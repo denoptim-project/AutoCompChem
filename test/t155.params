@@ -1,0 +1,12 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 6
+TASK: AnalyseXTBOutput
+JobOutputFile: ../t155-xtb/t155.out
+SaveLastGeometry: SDF t155_lastGeom.sdf
+#TODO-gg: Not implemented yet
+#SaveVibModes: 6 7 t155_vibModes_6_7.xyz
+GetEnergy
+GetFreeEnergy
+detectKindOfCriticalPoint

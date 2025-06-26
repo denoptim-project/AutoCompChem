@@ -281,9 +281,9 @@ public abstract class ChemSoftOutputReader extends OutputReader
             // geometry to analyse: all or just the last one.
         }
 
-        if (params.contains(ChemSoftConstants.PARGETENERGY))
+        if (params.contains(ChemSoftConstants.PARGETFREEENERGY))
         {
-            String s = params.getParameter(ChemSoftConstants.PARGETENERGY)
+            String s = params.getParameter(ChemSoftConstants.PARGETFREEENERGY)
             		.getValueAsString();
             String[] p = s.split("\\s+");
             AnalysisTask a = new AnalysisTask(AnalysisKind.QHTHERMOCHEMISTRY);
@@ -308,6 +308,12 @@ public abstract class ChemSoftOutputReader extends OutputReader
             }
             a.setParams(ps);
             analysisAllTasks.add(a);
+        }
+        
+        if (params.contains(ChemSoftConstants.PARGETENERGY))
+        {
+        	AnalysisTask a = new AnalysisTask(AnalysisKind.SCFENERGY);
+        	analysisAllTasks.add(a);
         }
         
         if (params.contains(ChemSoftConstants.PARCRITICALPOINTKIND))
@@ -375,13 +381,10 @@ public abstract class ChemSoftOutputReader extends OutputReader
 		
     	super.analyzeFiles();
     	
-        // Prepare collector of analysis results
+        // Prepare collector of global analysis results
     	StringBuilder resultsString = new StringBuilder();
         AtomContainerSet geomsToExpose = new AtomContainerSet();
-        TextBlock critPointKinds = new TextBlock();
         IAtomContainer lastGeomToExpose = null;
-        ListOfDoubles convergedScfEnergies = new ListOfDoubles();
-        ListOfDoubles qhGibbsEnergies = new ListOfDoubles();
         
         // Unless we have defined tasks for specific job steps, we take the 
         // analysis tasks defined upon initialization and perform them on all
@@ -557,8 +560,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        				break;
 	        			}
 	        			
-	        			IAtomContainer mol = acs.getAtomContainer(
-	        					acs.getAtomContainerCount()-1);
+	        			IAtomContainer mol = getLastGeometryWithProperties(
+	        					stepData);
 	        			
 	        			lastGeomToExpose = mol;
 	        			
@@ -646,8 +649,9 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        			}
 	        			resultsString.append(" ").append(imgFreqStr);
 	        			resultsString.append(NL);
-	        			
-	        			critPointKinds.add(kindOfCriticalPoint);
+	        			stepData.putNamedData(new NamedData(
+	        					ChemSoftConstants.JOBDATACRITICALPOINTKIND, 
+	        					kindOfCriticalPoint));
 	        			break;
 	        		}
 	        		
@@ -671,8 +675,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        			Double energy = l.get(l.size()-1);
 	        			resultsString.append("-> SCF Energy ").append(energy);
 	        			resultsString.append(NL);
-	        			
-	        			convergedScfEnergies.add(energy);
+	        			stepData.putNamedData(new NamedData(
+	        					ChemSoftConstants.JOBDATAFINALSCFENERGY, energy));
 	        			break;
 	        		}
 	        		
@@ -753,6 +757,10 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        			
 		        			gibbsFreeEnergy = gibbsFreeEnergy + vibS*temp 
 		        					- qhVibS*temp;
+		        			
+		        			stepData.putNamedData(new NamedData(
+		        					ChemSoftConstants.JOBDATAQHGIBBSFREEENERGY, 
+		        					gibbsFreeEnergy));
 	        			}
 	        			
 	        			resultsString.append("-> ")
@@ -760,8 +768,6 @@ public abstract class ChemSoftOutputReader extends OutputReader
 	        				.append("Gibbs free energy ")
 	        				.append(gibbsFreeEnergy)
 	        				.append(qhTitleSuffix).append(NL);
-	        			
-	        			qhGibbsEnergies.add(gibbsFreeEnergy);
 	        			break;
 	        		}
 	        		
@@ -890,15 +896,7 @@ public abstract class ChemSoftOutputReader extends OutputReader
 							continue;
 						}
 						NamedDataCollector stepData = stepsData.get(stepId);
-						if (stepData.contains(
-								ChemSoftConstants.JOBDATAGEOMETRIES))
-						{
-							AtomContainerSet acs = (AtomContainerSet) 
-									stepData.getNamedData(ChemSoftConstants
-											.JOBDATAGEOMETRIES).getValue();
-							lastGeom = acs.getAtomContainer(
-									acs.getAtomContainerCount()-1);
-						}
+						lastGeom = getLastGeometryWithProperties(stepData);
 					}
 					
 					if (lastGeom == null || lastGeom.isEmpty())
@@ -985,6 +983,66 @@ public abstract class ChemSoftOutputReader extends OutputReader
         			+ finalResultsString.toString());
         }
     }
+	
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Takes the last geometry from the data for a single step/job of 
+	 * a comp.chem. software and returns it with relevant data saved as 
+	 * proeprties. Relevant data can be the SCF or Gibbs free energy or the
+	 * kind of critical point, if any of this is available in that step.
+	 * @param stepData
+	 * @return the decorated atom container.
+	 */
+	
+	private IAtomContainer getLastGeometryWithProperties(
+			NamedDataCollector stepData)
+	{
+		IAtomContainer geom = null;
+		if (stepData.contains(
+				ChemSoftConstants.JOBDATAGEOMETRIES))
+		{
+			AtomContainerSet acs = (AtomContainerSet) 
+					stepData.getNamedData(ChemSoftConstants
+							.JOBDATAGEOMETRIES).getValue();
+			geom = acs.getAtomContainer(acs.getAtomContainerCount()-1);
+			
+			// Add properties specific to this geometry in this step
+			if (stepData.contains(
+					ChemSoftConstants.JOBDATAFINALSCFENERGY))
+			{
+				geom.setProperty("SCF_ENERGY", 
+						stepData.getNamedData(
+        					ChemSoftConstants.JOBDATAFINALSCFENERGY)
+								.getValue());
+			}
+			if (stepData.contains(
+					ChemSoftConstants.JOBDATACRITICALPOINTKIND))
+			{
+				geom.setProperty("KIND",
+						stepData.getNamedData(
+	        					ChemSoftConstants.JOBDATACRITICALPOINTKIND)
+									.getValue());
+			}
+			if (stepData.contains(
+					ChemSoftConstants.JOBDATAGIBBSFREEENERGY))
+			{
+				geom.setProperty("GIBBS_FREE_ENERGY",
+						stepData.getNamedData(
+	        					ChemSoftConstants.JOBDATAGIBBSFREEENERGY)
+									.getValue());
+			}
+			if (stepData.contains(
+					ChemSoftConstants.JOBDATAQHGIBBSFREEENERGY))
+			{
+				geom.setProperty("QH_GIBBS_FREE_ENERGY",
+						stepData.getNamedData(
+	        					ChemSoftConstants.JOBDATAQHGIBBSFREEENERGY)
+									.getValue());
+			}
+		}
+		return geom;
+	}
 
 //------------------------------------------------------------------------------
 	
