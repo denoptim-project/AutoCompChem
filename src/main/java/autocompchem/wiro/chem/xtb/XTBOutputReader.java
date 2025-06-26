@@ -94,6 +94,7 @@ public class XTBOutputReader extends ChemSoftOutputReader
         AtomContainerSet stepGeoms = new AtomContainerSet();
         
         boolean foundOptTrajectory = false;
+        File xtbopt = null;
         
     	int stepInitLineNum = 0;
     	int stepEndLineNum = Integer.MAX_VALUE;
@@ -335,6 +336,16 @@ public class XTBOutputReader extends ChemSoftOutputReader
                 }
         		foundOptTrajectory = true;
         	}
+        	
+        	if (line.matches(".*" + XTBConstants.LOGOPTGEOMFILENAME+ ".*"))
+        	{
+        		String[] p = line.trim().split("\\s+");
+        		String optGeomFileName = p[4];
+        		optGeomFileName = optGeomFileName.replace("\'","");
+        		optGeomFileName = optGeomFileName.replace("\'","");
+        		
+        		xtbopt = new File(path + optGeomFileName);
+        	}
     	
         	// There is plenty of other data in the XTB log file. 
         	// So, this list of parsed data will grow as needed...
@@ -367,6 +378,32 @@ public class XTBOutputReader extends ChemSoftOutputReader
     			}
             }
 		}
+        
+        // From xTB 6.7.1 the trajectory is not written in the log and it is not
+        // written to file if there are no steps taken (i.e., the input is
+        // already converged). In such case, the only source of geometry is the
+        // file where the optimized geometry is written
+        if (!foundOptTrajectory && xtbopt!=null)
+        {
+    		if (!xtbopt.exists())
+    		{
+    			logger.warn("WARNING! Found redirection"
+        					+ " to additional output file, " 
+        					+ "but '"
+        					+ xtbopt.getAbsolutePath() + "' could "
+        					+ "be found! " + System.getProperty(
+        							"line.separator") 
+        					+ "I cannot find optimized geometry for step "
+					+  (stepId+1) + "!");
+    		} else {
+    			// There should be only one geometry!
+    			List<IAtomContainer> mols = IOtools.readMultiMolFiles(xtbopt);
+    			for (IAtomContainer mol : mols)
+    			{
+    				stepGeoms.addAtomContainer(mol);
+    			}
+            }
+        }
         
         //TOTO read vib modes from g98.out (a.k.a. the fake output)
         /*

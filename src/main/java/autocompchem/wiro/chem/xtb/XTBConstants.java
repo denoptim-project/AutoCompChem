@@ -24,7 +24,7 @@ import java.util.Set;
  */
 
 /**
- * Storage of predefined constants related to the use of Orca
+ * Storage of predefined constants related to the use of XTB
  *
  * @author Marco Foscato
  */

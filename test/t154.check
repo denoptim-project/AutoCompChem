@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f t154.log ] ; then not_passed $LINENO ; fi
+if [ ! -f t154_allGeoms.xyz ] ; then not_passed $LINENO ; fi
+if [ ! -f t154_lastGeom.sdf ] ; then not_passed $LINENO ; fi
+
+# Only one geometry in the "trajectory" and XYZ format
+n=0; n=$(grep -c "\$\$\$\$" t154_allGeoms.xyz)
+if [ 0 != "$n" ];then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Ru" t154_allGeoms.xyz)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+
+# Only one geometry in the final geometry with SDF format
+n=0; n=$(grep -c "\$\$\$\$" t154_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+n=0; n=$(grep -c "Ru" t154_lastGeom.sdf)
+if [ 1 != "$n" ];then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t154.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

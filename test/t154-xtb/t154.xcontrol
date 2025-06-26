@@ -1,0 +1,19 @@
+$constrain
+  angle: 5, 1, 7, auto
+  angle: 5, 1, 8, auto
+  angle: 7, 1, 8, auto
+$end
+$gfn
+  method=2
+  scc=true
+  periodic=false
+$opt
+  logfile=t154_xtbtrj.xyz
+  hessian=read
+  optlevel=tight
+$scc
+  maxiterations=1000
+$set
+  runtyp opt
+$chrg 0
+$spin 0
