@@ -3,7 +3,7 @@
   <groupId>org.denoptim</groupId>
   <artifactId>autocompchem</artifactId>
 
-  <version>3.1.0</version>
+  <version>3.1.1</version>
   <!-- WARNUNG: the version must be changed also in src/main/java/autocompchem/ui/ACCMain.java-->
 
   <name>autocompchem</name>

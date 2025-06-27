@@ -288,19 +288,23 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         }
         else if (params.contains(ChemSoftConstants.PARJOBDETAILS))
         {
-            String jdLines = params.getParameter(
-                    ChemSoftConstants.PARJOBDETAILS).getValueAsString();
-            logger.info("Job details from nested parameter block.");
-            List<String> lines = new ArrayList<String>(Arrays.asList(
-                    jdLines.split("\\r?\\n")));
-            this.ccJob = new CompChemJob(lines);
-        }
-        else 
-        {
+        	Object jobDetails = params.getParameter(
+                    ChemSoftConstants.PARJOBDETAILS).getValue();
+        	if (jobDetails instanceof CompChemJob)
+        	{
+        		this.ccJob = (CompChemJob) jobDetails;
+        	} else {
+	            String jdLines = jobDetails.toString();
+	            logger.info("Job details from nested parameter block.");
+	            List<String> lines = new ArrayList<String>(Arrays.asList(
+	                    jdLines.split("\\r?\\n")));
+	            this.ccJob = new CompChemJob(lines);
+        	}
+        } else {
             Terminator.withMsgAndStatus("ERROR! Unable to get job details. "
                     + "Neither '" + WIROConstants.PARJOBDETAILSFILE
                     + "' nor '" + ChemSoftConstants.PARJOBDETAILS 
-                    + "'found in parameters.",-1);
+                    + "'found in parameters.", -1);
         }
 
         if (params.contains(WIROConstants.PAROUTFILEROOT))

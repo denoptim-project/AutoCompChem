@@ -251,6 +251,7 @@ public class IOtools
         			replacement);
             result = reader.fromJson(br, type);
         } catch (JsonSyntaxException jse) {
+        	jse.printStackTrace();
         	Terminator.withMsgAndStatus("ERROR! JSON file '" + file 
         			+ "' has illegal syntax: " + jse.getMessage(), -1);
         } finally 

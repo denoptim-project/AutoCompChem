@@ -121,6 +121,7 @@ public class NamedData implements Cloneable
             		NamedDataType.ATOMCONTAINERSET,
             		NamedDataType.CONSTRAINTSSET,
             		NamedDataType.ZMATRIX,
+            		NamedDataType.JOB,
             		NamedDataType.ANNOTATEDATOMTUPLELIST,
             		NamedDataType.CONFORMATIONALSPACE));
     // NB: when extending the above list, remember to add the corresponding case
@@ -781,56 +782,76 @@ public class NamedData implements Cloneable
 			}
 			JsonElement je = jo.get("value");
 			
+			// We do this here to avoid nesting the exception in the switch block
 			if (!jsonable.contains(joType))
 			{
+				System.err.println("Type '" + joType + "' is not "
+						+ "serializable to JSON. Returning null.");
 				return new NamedData(jo.get("reference").getAsString(),
-						joType, joValue);
+						joType, null);
 			}
 			
 			//NB: this list of cases must reflect the content of "jsonable"
-			switch (joType)
-			{
-			case BOOLEAN:
-				joValue = context.deserialize(je, Boolean.class);
-				break;
-			case DOUBLE:
-				joValue = context.deserialize(je, Double.class);
-				break;
-			case INTEGER:
-				joValue = context.deserialize(je, Integer.class);
-				break;
-			case STRING:
-				joValue = context.deserialize(je, String.class);
-				break;
-			case TEXTBLOCK:
-				joValue = new TextBlock(context.deserialize(je,
-						new TypeToken<ArrayList<String>>(){}.getType()));
-				break;
-			case PARAMETERSTORAGE:
-				joValue = context.deserialize(je, ParameterStorage.class);
-				break;
-			case BASISSET:
-				joValue = context.deserialize(je, BasisSet.class);
-				break;
-			case IATOMCONTAINER:
-				joValue = context.deserialize(je, IAtomContainer.class);
-				break;
-			case ATOMCONTAINERSET:
-				joValue = context.deserialize(je, AtomContainerSet.class);
-				break;
-			case CONSTRAINTSSET:
-				joValue = context.deserialize(je, ConstraintsSet.class);
-				break;
-			case ZMATRIX:
-				joValue = context.deserialize(je, ZMatrix.class);
-				break;
-			case ANNOTATEDATOMTUPLELIST:
-				joValue = context.deserialize(je, AnnotatedAtomTupleList.class);
-				break;
-			case CONFORMATIONALSPACE:
-				joValue = context.deserialize(je, ConformationalSpace.class);
-			default:
-				break;
+			try {
+				switch (joType)
+				{
+				case BOOLEAN:
+					joValue = context.deserialize(je, Boolean.class);
+					break;
+				case DOUBLE:
+					joValue = context.deserialize(je, Double.class);
+					break;
+				case INTEGER:
+					joValue = context.deserialize(je, Integer.class);
+					break;
+				case STRING:
+					joValue = context.deserialize(je, String.class);
+					break;
+				case TEXTBLOCK:
+					joValue = new TextBlock(context.deserialize(je,
+							new TypeToken<ArrayList<String>>(){}.getType()));
+					break;
+				case PARAMETERSTORAGE:
+					joValue = context.deserialize(je, ParameterStorage.class);
+					break;
+				case BASISSET:
+					joValue = context.deserialize(je, BasisSet.class);
+					break;
+				case IATOMCONTAINER:
+					joValue = context.deserialize(je, IAtomContainer.class);
+					break;
+				case ATOMCONTAINERSET:
+					joValue = context.deserialize(je, AtomContainerSet.class);
+					break;
+				case CONSTRAINTSSET:
+					joValue = context.deserialize(je, ConstraintsSet.class);
+					break;
+				case ZMATRIX:
+					joValue = context.deserialize(je, ZMatrix.class);
+					break;
+				case JOB:
+					joValue = context.deserialize(je, Job.class);
+					break;
+				case ANNOTATEDATOMTUPLELIST:
+					joValue = context.deserialize(je, 
+							AnnotatedAtomTupleList.class);
+					break;
+				case CONFORMATIONALSPACE:
+					joValue = context.deserialize(je, ConformationalSpace.class);
+					break;
+				default:
+					System.err.println("WARINING: attempt to deserialize "
+							+ "non-JSONable type '" + joType + "'");
+					break;
+				}
+			} catch (JsonParseException e) {
+				throw new JsonParseException("Type '" + joType + "' does not "
+						+ "match content. "
+						+ "Try by specifying '\"type\"=\"intendedType\" where "
+						+ "\"intendedType\" is one among " 
+						+ StringUtils.mergeListToString(Arrays.asList(jsonable),
+								", ", true) 
+						+ ". The content with mismatching type is: " + je, e);
 			}
 			
 			return new NamedData(jo.get("reference").getAsString(),

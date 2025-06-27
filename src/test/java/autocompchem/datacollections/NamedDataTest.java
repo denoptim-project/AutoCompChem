@@ -214,7 +214,6 @@ public class NamedDataTest
     	nds.add(new NamedData("Integer", 1));
     	nds.add(new NamedData("Double",  1.23));
     	nds.add(new NamedData("Double", 1.0));
-    	nds.add(new NamedData("File",  new File("path")));
     	nds.add(new NamedData("TextBlock", 
     			new ArrayList<String>(Arrays.asList("These","are","3 lines"))));
     	nds.add(new NamedData("BasisSet", 
