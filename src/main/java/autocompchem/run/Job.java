@@ -1121,12 +1121,12 @@ public class Job implements Runnable
     {
         if (completed)
         {
-        	//This avoid looking with finalizeStatusAndNotifications sending
+        	//This avoid looping with finalizeStatusAndNotifications sending
         	// a notification, and the notification triggering calling stopJob
             return;
         }
         this.jobIsBeingKilled = true;
-        finalizeStatusAndNotifications(false);
+        finalizeStatusAndNotifications(true);
         Thread.currentThread().interrupt();
     }
     

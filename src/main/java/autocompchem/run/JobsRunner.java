@@ -49,15 +49,15 @@ public abstract class JobsRunner
 	protected List<Job> todoJobs;
 
     /**
-     * Max time for waiting for completion (milliseconds)
+     * Max time for waiting for completion (milliseconds). Negative value means
+     * no walltime.
      */
-	protected long walltimeMillis = 600000L; //Default 10 min
+	protected long walltimeMillis = -1L; //Default: no walltime
     
     /**
      * Time step for waiting for completion (milliseconds)
      */
-	protected long waitingStep = 1000L; //Default 1 sec
-    
+	protected long waitingStep = -1L; //Default: no waiting step
     /**
      * Placeholder for exception throws by a job
      */
@@ -153,13 +153,20 @@ public abstract class JobsRunner
 //------------------------------------------------------------------------------
 
     /**
-     * Set the maximum time we'll wait for completion of subjobs
-     * @param walltime the walltime in seconds
+     * Set the maximum time we'll wait for completion of subjobs. Negative value
+     * means we wait forever, i.e., no wall time. By default, this also sets a 
+     * waiting time step that is 1/1000 of the given wall time unless a waiting 
+     * time step has already been set.
+     * @param walltime the wall time in seconds
      */
 
     public void setWallTime(long walltime)
     {
         this.walltimeMillis = walltime*1000;
+        if (waitingStep<0)
+        {
+        	waitingStep=walltime;
+        }
     }
 
 //------------------------------------------------------------------------------
@@ -171,6 +178,13 @@ public abstract class JobsRunner
 
     public void setWaitingStep(long waitingStep)
     {
+    	if (waitingStep<0)
+    	{
+    		logger.warn("Ignoring negative waiting step. "
+    				+ "To avoid any checking for wall time, "
+    				+ "set a negative wall time, instead.");
+    		return;
+    	}
         this.waitingStep = 1000*waitingStep;
     }
 
@@ -185,18 +199,25 @@ public abstract class JobsRunner
 //------------------------------------------------------------------------------
 
    /**
-    * Stop all if the maximum run time has been reached.
+    * Stop all if the maximum run time has been reached. By default the wall
+    * time is negative, meaning that it is ignored, so, by default, this method
+    * does nothing. It operates only if a wall time has been set.
     * @return <code>true</code> if the wall time has been reached and we want to 
     * kill sub jobs.
     */
 
     protected boolean weRunOutOfTime()
     {
+    	if (walltimeMillis<0)
+    	{
+    		return false;
+    	}
+    	
         boolean res = false;
         long endTime = System.currentTimeMillis();
         long millis = (endTime - startTime);
 
-        if (millis > walltimeMillis)
+        if (millis>walltimeMillis)
         {
         	logger.error("Walltime reached for " 
         			+ this.getClass().getSimpleName() 

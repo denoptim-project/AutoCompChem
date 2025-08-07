@@ -82,7 +82,6 @@ public class SerialJobsRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
         Job main = JobFactory.createJob(SoftwareId.ACC, 3);
-        main.setParameter("WALLTIME", "10");
         for (int i=0; i<3; i++)
         {
         	main.addStep(new TestJob(roothName+i, 1, 0, 200));
@@ -107,7 +106,7 @@ public class SerialJobsRunnerTest
 
     /*
      * Case tested:
-     * Run of a plain sequence of step, but the second step hits the walltime.
+     * Run of a plain sequence of step, but the second step hits the wall time.
      */
     @Test
     public void testSerialWorkflow_hitWalltime() throws Exception
@@ -116,7 +115,8 @@ public class SerialJobsRunnerTest
         String roothName = tempDir.getAbsolutePath() + SEP + "testjob.log";
         
         Job main = JobFactory.createJob(SoftwareId.ACC, 1);
-        main.setParameter("WALLTIME", "3"); 
+        main.setParameter(JobsRunner.WALLTIMEPARAM, 3); 
+        main.setParameter(JobsRunner.WAITTIMEPARAM, 1); 
         for (int i=0; i<3; i++)
         {
         	main.addStep(new TestJob(roothName+i, 2, 0, 950));
@@ -139,7 +139,7 @@ public class SerialJobsRunnerTest
     	assertTrue(n>0,"Lines in log 1: "+n);
     	assertTrue(n<4,"Lines in log 1: "+n);
     	assertTrue(main.getStep(1).isInterrupted,
-    			"Interruption flag on job-"+1);
+    			"Interruption flag on job-1");
     	
     	// Third never run
     	File thirdLog = new File(roothName+'2');

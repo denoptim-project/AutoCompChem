@@ -506,11 +506,16 @@ public class ParallelJobsRunner extends JobsRunner
 	                break;
 	            }
 	
-	            // wait some time before checking again, 
-	            // or weak up upon notification
+	            // If configured, wait some time before checking again, 
+	            // or weak up upon notification.
 	            try
 	            {
-	        		lock.wait(waitingStep);
+	        		if (waitingStep>0)
+	        		{
+	        			lock.wait(waitingStep);
+	        		} else {
+	        			lock.wait();
+	        		}
 	            }
 	            catch (InterruptedException ie)
 	            {

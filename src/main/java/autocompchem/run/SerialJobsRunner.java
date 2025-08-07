@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -299,12 +300,17 @@ public class SerialJobsRunner extends JobsRunner
 	                withinTime = false;
 	                break;
 	            }
-	
-	            // wait some time before checking again, 
-	            // or weak up upon notification
+
+	            // If configured, wait some time before checking again, 
+	            // or weak up upon notification.
 	            try
 	            {
-	        		lock.wait(waitingStep);
+	        		if (waitingStep>0)
+	        		{
+	        			lock.wait(waitingStep);
+	        		} else {
+	        			lock.wait();
+	        		}
 	            }
 	            catch (InterruptedException ie)
 	            {
