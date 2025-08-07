@@ -112,7 +112,7 @@
             },
             {
               "reference": "Free1",
-              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "value": "IOP(3/174\u003d1000000,3/175\u003d358940,3/177\u003d12092,3/178\u003d5938951)",
               "isLoud": false
             },
             {
@@ -196,7 +196,7 @@
               "reference": "PCM",
               "type": "TEXTBLOCK",
               "value": [
-                "radii=UFF",
+                "radii\u003dUFF",
                 "pcmdoc",
                 "Dis",
                 "Rep",
@@ -241,7 +241,7 @@
             },
             {
               "reference": "Free1",
-              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "value": "IOP(3/174\u003d1000000,3/175\u003d358940,3/177\u003d12092,3/178\u003d5938951)",
               "isLoud": false
             },
             {
@@ -335,7 +335,7 @@
               "reference": "PCM",
               "type": "TEXTBLOCK",
               "value": [
-                "radii=UFF",
+                "radii\u003dUFF",
                 "pcmdoc",
                 "Dis",
                 "Rep",
@@ -380,7 +380,7 @@
             },
             {
               "reference": "Free1",
-              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "value": "IOP(3/174\u003d1000000,3/175\u003d358940,3/177\u003d12092,3/178\u003d5938951)",
               "isLoud": false
             },
             {
@@ -486,7 +486,7 @@
                 },
                 {
                   "reference": "SMARTS",
-                  "value": "[!$([F]CP)] suffix=F"
+                  "value": "[!$([F]CP)] suffix\u003dF"
                 }
               ],
               "reference": "MODREDUNDANT"
@@ -495,7 +495,7 @@
               "reference": "PCM",
               "type": "TEXTBLOCK",
               "value": [
-                "radii=UFF",
+                "radii\u003dUFF",
                 "pcmdoc",
                 "Dis",
                 "Rep",
@@ -540,7 +540,7 @@
             },
             {
               "reference": "Free1",
-              "value": "IOP(3/174=1000000,3/175=358940,3/177=12092,3/178=5938951)",
+              "value": "IOP(3/174\u003d1000000,3/175\u003d358940,3/177\u003d12092,3/178\u003d5938951)",
               "isLoud": false
             },
             {
@@ -628,7 +628,7 @@
               "reference": "PCM",
               "type": "TEXTBLOCK",
               "value": [
-                "radii=UFF",
+                "radii\u003dUFF",
                 "pcmdoc",
                 "Dis",
                 "Rep",

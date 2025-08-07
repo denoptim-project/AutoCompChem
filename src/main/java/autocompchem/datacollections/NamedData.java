@@ -17,6 +17,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
@@ -780,15 +781,18 @@ public class NamedData implements Cloneable
 			{
 				joType = NamedDataType.valueOf(jo.get("type").getAsString());
 			}
+
+			JsonElement jref = jo.get("reference");
 			JsonElement je = jo.get("value");
 			
 			// Protect from corruption due to equal sign
-			if (je!=null && je.toString().contains("="))
-			{
+			if (jref instanceof JsonNull && je!=null && je.toString().contains("="))
+			{			
 				throw new JsonParseException("Found equal sign (i.e., '=') "
 						+ "in a JSON value. "
 						+ "This leads to corruption of the JSON object. "
-						+ "Please, replace the literal '=' with '\\u003d'."); 
+						+ "Please, replace the literal '=' with '\\u003d'. "
+						+ "See '" + je + "'"); 
 			}
 			
 			// We do this here to avoid nesting the exception in the switch block
@@ -856,7 +860,7 @@ public class NamedData implements Cloneable
 			} catch (JsonParseException e) {
 				throw new JsonParseException("Type '" + joType + "' does not "
 						+ "match content. "
-						+ "Try by specifying '\"type\"=\"intendedType\" where "
+						+ "Try by specifying '\"type\":\"intendedType\" where "
 						+ "\"intendedType\" is one among " 
 						+ StringUtils.mergeListToString(Arrays.asList(jsonable),
 								", ", true) 
