@@ -782,6 +782,15 @@ public class NamedData implements Cloneable
 			}
 			JsonElement je = jo.get("value");
 			
+			// Protect from corruption due to equal sign
+			if (je!=null && je.toString().contains("="))
+			{
+				throw new JsonParseException("Found equal sign (i.e., '=') "
+						+ "in a JSON value. "
+						+ "This leads to corruption of the JSON object. "
+						+ "Please, replace the literal '=' with '\\u003d'."); 
+			}
+			
 			// We do this here to avoid nesting the exception in the switch block
 			if (!jsonable.contains(joType))
 			{
@@ -853,7 +862,6 @@ public class NamedData implements Cloneable
 								", ", true) 
 						+ ". The content with mismatching type is: " + je, e);
 			}
-			
 			return new NamedData(jo.get("reference").getAsString(),
 					joType, joValue);
 		}
