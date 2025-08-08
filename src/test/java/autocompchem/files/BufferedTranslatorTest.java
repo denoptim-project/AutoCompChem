@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -123,6 +124,7 @@ public class BufferedTranslatorTest
         
         int[] bufferSize = new int[]{1, 2, 4, 6, 10, 1024};
         int[] readBuffSize = new int[] {1, 2, 10, 1024};
+        int[] offset = new int[] {0, 1, 2, 4};
         String[] regex = new String[] {"X", "XX", "long_patter_not_found"};
         
         for (int i=0; i<bufferSize.length; i++)
@@ -131,25 +133,44 @@ public class BufferedTranslatorTest
             {
         		for (int iRBuff=0; iRBuff<readBuffSize.length; iRBuff++)
         		{
-			        BufferedTranslator bt = new BufferedTranslator(
-			        		new FileReader(tmpFile), regex[j], replacement, 
-			        		bufferSize[i]);
-			        char[] buffer = new char[readBuffSize[iRBuff]];
-			        StringBuilder sb = new StringBuilder();
-			        int readChars = 0;
-			        while (readChars > -1) 
-			        {
-				        sb.append(Arrays.copyOfRange(buffer, 0, readChars));
-			        	readChars = bt.read(buffer, 0, buffer.length);
-			        }
-			        String whole = sb.toString();
-			        assertTrue(whole.contains(line1));
-			        assertTrue(whole.contains(line2));
-			        assertTrue(whole.contains(line3));
-			        assertFalse(whole.contains(replacement));
-			        
-			        assertEquals(expectedLength, whole.length());
-			        bt.close();
+        			for (int iOff=0; iOff<(iRBuff+1); iOff++)
+        			{
+				        BufferedTranslator bt = new BufferedTranslator(
+				        		new FileReader(tmpFile), regex[j], replacement, 
+				        		bufferSize[i]);
+				        /*
+				        BufferedReader bt = new BufferedReader(
+				        		new FileReader(tmpFile), bufferSize[i]);
+				        */
+				        char[] buffer = new char[readBuffSize[iRBuff]];
+				        StringBuilder sb = new StringBuilder();
+				        int readChars = 0;
+				        int actualOff = 0;
+				        boolean first = true;
+				        while (readChars > -1) 
+				        {
+				        	readChars = bt.read(buffer, actualOff, 
+				        			buffer.length-actualOff);
+					        if (readChars>-1)
+				        	{	
+					        	sb.append(Arrays.copyOfRange(buffer, actualOff, 
+					        			readChars+actualOff));
+				        	}
+				        	if (first)
+				        	{
+				        		first =false;
+				        		actualOff = offset[iOff];
+				        	}
+				        }
+				        String whole = sb.toString();
+				        assertTrue(whole.contains(line1));
+				        assertTrue(whole.contains(line2));
+				        assertTrue(whole.contains(line3));
+				        assertFalse(whole.contains(replacement));
+				        
+				        assertEquals(expectedLength, whole.length());
+				        bt.close();
+        			}
         		}
             }
         }
@@ -183,6 +204,7 @@ public class BufferedTranslatorTest
         
         int[] bufferSize = new int[]{1, 2, 4, 6, 10, 1024};
         int[] readBuffSize = new int[] {1, 2, 10, 1024};
+        int[] offset = new int[] {0, 1, 2, 4};
         for (int iBuff=0; iBuff<bufferSize.length; iBuff++)
         {
         	for (int iRegex=0; iRegex<regex.length; iRegex++)
@@ -191,49 +213,67 @@ public class BufferedTranslatorTest
                 {
             		for (int iRBuff=0; iRBuff<readBuffSize.length; iRBuff++)
             		{
-	            		BufferedTranslator bt = new BufferedTranslator(
-				        		new FileReader(tmpFile), 
-				        		regex[iRegex], replacement[iRepl], 
-				        		bufferSize[iBuff]);
-				        char[] buffer = new char[readBuffSize[iRBuff]];
-				        StringBuilder sb = new StringBuilder();
-				        int readChars = 0;
-				        while (readChars > -1) 
-				        {
-					        sb.append(Arrays.copyOfRange(buffer, 0, readChars));
-				        	readChars = bt.read(buffer, 0, buffer.length);
-				        }
-				        String whole = sb.toString();
-
-				        //NB: the -1 make it keep the trailing empty lines
-				        List<String> translatedLines = new ArrayList<String>(
-				        		Arrays.asList(whole.split("\\r?\\n",-1)));
-				        
-				        // +1 because the writing to file adds a newline char, hence a line
-				        assertEquals(lines.size() + 1, translatedLines.size());
-				        
-				        int expectedTotLenght = 0;
-				        for (int iLine=0; iLine<lines.size(); iLine++)
-				        {
-				        	String msg = "Line:" + iLine
-				        			+ " iRegex:" + iRegex
-				        			+ " iRepl:" + iRepl;
-				        	int expectedLineLength = lines.get(iLine).length() 
-				        			- (hitLength[iRegex] 
-				        					* numHitsPerLine[iLine])
-				        			+ (replacement[iRepl].length() 
-				        					* numHitsPerLine[iLine]);
-				        	assertEquals(expectedLineLength, 
-				        			translatedLines.get(iLine).length(), msg);
-				        	expectedTotLenght = expectedTotLenght 
-				        			+ expectedLineLength 
-				        			+ NEWLINECHARLENGTH;
-				        	assertEquals(lines.get(iLine).replaceAll(
-				        			regex[iRegex], replacement[iRepl]),
-				        			translatedLines.get(iLine), msg);
-				        }
-				        assertEquals(expectedTotLenght, whole.length());
-				        bt.close();
+            			for (int iOff=0; iOff<(iRBuff+1); iOff++)
+            			{
+		            		BufferedTranslator bt = new BufferedTranslator(
+					        		new FileReader(tmpFile), 
+					        		regex[iRegex], replacement[iRepl], 
+					        		bufferSize[iBuff]);
+    				        
+		            		char[] buffer = new char[readBuffSize[iRBuff]];
+					        StringBuilder sb = new StringBuilder();
+					        int readChars = 0;
+					        int actualOff = 0;
+					        boolean first = true;
+					        while (readChars > -1) 
+					        {
+					        	readChars = bt.read(buffer, actualOff, 
+					        			buffer.length-actualOff);
+						        if (readChars>-1)
+					        	{	
+						        	sb.append(Arrays.copyOfRange(buffer, 
+						        			actualOff, readChars+actualOff));
+					        	}
+					        	if (first)
+					        	{
+					        		first =false;
+					        		actualOff = offset[iOff];
+					        	}
+					        }
+					        
+					        String whole = sb.toString();
+	
+					        //NB: the -1 make it keep the trailing empty lines
+					        List<String> translatedLines = new ArrayList<String>(
+					        		Arrays.asList(whole.split("\\r?\\n",-1)));
+					        
+					        // +1 because the writing to file adds a newline char, hence a line
+					        assertEquals(lines.size() + 1, translatedLines.size());
+					        
+					        int expectedTotLenght = 0;
+					        for (int iLine=0; iLine<lines.size(); iLine++)
+					        {
+					        	String msg = "Line:" + iLine
+					        			+ " iRegex:" + iRegex
+					        			+ " iRepl:" + iRepl;
+					        	int expectedLineLength = lines.get(iLine).length() 
+					        			- (hitLength[iRegex] 
+					        					* numHitsPerLine[iLine])
+					        			+ (replacement[iRepl].length() 
+					        					* numHitsPerLine[iLine]);
+					        	assertEquals(expectedLineLength, 
+					        			translatedLines.get(iLine).length(), 
+					        			msg);
+					        	expectedTotLenght = expectedTotLenght 
+					        			+ expectedLineLength 
+					        			+ NEWLINECHARLENGTH;
+					        	assertEquals(lines.get(iLine).replaceAll(
+					        			regex[iRegex], replacement[iRepl]),
+					        			translatedLines.get(iLine), msg);
+					        }
+					        assertEquals(expectedTotLenght, whole.length());
+					        bt.close();
+            			}
                 	}
                 }
             }

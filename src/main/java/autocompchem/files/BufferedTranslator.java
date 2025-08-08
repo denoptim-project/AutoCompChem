@@ -169,7 +169,7 @@ public class BufferedTranslator extends BufferedReader
 		// Fill the destination buffer
 		for (int i=0; i<numCharsPutInDestBuffer; i++)
 		{
-			cbuf[i] = translatedBuffer[i];
+			cbuf[i+off] = translatedBuffer[i];
 		}
 		
 		// Consume the translated buffer
