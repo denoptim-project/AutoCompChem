@@ -782,18 +782,7 @@ public class NamedData implements Cloneable
 				joType = NamedDataType.valueOf(jo.get("type").getAsString());
 			}
 
-			JsonElement jref = jo.get("reference");
 			JsonElement je = jo.get("value");
-			
-			// Protect from corruption due to equal sign
-			if (jref instanceof JsonNull && je!=null && je.toString().contains("="))
-			{			
-				throw new JsonParseException("Found equal sign (i.e., '=') "
-						+ "in a JSON value. "
-						+ "This leads to corruption of the JSON object. "
-						+ "Please, replace the literal '=' with '\\u003d'. "
-						+ "See '" + je + "'"); 
-			}
 			
 			// We do this here to avoid nesting the exception in the switch block
 			if (!jsonable.contains(joType))

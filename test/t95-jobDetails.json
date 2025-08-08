@@ -148,7 +148,7 @@
             {
               "reference": "PCM",
               "value": [
-                "radii\u003dUAHF",
+                "radii=UAHF",
                 "pcmdoc",
                 "Dis",
                 "Rep",

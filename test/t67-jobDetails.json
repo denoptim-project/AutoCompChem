@@ -660,7 +660,7 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "\"Step6: opt. grid\u003d(99,590)\"",
+              "value": "\"Step6: opt. grid=(99,590)\"",
               "isLoud": false
             }
           ]
@@ -774,7 +774,7 @@
           "keywords": [
             {
               "reference": "title",
-              "value": "\"Step7: freq grid\u003d(99,590)\"",
+              "value": "\"Step7: freq grid=(99,590)\"",
               "isLoud": false
             }
           ]

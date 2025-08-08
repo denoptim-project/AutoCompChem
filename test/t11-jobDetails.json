@@ -592,7 +592,7 @@
           "keywords": [
             {
               "reference": "INTEGRAL",
-              "value": "INT(GRID\u003dSG1)",
+              "value": "INT(GRID=SG1)",
               "isLoud": false
             },
             {
@@ -611,7 +611,7 @@
             },
             {
               "reference": "IOP",
-              "value": "IOP(1/19\u003d5)",
+              "value": "IOP(1/19=5)",
               "isLoud": false
             },
             {
@@ -1189,7 +1189,7 @@
           "keywords": [
             {
               "reference": "INTEGRAL",
-              "value": "INT(GRID\u003dSG1)",
+              "value": "INT(GRID=SG1)",
               "isLoud": false
             },
             {
@@ -1208,7 +1208,7 @@
             },
             {
               "reference": "IOP",
-              "value": "IOP(1/19\u003d5)",
+              "value": "IOP(1/19=5)",
               "isLoud": false
             },
             {
@@ -1354,7 +1354,7 @@
             },
             {
               "reference": "IOP",
-              "value": "IOP(1/19\u003d5)",
+              "value": "IOP(1/19=5)",
               "isLoud": false
             }
           ],
@@ -1453,7 +1453,7 @@
             },
             {
               "reference": "IOP",
-              "value": "IOP(1/19\u003d11)",
+              "value": "IOP(1/19=11)",
               "isLoud": false
             },
             {
