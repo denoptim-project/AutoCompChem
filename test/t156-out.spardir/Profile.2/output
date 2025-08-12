@@ -1,0 +1,120 @@
+SPARTAN'20 MECHANICS PROGRAM:   (Linux/P4E)                           build  20.1.4
+
+
+     Turning Off Symmetry, Can't use with partial minimization
+  Using user parameter file '/home/marcof/PARAMS.MMFF.DENOPTIM'
+Warning: global charge (+1.00) does not match input file (+0)!
+
+  Unparameterized atoms in solvation model.
+  [Use PRINTLEV=3 to see more info]
+  ...Solvation calculation ignored.
+  ...Use the IGNORE_WARN keyword to override
+ Run Type            :    Optimization with 13 constraints
+ Method              :          MMFF94 (with extensions)
+ Stoichiometry       : C31 H38 Cl2 N2 O Ru
+ Number of Atoms     :              75
+ Point Group         :              C1
+ Degrees of Freedom  :             183
+
+
+Cycle    E           Gmax    maxDist   MaxTors      
+   0  734.73287     69.89   
+  10  722.14540     20.15      0.107    8.154729  
+  20  716.23018     88.41      0.0935   6.034268  
+  30  709.05785     16.11      0.00687  0.271216  
+  40  707.76609     11.84      0.0368   0.795036  
+  50  706.90227     13.00      0.0134   1.020369  
+  60  706.16751      9.59      0.0261   0.375145  
+  70  705.14833      8.51      0.00706  0.352806  
+  80  704.53323     17.56      0.00578  0.148773  
+  90  703.92118     11.24      0.0339   0.510538  
+ 100  703.11434      9.93      0.0884   6.610760  
+ 110  702.37072      7.55      0.0324   0.509872  
+ 120  701.67398      5.50      0.0380   0.599836  
+ 130  700.78670     10.87      0.00496  0.080673  
+ 140  700.08041      6.18      0.0336   0.528969  
+ 150  699.42294      7.09      0.0421   3.148838  
+ 160  698.91300     11.18      0.0253   0.401483  
+ 170  698.50974      9.32      0.00309  0.259017  
+ 180  698.16963      4.94      0.0394   3.018883  
+ 190  697.79386      5.92      0.0296   2.293719  
+ 200  697.43532      5.51      0.0280   0.466538  
+ 210  697.10560      7.25      0.00270  0.225392  
+ 220  696.75732      5.29      0.0369   2.844905  
+ 230  696.27844      6.43      0.00275  0.180134  
+ 240  695.86591      3.93      0.0237   0.376716  
+ 250  695.64720      6.74      0.00207  0.101794  
+ 260  695.09522      4.15      0.00168  0.072784  
+ 270  694.98403      5.49      0.0143   1.116910  
+ 280  694.84651      9.49      0.0490   3.721800  
+ 290  694.62991      4.64      0.0230   0.685283  
+ 300  694.44839      6.68      0.0256   1.137414  
+ 310  694.13171      6.71      0.0296   2.283127  
+ 320  693.93380      6.29      0.0270   2.051985  
+ 330  693.78904      3.65      0.0228   0.375077  
+ 340  693.70985      3.96      0.0337   2.614540  
+ 350  693.62133      4.15      0.00144  0.096935  
+ 360  693.47258      4.64      0.00281  0.039360  
+ 370  693.33252      6.57      0.00235  0.158072  
+ 380  693.10891      4.83      0.0157   0.329311  
+ 390  692.99250      4.20      0.0254   1.944576  
+ 400  692.91444      5.29      0.0180   1.037687  
+ 410  692.80498      6.44      0.0252   1.096380  
+ 420  692.72928      4.91      0.0106   0.823138  
+ 430  692.38608      4.40      0.00185  0.120418  
+ 440  691.50069     11.02      0.0114   0.214996  
+ 450  690.75935      3.16      0.0126   0.215970  
+ 460  690.55919      7.22      0.00907  0.182763  
+ 470  690.32495      6.20      0.0197   1.532067  
+ 480  690.23302      3.68      0.0160   0.290371  
+ 490  690.12794      4.30      0.0189   1.454379  
+ 500  690.10534      3.44      0.00333  0.233959  
+ 510  690.09807      3.15      0.00304  0.233729  
+ ==== ==========                                
+ 517  690.06790491     2e-09                      
+Removing Energy Due To Constraints.
+...(non-bonded frozen atoms will still be ignored)
+ ==== ==========                                
+ 518    1.25990128e+3      8                      
+
+
+  Constraint final values:  
+                                         |  current  (   Goal  )
+    Dihedral   : C1   Ru1  C11  N1    th =  179.79   ( 180.00  )  *
+
+ Minimization #2 to improve 1 constraints.
+
+
+Cycle    E           Gmax    maxDist   MaxTors      
+ 517  699.82510     77.15   
+ 520  699.69111      6.63      0.00127  0.020768  
+ 530  699.67987      4.06    236.11e-6  0.016010  
+ ==== ==========                                
+ 537  699.67367681     3e-09                      
+Removing Energy Due To Constraints.
+...(non-bonded frozen atoms will still be ignored)
+ ==== ==========                                
+ 538    1.26952095e+3      5                      
+
+
+  Constraint final values:  
+                                         |  current  (   Goal  )
+    Dihedral   : C1   Ru1  C11  N1    th =  179.99   ( 180.00  ) 
+
+          Net Charge :    1.000
+       Dipole Moment :   10.472 Debye
+          components :    4.8425   -1.3282    9.1898
+
+  Reason for exit: Successful completion 
+  Mechanics CPU Time :         1.03
+  Mechanics Wall Time:         1.03
+
+
+
+SPARTAN'20 Properties Program:  (Linux/P4E)                      build  20.1.4 
+
+  Reason for exit: Successful completion 
+  Properties CPU Time :         0.00
+  Properties Wall Time:      0.00635
+
+

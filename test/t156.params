@@ -1,0 +1,9 @@
+#
+# Parameters for Automated Computational Chemistry
+#
+VERBOSITY: 5
+TASK: analyseSpartanOutput
+jobOutputFile: ../t156-out.spardir
+modelID: Profile.1
+saveLastGeometry: SDF t156-out.sdf
+templateConnectivity: ../t156-tmpl.sdf

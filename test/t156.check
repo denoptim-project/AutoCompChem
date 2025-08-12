@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ! -f "t156-out.sdf" ]
+then
+  echo NOT Passes ERROR 1
+  exit -1
+fi
+
+if grep -q 'Termination status: 0' t156.log ; then
+  echo Passed
+  exit 0
+else
+  echo NOT Passed ERROR 5
+  exit -1
+fi

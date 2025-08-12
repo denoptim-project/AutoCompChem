@@ -1,6 +1,7 @@
 package autocompchem.wiro.chem.spartan;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -263,9 +264,15 @@ public class SpartanOutputReader extends ChemSoftOutputReader
     	// See <a href="https://github.com/denoptim-project/AutoCompChem/issues/21">issue #21</a>
     	String statusFile = inFile.getAbsoluteFile() + File.separator + ".."
     			+ File.separator + SpartanConstants.STATUSFILENAME;
-    			
-    	boolean foundNormalEndStatus = FileAnalyzer.grep(statusFile, 
+    	// But the status file is not written for ouput files that are created
+    	// by a job (e.g., the DYN constrained conformational search). Missing
+    	// status file does not mean there has been an error.
+    	boolean foundNormalEndStatus = true;
+    	if ((new File(statusFile).exists()))
+    	{
+    		foundNormalEndStatus = FileAnalyzer.grep(statusFile, 
     			SpartanConstants.NORMALCOMPLSTATUS).size() > 0;
+    	}
     	
     	if (foundNormalEndInLog && foundNormalEndStatus)
     		normalTerminated = true;
