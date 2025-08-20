@@ -19,6 +19,8 @@ package autocompchem.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -271,6 +273,37 @@ public class StringUtilsTest
     	assertEquals(2, parts.length);
     	assertEquals("abc", parts[0]);
     	assertEquals("123cfr567", parts[1]);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetParenthesesContent() throws Exception
+    {
+    	String s = "no parethesis";
+    	String result = StringUtils.getParenthesesContent(s);
+    	assertNull(result);
+    	
+    	s = "other (content with (nested))";
+    	result = StringUtils.getParenthesesContent(s);
+    	assertNotNull(result);
+    	assertEquals("content with (nested)",result);
+    	
+    	s = "(content with (nested)  ) more";
+    	result = StringUtils.getParenthesesContent(s);
+    	assertNotNull(result);
+    	assertEquals("content with (nested)  ",result);
+    	
+    	s = "other (content with (nested) more";
+    	result = StringUtils.getParenthesesContent(s);
+    	assertNotNull(result);
+    	assertEquals("content with (nested) more",result);
+    	
+    	s = "other (content without end";
+    	result = StringUtils.getParenthesesContent(s);
+    	assertNotNull(result);
+    	assertEquals("content without end",result);
+    	
     }
     
 //------------------------------------------------------------------------------

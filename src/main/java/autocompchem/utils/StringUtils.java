@@ -344,5 +344,41 @@ public class StringUtils
     }
     
 //------------------------------------------------------------------------------
+    
+    /**
+     * Extract text in between parenthesis. Ignores nested parentheses.
+     * @param input the text from which to extract the result.
+     * @return the string contained in the first pair of parenthesis, or 
+     * <code>null</code> if no parethesis is found.
+     */
+    
+    public static String getParenthesesContent(String input) 
+    {
+        int start = input.indexOf('(');
+        if (start == -1) return null;
+        
+        int count = 0;
+        int end = start;
+        
+        boolean foundEnd = false;
+        for (int i = start; i < input.length(); i++) 
+        {
+            if (input.charAt(i) == '(') count++;
+            if (input.charAt(i) == ')') count--;
+            if (count == 0) {
+            	foundEnd = true;
+                end = i;
+                break;
+            }
+        }
+        if (!foundEnd)
+        {
+        	return input.substring(start + 1);
+        } else {
+        	return input.substring(start + 1, end);
+        }
+    }
+    
+//------------------------------------------------------------------------------
 
 }
