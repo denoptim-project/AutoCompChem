@@ -868,7 +868,13 @@ public class Job implements Runnable
     				+ "Initiating " + appID + " Job " + getId());
     	
     	// Convert any request to fetch data from other jobs into the actual data
-    	fetchValuesFromJobsTree();
+    	try {
+    		fetchValuesFromJobsTree();
+    	} catch (Throwable t) {
+    		hasException = true;
+    		thrownExc = t;
+    		stopJob();
+    	}
     	
         // First do the work of this very Job
         runThisJobSubClassSpecific();
@@ -1178,19 +1184,34 @@ public class Job implements Runnable
 	    		if (!container.contains(nestedContentID))
 	    			return null;
 	    		nestedValue = container.getNamedData(nestedContentID).getValue();
-	    	} else if (value instanceof Map) {
+	    	} else if (value instanceof Map) 
+	    	{
 	    		Map<?,?> map = (Map<?, ?>) value;
-	    		if (map.containsKey(nestedContentID))
+	    		nestedValue = null;
+	    		for (Object key : map.keySet()) 
 	    		{
-	    			nestedValue = map.get(nestedContentID);
-	    		} else if (NumberUtils.isParsableToInt(nestedContentID)
-	    				&& map.containsKey(Integer.parseInt(nestedContentID))) {
-	    			nestedValue = map.get(Integer.parseInt(nestedContentID));
-	    		} else {
-	    			nestedValue = null;
+	    		    if (key instanceof String) 
+	    		    {
+	    		        String strKey = (String) key;
+	    		        if (strKey.equals(nestedContentID)) 
+	    		        {
+	    		        	nestedValue = map.get(key);
+	    		        	break;
+	    		        }
+	    		    } else if (key instanceof Integer 
+	    		    		&& NumberUtils.isParsableToInt(nestedContentID)) 
+	    		    {
+	    		        Integer intKey = (Integer) key;
+	    		        if (intKey == Integer.parseInt(nestedContentID)) 
+	    		        {
+	    		        	nestedValue = map.get(key);
+	    		        	break;
+	    		        }
+	    		    }
 	    		}
 	    	} else if (value instanceof List 
-	    			&& NumberUtils.isParsableToInt(nestedContentID)) {
+	    			&& NumberUtils.isParsableToInt(nestedContentID)) 
+	    	{
 	    		List<?> list = (List<?>) value;
 	    		nestedValue = list.get(Integer.parseInt(nestedContentID));
 	    	} else {
