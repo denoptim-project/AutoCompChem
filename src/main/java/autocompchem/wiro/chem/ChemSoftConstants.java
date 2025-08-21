@@ -500,4 +500,9 @@ public class ChemSoftConstants
 	 */
 	public static final String EXTERNALFILEGEOMETRIES = "EXTERNALGEOMSFILE";
 	
+	/**
+	 * Key for parameter requesting to set properties to atom containers
+	 */
+	public static final String PARSETIACPROPERTIES = "SETPROPERTIES";
+	
 }

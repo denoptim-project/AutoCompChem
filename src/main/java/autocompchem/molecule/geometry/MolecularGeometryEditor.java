@@ -397,19 +397,15 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
                         + "a Cartesian or a ZMatrix move.", -1);
             }
     		
-    		if (outFile!=null)
-    		{
-    			outFileAlreadyUsed = true;
-    			IOtools.writeAtomContainerSetToFile(outFile, result, outFormat, 
-    	            		true);
-    		}
-    		
     		if (exposedOutputCollector != null)
             {
 	    	    String molID = "mol-"+i;
 		        exposeOutputData(new NamedData(task.ID + molID, 
 		        		result));
         	}
+    		
+    		tryWritingToOutfile(result);
+    		outFileAlreadyUsed = true;
     	} else {
     		dealWithTaskMismatch();
         }

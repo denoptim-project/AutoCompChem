@@ -18,6 +18,12 @@
     "doc": "If this option is given, then only the tuples corresponding to chains of bonded atoms will be considered as measurable quantities. For example, is 3 SMARTS are given, we'll measure only the angles that correspond to triplets of atoms A-B-C where A and B are bonded and B and C are bonded."
   },
   {
+    "key": "OUTDATAFILE",
+    "casedKey": "outDataFile",
+    "type": "<String>",
+    "doc": "The pathname to the file where to save the resulting descriptors."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
     "tag": "the importing of chemical objects (e.g., molecular geometries)"
   }

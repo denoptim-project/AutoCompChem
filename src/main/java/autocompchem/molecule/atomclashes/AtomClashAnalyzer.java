@@ -33,8 +33,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;
@@ -250,13 +248,8 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
                 for (AtomClash ac : clashes)
                 	msg = msg + ac + NL;
                 logger.info(msg);
-
-                if (outFile!=null)
-                {
-                	outFileAlreadyUsed = true;
-                    writeAtmClashToSDFFields(iac, clashes, i, outFile);
-                }
             }
+            saveAtmClashToProperties(iac, clashes);
   		} else {
   			dealWithTaskMismatch();
   		}
@@ -504,37 +497,42 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
 //-----------------------------------------------------------------------------
 
     /**
-     * Writes information on atom clashes in SDF fields. The output file can
-     * be new of existing, in which case the molecule will be appended at the
-     * end.
+     * Writes information on atom clashes in the contenter's properties.
      * @param mol the molecular system
      * @param clashes the list of atom clashes to consider
-     * @param i index of record in the results storage
-     * @param file the output SDF file
      */
 
-    public void writeAtmClashToSDFFields(IAtomContainer mol, 
-    		List<AtomClash> clashes, int i, File file)
+    public void saveAtmClashToProperties(IAtomContainer mol, 
+    		List<AtomClash> clashes)
     {
-        //find closes
-        @SuppressWarnings("unused")
-                AtomClash worstac;
-        double worstoverlap = 0.0;
-        for (AtomClash ac : clashes)
-        {
-            if (ac.getOverlap() > worstoverlap)
-            {
-                worstoverlap = ac.getOverlap();
-                worstac = ac;
-            } 
-        }
-
-        //prepare fields
-        mol.setProperty("WorstOverlap", worstoverlap);
-        mol.setProperty("AtomClashes", clashes);
-
-        //write
-        IOtools.writeSDFAppend(file,mol,true);
+    	String clashesStr = "none";
+    	if (clashes.size()>0)
+    	{
+	        @SuppressWarnings("unused")
+	                AtomClash worstac;
+	        double worstOverlap = 0.0;
+	        StringBuilder sb = new StringBuilder();
+	        boolean first = true;
+	        for (AtomClash ac : clashes)
+	        {
+	        	if (first)
+	        	{
+	        		sb.append(ac.toString());
+	        		first = false;
+	        	} else {
+	        		sb.append(", ").append(ac.toString());
+	        	}
+	        		
+	            if (ac.getOverlap() > worstOverlap)
+	            {
+	            	worstOverlap = ac.getOverlap();
+	                worstac = ac;
+	            }
+	        }
+	        clashesStr = sb.toString();
+	        mol.setProperty("WorstOverlap", worstOverlap);
+    	}
+        mol.setProperty("AtomClashes", clashesStr);
     }
 
 //-----------------------------------------------------------------------------

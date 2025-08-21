@@ -124,13 +124,6 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     		
     		// Generate the actual conformers
     		conformers = generateConformers(orderedIAC, cs, logger);
-    		
-    		if (outFile != null)
-            {
-            	outFileAlreadyUsed = true;
-            	IOtools.writeAtomContainerSetToFile(outFile, conformers, 
-            			outFormat, true);
-            }
             
             if (exposedOutputCollector != null)
         	{
@@ -138,6 +131,9 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     	        exposeOutputData(new NamedData(
     	        		GENERATECONFORMERSTASK.ID + "-" + molID, conformers));
         	}
+    		
+    		tryWritingToOutfile(conformers);
+    		outFileAlreadyUsed = true;
     	} else {
     		dealWithTaskMismatch();
         }

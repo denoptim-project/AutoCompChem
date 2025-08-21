@@ -21,19 +21,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.IOtools.IACOutFormat;
+import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
@@ -82,6 +87,11 @@ public class AtomContainerInputProcessor extends Worker
      * The input molecules
      */
     protected List<IAtomContainer> inMols;
+    
+    /**
+     * List of CDK properties to set on the incoming atom containers.
+     */
+    protected Map<String,String> iacPropertiesToAdd;
     
     /**
      * The list of resulting data
@@ -201,6 +211,13 @@ public class AtomContainerInputProcessor extends Worker
         	}
         }
         
+        if (params.contains(ChemSoftConstants.PARSETIACPROPERTIES))
+        {
+        	String text = params.getParameter(
+        			ChemSoftConstants.PARSETIACPROPERTIES).getValueAsString();
+        	parsePropertiesToSet(text);
+        }
+        
         if (params.contains(WorkerConstants.PAROUTFILE))
         {
 	        this.outFile = new File(params.getParameter(
@@ -247,6 +264,63 @@ public class AtomContainerInputProcessor extends Worker
         				+ "' without any input atom container.");
         	}
         }
+        
+        // We set properties here upon initialization, but also when writing 
+        // the output to allow for properties computed within the job of this 
+        // worker to be added after the worker has done its job.
+        if (inMols!=null && iacPropertiesToAdd!=null)
+        {
+        	for (IAtomContainer iac : inMols)
+        	{
+        		for (Entry<String, String> e : iacPropertiesToAdd.entrySet())
+        		{
+        			iac.setProperty(e.getKey(), e.getValue());
+        		}
+        	}
+        }
+    }
+	
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses the formatted text defining what properties to set to the 
+     * atom containers.
+     * @param text the text (i.e., multiple lines) to be parsed.
+     */
+
+    protected void parsePropertiesToSet(String text)
+    {
+    	// NB: the REGEX makes this compatible with either new-line character
+        String[] arr = text.split("\\r?\\n|\\r");
+        parsePropertiesToSet(new ArrayList<String>(Arrays.asList(arr)));
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Parses the formatted text defining what properties to set to the 
+     * atom containers.
+     * @param lines the lines of text to be parsed.
+     */
+
+    protected void parsePropertiesToSet(List<String> lines)
+    {
+    	iacPropertiesToAdd = new HashMap<String,String>();
+        for (String line : lines)
+        {
+        	String[] nameValueParts = line.split(":", 2);
+    		String propertyName = line;
+    		String propertyValue = "";
+        	if (nameValueParts.length>0)
+        	{
+        		propertyName = nameValueParts[0];
+        		if (nameValueParts.length>1)
+            	{
+        			propertyValue = nameValueParts[1];
+            	}
+        	}
+        	iacPropertiesToAdd.put(propertyName, propertyValue);
+        }
     }
 	
 //-----------------------------------------------------------------------------
@@ -255,6 +329,7 @@ public class AtomContainerInputProcessor extends Worker
 	 * NB: if we are reading a huge file, this code will cause problems, but
 	 * we can assume no huge file will be read here.
 	 */
+    
 	protected void processInputFileParameter(String value)
 	{
         String[] words = value.trim().split("\\s+");
@@ -348,10 +423,8 @@ public class AtomContainerInputProcessor extends Worker
 	                {
 	    	        	exposeAtomContainer(result);
 	                }
-	                if (outFile!=null && !outFileAlreadyUsed)
-	                {
-	        			IOtools.writeAtomContainerToFile(outFile, result, outFormat, true);
-	                }
+	                if (!outFileAlreadyUsed)
+	                	tryWritingToOutfile(result);
 	                
 	            	if (breakAfterThis)
 	            		break;
@@ -368,12 +441,55 @@ public class AtomContainerInputProcessor extends Worker
 	            {
 		        	exposeAtomContainers(results);
 	            }
-                if (outFile!=null && !outFileAlreadyUsed)
-                {
-        			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
-                }
+                if (!outFileAlreadyUsed)
+                	tryWritingToOutfile(iacs);
 			}
 		}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Tries to write to the file defined by the OUTFILE parameter, if defined
+     * and if not already used.
+     * @param iac the atom container to write.
+     */
+    public void tryWritingToOutfile(IAtomContainer iac)
+    {
+        if (outFile!=null)
+        {
+			IOtools.writeAtomContainerToFile(outFile, iac, outFormat, true);
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Tries to write to the file defined by the OUTFILE parameter, if defined
+     * and if not already used.
+     * @param iacs the atom containers to write.
+     */
+    public void tryWritingToOutfile(IAtomContainerSet iacs)
+    {
+        if (outFile!=null)
+        {
+			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Tries to write to the file defined by the OUTFILE parameter, if defined
+     * and if not already used.
+     * @param iacs the atom containers to write.
+     */
+    public void tryWritingToOutfile(List<IAtomContainer> iacs)
+    {
+        if (outFile!=null)
+        {
+			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
+        }
     }
     
 //------------------------------------------------------------------------------

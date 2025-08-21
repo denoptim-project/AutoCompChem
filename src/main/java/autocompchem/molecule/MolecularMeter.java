@@ -1,5 +1,6 @@
 package autocompchem.molecule;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtom;
@@ -35,7 +37,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
+import autocompchem.io.IOtools.IACOutFormat;
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
@@ -44,6 +48,7 @@ import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * MolecularMeter collects measuring tools for molecular quantities
@@ -86,6 +91,11 @@ public class MolecularMeter extends AtomContainerInputProcessor
      * Flag: consider only bonded atoms
      */
     private boolean onlyBonded = false;
+    
+    /**
+     * File to the file where to write the descriptors computed
+     */
+    protected File outTxtFile = null;
     
     /**
      * String defining the task of measuring geometric descriptors
@@ -173,7 +183,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
             Terminator.withMsgAndStatus(msg,-1);
         }
 
-        //Get optional parameter
         if (params.contains("ONLYBONDED"))
         {
             String val = params.getParameter("ONLYBONDED").getValueAsString();
@@ -183,6 +192,13 @@ public class MolecularMeter extends AtomContainerInputProcessor
             {
                 this.onlyBonded = true;
             }
+        }
+        
+        if (params.contains(WorkerConstants.PAROUTDATAFILE))
+        {
+	        this.outTxtFile = new File(params.getParameter(
+	        		WorkerConstants.PAROUTDATAFILE).getValueAsString());
+	        FileUtils.mustNotExist(this.outTxtFile);
         }
     }
 
@@ -258,8 +274,8 @@ public class MolecularMeter extends AtomContainerInputProcessor
     	{
     		Map<String,List<Double>> descriptors = measureAllQuantities(iac,
     				smarts, sortedKeys, atmIds, onlyBonded, i);
-
-    		if (outFile!=null)
+    		
+    		if (outTxtFile!=null)
             {
             	outFileAlreadyUsed = true;
             	StringBuilder sb = new StringBuilder();
@@ -271,7 +287,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
 	    		}
             	IOtools.writeTXTAppend(outFile, sb.toString(), true);
             }
-            
+    		
             if (exposedOutputCollector != null)
         	{
     			String molID = "mol-"+i;
@@ -282,6 +298,8 @@ public class MolecularMeter extends AtomContainerInputProcessor
 	  		        		new ListOfDoubles(descriptors.get(descRef))));
 	    		}
         	}
+            
+    		tryWritingToOutfile(iac);
     	} else {
     		dealWithTaskMismatch();
         }

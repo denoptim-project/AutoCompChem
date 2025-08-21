@@ -7,6 +7,12 @@ if [[ $n != 88 ]] ; then
 fi
 
 n=0; n=$(grep "\$\$\$\$" t36-out.sdf -c)
+if [[ $n != 67 ]] ; then
+  echo NOT Passed 2
+  exit -1
+fi
+
+n=0; n=$(grep "^AtomClash" t36-out.sdf -c)
 if [[ $n != 32 ]] ; then
   echo NOT Passed 2
   exit -1

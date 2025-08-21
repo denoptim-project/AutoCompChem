@@ -200,8 +200,9 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
             {
     			if (singleMolOutput)
     			{
-        			// We set even if we write singe-frag files to avoid producing
-        			// also a file that collects all fragments in the super class
+        			// Even if we write singe-frag files, we set this to true
+    				// to avoid producing also a file that collects all fragments 
+    				// in the super class
                 	outFileAlreadyUsed = true;
     				for (int j=0; j< molecules.getAtomContainerCount(); j++)
     				{
@@ -213,10 +214,6 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
     	            	logger.info("Writing " + mol.getTitle() + " to '" 
     	            			+ singleMolOutFile.getAbsolutePath() + "'");
     				}
-    			} else {
-                	outFileAlreadyUsed = true;
-	            	IOtools.writeAtomContainerSetToFile(outFile, molecules, 
-	            			outFormat, true);
     			}
             }
             
@@ -226,6 +223,12 @@ public class MoleculeExtractor extends AtomContainerInputProcessor
     	        exposeOutputData(new NamedData(
     	        		EXTRACTMOLECULESTASK.ID + "-" + molID, molecules));
         	}
+
+            if (!singleMolOutput)
+			{
+            	tryWritingToOutfile(molecules);
+        		outFileAlreadyUsed = true;
+			}
     	} else {
     		dealWithTaskMismatch();
         }

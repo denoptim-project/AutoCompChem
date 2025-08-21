@@ -44,6 +44,14 @@ public class WorkerConstants
 	public static final String PAROUTFILE = "OUTFILE";
 	
 	/**
+	 * Key for parameter defining the pathname to an output file with raw data,
+	 * typically not a molecular structure file. If more
+	 * output files are needed these are dealt with by the specific 
+	 * {@link Worker} implementations.
+	 */
+	public static final String PAROUTDATAFILE = "OUTDATAFILE";
+	
+	/**
 	 * Key of parameter defining the format to be used for writing molecular 
 	 * structure representations of processes atom containers.
 	 */
