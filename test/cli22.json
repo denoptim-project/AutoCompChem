@@ -1,0 +1,49 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ],
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "AnalyseXTBOutput"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "JOBOUTPUTFILE",
+          "value": "../cli22-xtb.out"
+        },
+        {
+          "reference": "GETENERGY",
+          "value": "getEnergy"
+        }
+      ]
+    },
+    {
+      "jobType": "ShellJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "SHELL"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "4"
+        },
+        {
+          "reference": "CMD",
+          "value": "echo value collected from previous job is 'getACCJobsData(#-1.0,JOBOUTPUTDATA,0,FINALSCFENERGY)'. SCF converged in _getACCJobsData(#-1.0, JOBOUTPUTDATA, 0, SCFSTEPS)_ steps."
+        }
+      ]
+    }
+  ]
+}

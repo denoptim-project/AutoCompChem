@@ -20,9 +20,11 @@ package autocompchem.run;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -30,10 +32,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.jena.web.HttpSC.Code;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -48,8 +52,10 @@ import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.io.ACCJson;
 import autocompchem.log.LogUtils;
 import autocompchem.utils.NumberUtils;
+import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
@@ -241,6 +247,12 @@ public class Job implements Runnable
 	 * the steps or child jobs.
 	 */
 	public static final String JSONSUBJOBS = "steps";
+	
+	/**
+	 * String used to request accessing data exposed by jobs in the family tree
+	 * of this job.
+	 */
+	public static final String GETACCJOBSDATA = "GETACCJOBSDATA";
 	
 	
 //------------------------------------------------------------------------------
@@ -855,6 +867,9 @@ public class Job implements Runnable
     	logger.info(System.getProperty("line.separator") 
     				+ "Initiating " + appID + " Job " + getId());
     	
+    	// Convert any request to fetch data from other jobs into the actual data
+    	fetchValuesFromJobsTree();
+    	
         // First do the work of this very Job
         runThisJobSubClassSpecific();
         
@@ -1013,13 +1028,178 @@ public class Job implements Runnable
     /**
      * Returns the exposed output data identified by the given reference name.
      * @param refName the reference name identifying the data to fetch.
-     * @return the exposed output data structure or null if no such data is
-     * available.
+     * @return the exposed output data structure or <code>null</code> 
+     * if no such data is available.
      */
     
     public NamedData getOutput(String refName)
     {
     	return exposedOutput.getNamedData(refName);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Extracts the value of any data stored in the exposed output collectors
+     * reachable from the job tree relationships.
+     * @param pathToJob this is pointer to a job relative to "this" job. 
+     * The expected syntax is <code>#S.L.M.N....Z</code> where S is 0 or a 
+     * negative integer, while L, ..., Z are strictly positive integers. 
+     * The first integer, i.e., <code>S</code>,
+     * indicates how many steps to move back in the chain of container jobs. 
+     * The other integers indicate which step (0-based) to take among the steps 
+     * of the job identified by the previous index. Negative values are, therefore,
+     * permitted only for the first index and indicate how many levels relative 
+     * to the present jobs to move to identify the outermost job from which
+     * we start looking at the contained steps. A value of 0 indicated that 
+     * 'this' very job is the one where to start looking into the steps.
+     * @param pathIntoExposedData
+     * @return the content of the requested data or <code>null</code> if the
+     * given path cannot be satisfied by any content in the exposed data 
+     * collection.
+     */
+    public Object getExposedData(String pathToJob, String[] pathIntoExposedData)
+    {
+    	// Take away the pound sign
+    	if (pathToJob.startsWith("#"))
+    		pathToJob = pathToJob.substring(1);
+    	String[] parts = pathToJob.split("\\.");
+    	int[] pathAsInts = new int[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+        	pathAsInts[i] = Integer.parseInt(parts[i].stripLeading().stripTrailing());
+        }
+        return getExposedData(pathAsInts, pathIntoExposedData);
+    }
+    
+//------------------------------------------------------------------------------
+    /**
+     * Extracts the value of any data stored in the exposed output collectors
+     * reachable from the job tree relationships.
+     * @param pathToJob list of pointers to jobs. The first one indicates how
+     * many steps to take up along the chain of containing jobs. 
+     * Zero indicated that
+     * we look at a job that is contained (at any level) in this very job. 
+     * Positive values take no effect as they are interpreted as a 0.
+     * @param pathIntoExposedData
+     * @return the content of the requested data or <code>null</code> if the
+     * given path cannot be satisfied by any content in the exposed data 
+     * collection.
+     */
+    public Object getExposedData(int[] pathToJob, String[] pathIntoExposedData)
+    {
+    	if (pathToJob.length<1)
+    		return null;
+    	
+        if (pathToJob[0]<0)
+        {
+        	int[] newPath = new int[pathToJob.length];
+        	newPath[0] = pathToJob[0]+1;
+        	for (int i = 1; i < newPath.length; i++) {
+        		newPath[i] = pathToJob[i];
+            }
+        	if (!this.hasContainer())
+        	{
+        		return null;
+        	}
+        	return this.containerJob.getExposedData(newPath, pathIntoExposedData);
+        }
+        
+        // So, the job we look after is contained in this very job
+        if (pathToJob.length>1)
+        {
+        	// We move into the first level of steps
+        	// Note the indexes in pathToJob: 
+        	// * 0 is this job, and we know it is not negative (0 or positive 
+        	//   is the same) and we now get rid of this index in newPath.
+        	// * 1 is index where we find the index of the step to look at, and
+        	//   we get rid (change it to 0) of it because we just take the step
+        	//   object. By setting to 0 we tell the step that he is the right 
+        	//   job and not any of his containers.
+        	// * anything above 1 is further nested and is kept in the newPath
+        	int[] newPath = new int[pathToJob.length-1];
+        	
+        	// this indicated to the step that the target data is contained in it.
+        	newPath[0] = 0;
+        	
+        	// deeper level are dealt with in future recursions 
+        	for (int i = 2; i < newPath.length; i++) {
+        		newPath[i-1] = pathToJob[i];
+            }
+        	
+        	if (pathToJob[1]+1 > getNumberOfSteps())
+        		return null;
+        	
+        	Job step = getStep(pathToJob[1]);
+        	
+        	return step.getExposedData(newPath, pathIntoExposedData);
+        } else {
+        	// The target job this job
+        	return getExposedData(pathIntoExposedData);
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Extracts the value of any data stored in the exposed output collector.
+     * @param pathIntoExposedData the array of names/integers that allow navigating 
+     * the data structure. Names (or integers reported as strings)
+     * are expected for data containers that are
+     * {@link NamedData}, {@link NamedDataCollector}, or {@link Map}s with 
+     * strings as key. Strings representations of integers are needed for 
+     * {@link List}s and {@link Map}s with integers as keys.
+     * @return the content of the requested data or <code>null</code> if the
+     * given path cannot be satisfied by any content in the exposed data 
+     * collection.
+     */
+    public Object getExposedData(String[] pathIntoExposedData)
+    {
+    	Set<String> availableKeys = getOutputRefSet();
+    	String contentName = pathIntoExposedData[0].stripLeading().stripTrailing();
+    	if (!availableKeys.contains(contentName))
+    		return null;
+    	
+    	NamedData data = getOutput(contentName);
+    	Object value = data.getValue();
+    	
+    	for (int i=1; i<pathIntoExposedData.length; i++)
+    	{
+        	String nestedContentID = pathIntoExposedData[i].stripLeading().stripTrailing();
+        	Object nestedValue = null;
+        	if (value instanceof NamedData)
+        	{
+        		NamedData container = (NamedData) value;
+        		if (!container.getReference().equals(nestedContentID))
+        			return null;
+        		nestedValue = container.getValue();
+        	} else if (value instanceof NamedDataCollector)
+	    	{
+	    		NamedDataCollector container = (NamedDataCollector) value;
+	    		if (!container.contains(nestedContentID))
+	    			return null;
+	    		nestedValue = container.getNamedData(nestedContentID).getValue();
+	    	} else if (value instanceof Map) {
+	    		Map<?,?> map = (Map<?, ?>) value;
+	    		if (map.containsKey(nestedContentID))
+	    		{
+	    			nestedValue = map.get(nestedContentID);
+	    		} else if (NumberUtils.isParsableToInt(nestedContentID)
+	    				&& map.containsKey(Integer.parseInt(nestedContentID))) {
+	    			nestedValue = map.get(Integer.parseInt(nestedContentID));
+	    		} else {
+	    			nestedValue = null;
+	    		}
+	    	} else if (value instanceof List 
+	    			&& NumberUtils.isParsableToInt(nestedContentID)) {
+	    		List<?> list = (List<?>) value;
+	    		nestedValue = list.get(Integer.parseInt(nestedContentID));
+	    	} else {
+	    		// NB: there might be other types of containers to consider!
+	    	}
+        	value = nestedValue;
+    	}
+    	
+    	return value;
     }
 
 //------------------------------------------------------------------------------
@@ -1206,25 +1386,88 @@ public class Job implements Runnable
     
 //------------------------------------------------------------------------------
     
-   @Override
-   public boolean equals(Object o) 
-   {
-	   if (o == this)
-		   return true;
+    protected void fetchValuesFromJobsTree()
+    {    	Gson jsonWriter = ACCJson.getWriter();
+    	Gson jsonReader = ACCJson.getReader();
+    	for (String paramKey : params.getAllNamedData().keySet())
+    	{
+    		NamedData data = params.getAllNamedData().get(paramKey);
+    		String jsonStr = jsonWriter.toJson(data);
+    		List<Integer> indexes = new ArrayList<Integer>();
+    		boolean edited = false;
+    		int fromIdx=0;
+    		while (fromIdx>-1)
+    		{
+    			fromIdx = jsonStr.toUpperCase().indexOf(GETACCJOBSDATA, fromIdx);
+    			if (fromIdx>-1)
+    			{
+        			indexes.add(fromIdx);
+    				edited = true;
+    				fromIdx++;
+    			}
+    		}
+    		StringBuilder newJson = new StringBuilder();
+    		int maxEnd = jsonStr.length();
+    		int startCopying = 0;
+    		for (int i=0; i<indexes.size(); i++)
+    		{
+    			int beginMatch = indexes.get(i);
+    			int end = maxEnd;
+    			if (indexes.size()>i+1)
+    				end = indexes.get(i+1);
+    			String argStr = StringUtils.getParenthesesContent(
+    					jsonStr.substring(beginMatch, end));
+    			String[] args = argStr.split(",");
+    			String pathToJob = "#0";
+    			String[] pathIntoExposedData = args;
+    			if (args[0].stripLeading().startsWith("#"))
+    			{
+    				pathToJob = args[0].stripLeading().stripTrailing();
+    				pathIntoExposedData = Arrays.copyOfRange(args, 1, args.length);
+    			}
+    			
+    			Object value = getExposedData(pathToJob, pathIntoExposedData);
+    			
+    			String init = jsonStr.substring(startCopying, beginMatch);
+    			int beginningLeftOver = beginMatch + GETACCJOBSDATA.length() 
+    				+ 2 + argStr.length();
+    			String leftover = jsonStr.substring(beginningLeftOver, end);
+    			newJson.append(init);
+    			newJson.append(value);
+    			newJson.append(leftover);
+    			
+    			startCopying = end;
+    		}
+    		
+    		if (edited)
+    		{
+    			params.getAllNamedData().put(paramKey, jsonReader.fromJson(
+    					newJson.toString(), NamedData.class));
+    		}
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+	    if (o == this)
+		    return true;
        
-       if (o.getClass() != getClass())
-           return false;
+        if (o.getClass() != getClass())
+            return false;
 	   
-	   Job other = (Job) o;
+	    Job other = (Job) o;
 
-	   // NB: flags like 'isInterrupted', 'hasException', 'completed',
-	   // and 'redirectOutErr' and also 'exposedOutput'
-	   // change during the execution of the job so should not be used to 
-	   // compare jobs otherwise the associated change of hachcode breaks
-	   // consistency required to use Job instances as keys in Hash-based maps
-	   // and similar.
+	    // NB: flags like 'isInterrupted', 'hasException', 'completed',
+	    // and 'redirectOutErr' and also 'exposedOutput'
+	    // change during the execution of the job so should not be used to 
+	    // compare jobs otherwise the associated change of hashcode breaks
+	    // consistency required to use Job instances as keys in Hash-based maps
+	    // and similar.
 	   
-	   return this.jobId == other.jobId 
+	    return this.jobId == other.jobId 
 			   && this.appID == other.appID
 			   && this.nThreads == other.nThreads
 			   && Objects.equals(this.customUserDir, other.customUserDir)
@@ -1232,7 +1475,7 @@ public class Job implements Runnable
 			   && Objects.equals(this.stderr, other.stderr)
 			   && Objects.equals(this.params, other.params)
 			   && Objects.equals(this.steps, other.steps);
-   }
+    }
    
 //-----------------------------------------------------------------------------
 
