@@ -46,6 +46,7 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
@@ -96,6 +97,12 @@ public class MolecularMeter extends AtomContainerInputProcessor
      * File to the file where to write the descriptors computed
      */
     protected File outTxtFile = null;
+    
+    /**
+     * Flag controlling whether we save the descriptor values into atom 
+     * container properties
+     */
+    private boolean saveDescriptorsAsProperties = false;
     
     /**
      * String defining the task of measuring geometric descriptors
@@ -194,6 +201,14 @@ public class MolecularMeter extends AtomContainerInputProcessor
             }
         }
         
+        if (params.contains("SAVEASPROPERTIES"))
+        {
+        	String value = 
+        			params.getParameter("SAVEASPROPERTIES").getValueAsString();
+        	
+        	saveDescriptorsAsProperties = StringUtils.parseBoolean(value);
+        }
+        
         if (params.contains(WorkerConstants.PAROUTDATAFILE))
         {
 	        this.outTxtFile = new File(params.getParameter(
@@ -275,6 +290,15 @@ public class MolecularMeter extends AtomContainerInputProcessor
     		Map<String,List<Double>> descriptors = measureAllQuantities(iac,
     				smarts, sortedKeys, atmIds, onlyBonded, i);
     		
+    		if (saveDescriptorsAsProperties)
+    		{
+    			for (Map.Entry<String,List<Double>> e : descriptors.entrySet())
+	    		{
+            		iac.setProperty(e.getKey(), StringUtils.mergeListToString(
+            				e.getValue(), " "));
+	    		}
+    		}
+    		
     		if (outTxtFile!=null)
             {
             	outFileAlreadyUsed = true;
@@ -298,8 +322,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
 	  		        		new ListOfDoubles(descriptors.get(descRef))));
 	    		}
         	}
-            
-    		tryWritingToOutfile(iac);
     	} else {
     		dealWithTaskMismatch();
         }

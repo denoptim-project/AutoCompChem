@@ -307,5 +307,30 @@ public class StringUtilsTest
     }
     
 //------------------------------------------------------------------------------
+    
+    @Test
+    public void testParseBoolean() throws Exception
+    {
+    	for (String s : StringUtils.TRUE_VALUES)
+    	{
+    		assertTrue(StringUtils.parseBoolean(s));
+    		assertTrue(StringUtils.parseBoolean(s.toLowerCase()));
+    	}
+    	for (String s : StringUtils.FALSE_VALUES)
+    	{
+    		assertFalse(StringUtils.parseBoolean(s));
+    		assertFalse(StringUtils.parseBoolean(s.toLowerCase()));
+    	}
+    	
+    	boolean hasTrhown = false;
+    	try {
+    		StringUtils.parseBoolean("string");
+    	} catch (IllegalArgumentException iae) {
+    		hasTrhown = true;
+    	}
+    	assertTrue(hasTrhown);
+    }
+    			
+//------------------------------------------------------------------------------
 
 }

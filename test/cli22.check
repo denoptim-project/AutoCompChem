@@ -7,14 +7,26 @@ function not_passed() {
 
 if [ ! -f "cli22.log" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "\-50.1152612" "cli22.log")
-if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
-
-n=0; n=$(grep -c -i "is '\-50.1152612" "cli22.log")
+n=0; n=$(grep -c -i "\-50\.1152612" "cli22.log")
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "_\[27\]_ steps" "cli22.log")
+if [ ! -f "cli22_wProps.sdf" ] ; then not_passed $LINENO ; fi
+
+# NB: the space is not a valid character for property key, so it gets replaced by '_'
+n=0; n=$(grep -c -i "^> <first_property>" "cli22_wProps.sdf")
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -A 1 "^> <first_property>" "cli22_wProps.sdf" | grep -q "^more than one word$" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "^> <2ndPropery>" "cli22_wProps.sdf")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -A 1 "^> <2ndPropery>" "cli22_wProps.sdf" | grep -q "^\-50\.115261285311" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "^> <3rdProperty>" "cli22_wProps.sdf")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -A 1 "^> <3rdProperty>" "cli22_wProps.sdf" | grep -q "^_\[27\]_steps" ; then not_passed $LINENO ; fi
 
 if grep -q 'Termination status: 0' "cli22.log" ; then echo Passed ; exit 0 ; fi
 not_passed $LINENO

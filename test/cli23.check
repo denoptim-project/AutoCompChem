@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli23.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "2\.95044530367875" "cli23.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli23-out.sdf" ] ; then not_passed $LINENO ; fi
+
+# NB: one is the property fro msaveAsProperty, two are form getACCJobsResults
+n=0; n=$(grep -c -i "2\.95044530367875" "cli23-out.sdf")
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+if ! grep -q "3\.0965314417.* 2\.955191734896" "cli23-out.sdf" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "^1234" "cli23-out.sdf")
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli23.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

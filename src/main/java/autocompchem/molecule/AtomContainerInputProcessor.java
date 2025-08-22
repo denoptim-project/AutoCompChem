@@ -35,6 +35,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.datacollections.NamedData;
+import autocompchem.datacollections.NamedDataCollector;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.IOtools.IACOutFormat;
@@ -89,9 +91,12 @@ public class AtomContainerInputProcessor extends Worker
     protected List<IAtomContainer> inMols;
     
     /**
-     * List of CDK properties to set on the incoming atom containers.
+     * List of properties to set on the processed atom containers.
+     * Since these properties may change during the execution of this worker's 
+     * job, we set them twice: first upon reading in the input atom containers, 
+     * and then when saving the results.
      */
-    protected Map<String,String> iacPropertiesToAdd;
+    protected Map<String,String> iacPropertiesToAdd = new HashMap<String,String>();
     
     /**
      * The list of resulting data
@@ -268,7 +273,7 @@ public class AtomContainerInputProcessor extends Worker
         // We set properties here upon initialization, but also when writing 
         // the output to allow for properties computed within the job of this 
         // worker to be added after the worker has done its job.
-        if (inMols!=null && iacPropertiesToAdd!=null)
+        if (inMols!=null)
         {
         	for (IAtomContainer iac : inMols)
         	{
@@ -305,18 +310,17 @@ public class AtomContainerInputProcessor extends Worker
 
     protected void parsePropertiesToSet(List<String> lines)
     {
-    	iacPropertiesToAdd = new HashMap<String,String>();
         for (String line : lines)
         {
         	String[] nameValueParts = line.split(":", 2);
-    		String propertyName = line;
+    		String propertyName = line.stripLeading().stripTrailing();
     		String propertyValue = "";
         	if (nameValueParts.length>0)
         	{
-        		propertyName = nameValueParts[0];
+        		propertyName = nameValueParts[0].stripLeading().stripTrailing();
         		if (nameValueParts.length>1)
             	{
-        			propertyValue = nameValueParts[1];
+        			propertyValue = nameValueParts[1].stripLeading().stripTrailing();
             	}
         	}
         	iacPropertiesToAdd.put(propertyName, propertyValue);
@@ -419,6 +423,9 @@ public class AtomContainerInputProcessor extends Worker
 	      						iac));
 	            	}
 	            	IAtomContainer result = processOneAtomContainer(iac, i);
+	            	
+	            	// Finalize output
+	            	setPropertiesToOutgoingIAC(result);
 	                if (exposedOutputCollector != null)
 	                {
 	    	        	exposeAtomContainer(result);
@@ -436,6 +443,7 @@ public class AtomContainerInputProcessor extends Worker
 			{
 				AtomContainerSet results = new AtomContainerSet();
 				List<IAtomContainer> iacs = processAllAtomContainer(inMols);
+				iacs.forEach(iac -> setPropertiesToOutgoingIAC(iac));
 				iacs.forEach(iac -> results.addAtomContainer(iac));
 	            if (exposedOutputCollector != null)
 	            {
@@ -490,6 +498,35 @@ public class AtomContainerInputProcessor extends Worker
         {
 			IOtools.writeAtomContainerSetToFile(outFile, iacs, outFormat, true);
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    private void setPropertiesToOutgoingIAC(IAtomContainer iac)
+    {
+    	// We may need to update the values, if any of the properties requires
+    	// values from the job of this worker
+    	if (myJob==null)
+    	{
+    		return;
+    	}
+    	
+    	// We work only on the parameters that need updating
+    	NamedDataCollector dataToUpdate = new NamedDataCollector();
+    	for (Entry<String, String> e : iacPropertiesToAdd.entrySet())
+		{
+    		if (e.getValue().toUpperCase().contains(Job.GETACCJOBSRESULTS))
+    		{
+    			dataToUpdate.putNamedData(new NamedData(e.getKey(),e.getValue()));
+    		}
+		}
+
+    	myJob.updateValuesFromJobsTree(dataToUpdate, Job.GETACCJOBSRESULTS);
+
+		for (Entry<String, NamedData> e : dataToUpdate.getAllNamedData().entrySet())
+		{
+			iac.setProperty(e.getKey(), e.getValue().getValueAsString());
+		}
     }
     
 //------------------------------------------------------------------------------

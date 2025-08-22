@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 /*   
@@ -34,6 +35,12 @@ import java.util.regex.Pattern;
 
 public class StringUtils
 {
+	
+	protected static final Set<String> TRUE_VALUES = Set.of(
+			"TRUE", "YES", "Y", "ON", "ENABLED", "ENABLE");
+	    
+    protected static final Set<String> FALSE_VALUES = Set.of(
+    		"FALSE", "NO", "N", "OFF", "DISABLED", "DISABLE");
 
 //------------------------------------------------------------------------------
 
@@ -377,6 +384,32 @@ public class StringUtils
         } else {
         	return input.substring(start + 1, end);
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Parse a string into a boolean. Case insensitive, and understands Yes/True/Y
+     * @param value
+     * @return the boolean
+     */
+    public static Boolean parseBoolean(String value) 
+    {
+        if (value == null) {
+            return null;
+        }
+        
+        String normalized = value.trim().toUpperCase();
+        
+        if (TRUE_VALUES.contains(normalized)) {
+            return true;
+        }
+        
+        if (FALSE_VALUES.contains(normalized)) {
+            return false;
+        }
+        
+        throw new IllegalArgumentException("Cannot parse boolean from: " + value);
     }
     
 //------------------------------------------------------------------------------

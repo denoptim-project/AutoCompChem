@@ -294,26 +294,26 @@ public class JobTest
     			    put(1, 13); put(-2, 23); put(0, -1);
     			}}));
     	
-    	Object data = job.getExposedData(new String[] {"Lev0Key1"});
+    	Object data = Job.getExposedData(job, new String[] {"Lev0Key1"});
     	assertTrue(data instanceof Double);
     	assertTrue(NumberUtils.closeEnough(1.234, (Double) data));
     	
-    	data = job.getExposedData(new String[]{"Lev0Key2"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key2"});
     	assertTrue(data instanceof ArrayList);
     	assertEquals(3, ((List<?>) data).size());
-    	data = job.getExposedData(new String[]{"Lev0Key2", "2"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key2", "2"});
     	assertTrue(data instanceof Integer);
     	assertEquals(31, (Integer) data);
 
-    	data = job.getExposedData(new String[]{"Lev0Key3"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key3"});
     	assertTrue(data instanceof Map);
-    	data = job.getExposedData(new String[]{"Lev0Key3", "a"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key3", "a"});
     	assertTrue(data instanceof Integer);
     	assertEquals(12, (Integer) data);
 
-    	data = job.getExposedData(new String[]{"Lev0Key4"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key4"});
     	assertTrue(data instanceof Map);
-    	data = job.getExposedData(new String[]{"Lev0Key4", "0"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key4", "0"});
     	assertTrue(data instanceof Integer);
     	assertEquals(-1, (Integer) data);
     	
@@ -335,25 +335,25 @@ public class JobTest
     			    put(1, 131); put(-2, 231); put(0, -11);
     			}})));
     	
-    	data = job.getExposedData(new String[] {"Lev0Key5", "Lev1Key5"});
+    	data = Job.getExposedData(job, new String[] {"Lev0Key5", "Lev1Key5"});
     	assertTrue(data instanceof Double);
     	assertTrue(NumberUtils.closeEnough(12.34, (Double) data));
     	
-    	data = job.getExposedData(new String[]{"Lev0Key6", "Lev1Key6"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key6", "Lev1Key6"});
     	assertTrue(data instanceof ArrayList);
-    	data = job.getExposedData(new String[]{"Lev0Key6", "Lev1Key6", "2"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key6", "Lev1Key6", "2"});
     	assertTrue(data instanceof Integer);
     	assertEquals(311, (Integer) data);
 
-    	data = job.getExposedData(new String[]{"Lev0Key7", "Lev1Key7"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key7", "Lev1Key7"});
     	assertTrue(data instanceof Map);
-    	data = job.getExposedData(new String[]{"Lev0Key7", "Lev1Key7", "a"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key7", "Lev1Key7", "a"});
     	assertTrue(data instanceof Integer);
     	assertEquals(121, (Integer) data);
 
-    	data = job.getExposedData(new String[]{"Lev0Key8", "Lev1Key8"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key8", "Lev1Key8"});
     	assertTrue(data instanceof Map);
-    	data = job.getExposedData(new String[]{"Lev0Key8", "Lev1Key8", "0"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key8", "Lev1Key8", "0"});
     	assertTrue(data instanceof Integer);
     	assertEquals(-11, (Integer) data);
     	
@@ -383,37 +383,37 @@ public class JobTest
     			    put(1, 133); put(2, 233); put(0, -13);
     			}})))));
     	
-    	data = job.getExposedData(new String[] {"Lev0Key13", "Lev1Key13", "Lev2Key13", "Lev3Key13"});
+    	data = Job.getExposedData(job, new String[] {"Lev0Key13", "Lev1Key13", "Lev2Key13", "Lev3Key13"});
     	assertTrue(data instanceof Double);
     	assertTrue(NumberUtils.closeEnough(123.4, (Double) data));
     	
-    	data = job.getExposedData(new String[]{"Lev0Key14", "Lev1Key14", "Lev2Key14", "Lev3Key14"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key14", "Lev1Key14", "Lev2Key14", "Lev3Key14"});
     	assertTrue(data instanceof ArrayList);
-    	data = job.getExposedData(new String[]{"Lev0Key14", "Lev1Key14", "Lev2Key14", "Lev3Key14", "2"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key14", "Lev1Key14", "Lev2Key14", "Lev3Key14", "2"});
     	assertTrue(data instanceof Integer);
     	assertEquals(313, (Integer) data);
 
-    	data = job.getExposedData(new String[]{"Lev0Key15", "Lev1Key15", "Lev2Key15", "Lev3Key15"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key15", "Lev1Key15", "Lev2Key15", "Lev3Key15"});
     	assertTrue(data instanceof Map);
-    	data = job.getExposedData(new String[]{"Lev0Key15", "Lev1Key15", "Lev2Key15", "Lev3Key15", "b"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key15", "Lev1Key15", "Lev2Key15", "Lev3Key15", "b"});
     	assertTrue(data instanceof Integer);
     	assertEquals(223, (Integer) data);
 
-    	data = job.getExposedData(new String[]{"Lev0Key16", "Lev1Key16", "Lev2Key16", "Lev3Key16"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key16", "Lev1Key16", "Lev2Key16", "Lev3Key16"});
     	assertTrue(data instanceof Map);
-    	data = job.getExposedData(new String[]{"Lev0Key16", "Lev1Key16", "Lev2Key16", "Lev3Key16", "2"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key16", "Lev1Key16", "Lev2Key16", "Lev3Key16", "2"});
     	assertTrue(data instanceof Integer);
     	assertEquals(233, (Integer) data);
     	
     	
     	// Test results in case of no match
-    	data = job.getExposedData(new String[]{"Lev0KeyNotThere"});
+    	data = Job.getExposedData(job, new String[]{"Lev0KeyNotThere"});
     	assertNull(data);
     	
     	// Test results in case of not enough levels
-    	data = job.getExposedData(new String[]{"Lev0Key16", "Lev0KeyNotThere"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key16", "Lev0KeyNotThere"});
     	assertNull(data);
-    	data = job.getExposedData(new String[]{"Lev0Key16", "Lev1Key16", "Lev0KeyNotThere"});
+    	data = Job.getExposedData(job, new String[]{"Lev0Key16", "Lev1Key16", "Lev0KeyNotThere"});
     	assertNull(data);
     }
     
@@ -448,22 +448,22 @@ public class JobTest
     	containerJob.addStep(job);
     	
     	// Test exposed data from "this" very job
-    	Object result = job.getExposedData("#0", new String[]{"DataName"});
+    	Object result = Job.getExposedData(job, "#0", new String[]{"DataName"});
     	assertTrue(result instanceof Double);
     	assertTrue(NumberUtils.closeEnough(dataInFocusJob, (Double)result));
     	
     	// Test exposed data from parent job
-    	result = job.getExposedData("#-1", new String[]{"DataName"});
+    	result = Job.getExposedData(job, "#-1", new String[]{"DataName"});
     	assertTrue(result instanceof String);
     	assertEquals(dataInContainerJob, (String)result);
 
     	// Test exposed data from sibling job
-    	result = job.getExposedData("#-1.0", new String[]{"DataName"});
+    	result = Job.getExposedData(job, "#-1.0", new String[]{"DataName"});
     	assertTrue(result instanceof Integer);
     	assertEquals(dataInSiblinJob, (Integer)result);
 
     	// Test de-tour leading to original job
-    	result = job.getExposedData("#-1.1", new String[]{"DataName"});
+    	result = Job.getExposedData(job, "#-1.1", new String[]{"DataName"});
     	assertTrue(result instanceof Double);
     	assertTrue(NumberUtils.closeEnough(dataInFocusJob, (Double)result));
     }
@@ -497,7 +497,7 @@ public class JobTest
     	containerob.addStep(siblinJob);
     	containerob.addStep(job);
    
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
 
     	// Test no change is none is meant
     	assertEquals(3, job.getParameters().size());
@@ -508,7 +508,7 @@ public class JobTest
     	
     	// Test fetching from within the job (which useless spaces)
     	job.setParameter("KEY4", "value is "+Job.GETACCJOBSDATA+"( #0 , DataName )_other");
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	String modifiedValue = job.getParameter("Key4").getValueAsString();
     	assertTrue(modifiedValue.startsWith("value is 4.56"));
     	assertTrue(modifiedValue.endsWith("_other"));
@@ -518,20 +518,20 @@ public class JobTest
     	// Test fetching from container job (leading/trailing spaces)
     	job.setParameter("KEY5", Job.GETACCJOBSDATA+"( # -1 ,DataName ,"
     			+ " NestedData, 2 , DataItem1 )_leftover");
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	assertEquals("333_leftover", job.getParameter("Key5").getValueAsString());
     	
     	// Test fetching from sibling job and multiple replacements
     	job.setParameter("KEY6", Job.GETACCJOBSDATA+"(#-1.0,Foo,Bar) and " 
     	+ Job.GETACCJOBSDATA + "(#0,Foo,Bar):(foo)");
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	assertEquals("123 and 456:(foo)", job.getParameter("Key6").getValueAsString());
     		
     	job.setParameter("KEY7", "Some text:" 
     		+ Job.GETACCJOBSDATA + "(#-1,DataName,NestedData,0,DataItem1) and " 
     		+ Job.GETACCJOBSDATA + "(#-1.0,Foo,Bar):(foo) "
     		+ Job.GETACCJOBSDATA + "(#0,DoubleAsString)");
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	assertEquals("Some text:111 and 123:(foo) 8.901", 
     			job.getParameter("Key7").getValueAsString());
     	
@@ -543,13 +543,12 @@ public class JobTest
     	
     	// Test behavior with inconsistent input
     	job.setParameter("KEY8", Job.GETACCJOBSDATA + "(#0.1.1,DataName)");
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	assertEquals("null", job.getParameter("Key8").getValueAsString());
     	
     	job.setParameter("KEY8", Job.GETACCJOBSDATA + "(#0,not matched)");
-    	job.fetchValuesFromJobsTree();
+    	Job.fetchValuesFromJobsTree(job, job.params, Job.GETACCJOBSDATA);
     	assertEquals("null", job.getParameter("Key8").getValueAsString());
-    	
     }
     
 //------------------------------------------------------------------------------

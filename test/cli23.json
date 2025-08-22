@@ -1,0 +1,37 @@
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "ACC"
+        },
+        {
+          "reference": "TASK",
+          "value": "MeasureGeomDescriptors"
+        },
+        {
+          "reference": "SMARTS",
+          "value": "dist [#7] [Ru]"
+        },
+        {
+          "reference": "VERBOSITY",
+          "value": "7"
+        },
+        {
+          "reference": "INFILE",
+          "value": "../cli23-mol.sdf"
+        },
+        {
+          "reference": "outFile",
+          "value": "cli23-out.sdf"
+        },
+        {
+          "reference": "saveAsProperties",
+          "value": "enable"
+        },
+        {
+          "reference": "setProperties",
+          "value": "distance: getACCJobsResults(#0,mol-0_dist-0)\nsomething: 1234"
+        }
+      ]
+    }
