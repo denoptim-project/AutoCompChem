@@ -42,16 +42,6 @@ import autocompchem.run.Terminator;
 
 public class FileUtils
 {
-
-//------------------------------------------------------------------------------
-
-    /**
-     * Construct an empty FilesManager
-     */
-
-    public FileUtils()
-    {
-    }
     
 //------------------------------------------------------------------------------
     
@@ -298,6 +288,32 @@ public class FileUtils
 //------------------------------------------------------------------------------
     
     /**
+     * Get pathname without the last extension, i.e., the last string adter and
+     * including the last index of the dot character.
+     * @param file
+     */
+    
+    public static String getFilePathnameWithoutExtension(File file)
+    {
+    	String fname = file.getName();
+    	String newPathName = fname;
+    	
+    	if (fname.contains("."))
+    	{
+    		newPathName = fname.substring(0,fname.lastIndexOf("."));
+    	}
+    	
+    	String parent = file.getParent();
+    	if (parent!=null)
+    	{
+    		newPathName = parent + File.separator + newPathName;
+    	}
+    	return newPathName;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Extracts the extension from the file name
      * @param f the file.
      * @return the extension starting with a dot or <code>null</code> if the 
@@ -314,6 +330,23 @@ public class FileUtils
     	}
     	
     	return ext;
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Creates an id-specific pathname from a given pathname and an id. Adds the
+     * identifier to the last location in the
+     * original pathname before the last extension (i.e., last ".").
+     * @param f original pathname to be modified.
+     * @param id the identifier making the original pathname unique. NB: this
+     * method does not check for uniqueness.
+     * @return the pathname resulting from appending the identifier to the 
+     * original pathname before the extension (i.e., last ".").
+     */
+    public static String getIdSpecPathName(String pathName, int id)
+    {
+    	return getIdSpecPathName(new File(pathName), id+"");
     }
     
 //------------------------------------------------------------------------------
@@ -347,21 +380,13 @@ public class FileUtils
      */
     public static String getIdSpecPathName(File f, String id)
     {
-    	String ext = "";
-    	String fname = f.getName();
-    	String newPathName = fname;
-    	
-    	if (fname.contains("."))
+    	String extension = getFileExtension(f);
+    	String newPathName = getFilePathnameWithoutExtension(f) + "_" + id;
+    	if (extension!=null)
     	{
-    		ext = fname.substring(fname.lastIndexOf("."));
-    		newPathName = fname.substring(0,fname.lastIndexOf("."));
+    		newPathName = newPathName + extension;
     	}
-    	
-    	String parent = f.getParent();
-    	if (parent!=null)
-    		newPathName = parent + File.separator + newPathName;
-    	
-    	return newPathName + "_" + id + ext;
+    	return newPathName;
     }
 
 //------------------------------------------------------------------------------

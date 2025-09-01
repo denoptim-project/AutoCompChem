@@ -19,6 +19,7 @@ package autocompchem.files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -330,6 +331,37 @@ sub2_abc/subsub2_abc
         a = "me";
         assertEquals(".",FileUtils.getPathToPatent(a),
         		"Only file name without path");
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetFilePathnameWothoutExtension() throws Exception
+    {
+    	assertEquals("/tmp/foo", FileUtils.getFilePathnameWithoutExtension(
+    			new File("/tmp/foo.bar")));
+    	assertEquals("/tmp/foo_bar", FileUtils.getFilePathnameWithoutExtension(
+    			new File("/tmp/foo_bar")));
+    	assertEquals("foo", FileUtils.getFilePathnameWithoutExtension(
+    			new File("foo.bar")));
+    	assertEquals("", FileUtils.getFilePathnameWithoutExtension(
+    			new File(".bar")));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetFileExtension() throws Exception
+    {
+    	assertEquals(".bar", FileUtils.getFileExtension(
+    			new File("/tmp/foo.bar")));
+    	assertEquals(".bar", FileUtils.getFileExtension(
+    			new File("/foo.bar")));
+    	assertEquals(".bar", FileUtils.getFileExtension(
+    			new File("foo.bar")));
+    	assertEquals(".bar", FileUtils.getFileExtension(
+    			new File(".bar")));
+    	assertNull(FileUtils.getFileExtension(new File("/tmp/foo_bar")));
     }
     
 //------------------------------------------------------------------------------
