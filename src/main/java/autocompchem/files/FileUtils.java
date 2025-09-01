@@ -490,5 +490,55 @@ public class FileUtils
 	}
 
 //------------------------------------------------------------------------------
+	
+	/**
+	 * Copies files or folders.
+	 * @param sourcePath
+	 * @param destPath
+	 * @throws IOException
+	 */
+	public static void copy(String sourcePath, String destPath) throws IOException 
+	{
+		copy(new File(sourcePath), new File(destPath));
+	}
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Copies files or folders.
+	 * @param sourcePath
+	 * @param destPath
+	 * @throws IOException
+	 */
+	public static void copy(File source, File dest) throws IOException 
+	{ 
+	    if (source.isDirectory())
+	    {
+	    	if (!dest.exists()) 
+	    	{
+	    		dest.mkdirs();
+	    	}
+	        File[] files = source.listFiles();
+	        if (files != null) 
+	        {
+	            for (File file : files) 
+	            {
+	                if (file.isFile()) 
+	                {
+	                	com.google.common.io.Files.copy(file, new File(dest, 
+	                			file.getName()));
+	                } else if (file.isDirectory()) {
+	                    // Recursive copy for subdirectories
+	                    copy(file.getAbsolutePath(), new File(dest, 
+	                    		file.getName()).getAbsolutePath());
+	                }
+	            }
+	        }
+	    } else {
+	    	com.google.common.io.Files.copy(source, dest);
+	    }
+	}
+	
+//------------------------------------------------------------------------------
 
 }

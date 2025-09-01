@@ -353,4 +353,51 @@ sub2_abc/subsub2_abc
     
 //------------------------------------------------------------------------------
     
+    @Test
+    public void testCopy() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	File d1 = new File(this.tempDir, "d1");
+    	d1.mkdir();
+    	IOtools.writeTXTAppend(new File(d1,"f1"), "file_1", false);
+    	File d2 = new File(d1, "d2");
+    	d2.mkdir();
+    	IOtools.writeTXTAppend(new File(d2,"f2a"), "file_2a", false);
+    	IOtools.writeTXTAppend(new File(d2,"f2b"), "file_2b", false);
+    	File d3 = new File(d2, "d3");
+    	d3.mkdir();
+    	IOtools.writeTXTAppend(new File(d3,"f3a"), "file_3a", false);
+    	IOtools.writeTXTAppend(new File(d3,"f3b"), "file_3b", false);
+    	IOtools.writeTXTAppend(new File(d3,"f3c"), "file_3c", false);
+    	File d4 = new File(d2, "d4");
+    	d4.mkdir();
+    	IOtools.writeTXTAppend(new File(d4,"f4a"), "file_4a", false);
+    	
+    	FileUtils.copy(new File(this.tempDir, "d1"), 
+    			new File(this.tempDir, "d1_cp"));
+    	
+    	assertTrue((new File(this.tempDir, "d1_cp/d2")).isDirectory());
+    	assertTrue((new File(this.tempDir, "d1_cp/d2/d3")).isDirectory());
+    	assertTrue((new File(this.tempDir, "d1_cp/d2/d4")).isDirectory());
+    	assertTrue((new File(this.tempDir, "d1_cp/f1")).isFile());
+    	assertTrue((new File(this.tempDir, "d1_cp/d2/f2b")).isFile());
+    	assertTrue((new File(this.tempDir, "d1_cp/d2/d3/f3c")).isFile());
+    	assertTrue((new File(this.tempDir, "d1_cp/d2/d4/f4a")).isFile());
+    	
+    	List<String> content = IOtools.readTXT(new File(this.tempDir, 
+    			"d1_cp/d2/d4/f4a"));
+    	assertEquals(1, content.size());
+    	assertEquals("file_4a", content.get(0));
+    	
+    	File source = new File(d1, "f1");
+    	File dest = new File(d1, "f1_cp");
+    	FileUtils.copy(source, dest);
+    	
+    	List<String> contentA = IOtools.readTXT(source);
+    	List<String> contentB = IOtools.readTXT(dest);
+    	assertEquals(contentA, contentB);
+    }
+    
+//------------------------------------------------------------------------------
+    
 }
