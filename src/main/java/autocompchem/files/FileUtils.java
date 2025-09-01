@@ -493,8 +493,9 @@ public class FileUtils
 	
 	/**
 	 * Copies files or folders.
-	 * @param sourcePath
-	 * @param destPath
+	 * @param sourcePath the file/folder to be copied
+	 * @param destPath the destination for the content of the source file/folder. 
+	 * This path is created, if not existing.
 	 * @throws IOException
 	 */
 	public static void copy(String sourcePath, String destPath) throws IOException 
@@ -506,8 +507,9 @@ public class FileUtils
 	
 	/**
 	 * Copies files or folders.
-	 * @param sourcePath
-	 * @param destPath
+	 * @param sourcePath the file/folder to be copied
+	 * @param destPath the destination for the content of the source file/folder. 
+	 * This path is created, if not existing.
 	 * @throws IOException
 	 */
 	public static void copy(File source, File dest) throws IOException 
@@ -537,6 +539,35 @@ public class FileUtils
 	    } else {
 	    	com.google.common.io.Files.copy(source, dest);
 	    }
+	}
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Delete files or folders even if not empty
+	 * @param file the file/folder to remove
+	 * @throws IOException
+	 */
+	public static void delete(String filePath) throws IOException 
+	{
+		delete(new File(filePath));
+	}
+
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Delete files or folders even if not empty
+	 * @param file the file/folder to remove
+	 * @throws IOException 
+	 */
+	public static void delete(File file) throws IOException
+	{ 
+		if (file.isDirectory())
+		{
+			org.apache.commons.io.FileUtils.deleteDirectory(file);
+		} else {
+			file.delete();
+		}
 	}
 	
 //------------------------------------------------------------------------------

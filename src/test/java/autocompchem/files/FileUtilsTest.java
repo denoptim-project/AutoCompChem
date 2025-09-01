@@ -400,4 +400,36 @@ sub2_abc/subsub2_abc
     
 //------------------------------------------------------------------------------
     
+    @Test
+    public void testDelete() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	File d1 = new File(this.tempDir, "d1");
+    	d1.mkdir();
+    	IOtools.writeTXTAppend(new File(d1,"f1"), "file_1", false);
+    	File d2 = new File(d1, "d2");
+    	d2.mkdir();
+    	IOtools.writeTXTAppend(new File(d2,"f2a"), "file_2a", false);
+    	IOtools.writeTXTAppend(new File(d2,"f2b"), "file_2b", false);
+    	File d3 = new File(d2, "d3");
+    	d3.mkdir();
+    	IOtools.writeTXTAppend(new File(d3,"f3a"), "file_3a", false);
+    	IOtools.writeTXTAppend(new File(d3,"f3b"), "file_3b", false);
+    	IOtools.writeTXTAppend(new File(d3,"f3c"), "file_3c", false);
+    	File d4 = new File(d2, "d4");
+    	d4.mkdir();
+    	IOtools.writeTXTAppend(new File(d4,"f4a"), "file_4a", false);
+    	
+    	FileUtils.delete(d2);
+    	
+    	assertTrue(d1.isDirectory());
+    	assertTrue(d1.exists());
+    	assertFalse(d3.isDirectory());
+    	assertFalse(d3.exists());
+    	assertFalse(d2.isDirectory());
+    	assertFalse(d2.exists());
+    }
+    
+//------------------------------------------------------------------------------
+    
 }
