@@ -552,5 +552,43 @@ public class JobTest
     }
     
 //------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetContainers()
+    {
+    	Job j = new Job();
+    	
+    	Job c0 = new Job();
+    	Job c1a = new Job();
+    	Job c1b = new Job();
+    	Job c2a = new Job();
+    	Job c2b = new Job();
+    	Job c3 = new Job();
+
+    	c0.addStep(c1a);
+    	c0.addStep(c1b);
+    	c1a.addStep(c2a);
+    	c1a.addStep(c2b);
+    	c2b.addStep(c3);
+    	
+    	List<Job> actual = j.getContainers();
+    	
+    	List<Job> expected = new ArrayList<Job>();
+		assertEquals(expected, actual);
+
+    	actual = c2a.getContainers();
+    	expected.add(c0);
+    	expected.add(c1a);
+		assertEquals(expected, actual);
+
+    	actual = c3.getContainers();
+    	expected = new ArrayList<Job>();
+    	expected.add(c0);
+    	expected.add(c1a);
+    	expected.add(c2b);
+		assertEquals(expected, actual);
+    }
+    
+//------------------------------------------------------------------------------
 
 }

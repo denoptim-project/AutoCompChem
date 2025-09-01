@@ -667,6 +667,41 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
+     * Returns the list of container job from the outermost to the innermost.
+     * @return the chain of containing jobs which may be empty if this job is 
+     * not contained.
+     */
+    
+    public List<Job> getContainers()
+    {
+    	List<Job> list = new ArrayList<Job>();
+    	if (hasContainer())
+    	{
+    		containerJob.getContainers(list);
+    	}
+    	return list;
+    }  
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns the list of container job from the innermost to the outermost.
+     * @return the chain of containing jobs which may be empty if this job is 
+     * not contained.
+     */
+    
+    private void getContainers(List<Job> list)
+    {
+    	if (hasContainer())
+    	{
+    		containerJob.getContainers(list);
+    	}
+		list.add(this);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Checks if there is a container job. 
      * @return <code>true</code> if this job is contained in a workflow or batch
      * of jobs.
