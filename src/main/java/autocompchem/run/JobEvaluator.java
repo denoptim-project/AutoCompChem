@@ -427,20 +427,23 @@ public class JobEvaluator extends Worker
 				&& jobBeingEvaluated.runsParallelSubjobs()
 				&& jobBeingEvaluated.getNumberOfSteps()>1)
 		{
-			Terminator.withMsgAndStatus("Analysis of paralle batches is "
+			Terminator.withMsgAndStatus("Analysis of parallel batches is "
 					+ "not implemented yet. Please, contact the developers "
 					+ "and present your use case.", -1);
 			// Must define idxFocusJob in here
 		} else {
-			// In here we define what is the "focus job", i.e., the job
+			// In here, we define what is the "focus job", i.e., the job
 			// that triggers the reaction. It can be jobBeingEvaluated, or
 			// one of its steps.
-			analyzeLogFileaSerialJob(p);
+			analyzeLogFilesSerialJob(p);
+			//TODO-gg del
+			/*
 			if (exposedOutputCollector.contains(NUMSTEPSKEY))
 			{
 				idxFocusJob = ((int) exposedOutputCollector.getNamedData(
 						NUMSTEPSKEY).getValue()) - 1;
 			}
+			*/
 		}
 		
 		try {
@@ -489,7 +492,8 @@ public class JobEvaluator extends Worker
 					// but it can prepare a new input.
 					if (standaloneCureJob)
 					{
-						healJob(jobBeingEvaluated, reaction, idxFocusJob);
+						//TODO-gg delete, mode CURE to JobAssistant
+						//healJob(jobBeingEvaluated, reaction, idxFocusJob);
 					}
 				}
 			}
@@ -571,6 +575,8 @@ public class JobEvaluator extends Worker
 			}
 		}
 		
+		//TODO: we should return the jobResultingFromAction
+		
 		// Prepare generation of new input file
 		ParameterStorage makeInputPars = new ParameterStorage();
 		
@@ -631,7 +637,7 @@ public class JobEvaluator extends Worker
 	 * information channels before perception. Therefore, we need to 
 	 * communicate the findings to the perceptron.
 	 */
-	private void analyzeLogFileaSerialJob(Perceptron p)
+	private void analyzeLogFilesSerialJob(Perceptron p)
 	{
 		List<InfoChannel> logChannels = icDB.getChannelsOfType(
 				InfoChannelType.LOGFEED);

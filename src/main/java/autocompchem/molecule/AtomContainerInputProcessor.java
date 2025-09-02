@@ -182,7 +182,7 @@ public class AtomContainerInputProcessor extends Worker
             ((AtomContainerSet) params.getParameter(ChemSoftConstants.PARGEOM)
             		.getValue()).atomContainers().forEach(i -> inMols.add(i));
            
-            if (params.contains("INFILE"))
+            if (params.contains(WorkerConstants.PARINFILE))
             {
             	logger.warn("WARNING: found both "
             			+ WorkerConstants.PARINFILE + " and "
@@ -386,7 +386,6 @@ public class AtomContainerInputProcessor extends Worker
     /**
      * Goes through the input according to the settings available to this
      * instance.
-     * @param outputStorage the collector of output data
      */
     protected void processInput()
     {

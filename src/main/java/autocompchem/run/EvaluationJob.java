@@ -59,6 +59,7 @@ public class EvaluationJob extends ACCJob
     {
         this();
         focusJob = jobToEvaluate;
+        //TODO-gg remove, not needed
         params.setParameter(ParameterConstants.JOBTOEVALPARENT,
         		containerOfJobToEvaluate);
         params.setParameter(ParameterConstants.JOBTOEVALUATE, jobToEvaluate);
@@ -66,6 +67,32 @@ public class EvaluationJob extends ACCJob
         params.setParameter(ParameterConstants.INFOCHANNELSDB, icDB);
     }
     
+//------------------------------------------------------------------------------
+    
+    /**
+     * The job triggering a reaction may be the job being evaluated or a step 
+     * contained in the job being evaluated. Hence, we talk about the innermost
+     * job.
+     * @return the innermost job considered responsible for the situation that 
+     * this job perceived and that triggered the request for a reaction. 
+     */
+  	public Job getReactionTriggeringJob()
+  	{
+  		if (exposedOutput.contains(JobEvaluator.NUMSTEPSKEY))
+  		{
+  			int idx = ((int) exposedOutput.getNamedData(
+  					JobEvaluator.NUMSTEPSKEY).getValue()) - 1;
+  			if (idx > 1)
+  			{
+  				if (focusJob.getNumberOfSteps() > 0)
+  				{
+  					return focusJob.steps.get(idx);
+  				}
+  			}
+  		}
+  		return focusJob;
+  	}
+  	
 //------------------------------------------------------------------------------
     
     /**
@@ -115,14 +142,17 @@ public class EvaluationJob extends ACCJob
 
     /**
      * Adjust notification to trigger reaction to the action that this job is 
-     * requesting.
+     * requesting. Note that the reaction applies to the workflow this job
+     * belongs to, so we notify the observer only if the evaluated job is part 
+     * of the same batch/workflow of this very job.
      */
     @Override
 	protected void notifyObserver() 
     {
     	if (observer!=null)
     	{
-	    	if (requestsAction())
+	    	if (requestsAction() && hasContainer() 
+	    			&& focusJob.getContainers().contains(getContainer()))
 	        {
 	        	observer.reactToRequestOfAction(getRequestedAction(), this);
 	        } else {

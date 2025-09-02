@@ -1352,7 +1352,7 @@ public class Job implements Runnable
     
     /**
      * This method resets any information about the running of this job so that
-     * it looks as if it had never run.
+     * it looks as if it has never run.
      */
     public void resetRunStatus()
     {
@@ -1363,6 +1363,8 @@ public class Job implements Runnable
     	hasException = false;
     	thrownExc = null;
     	exposedOutput.clear();
+    	for (Job step : steps)
+    		step.resetRunStatus();
     }
 
 //------------------------------------------------------------------------------
@@ -1600,8 +1602,7 @@ public class Job implements Runnable
 	    // consistency required to use Job instances as keys in Hash-based maps
 	    // and similar.
 		
-		return Objects.hash(jobId, appID, nThreads,
-				customUserDir, stdout, stderr, params, steps);
+		return Objects.hash(jobId, appID);
 	}
     
 //------------------------------------------------------------------------------

@@ -11,8 +11,6 @@ import java.util.Set;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.google.common.io.Files;
-
 import autocompchem.files.FileUtils;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -456,13 +454,20 @@ public class ActionApplier
         {
         	File newFile = new File(pathToArchive + file.getName());
         	try {
-				Files.copy(file, newFile);
+				FileUtils.copy(file, newFile);
 			} catch (IOException e) {
 				logger.warn("WARNING: cannot copy file '" + file 
 						+ "' to '" + newFile + "'. " + e.getMessage());
 			}
         	if (!filesToCopy.contains(file))
-        		file.delete();
+        	{
+        		try {
+					FileUtils.delete(file);
+				} catch (IOException e) {
+					logger.warn("WARNING: cannot delete file '" + file 
+							+ "' to '" + newFile + "'. " + e.getMessage());
+				}
+        	}
         }
         
         // Cleanup files to trash

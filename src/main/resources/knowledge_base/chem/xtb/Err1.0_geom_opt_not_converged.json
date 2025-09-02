@@ -1,0 +1,52 @@
+{
+  "type": "ERROR",
+  "refName": "xtb-e1.0_GeomOptNotConverged",
+  "description": "Geometry optimization failed due to internal rotation error",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "[ERROR] Program stopped due to fatal error"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Geometry optimization failed"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Geometry optimization did not converge"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "optimizer_relax: internal rational function error"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FocusAndFollowingJobs",
+    "jobEditTasks": [
+      {
+        "task": "SET_JOB_PARAMETER",
+        "parameter": {
+          "reference": "___DUMMY____",
+          "value": "_______xtblast.sdf"
+        }
+      }
+    ],
+    "jobArchivingRules": [
+      {
+        "type": "move",
+        "pattern": "*"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.sdf"
+      }
+    ],
+    "prerefinementSteps": [],
+    "inheritedSettings": []
+  }
+}

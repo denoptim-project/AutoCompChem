@@ -644,12 +644,18 @@ public class XTBInputWriter extends ChemSoftInputWriter
 	public StringBuilder getTextForInput(CompChemJob job) 
 	{
     	StringBuilder sb = new StringBuilder();
+    	CompChemJob actualJob = job;
 		if (job.getNumberOfSteps()>1)
+		{
 			throw new IllegalArgumentException("ERROR! XTB does not run "
 					+ "multi-step jobs, but your input contains more than one "
 					+ "step.");
+		} else if (job.getNumberOfSteps()==1) {
+			// Ignore the container job be cause it contains a single job
+			actualJob = (CompChemJob) job.getStep(0);
+		}
 		
-		Iterator<Directive> it = job.directiveIterator();
+		Iterator<Directive> it = actualJob.directiveIterator();
 		while (it.hasNext())
 		{
 			Directive d = it.next();

@@ -149,6 +149,14 @@ public class ChemSoftConstants
 	public static final String PARGEOMNAMES = "MULTIGEOMNAMES";
 	
 	/**
+	 * Key for parameter defining the name of the coordinates file to write as
+	 * part of the input for a comp.chem. software package that does not allow 
+	 * to define both methodological settings and initial coordinates in the
+	 * same file, but requires a distinct file with a molecular geometry.
+	 */
+	public static final String PARCOORDFILE = "COORDFILE";
+	
+	/**
 	 * Key of parameter defining the format for reporting Cartesian coordinates.
 	 */
 	public static final String PARCARTCOORDSFORMAT = "CARTESIANCOORDSFORMAT";

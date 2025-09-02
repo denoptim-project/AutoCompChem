@@ -1,0 +1,155 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "assistJob"
+    },
+    {
+      "reference": "SOFTWAREID",
+      "value": "XTB"
+    },
+    {
+      "reference": "inFile",
+      "value": "../cli24.sdf"
+    },
+    {
+      "reference": "coordFile",
+      "value": "xtbinit.sdf"
+    },
+    {
+      "reference": "assistedJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "CompChemJob",
+        "directives": [
+          {
+            "name": "set",
+            "keywords": [
+              {
+                "reference": "runtyp",
+                "value": "opt"
+              }
+            ]
+          },
+          {
+            "name": "opt",
+            "keywords": [
+              {
+                "reference": "logfile",
+                "value": "cli24_xtbtrj.xyz"
+              },
+              {
+                "reference": "optlevel",
+                "value": "normal"
+              }
+            ]
+          },
+          {
+            "name": "gfn",
+            "keywords": [
+              {
+                "reference": "method",
+                "value": "2"
+              },
+              {
+                "reference": "scc",
+                "value": "true"
+              },
+              {
+                "reference": "periodic",
+                "value": "false"
+              }
+            ]
+          },
+          {
+            "name": "scc",
+            "keywords": [
+              {
+                "reference": "maxiterations",
+                "value": "1000"
+              }
+            ]
+          },
+          {
+            "name": "constrain",
+            "keywords": [
+               {
+                 "reference":"force constant",
+                  "value" : 0.75
+               }
+             ],
+            "dirData": [
+              {
+                "accTaskParams": [
+                  {
+                    "reference": "TASK",
+                    "value": "GenerateConstraints"
+                  },
+                  {
+                    "reference": "SMARTS",
+                    "value": "[#44] [$([*]~[#44])] onlybonded GetCurrentValue\n[$([*]~[#44])] [#44] [$([*]~[#44])] onlybonded GetCurrentValue\n[$([*]~[#44])] [#44] [$([#6]([#1])[#1])] [#1] onlybonded GetCurrentValue\n[$([#6]([#1])([#1])~[#44]1~[*]~[#44]~[*]~1)] [$([#6]([#1])([#1])~[#44]1~[*]~[#44]~[*]~1)]"
+                  }
+                ],
+                "reference": "constrain-generation task"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "reference": "runJob",
+      "type": "JOB",
+      "value":
+      {
+        "jobType": "ACCJob",
+        "steps": [
+          {
+            "jobType": "ShellJob",
+            "params": [
+              {
+                "reference": "APP",
+                "value": "SHELL"
+              },
+              {
+                "reference": "VERBOSITY",
+                "value": "4"
+              },
+              {
+                "reference": "CMD",
+                "value": "bash ../cli24_fakeRunner.sh"
+              }
+            ]
+          },
+          {
+            "jobType": "ShellJob",
+            "params": [
+              {
+                "reference": "APP",
+                "value": "SHELL"
+              },
+              {
+                "reference": "VERBOSITY",
+                "value": "4"
+              },
+              {
+                "reference": "CMD",
+                "value": "cp -f xtblast.sdf xtbinit.sdf"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "reference": "maxRestart",
+      "value": "5"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    }
+  ]
+}

@@ -53,6 +53,7 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.molecule.sorting.MolecularSorter;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
+import autocompchem.run.JobAssistant;
 import autocompchem.run.JobDefinitionConverter;
 import autocompchem.run.JobEvaluator;
 import autocompchem.wiro.InputWriter;
@@ -151,6 +152,7 @@ public final class WorkerFactory
         registerType(new JobDefinitionConverter());
         registerType(new ConformersGenerator());
         registerType(new MoleculeExtractor());
+        registerType(new JobAssistant());
 	}
 
 //-----------------------------------------------------------------------------

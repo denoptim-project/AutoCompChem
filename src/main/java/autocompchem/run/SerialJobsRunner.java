@@ -382,7 +382,7 @@ public class SerialJobsRunner extends JobsRunner
 			            	{
 								cancellAllRunningThreadsAndShutDown();
 			            	
-							logger.warn("Action " 
+								logger.warn("Action " 
 									+ requestedAction.getType() + " of " 
 									+ requestedAction.getObject() 
 									+ " requested by job " 
