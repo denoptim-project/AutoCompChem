@@ -78,6 +78,20 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * Flag deciding if we write the specific job-details file or not.
      */
     private boolean writeJobSpecificJDOutput = true;
+    
+    /**
+     * File where to save the input geometry to be used among the input files 
+     * for the comp.chem software. This parameter is useful for those software 
+     * packages that do not allow to define the molecular geometry and the 
+     * settings of the calculation in the same files (e.g.,m xTB).
+     */
+    private String coordFile = null;
+    
+    /**
+     * Format to be used for the coord file, if any. Usually detected from the 
+     * extension of the pathname given for the coordinates file.
+     */
+    private String coordFileFormat = null;
 
     /**
      * Charge of the whole system.
@@ -182,6 +196,14 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 						+ formatIC + "' as a floating point format definition. "
 						+ "Please, check your input.", -1); 
         	}
+        }
+
+        if (params.contains(ChemSoftConstants.PARCOORDFILE))
+        {
+        	coordFile = params.getParameter(
+                    ChemSoftConstants.PARCOORDFILE).getValueAsString().trim();
+        	coordFileFormat = FileUtils.getFileExtension(new File(coordFile))
+        			.replaceAll("\\.", "").toUpperCase();
         }
 
         /*
@@ -400,9 +422,14 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
 		String fileRootName = ccJobInputNameRoot;
+		String coordFileNameWithId = coordFile;
 		if (inMols!=null && inMols.size()>1)
 		{ 
 			fileRootName = fileRootName + "-" + i;
+			if (coordFile!=null)
+			{
+				coordFileNameWithId = FileUtils.getIdSpecPathName(coordFile, i);
+			}
 		}
         if (overwriteGeomNames)
         {
@@ -410,7 +437,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             {
             	Terminator.withMsgAndStatus("ERROR! Found " + inMols.size() 
             		+ " geometries, but " + geomNames.size() + " names. Check "
-            		+ "your input.",-1); 
+            		+ "your input.", -1); 
             }
         	String geomName = geomNames.get(i);
         	iac.setTitle(geomName);
@@ -426,6 +453,11 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         produceSingleJobInputFiles(set, 
         		new File(fileRootName+inpExtrension),
         		fileRootName);
+        if (coordFile!=null)
+        {
+        	IOtools.writeAtomContainerToFile(new File(coordFileNameWithId), iac, 
+        			coordFileFormat, false);
+        }
         
         return iac;
 	}
@@ -484,7 +516,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * constants.
      */
     private void produceSingleJobInputFiles(List<IAtomContainer> mols, 
-    		File ccJobInput,	String ccJobInputNameRoot)
+    		File ccJobInput, String ccJobInputNameRoot)
     {
     	// We customize a copy of the master job
 		CompChemJob molSpecJob = ccJob.clone();

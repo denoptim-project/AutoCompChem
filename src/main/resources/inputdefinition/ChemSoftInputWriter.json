@@ -6,6 +6,12 @@
     "doc": "Provides a space-separated list of strings to be used as geometry names. This overwrites the names imported from molecular structures file."
   },
   {
+    "key": "COORDFILE",
+    "casedKey": "coordFile",
+    "type": "<String>",
+    "doc": "The pathname of a file defining the initial coordinates of the chemical object. This file is meant to be amond the input of comp.chem. software packages that do not allow to define the coordinated in the input file defining type and configuration of the molecular modeling task (e.g., XTB)."
+  },
+  {
     "key": "JOBDETAILS",
     "casedKey": "jobDetails",
     "type": "<String>",
