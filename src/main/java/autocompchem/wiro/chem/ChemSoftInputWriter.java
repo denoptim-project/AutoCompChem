@@ -400,7 +400,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     @Override
     public void performTask()
     {
-    	if (params.contains(WIROConstants.PARJOBDETAILSOBJ))
+    	if (params.contains(WIROConstants.PARIGNOREINPUTIAC))
     	{
     		// Here we do not read atom containers because we are given a fully 
     		// defined job details object, which is expected to contains all the
@@ -505,7 +505,8 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
      * However, jobs do use multiple input geometries within the same job
      * (e.g., transition state searches that start from the geometries of the
      * reactant and product). This is the case of multi-geometry mode 
-     * {@value MultiGeomMode#ALLINONEJOB}.
+     * {@value MultiGeomMode#ALLINONEJOB}. This list can also be empty when the
+     * job to perform is already molecule-specific.
      * <br>
      * <b>WARNING</b>: Changes in the number of electrons or in spin 
      * multiplicity among the geometries are not supported (yet).

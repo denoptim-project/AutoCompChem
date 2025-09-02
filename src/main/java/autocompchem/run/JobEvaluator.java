@@ -589,6 +589,7 @@ public class JobEvaluator extends Worker
 		}
 		makeInputPars.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
 				jobResultingFromAction);
+		makeInputPars.setParameter(WIROConstants.PARIGNOREINPUTIAC);
 		
 		//TODO-gg this was the wrong way to do this. We need to make
 		// the action control whether or not to update the geometry 
