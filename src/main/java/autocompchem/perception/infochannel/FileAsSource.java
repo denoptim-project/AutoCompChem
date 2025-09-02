@@ -21,8 +21,26 @@ import java.io.FileReader;
  */
 
 import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+
+import autocompchem.datacollections.ParameterStorage;
+import autocompchem.perception.circumstance.MatchText;
+import autocompchem.run.Job;
 import autocompchem.run.Terminator;
+import autocompchem.run.jobediting.JobEditType;
+import autocompchem.wiro.chem.CompChemJob;
 
 /**
  * File as a source of information
@@ -36,6 +54,11 @@ public class FileAsSource extends ReadableIC
      * Pathname
      */
     private String pathName = "";
+    
+    /**
+     * JSON name of the pathname field
+     */
+    public static final String JSONPATHNAME = "pathName";
 
 //------------------------------------------------------------------------------
 
@@ -119,7 +142,74 @@ public class FileAsSource extends ReadableIC
         }
         return super.reader;
     }
+    
+//------------------------------------------------------------------------------
 
+    public static class FileAsSourceSerializer 
+    implements JsonSerializer<FileAsSource>
+    {
+        @Override
+        public JsonElement serialize(FileAsSource fas, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONICIMPLEMENTATION, 
+            		InfoChannelImplementation.valueOf(
+            				fas.getClass().getSimpleName().toUpperCase())
+            		.toString());
+            jsonObject.addProperty(JSONINFOCHANNELTYPE, 
+            		fas.getType().toString());
+            
+            if (!fas.pathName.isEmpty())
+            	jsonObject.add("pathName", context.serialize(fas.pathName));
+
+            return jsonObject;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class FileAsSourceDeserializer 
+    implements JsonDeserializer<FileAsSource>
+    {
+        @Override
+        public FileAsSource deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            if (!jsonObject.has(JSONICIMPLEMENTATION))
+            {
+                String msg = "Missing '" + JSONICIMPLEMENTATION + "': found a "
+                        + "JSON string that cannot be converted into any "
+                        + "InfoChannel subclass.";
+                throw new JsonParseException(msg);
+            }   
+
+            InfoChannelImplementation impl = context.deserialize(
+            		jsonObject.get(JSONICIMPLEMENTATION),
+            		InfoChannelImplementation.class);
+            if (this.getClass().getSimpleName().toUpperCase().equals(
+            		impl.toString()))
+            {
+            	String msg = "Cannot to deserialize '" + impl + "' into "
+            			+ this.getClass().getSimpleName() + ".";
+                throw new JsonParseException(msg);
+            }
+
+            String pathName = context.deserialize(
+            		jsonObject.get(JSONPATHNAME), String.class);
+
+            InfoChannelType type = context.deserialize(
+            		jsonObject.get(JSONINFOCHANNELTYPE), InfoChannelType.class);
+            
+            FileAsSource fas = new FileAsSource(pathName, type);
+        	
+        	return fas;
+        }
+    }
+            
 //------------------------------------------------------------------------------
 
     /**
@@ -135,6 +225,36 @@ public class FileAsSource extends ReadableIC
         sb.append("; pathName:").append(pathName);
         sb.append("]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        FileAsSource other = (FileAsSource) o;
+         
+        if (!this.pathName.equals(other.pathName))
+            return false;
+        
+        return super.equals(other);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(pathName, super.hashCode());
     }
 
 //------------------------------------------------------------------------------

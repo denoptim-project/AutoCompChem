@@ -27,8 +27,25 @@ import autocompchem.perception.circumstance.MatchDirComponent.MatchDirComponentS
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.circumstance.MatchText.MatchTextDeserializer;
 import autocompchem.perception.circumstance.MatchText.MatchTextSerializer;
+import autocompchem.perception.infochannel.EnvironmentAsSource;
+import autocompchem.perception.infochannel.EnvironmentAsSource.EnvironmentAsSourceDeserializer;
+import autocompchem.perception.infochannel.EnvironmentAsSource.EnvironmentAsSourceSerializer;
+import autocompchem.perception.infochannel.FileAsSource;
+import autocompchem.perception.infochannel.FileAsSource.FileAsSourceDeserializer;
+import autocompchem.perception.infochannel.FileAsSource.FileAsSourceSerializer;
+import autocompchem.perception.infochannel.InfoChannel;
+import autocompchem.perception.infochannel.InfoChannel.InfoChannelDeserializer;
+import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.infochannel.InfoChannelBase.InfoChannelBaseDeserializer;
+import autocompchem.perception.infochannel.InfoChannelBase.InfoChannelBaseSerializer;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelType.InfoChannelTypeDeserializer;
+import autocompchem.perception.infochannel.JobDetailsAsSource;
+import autocompchem.perception.infochannel.JobDetailsAsSource.JobDetailsAsSourceDeserializer;
+import autocompchem.perception.infochannel.JobDetailsAsSource.JobDetailsAsSourceSerializer;
+import autocompchem.perception.infochannel.ShortTextAsSource;
+import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceDeserializer;
+import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -144,6 +161,16 @@ public class ACCJson
     	        		new IAtomContainerSerializer())
     	        .registerTypeHierarchyAdapter(AtomContainerSet.class, 
     	        		new AtomContainerSetSerializer())
+    	        .registerTypeAdapter(FileAsSource.class, 
+    	        		new FileAsSourceSerializer())
+    	        .registerTypeAdapter(ShortTextAsSource.class, 
+    	        		new ShortTextAsSourceSerializer())
+    	        .registerTypeAdapter(EnvironmentAsSource.class, 
+    	        		new EnvironmentAsSourceSerializer())
+    	        .registerTypeAdapter(JobDetailsAsSource.class, 
+    	        		new JobDetailsAsSourceSerializer())
+    	        .registerTypeAdapter(InfoChannelBase.class, 
+    	        		new InfoChannelBaseSerializer())
     			.create();
     	
     	reader = new GsonBuilder()
@@ -190,6 +217,18 @@ public class ACCJson
     	        		new JobEditTypeDeserializer())
     	        .registerTypeHierarchyAdapter(InfoChannelType.class, 
     	        		new InfoChannelTypeDeserializer())
+    	        .registerTypeAdapter(InfoChannel.class, 
+    	        		new InfoChannelDeserializer())
+    	        .registerTypeAdapter(InfoChannelBase.class, 
+    	        		new InfoChannelBaseDeserializer())
+    	        .registerTypeAdapter(FileAsSource.class, 
+    	        		new FileAsSourceDeserializer())
+    	        .registerTypeAdapter(ShortTextAsSource.class, 
+    	        		new ShortTextAsSourceDeserializer())
+    	        .registerTypeAdapter(EnvironmentAsSource.class, 
+    	        		new EnvironmentAsSourceDeserializer())
+    	        .registerTypeAdapter(JobDetailsAsSource.class, 
+    	        		new JobDetailsAsSourceDeserializer())
     	        .registerTypeHierarchyAdapter(ArchivingTaskType.class, 
     	        		new ArchivingTaskTypeDeserializer())
     	        .registerTypeHierarchyAdapter(ConfigItem.class, 

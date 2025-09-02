@@ -1,5 +1,14 @@
 package autocompchem.perception.infochannel;
 
+import java.lang.reflect.Type;
+import java.util.Objects;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -26,6 +35,15 @@ package autocompchem.perception.infochannel;
 
 public abstract class InfoChannel
 {
+	/**
+	 * JSON name to identify subclass implementation
+	 */
+	public static final String JSONICIMPLEMENTATION = "Implementation";
+	
+	/**
+	 * JSON name to identify subclass implementation
+	 */
+	public static final String JSONINFOCHANNELTYPE = "infoChannelType";
 
     /**
      * The type of information channel
@@ -66,6 +84,57 @@ public abstract class InfoChannel
     {
         type = ict;
     }
+    
+//------------------------------------------------------------------------------
+
+    public static class InfoChannelDeserializer 
+    implements JsonDeserializer<InfoChannel>
+    {
+        @Override
+        public InfoChannel deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            if (!jsonObject.has(JSONICIMPLEMENTATION))
+            {
+                String msg = "Missing '" + JSONICIMPLEMENTATION + "': found a "
+                        + "JSON string that cannot be converted into any "
+                        + "InfoChannel subclass.";
+                throw new JsonParseException(msg);
+            }   
+
+            InfoChannelImplementation impl = context.deserialize(
+            		jsonObject.get(JSONICIMPLEMENTATION),
+            		InfoChannelImplementation.class);
+            
+            InfoChannel ic = null;
+            switch (impl)
+            {
+                case FILEASSOURCE:
+                	ic = context.deserialize(jsonObject, FileAsSource.class);
+                	break;
+                
+		        case JOBDETAILSASSOURCE:
+                	ic = context.deserialize(jsonObject, JobDetailsAsSource.class);
+		        	break;
+		        
+			    case ENVIRONMENTASSOURCE:
+                	ic = context.deserialize(jsonObject, EnvironmentAsSource.class);
+			    	break;
+			    
+				case SHORTTEXTASSOURCE:
+                	ic = context.deserialize(jsonObject, ShortTextAsSource.class);
+					break;
+
+				default:
+					throw new IllegalArgumentException("InfoChannel "
+							+ "implementation '" + impl + "' is not known. "
+							+ "Cannot deserialize JSON element: " + json);
+            }
+        	return ic;
+        }
+    }
 
 //------------------------------------------------------------------------------
 
@@ -80,6 +149,36 @@ public abstract class InfoChannel
         sb.append("InfoChannel [type:").append(type);
         sb.append("]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        InfoChannel other = (InfoChannel) o;
+         
+        if (!this.type.equals(other.type))
+            return false;
+        
+        return true;
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(this.getClass(), type);
     }
 
 //------------------------------------------------------------------------------

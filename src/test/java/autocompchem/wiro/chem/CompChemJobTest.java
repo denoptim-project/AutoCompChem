@@ -53,7 +53,7 @@ public class CompChemJobTest
 	 *   Step 1:
 	 *   A_kA1,kA1
 	 */
-    public CompChemJob getTextCompChemJob()
+    public static CompChemJob getTextCompChemJob()
     {
     	CompChemJob ccj = new CompChemJob();
     	

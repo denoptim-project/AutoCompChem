@@ -1,5 +1,6 @@
 package autocompchem.perception.infochannel;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +26,15 @@ import java.util.Map;
 
 import java.util.Set;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
+
 /**
  * A list of information channels
  * 
@@ -36,7 +46,7 @@ public class InfoChannelBase
     /**
      * List of information channels
      */
-    private ArrayList<InfoChannel> allInfoChans = new ArrayList<InfoChannel>();
+    private List<InfoChannel> allInfoChannels = new ArrayList<InfoChannel>();
 
     /**
      * Indexing of InfoChannels by type
@@ -63,7 +73,7 @@ public class InfoChannelBase
 
     public void addChannel(InfoChannel channel)
     {
-        allInfoChans.add(channel);
+        allInfoChannels.add(channel);
 
 //TODO deal with UNDEFINED type as if it was a whildcard
 
@@ -79,6 +89,18 @@ public class InfoChannelBase
                             new ArrayList<InfoChannel>(Arrays.asList(channel)));
         }
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Get all information channels
+     * @return all the information channels
+     */
+
+    public List<InfoChannel> getAllChannels()
+    {
+        return allInfoChannels;
+    }
     
 //------------------------------------------------------------------------------
     
@@ -89,7 +111,7 @@ public class InfoChannelBase
     
     public int getInfoChannelCount()
     {
-    	return allInfoChans.size();
+    	return allInfoChannels.size();
     }
 
 //------------------------------------------------------------------------------
@@ -131,12 +153,77 @@ public class InfoChannelBase
     {
         StringBuilder sb = new StringBuilder();
         sb.append("InfoChannelBase [");
-        for (InfoChannel ic : allInfoChans)
+        for (InfoChannel ic : allInfoChannels)
         {
             sb.append(ic.toString()).append("; ");
         }
         sb.append("]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class InfoChannelBaseSerializer 
+    implements JsonSerializer<InfoChannelBase>
+    {
+        @Override
+        public JsonElement serialize(InfoChannelBase fas, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+            
+            jsonObject.add("InfoChannels", context.serialize(fas.getAllChannels()));
+
+            return jsonObject;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class InfoChannelBaseDeserializer 
+    implements JsonDeserializer<InfoChannelBase>
+    {
+        @Override
+        public InfoChannelBase deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            List<InfoChannel> channels = context.deserialize(
+            		jsonObject.get("InfoChannels"),
+					new TypeToken<ArrayList<InfoChannel>>(){}.getType());
+            
+            // This way we construct also the mapping that is not serialized
+            InfoChannelBase icb = new InfoChannelBase();
+            for (InfoChannel ic : channels)
+            {
+            	icb.addChannel(ic);
+            }
+        	
+        	return icb;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        InfoChannelBase other = (InfoChannelBase) o;
+         
+        if (!this.allInfoChannels.equals(other.allInfoChannels))
+            return false;
+        
+        return true;
     }
 
 //------------------------------------------------------------------------------

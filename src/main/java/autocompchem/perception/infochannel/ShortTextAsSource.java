@@ -2,6 +2,7 @@ package autocompchem.perception.infochannel;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /*
@@ -23,6 +24,16 @@ import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 
 /**
@@ -97,6 +108,73 @@ public class ShortTextAsSource extends ReadableIC
         super.reader = new StringReader(sb.toString());
         return super.reader;
     }
+    
+//------------------------------------------------------------------------------
+
+    public static class ShortTextAsSourceSerializer 
+    implements JsonSerializer<ShortTextAsSource>
+    {
+        @Override
+        public JsonElement serialize(ShortTextAsSource tas, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONICIMPLEMENTATION, 
+            		InfoChannelImplementation.valueOf(
+            				tas.getClass().getSimpleName().toUpperCase())
+            		.toString());
+            jsonObject.addProperty(JSONINFOCHANNELTYPE, 
+            		tas.getType().toString());
+            
+            jsonObject.add("txt", context.serialize(tas.txt));
+
+            return jsonObject;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class ShortTextAsSourceDeserializer 
+    implements JsonDeserializer<ShortTextAsSource>
+    {
+        @Override
+        public ShortTextAsSource deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            if (!jsonObject.has(JSONICIMPLEMENTATION))
+            {
+                String msg = "Missing '" + JSONICIMPLEMENTATION + "': found a "
+                        + "JSON string that cannot be converted into any "
+                        + "InfoChannel subclass.";
+                throw new JsonParseException(msg);
+            }   
+
+            InfoChannelImplementation impl = context.deserialize(
+            		jsonObject.get(JSONICIMPLEMENTATION),
+            		InfoChannelImplementation.class);
+            if (this.getClass().getSimpleName().toUpperCase().equals(
+            		impl.toString()))
+            {
+            	String msg = "Cannot to deserialize '" + impl + "' into "
+            			+ this.getClass().getSimpleName() + ".";
+                throw new JsonParseException(msg);
+            } 
+
+			List<String> lines = context.deserialize(jsonObject.get("txt"),
+					new TypeToken<ArrayList<String>>(){}.getType());
+
+            InfoChannelType type = context.deserialize(
+            		jsonObject.get(JSONINFOCHANNELTYPE), InfoChannelType.class);
+            
+            ShortTextAsSource tas = new ShortTextAsSource(lines);
+            tas.setType(type);
+        	
+        	return tas;
+        }
+    }
 
 //------------------------------------------------------------------------------
 
@@ -122,6 +200,39 @@ public class ShortTextAsSource extends ReadableIC
 	{
 		return txt!=null;
 	}
+    
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+            return false;
+         
+        ShortTextAsSource other = (ShortTextAsSource) o;
+         
+        if (!this.txt.equals(other.txt))
+            return false;
+        
+        return super.equals(other);
+    }
+    
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+    	return Objects.hash(txt, super.hashCode());
+    }
+
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 

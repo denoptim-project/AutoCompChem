@@ -2,6 +2,8 @@ package autocompchem.perception.infochannel;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 
 /*
  *   Copyright (C) 2018  Marco Foscato
@@ -21,6 +23,15 @@ import java.io.StringReader;
  */
 
 import java.util.Map;
+import java.util.Objects;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 
 /**
@@ -46,6 +57,17 @@ public class EnvironmentAsSource extends ReadableIC
     {
         super();
         env = System.getenv();
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Sets the map of environmental variables
+     */
+
+    public void setEnvironment(Map<String,String> env)
+    {
+    	this.env = env;
     }
     
 //------------------------------------------------------------------------------
@@ -77,6 +99,72 @@ public class EnvironmentAsSource extends ReadableIC
         super.reader = new StringReader(sb.toString());
         return super.reader;
     }
+    
+//------------------------------------------------------------------------------
+
+    public static class EnvironmentAsSourceSerializer 
+    implements JsonSerializer<EnvironmentAsSource>
+    {
+        @Override
+        public JsonElement serialize(EnvironmentAsSource eas, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+
+            jsonObject.addProperty(JSONICIMPLEMENTATION, 
+            		InfoChannelImplementation.valueOf(
+            				eas.getClass().getSimpleName().toUpperCase())
+            		.toString());
+            jsonObject.addProperty(JSONINFOCHANNELTYPE, 
+            		eas.getType().toString());
+            
+            jsonObject.add("env", context.serialize(eas.env));
+
+            return jsonObject;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class EnvironmentAsSourceDeserializer 
+    implements JsonDeserializer<EnvironmentAsSource>
+    {
+        @Override
+        public EnvironmentAsSource deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            if (!jsonObject.has(JSONICIMPLEMENTATION))
+            {
+                String msg = "Missing '" + JSONICIMPLEMENTATION + "': found a "
+                        + "JSON string that cannot be converted into any "
+                        + "InfoChannel subclass.";
+                throw new JsonParseException(msg);
+            } 
+
+            InfoChannelImplementation impl = context.deserialize(
+            		jsonObject.get(JSONICIMPLEMENTATION),
+            		InfoChannelImplementation.class);
+            if (this.getClass().getSimpleName().toUpperCase().equals(
+            		impl.toString()))
+            {
+            	String msg = "Cannot to deserialize '" + impl + "' into "
+            			+ this.getClass().getSimpleName() + ".";
+                throw new JsonParseException(msg);
+            }
+
+            InfoChannelType type = context.deserialize(
+            		jsonObject.get(JSONINFOCHANNELTYPE), InfoChannelType.class);
+            EnvironmentAsSource eas = new EnvironmentAsSource();
+            eas.setType(type);
+            Map<String,String> env = context.deserialize(
+            		jsonObject.get("env"), Map.class);
+            eas.setEnvironment(env);
+            
+            return eas;
+        }
+    }
 
 //------------------------------------------------------------------------------
 
@@ -94,6 +182,36 @@ public class EnvironmentAsSource extends ReadableIC
         sb.append("]");
         return sb.toString();
     }
+      
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+          
+        if (o.getClass() != getClass())
+            return false;
+           
+        EnvironmentAsSource other = (EnvironmentAsSource) o;
+           
+        if (!this.env.equals(other.env))
+            return false;
+          
+        return super.equals(other);
+    }
+      
+//-----------------------------------------------------------------------------
+    
+    @Override
+    public int hashCode()
+    {
+   	    return Objects.hash(env, super.hashCode());
+    }  
 
 //------------------------------------------------------------------------------
 
