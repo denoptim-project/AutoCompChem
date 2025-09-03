@@ -1504,6 +1504,10 @@ public class Job implements Runnable
     	for (String paramKey : dataToUpdate.getAllNamedData().keySet())
     	{
     		NamedData data = dataToUpdate.getAllNamedData().get(paramKey);
+    		//WARNING: this may cause problems for non JSON-able content
+    		// and also for any operation that relies on the actual instance
+    		// stored within the named data because with the JSON operation
+    		// we create a new instance, rather then modifying the existing one
     		String jsonStr = jsonWriter.toJson(data);
     		List<Integer> indexes = new ArrayList<Integer>();
     		boolean edited = false;

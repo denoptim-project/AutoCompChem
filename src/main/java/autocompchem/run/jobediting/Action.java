@@ -28,6 +28,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+import autocompchem.io.ACCJson;
+import autocompchem.perception.situation.Situation;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;
@@ -388,9 +390,14 @@ public class Action implements Cloneable
      * @return a deep copy
      */
     
+    @Override
     public Action clone()
     {
-        return new Action(type, object);
+  		// Shortcut via json serialization to avoid implementing Cloneable
+  		// in all implementations of IJobEditingTask
+    	Action clone = ACCJson.getReader().fromJson(
+  				ACCJson.getWriter().toJson(this), Action.class);
+  		return clone;
     }
     
 //------------------------------------------------------------------------------

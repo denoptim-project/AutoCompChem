@@ -346,7 +346,6 @@ public final class JobFactory
 	            newJob.setParameters(params);
 	        }
         }
-        //TODO-gg test input from json
         
         if (params.contains(ParameterConstants.VERBOSITY))
         {

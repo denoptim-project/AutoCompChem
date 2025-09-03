@@ -46,6 +46,10 @@ import autocompchem.perception.infochannel.JobDetailsAsSource.JobDetailsAsSource
 import autocompchem.perception.infochannel.ShortTextAsSource;
 import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceDeserializer;
 import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceSerializer;
+import autocompchem.perception.situation.Situation;
+import autocompchem.perception.situation.SituationBase;
+import autocompchem.perception.situation.SituationBase.SituationBaseDeserializer;
+import autocompchem.perception.situation.SituationBase.SituationBaseSerializer;
 import autocompchem.run.ACCJob;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
@@ -169,6 +173,8 @@ public class ACCJson
     	        		new EnvironmentAsSourceSerializer())
     	        .registerTypeAdapter(JobDetailsAsSource.class, 
     	        		new JobDetailsAsSourceSerializer())
+    	        .registerTypeAdapter(SituationBase.class, 
+    	        		new SituationBaseSerializer())
     	        .registerTypeAdapter(InfoChannelBase.class, 
     	        		new InfoChannelBaseSerializer())
     			.create();
@@ -221,6 +227,8 @@ public class ACCJson
     	        		new InfoChannelDeserializer())
     	        .registerTypeAdapter(InfoChannelBase.class, 
     	        		new InfoChannelBaseDeserializer())
+    	        .registerTypeAdapter(SituationBase.class, 
+    	        		new SituationBaseDeserializer())
     	        .registerTypeAdapter(FileAsSource.class, 
     	        		new FileAsSourceDeserializer())
     	        .registerTypeAdapter(ShortTextAsSource.class, 

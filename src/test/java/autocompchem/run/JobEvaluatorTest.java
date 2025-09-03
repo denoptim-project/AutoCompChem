@@ -29,6 +29,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.io.IOtools;
@@ -74,8 +75,9 @@ public class JobEvaluatorTest
         // being evaluated. Also, without an interpreted of the ICfeed that
         // can split the ICfeed into steps, the perceptron can only assume that
         // the situation is triggered by the first subjob of a batch/workflow.
+        String situationName = "TestSituation-1.23";
         Situation situationWithAction = new Situation("SituationType",
-        		"TestSituation", new ArrayList<ICircumstance>(Arrays.asList(
+        		situationName, new ArrayList<ICircumstance>(Arrays.asList(
         				new MatchText(".*TRIGGERS REACTION.*", 
         						InfoChannelType.LOGFEED))));
         situationWithAction.setReaction(new Action(ActionType.REDO, 
@@ -100,26 +102,17 @@ public class JobEvaluatorTest
     	
     	Job evalJob = new EvaluationJob(workflowToEvaluate.getStep(0), 
     			workflowToEvaluate, sitsDB, icDB);
-    	evalJob.setParameter(JobEvaluator.RUNSTANDALONE);
 
-        File newJobDef = new File(
-        		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
-    	evalJob.setParameter(WIROConstants.PAROUTFILE.toString(), 
-    			newJobDef.getAbsolutePath());
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	w.performTask();
     	
-    	assertNotNull(evalJob.exposedOutput.getNamedData(
-    			JobEvaluator.SITUATIONOUTKEY,true));
-    	assertTrue(newJobDef.exists());
-    	
-    	Job jobFromReaction = JobFactory.buildFromFile(newJobDef);
-    	assertEquals(2, jobFromReaction.getNumberOfSteps());
-    	assertEquals(SoftwareId.SHELL, jobFromReaction.getStep(0).appID);
-    	assertEquals(SoftwareId.ACC, jobFromReaction.getStep(1).appID);
-    	assertEquals(0, jobFromReaction.getStep(0).getNumberOfSteps());
-    	assertEquals(0, jobFromReaction.getStep(1).getNumberOfSteps());
-    	assertTrue(jobFromReaction.getStep(1).hasParameter(PARAMNAME));
+    	NamedData situationData = evalJob.exposedOutput.getNamedData(
+    			JobEvaluator.SITUATIONOUTKEY, true); 
+    	Situation situationPerceived = (Situation) situationData.getValue();
+    	assertNotNull(situationData);
+    	assertEquals(situationName, situationPerceived.getRefName());
+    	assertNotNull(situationPerceived.getReaction());
+    	assertEquals(ActionType.REDO, situationPerceived.getReaction().getType());
     }
       
 //-----------------------------------------------------------------------------
@@ -137,8 +130,9 @@ public class JobEvaluatorTest
         // being evaluated. Also, without an interpreted of the ICfeed that
         // can split the ICfeed into steps, the perceptron can only assume that
         // the situation is triggered by the first subjob of a batch/workflow.
+        String situationName = "TestSituation-1.23";
         Situation situationWithAction = new Situation("SituationType",
-        		"TestSituation", new ArrayList<ICircumstance>(Arrays.asList(
+        		situationName, new ArrayList<ICircumstance>(Arrays.asList(
         				new MatchText(".*TRIGGERS REACTION.*", 
         						InfoChannelType.LOGFEED))));
         situationWithAction.setReaction(new Action(ActionType.REDO, 
@@ -164,7 +158,6 @@ public class JobEvaluatorTest
     	
     	Job evalJob = new EvaluationJob(batchToEvaluate.getStep(1), 
     			batchToEvaluate, sitsDB, icDB);
-    	evalJob.setParameter(JobEvaluator.RUNSTANDALONE);
 
         File newJobDef = new File(
         		tempDir.getAbsolutePath() + SEP + "newJobDef.json");
@@ -173,15 +166,13 @@ public class JobEvaluatorTest
     	JobEvaluator w = (JobEvaluator) WorkerFactory.createWorker(evalJob);
     	w.performTask();
     	
-    	assertNotNull(evalJob.exposedOutput.getNamedData(
-    			JobEvaluator.SITUATIONOUTKEY,true));
-    	assertTrue(newJobDef.exists());
-    	
-    	Job jobFromReaction = JobFactory.buildFromFile(newJobDef);
-    	assertEquals(1, jobFromReaction.getNumberOfSteps());
-    	assertEquals(SoftwareId.ACC, jobFromReaction.getStep(0).appID);
-    	assertEquals(0, jobFromReaction.getStep(0).getNumberOfSteps());
-    	assertTrue(jobFromReaction.getStep(0).hasParameter(PARAMNAME));
+    	NamedData situationData = evalJob.exposedOutput.getNamedData(
+    			JobEvaluator.SITUATIONOUTKEY, true); 
+    	Situation situationPerceived = (Situation) situationData.getValue();
+    	assertNotNull(situationData);
+    	assertEquals(situationName, situationPerceived.getRefName());
+    	assertNotNull(situationPerceived.getReaction());
+    	assertEquals(ActionType.REDO, situationPerceived.getReaction().getType());
     }
     
 //-----------------------------------------------------------------------------

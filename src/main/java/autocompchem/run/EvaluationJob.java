@@ -1,6 +1,7 @@
 package autocompchem.run;
 
 import autocompchem.datacollections.ParameterConstants;
+import autocompchem.datacollections.ParameterStorage;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
@@ -85,6 +86,24 @@ public class EvaluationJob extends ACCJob
             params.setParameter(ParameterConstants.SITUATIONSDB, sitsDB);
         if (icDB!=null)
             params.setParameter(ParameterConstants.INFOCHANNELSDB, icDB);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Set this job parameters
+     * @param params the new set of parameters
+     */
+
+    @Override
+    public void setParameters(ParameterStorage params)
+    {
+    	super.setParameters(params);
+    	if (params.contains(ParameterConstants.JOBTOEVALUATE))
+    	{
+    		focusJob = (Job) params.getParameter(
+    				ParameterConstants.JOBTOEVALUATE).getValue();
+    	}
     }
     
 //------------------------------------------------------------------------------

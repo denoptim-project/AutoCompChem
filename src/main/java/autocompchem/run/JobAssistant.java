@@ -17,52 +17,24 @@ package autocompchem.run;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import com.google.gson.Gson;
+import org.apache.logging.log4j.Logger;
+
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
-import autocompchem.files.FileUtils;
-import autocompchem.io.ACCJson;
-import autocompchem.io.IOtools;
-import autocompchem.perception.Perceptron;
-import autocompchem.perception.TxtQuery;
-import autocompchem.perception.circumstance.ICircumstance;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.infochannel.FileAsSource;
-import autocompchem.perception.infochannel.InfoChannel;
-import autocompchem.perception.infochannel.InfoChannelBase;
-import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
 import autocompchem.run.jobediting.ActionApplier;
-import autocompchem.run.jobediting.DataArchivingRule;
-import autocompchem.run.jobediting.SetJobParameter;
-import autocompchem.run.jobediting.Action.ActionObject;
-import autocompchem.run.jobediting.Action.ActionType;
 import autocompchem.utils.NumberUtils;
-import autocompchem.wiro.OutputReader;
-import autocompchem.wiro.ReaderWriterFactory;
+import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.WIROConstants;
-import autocompchem.wiro.chem.ChemSoftConstants;
-import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -84,6 +56,19 @@ public class JobAssistant extends Worker
     public static final Task ASSISTJOBTASK;
     static {
     	ASSISTJOBTASK = Task.make(ASSISTJOBTASKNAME);
+    }
+    
+    /**
+     * String defining the task of healing/fixing any job
+     */
+    public static final String CUREJOBTASKNAME = "cureJob";
+
+    /**
+     * Task about healing/fixing any job output
+     */
+    public static final Task CUREJOBTASK;
+    static {
+    	CUREJOBTASK = Task.make(CUREJOBTASKNAME);
     }
     
     /**
@@ -133,6 +118,7 @@ public class JobAssistant extends Worker
     public Set<Task> getCapabilities() {
 		Set<Task> tmpSet = new HashSet<Task>();
 		tmpSet.add(ASSISTJOBTASK);
+		tmpSet.add(CUREJOBTASK);
 		return Collections.unmodifiableSet(tmpSet);
     }
 
@@ -159,15 +145,12 @@ public class JobAssistant extends Worker
 		if (hasParameter(PARASSISTEDJOB)) 
 		{
 			assistedJob = (Job) params.getParameter(PARASSISTEDJOB).getValue();
-		} else {
-			Terminator.withMsgAndStatus("Missing definition of assisted job. "
-					+ "Please, use 'ASSISTEDJOB' in yout input.", -1);
 		}
     	
 		if (hasParameter(PARRUNJOB)) 
 		{
 			runJob = (Job) params.getParameter(PARRUNJOB).getValue();
-		} else {
+		} else if (hasParameter(PARASSISTEDJOB)) {
 			Terminator.withMsgAndStatus("Missing definition of assisted job. "
 					+ "Please, use 'ASSISTEDJOB' in yout input.", -1);
 		}
@@ -183,16 +166,6 @@ public class JobAssistant extends Worker
 						+ "' to an integer. Please, check your input.", -1);
 			}
 		}
-		
-		/*
-		if (hasParameter(ParameterConstants. )) 
-		{
-			String pathNames = params.getParameter(
-					ParameterConstants. ).getValueAsString();
-			
-		}
-		*/
-		
 	}
 
 //------------------------------------------------------------------------------
@@ -200,38 +173,32 @@ public class JobAssistant extends Worker
 	@Override
 	public void performTask() 
 	{
-		/*
-		//TODO replace with sensible content: this is only for testing
-        ICircumstance c = new MatchText("Geometry optimization did not converge", 
-        		InfoChannelType.LOGFEED);
-        Action act = new Action(ActionType.REDO, 
-        		ActionObject.FOCUSANDFOLLOWINGJOBS);
-        act.addJobEditingTask(new SetJobParameter(
-        		new NamedData("___DUMMY____", "_______xtblast.sdf")));
-        act.addJobArchivingDetails(DataArchivingRule.makeMoveRule("*"));
-        act.addJobArchivingDetails(DataArchivingRule.makeCopyRule("*.sdf"));
-        Situation sit1 = new Situation("ERROR", "Not_converged", 
-        		new ArrayList<ICircumstance>(Arrays.asList(c)),
-        		act);
-        
-        SituationBase sitsDB = new SituationBase();
-        sitsDB.addSituation(sit1);
-        
-        InfoChannel ic = new FileAsSource("cli24.out", 
-        		InfoChannelType.LOGFEED);
-        InfoChannelBase icDB = new InfoChannelBase();
-        icDB.addChannel(ic);
+    	if (task.equals(ASSISTJOBTASK))
+    	{
+    		runAssistedJob();
+    	} else if (task.equals(CUREJOBTASK)) {	
+    		cureAssistedJob();
+    	} else {
+    		dealWithTaskMismatch();
+        }
+	}
 
-        
-        Gson writer = ACCJson.getWriter();
-        IOtools.writeTXTAppend(new File("/tmp/ic.json"), writer.toJson(ic), false);
-        IOtools.writeTXTAppend(new File("/tmp/act.json"), writer.toJson(act), false);
-        IOtools.writeTXTAppend(new File("/tmp/c.json"), writer.toJson(c), false);
-        IOtools.writeTXTAppend(new File("/tmp/s.json"), writer.toJson(sit1), false);
-        IOtools.writeTXTAppend(new File("/tmp/icDB.json"), writer.toJson(icDB), false);
-        */
-		
-        
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Running an assisted job means:<ol>
+	 * <li>preparing some input</li>
+	 * <li>running the actual job 
+	 * (possibly monitoring its behavior while it runs)</li>
+	 * <li>evaluating the outcome according to the knowledge about possible
+	 * situations that may require some actions to fix whatever problem the job
+	 * has encountered</li>
+	 * <li>if needed, perform any action in response to the situation perceived</li>
+	 * <li>if needed, start again from point 1, or terminate the assisted run</li>
+	 * </ol>
+	 */
+	private void runAssistedJob() 
+	{   
 		// Define the assisted workflow
         ACCJob assistedWorkflow = new ACCJob();
         //TODO set this as parent of assistedWorkflow
@@ -282,7 +249,7 @@ public class JobAssistant extends Worker
            {
         	   Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
         	   Job editedAssistedJob = healJob(reactiontriggeringJob, 
-        			   evalJob.getRequestedAction(), i);
+        			   evalJob.getRequestedAction(), i, myJob, logger);
         	   inputPreparationJob.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
         			   editedAssistedJob);
            } else {
@@ -291,15 +258,77 @@ public class JobAssistant extends Worker
 		}
 	}
 
+//------------------------------------------------------------------------------
+	
+	/**
+	 * Cure an assisted job means:<ol>
+	 * <li>evaluating the outcome according to the knowledge about possible
+	 * situations that may require some actions to fix whatever problem the job
+	 * has encountered</li>
+	 * <li>if needed, perform any action in response to the situation perceived</li>
+	 * <li>if needed, prepare a new input for to heal the assisted job</li>
+	 * </ol>
+	 */
+	private void cureAssistedJob() 
+	{	
+		// First, the evaluation job
+		ParameterStorage parsToEvalJob = params.copy();
+		parsToEvalJob.setParameter(WorkerConstants.PARTASK, 
+					JobEvaluator.EVALUATEJOBTASK.casedID);
+		EvaluationJob evalJob = (EvaluationJob) JobFactory.createJob(
+				parsToEvalJob);
+		
+		evalJob.run();
+		
+        if (evalJob.requestsAction())
+        {
+        	// Then, if needed, apply any error-handling response
+    	    Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
+    	    Job editedAssistedJob = healJob(reactiontriggeringJob, 
+    	 		   evalJob.getRequestedAction(), 0, myJob, logger);
+    	    
+    	    // and, finally, make a new input
+    	    ParameterStorage parsToMakeInput = params.copy();
+    	    parsToMakeInput.setParameter(WorkerConstants.PARTASK, 
+    		 	   InputWriter.PREPAREINPUTTASK.casedID);
+    	    parsToMakeInput.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
+    		 	   editedAssistedJob);
+    	    Job inputPreparationJob = JobFactory.createJob(parsToMakeInput);
+    	   
+    	    inputPreparationJob.run();
+        }
+        
+        // Project output
+        for (NamedData dataToExpose : evalJob.exposedOutput.getAllNamedData().values())
+        {
+        	exposeOutputData(dataToExpose);
+        }
+	}
 
 //------------------------------------------------------------------------------
 	
-	private Job healJob(Job jobToHeal, Action cure, int restartCounter) 
+	/**
+	 * Edits a job trying to heal it, i.e., change parts of it according to a 
+	 * given recipe, i.e., the cure.
+	 * @param jobToHeal the job the be healed.
+	 * @param cure the action that is to be performed to cure the job.
+	 * @param restartCounter integer used to identify the sequence of healing 
+	 * attempts.
+	 * @param requestingJob the job that requests the healing of another job.
+	 * @param logger logging tool, but can be <code>null</code> so no logging
+	 * will be done.
+	 * @return
+	 */
+	public static Job healJob(Job jobToHeal, Action cure, int restartCounter,
+			Job requestingJob, Logger logger) 
 	{
-		logger.info("Attempting to heal job. Reaction: " 
+		if (logger!=null)
+		{
+			logger.info("Attempting to heal job. Reaction: " 
 				+ cure.getType() + " " 
 				+ cure.getObject());
-	
+		}
+			
 		Job jobResultingFromAction = null;
 		if (jobToHeal.hasContainer())
 		{
@@ -313,7 +342,7 @@ public class JobAssistant extends Worker
 								cure,   //action to perform
 								jobToHeal.getContainer(), //parallel batch
 								jobToHeal, //job causing the reaction
-								(EvaluationJob) myJob, //job doing the evaluation 
+								(EvaluationJob) requestingJob, 
 								restartCounter);
 				jobToHeal.getContainer().steps = newJobSteps;
 			} else {
@@ -348,10 +377,7 @@ public class JobAssistant extends Worker
 			}
 		}
 		return jobResultingFromAction;
-	}	
-	
-//------------------------------------------------------------------------------
-	
+	}
 	
 //------------------------------------------------------------------------------
 

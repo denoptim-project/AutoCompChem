@@ -27,7 +27,7 @@ import java.util.Objects;
  * @author Marco Foscato
  */
 
-public class Concept implements Cloneable
+public class Concept
 {
     /**
      * Type of concept

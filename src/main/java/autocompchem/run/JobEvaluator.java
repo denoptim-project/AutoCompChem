@@ -75,19 +75,6 @@ public class JobEvaluator extends Worker
     static {
     	EVALUATEJOBTASK = Task.make(EVALUATEJOBTASKNAME);
     }
-    
-    /**
-     * String defining the task of healing/fixing any job
-     */
-    public static final String CUREJOBTASKNAME = "cureJob";
-
-    /**
-     * Task about healing/fixing any job output
-     */
-    public static final Task CUREJOBTASK;
-    static {
-    	CUREJOBTASK = Task.make(CUREJOBTASKNAME);
-    }
 	
 	/**
 	 * The string used to identify the kind of termination of the evaluated job.
@@ -116,12 +103,6 @@ public class JobEvaluator extends Worker
 	 * The string used to identify the exception triggered by perception.
 	 */
 	public static final String EXCEPTION = "exception";
-	
-	/**
-	 * The string used to define a parameter that makes this evaluator run in
-	 * standalone fashion. This is used only for tests.
-	 */
-	protected static final String RUNSTANDALONE = "RUNSTANDALONE";
 	
     /**
      * Situation base: list of known situations/concepts
@@ -158,7 +139,6 @@ public class JobEvaluator extends Worker
     public Set<Task> getCapabilities() {
 		Set<Task> tmpSet = new HashSet<Task>();
 		tmpSet.add(EVALUATEJOBTASK);
-		tmpSet.add(CUREJOBTASK);
 		return Collections.unmodifiableSet(tmpSet);
     }
 
@@ -438,10 +418,6 @@ public class JobEvaluator extends Worker
 	@Override
 	public void performTask() 
 	{	
-		// Detect if this is a standalone cure job.
-		boolean standaloneCureJob = myJob.getObserver()==null 
-				&& (CUREJOBTASK.equals(task) || hasParameter(RUNSTANDALONE));
-		
 		// Prepare to perception.
 		Perceptron p = new Perceptron(sitsDB, icDB);
 		p.setTolerantMissingIC(tolerateMissingIC);
@@ -450,7 +426,6 @@ public class JobEvaluator extends Worker
 		// the log/output and detect which step of the job failed, then we get
 		// an accurate value, otherwise we assume it is only a single-step
 		// job.
-		int idxFocusJob = 0;
 		if (jobBeingEvaluated != null
 				&& jobBeingEvaluated.runsParallelSubjobs()
 				&& jobBeingEvaluated.getNumberOfSteps()>1)
@@ -484,12 +459,6 @@ public class JobEvaluator extends Worker
 						+ sit.getRefName());
 			} else {
 				logger.info("JobEvaluator: No known situation perceived.");
-				if (standaloneCureJob)
-				{
-					Terminator.withMsgAndStatus("Standalone job evaluation is "
-							+ "expected to detect a known error/situation, but "
-							+ "none was percieved.", -1);
-				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception while doing perception. ", e);
@@ -510,150 +479,8 @@ public class JobEvaluator extends Worker
 				// observer (if any observer is present)
 				((EvaluationJob) myJob).setRequestedAction(reaction);
 				exposeOutputData(new NamedData(REACTIONTOSITUATION, reaction));
-				
-				if (jobBeingEvaluated!=null)
-				{
-					// In case this is a stand-alone CURE-type job, we do the 
-					// action triggered by the jobBeingEvaluated here,
-					// but this is has limited capability: 
-					// it cannot restart the job,
-					// but it can prepare a new input.
-					if (standaloneCureJob)
-					{
-						//TODO-gg delete, mode CURE to JobAssistant
-						//healJob(jobBeingEvaluated, reaction, idxFocusJob);
-					}
-				}
 			}
 		}
-	}
-	
-//------------------------------------------------------------------------------
-	
-	private void healJob(Job jobToHeal, Action cure, int idxFocusJob) 
-	{
-		logger.info("Attempting to cure job. Reaction: " 
-				+ cure.getType() + " " 
-				+ cure.getObject());
-	
-		Job jobResultingFromAction = null;
-		if (jobToHeal.hasContainer())
-		{
-			if (jobToHeal.getContainer().runsParallelSubjobs())
-			{
-				// We have evaluated a job that is a part of a batch
-				// so, any action must be compatible with the lack
-				// of a linear workflow.
-				List<Job> newJobSteps = 
-						ActionApplier.performActionOnParallelBatch(
-								cure,   //action to perform
-								jobToHeal.getContainer(), //parallel batch
-								jobToHeal, //job causing the reaction
-								(EvaluationJob) myJob, //job doing the evaluation 
-								1); // restart counter
-				jobToHeal.getContainer().steps = newJobSteps;
-			} else {
-				int idxStepEvaluated = jobToHeal
-						.getContainer().getSteps().indexOf(
-								jobToHeal);
-				ActionApplier.performActionOnSerialWorkflow(
-						cure,   //action to perform
-						jobToHeal.getContainer(), //serial workflow
-						idxStepEvaluated, //id of step triggering reaction
-						1); // restart counter
-			}
-			jobResultingFromAction = jobToHeal.getContainer();
-		} else {
-			if (jobToHeal.getNumberOfSteps() > 0)
-			{
-				// jobToHeal is a workflow or a batch:
-				if (jobToHeal.runsParallelSubjobs())
-				{
-					// jobToHeal is a batch
-					List<Job> newJobSteps = 
-							ActionApplier.performActionOnParallelBatch(
-									cure,   //action to perform
-									jobToHeal, //parallel batch
-									jobToHeal.getStep(idxFocusJob), //job causing the reaction
-									(EvaluationJob) myJob, //job doing the evaluation 
-									1); // restart counter
-					jobToHeal.steps = newJobSteps;
-				} else {
-					// jobToHeal is a workflow
-					ActionApplier.performActionOnSerialWorkflow(
-							cure,   //action to perform
-							jobToHeal, //serial workflow
-							idxFocusJob, //id of step triggering reaction
-							1); // restart counter
-				}
-				jobResultingFromAction = jobToHeal;
-			} else {
-				// jobToHeal is a single, self-contained job.
-				// We can add any preliminary step only by embedding
-				// it into a workflow.
-				Job embeddingWorkflow = JobFactory.createTypedJob(jobToHeal);
-				embeddingWorkflow.addStep(jobToHeal);
-	
-				ActionApplier.performActionOnSerialWorkflow(
-						cure,   //action to perform
-						embeddingWorkflow, //serial workflow
-						0, //id of step triggering reaction
-						1); // restart counter
-				jobResultingFromAction = embeddingWorkflow;
-			}
-		}
-		
-		//TODO: we should return the jobResultingFromAction
-		
-		// Prepare generation of new input file
-		ParameterStorage makeInputPars = new ParameterStorage();
-		
-		makeInputPars.setParameter(WorkerConstants.PARTASK, 
-				Task.make("prepareInput").casedID);
-		if (exposedOutputCollector.contains(
-				WIROConstants.SOFTWAREID))
-		{
-			makeInputPars.setParameter(WIROConstants.SOFTWAREID, 
-					exposedOutputCollector.getNamedData(
-							WIROConstants.SOFTWAREID)
-					.getValueAsString());
-		} else {
-			makeInputPars.setParameter(WIROConstants.SOFTWAREID,
-					"ACC");
-		}
-		makeInputPars.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
-				jobResultingFromAction);
-		makeInputPars.setParameter(WIROConstants.PARIGNOREINPUTIAC);
-		
-		//TODO-gg this was the wrong way to do this. We need to make
-		// the action control whether or not to update the geometry 
-		// and which geometry to use as the new one (last, initial, 
-		// before oscillation, lowest energy) it 
-		/*
-		if (jobToHeal instanceof CompChemJob)
-		{
-			// Get geometry/ies for restart
-			List<IAtomContainer> iacs = ActionApplier.getRestartGeoms(
-					s.getReaction(), myJob);
-			makeInputPars.setParameter(ChemSoftConstants.PARGEOM, 
-					NamedDataType.UNDEFINED, iacs);
-		}
-		*/
-		if (hasParameter(WIROConstants.PAROUTFILE))
-		{
-			makeInputPars.setParameter(WIROConstants.PAROUTFILE,
-				params.getParameter(WIROConstants.PAROUTFILE)
-					.getValueAsString());
-		}
-		
-		Worker worker;
-		try {
-			worker = (Worker) 
-					WorkerFactory.createWorker(makeInputPars, myJob);
-		} catch (ClassNotFoundException e) {
-			throw new Error("Unable to make worker for " + task);
-		}
-		worker.performTask();
 	}
 	
 //------------------------------------------------------------------------------
@@ -722,6 +549,8 @@ public class JobEvaluator extends Worker
 		}
 		if (outputParser==null)
 		{
+			//TODO: we should have a general-purpose output reader where we can
+			// set step_separators from the job's Parameter_Storage
 			logger.warn("WARNING: "
 					+ "No suitable parser found for log/output file '"
 					+ fileToParse + "'.");
