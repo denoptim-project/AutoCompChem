@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -244,7 +245,8 @@ public class FileUtils
     	switch (mode.toUpperCase())
     	{
     		case "REGEX":
-    			pattern = pattern.replace("\\", "\\\\");
+    			//TODO-gg adjust code to the removal of this line
+    			//pattern = pattern.replace("\\", "\\\\");
     			break;
     			
     		case "GLOB":
@@ -593,6 +595,23 @@ public class FileUtils
 		} else {
 			file.delete();
 		}
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Checks if a string is an absolute pathname or not
+	 * @param pathname
+	 * @return
+	 */
+	public static boolean isAbsolutePath(String pathname) 
+	{
+	    if (pathname == null) {
+	        return false;
+	    }
+	    
+	    Path path = Paths.get(pathname);
+	    return path.isAbsolute();
 	}
 	
 //------------------------------------------------------------------------------

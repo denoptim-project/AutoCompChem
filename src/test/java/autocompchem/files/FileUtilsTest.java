@@ -464,4 +464,15 @@ sub2_abc/subsub2_abc
     
 //------------------------------------------------------------------------------
     
+    @Test
+    public void testIsAbsolutePath() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	assertTrue(FileUtils.isAbsolutePath(tempDir.getAbsolutePath()));
+    	assertFalse(FileUtils.isAbsolutePath("foo/bar"));
+    	assertFalse(FileUtils.isAbsolutePath("../foo/bar"));
+    }
+    
+//------------------------------------------------------------------------------
+    
 }
