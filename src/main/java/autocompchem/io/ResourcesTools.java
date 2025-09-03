@@ -17,11 +17,13 @@ package autocompchem.io;
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
  * Tools for handling resources
@@ -31,52 +33,45 @@ import java.util.List;
 
 public class ResourcesTools
 {
-
-//------------------------------------------------------------------------------
-
-	/*
-	 * Recursive method to explore resource tree
-	 */
-	private static void collectResources(File directory, List<String> resources, 
-			String prefix) 
-	{
-	    File[] files = directory.listFiles();
-	    if (files != null) 
-	    {
-	        for (File file : files) 
-	        {
-	            String resourcePath = prefix + file.getName();
-	            if (file.isDirectory()) 
-	            {
-	                collectResources(file, resources, resourcePath + "/");
-	            } else {
-	                resources.add(resourcePath);
-	            }
-	        }
-	    }
-	}
 	
 //------------------------------------------------------------------------------
 
 	/**
-	 * Returns the list of all resources found under the given path.
-	 * @param path the root where to start the search.
-	 * @return the list of pathnames for all resources.
-	 * @throws URISyntaxException
+	 * Looks for all resources under a given entry point defined by the "path",
+	 * i.e., the base path in the resources tree.
+	 * @param basePath the base path in the resources tree
+	 * @return the list of streams.
+	 * @throws IOException
 	 */
-	public static List<String> getAllResources(ClassLoader classLoader, 
-			String path) throws URISyntaxException
+	public static List<InputStream> getAllResourceStreams(String basePath) 
+			throws IOException
 	{
-	    List<String> resources = new ArrayList<>();
+	    PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 	    
-	    URL resource = classLoader.getResource(path);
-	    if (resource != null) 
-	    {
-	        File directory = new File(resource.toURI());
-	        collectResources(directory, resources, "");
-	    }
+	    // Use wildcard pattern to get all resources recursively
+	    String pattern = "classpath*:" + basePath + "/**/*";
+	    Resource[] resources = resolver.getResources(pattern);
 	    
-	    return resources;
+	    List<InputStream> streams = new ArrayList<>();
+		for (Resource resource : resources) {
+			if (resource.isReadable()) {
+				try {
+					// For file system resources, check if it's a directory
+					if (resource.getFile() != null && resource.getFile().isDirectory()) {
+						continue;
+					}
+				} catch (IOException e) {
+					// This is expected for JAR resources - they don't have File objects
+					// For JAR resources, check if filename suggests it's a file
+					String filename = resource.getFilename();
+					if (filename == null || filename.isEmpty()) {
+						continue;
+					}
+				}
+				streams.add(resource.getInputStream());
+			}
+		}
+	    return streams;
 	}
 	
 //------------------------------------------------------------------------------

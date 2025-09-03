@@ -141,6 +141,17 @@ public class SituationBase implements Cloneable
     }
     
 //------------------------------------------------------------------------------
+    
+    /**
+     * Returns the list of situations contained here.
+     * @return the list of situations contained here.
+     */
+    public List<Situation> getAllSituations()
+    {
+    	return allSituations;
+    }
+    
+//------------------------------------------------------------------------------
   	
     /**
      * Get default situations that pertain a specific software and that are
@@ -168,7 +179,7 @@ public class SituationBase implements Cloneable
   	}
 	
 //------------------------------------------------------------------------------
-  	
+    	
     /**
      * Get default situations from the ACC knowledgebase and that match the
      * given prefix.
@@ -178,25 +189,37 @@ public class SituationBase implements Cloneable
      * the ACC knowledgebase.
      * @throws IOException when failing to read resources
      */
-  	public static SituationBase getDefaultSituationDB(String prefix) 
-  			throws IOException
-  	{
-      	Gson reader = ACCJson.getReader();
+    public static SituationBase getDefaultSituationDB(String prefix) 
+    			throws IOException
+	{
       	String dbRoot = "knowledgebase/situations";
       	if (prefix!=null && !prefix.isBlank())
       	{
       		dbRoot = dbRoot + "/" + prefix.toLowerCase();
       	}
+    	return getSituationDB(dbRoot);
+	}
+	
+//------------------------------------------------------------------------------
+  	
+    /**
+     * Get situations from any base path in the resources.
+     * @param basepath the base path under which to search for situations.
+     * @return the collection of all the situations found in
+     * the base path.
+     * @throws IOException when failing to read resources
+     */
+  	public static SituationBase getSituationDB(String basepath) 
+  			throws IOException
+  	{
+      	Gson reader = ACCJson.getReader();
 
       	SituationBase sb = new SituationBase();
-    	ClassLoader cl = reader.getClass().getClassLoader();
         try 
         {
-			for (String pathname : ResourcesTools.getAllResources(cl, dbRoot))
+        	for (InputStream is : ResourcesTools.getAllResourceStreams(basepath))
 			{
-				pathname =  dbRoot + "/" + pathname;
-				InputStream ins = cl.getResourceAsStream(pathname);
-				BufferedReader br = new BufferedReader(new InputStreamReader(ins));
+        		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				Situation s = reader.fromJson(br, Situation.class);
 			    try {
 					br.close();
@@ -208,7 +231,8 @@ public class SituationBase implements Cloneable
 				sb.addSituation(s);
 			}
 		} catch (Throwable t) {
-			throw new IOException("Could not read situations from '" + dbRoot 
+			t.printStackTrace();
+			throw new IOException("Could not read situations from '" + basepath 
 					+ "'.", t);
 		}
   		return sb;

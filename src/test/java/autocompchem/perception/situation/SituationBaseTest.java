@@ -425,6 +425,24 @@ public class SituationBaseTest
 //------------------------------------------------------------------------------
     
     @Test
+    public void testGetSituationDB() throws Exception
+    {
+    	SituationBase sb = SituationBase.getSituationDB("test_situations");
+    	assertEquals(4, sb.getSituationCount());
+    	
+    	Set<String> expectedNames = Set.of(
+    			"Situation 1", //NB: there are 2 with the same name
+    			"Situation 2",
+    			"Situation 3");
+    	for (Situation s : sb.getAllSituations())
+    	{
+    		assertTrue(expectedNames.contains(s.getRefName()));
+    	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
     public void testJSONRoundTrip() throws Exception
     {
     	SituationBase original = getTestSituationBase();

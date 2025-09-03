@@ -102,7 +102,7 @@ public class InfoChannelBase
   	}
 	
 //------------------------------------------------------------------------------
-  	
+    	
     /**
      * Get default info channels from the ACC knowledgebase and that match the
      * given prefix.
@@ -112,26 +112,38 @@ public class InfoChannelBase
      * from the ACC knowledgebase.
      * @throws IOException when failing to read resources.
      */
-  	public static InfoChannelBase getDefaultInfoChannelDB(String prefix) 
+    public static InfoChannelBase getDefaultInfoChannelDB(String prefix) 
+    			throws IOException
+    {
+       	String dbRoot = "knowledgebase/infochannels";
+       	if (prefix!=null && !prefix.isBlank())
+       	{
+       		dbRoot = dbRoot + "/" + prefix.toLowerCase();
+       	}
+       	return getInfoChannelDB(dbRoot);
+    }  	
+	
+//------------------------------------------------------------------------------
+  	
+    /**
+     * Get info channels from any base path in the resources.
+     * @param basepath the base path under which to search for info channels.
+     * @return the collection of all the info channels found in
+     * the base path.
+     * @throws IOException when failing to read resources.
+     */
+  	public static InfoChannelBase getInfoChannelDB(String basepath) 
   			throws IOException
   	{
       	Gson reader = ACCJson.getReader();
-      	String dbRoot = "knowledgebase/infochannels";
-      	if (prefix!=null && !prefix.isBlank())
-      	{
-      		dbRoot = dbRoot + "/" + prefix.toLowerCase();
-      	}
-
       	InfoChannelBase icb = new InfoChannelBase();
     	ClassLoader cl = reader.getClass().getClassLoader();
         try 
         {
-			for (String pathname : ResourcesTools.getAllResources(cl, dbRoot))
+        	for (InputStream is : ResourcesTools.getAllResourceStreams(basepath))
 			{
-				pathname =  dbRoot + "/" + pathname;
-				InputStream ins = cl.getResourceAsStream(pathname);
-				BufferedReader br = new BufferedReader(new InputStreamReader(ins));
-				InfoChannel ic = reader.fromJson(br, InfoChannel.class);
+        		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        		InfoChannel ic = reader.fromJson(br, InfoChannel.class);
 			    try {
 					br.close();
 				} catch (IOException e) {
@@ -139,10 +151,10 @@ public class InfoChannelBase
 				} finally {
 					br.close();
 				}
-				icb.addChannel(ic);
+			    icb.addChannel(ic);
 			}
 		} catch (Throwable t) {
-			throw new IOException("Could not read InfoChannel from '" + dbRoot 
+			throw new IOException("Could not read InfoChannel from '" + basepath 
 					+ "'.", t);
 		}
   		return icb;

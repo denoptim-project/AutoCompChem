@@ -3,7 +3,11 @@ package autocompchem.io;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -40,12 +44,19 @@ public class ResourcesToolsTest
     @Test
     public void testGetAllResources() throws Exception
     {
-    	ClassLoader cl = getClass().getClassLoader();
-    	List<String> allLeaves = ResourcesTools.getAllResources(cl, "tree");
-    	assertEquals(3, allLeaves.size());
-    	assertTrue(allLeaves.contains("leaf-0"));
-    	assertTrue(allLeaves.contains("branch-a/leaf-a1"));
-    	assertTrue(allLeaves.contains("branch-b/leaf-b1"));
+      	List<InputStream> allStreams = ResourcesTools.getAllResourceStreams("tree");
+      	assertEquals(4, allStreams.size());
+      	
+      	Set<String> expectedContent = Set.of(
+      			"content of leaf-0\n", 
+      			"content of leaf-a1\n", 
+      			"content of leaf-b1\n", 
+      			"content of leaf-aa2\n");
+      	for (InputStream is : allStreams)
+      	{
+      		String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+      		assertTrue(expectedContent.contains(content));
+      	}
     }
     
 //------------------------------------------------------------------------------
