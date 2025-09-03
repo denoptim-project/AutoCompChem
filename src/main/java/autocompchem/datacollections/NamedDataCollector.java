@@ -202,6 +202,22 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
+     * @return a shallow copy of this collection of data
+     */
+    
+    public NamedDataCollector copy()
+    {
+    	NamedDataCollector ndc = new NamedDataCollector();
+    	for (NamedData e : allData.values())
+    	{
+    		ndc.putNamedData(e);
+    	}
+    	return ndc;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * @return a deep copy of this collection of data
      * @throws CloneNotSupportedException 
      */

@@ -342,9 +342,27 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
     
     /**
+     * @return a shallow copy of this collection of data
+     */
+    
+    public ParameterStorage copy()
+    {
+    	ParameterStorage ps = new ParameterStorage();
+    	for (NamedData e : allData.values())
+    	{
+    		ps.putNamedData(e);
+    	}
+    	return ps;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Return a deep clone
      * @returns a deep clone
      */
+    
+    @Override
     public ParameterStorage clone()
     {
     	ParameterStorage newPar = new ParameterStorage();
