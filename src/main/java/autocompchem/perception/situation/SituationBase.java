@@ -1,6 +1,11 @@
 package autocompchem.perception.situation;
 
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,14 +35,23 @@ import java.util.Set;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
 import autocompchem.files.FileUtils;
+import autocompchem.io.ACCJson;
 import autocompchem.io.IOtools;
+import autocompchem.io.ResourcesTools;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelTypeComparator;
+import autocompchem.worker.ConfigItem;
+import autocompchem.worker.Worker;
 
 
 /**
@@ -116,6 +130,80 @@ public class SituationBase
 			}
         }
     }
+    
+//------------------------------------------------------------------------------
+  	
+    /**
+     * Get default situations that pertain a specific software and that are
+     * available on the ACC knowledgebase.
+     * @param software the software name. 
+     * Case insensitive, as it is always converted to lower case.
+     * @param version the version identifier. Could be any string, even blank.
+     * Case insensitive, as it is always converted to lower case.
+     * @return the collection of all the situations matching the criterion.
+     * @throws IOException when failing to read resources
+     */
+  	public static SituationBase getDefaultSituationDB(String software, 
+  			String version) throws IOException
+  	{
+  		String prefix = "";
+      	if (software!=null && !software.isBlank())
+      	{
+      		prefix = software.toLowerCase();
+      		if (version!=null && !version.isBlank())
+          	{
+      			prefix = prefix + "_" + version.toLowerCase();
+          	}
+      	}
+      	return getDefaultSituationDB(prefix);
+  	}
+	
+//------------------------------------------------------------------------------
+  	
+    /**
+     * Get default situations from the ACC knowledgebase and that match the
+     * given prefix.
+     * @param prefix the partial folder tree under which to search for situations.
+     * Case insensitive, as it is always converted to lower case.
+     * @return the collection of all the situations that could be imported from 
+     * the ACC knowledgebase.
+     * @throws IOException when failing to read resources
+     */
+  	public static SituationBase getDefaultSituationDB(String prefix) 
+  			throws IOException
+  	{
+      	Gson reader = ACCJson.getReader();
+      	String dbRoot = "knowledgebase/situations";
+      	if (prefix!=null && !prefix.isBlank())
+      	{
+      		dbRoot = dbRoot + "/" + prefix.toLowerCase();
+      	}
+
+      	SituationBase sb = new SituationBase();
+    	ClassLoader cl = reader.getClass().getClassLoader();
+        try 
+        {
+			for (String pathname : ResourcesTools.getAllResources(cl, dbRoot))
+			{
+				pathname =  dbRoot + "/" + pathname;
+				InputStream ins = cl.getResourceAsStream(pathname);
+				BufferedReader br = new BufferedReader(new InputStreamReader(ins));
+				Situation s = reader.fromJson(br, Situation.class);
+			    try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					br.close();
+				}
+				sb.addSituation(s);
+			}
+		} catch (Throwable t) {
+			throw new IOException("Could not read situations from '" + dbRoot 
+					+ "'.", t);
+		}
+  		return sb;
+  	}
 
 //------------------------------------------------------------------------------
 
@@ -134,9 +222,7 @@ public class SituationBase
             if (situationsByICType.keySet().contains(ict))
             {
                 situationsByICType.get(ict).add(situation);
-            }
-            else
-            {
+            } else {
                 situationsByICType.put(ict,
                            new ArrayList<Situation>(Arrays.asList(situation)));
             }

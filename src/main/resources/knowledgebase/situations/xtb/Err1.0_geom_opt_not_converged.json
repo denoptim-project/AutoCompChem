@@ -6,7 +6,7 @@
     {
       "circumstance": "MatchText",
       "channel": "LOGFEED",
-      "pattern": "[ERROR] Program stopped due to fatal error"
+      "pattern": "Program stopped due to fatal error"
     },
     {
       "circumstance": "MatchText",

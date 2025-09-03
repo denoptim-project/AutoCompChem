@@ -298,7 +298,7 @@ public final class JobFactory
      * @return the job defined by the given parameters.
      */ 
 
-    private static Job createJob(ParameterStorage locPar)
+    public static Job createJob(ParameterStorage locPar)
     {
         Job job = new Job();
         

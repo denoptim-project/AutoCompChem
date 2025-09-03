@@ -200,6 +200,7 @@ public class JobAssistant extends Worker
 	@Override
 	public void performTask() 
 	{
+		/*
 		//TODO replace with sensible content: this is only for testing
         ICircumstance c = new MatchText("Geometry optimization did not converge", 
         		InfoChannelType.LOGFEED);
@@ -228,7 +229,7 @@ public class JobAssistant extends Worker
         IOtools.writeTXTAppend(new File("/tmp/c.json"), writer.toJson(c), false);
         IOtools.writeTXTAppend(new File("/tmp/s.json"), writer.toJson(sit1), false);
         IOtools.writeTXTAppend(new File("/tmp/icDB.json"), writer.toJson(icDB), false);
-        
+        */
 		
         
 		// Define the assisted workflow
@@ -254,7 +255,10 @@ public class JobAssistant extends Worker
 		assistedWorkflow.addStep(monitoredRun);
 		
 		// Finally, the evaluation job
-		EvaluationJob evalJob = new EvaluationJob(assistedJob, null, sitsDB, icDB);
+		ParameterStorage parsToEvaluationJob = params.clone();
+		parsToEvaluationJob.removeData(WorkerConstants.PARTASK);
+		EvaluationJob evalJob = new EvaluationJob(assistedJob);
+		evalJob.setParameters(parsToEvaluationJob);
 		assistedWorkflow.addStep(evalJob);
 		
 		// Run the assisted workflow, possibly including restarts

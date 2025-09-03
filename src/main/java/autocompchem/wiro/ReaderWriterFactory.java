@@ -133,8 +133,8 @@ public final class ReaderWriterFactory
 	 * Identifies the software that generated the file or file structure based
 	 * on the list of registered {@link ChemSoftOutputReader}s.
 	 * @param file the output to read. Note it can be a file or a folder.
-	 * @return the name of the software or null if the identification was not
-	 * successful.
+	 * @return the name of the software or <code>null</code> if the 
+	 * identification was not successful.
 	 * @throws FileNotFoundException  if the output does not exist.
 	 */
 	

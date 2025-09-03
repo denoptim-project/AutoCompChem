@@ -1,5 +1,6 @@
 package autocompchem.run;
 
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -340,27 +341,66 @@ public class JobEvaluator extends Worker
 					ParameterConstants.JOBTOEVALUATE).getValue();
 		}
     	
-		String whatIsNull = "";
-		if (sitsDB==null)
+		if (sitsDB==null || icDB==null)
 		{
-			if (!whatIsNull.equals(""))
+			//Try to detect the kind of ouput to analyze.
+			if (!params.contains(WIROConstants.PARJOBOUTPUTFILE))
 			{
-				whatIsNull=whatIsNull + ", and ";
+				Terminator.withMsgAndStatus("ERROR: cannot detect the type of "
+						+ "output to analyze. Make sure the parameter '" 
+						+ WIROConstants.PARJOBOUTPUTFILE + "' is given or "
+						+ "specify lists of know situations and info channels. "
+						+ "Cannot use default configuration without "
+						+ "understanding the kind of job to analyze.", -1);
 			}
-			whatIsNull=whatIsNull + "a collection of known situations";
-		}
-		if (icDB==null)
-		{
-			if (!whatIsNull.equals(""))
+			File jobOutFile = new File(params.getParameter(
+					WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
+			FileUtils.foundAndPermissions(jobOutFile, true, false, false);
+			SoftwareId software = null;
+			try {
+				software = ReaderWriterFactory.detectOutputFormat(jobOutFile);
+			} catch (FileNotFoundException e) {
+				// Cannot happen!
+			}
+			
+			if (sitsDB==null)
 			{
-				whatIsNull=whatIsNull + ", and ";
+				logger.info("Trying to use default list on known situations.");
+				try {
+					sitsDB = SituationBase.getDefaultSituationDB(
+							software.toString());
+				} catch (IOException e) {
+					Terminator.withMsgAndStatus("ERROR: cannot use default "
+							+ "list of known situations when using software '" 
+							+ software + "'. "
+							+ "Try to specify a dedicated list on known "
+							+ "situations.", -1, e);
+				}
 			}
-			whatIsNull=whatIsNull + "a collection of information channels";
-		}
-		if (!whatIsNull.equals(""))
-		{
-			Terminator.withMsgAndStatus("ERROR! Cannot evaluate job. Missing "
-					+ whatIsNull + ".", -1);
+			if (icDB==null)
+			{
+				logger.info("Trying to use default configuration of info "
+						+ "channels.");
+				try {
+					icDB = InfoChannelBase.getDefaultInfoChannelDB(
+							software.toString());
+				} catch (Exception e) {
+					Terminator.withMsgAndStatus("ERROR: cannot use default "
+							+ "configuration of info channels when using "
+							+ "software '" + software + "'. "
+							+ "Try to specify a dedicated configuration of "
+							+ "info channels using "
+							+ ParameterConstants.INFOCHANNELSDB + ", or "
+							+ ParameterConstants.INFOSRCLOGFILES + ", "
+							+ ParameterConstants.INFOSRCOUTPUTFILES + ", "
+							+ ParameterConstants.INFOSRCJOBDETAILS + ", and "
+							+ ParameterConstants.INFOSRCINPUTFILES + ".", -1, e);
+				}
+				icDB = new InfoChannelBase();
+				icDB.addChannel(new FileAsSource(jobOutFile.getAbsolutePath(), 
+						InfoChannelType.LOGFEED));
+				tolerateMissingIC = true;
+			}
 		}
 	}
 	
@@ -397,19 +437,7 @@ public class JobEvaluator extends Worker
 	
 	@Override
 	public void performTask() 
-	{
-		// Pre-flight checks
-		if (sitsDB.getSituationCount()==0)
-		{
-			Terminator.withMsgAndStatus("ERROR! List of known situations is "
-					+ "empty! Some knowledge is needed to do perception.",-1);
-		}
-		if (icDB.getInfoChannelCount()==0)
-		{
-			Terminator.withMsgAndStatus("ERROR! List of information channels "
-					+ "is empty! Information is needed to do perception.",-1);
-		}
-		
+	{	
 		// Detect if this is a standalone cure job.
 		boolean standaloneCureJob = myJob.getObserver()==null 
 				&& (CUREJOBTASK.equals(task) || hasParameter(RUNSTANDALONE));

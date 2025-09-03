@@ -1,5 +1,9 @@
 package autocompchem.perception.infochannel;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +30,7 @@ import java.util.Map;
 
 import java.util.Set;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -34,6 +39,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+
+import autocompchem.io.ACCJson;
+import autocompchem.io.ResourcesTools;
+import autocompchem.perception.situation.Situation;
+import autocompchem.perception.situation.SituationBase;
 
 /**
  * A list of information channels
@@ -63,6 +73,80 @@ public class InfoChannelBase
     public InfoChannelBase() 
     {
     }
+    
+//------------------------------------------------------------------------------
+  	
+    /**
+     * Get default info channels configuration that pertain a specific software 
+     * and that is available on the ACC knowledgebase.
+     * @param software the software name. 
+     * Case insensitive, as it is always converted to lower case.
+     * @param version the version identifier. Could be any string, even blank.
+     * Case insensitive, as it is always converted to lower case.
+     * @return the collection of all the info channels matching the criterion.
+     * @throws IOException when failing to read resources.
+     */
+  	public static InfoChannelBase getDefaultInfoChannelDB(String software, 
+  			String version) throws IOException
+  	{
+  		String prefix = "";
+      	if (software!=null && !software.isBlank())
+      	{
+      		prefix = software.toLowerCase();
+      		if (version!=null && !version.isBlank())
+          	{
+      			prefix = prefix + "_" + version.toLowerCase();
+          	}
+      	}
+      	return getDefaultInfoChannelDB(prefix);
+  	}
+	
+//------------------------------------------------------------------------------
+  	
+    /**
+     * Get default info channels from the ACC knowledgebase and that match the
+     * given prefix.
+     * @param prefix the partial folder tree under which to search for info
+     * channels. Case insensitive, as it is always converted to lower case.
+     * @return the collection of all the info channels that could be imported  
+     * from the ACC knowledgebase.
+     * @throws IOException when failing to read resources.
+     */
+  	public static InfoChannelBase getDefaultInfoChannelDB(String prefix) 
+  			throws IOException
+  	{
+      	Gson reader = ACCJson.getReader();
+      	String dbRoot = "knowledgebase/infochannels";
+      	if (prefix!=null && !prefix.isBlank())
+      	{
+      		dbRoot = dbRoot + "/" + prefix.toLowerCase();
+      	}
+
+      	InfoChannelBase icb = new InfoChannelBase();
+    	ClassLoader cl = reader.getClass().getClassLoader();
+        try 
+        {
+			for (String pathname : ResourcesTools.getAllResources(cl, dbRoot))
+			{
+				pathname =  dbRoot + "/" + pathname;
+				InputStream ins = cl.getResourceAsStream(pathname);
+				BufferedReader br = new BufferedReader(new InputStreamReader(ins));
+				InfoChannel ic = reader.fromJson(br, InfoChannel.class);
+			    try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					br.close();
+				}
+				icb.addChannel(ic);
+			}
+		} catch (Throwable t) {
+			throw new IOException("Could not read InfoChannel from '" + dbRoot 
+					+ "'.", t);
+		}
+  		return icb;
+  	}
 
 //------------------------------------------------------------------------------
 

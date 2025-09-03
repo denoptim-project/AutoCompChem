@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli25.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "default list .* situations" "cli25.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "default list .* configuration of info channels" "cli25.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "run did NOT terminate normally" "cli25.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Situation perceived.*xtb-e1.0_GeomOptNotConverged" "cli25.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli25.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

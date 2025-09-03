@@ -398,8 +398,7 @@ public class ACCMain
         if (foundTask && !foundParams && !foundJob)
         {
             // Finally, pack all into a job
-            job = JobFactory.createJob(SoftwareId.ACC);
-            job.setParameters(params);
+            job = JobFactory.createJob(params);
         }
         
         if (job == null)

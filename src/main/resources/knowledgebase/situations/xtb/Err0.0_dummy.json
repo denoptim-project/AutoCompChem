@@ -1,0 +1,12 @@
+{
+  "type": "ERROR",
+  "refName": "xtb-e0.0_dummy",
+  "description": "This is only for testing purposes",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "This text should never be matched"
+    }
+  ]
+}
