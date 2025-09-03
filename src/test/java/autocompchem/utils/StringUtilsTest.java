@@ -330,6 +330,18 @@ public class StringUtilsTest
     	}
     	assertTrue(hasTrhown);
     }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testIsValidRegex() throws Exception
+    {
+    	assertTrue(StringUtils.isValidRegex("foobar"));
+    	assertTrue(StringUtils.isValidRegex(".*[a-z]+\\d+"));
+    	assertFalse(StringUtils.isValidRegex("*"));
+    	assertFalse(StringUtils.isValidRegex("[abc"));
+    	assertFalse(StringUtils.isValidRegex("ab\\"));
+    }
     			
 //------------------------------------------------------------------------------
 

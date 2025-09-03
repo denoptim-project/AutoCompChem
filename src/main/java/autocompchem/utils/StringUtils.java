@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
  */
 
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Toolbox for strings
@@ -410,6 +411,23 @@ public class StringUtils
         }
         
         throw new IllegalArgumentException("Cannot parse boolean from: " + value);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Checks if the given string is a valid REGEX
+     * @param regex string to test
+     * @return <code>true</code> if the string can be used as REGEX
+     */
+    public static boolean isValidRegex(String regex) 
+    {
+        try {
+            Pattern.compile(regex);
+            return true;
+        } catch (PatternSyntaxException e) {
+            return false;
+        }
     }
     
 //------------------------------------------------------------------------------
