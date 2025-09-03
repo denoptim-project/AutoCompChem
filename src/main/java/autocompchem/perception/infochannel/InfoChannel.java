@@ -9,6 +9,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import autocompchem.io.ACCJson;
+import autocompchem.perception.situation.Situation;
+
 /*
  *   Copyright (C) 2018  Marco Foscato
  *
@@ -33,7 +36,7 @@ import com.google.gson.JsonParseException;
  * @author Marco Foscato
  */
 
-public abstract class InfoChannel
+public abstract class InfoChannel implements Cloneable
 {
 	/**
 	 * JSON name to identify subclass implementation
@@ -172,6 +175,18 @@ public abstract class InfoChannel
         
         return true;
     }
+  	
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public InfoChannel clone()
+  	{
+  		// Shortcut via json serialization to avoid implementing Cloneable
+  		// in all implementations of ICircumstance
+  		InfoChannel clone = ACCJson.getReader().fromJson(
+  				ACCJson.getWriter().toJson(this), InfoChannel.class);
+  		return clone;
+  	}
     
 //-----------------------------------------------------------------------------
     

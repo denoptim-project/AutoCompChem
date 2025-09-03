@@ -31,9 +31,11 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 
+import autocompchem.io.ACCJson;
 import autocompchem.perception.SCPair;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.CountTextMatches;
@@ -419,6 +421,54 @@ public class SituationBaseTest
 		assertTrue(sits.contains(s3));
 		assertFalse(sits.contains(s2));
 	}
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testJSONRoundTrip() throws Exception
+    {
+    	SituationBase original = getTestSituationBase();
+         
+         Gson writer = ACCJson.getWriter();
+         Gson reader = ACCJson.getReader();
+          
+         String json = writer.toJson(original);
+          
+         SituationBase fromJson = reader.fromJson(json, SituationBase.class);
+         assertEquals(original, fromJson);
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testEquals() throws Exception
+    {
+    	SituationBase a1 = getTestSituationBase();
+    	SituationBase a2 = getTestSituationBase();
+
+        assertTrue(a1.equals(a2));
+        assertTrue(a2.equals(a1));
+        assertTrue(a1.equals(a1));
+        assertFalse(a1.equals(null));
+
+        a2 = getTestSituationBase();
+        a2.addSituation(SituationTest.getTestSituation()); 
+        assertFalse(a1.equals(a2));
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	SituationBase s1 = getTestSituationBase();
+    	SituationBase cl1 = s1.clone();
+		assertTrue(s1.equals(cl1));
+		assertFalse(s1 == cl1);
+		
+        s1.addSituation(SituationTest.getTestSituation()); 
+		assertFalse(s1.equals(cl1));
+    }
 
 //------------------------------------------------------------------------------
 

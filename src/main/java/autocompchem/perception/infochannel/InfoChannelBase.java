@@ -287,6 +287,21 @@ public class InfoChannelBase
         	return icb;
         }
     }
+  	
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public InfoChannelBase clone()
+  	{
+  		InfoChannelBase clone = new InfoChannelBase();
+  		// This way we construct also the mapping that is not serialized
+        InfoChannelBase icb = new InfoChannelBase();
+        for (InfoChannel ic : this.allInfoChannels)
+        {
+        	icb.addChannel(ic);
+        }
+  		return clone;
+  	}
     
 //------------------------------------------------------------------------------
 

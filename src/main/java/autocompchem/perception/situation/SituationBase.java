@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,6 +55,7 @@ import autocompchem.io.ResourcesTools;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
+import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelTypeComparator;
@@ -60,7 +69,7 @@ import autocompchem.worker.Worker;
  * @author Marco Foscato
  */
 
-public class SituationBase
+public class SituationBase implements Cloneable
 {
     /**
      * List of situations
@@ -410,6 +419,85 @@ public class SituationBase
         }
         sb.append("]");
         return sb.toString();
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class SituationBaseSerializer 
+    implements JsonSerializer<SituationBase>
+    {
+        @Override
+        public JsonElement serialize(SituationBase sb, Type typeOfSrc,
+              JsonSerializationContext context)
+        {
+            JsonObject jsonObject = new JsonObject();
+            
+            jsonObject.add("Situations", context.serialize(sb.allSituations));
+
+            return jsonObject;
+        }
+    }
+    
+//------------------------------------------------------------------------------
+
+    public static class SituationBaseDeserializer 
+    implements JsonDeserializer<SituationBase>
+    {
+        @Override
+        public SituationBase deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject jsonObject = json.getAsJsonObject();
+            
+            List<Situation> situations = context.deserialize(
+            		jsonObject.get("Situations"),
+					new TypeToken<ArrayList<Situation>>(){}.getType());
+            
+            // This way we construct also the mapping that is not serialized
+            SituationBase sb = new SituationBase();
+            for (Situation s : situations)
+            {
+            	sb.addSituation(s);
+            }
+        	
+        	return sb;
+        }
+    }
+  	
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public SituationBase clone()
+  	{
+  		SituationBase clone = new SituationBase();
+  		// This way we populate the maps properly
+  		for (Situation originalSit : allSituations)
+  		{
+  			clone.addSituation(originalSit.clone());
+  		}
+  		return clone;
+  	}
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null)
+            return false;
+        
+        if (o == this)
+            return true;
+        
+        if (o.getClass() != getClass())
+        	return false;
+         
+        SituationBase other = (SituationBase) o;
+         
+        if (!this.allSituations.equals(other.allSituations))
+        	return false;
+        
+        return true;
     }
 
 //------------------------------------------------------------------------------

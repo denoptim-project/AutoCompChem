@@ -31,6 +31,10 @@ import autocompchem.molecule.conformation.ConformationalSpace;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
+import autocompchem.perception.infochannel.InfoChannel;
+import autocompchem.perception.infochannel.InfoChannelBase;
+import autocompchem.perception.situation.Situation;
+import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
 import autocompchem.run.jobediting.Action;
 import autocompchem.text.TextBlock;
@@ -92,6 +96,7 @@ public class NamedData implements Cloneable
         ATOMCONTAINERSET,
         SITUATION,
         SITUATIONBASE,
+        INFOCHANNEL,
         INFOCHANNELBASE,
         JOB,
         FILE,
@@ -124,6 +129,11 @@ public class NamedData implements Cloneable
             		NamedDataType.ZMATRIX,
             		NamedDataType.JOB,
             		NamedDataType.ANNOTATEDATOMTUPLELIST,
+            		NamedDataType.ACTION,
+            		NamedDataType.SITUATION,
+            		NamedDataType.SITUATIONBASE,
+            		NamedDataType.INFOCHANNEL,
+            		NamedDataType.INFOCHANNELBASE,
             		NamedDataType.CONFORMATIONALSPACE));
     // NB: when extending the above list, remember to add the corresponding case
     // in the NamedDataDeserializer!
@@ -494,6 +504,18 @@ public class NamedData implements Cloneable
     			tp = NamedDataType.SITUATION;
     			break;
 
+    		case ("SituationBase"):
+    			tp = NamedDataType.SITUATIONBASE;
+    			break;
+
+    		case ("InfoChannel"):
+    			tp = NamedDataType.INFOCHANNEL;
+    			break;
+
+    		case ("InfoChannelBase"):
+    			tp = NamedDataType.INFOCHANNELBASE;
+    			break;
+
     		case ("String"):
     			tp = NamedDataType.STRING;
     			break;
@@ -512,6 +534,10 @@ public class NamedData implements Cloneable
     			
     		case ("NormalModeSet"):
     			tp = NamedDataType.NORMALMODESET;
+    			break;
+
+    		case ("Job"):
+    			tp = NamedDataType.JOB;
     			break;
     			
     		case ("Action"):
@@ -652,9 +678,27 @@ public class NamedData implements Cloneable
 	        	
 	        case ANNOTATEDATOMTUPLELIST:
 	        	cVal = ((AnnotatedAtomTupleList) value).clone();
+	        	break;
 
 	        case CONFORMATIONALSPACE:
 	        	cVal = ((ConformationalSpace) value).clone();
+	        	break;
+	        	
+	        case SITUATION:
+	        	cVal = ((Situation) value).clone();
+	        	break;
+	        	
+	        case SITUATIONBASE:
+	        	cVal = ((SituationBase) value).clone();
+	        	break;
+	        	
+	        case INFOCHANNEL:
+	        	cVal = ((InfoChannel) value).clone();
+	        	break;
+	        	
+	        case INFOCHANNELBASE:
+	        	cVal = ((InfoChannelBase) value).clone();
+	        	break;
 	        	
 	        default:
 	        	cVal = value.toString();
@@ -833,6 +877,21 @@ public class NamedData implements Cloneable
 					break;
 				case JOB:
 					joValue = context.deserialize(je, Job.class);
+					break;
+				case INFOCHANNEL:
+					joValue = context.deserialize(je, InfoChannel.class);
+					break;
+				case INFOCHANNELBASE:
+					joValue = context.deserialize(je, InfoChannelBase.class);
+					break;
+				case SITUATION:
+					joValue = context.deserialize(je, Situation.class);
+					break;
+				case SITUATIONBASE:
+					joValue = context.deserialize(je, SituationBase.class);
+					break;
+				case ACTION:
+					joValue = context.deserialize(je, Action.class);
 					break;
 				case ANNOTATEDATOMTUPLELIST:
 					joValue = context.deserialize(je, 

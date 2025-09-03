@@ -47,7 +47,7 @@ import jakarta.el.VariableMapper;
  * @author Marco Foscato
  */
 
-public class Situation extends Concept
+public class Situation extends Concept implements Cloneable
 {   
     /**
      * Details describing this situation
@@ -473,6 +473,18 @@ public class Situation extends Concept
         sb.append("]]");
         return sb.toString();
     }
+  	
+//-----------------------------------------------------------------------------
+
+  	@Override
+  	public Situation clone()
+  	{
+  		// Shortcut via json serialization to avoid implementing Cloneable
+  		// in all implementations of ICircumstance
+  		Situation clone = ACCJson.getReader().fromJson(
+  				ACCJson.getWriter().toJson(this), Situation.class);
+  		return clone;
+  	}
 
 //------------------------------------------------------------------------------
 

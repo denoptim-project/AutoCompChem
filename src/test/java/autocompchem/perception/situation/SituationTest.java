@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
+import autocompchem.molecule.conformation.ConformationalCoordinate;
+import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
 import autocompchem.perception.circumstance.Circumstance;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.MatchText;
@@ -61,6 +63,20 @@ public class SituationTest
         		InfoChannelType.OUTPUTFILE));
         s.setReaction(ActionTest.getTestAction());
         return s;
+    }
+	
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testClone() throws Exception
+    {
+    	Situation s1 = getTestSituation();
+    	Situation cl1 = s1.clone();
+		assertTrue(s1.equals(cl1));
+		assertFalse(s1 == cl1);
+		
+		s1.setDescription("changed description");
+		assertFalse(s1.equals(cl1));
     }
     
 //------------------------------------------------------------------------------
@@ -107,12 +123,7 @@ public class SituationTest
     @Test
     public void testJSONRoundTrip() throws Exception
     {
-         Situation original = new Situation();
-         original.addCircumstance(new MatchText("patternToMatch", true, 
-                 InfoChannelType.OUTPUTFILE));
-         original.addCircumstance(new CountTextMatches("counter", 3, 6, 
-                 InfoChannelType.OUTPUTFILE));
-         original.setReaction(ActionTest.getTestAction());
+         Situation original = getTestSituation();
          
          Gson writer = ACCJson.getWriter();
          Gson reader = ACCJson.getReader();
