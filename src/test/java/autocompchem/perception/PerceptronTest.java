@@ -161,6 +161,7 @@ public class PerceptronTest
         sitsBase1.addSituation(sit1);
 
         Perceptron prc = new Perceptron(sitsBase1,icb);
+        prc.setTolerantMissingIC(true);
         prc.perceive();
 
         assertEquals(true, prc.isAware(), "Perception awareness");
@@ -183,6 +184,7 @@ public class PerceptronTest
         sitsBase1.addSituation(sit2);
 
         prc = new Perceptron(sitsBase1,icb);
+        prc.setTolerantMissingIC(true);
         prc.perceive();
 
         assertEquals(false,prc.isAware(),"Perception awareness (2)");

@@ -201,12 +201,11 @@ public class JobAssistant extends Worker
 	{   
 		// Define the assisted workflow
         ACCJob assistedWorkflow = new ACCJob();
-        //TODO set this as parent of assistedWorkflow
 		
 		// First step, is the preparation of the input
-		ParameterStorage parsToMakeInput = params.clone();
+		ParameterStorage parsToMakeInput = params.copy();
 		parsToMakeInput.setParameter(WorkerConstants.PARTASK, 
-				Task.make("prepareInput").casedID);
+				InputWriter.PREPAREINPUTTASK.casedID);
 		parsToMakeInput.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
 				assistedJob);
 		
@@ -216,14 +215,15 @@ public class JobAssistant extends Worker
 		
 		// Next, the actual run of the assisted job
 		Job monitoredRun = new ACCJob();
-		//TODO: set parent-child relation
 		//monitoredRun.addStep(monitoringJob);
 		monitoredRun.addStep(runJob);
 		assistedWorkflow.addStep(monitoredRun);
 		
 		// Finally, the evaluation job
-		ParameterStorage parsToEvaluationJob = params.clone();
-		parsToEvaluationJob.removeData(WorkerConstants.PARTASK);
+		ParameterStorage parsToEvaluationJob = params.copy();
+		parsToEvaluationJob.setParameter(WorkerConstants.PARTASK,
+				JobEvaluator.EVALUATEJOBTASK.casedID);
+		//TODO: the parameters defined on the constructor are overwritten by setParameters
 		EvaluationJob evalJob = new EvaluationJob(assistedJob);
 		evalJob.setParameters(parsToEvaluationJob);
 		assistedWorkflow.addStep(evalJob);

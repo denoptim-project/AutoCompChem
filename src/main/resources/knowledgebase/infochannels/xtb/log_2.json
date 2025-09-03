@@ -1,5 +1,5 @@
 {
   "Implementation": "FILEASSOURCE",
   "infoChannelType": "LOGFEED",
-  "pathName": "*.log"
+  "pathName": ".*\\.log"
 }

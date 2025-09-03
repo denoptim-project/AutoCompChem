@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -155,15 +156,17 @@ public class InfoChannelBaseTest
     	icb.addChannel(nonRegex);
     	icb.addChannel(EnvironmentAsSourceTest.getTestInstance());
     	icb.addChannel(ShortTextAsSourceTest.getTestInstance());
-    	
-    	assertEquals(icb, icb.getSpecific(tempDir.toPath()));
+
+    	List<InfoChannel> lostICs = new ArrayList<InfoChannel>();
+    	assertEquals(icb, icb.getSpecific(tempDir.toPath(), lostICs));
     	
     	// Replace a wildecard-based channel with the concrete ones
     	FileAsSource fasWithStar = new FileAsSource(".*\\.ext$", 
     			InfoChannelType.LOGFEED);
     	icb.addChannel(fasWithStar);
     	
-    	InfoChannelBase specICB = icb.getSpecific(tempDir.toPath());
+    	lostICs = new ArrayList<InfoChannel>();
+    	InfoChannelBase specICB = icb.getSpecific(tempDir.toPath(), lostICs);
     	
     	assertNotEquals(icb, specICB);
     	assertEquals(5, specICB.getInfoChannelCount());

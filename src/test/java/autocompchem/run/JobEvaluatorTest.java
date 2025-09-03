@@ -69,7 +69,7 @@ public class JobEvaluatorTest
         
         File existingFile = new File(
         		tempDir.getAbsolutePath() + SEP + "file.out");
-        IOtools.writeTXTAppend(existingFile, "Text TRIGGERS REACTION", false);
+        IOtools.writeTXTAppend(existingFile, "  |  x T B  |  \nText TRIGGERS REACTION", false);
 
         // NB: this situation is not related to any specific step of the job
         // being evaluated. Also, without an interpreted of the ICfeed that
@@ -124,7 +124,7 @@ public class JobEvaluatorTest
         
         File existingFile = new File(
         		tempDir.getAbsolutePath() + SEP + "file.out");
-        IOtools.writeTXTAppend(existingFile, "Text TRIGGERS REACTION", false);
+        IOtools.writeTXTAppend(existingFile, "  |  x T B  |  \nText TRIGGERS REACTION", false);
 
         // NB: this situation is not related to any specific step of the job
         // being evaluated. Also, without an interpreted of the ICfeed that
@@ -205,7 +205,7 @@ public class JobEvaluatorTest
     	assertNotNull(output.getNamedData(JobEvaluator.SITUATIONOUTKEY, true));
     	
     	icDB.addChannel(new FileAsSource("non_existing_pathname", 
-    			InfoChannelType.OUTPUTFILE));
+    			InfoChannelType.LOGFEED));
     	output = new NamedDataCollector();
     	w.setDataCollector(output);
     	w.performTask();

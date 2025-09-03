@@ -308,15 +308,24 @@ public class InfoChannelBase
      * (e.g., a REGEX) is replaced with one or more channels with 
      * the actual value upon applying the query to the context where this
      * is called (i.e., work directory and environment).
+     * @param wdir the work directory to consider
+     * @param lostICs a collector of channels that do not have any specific 
+     * version and are, therefore, lost.
+     * @return
      */
-    public InfoChannelBase getSpecific(Path wdir)
+    public InfoChannelBase getSpecific(Path wdir, List<InfoChannel> lostICs)
     {
       	InfoChannelBase specificICB = new InfoChannelBase();
         for (InfoChannel ic : this.allInfoChannels)
         {
-        	for (InfoChannel specIC : ic.getSpecific(wdir))
+        	List<InfoChannel> newICs = ic.getSpecific(wdir);
+        	for (InfoChannel specIC : newICs)
         	{
         		specificICB.addChannel(specIC);
+        	}
+        	if (newICs.size()==0)
+        	{
+        		lostICs.add(ic);
         	}
         }
         return specificICB;

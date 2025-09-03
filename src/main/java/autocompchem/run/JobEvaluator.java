@@ -42,7 +42,6 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
-import autocompchem.run.jobediting.ActionApplier;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.WIROConstants;
@@ -51,7 +50,6 @@ import autocompchem.wiro.chem.ChemSoftOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;
-import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -320,28 +318,47 @@ public class JobEvaluator extends Worker
 			jobBeingEvaluated = (Job) params.getParameter(
 					ParameterConstants.JOBTOEVALUATE).getValue();
 		}
+		
+		if (jobBeingEvaluated==null && ((EvaluationJob) myJob).getFocusJob()!=null)
+		{
+			jobBeingEvaluated = ((EvaluationJob) myJob).getFocusJob();
+		}
     	
 		if (sitsDB==null || icDB==null)
 		{
-			//Try to detect the kind of ouput to analyze.
-			if (!params.contains(WIROConstants.PARJOBOUTPUTFILE))
-			{
-				Terminator.withMsgAndStatus("ERROR: cannot detect the type of "
-						+ "output to analyze. Make sure the parameter '" 
-						+ WIROConstants.PARJOBOUTPUTFILE + "' is given or "
-						+ "specify lists of know situations and info channels. "
-						+ "Cannot use default configuration without "
-						+ "understanding the kind of job to analyze.", -1);
-			}
-			File jobOutFile = new File(params.getParameter(
-					WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
-			FileUtils.foundAndPermissions(jobOutFile, true, false, false);
+
 			SoftwareId software = null;
-			try {
-				software = ReaderWriterFactory.detectOutputFormat(jobOutFile);
-			} catch (FileNotFoundException e) {
-				// Cannot happen!
-			}
+			//Try to detect the kind of ouput to analyze.
+			if (params.contains(WIROConstants.PARJOBOUTPUTFILE))
+			{
+				File jobOutFile = new File(params.getParameter(
+						WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
+				FileUtils.foundAndPermissions(jobOutFile, true, false, false);
+				try {
+					software = ReaderWriterFactory.detectOutputFormat(jobOutFile);
+				} catch (FileNotFoundException e) {
+					// Cannot happen!
+				}
+			} else if (params.contains(WIROConstants.SOFTWAREID)) {
+				software = new SoftwareId(params.getParameter(
+						WIROConstants.SOFTWAREID).getValueAsString());
+			} else if (jobBeingEvaluated!=null) {
+				SoftwareId temptative = jobBeingEvaluated.getAppID();
+				if (!SoftwareId.UNDEFINED.equals(temptative))
+				{
+					software = new SoftwareId(params.getParameter(
+							WIROConstants.SOFTWAREID).getValueAsString());
+				}
+			} else {
+				Terminator.withMsgAndStatus("ERROR: cannot infer the type of "
+						+ "output to analyze. External software not identified "
+						+ "by '" + WIROConstants.SOFTWAREID + "' and no '" 
+						+ WIROConstants.PARJOBOUTPUTFILE + "' is given. "
+						+ "Cannot choose software-specific configuration. "
+						+ "Please, provide one of the above parameters or "
+						+ "manually specify which lists of knwon situations "
+						+ "and info channels to use.", -1);
+			} 
 			
 			if (sitsDB==null)
 			{
@@ -354,7 +371,10 @@ public class JobEvaluator extends Worker
 							+ "list of known situations when using software '" 
 							+ software + "'. "
 							+ "Try to specify a dedicated list on known "
-							+ "situations.", -1, e);
+							+ "situations with " 
+							+ ParameterConstants.SITUATION + ", "
+							+ ParameterConstants.SITUATIONSDB + ", or "
+							+ ParameterConstants.SITUATIONSDBROOT + ".", -1, e);
 				}
 			}
 			if (icDB==null)
@@ -376,10 +396,14 @@ public class JobEvaluator extends Worker
 							+ ParameterConstants.INFOSRCJOBDETAILS + ", and "
 							+ ParameterConstants.INFOSRCINPUTFILES + ".", -1, e);
 				}
-				icDB = new InfoChannelBase();
-				icDB.addChannel(new FileAsSource(jobOutFile.getAbsolutePath(), 
-						InfoChannelType.LOGFEED));
 				tolerateMissingIC = true;
+				if (params.contains(WIROConstants.PARJOBOUTPUTFILE))
+				{
+					File jobOutFile = new File(params.getParameter(
+							WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
+					icDB.addChannel(new FileAsSource(jobOutFile.getAbsolutePath(), 
+						InfoChannelType.LOGFEED));
+				}
 			}
 		}
 	}
@@ -438,7 +462,12 @@ public class JobEvaluator extends Worker
 			// In here, we define what is the "focus job", i.e., the job
 			// that triggers the reaction. It can be jobBeingEvaluated, or
 			// one of its steps.
-			analyzeLogFilesSerialJob(p);
+			try {
+				analyzeLogFilesSerialJob(p);
+			} catch (Exception e) {
+				logger.error("Exception while doing perception. ", e);
+				exposeOutputData(new NamedData(EXCEPTION, e.toString()));
+			}
 			//TODO-gg del
 			/*
 			if (exposedOutputCollector.contains(NUMSTEPSKEY))
@@ -496,14 +525,17 @@ public class JobEvaluator extends Worker
 	{
 		List<InfoChannel> logChannels = icDB.getChannelsOfType(
 				InfoChannelType.LOGFEED);
-		for (InfoChannel log : logChannels)
+		for (InfoChannel ic : logChannels)
 		{
-			if (!(log instanceof FileAsSource))
+			if (!(ic instanceof FileAsSource))
 			{
-				Terminator.withMsgAndStatus("ERROR! Information channel '"
-						+ log + "' is not a log/output file I can read.",-1);
+				logger.warn("Information channel '"
+						+ ic + "' is not a log/output file I can read.");
+				continue;
 			}
-			analyzeLogFileOfSerialJob(p, (FileAsSource) log);
+			FileAsSource fas = (FileAsSource) ic;
+			
+			analyzeLogFileOfSerialJob(p, fas);
 		}
 	}
 	
@@ -529,9 +561,9 @@ public class JobEvaluator extends Worker
 		} else {
 			if (!tolerateMissingIC)
 			{
-				Terminator.withMsgAndStatus("ERROR: File '" + fileToParse 
+				throw new IllegalStateException("File '" + fileToParse 
 						+ "' is listed as " + InfoChannelType.LOGFEED
-						+ " but is not found.", -1);
+						+ " but is not found.");
 			}
 			return;
 		}
@@ -594,8 +626,9 @@ public class JobEvaluator extends Worker
 						ChemSoftOutputReader.MATCHESTOTEXTQRYSFORPERCEPTION)
 				.getValue();
 		for (TxtQuery tq : matchesByTQ.keySet())
+		{
 			p.collectPerceptionScoresForTxtMatchers(tq, matchesByTQ.get(tq));
-		
+		}
 
 		p.setInfoChannelAsRead(log);
 	}

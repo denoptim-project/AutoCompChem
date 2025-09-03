@@ -273,7 +273,7 @@ public class FileAsSource extends ReadableIC
 		{
 			regex = ".*" + pathName; 
 		}
-		if (StringUtils.isValidRegex(regex))
+		if (!FileUtils.isAbsolutePath(pathName) && StringUtils.isValidRegex(regex))
 		{
 			List<File> files = FileUtils.findByREGEX(wdir.toFile(), regex, 1, false);
 			for (File file : files)

@@ -1,6 +1,7 @@
 package autocompchem.perception;
 
 import java.io.BufferedReader;
+import java.nio.file.Paths;
 
 /*   
  *   Copyright (C) 2018  Marco Foscato 
@@ -62,8 +63,17 @@ public class Perceptron
 
     /**
      * Information channels base: list of available information channels
+     * that may include channels with wildcards.
      */
     private InfoChannelBase icb;
+    
+    /**
+     * Perception-specific Information channels base: this is made from the
+     * InfoChannelBase configured to this perceptron by replacing 
+     * wildcard-containing InfoChannel with concrete ones obtained after
+     * trying to match the wildcards within the corrent context. 
+     */
+    private InfoChannelBase specICB;
     
     /**
      * Information channels that have been visited
@@ -199,6 +209,17 @@ public class Perceptron
     public void perceive() throws Exception
     {
     	logger.trace(newline + "Perception from " + this.hashCode());
+    	
+    	// InfoChannels may include wildcards, so we need to change them
+    	// into concrete and unambiguous InfoChannels
+    	List<InfoChannel> lostICs = new ArrayList<InfoChannel>();
+    	specICB = icb.getSpecific(Paths.get("").toAbsolutePath(), lostICs);
+    	if (lostICs.size()>0 && !tolerateMissingIC)
+    	{ 
+    		throw new IllegalStateException("These info channels were not "
+    				+ "found: " 
+    				+ StringUtils.mergeListToString(lostICs, ", ", true));
+    	}
         
         //To read text files only once we run all text-matching queries in once
         analyzeAllText();
@@ -206,7 +227,7 @@ public class Perceptron
         logger.trace("Scores after text-only: " + scoreCollector.printToString());
 
         //Do actual perception
-        for (Situation s : sitsBase.getRelevantSituations(icb))
+        for (Situation s : sitsBase.getRelevantSituations(specICB))
         {
             // Check if each circumstance is verified.
             for (ICircumstance c : s.getCircumstances())
@@ -284,7 +305,7 @@ public class Perceptron
             double score = 1.0;
             
             // Scan all the input channels of relevant type
-            for (InfoChannel ic : icb.getChannelsOfType(c.getChannelType()))
+            for (InfoChannel ic : specICB.getChannelsOfType(c.getChannelType()))
             {	
             	logger.trace(newline +"Scanning InfoChannel: "+ic);
                 score = score * sc.calculateScore(ic);
@@ -311,7 +332,7 @@ public class Perceptron
     {
         //Sort info source by type.
         Map<InfoChannelType,List<Situation>> situationsByICType = 
-        		sitsBase.getRelevantSituationsByICT(icb);
+        		sitsBase.getRelevantSituationsByICT(specICB);
 
         // Explore all the information channels by type, so that we can take all
         // the Circumstances that involve such channel type
@@ -323,7 +344,7 @@ public class Perceptron
             		sitsBase.getAllTxTQueriesForICT(ict, true));
             
             // Scan all the input channels of the present type
-            for (InfoChannel ic : icb.getChannelsOfType(ict))
+            for (InfoChannel ic : specICB.getChannelsOfType(ict))
             {
             	if (previouslyReadInfoChannels.contains(ic))
             		continue;

@@ -10,7 +10,6 @@ import java.util.Objects;
  */
 public class SoftwareId 
 {
-
 	/**
 	 * The ID for shell jobs.
 	 */
