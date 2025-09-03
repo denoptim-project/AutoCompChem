@@ -2,6 +2,7 @@ package autocompchem.perception.infochannel;
 
 
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -111,6 +112,17 @@ public class JobDetailsAsSource extends InfoChannel
         	return jdas;
         }
     }
+
+//-----------------------------------------------------------------------------
+     
+    // This implementation does not get specific
+	@Override
+	public List<InfoChannel> getSpecific(Path wdir)
+	{
+		List<InfoChannel> results = new ArrayList<InfoChannel>();
+		results.add(this);
+		return results;
+	}
 
 //------------------------------------------------------------------------------
 

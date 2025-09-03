@@ -2,15 +2,22 @@ package autocompchem.perception.InfoChannel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.Gson;
 
+import autocompchem.files.FileUtils;
 import autocompchem.io.ACCJson;
+import autocompchem.io.IOtools;
 import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
@@ -18,7 +25,11 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 
-public class InfoChannelBaseTest {
+public class InfoChannelBaseTest 
+{
+
+    @TempDir 
+    File tempDir;
     
 //------------------------------------------------------------------------------
 
@@ -58,7 +69,7 @@ public class InfoChannelBaseTest {
 //------------------------------------------------------------------------------
     
     @Test
-    public void testGetSituationDB() throws Exception
+    public void testGetInfoChannelDB() throws Exception
     {
     	InfoChannelBase sb = InfoChannelBase.getInfoChannelDB("test_infochannels");
     	assertEquals(3, sb.getAllChannels().size());
@@ -92,6 +103,78 @@ public class InfoChannelBaseTest {
     	
     	InfoChannelBase fromJson = reader.fromJson(json, InfoChannelBase.class);
     	assertEquals(icb, fromJson);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetSpecific() throws Exception
+    {
+    	// Prepare files for test
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        
+        String filename = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "foo.bar";
+        File tmpFile = new File(filename);
+        IOtools.writeTXTAppend(tmpFile, "dummy content", false);
+        
+        String filename0 = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "tmp.txt";
+        File tmpFile0 = new File(filename0);
+        IOtools.writeTXTAppend(tmpFile0, "dummy content", false);
+        
+        String filename1 = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "tmp.ext1";
+        File tmpFile1 = new File(filename1);
+        IOtools.writeTXTAppend(tmpFile1, "dummy content", false);
+        
+        String filename2 = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "a.ext";
+        File tmpFile2 = new File(filename2);
+        IOtools.writeTXTAppend(tmpFile2, "dummy content", false);
+        
+        String filename3 = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "b.ext";
+        File tmpFile3 = new File(filename3);
+        IOtools.writeTXTAppend(tmpFile3, "dummy content", false);
+        
+        String dirName = tempDir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "dir";
+        File dir = new File(dirName);
+        dir.mkdir();
+        
+        String filename4 = dir.getAbsolutePath() 
+        		+ System.getProperty("file.separator") + "inner.ext";
+        File tmpFile4 = new File(filename4);
+        IOtools.writeTXTAppend(tmpFile4, "dummy content", false);
+       
+    	// No change if none of the channels has wildcards
+    	InfoChannelBase icb = new InfoChannelBase();
+    	FileAsSource nonRegex = new FileAsSource("[abs", 
+    			InfoChannelType.INPUTFILE);
+    	icb.addChannel(nonRegex);
+    	icb.addChannel(EnvironmentAsSourceTest.getTestInstance());
+    	icb.addChannel(ShortTextAsSourceTest.getTestInstance());
+    	
+    	assertEquals(icb, icb.getSpecific(tempDir.toPath()));
+    	
+    	// Replace a wildecard-based channel with the concrete ones
+    	FileAsSource fasWithStar = new FileAsSource(".*\\.ext$", 
+    			InfoChannelType.LOGFEED);
+    	icb.addChannel(fasWithStar);
+    	
+    	InfoChannelBase specICB = icb.getSpecific(tempDir.toPath());
+    	
+    	assertNotEquals(icb, specICB);
+    	assertEquals(5, specICB.getInfoChannelCount());
+    	assertEquals(2, specICB.getChannelsOfType(InfoChannelType.LOGFEED).size());
+    	Set<String> expected = Set.of("a.ext", "b.ext");
+    	for  (InfoChannel ic : specICB.getChannelsOfType(InfoChannelType.LOGFEED))
+    	{
+    		assertTrue(ic instanceof FileAsSource);
+    		assertTrue(expected.contains(
+    				(new File(((FileAsSource) ic).getPathName()).getName())));
+    	}
     }
     
 //------------------------------------------------------------------------------

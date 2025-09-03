@@ -1,10 +1,13 @@
 package autocompchem.perception.infochannel;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,8 +45,6 @@ import com.google.gson.reflect.TypeToken;
 
 import autocompchem.io.ACCJson;
 import autocompchem.io.ResourcesTools;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
 
 /**
  * A list of information channels
@@ -299,6 +300,27 @@ public class InfoChannelBase
         	return icb;
         }
     }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Returns a new InfoChannelBase where each channel containing a query 
+     * (e.g., a REGEX) is replaced with one or more channels with 
+     * the actual value upon applying the query to the context where this
+     * is called (i.e., work directory and environment).
+     */
+    public InfoChannelBase getSpecific(Path wdir)
+    {
+      	InfoChannelBase specificICB = new InfoChannelBase();
+        for (InfoChannel ic : this.allInfoChannels)
+        {
+        	for (InfoChannel specIC : ic.getSpecific(wdir))
+        	{
+        		specificICB.addChannel(specIC);
+        	}
+        }
+        return specificICB;
+    }
   	
 //-----------------------------------------------------------------------------
 
@@ -310,7 +332,7 @@ public class InfoChannelBase
         InfoChannelBase icb = new InfoChannelBase();
         for (InfoChannel ic : this.allInfoChannels)
         {
-        	icb.addChannel(ic);
+        	icb.addChannel(ic.clone());
         }
   		return clone;
   	}

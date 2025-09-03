@@ -1,9 +1,13 @@
 package autocompchem.perception.infochannel;
 
+import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /*
  *   Copyright (C) 2018  Marco Foscato
@@ -32,6 +36,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+import autocompchem.files.FileUtils;
 
 
 /**
@@ -165,6 +171,17 @@ public class EnvironmentAsSource extends ReadableIC
             return eas;
         }
     }
+
+//-----------------------------------------------------------------------------
+
+    // This implementation does not get specific
+  	@Override
+  	public List<InfoChannel> getSpecific(Path wdir)
+  	{
+  		List<InfoChannel> results = new ArrayList<InfoChannel>();
+  		results.add(this);
+  		return results;
+  	}
 
 //------------------------------------------------------------------------------
 

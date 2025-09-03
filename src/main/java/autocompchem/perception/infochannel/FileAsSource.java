@@ -22,6 +22,7 @@ import java.io.FileReader;
 
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,10 +37,12 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileUtils;
 import autocompchem.perception.circumstance.MatchText;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.run.jobediting.JobEditType;
+import autocompchem.utils.StringUtils;
 import autocompchem.wiro.chem.CompChemJob;
 
 /**
@@ -256,6 +259,34 @@ public class FileAsSource extends ReadableIC
     {
     	return Objects.hash(pathName, super.hashCode());
     }
+
+//-----------------------------------------------------------------------------
+      
+	@Override
+	public List<InfoChannel> getSpecific(Path wdir)
+	{
+		List<InfoChannel>  results = new ArrayList<InfoChannel>();
+		// NB: Any REGEX for a file in the pwd must allow for the dirname part, 
+		// hence, we add the ".*" if not there.
+		String regex = pathName;
+		if (!pathName.startsWith(".*"))
+		{
+			regex = ".*" + pathName; 
+		}
+		if (StringUtils.isValidRegex(regex))
+		{
+			List<File> files = FileUtils.findByREGEX(wdir.toFile(), regex, 1, false);
+			for (File file : files)
+			{
+				FileAsSource specIC = new FileAsSource(file.getAbsolutePath(), 
+						getType());
+				results.add(specIC);
+			}
+		} else {
+			results.add(this);
+		}
+		return results;
+	}
 
 //------------------------------------------------------------------------------
 

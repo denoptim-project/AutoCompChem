@@ -3,6 +3,7 @@ package autocompchem.perception.infochannel;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 /*
@@ -175,6 +176,17 @@ public class ShortTextAsSource extends ReadableIC
         	return tas;
         }
     }
+
+//-----------------------------------------------------------------------------
+       
+      // This implementation does not get specific
+  	@Override
+  	public List<InfoChannel> getSpecific(Path wdir)
+  	{
+  		List<InfoChannel> results = new ArrayList<InfoChannel>();
+  		results.add(this);
+  		return results;
+  	}
 
 //------------------------------------------------------------------------------
 
