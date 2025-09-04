@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -612,6 +613,49 @@ public class FileUtils
 	    
 	    Path path = Paths.get(pathname);
 	    return path.isAbsolute();
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Gets a path from under the user.dir to a path under a specific location.
+	 * @param pathname the pathname to alter. Must be absolute.
+	 * @param effectiveUserDir the pathname to the location acting as effective
+	 * user dir. Must be absolute.
+	 * @return the pathname as it the usr.dir was changed to the location of 
+	 * the effective user dir. 
+	 */
+	public static Path getCustomAbsPath(String pathname, String effectiveUserDir) 
+	{
+		return getCustomAbsPath(Paths.get(pathname), Paths.get(effectiveUserDir));
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Gets a path from under the user.dir to a path under a specific location.
+	 * @param pathname the pathname to alter. Must be absolute.
+	 * @param effectiveUserDir the pathname to the location acting as effective
+	 * user dir. Must be absolute.
+	 * @return the pathname as it the usr.dir was changed to the location of 
+	 * the effective user dir. 
+	 */
+	public static Path getCustomAbsPath(Path filePath, Path customDirPath) 
+	{
+		Path userDirPath = Paths.get(System.getProperty("user.dir"));
+		Path absFilePath = filePath.toAbsolutePath();
+		Path absUserDirPath = userDirPath.toAbsolutePath();
+		
+		// Check if the file path is under the user directory
+		if (absFilePath.startsWith(absUserDirPath)) {
+			// File is under user.dir, so relativize and resolve under customDirPath
+			Path relFilePath = absUserDirPath.relativize(absFilePath);
+			Path effectiveFilePath = customDirPath.resolve(relFilePath);
+			return effectiveFilePath;
+		} else {
+			// File is not under user.dir, return the original path unchanged
+			return absFilePath;
+		}
 	}
 	
 //------------------------------------------------------------------------------

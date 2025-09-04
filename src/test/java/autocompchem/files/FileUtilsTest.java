@@ -26,6 +26,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.io.IOtools;
+import autocompchem.utils.StringUtils;
 
 
 /**
@@ -491,6 +493,68 @@ sub2_abc/subsub2_abc
     	assertTrue(FileUtils.isAbsolutePath(tempDir.getAbsolutePath()));
     	assertFalse(FileUtils.isAbsolutePath("foo/bar"));
     	assertFalse(FileUtils.isAbsolutePath("../foo/bar"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetCustomAbsPath() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        File customWDir = new File(tempDir.getAbsolutePath() + fileSeparator + "wdir");
+        customWDir.mkdir();
+        
+        // Test 1: Basic transformation case - file under user.dir
+        String pathname = System.getProperty("user.dir") + fileSeparator + "file";
+        File file = new File(pathname);
+       
+        String newPath = FileUtils.getCustomAbsPath(pathname, 
+        		customWDir.getAbsolutePath()).toString();
+       
+        assertTrue(newPath.startsWith(tempDir.getAbsolutePath()));
+        assertTrue(newPath.contains(customWDir.getName()));
+        assertTrue(newPath.endsWith(file.getName()));
+        
+        // Test 2: Idempotent case - applying transformation to already transformed path
+        String newPathRedone = FileUtils.getCustomAbsPath(newPath, 
+        		customWDir.getAbsolutePath()).toString();
+
+        assertTrue(newPathRedone.startsWith(tempDir.getAbsolutePath()));
+        assertTrue(newPathRedone.endsWith(file.getName()));
+        assertEquals(newPath.length(), newPathRedone.length());
+        
+        // Test 3: CRITICAL - File outside user.dir should be returned unchanged
+        String outsideUserDir = tempDir.getAbsolutePath() + fileSeparator + "external_file";
+        String resultOutside = FileUtils.getCustomAbsPath(outsideUserDir, 
+                customWDir.getAbsolutePath()).toString();
+        assertEquals(Paths.get(outsideUserDir).toAbsolutePath().toString(), resultOutside);
+        
+        // Test 4: Subdirectory under user.dir
+        String subdirPath = System.getProperty("user.dir") + fileSeparator + "subdir" + fileSeparator + "file.txt";
+        String subdirResult = FileUtils.getCustomAbsPath(subdirPath, 
+                customWDir.getAbsolutePath()).toString();
+        assertTrue(subdirResult.startsWith(customWDir.getAbsolutePath()));
+        assertTrue(subdirResult.endsWith("subdir" + fileSeparator + "file.txt"));
+        
+        // Test 5: Path-based overload directly
+        Path inputPath = Paths.get(System.getProperty("user.dir"), "pathfile");
+        Path customPath = Paths.get(customWDir.getAbsolutePath());
+        Path pathResult = FileUtils.getCustomAbsPath(inputPath, customPath);
+        assertTrue(pathResult.toString().startsWith(customWDir.getAbsolutePath()));
+        assertTrue(pathResult.toString().endsWith("pathfile"));
+        
+        // Test 6: Relative path input (resolved relative to user.dir)
+        String relativePath = "relative_file.txt";
+        String relativeResult = FileUtils.getCustomAbsPath(relativePath, 
+                customWDir.getAbsolutePath()).toString();
+        assertTrue(relativeResult.startsWith(customWDir.getAbsolutePath()));
+        assertTrue(relativeResult.endsWith("relative_file.txt"));
+        
+        // Test 7: Same directory case (customDir same as user.dir)
+        String userDir = System.getProperty("user.dir");
+        String samePathname = userDir + fileSeparator + "samefile";
+        String sameResult = FileUtils.getCustomAbsPath(samePathname, userDir).toString();
+        assertEquals(Paths.get(samePathname).toAbsolutePath().toString(), sameResult);
     }
     
 //------------------------------------------------------------------------------
