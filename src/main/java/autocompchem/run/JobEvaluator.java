@@ -21,6 +21,8 @@ package autocompchem.run;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,7 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.jobediting.Action;
+import autocompchem.utils.StringUtils;
 import autocompchem.wiro.OutputReader;
 import autocompchem.wiro.ReaderWriterFactory;
 import autocompchem.wiro.WIROConstants;
@@ -421,8 +424,12 @@ public class JobEvaluator extends Worker
 //------------------------------------------------------------------------------
 
 	/**
-	 * @return the collection of information channels that this evaluator can 
-	 * use.
+	 * Returns the collection of {@link InfoChannel}s that was originally 
+	 * configures for this evaluation. Note that the {@link Perceptron} needs
+	 * to convert general-purpose {@link InfoChannel} (i.e., those based on
+	 * matching rules) into actual information sources (e.g., the actual matches
+	 * of the matching rules).
+	 * @return the collection of information channels 
 	 */
 	public InfoChannelBase getIcDB() {
 		return icDB;
@@ -440,11 +447,17 @@ public class JobEvaluator extends Worker
 //------------------------------------------------------------------------------
 	
 	@Override
-	public void performTask() 
+	public void performTask()
 	{	
 		// Prepare to perception.
-		Perceptron p = new Perceptron(sitsDB, icDB);
+		Perceptron p = new Perceptron(sitsDB, icDB, Paths.get("").toAbsolutePath());
 		p.setTolerantMissingIC(tolerateMissingIC);
+		if (!tolerateMissingIC && p.getLostICs().size()>0)
+		{ 
+			throw new IllegalStateException("These info channels were not "
+					+ "found: " 
+					+ StringUtils.mergeListToString(p.getLostICs(), ", ", true));
+		}
 
 		// NB: by default we think that there is only one step. If we can parse
 		// the log/output and detect which step of the job failed, then we get
@@ -523,9 +536,9 @@ public class JobEvaluator extends Worker
 	 */
 	private void analyzeLogFilesSerialJob(Perceptron p)
 	{
-		List<InfoChannel> logChannels = icDB.getChannelsOfType(
+		List<InfoChannel> logs = p.getContextSpecificICB().getChannelsOfType(
 				InfoChannelType.LOGFEED);
-		for (InfoChannel ic : logChannels)
+		for (InfoChannel ic : logs)
 		{
 			if (!(ic instanceof FileAsSource))
 			{
@@ -583,6 +596,8 @@ public class JobEvaluator extends Worker
 		{
 			//TODO: we should have a general-purpose output reader where we can
 			// set step_separators from the job's Parameter_Storage
+			// Now in the unit tests we trigger selection of a comp.chem reader
+			// but that is not a good solution.
 			logger.warn("WARNING: "
 					+ "No suitable parser found for log/output file '"
 					+ fileToParse + "'.");

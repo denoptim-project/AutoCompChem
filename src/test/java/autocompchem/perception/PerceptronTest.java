@@ -160,7 +160,7 @@ public class PerceptronTest
         SituationBase sitsBase1 = new SituationBase();
         sitsBase1.addSituation(sit1);
 
-        Perceptron prc = new Perceptron(sitsBase1,icb);
+        Perceptron prc = new Perceptron(sitsBase1, icb);
         prc.setTolerantMissingIC(true);
         prc.perceive();
 

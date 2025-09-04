@@ -1,6 +1,7 @@
 package autocompchem.perception;
 
 import java.io.BufferedReader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /*   
@@ -28,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +41,6 @@ import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.ReadableIC;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
-import autocompchem.run.Terminator;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.utils.StringUtils;
 
@@ -65,15 +64,21 @@ public class Perceptron
      * Information channels base: list of available information channels
      * that may include channels with wildcards.
      */
-    private InfoChannelBase icb;
+    private InfoChannelBase originalICB;
     
     /**
      * Perception-specific Information channels base: this is made from the
      * InfoChannelBase configured to this perceptron by replacing 
      * wildcard-containing InfoChannel with concrete ones obtained after
-     * trying to match the wildcards within the corrent context. 
+     * trying to match the wildcards within the current context. 
      */
     private InfoChannelBase specICB;
+    
+    /**
+     * Collection of channels that are lost upon creating the context-specific
+     * {@link InfoChannelBase}.
+     */
+    private List<InfoChannel> lostICs = new ArrayList<InfoChannel>();
     
     /**
      * Information channels that have been visited
@@ -88,7 +93,7 @@ public class Perceptron
     /**
      * Result/s of the perception
      */
-    private ArrayList<Situation> occurringSituations;
+    private List<Situation> occurringSituations;
 
     /**
      * Flag remembering the status of awareness
@@ -114,7 +119,8 @@ public class Perceptron
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for an empty Perceptron
+     * Constructor for an empty {@link Perceptron} with no configuration of
+     * {@link Situation}s or {@link InfoChannel}s.
      */
 
     public Perceptron() 
@@ -127,17 +133,102 @@ public class Perceptron
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for Perceptron with given situation base and base of 
-     * information channels
+     * Constructor for {@link Perceptron} with given a collection of known 
+     * {@link Situation}s and a collection of {@link InfoChannel}s. Since 
+     * channels may be contain rules aimed at searching actual sources of
+     * information to be identified thanks to matching rules (e.g., REGEX-based 
+     * file search), this method transforms the given {@link InfoChannelBase}
+     * into a the present context-specific version to be used for perception.
+     * Assumes the present work directory as context.
+     * @param sitsBase the collection of {@link Situation}s to be aware of.
+     * @param icb the collection of {@link InfoChannel}s, which may be aspecific,
+     * i.e., use matching rules to search for specific sources of information.
      */
+    protected Perceptron(SituationBase sitsBase, InfoChannelBase icb)
+    {
+    	this(sitsBase, icb, Paths.get("").toAbsolutePath());
+    }
+    
+//------------------------------------------------------------------------------
 
-    public Perceptron(SituationBase sitsBase, InfoChannelBase icb)
+    /**
+     * Constructor for {@link Perceptron} with given a collection of known 
+     * {@link Situation}s and a collection of {@link InfoChannel}s. Since 
+     * channels may be contain rules aimed at searching actual sources of
+     * information to be identified thanks to matching rules (e.g., REGEX-based 
+     * file search), this method transforms the given {@link InfoChannelBase}
+     * into a context-specific version to be used for perception.
+     * @param sitsBase the collection of {@link Situation}s to be aware of.
+     * @param icb the collection of {@link InfoChannel}s, which may be aspecific,
+     * i.e., use matching rules to search for specific sources of information.
+     * @param wdir the work directory used to search for relative pathnames
+     * when making the {@link InfoChannel}s context-specific.
+     * @param lostICs the collector of any {@link InfoChannel} that does not 
+     * match any concrete source of information, and is, therefore, removed
+     * from the {@link InfoChannelBase}.
+     */
+    public Perceptron(SituationBase sitsBase, InfoChannelBase icb, Path wdir)
     {
     	this();
         this.sitsBase = sitsBase;
-        this.icb = icb;
+        this.originalICB = icb;
         this.scoreCollector = new ScoreCollector();
         this.occurringSituations = new ArrayList<Situation>();
+        specifyInfoChannelBase(wdir);
+    }
+    
+//------------------------------------------------------------------------------
+
+    /**
+     * Convert {@link InfoChannel}s originally given upon construction of this
+     * {@link Perceptron} and that are based on matching rules 
+     * into analogues with the concrete matches,
+     * hence creates a {@link InfoChannelBase} specific
+     * to the context (work directory and environment) given as parameter. 
+     * Does not alter the original {@link InfoChannelBase}, but overwrites the
+     * context-specific {@link InfoChannelBase} used for perception.
+     * @param wdir the work directory used to search for relative pathnames.
+     * @return the list of channels that were lost because there is no 
+     * concrete information source that matches their matching rules in the
+     * present context. This list is the same object returned by 
+     * {@link #getLostICs()}
+     */
+    public List<InfoChannel> specifyInfoChannelBase(Path wdir)
+    {
+    	lostICs = new ArrayList<InfoChannel>();
+		specICB = originalICB.getSpecific(wdir, lostICs);
+		return lostICs;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Returns the list of channels that were lost upon making the
+     * {@link InfoChannelBase} context-specific. 
+     * These channels were lost because there is no 
+     * concrete information source that matches their matching rules in the
+     * present context.
+     *  access to the context-specific {@link InfoChannelBase} generated
+     * by the {@link #specifyInfoChannelBase} method.
+     * @return the collection of channels or <code>null</code> if
+     * the {@link #specifyInfoChannelBase} method has not yet been run. 
+     */
+    public List<InfoChannel>  getLostICs()
+    {
+    	return lostICs;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Provides access to the context-specific {@link InfoChannelBase} generated
+     * by the {@link #specifyInfoChannelBase} method.
+     * @return the collection of channels or <code>null</code> if
+     * the {@link #specifyInfoChannelBase} method has not yet been run. 
+     */
+    public InfoChannelBase getContextSpecificICB()
+    {
+    	return specICB;
     }
     
 //------------------------------------------------------------------------------
@@ -209,18 +300,13 @@ public class Perceptron
     public void perceive() throws Exception
     {
     	logger.trace(newline + "Perception from " + this.hashCode());
+		if (!tolerateMissingIC && lostICs.size()>0)
+		{ 
+			throw new IllegalStateException("These info channels were not "
+					+ "found: " 
+					+ StringUtils.mergeListToString(lostICs, ", ", true));
+		}
     	
-    	// InfoChannels may include wildcards, so we need to change them
-    	// into concrete and unambiguous InfoChannels
-    	List<InfoChannel> lostICs = new ArrayList<InfoChannel>();
-    	specICB = icb.getSpecific(Paths.get("").toAbsolutePath(), lostICs);
-    	if (lostICs.size()>0 && !tolerateMissingIC)
-    	{ 
-    		throw new IllegalStateException("These info channels were not "
-    				+ "found: " 
-    				+ StringUtils.mergeListToString(lostICs, ", ", true));
-    	}
-        
         //To read text files only once we run all text-matching queries in once
         analyzeAllText();
 
@@ -409,7 +495,8 @@ public class Perceptron
      * @param txtQueries the queries defining what to search for in the text.
      * @param ic channel we are reading now (only for logging).
      * @param tolerant use <code>true</code> to simply skip info channels that
-     * cannot be read. Use <code>false</code> to trigger error upon finding
+     * cannot be read. Use <code>false</code> to throw 
+     * {@link IllegalStateException} upon finding
      * that an info channel cannot be read.
      * @param verbosity the level of verbosity (only for logging).
      * @return a mapping of what lines matches which query.
@@ -457,8 +544,10 @@ public class Perceptron
                                                 false,
                                                 true);
         } catch (Exception e) {
-            String msg = "ERROR reading InfoChannel "+ic;
-            Terminator.withMsgAndStatus(msg, -1);
+        	if (!tolerant)
+        	{
+        		throw new IllegalStateException("Could not read InfoChannel "+ic);
+        	}
         } finally {
             if (br != null)
             {
@@ -466,8 +555,11 @@ public class Perceptron
                 {
                     br.close();
                 } catch (Exception e) {
-                    String msg = "ERROR closing InfoChannel "+ic;
-                    Terminator.withMsgAndStatus(msg,-1);
+                	if (!tolerant)
+                	{
+                		throw new IllegalStateException("Could not close reader "
+                				+ "on InfoChannel "+ic);
+                	}
                 }
             }
         }
