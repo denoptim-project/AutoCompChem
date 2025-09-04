@@ -11,7 +11,7 @@ if [ ! -f "cli11.log" ] ; then
 fi
 
 if grep -q -i "NOT Passed" "cli11.log" ; then 
-  echo "NOT Passed: problems printing help for task '$(tail -n 2 cli11.log | head -n 1 | awk '{print $2}')'"
+  echo "NOT Passed: problems printing help for task '$(grep -B1 "NOT Passed" cli11.log | head -n 1 | awk '{print $2}')'"
   exit -1
 fi
 echo Passed 
