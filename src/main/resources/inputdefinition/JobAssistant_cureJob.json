@@ -1,0 +1,17 @@
+[
+  {
+    "embeddedWorker": "autocompchem.run.JobEvaluator",
+    "tag": "the evaluation of the outcome from the assisted job",
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries), if any"
+  },
+  {
+    "embeddedWorker": "autocompchem.wiro.InputWriter",
+    "tag": "the writing of the input for a job",
+    "ignorableItems": [
+      "jobDetailsFile"
+    ]
+  }
+]

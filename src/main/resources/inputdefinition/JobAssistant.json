@@ -1,0 +1,38 @@
+[
+  {
+    "key": "ASSISTEDJOB",
+    "casedKey": "assistedJob",
+    "type": "Job",
+    "doc": "the definition of the job to run in an assisted way. This parameter is most conveniently used from a JSON job definition."
+  },
+  {
+    "key": "RUNJOB",
+    "casedKey": "runJob",
+    "type": "Job",
+    "doc": "the definition of the job that runs the assisted job. The assisted job may be performed by external applications, so the runJob defines how to call such external applications. This parameter is most conveniently used from a JSON job definition."
+  },
+  {
+    "key": "MAXRESTART",
+    "casedKey": "maxRestart",
+    "type": "int",
+    "doc": "the maximum number of attempts to restart the assisted job or part of it."
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries), if any"
+  },
+  {
+    "embeddedWorker": "autocompchem.wiro.InputWriter",
+    "tag": "the writing of the input for a job",
+    "ignorableItems": [
+      "jobDetailsFile"
+    ]
+  },
+  {
+    "embeddedWorker": "autocompchem.run.JobEvaluator",
+    "tag": "the evaluation of the outcome from the assisted job",
+    "ignorableItems": [
+      "jobDefinition"
+    ]
+  }
+]
