@@ -39,7 +39,7 @@
     "jobArchivingRules": [
       {
         "type": "move",
-        "pattern": "*"
+        "pattern": "[!.]*"
       },
       {
         "type": "copy",

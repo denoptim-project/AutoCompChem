@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+# the log has a peculiar name to avoid confusion with the log feed channels
+if [ ! -f ".cli24.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "default list .*situations" ".cli24.log")
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "default .*configuration of info channels" ".cli24.log")
+if [ 3 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "run did NOT terminate normally" ".cli24.log")
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Situation perceived.*xtb-e1.0_GeomOptNotConverged" ".cli24.log")
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "run did terminate normally" ".cli24.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli24.out" ] ; then not_passed $LINENO ; fi
+if tail -n 2 "cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
+if ! tail -n 2 "cli24.out" | grep -q "^normal termination of xtb" ; then not_passed $LINENO ; fi
+
+if [ ! -d "Job_#0.1_1" ] ; then not_passed $LINENO ; fi
+if [ ! -f "Job_#0.1_1/cli24.out" ] ; then not_passed $LINENO ; fi
+if ! tail -n 2 "Job_#0.1_1/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
+
+if [ ! -d "Job_#0.1_1/Job_#0.1_0" ] ; then not_passed $LINENO ; fi
+if [ ! -f "Job_#0.1_1/Job_#0.1_0/cli24.out" ] ; then not_passed $LINENO ; fi
+if ! tail -n 2 "Job_#0.1_1/Job_#0.1_0/cli24.out" | grep -q "abnormal termination of xtb" ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' ".cli24.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

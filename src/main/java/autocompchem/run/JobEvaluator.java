@@ -454,9 +454,12 @@ public class JobEvaluator extends Worker
 		p.setTolerantMissingIC(tolerateMissingIC);
 		if (!tolerateMissingIC && p.getLostICs().size()>0)
 		{ 
-			throw new IllegalStateException("These info channels were not "
-					+ "found: " 
+			IllegalStateException e = new IllegalStateException(
+					"These info channels were not found: " 
 					+ StringUtils.mergeListToString(p.getLostICs(), ", ", true));
+
+			logger.error("Exception while reading logs. ", e);
+			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}
 
 		// NB: by default we think that there is only one step. If we can parse
@@ -478,7 +481,7 @@ public class JobEvaluator extends Worker
 			try {
 				analyzeLogFilesSerialJob(p);
 			} catch (Exception e) {
-				logger.error("Exception while doing perception. ", e);
+				logger.error("Exception while reading logs. ", e);
 				exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 			}
 			//TODO-gg del

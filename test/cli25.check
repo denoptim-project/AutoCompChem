@@ -7,10 +7,10 @@ function not_passed() {
 
 if [ ! -f "cli25.log" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "default list .* situations" "cli25.log")
+n=0; n=$(grep -c -i "default list .*situations" "cli25.log")
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
-n=0; n=$(grep -c -i "default list .* configuration of info channels" "cli25.log")
+n=0; n=$(grep -c -i "default .*configuration of info channels" "cli25.log")
 if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "run did NOT terminate normally" "cli25.log")
