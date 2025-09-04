@@ -1,7 +1,7 @@
 [
   {
     "embeddedWorker": "autocompchem.run.JobEvaluator",
-    "tag": "the evaluation of the outcome from the assisted job",
+    "tag": "the evaluation of the outcome from the assisted job"
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
