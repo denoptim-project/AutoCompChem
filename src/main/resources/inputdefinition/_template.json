@@ -12,51 +12,24 @@
     "doc": ""
   },
   {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
-    "key": "",
-    "casedKey": "",
-    "type": "<String>",
-    "doc": ""
-  },
-  {
     "key": "VERBOSITY",
     "casedKey": "verbosity",
     "type": "<int>",
     "doc": "Sets the amount of log messages. Larger values result in more detailed log reports."
+  },
+  {
+    "embeddedWorker": "autocompchem.wiro.InputWriter",
+    "tag": "the writing of the input for a job"
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
+    "tag": "generation of ZMatrix",
+    "ignorableItems": [
+      "outFile",
+      "inFile2"
+    ],
+    "ignorableWorkers": [
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
   }
 ]
