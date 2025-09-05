@@ -645,6 +645,13 @@ public class FileUtils
 		Path userDirPath = Paths.get(System.getProperty("user.dir"));
 		Path absFilePath = filePath.toAbsolutePath();
 		Path absUserDirPath = userDirPath.toAbsolutePath();
+		Path absCustomDirPath = customDirPath.toAbsolutePath();
+		
+		// Check if the file is already under the custom directory
+		if (absFilePath.startsWith(absCustomDirPath)) {
+			// File is already under customDirPath, return unchanged
+			return absFilePath;
+		}
 		
 		// Check if the file path is under the user directory
 		if (absFilePath.startsWith(absUserDirPath)) {

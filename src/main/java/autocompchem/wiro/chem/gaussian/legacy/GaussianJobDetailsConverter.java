@@ -102,7 +102,7 @@ public class GaussianJobDetailsConverter extends Worker
 
         //Get and check the input file (which has to be an SDF file)
         String inFilePathname = params.getParameter("INFILE").getValueAsString();
-        this.inFile = new File(inFilePathname);
+        this.inFile = getNewFile(inFilePathname);
         FileUtils.foundAndPermissions(inFilePathname,true,false,false);
 
         String outFilePathname = null;
@@ -112,7 +112,7 @@ public class GaussianJobDetailsConverter extends Worker
         } else {
         	outFilePathname = inFilePathname + ".json";
         }
-        this.outFile = new File(outFilePathname);
+        this.outFile = getNewFile(outFilePathname);
         FileUtils.mustNotExist(this.outFile);
     }
     

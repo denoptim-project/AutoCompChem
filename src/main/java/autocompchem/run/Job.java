@@ -18,6 +18,7 @@ package autocompchem.run;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,12 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.jena.web.HttpSC.Code;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -48,7 +47,7 @@ import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.files.FileUtils;
 import autocompchem.datacollections.NamedDataCollector;
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
@@ -56,7 +55,6 @@ import autocompchem.io.ACCJson;
 import autocompchem.log.LogUtils;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
-import autocompchem.wiro.chem.ChemSoftConstants;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.Directive;
 
@@ -183,7 +181,7 @@ public class Job implements Runnable
     /**
      * Custom working directory
      */
-    protected File customUserDir;
+    protected File customUserDir = new File(System.getProperty("user.dir"));
     
     /**
      * Flag controlling redirect of STDOUT and STDERR
@@ -203,7 +201,7 @@ public class Job implements Runnable
     /**
      * File separator on this OS
      */
-    private static final String SEP = System.getProperty("file.separator");
+    protected static final String SEP = System.getProperty("file.separator");
     
     /**
      * Container for any kind of output that is made available to the outside
@@ -314,6 +312,9 @@ public class Job implements Runnable
         {
         	processVerbosity(params.getParameter(ParameterConstants.VERBOSITY));
         }
+
+    	// Deal with requests related to work directory
+    	processWorkDirInstructions();
     }
     
 //------------------------------------------------------------------------------
@@ -329,6 +330,57 @@ public class Job implements Runnable
 		}
         Configurator.setLevel(logger.getName(), 
         		LogUtils.verbosityToLevel(Integer.parseInt(str)));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    protected void processWorkDirInstructions()
+    {
+    	// We might want to run this in a subfolder
+    	if (params.contains(JobConstants.PARWORKDIR))
+    	{
+    		File workDir = new File(params.getParameter(
+    				JobConstants.PARWORKDIR).getValueAsString());
+    		if (!workDir.exists() && !workDir.mkdirs())
+    		{
+    			Terminator.withMsgAndStatus("ERROR! Could not make the "
+    					+ "required subfolder '" + workDir + "'.",-1);
+    		}
+    		logger.warn("WARNING: setting work directory to '"
+    				+ workDir + "'.");
+    		this.setUserDirAndStdFiles(workDir);
+    	}
+
+    	//TODO-gg specify if cytowdir takes relative paths from initial or final dir
+    	
+    	if (params.contains(JobConstants.PARCOPYTOWORKDIR))
+    	{
+    		String listAsStr = params.getParameter(
+    				JobConstants.PARCOPYTOWORKDIR).getValueAsString();
+    		String[] list = listAsStr.split(",");
+    		for (int i=0; i<list.length; i++)
+    		{
+    			File source = new File(list[i].trim());
+    			File dest = new File(this.customUserDir 
+    					+ System.getProperty("file.separator")
+    					+ source.getName());
+    			if (source.exists())
+    			{
+    				try {
+						com.google.common.io.Files.copy(source,dest);
+					} catch (IOException e) {
+						e.printStackTrace();
+						Terminator.withMsgAndStatus("ERROR! Could not copy "
+								+ "file '" + source + "' to work directory.",-1);
+					}
+    			} else {
+    				logger.warn("WARNING: file '" + source 
+    						+ "' was listed among "
+    						+ "those to copy into the work directory, "
+    						+ "but it does not exist. I'll skipp it.");
+    			}
+    		}
+    	}
     }
 
 //------------------------------------------------------------------------------
@@ -527,9 +579,11 @@ public class Job implements Runnable
     
   	/**
   	 * Gets the main folder (user dir) of this job.
-  	 * This is not guaranteed to be the same as the UserDir for the JAVA virtual 
-  	 * machine. Instead, it is a path that may have been set for this job.
-  	 * @return the the pathname to the main folder (user dir) of this job.
+  	 * This is not guaranteed to be the same as the user.dir for the JAVA virtual 
+  	 * machine. Instead, it is a path that may have been set for this job. If
+  	 * so, this is the value that should be used by any other class needing to
+  	 * know where the job is being run (i.e., the equivalent of 'pdw').
+  	 * @return the the pathname to the main folder of this job.
      */
     public File getUserDir()
     {
@@ -539,18 +593,36 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
 	/**
-     * Sets the directory from which the job should be executed.
+     * Sets the apparent user directory, i.e., the file system location meant 
+     * for this job. Note, however, that there is 
+     * NO WAY to change the actual PWD of the JVN, so any file operation should
+     * not assume that the PDW is equal to the custom wdir.
+     * See <a href="https://stackoverflow.com/questions/840190/changing-the-current-working-directory-in-java#8204584">discussion in the web</a>.
      * @param customUserDir the new directory
      */
     public void setUserDir(File customUserDir)
     {
-    	this.customUserDir = customUserDir;
+    	boolean done = false;
+        if (customUserDir.exists() || customUserDir.mkdirs())
+        {
+        	this.customUserDir = new File(customUserDir.getAbsolutePath());
+        	done = true;
+        }
+        if (done)
+        {
+        	logger.warn("Apparent work directory set to '" 
+        			+ this.customUserDir + "'");
+        } else {
+        	logger.warn("Could not change apparent work directory. Keeping '" 
+        			+ this.customUserDir + "'");
+        }
     }
     
 //------------------------------------------------------------------------------
     
     /**
-     * Sets the directory from which the job should be executed and assigns
+     * Sets the directory which we treat as working directory (even though the
+     * JVM's PWD does not change!) and assigns
      * values to STDERR and STDOUT accordingly.
      * @param customUserDir the new directory
      */
@@ -586,31 +658,60 @@ public class Job implements Runnable
      */
     
     private void updateStdoutStdErr()
-    {   
-        String dir;
-        if (customUserDir != null)
+    {
+        if (customUserDir == null)
         {
-        	dir = customUserDir.getAbsolutePath();
-        }
-        else
-        {
-        	dir = System.getProperty("user.dir");
+        	customUserDir = new File(System.getProperty("user.dir"));
         }
         
+        String id = "";
         if (containerJob!=null)
         {
-        	if (stdout==null)
-        		stdout = new File(dir + SEP + "Job" + getId() +".log");
-	        if (stderr==null)
-	        	stderr = new File(dir + SEP + "Job" + getId() +".err");
+        	id = getId();
         } else {
-        	if (stdout==null)
-        		stdout = new File(dir + SEP + "Job" + jobHashCode +".log");
-        	if (stderr==null)
-        		stderr = new File(dir + SEP + "Job" + jobHashCode +".err");
+        	id = jobHashCode + "";
         }
+
+    	if (stdout==null)
+    	{
+    		stdout = getNewFile("Job" + id +".log");
+    	} else {
+    		stdout = getNewFile(stdout.getAbsolutePath());
+    	}
+    	
+    	if (stderr==null)
+    	{
+    		stderr = getNewFile("Job" + id +".err");
+    	} else {
+    		stderr = getNewFile(stderr.getAbsolutePath());
+    	}
+        
         exposedOutput.putNamedData(new NamedData("LOG", stdout));
         exposedOutput.putNamedData(new NamedData("ERR", stderr));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Wrapper for the {@link File} constructor that accounts for the possibility
+     * of considering an effective work directory different than user.dir.
+     * @param pathname an intended pathname, may be relative or absolute.
+     * @return the file object with the pathname adjusted to the current 
+     * configuration of the work directory of this Job.
+     */
+    public File getNewFile(String pathname)
+    {
+    	// If we have a custom user directory different from system user.dir,
+    	// adjust the pathname accordingly
+    	if (customUserDir != null && 
+    		!customUserDir.getAbsolutePath().equals(System.getProperty("user.dir")))
+    	{
+    		// Use the FileUtils method to get the path as if user.dir was customUserDir
+    		return FileUtils.getCustomAbsPath(pathname, customUserDir.getAbsolutePath()).toFile();
+    	} else {
+    		// No custom directory or it's the same as user.dir, use standard constructor
+    		return new File(pathname);
+    	}
     }
     
 //------------------------------------------------------------------------------
@@ -1708,11 +1809,17 @@ public class Job implements Runnable
             }
             
         	if (jsonObject.has(JSONSUBJOBS))
+        	{	
         		job.steps = context.deserialize(jsonObject.get(JSONSUBJOBS),
                     new TypeToken<ArrayList<Job>>(){}.getType());
+        	}
+        	
         	if (jsonObject.has(JSONPARAMS))
+        	{
         		job.params = context.deserialize(jsonObject.get(JSONPARAMS),
         			ParameterStorage.class);
+            	job = JobFactory.procesParametersUponJobCreation(job);
+        	}
         	
         	// Reconstruct references to parent/child job
             for (Job step : job.steps)

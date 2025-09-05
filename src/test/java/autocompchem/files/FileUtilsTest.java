@@ -19,6 +19,7 @@ package autocompchem.files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -555,6 +556,45 @@ sub2_abc/subsub2_abc
         String samePathname = userDir + fileSeparator + "samefile";
         String sameResult = FileUtils.getCustomAbsPath(samePathname, userDir).toString();
         assertEquals(Paths.get(samePathname).toAbsolutePath().toString(), sameResult);
+        
+        // Test 8: EDGE CASE - Custom directory under user.dir with already-transformed path
+        File customSubDir = new File(userDir + fileSeparator + "customSubDir");
+        customSubDir.mkdir();
+        try {
+            // First transformation: user.dir/file -> customSubDir/file
+            String originalPath = userDir + fileSeparator + "file_in_subdir";
+            String firstTransform = FileUtils.getCustomAbsPath(originalPath, 
+                    customSubDir.getAbsolutePath()).toString();
+            assertTrue(firstTransform.startsWith(customSubDir.getAbsolutePath()));
+            assertTrue(firstTransform.endsWith("file_in_subdir"));
+            
+            // Second transformation: should be idempotent (not transform again)
+            String secondTransform = FileUtils.getCustomAbsPath(firstTransform,
+                    customSubDir.getAbsolutePath()).toString();
+            assertEquals(firstTransform, secondTransform, 
+                    "Already-transformed path under custom subdir should remain unchanged");
+        } finally {
+            customSubDir.delete();
+        }
+        
+        // Test 9: Multiple successive calls with same path - idempotency test
+        String testPath = userDir + fileSeparator + "multi_call_test.txt";
+        String transform1 = FileUtils.getCustomAbsPath(testPath, customWDir.getAbsolutePath()).toString();
+        String transform2 = FileUtils.getCustomAbsPath(transform1, customWDir.getAbsolutePath()).toString();
+        String transform3 = FileUtils.getCustomAbsPath(transform2, customWDir.getAbsolutePath()).toString();
+        String transform4 = FileUtils.getCustomAbsPath(transform3, customWDir.getAbsolutePath()).toString();
+        String transform5 = FileUtils.getCustomAbsPath(transform4, customWDir.getAbsolutePath()).toString();
+        
+        // All transformations after the first should be identical
+        assertEquals(transform1, transform2, "Second call should be idempotent");
+        assertEquals(transform1, transform3, "Third call should be idempotent");
+        assertEquals(transform1, transform4, "Fourth call should be idempotent");
+        assertEquals(transform1, transform5, "Fifth call should be idempotent");
+        
+        // Verify the path is correctly transformed and stable
+        assertTrue(transform1.startsWith(customWDir.getAbsolutePath()));
+        assertTrue(transform1.endsWith("multi_call_test.txt"));
+        assertNotEquals(testPath, transform1, "Path should have been transformed on first call");
     }
     
 //------------------------------------------------------------------------------

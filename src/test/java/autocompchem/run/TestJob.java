@@ -1,6 +1,5 @@
 package autocompchem.run;
 
-import java.io.File;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +47,7 @@ public class TestJob extends Job
 	{
 		super();
 		this.appID = SoftwareId.ACC;
-		stdout = new File(logPathName);
+		stdout = getNewFile(logPathName);
 		this.wallTime = wallTime;
 		setNumberOfThreads(1);
 		setParameter(PREFIX, "");

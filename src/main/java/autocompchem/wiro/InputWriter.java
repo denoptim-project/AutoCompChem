@@ -158,7 +158,7 @@ public class InputWriter extends Worker implements ITextualInputWriter
        
     	if (params.contains(WIROConstants.PARJOBDETAILSFILE))
         {
-            File jdFile = new File(params.getParameter(
+            File jdFile = getNewFile(params.getParameter(
                     WIROConstants.PARJOBDETAILSFILE).getValueAsString());
             logger.debug("Job details from JD file '" + jdFile + "'.");
             
@@ -178,10 +178,10 @@ public class InputWriter extends Worker implements ITextualInputWriter
         {
             outFileNameRoot = params.getParameter(
                     WIROConstants.PAROUTFILEROOT).getValueAsString();
-            outFile = new File(outFileNameRoot + inpExtrension);
+            outFile = getNewFile(outFileNameRoot + inpExtrension);
         } else if (params.contains(WIROConstants.PAROUTFILE))
         {
-        	outFile = new File(params.getParameter(
+        	outFile = getNewFile(params.getParameter(
         			WIROConstants.PAROUTFILE).getValueAsString());
             outFileNameRoot = FileUtils.getRootOfFileName(outFile);
             if (outFile.getParentFile()!=null)
@@ -196,7 +196,7 @@ public class InputWriter extends Worker implements ITextualInputWriter
         				 + WIROConstants.PAROUTFILEROOT + "' found. " + NL
                          + "Root of any output file name set to '" 
                          + outFileNameRoot + "'.");
-        	outFile = new File(outFileNameRoot + inpExtrension);
+        	outFile = getNewFile(outFileNameRoot + inpExtrension);
         }
         
         if (params.contains(WIROConstants.PARNOJSONOUTPUT))
@@ -228,7 +228,7 @@ public class InputWriter extends Worker implements ITextualInputWriter
 				false);
 		if (writeJobSpecificJDOutput)
 		{
-			IOtools.writeJobToJSON(jobToInput, new File(
+			IOtools.writeJobToJSON(jobToInput, getNewFile(
 					outFileNameRoot + WIROConstants.JSONJDEXTENSION));
 		}
 	}

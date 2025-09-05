@@ -6,12 +6,20 @@
       "value": "assistJob"
     },
     {
+      "reference": "workDir",
+      "value": "cli24_wdir"
+    },
+    {
+      "reference": "copyToWorkDir",
+      "value": "../cli24.sdf"
+    },
+    {
       "reference": "SOFTWAREID",
       "value": "XTB"
     },
     {
       "reference": "inFile",
-      "value": "../cli24.sdf"
+      "value": "cli24.sdf"
     },
     {
       "reference": "coordFile",
@@ -23,6 +31,12 @@
       "value":
       {
         "jobType": "CompChemJob",
+        "params": [
+          {
+            "reference": "workDir",
+            "value": "cli24_wdir"
+          }
+        ],
         "directives": [
           {
             "name": "set",
@@ -114,12 +128,16 @@
                 "value": "SHELL"
               },
               {
+                "reference": "workDir",
+                "value": "cli24_wdir"
+              },
+              {
                 "reference": "VERBOSITY",
                 "value": "4"
               },
               {
                 "reference": "CMD",
-                "value": "bash ../cli24_fakeRunner.sh"
+                "value": "bash ../../cli24_fakeRunner.sh"
               }
             ]
           },
@@ -129,6 +147,10 @@
               {
                 "reference": "APP",
                 "value": "SHELL"
+              },
+              {
+                "reference": "workDir",
+                "value": "cli24_wdir"
               },
               {
                 "reference": "VERBOSITY",

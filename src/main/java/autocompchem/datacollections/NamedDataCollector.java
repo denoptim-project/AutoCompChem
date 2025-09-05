@@ -171,8 +171,8 @@ public class NamedDataCollector implements Cloneable
 //------------------------------------------------------------------------------
 
     /**
-     * Store a {@link NamedData} with the given reference name. If the {@link NamedData} already
-     * exists, it will be overwritten.
+     * Store a {@link NamedData} with the given reference name. If the key
+     * already exists, the corresponding value will be overwritten.
      * @param ref the reference name of the {@link NamedData}
      * @param par the new {@link NamedData} to be stored
      */

@@ -37,6 +37,7 @@ import com.google.gson.reflect.TypeToken;
 
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
+import autocompchem.run.jobediting.SetJobParameter;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 
@@ -200,6 +201,21 @@ public class ParameterStorage extends NamedDataCollector implements Cloneable
     public void setParameter(NamedData par)
     {
         allData.put(par.getReference().toUpperCase(), par); 
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
+     * Store a {@link NamedData} with the given reference name as upper case. 
+     * If the upper case key already exists, the value will be overwritten.
+     * This for consistency with the {@link #setParameter(NamedData)} method.
+     * @param data the new {@link NamedData} to be stored
+     */
+
+    @Override
+    public void putNamedData(NamedData data)
+    {
+        allData.put(data.getReference().toUpperCase(), data); 
     }
 
 //------------------------------------------------------------------------------

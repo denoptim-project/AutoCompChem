@@ -317,7 +317,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
             if (rules.get(rulRef).getSourceType().toUpperCase().equals(
                                                 BasisSetConstants.BSSOURCELINK))
             {
-                importBasisSetFromFile(rulRef, new File(
+                importBasisSetFromFile(rulRef, getNewFile(
                 		rules.get(rulRef).getSource()));
             }
             
@@ -386,7 +386,7 @@ public class BasisSetGenerator extends AtomContainerInputProcessor
                 case BasisSetConstants.BSSOURCELINK:
                     if (!importedBSs.keySet().contains(rulRef))
                     {
-                        importBasisSetFromFile(rulRef, new File(rule.getSource()));
+                        importBasisSetFromFile(rulRef, getNewFile(rule.getSource()));
                     }
                     BasisSet impBS = importedBSs.get(rulRef);
     

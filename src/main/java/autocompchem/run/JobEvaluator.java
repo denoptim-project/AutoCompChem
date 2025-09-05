@@ -200,7 +200,7 @@ public class JobEvaluator extends Worker
 			}
 			String pathName = params.getParameter(
 					ParameterConstants.SITUATIONSDBROOT).getValueAsString();
-			sitsDB = new SituationBase(new File(pathName));
+			sitsDB = new SituationBase(getNewFile(pathName));
 		} else if (hasParameter(ParameterConstants.SITUATIONSDB)) 
 		{
 			sitsDB = (SituationBase) params.getParameter(
@@ -296,7 +296,7 @@ public class JobEvaluator extends Worker
 		
 		if (hasParameter(ParameterConstants.JOBDEF)) 
 		{
-			File file = new File(params.getParameter(
+			File file = getNewFile(params.getParameter(
 					ParameterConstants.JOBDEF).getValueAsString());
 			FileUtils.foundAndPermissions(file, true, false, false);
 			try {
@@ -334,7 +334,7 @@ public class JobEvaluator extends Worker
 			//Try to detect the kind of ouput to analyze.
 			if (params.contains(WIROConstants.PARJOBOUTPUTFILE))
 			{
-				File jobOutFile = new File(params.getParameter(
+				File jobOutFile = getNewFile(params.getParameter(
 						WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
 				FileUtils.foundAndPermissions(jobOutFile, true, false, false);
 				try {
@@ -365,7 +365,7 @@ public class JobEvaluator extends Worker
 			
 			if (sitsDB==null)
 			{
-				logger.info("Trying to use default list on known situations.");
+				logger.info("Trying to use default list of known situations.");
 				try {
 					sitsDB = SituationBase.getDefaultSituationDB(
 							software.toString());
@@ -402,7 +402,7 @@ public class JobEvaluator extends Worker
 				tolerateMissingIC = true;
 				if (params.contains(WIROConstants.PARJOBOUTPUTFILE))
 				{
-					File jobOutFile = new File(params.getParameter(
+					File jobOutFile = getNewFile(params.getParameter(
 							WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
 					icDB.addChannel(new FileAsSource(jobOutFile.getAbsolutePath(), 
 						InfoChannelType.LOGFEED));
@@ -450,7 +450,8 @@ public class JobEvaluator extends Worker
 	public void performTask()
 	{	
 		// Prepare to perception.
-		Perceptron p = new Perceptron(sitsDB, icDB, Paths.get("").toAbsolutePath());
+		Perceptron p = new Perceptron(sitsDB, icDB, 
+				Paths.get(getWorkDir().getAbsolutePath()));
 		p.setTolerantMissingIC(tolerateMissingIC);
 		if (!tolerateMissingIC && p.getLostICs().size()>0)
 		{ 
@@ -568,8 +569,10 @@ public class JobEvaluator extends Worker
 		analysisParams.setParameter(WorkerConstants.PARTASK, Task.make(
 				"analyseOutput").casedID);
 		
-		// Define the pathname to the file to parse;
-		File fileToParse = new File(log.getPathName());
+		// The info channel has been already made context-specific, so
+		// the pathname does not need to account for potential change of user.dir
+		//TODO-gg might need to change upon fixing the getNewFile()
+		File fileToParse = getNewFile(log.getPathName());
 		if (fileToParse.exists())
 		{
 			analysisParams.setParameter(WIROConstants.PARJOBOUTPUTFILE, 

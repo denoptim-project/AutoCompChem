@@ -96,18 +96,18 @@ public class PathnameEditor extends Worker
     	super.initialize();
     	
         // Multiple ways to define the input pathname are here processes from
-        // the lowest priority to the highest. This here we implicitly define
+        // the lowest priority to the highest. Thus, here we implicitly define
         // the priority order.
         if (params.contains(WIROConstants.PAROUTFILEROOT))
         {
-            this.input = new File(
+            this.input = getNewFile(
             		params.getParameter(WIROConstants.PAROUTFILEROOT)
             		.getValueAsString());
         }
 
         if (params.contains("PATHNAME"))
         {
-            this.input = new File(
+            this.input = getNewFile(
             		params.getParameter("PATHNAME").getValueAsString());
         }
 

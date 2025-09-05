@@ -211,7 +211,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
         
         if (params.contains(WorkerConstants.PAROUTDATAFILE))
         {
-	        this.outTxtFile = new File(params.getParameter(
+	        this.outTxtFile = getNewFile(params.getParameter(
 	        		WorkerConstants.PAROUTDATAFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outTxtFile);
         }

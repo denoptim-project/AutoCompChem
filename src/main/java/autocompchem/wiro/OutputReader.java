@@ -165,7 +165,7 @@ public class OutputReader extends Worker
 		ReaderWriterFactory builder = ReaderWriterFactory.getInstance();
 		
 		try {
-			Worker w = builder.makeOutputReaderInstance(new File(fileName));
+			Worker w = builder.makeOutputReaderInstance(getNewFile(fileName));
 			if (w==null)
 			{
 				Terminator.withMsgAndStatus("ERROR: log/output file '"
@@ -200,7 +200,7 @@ public class OutputReader extends Worker
 	        String inFileName = params.getParameter(
 	        		WIROConstants.PARJOBOUTPUTFILE).getValueAsString();
 	        FileUtils.foundAndPermissions(inFileName,true,false,false);
-	        this.inFile = new File(inFileName);
+	        this.inFile = getNewFile(inFileName);
         } else {
         	Terminator.withMsgAndStatus("ERROR! No definition of the output to "
         			+ "analyse. Please provide a value for '"

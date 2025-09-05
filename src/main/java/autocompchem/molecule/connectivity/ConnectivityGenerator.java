@@ -189,14 +189,14 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         
         if (params.contains("TEMPLATE"))
         {
-            this.templatePathName = new File(
+            this.templatePathName = getNewFile(
                     params.getParameter("TEMPLATE").getValueAsString());
         }
         
         if (params.contains("REFERENCE"))
         {
             String str = params.getParameter("REFERENCE").getValueAsString();
-            this.templatePathName = new File(str);
+            this.templatePathName = getNewFile(str);
             FileUtils.foundAndPermissions(str,true,false,false);
         }
     }

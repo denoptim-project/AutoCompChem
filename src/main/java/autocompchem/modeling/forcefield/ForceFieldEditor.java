@@ -186,7 +186,7 @@ public class ForceFieldEditor extends Worker
     	super.initialize();
 
         //Get and check initial force field file
-        this.iFFFile = new File(
+        this.iFFFile = getNewFile(
         		params.getParameter("INPFFFILE").getValue().toString());
         FileUtils.foundAndPermissions(this.iFFFile,true,false,false);
 
@@ -238,7 +238,7 @@ public class ForceFieldEditor extends Worker
         if (params.contains("OUTFFFILE"))
         {
             //Get and check output file
-            this.oFFFile = new File(
+            this.oFFFile = getNewFile(
             		params.getParameter("OUTFFFILE").getValue().toString());
             FileUtils.mustNotExist(this.oFFFile);
         } else {

@@ -38,7 +38,10 @@ import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedData.NamedDataType;
+import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
 import autocompchem.utils.NumberUtils;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -587,6 +590,103 @@ public class JobTest
     	expected.add(c1a);
     	expected.add(c2b);
 		assertEquals(expected, actual);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testSettingCustomWDir()
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+
+        //Define paths in tmp dir
+        File customWDir = new File(tempDir.getAbsolutePath() + SEP + "wdir");
+        customWDir.mkdir();
+        
+    	Job job = new TestJob("foobar.log", 1, 0, 200);
+    	String prefix = "logging into other wdir";
+		job.setParameter(TestJob.PREFIX, prefix);
+    	job.setUserDirAndStdFiles(customWDir);
+    	
+    	job.run();
+    	
+    	File expected = new File(customWDir + SEP + "foobar.log");
+    	assertTrue(expected.exists());
+    	
+    	List<String> content = IOtools.readTXT(expected);
+    	int count = 0;
+    	for (String line : content)
+    	{
+    		if (line.contains(prefix))
+    			count++;
+    	}
+    	assertTrue(count > 3);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetNewFile() throws Exception
+    {
+        assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+        
+        // Test 1: Job with no custom directory (default behavior)
+        Job jobDefault = new Job();
+        String relativePath = "test_file.txt";
+        String absolutePath = System.getProperty("user.dir") + SEP + "abs_file.txt";
+        
+        File result1 = jobDefault.getNewFile(relativePath);
+        File result2 = jobDefault.getNewFile(absolutePath);
+        
+        // Should behave like standard File constructor
+        assertEquals(new File(relativePath).getAbsolutePath(), result1.getAbsolutePath());
+        assertEquals(new File(absolutePath).getAbsolutePath(), result2.getAbsolutePath());
+        
+        // Test 2: Job with custom directory different from user.dir
+        File customWDir = new File(tempDir.getAbsolutePath() + SEP + "customwdir");
+        customWDir.mkdir();
+        
+        Job jobCustom = new Job();
+        jobCustom.setUserDir(customWDir);
+        
+        // Test 2a: Relative path - should be resolved under custom directory
+        File customResult1 = jobCustom.getNewFile(relativePath);
+        assertTrue(customResult1.getAbsolutePath().startsWith(customWDir.getAbsolutePath()));
+        assertTrue(customResult1.getAbsolutePath().endsWith("test_file.txt"));
+        
+        // Test 2b: Absolute path under user.dir - should be transformed to custom directory
+        String userDirFile = System.getProperty("user.dir") + SEP + "subdir" + SEP + "user_file.txt";
+        File customResult2 = jobCustom.getNewFile(userDirFile);
+        assertTrue(customResult2.getAbsolutePath().startsWith(customWDir.getAbsolutePath()));
+        assertTrue(customResult2.getAbsolutePath().endsWith("subdir" + SEP + "user_file.txt"));
+        
+        // Test 2c: Absolute path outside user.dir - should be returned unchanged
+        String outsideUserDir = tempDir.getAbsolutePath() + SEP + "external_file.txt";
+        File customResult3 = jobCustom.getNewFile(outsideUserDir);
+        assertEquals(new File(outsideUserDir).getAbsolutePath(), customResult3.getAbsolutePath());
+        
+        // Test 3: Job with custom directory same as user.dir (edge case)
+        File userDir = new File(System.getProperty("user.dir"));
+        Job jobSameDir = new Job();
+        jobSameDir.setUserDir(userDir);
+        
+        File sameResult = jobSameDir.getNewFile(relativePath);
+        // Should behave like standard constructor since directories are the same
+        assertEquals(new File(relativePath).getAbsolutePath(), sameResult.getAbsolutePath());
+        
+        // Test 4: Verify consistency with existing patterns in the codebase
+        // This mimics what's done in updateStdoutStdErr() method
+        Job jobForConsistency = new Job();
+        jobForConsistency.setUserDir(customWDir);
+        
+        String testPath = System.getProperty("user.dir") + SEP + "Job123.log";
+        File fileViaGetNewFile = jobForConsistency.getNewFile(testPath);
+        
+        // Should produce the same result as the existing FileUtils.getCustomAbsPath pattern
+        File fileViaFileUtils = FileUtils.getCustomAbsPath(testPath, 
+                customWDir.getAbsolutePath()).toFile();
+        
+        assertEquals(fileViaFileUtils.getAbsolutePath(), fileViaGetNewFile.getAbsolutePath());
     }
     
 //------------------------------------------------------------------------------

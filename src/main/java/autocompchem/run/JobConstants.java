@@ -18,31 +18,23 @@ package autocompchem.run;
  */
 
 /**
- * Storage of predefined constants for shell commands
+ * Storage of predefined constants pertaining {@link Job} class.
  *
  * @author Marco Foscato
  */
 
-public class ShellJobConstants
+public class JobConstants
 {
+
+    /**
+     * Keyword for requesting to run a job from a custom location.
+     */
+	public static final String PARWORKDIR = "WORKDIR";
+
 	/**
-	 * Keyword for the parameter defining an entire command
+	 * Keyword requesting to copy some pathnames to the work directory.
 	 */
-	public final static String LABCOMMAND = "CMD";
+	public static final String PARCOPYTOWORKDIR = "COPYTOWORKDIR";
 	
-    /**
-     * Keyword for interpreter
-     */
-    public final static String LABINTERPRETER = "EXE";
-
-    /**
-     * Keyword for script
-     */
-    public final static String LABSCRIPT = "SCRIPT";
-
-    /**
-     * Keyword for arguments
-     */
-    public final static String LABARGS = "ARGS";
 
 }

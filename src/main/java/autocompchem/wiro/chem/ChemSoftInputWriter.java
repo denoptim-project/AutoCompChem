@@ -202,7 +202,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         {
         	coordFile = params.getParameter(
                     ChemSoftConstants.PARCOORDFILE).getValueAsString().trim();
-        	coordFileFormat = FileUtils.getFileExtension(new File(coordFile))
+        	coordFileFormat = FileUtils.getFileExtension(getNewFile(coordFile))
         			.replaceAll("\\.", "").toUpperCase();
         }
 
@@ -214,7 +214,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
             String[] words = value.trim().split("\\s+");
             String pathname = words[0];
             FileUtils.foundAndPermissions(pathname,true,false,false);
-            this.inGeomFile = new File(pathname);
+            this.inGeomFile = getNewFile(pathname);
             List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inGeomFile);
             if (words.length > 1)
             {
@@ -284,7 +284,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 
         if (params.contains(WIROConstants.PARJOBDETAILSFILE))
         {
-            File jdFile = new File(params.getParameter(
+            File jdFile = getNewFile(params.getParameter(
                     WIROConstants.PARJOBDETAILSFILE).getValueAsString());
             logger.debug("Job details from JD file '" + jdFile + "'.");
             
@@ -333,10 +333,10 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         {
             ccJobInputNameRoot = params.getParameter(
                     WIROConstants.PAROUTFILEROOT).getValueAsString();
-            ccJobInputFile = new File(ccJobInputNameRoot + inpExtrension);
+            ccJobInputFile = getNewFile(ccJobInputNameRoot + inpExtrension);
         } else if (params.contains(WIROConstants.PAROUTFILE))
         {
-        	ccJobInputFile = new File(params.getParameter(
+        	ccJobInputFile = getNewFile(params.getParameter(
         			WIROConstants.PAROUTFILE).getValueAsString());
             ccJobInputNameRoot = FileUtils.getRootOfFileName(ccJobInputFile);
         } else {
@@ -359,7 +359,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
                             + "Root of any output file name set to '" 
                             + ccJobInputNameRoot + "'.");
         	}
-        	ccJobInputFile = new File(ccJobInputNameRoot + inpExtrension);
+        	ccJobInputFile = getNewFile(ccJobInputNameRoot + inpExtrension);
         }
         
         if (params.contains(WIROConstants.PARNOJSONOUTPUT))
@@ -451,11 +451,11 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         List<IAtomContainer> set = new ArrayList<IAtomContainer>();
         set.add(iac);
         produceSingleJobInputFiles(set, 
-        		new File(fileRootName+inpExtrension),
+        		getNewFile(fileRootName+inpExtrension),
         		fileRootName);
         if (coordFile!=null)
         {
-        	IOtools.writeAtomContainerToFile(new File(coordFileNameWithId), iac, 
+        	IOtools.writeAtomContainerToFile(getNewFile(coordFileNameWithId), iac, 
         			coordFileFormat, false);
         }
         
@@ -487,7 +487,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 	    }
 	    
 	    produceSingleJobInputFiles(iacs, 
-	    		new File(ccJobInputNameRoot + inpExtrension), ccJobInputNameRoot);
+	    		getNewFile(ccJobInputNameRoot + inpExtrension), ccJobInputNameRoot);
     	
 	    return iacs;
     }
@@ -575,7 +575,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 		{
 			CompChemJob cleanCCJ = molSpecJob.clone();
 			cleanCCJ.removeACCTasks();
-			File jdFileOut = new File(ccJobInputNameRoot 
+			File jdFileOut = getNewFile(ccJobInputNameRoot 
 					+ WIROConstants.JSONJDEXTENSION);
 			FileUtils.mustNotExist(jdFileOut);
 			Gson writer = ACCJson.getWriter();

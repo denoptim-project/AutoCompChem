@@ -324,7 +324,7 @@ public final class JobFactory
      * We need to process some of the parameters read-in upon creation of the 
      * job.
      */
-    private static Job procesParametersUponJobCreation(Job job)
+    public static Job procesParametersUponJobCreation(Job job)
     {
     	ParameterStorage params = job.getParameters();
     
@@ -335,14 +335,16 @@ public final class JobFactory
         			WorkerConstants.PARTASK));
         	if (new JobEvaluator().getCapabilities().contains(task))
 	        {
-	        	if (params.contains(MonitoringJob.PERIODPAR) 
-	        			|| params.contains(MonitoringJob.DELAYPAR))
-	        	{
-	        		newJob = new MonitoringJob();
-	        	} else {
-	        		newJob = new EvaluationJob();
-	        	}
-
+        		if (!(job instanceof MonitoringJob))
+        		{
+		        	if (params.contains(MonitoringJob.PERIODPAR) 
+		        			|| params.contains(MonitoringJob.DELAYPAR))
+		        	{
+		        		newJob = new MonitoringJob();
+		        	} else {
+		        		newJob = new EvaluationJob();
+		        	}
+        		}
 	            newJob.setParameters(params);
 	        }
         }
@@ -359,8 +361,11 @@ public final class JobFactory
         {
         	int nThreadsPerSubJob = Integer.parseInt(params.getParameter(
         			ParameterConstants.PARALLELIZE).getValueAsString());
-        	job.setNumberOfThreads(nThreadsPerSubJob);
+        	newJob.setNumberOfThreads(nThreadsPerSubJob);
         }
+        
+        newJob.processWorkDirInstructions();
+        
         return newJob;
     }
 

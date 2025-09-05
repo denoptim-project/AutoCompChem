@@ -18,7 +18,6 @@ package autocompchem.run;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,31 +117,6 @@ public class ShellJob extends Job
 //------------------------------------------------------------------------------
 
     /**
-     * Constructor for a ShellJob with a defined interpreter, script and 
-     * arguments/options.
-     * @param interpreter the interpreter to call for the script.
-     * @param script the executable script.
-     * @param args command line arguments and options all collected in a single
-     * string.
-     * @param customUserDir the (existing) directory from which to run the script.
-     * @param verbosity the verbosity level.
-     */
-
-    public ShellJob(String interpreter, String script, String args, 
-    		File customUserDir, int verbosity)
-    {
-        super();
-        this.appID = SoftwareId.SHELL;
-        this.command = new ArrayList<String>();
-        this.command.add(interpreter);
-        this.command.add(script);
-        this.command.add(args);
-        this.customUserDir = customUserDir;
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
      * Constructor that may return a subclass
      */
     public Job makeInstance()
@@ -186,7 +160,7 @@ public class ShellJob extends Job
     		String script = params.getParameter(
     				ShellJobConstants.LABSCRIPT).getValueAsString();
     		script = script.replaceFirst("^~", System.getProperty("user.home")); 
-    		File scriptFile = new File(script);
+    		File scriptFile = getNewFile(script);
     		command.add(scriptFile.getAbsolutePath());
     	} else if (params.contains(ShellJobConstants.LABCOMMAND))
     	{
@@ -210,51 +184,6 @@ public class ShellJob extends Job
     		while (matcher.find()) 
     		{
     		    command.add(matcher.group());
-    		}
-    	}
-    	
-    	// We might want to run this in a subfolder
-    	if (params.contains(ShellJobConstants.WORKDIR))
-    	{
-    		File workDir = new File(params.getParameter(
-    				ShellJobConstants.WORKDIR).getValueAsString());
-    		if (!workDir.exists() && !workDir.mkdirs())
-    		{
-    			Terminator.withMsgAndStatus("ERROR! Could not make the "
-    					+ "required subfolder '" + workDir + "'.",-1);
-    		}
-    		logger.warn("WARNING: setting work directory to '"
-    				+ workDir + "'.");
-    		this.setUserDirAndStdFiles(workDir);
-    	}
-    	
-    	if (params.contains(ShellJobConstants.COPYTOWORKDIR))
-    	{
-    		String listAsStr = params.getParameter(
-    				ShellJobConstants.COPYTOWORKDIR).getValueAsString();
-    		String[] list = listAsStr.split(",");
-    		for (int i=0; i<list.length; i++)
-    		{
-    			File source = new File(list[i].trim());
-    			File dest = new File(this.customUserDir 
-    					+ System.getProperty("file.separator")
-    					+ source.getName());
-    			if (source.exists())
-    			{
-    				try {
-						com.google.common.io.Files.copy(source,dest);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Terminator.withMsgAndStatus("ERROR! Could not copy "
-								+ "file '" + source + "' to work directory.",-1);
-					}
-    			} else {
-    				logger.warn("WARNING: file '" + source 
-    						+ "' was listed among "
-    						+ "those to copy into the work directory, "
-    						+ "but it does not exist. I'll skipp it.");
-    			}
     		}
     	}
     	

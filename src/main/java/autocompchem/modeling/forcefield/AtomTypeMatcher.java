@@ -119,7 +119,7 @@ public class AtomTypeMatcher extends AtomContainerInputProcessor
     	super.initialize();
     	
         //File with atom types map
-        this.atMapFile = new File(
+        this.atMapFile = getNewFile(
         		params.getParameter( "ATOMTYPESMAP").getValue().toString());
         FileUtils.foundAndPermissions(this.inFile,true,false,false);
 

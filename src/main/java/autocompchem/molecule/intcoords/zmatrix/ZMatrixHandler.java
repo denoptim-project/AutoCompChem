@@ -209,7 +209,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         if (params.contains("TEMPLATEZMAT"))
         {
             this.useTmpl = true;
-            File tmplZMatFile = new File(
+            File tmplZMatFile = getNewFile(
                       params.getParameter("TEMPLATEZMAT").getValue().toString());
             List<ZMatrix> templates = IOtools.readZMatrixFile(tmplZMatFile);
             if (templates.size()==0)
@@ -237,7 +237,7 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
         
         if (params.contains("INFILE2"))
         {
-            File inFile2 = new File(
+            File inFile2 = getNewFile(
             		params.getParameter("INFILE2").getValue().toString());
             FileUtils.foundAndPermissions(inFile2,true,false,false);
         	if (inFile2.getName().endsWith(".zmat"))
@@ -286,13 +286,13 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
     {
     	String[] words = value.trim().split("\\s+");
         String pathname = words[0];
-        FileUtils.foundAndPermissions(pathname,true,false,false);
     	if (!pathname.endsWith(".zmat"))
         {
     		super.processInputFileParameter(pathname);
         } else {
-        	this.inFile = new File(pathname);;
+        	this.inFile = getNewFile(pathname);
         }
+        FileUtils.foundAndPermissions(inFile,true,false,false);
     }
     
 //-----------------------------------------------------------------------------

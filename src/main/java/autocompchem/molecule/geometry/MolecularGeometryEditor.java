@@ -209,7 +209,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         // Get the Cartesian move
         if (params.contains("CARTESIANMOVE"))
         {
-            File crtFile = new File(
+            File crtFile = getNewFile(
                      params.getParameter("CARTESIANMOVE").getValueAsString());
             FileUtils.foundAndPermissions(crtFile,true,false,false);
             List<String> all = IOtools.readTXT(crtFile);
@@ -323,7 +323,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         // Get the Cartesian move
         if (params.contains("ZMATRIXMOVE"))
         {
-            File zmtFile = new File(
+            File zmtFile = getNewFile(
                        params.getParameter("ZMATRIXMOVE").getValueAsString());
             FileUtils.foundAndPermissions(zmtFile,true,false,false);
             if (IOtools.readZMatrixFile(zmtFile).size() != 1)
@@ -337,7 +337,7 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         // Get the reference substructure
         if (params.contains("REFERENCESUBSTRUCTUREFILE"))
         {
-            this.refFile =  new File(
+            this.refFile =  getNewFile(
             		params.getParameter("REFERENCESUBSTRUCTUREFILE")
             		.getValueAsString());
             FileUtils.foundAndPermissions(this.refFile,true,false,false);

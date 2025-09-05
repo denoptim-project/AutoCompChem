@@ -112,7 +112,7 @@ public class JobDefinitionConverter extends Worker
          	String pathname = params.getParameter(WorkerConstants.PARINFILE)
              		.getValueAsString();
             FileUtils.foundAndPermissions(pathname,true,false,false);
-            this.inFile = new File(pathname);
+            this.inFile = getNewFile(pathname);
         } else {
 			Terminator.withMsgAndStatus("ERROR! Missing '" 
 					+ WorkerConstants.PARINFILE + "'.", -1);
@@ -120,7 +120,7 @@ public class JobDefinitionConverter extends Worker
     	
     	if (params.contains(WorkerConstants.PAROUTFILE))
         {
-	        this.outFile = new File(params.getParameter(
+	        this.outFile = getNewFile(params.getParameter(
 	        		WorkerConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
 	        String ext = FileUtils.getFileExtension(outFile);

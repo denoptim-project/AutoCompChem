@@ -203,7 +203,7 @@ public class DummyObjectsHandler extends AtomContainerInputProcessor
         //Get and check the input file (which has to be an SDF file)
         if (params.contains("TEMPLATE"))
         {
-            this.tmplFile = new File(
+            this.tmplFile = getNewFile(
             		params.getParameter("TEMPLATE").getValueAsString());
             FileUtils.foundAndPermissions(this.inFile,true,false,false);
             List<IAtomContainer> inTmpls = IOtools.readSDF(this.tmplFile);

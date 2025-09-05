@@ -225,7 +225,7 @@ public class AtomContainerInputProcessor extends Worker
         
         if (params.contains(WorkerConstants.PAROUTFILE))
         {
-	        this.outFile = new File(params.getParameter(
+	        this.outFile = getNewFile(params.getParameter(
 	        		WorkerConstants.PAROUTFILE).getValueAsString());
 	        FileUtils.mustNotExist(this.outFile);
 	        String ext = FileUtils.getFileExtension(outFile);
@@ -338,8 +338,8 @@ public class AtomContainerInputProcessor extends Worker
 	{
         String[] words = value.trim().split("\\s+");
         String pathname = words[0];
-        FileUtils.foundAndPermissions(pathname,true,false,false);
-        inFile = new File(pathname);
+        inFile = getNewFile(pathname);
+        FileUtils.foundAndPermissions(inFile,true,false,false);
         
         List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inFile);
         inMols = new ArrayList<IAtomContainer>();

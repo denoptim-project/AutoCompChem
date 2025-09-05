@@ -18,6 +18,7 @@ package autocompchem.worker;
  */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -339,6 +340,45 @@ public abstract class Worker implements IOutputExposer
             Configurator.setLevel(logger.getName(), 
             		LogUtils.verbosityToLevel(Integer.parseInt(str)));
         }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Wrapper for the {@link File} constructor that accounts for the possibility
+     * of considering an effective work directory different than user.dir.
+     * The decision on whether the user.dir has been overwritten is taken by
+     * the {@link Job} this worker is tasked to to, if any.
+     * @param pathname an intended pathname, may be relative or absolute.
+     * @return the file object with the pathname adjusted to the current 
+     * configuration of the work directory of this Job.
+     */
+    public File getNewFile(String pathname)
+    {
+    	if (myJob!=null)
+    	{
+    		return myJob.getNewFile(pathname);
+    	}
+    	return new File(pathname);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Accounts for the possibility of having configured an effective work 
+     * directory different than user.dir.
+     * The decision on whether the user.dir has been overwritten is taken by
+     * the {@link Job} this worker is tasked to to, if any. Otherwise, the
+     * value of user.dir applies.
+     * @return 
+     */
+    public File getWorkDir()
+    {
+    	if (myJob!=null)
+    	{
+    		return myJob.getUserDir();
+    	}
+    	return new File(System.getProperty("user.dir"));
     }
     
 //------------------------------------------------------------------------------

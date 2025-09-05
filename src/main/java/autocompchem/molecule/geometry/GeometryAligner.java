@@ -144,7 +144,7 @@ public class GeometryAligner extends AtomContainerInputProcessor
     	super.initialize();
     	if (params.contains("REFERENCE"))
         {
-	        File refFile = new File(
+	        File refFile = getNewFile(
 	        		params.getParameter("REFERENCE").getValueAsString());
 	        FileUtils.foundAndPermissions(refFile,true,false,false);
 	        List<IAtomContainer> lst = IOtools.readMultiMolFiles(refFile);
