@@ -261,7 +261,7 @@ function cliTesting() {
     # We run all tests unless a specific list of test IDs was given
     if [ ${#chosenCliTests[@]} -eq 0 ]
     then
-        for i in $(seq 1 $(ls ../cli*.sh | wc -l | awk '{print $1}'))
+        for i in $(seq 1 $(ls  ../cli[0-9].sh ../cli[0-9][0-9].sh ../cli[0-9][0-9][0-9].sh 2>/dev/null | wc -l | awk '{print $1}'))
         do
             chosenCliTests+=($i)
         done
