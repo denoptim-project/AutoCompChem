@@ -190,6 +190,18 @@ public class InfoChannelBase
 //------------------------------------------------------------------------------
 
     /**
+     * @return <code>true</code> if this collection contains an equal definition
+     * the query information channel
+     */
+
+    public boolean contains(InfoChannel ic)
+    {
+        return allInfoChannels.contains(ic);
+    }
+
+//------------------------------------------------------------------------------
+
+    /**
      * Get all information channels
      * @return all the information channels
      */
@@ -321,7 +333,8 @@ public class InfoChannelBase
         	List<InfoChannel> newICs = ic.getSpecific(wdir);
         	for (InfoChannel specIC : newICs)
         	{
-        		specificICB.addChannel(specIC);
+        		if (!specificICB.contains(specIC))
+        			specificICB.addChannel(specIC);
         	}
         	if (newICs.size()==0)
         	{

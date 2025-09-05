@@ -164,6 +164,10 @@ public class InfoChannelBaseTest
     	FileAsSource fasWithStar = new FileAsSource(".*\\.ext$", 
     			InfoChannelType.LOGFEED);
     	icb.addChannel(fasWithStar);
+    	// Trigger creation of duplicate channel
+    	FileAsSource hardCodedPathname = new FileAsSource(filename3, 
+    			InfoChannelType.LOGFEED);
+    	icb.addChannel(hardCodedPathname);
     	
     	lostICs = new ArrayList<InfoChannel>();
     	InfoChannelBase specICB = icb.getSpecific(tempDir.toPath(), lostICs);
@@ -178,6 +182,41 @@ public class InfoChannelBaseTest
     		assertTrue(expected.contains(
     				(new File(((FileAsSource) ic).getPathName()).getName())));
     	}
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testContains() throws Exception
+    {
+    	InfoChannelBase icb = new InfoChannelBase();
+    	InfoChannel fas1 = new FileAsSource("/path/to/filename.out", 
+    			InfoChannelType.LOGFEED);
+    	icb.addChannel(fas1);
+    	InfoChannel qry1 = new FileAsSource(".*\\.out", 
+    			InfoChannelType.LOGFEED);
+    	icb.addChannel(qry1);
+    	InfoChannel eas = EnvironmentAsSourceTest.getTestInstance();
+    	icb.addChannel(eas);
+    	InfoChannel tas = ShortTextAsSourceTest.getTestInstance();
+    	icb.addChannel(tas);
+    	
+    	assertTrue(icb.contains(fas1));
+    	assertTrue(icb.contains(qry1));
+    	assertTrue(icb.contains(eas));
+    	assertTrue(icb.contains(tas));
+    	
+    	InfoChannel fas2 = new FileAsSource("/path/to/filename.out", 
+    			InfoChannelType.LOGFEED);
+    	InfoChannel qry2 = new FileAsSource(".*\\.out", 
+    			InfoChannelType.LOGFEED);
+    	InfoChannel eas2 = EnvironmentAsSourceTest.getTestInstance();
+    	InfoChannel tas2 = ShortTextAsSourceTest.getTestInstance();
+    	
+    	assertTrue(icb.contains(fas2));
+    	assertTrue(icb.contains(qry2));
+    	assertTrue(icb.contains(eas2));
+    	assertTrue(icb.contains(tas2));
     }
     
 //------------------------------------------------------------------------------
