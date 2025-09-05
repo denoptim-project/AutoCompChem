@@ -273,7 +273,7 @@ public class FileAsSource extends ReadableIC
 		{
 			regex = ".*" + pathName; 
 		}
-		if (!FileUtils.isAbsolutePath(pathName) && StringUtils.isValidRegex(regex))
+		if (!FileUtils.isValidPath(pathName) && StringUtils.isValidRegex(regex))
 		{
 			List<File> files = FileUtils.findByREGEX(wdir.toFile(), regex, 1, false);
 			for (File file : files)
@@ -282,6 +282,14 @@ public class FileAsSource extends ReadableIC
 						getType());
 				results.add(specIC);
 			}
+		} else if  (FileUtils.isRelativePath(pathName)) {
+			//Consider the possibility of a custom word dir
+			Path resolvedFromWdir = FileUtils.getCustomAbsPath(pathName, 
+					wdir.toAbsolutePath().toString());
+			FileAsSource specIC = new FileAsSource(
+					resolvedFromWdir.toAbsolutePath().toString(), 
+					getType());
+			results.add(specIC);
 		} else {
 			results.add(this);
 		}

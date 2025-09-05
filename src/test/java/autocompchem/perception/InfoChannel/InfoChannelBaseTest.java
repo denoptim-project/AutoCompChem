@@ -3,6 +3,7 @@ package autocompchem.perception.InfoChannel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -148,8 +149,13 @@ public class InfoChannelBaseTest
         		+ System.getProperty("file.separator") + "inner.ext";
         File tmpFile4 = new File(filename4);
         IOtools.writeTXTAppend(tmpFile4, "dummy content", false);
+        
+        String filename5 =  FileUtils.getPathToPatent(tempDir.getAbsolutePath()) 
+        		+ System.getProperty("file.separator") + "outer.ext";
+        File tmpFile5 = new File(filename5);
+        IOtools.writeTXTAppend(tmpFile5, "dummy content", false);
        
-    	// No change if none of the channels has wildcards
+    	// No change if none of the channels has wildcards (regex)
     	InfoChannelBase icb = new InfoChannelBase();
     	FileAsSource nonRegex = new FileAsSource("[abs", 
     			InfoChannelType.INPUTFILE);
@@ -160,7 +166,7 @@ public class InfoChannelBaseTest
     	List<InfoChannel> lostICs = new ArrayList<InfoChannel>();
     	assertEquals(icb, icb.getSpecific(tempDir.toPath(), lostICs));
     	
-    	// Replace a wildecard-based channel with the concrete ones
+    	// Replace a regex-based channel with the concrete ones
     	FileAsSource fasWithStar = new FileAsSource(".*\\.ext$", 
     			InfoChannelType.LOGFEED);
     	icb.addChannel(fasWithStar);
@@ -168,12 +174,21 @@ public class InfoChannelBaseTest
     	FileAsSource hardCodedPathname = new FileAsSource(filename3, 
     			InfoChannelType.LOGFEED);
     	icb.addChannel(hardCodedPathname);
+    	// Relative pathname from wdir and under wdir
+    	FileAsSource relativePathname1 = new FileAsSource("dir/inner.ext", 
+    			InfoChannelType.OUTPUTFILE);
+    	icb.addChannel(relativePathname1);
+    	// Relative pathname from wdir but outside wdir
+    	FileAsSource relativePathname2 = new FileAsSource("../outer.ext", 
+    			InfoChannelType.OUTPUTFILE);
+    	icb.addChannel(relativePathname2);
     	
     	lostICs = new ArrayList<InfoChannel>();
     	InfoChannelBase specICB = icb.getSpecific(tempDir.toPath(), lostICs);
     	
     	assertNotEquals(icb, specICB);
-    	assertEquals(5, specICB.getInfoChannelCount());
+    	assertEquals(7, specICB.getInfoChannelCount());
+    	assertEquals(2, specICB.getChannelsOfType(InfoChannelType.INPUTFILE).size());
     	assertEquals(2, specICB.getChannelsOfType(InfoChannelType.LOGFEED).size());
     	Set<String> expected = Set.of("a.ext", "b.ext");
     	for  (InfoChannel ic : specICB.getChannelsOfType(InfoChannelType.LOGFEED))
@@ -181,6 +196,17 @@ public class InfoChannelBaseTest
     		assertTrue(ic instanceof FileAsSource);
     		assertTrue(expected.contains(
     				(new File(((FileAsSource) ic).getPathName()).getName())));
+    	}
+    	assertEquals(2, specICB.getChannelsOfType(InfoChannelType.OUTPUTFILE).size());
+    	Set<String> expectedName = Set.of("inner.ext", "outer.ext");
+    	Set<String> expectedParent = Set.of("dir", "..");
+    	for  (InfoChannel ic : specICB.getChannelsOfType(InfoChannelType.OUTPUTFILE))
+    	{
+    		assertTrue(ic instanceof FileAsSource);
+    		File targetFile = new File(((FileAsSource) ic).getPathName());
+    		assertNotNull(targetFile.getParentFile());
+    		assertTrue(expectedName.contains(targetFile.getName()));
+    		assertTrue(expectedParent.contains(targetFile.getParentFile().getName()));
     	}
     }
     

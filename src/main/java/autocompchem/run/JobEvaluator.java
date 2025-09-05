@@ -458,7 +458,6 @@ public class JobEvaluator extends Worker
 			IllegalStateException e = new IllegalStateException(
 					"These info channels were not found: " 
 					+ StringUtils.mergeListToString(p.getLostICs(), ", ", true));
-
 			logger.error("Exception while reading logs. ", e);
 			exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 		}

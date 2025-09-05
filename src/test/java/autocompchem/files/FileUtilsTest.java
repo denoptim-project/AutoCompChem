@@ -499,6 +499,29 @@ sub2_abc/subsub2_abc
 //------------------------------------------------------------------------------
     
     @Test
+    public void testIsRelativePath() throws Exception
+    {
+    	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
+    	
+    	assertTrue(FileUtils.isRelativePath("foo/bar"));
+    	assertTrue(FileUtils.isRelativePath("../foo/bar"));
+    	assertTrue(FileUtils.isRelativePath("foo.bar"));
+
+    	assertFalse(FileUtils.isRelativePath(tempDir.getAbsolutePath()));
+    	assertFalse(FileUtils.isRelativePath("/foo.bar"));
+    	assertFalse(FileUtils.isRelativePath("/foo/bar"));
+    	assertFalse(FileUtils.isRelativePath("/"));
+    	
+    	assertFalse(FileUtils.isRelativePath(".*"));
+    	assertFalse(FileUtils.isRelativePath(".*\\.out"));
+    	assertFalse(FileUtils.isRelativePath("sdr@er.no"));
+    	assertFalse(FileUtils.isRelativePath("[/path/file"));
+    	assertFalse(FileUtils.isRelativePath("^/path/file"));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
     public void testGetCustomAbsPath() throws Exception
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");

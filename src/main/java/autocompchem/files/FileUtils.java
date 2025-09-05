@@ -601,18 +601,79 @@ public class FileUtils
 //------------------------------------------------------------------------------
 
 	/**
-	 * Checks if a string is an absolute pathname or not
-	 * @param pathname
-	 * @return
+	 * Checks if a string represents a valid path.
+	 * Returns false if the string contains wildcards (*,?), regex characters,
+	 * or other characters that cannot be used in pathnames.
+	 * @param pathname the string to check
+	 * @return true if it's a valid path, false otherwise
 	 */
-	public static boolean isAbsolutePath(String pathname) 
+	public static boolean isValidPath(String pathname) 
 	{
-	    if (pathname == null) {
+	    if (pathname == null || pathname.trim().isEmpty()) {
 	        return false;
 	    }
 	    
-	    Path path = Paths.get(pathname);
-	    return path.isAbsolute();
+	    // Check for wildcards and invalid characters that cannot be used in pathnames
+	    if (pathname.contains("*") || pathname.contains("?") || 
+	        pathname.contains("[") || pathname.contains("]") ||
+	        pathname.contains("^") || pathname.contains("@") ||
+	        (pathname.startsWith(".") && pathname.contains("\\"))) {
+	        return false;
+	    }
+	    
+	    // Try to create a Path object - this will catch invalid path strings
+	    try {
+	    	Paths.get(pathname);
+	    	return true;
+	    } catch (Throwable t) {
+	    	return false;
+	    }
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Checks if a string is a valid relative pathname or not.
+	 * @param pathname the string to check
+	 * @return true if it's a valid relative pathname, false otherwise
+	 */
+	public static boolean isRelativePath(String pathname) 
+	{
+	    // First check if it's a valid path at all
+	    if (!isValidPath(pathname)) {
+	        return false;
+	    }
+	    
+	    // Then check if it's relative (not absolute)
+	    try {
+	    	Path path = Paths.get(pathname);
+	    	return !path.isAbsolute();
+	    } catch (Throwable t) {
+	    	return false;
+	    }
+	}
+
+//------------------------------------------------------------------------------
+
+	/**
+	 * Checks if a string is a valid absolute pathname or not.
+	 * @param pathname the string to check
+	 * @return true if it's a valid absolute pathname, false otherwise
+	 */
+	public static boolean isAbsolutePath(String pathname) 
+	{
+	    // First check if it's a valid path at all
+	    if (!isValidPath(pathname)) {
+	        return false;
+	    }
+	    
+	    // Then check if it's absolute
+	    try {
+	    	Path path = Paths.get(pathname);
+	    	return path.isAbsolute();
+	    } catch (Throwable t) {
+	    	return false;
+	    }
 	}
 
 //------------------------------------------------------------------------------
