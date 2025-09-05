@@ -110,7 +110,7 @@ public class EvaluationJob extends ACCJob
   		{
   			int idx = ((int) exposedOutput.getNamedData(
   					JobEvaluator.NUMSTEPSKEY).getValue()) - 1;
-  			if (idx > 1)
+  			if (idx > -1)
   			{
   				if (jobBeingEvaluated.getNumberOfSteps() > 0)
   				{

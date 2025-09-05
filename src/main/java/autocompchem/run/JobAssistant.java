@@ -280,25 +280,32 @@ public class JobAssistant extends Worker
 		
 		evalJob.run();
 		
-        if (evalJob.requestsAction())
-        {
-        	// Then, if needed, apply any error-handling response
-    	    Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
-    	    Job editedAssistedJob = healJob(reactiontriggeringJob, 
-    	 		   evalJob.getRequestedAction(), 0, myJob, logger);
-    	    
-    	    // and, finally, make a new input
-    	    ParameterStorage parsToMakeInput = params.copy();
-    	    parsToMakeInput.setParameter(WorkerConstants.PARTASK, 
-    		 	   InputWriter.PREPAREINPUTTASK.casedID);
-    	    parsToMakeInput.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
-    		 	   editedAssistedJob);
-    	    parsToMakeInput.setParameter(WIROConstants.SOFTWAREID, 
-     		 	   evalJob.getOutput(WIROConstants.SOFTWAREID).getValue());
-    	    Job inputPreparationJob = JobFactory.createJob(parsToMakeInput);
-    	   
-    	    inputPreparationJob.run();
-        }
+		if (evalJob.hasOutput(JobEvaluator.SITUATIONOUTKEY))
+		{
+	        if (evalJob.requestsAction())
+	        {
+	        	// Then, if needed, apply any error-handling response
+	    	    Job reactiontriggeringJob = evalJob.getReactionTriggeringJob();
+	    	    Job editedAssistedJob = healJob(reactiontriggeringJob, 
+	    	 		   evalJob.getRequestedAction(), 0, myJob, logger);
+	    	    
+	    	    // and, finally, make a new input
+	    	    ParameterStorage parsToMakeInput = params.copy();
+	    	    parsToMakeInput.setParameter(WorkerConstants.PARTASK, 
+	    		 	   InputWriter.PREPAREINPUTTASK.casedID);
+	    	    parsToMakeInput.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
+	    		 	   editedAssistedJob);
+	    	    parsToMakeInput.setParameter(WIROConstants.SOFTWAREID, 
+	     		 	   evalJob.getOutput(WIROConstants.SOFTWAREID).getValue());
+	    	    Job inputPreparationJob = JobFactory.createJob(parsToMakeInput);
+	    	   
+	    	    inputPreparationJob.run();
+	        }
+		} else {
+			Terminator.withMsgAndStatus("No situation perceived. Please, add "
+					+ "suitable situations and corresponding actions if you"
+					+ "what to cure the given job.", -1);
+		}
         
         // Project output
         for (NamedData dataToExpose : evalJob.exposedOutput.getAllNamedData().values())

@@ -1190,6 +1190,18 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
     
     /**
+     * Checks if a given reference name is found in the output exposed by this
+     * job.
+     */
+    
+    public boolean hasOutput(String refName)
+    {
+    	return exposedOutput.contains(refName);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
      * Extracts the value of any data stored in the exposed output collectors
      * reachable from the job tree relationships.
      * @param job the job on which we sit when looking at the job tree. Could be

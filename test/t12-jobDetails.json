@@ -2,6 +2,10 @@
   "jobType": "CompChemJob",
   "params": [
     {
+      "reference": "SOFTWAREID",
+      "value": "Gaussian"
+    },
+    {
       "reference": "ROOTPATHNAMEOUTPUT",
       "value": "11restarted"
     }

@@ -512,14 +512,6 @@ public class JobEvaluator extends Worker
 				logger.error("Exception while reading logs. ", e);
 				exposeOutputData(new NamedData(EXCEPTION, e.toString()));
 			}
-			//TODO-gg del
-			/*
-			if (exposedOutputCollector.contains(NUMSTEPSKEY))
-			{
-				idxFocusJob = ((int) exposedOutputCollector.getNamedData(
-						NUMSTEPSKEY).getValue()) - 1;
-			}
-			*/
 		}
 		
 		try {
