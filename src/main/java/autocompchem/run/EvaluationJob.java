@@ -1,7 +1,12 @@
 package autocompchem.run;
 
+import java.io.File;
+import java.io.IOException;
+
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileUtils;
+import autocompchem.io.IOtools;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
@@ -19,7 +24,7 @@ public class EvaluationJob extends ACCJob
 	/**
 	 * The job that is evaluated by this job.
 	 */
-	private Job focusJob;
+	private Job jobBeingEvaluated;
 	
 	/**
 	 * The reaction to the results of the evaluation
@@ -80,30 +85,14 @@ public class EvaluationJob extends ACCJob
     		SituationBase sitsDB, InfoChannelBase icDB)
     {
         this();
-        focusJob = jobToEvaluate;
+        jobBeingEvaluated = jobToEvaluate;
+        //NB: this is done also in the initialization of the worker, but 
+        // we check for consistency
         params.setParameter(ParameterConstants.JOBTOEVALUATE, jobToEvaluate);
         if (sitsDB!=null)
             params.setParameter(ParameterConstants.SITUATIONSDB, sitsDB);
         if (icDB!=null)
             params.setParameter(ParameterConstants.INFOCHANNELSDB, icDB);
-    }
-    
-//------------------------------------------------------------------------------
-
-    /**
-     * Set this job parameters
-     * @param params the new set of parameters
-     */
-
-    @Override
-    public void setParameters(ParameterStorage params)
-    {
-    	super.setParameters(params);
-    	if (params.contains(ParameterConstants.JOBTOEVALUATE))
-    	{
-    		focusJob = (Job) params.getParameter(
-    				ParameterConstants.JOBTOEVALUATE).getValue();
-    	}
     }
     
 //------------------------------------------------------------------------------
@@ -123,13 +112,13 @@ public class EvaluationJob extends ACCJob
   					JobEvaluator.NUMSTEPSKEY).getValue()) - 1;
   			if (idx > 1)
   			{
-  				if (focusJob.getNumberOfSteps() > 0)
+  				if (jobBeingEvaluated.getNumberOfSteps() > 0)
   				{
-  					return focusJob.steps.get(idx);
+  					return jobBeingEvaluated.steps.get(idx);
   				}
   			}
   		}
-  		return focusJob;
+  		return jobBeingEvaluated;
   	}
   	
 //------------------------------------------------------------------------------
@@ -169,12 +158,23 @@ public class EvaluationJob extends ACCJob
 //------------------------------------------------------------------------------
 
     /**
+     * Sets the job that is evaluated by this one.
+     * @param job the job that is evaluated by this one.
+     */
+    public void setJobBeingEvaluated(Job job)
+    {
+    	jobBeingEvaluated = job;
+    } 
+    
+//------------------------------------------------------------------------------
+
+    /**
      * Returns the job that is evaluated by this one.
      * @return the job that is evaluated by this one.
      */
-    public Job getFocusJob()
+    public Job getJobBeingEvaluated()
     {
-    	return focusJob;
+    	return jobBeingEvaluated;
     }  
     
 //------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ public class EvaluationJob extends ACCJob
     	if (observer!=null)
     	{
 	    	if (requestsAction() && hasContainer() 
-	    			&& focusJob.getContainers().contains(getContainer()))
+	    			&& jobBeingEvaluated.getContainers().contains(getContainer()))
 	        {
 	        	observer.reactToRequestOfAction(getRequestedAction(), this);
 	        } else {

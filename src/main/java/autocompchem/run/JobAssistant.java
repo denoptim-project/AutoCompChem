@@ -293,6 +293,8 @@ public class JobAssistant extends Worker
     		 	   InputWriter.PREPAREINPUTTASK.casedID);
     	    parsToMakeInput.setParameter(WIROConstants.PARJOBDETAILSOBJ, 
     		 	   editedAssistedJob);
+    	    parsToMakeInput.setParameter(WIROConstants.SOFTWAREID, 
+     		 	   evalJob.getOutput(WIROConstants.SOFTWAREID).getValue());
     	    Job inputPreparationJob = JobFactory.createJob(parsToMakeInput);
     	   
     	    inputPreparationJob.run();

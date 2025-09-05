@@ -43,13 +43,13 @@ public class WIROConstants
 	 * Key for parameter defining the details
 	 * of a job as a {@link Job} instance.
 	 */
-	public static final String PARJOBDETAILSOBJ = "PARJOBDETAILSOBJ";
+	public static final String PARJOBDETAILSOBJ = "JOBDETAILSOBJ";
 	
 	/**
 	 * Key for parameter requesting to ignore the processing of input atom 
 	 * containers.
 	 */
-	public static final String PARIGNOREINPUTIAC = "PARIGNOREINPUTIAC";
+	public static final String PARIGNOREINPUTIAC = "IGNOREINPUTIAC";
 
 	/**
 	 * Key for parameter defining the pathname's root for any output file (i.e.,

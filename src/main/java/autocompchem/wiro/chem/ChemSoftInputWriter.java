@@ -42,6 +42,7 @@ import autocompchem.run.Terminator;
 import autocompchem.wiro.ITextualInputWriter;
 import autocompchem.wiro.InputWriter;
 import autocompchem.wiro.WIROConstants;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Core components of any tool writing input files for software packages that
@@ -205,63 +206,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
         	coordFileFormat = FileUtils.getFileExtension(getNewFile(coordFile))
         			.replaceAll("\\.", "").toUpperCase();
         }
-
-        /*
-        if (params.contains(ChemSoftConstants.PARGEOMFILE))
-        {
-            String value = params.getParameter(
-                    ChemSoftConstants.PARGEOMFILE).getValueAsString();
-            String[] words = value.trim().split("\\s+");
-            String pathname = words[0];
-            FileUtils.foundAndPermissions(pathname,true,false,false);
-            this.inGeomFile = getNewFile(pathname);
-            List<IAtomContainer> iacs = IOtools.readMultiMolFiles(inGeomFile);
-            if (words.length > 1)
-            {
-            	for (int iw=1; iw<words.length; iw++)
-            	{
-            		String idStr = words[iw];
-            		if (NumberUtils.isParsableToInt(idStr))
-            		{
-            			int id = Integer.parseInt(idStr);
-            			if (id>-1 && id < iacs.size())
-            			{
-            				this.inpGeom.add(iacs.get(iacs.size()-1));
-            			} else {
-                        	Terminator.withMsgAndStatus("ERROR! Found request "
-                        			+ "to take geometry " + id + " from '"
-                        			+ pathname + "' but found "+ iacs.size() 
-                        			+ " geometries. Check your input.",-1); 
-            			}
-            		} else if ("LAST".equals(idStr.toUpperCase())) {
-            			this.inpGeom.add(iacs.get(iacs.size()-1));
-            		} else {
-            			Terminator.withMsgAndStatus("ERROR! Unable to "
-                    			+ "understand option '" + idStr + "' for "
-                    			+ ChemSoftConstants.PARGEOMFILE 
-                    			+ ". Check your input.",-1); 
-            		}
-            	}
-            } else {
-            	this.inpGeom = iacs;
-            }
-        } 
-        
-        if (params.contains(ChemSoftConstants.PARGEOM))
-        {
-        	Object value = params.getParameter(ChemSoftConstants.PARGEOM)
-        			.getValue();
-            this.inpGeom = (List<IAtomContainer>) value;
-        }
-
-        if (params.contains(ChemSoftConstants.PARMULTIGEOMMODE))
-        {
-            String value = params.getParameter(
-            		ChemSoftConstants.PARMULTIGEOMMODE).getValueAsString();
-            this.multiGeomMode = EnumUtils.getEnumIgnoreCase(
-            		MultiGeomMode.class, value);
-        }
-        */
         
         if (params.contains(ChemSoftConstants.PARGEOMNAMES))
         {
@@ -327,6 +271,25 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
                     + "Neither '" + WIROConstants.PARJOBDETAILSFILE
                     + "' nor '" + ChemSoftConstants.PARJOBDETAILS 
                     + "'found in parameters.", -1);
+        }
+        
+        // We could have a definition of the geometries in the job
+        if (ccJob!=null && (inMols==null || (inMols!=null && inMols.isEmpty())))
+        {
+        	// ccJob could be a workflow and the geometries could be defined
+        	// in the first step
+        	Job sourceOfGeoms = ccJob;
+        	if (ccJob.getNumberOfSteps()>0 && !ccJob.hasParameter(ChemSoftConstants.PARGEOM))
+        	{
+        		sourceOfGeoms = ccJob.getStep(0);
+        	} 
+        	if (sourceOfGeoms.hasParameter(ChemSoftConstants.PARGEOM))
+            {
+        		logger.debug("Taking input geometries from CompChemJob " + sourceOfGeoms.getId());
+                inMols = new ArrayList<IAtomContainer>();
+                ((AtomContainerSet) sourceOfGeoms.getParameter(ChemSoftConstants.PARGEOM)
+                		.getValue()).atomContainers().forEach(i -> inMols.add(i));
+            }
         }
 
         if (params.contains(WIROConstants.PAROUTFILEROOT))
@@ -400,7 +363,7 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     @Override
     public void performTask()
     {
-    	if (params.contains(WIROConstants.PARIGNOREINPUTIAC))
+    	if (params.contains(WIROConstants.PARIGNOREINPUTIAC) || inMols.size()==0)
     	{
     		// Here we do not read atom containers because we are given a fully 
     		// defined job details object, which is expected to contains all the

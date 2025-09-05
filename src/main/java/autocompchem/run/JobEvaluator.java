@@ -321,11 +321,6 @@ public class JobEvaluator extends Worker
 			jobBeingEvaluated = (Job) params.getParameter(
 					ParameterConstants.JOBTOEVALUATE).getValue();
 		}
-		
-		if (jobBeingEvaluated==null && ((EvaluationJob) myJob).getFocusJob()!=null)
-		{
-			jobBeingEvaluated = ((EvaluationJob) myJob).getFocusJob();
-		}
     	
 		if (sitsDB==null || icDB==null)
 		{
@@ -406,6 +401,39 @@ public class JobEvaluator extends Worker
 							WIROConstants.PARJOBOUTPUTFILE).getValueAsString());
 					icDB.addChannel(new FileAsSource(jobOutFile.getAbsolutePath(), 
 						InfoChannelType.LOGFEED));
+				}
+			}
+		}
+		
+		// Ensure consistency with the job object using this worker
+		if (jobBeingEvaluated==null)
+		{
+			// We take the job to evaluate from the job running this worker
+			if (myJob!= null && (myJob instanceof EvaluationJob)
+				&& ((EvaluationJob)myJob).getJobBeingEvaluated()!=null)
+			{
+				jobBeingEvaluated = ((EvaluationJob)myJob).getJobBeingEvaluated();
+			} else {
+				logger.warn("WARNING: The job to be evaluated is defined "
+						+ "neither in the parameters nor as an "
+						+ "argument to the constructor of the evaluation job. "
+						+ "I can only evaluate the outcome and related info "
+						+ "channels.");
+			}
+		} else {
+			// Endure consistency with job running this worker
+			if (myJob!=null && (myJob instanceof EvaluationJob))
+			{
+				Job jobInMyJob = ((EvaluationJob)myJob).getJobBeingEvaluated();
+				if (jobInMyJob!=null)
+				{
+					if (jobBeingEvaluated != jobInMyJob)
+					{
+						throw new IllegalStateException("Inconsistent definition "
+								+ "of the job to evaluate");
+					}
+				} else {
+					((EvaluationJob)myJob).setJobBeingEvaluated(jobBeingEvaluated);
 				}
 			}
 		}
