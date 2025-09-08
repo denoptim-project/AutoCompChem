@@ -246,8 +246,8 @@ public class FileUtils
     	switch (mode.toUpperCase())
     	{
     		case "REGEX":
-    			// Normalize regex patterns to be OS-independent
-    			processedPattern = normalizeRegexPattern(pattern);
+    			// No normalization needed - patterns should be cross-platform from the start
+    			processedPattern = pattern;
     			break;
     			
     		case "GLOB":
@@ -298,6 +298,7 @@ public class FileUtils
      * Normalizes regex patterns to be OS-independent by handling path separators.
      * This method handles both Unix-style forward slashes and Windows-style backslashes
      * that may result from FilenameUtils.separatorsToSystem() conversion.
+     * It carefully preserves regex constructs like character classes while normalizing path separators.
      * @param pattern the original regex pattern
      * @return normalized pattern that works on any OS
      */
@@ -308,10 +309,12 @@ public class FileUtils
         
         String result = pattern;
         
-        // Check for simple path patterns that need normalization
-        boolean isSimplePathPattern = !pattern.contains("[") && !pattern.contains("(") && !pattern.contains("\\\\");
+        // Be more intelligent about what patterns to normalize
+        // Avoid normalizing patterns with complex regex constructs like groups ()
+        // But allow character classes [] since they don't conflict with path separators
+        boolean hasComplexConstructs = pattern.contains("(") && !pattern.contains("\\\\\\\\");
         
-        if (isSimplePathPattern) {
+        if (!hasComplexConstructs) {
             // Handle forward slashes (Unix style or unconverted patterns)
             if (pattern.contains("/")) {
                 result = result.replace("/", "[\\\\/]");
