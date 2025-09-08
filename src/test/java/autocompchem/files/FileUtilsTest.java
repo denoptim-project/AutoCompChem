@@ -353,12 +353,15 @@ sub2_abc/subsub2_abc
     {
         // Create OS-specific absolute path
         String a;
+		String root;
         if (File.separator.equals("/")) {
         	a = "/path/to/me";
+			root = "/";
         } else {
         	a = "C:\\path\\to\\me";
+			root = "C:\\";
         }
-        assertEquals(fileSeparator + "path" + fileSeparator + "to",
+        assertEquals(root + "path" + fileSeparator + "to",
         		FileUtils.getPathToPatent(a),
         		"Absolute pathname");
         
