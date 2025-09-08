@@ -107,11 +107,14 @@ public class FileFingerprint
         	if (!file.canExecute())
         		return false;
         	
-    		String sep = File.separator;
-    		String relPath = PATHNAME.replace("\\", sep)
-    				.replace("/", sep)
-    				.replaceFirst("\\.\\/", "")
-    				.replaceFirst("\\.\\\\", "");
+    		// Normalize path separators to forward slashes for GLOB patterns
+    		// GLOB patterns in Java always expect forward slashes, even on Windows
+    		String relPath = PATHNAME.replace("\\", "/");
+    		
+    		// Remove leading "./" if present
+    		if (relPath.startsWith("./")) {
+    			relPath = relPath.substring(2);
+    		}
     	
     		targetFiles.addAll(FileUtils.findByGlob(file, relPath, false));
     	}
