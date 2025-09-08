@@ -48,14 +48,16 @@ public class ResourcesToolsTest
       	assertEquals(4, allStreams.size());
       	
       	Set<String> expectedContent = Set.of(
-      			"content of leaf-0\n", 
-      			"content of leaf-a1\n", 
-      			"content of leaf-b1\n", 
-      			"content of leaf-aa2\n");
+      			"content of leaf-0", 
+      			"content of leaf-a1", 
+      			"content of leaf-b1", 
+      			"content of leaf-aa2");
       	for (InputStream is : allStreams)
       	{
       		String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-      		assertTrue(expectedContent.contains(content));
+      		// Normalize line endings by removing all line separators for cross-platform compatibility
+      		String normalizedContent = content.replaceAll("\\r?\\n", "").trim();
+      		assertTrue(expectedContent.contains(normalizedContent));
       	}
     }
     
