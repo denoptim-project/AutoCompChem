@@ -116,10 +116,10 @@ sub2_abc/subsub2_abc
    	 */
 		
 	    // NB: the separator is OS-independent (See use of FilenameUtils.separatorsToSystem below)
-		String[] pattern = {".*", ".*/.*", ".*", ".*/.*", ".*/.*/.*",
+		String[] pattern = {".*", ".*[\\\\/].*", ".*", ".*[\\\\/].*", ".*[\\\\/].*[\\\\/].*",
 				".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*",
 				"file.*", "file.*", ".*file.*", ".*file.*", ".*file.*", ".*file.*",
-				"file_abc", ".*/file_abc", ".*/file_abc"};
+				"file_abc", ".*[\\\\/]file_abc", ".*[\\\\/]file_abc"};
 		int[] depth = {1, 2, 1, 2, 3,
 				1, 2, 3, 1, 2, 3,
 				Integer.MAX_VALUE, 2, 3, 1, 2, 3,
