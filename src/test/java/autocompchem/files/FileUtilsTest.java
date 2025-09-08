@@ -299,15 +299,24 @@ sub2_abc/subsub2_abc
     @Test
     public void testGetExtension() throws Exception
     {
-        File f = new File("./tmp/__ tmp_acc_junit. srtg.tre.ext");
+    	// Create OS-specific test directory
+    	String testDir;
+    	if (File.separator.equals("/")) {
+    		testDir = "/tmp";
+    	} else {
+    		testDir = "C:\\temp";
+    	}
+    	
+        File f = new File("." + File.separator 
+			+ "tmp" + File.separator + "__ tmp_acc_junit. srtg.tre.ext");
         assertEquals(".ext",FileUtils.getFileExtension(f),
         		"Extention of filename with many dots");
         
-        f = new File("/tmp/ __tmp_acc_junit.ext");
+        f = new File(testDir + File.separator + " __tmp_acc_junit.ext");
         assertEquals(".ext",FileUtils.getFileExtension(f),
         		"Extention of filename with one dot");
         
-        f = new File("/tmp/__tmp_acc_junitext");
+        f = new File(testDir + File.separator + "__tmp_acc_junitext");
         assertEquals(null,FileUtils.getFileExtension(f),
         		"Extention of filename with no dot");
     }
@@ -342,12 +351,19 @@ sub2_abc/subsub2_abc
     @Test
     public void testGetPathToPatent() throws Exception
     {
-        String a = "/path/to/me";
+        // Create OS-specific absolute path
+        String a;
+        if (File.separator.equals("/")) {
+        	a = "/path/to/me";
+        } else {
+        	a = "C:\\path\\to\\me";
+        }
         assertEquals(fileSeparator + "path" + fileSeparator + "to",
         		FileUtils.getPathToPatent(a),
         		"Absolute pathname");
         
-        a = "../path/../to/me";
+        a = ".." + File.separator + "path" + File.separator 
+			+ ".." + File.separator + "to" + File.separator + "me";
         assertEquals(".." + fileSeparator + "path" + fileSeparator + ".." 
         		+ fileSeparator + "to",FileUtils.getPathToPatent(a),
         		"Relative pathname");
@@ -360,12 +376,22 @@ sub2_abc/subsub2_abc
 //------------------------------------------------------------------------------
     
     @Test
-    public void testGetFilePathnameWothoutExtension() throws Exception
+    public void testGetFilePathnameWithoutExtension() throws Exception
     {
-    	assertEquals("/tmp/foo", FileUtils.getFilePathnameWithoutExtension(
-    			new File("/tmp/foo.bar")));
-    	assertEquals("/tmp/foo_bar", FileUtils.getFilePathnameWithoutExtension(
-    			new File("/tmp/foo_bar")));
+    	// Create OS-specific absolute paths for testing
+    	String testDir;
+    	if (File.separator.equals("/")) {
+    		testDir = "/tmp";
+    	} else {
+    		testDir = "C:\\temp";
+    	}
+    	
+    	assertEquals(testDir + File.separator + "foo", 
+			FileUtils.getFilePathnameWithoutExtension(
+    			new File(testDir + File.separator + "foo.bar")));
+    	assertEquals(testDir + File.separator + "foo_bar", 
+			FileUtils.getFilePathnameWithoutExtension(
+    			new File(testDir + File.separator + "foo_bar")));
     	assertEquals("foo", FileUtils.getFilePathnameWithoutExtension(
     			new File("foo.bar")));
     	assertEquals("", FileUtils.getFilePathnameWithoutExtension(
@@ -377,15 +403,26 @@ sub2_abc/subsub2_abc
     @Test
     public void testGetFileExtension() throws Exception
     {
+    	// Create OS-specific absolute paths for testing
+    	String testDir, rootPath;
+    	if (File.separator.equals("/")) {
+    		testDir = "/tmp";
+    		rootPath = "/";
+    	} else {
+    		testDir = "C:\\temp";
+    		rootPath = "C:\\";
+    	}
+    	
     	assertEquals(".bar", FileUtils.getFileExtension(
-    			new File("/tmp/foo.bar")));
+    			new File(testDir + File.separator + "foo.bar")));
     	assertEquals(".bar", FileUtils.getFileExtension(
-    			new File("/foo.bar")));
+    			new File(rootPath + "foo.bar")));
     	assertEquals(".bar", FileUtils.getFileExtension(
     			new File("foo.bar")));
     	assertEquals(".bar", FileUtils.getFileExtension(
     			new File(".bar")));
-    	assertNull(FileUtils.getFileExtension(new File("/tmp/foo_bar")));
+    	assertNull(FileUtils.getFileExtension(new File(
+			testDir + File.separator + "foo_bar")));
     }
     
 //------------------------------------------------------------------------------
@@ -399,8 +436,12 @@ sub2_abc/subsub2_abc
     	assertEquals(fn+"_"+2+".sdr", FileUtils.getIdSpecPathName(
     			new File(fn+".sdr"), "2"));
     	
-    	fn = "/usr/local/dummy_file name";
-    	fn = FilenameUtils.separatorsToSystem(fn);
+    	// Create OS-specific absolute path
+    	if (File.separator.equals("/")) {
+    		fn = "/usr/local/dummy_file name";
+    	} else {
+    		fn = "C:\\Program Files\\dummy_file name";
+    	}
     	assertEquals(fn+"_"+2, FileUtils.getIdSpecPathName(
     			new File(fn), "2"));
     	assertEquals(fn+"_"+2+".sdr", FileUtils.getIdSpecPathName(
