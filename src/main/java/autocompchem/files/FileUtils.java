@@ -295,28 +295,32 @@ public class FileUtils
     
     /**
      * Normalizes regex patterns to be OS-independent by handling path separators.
-     * This method is conservative and only replaces path separators that are clearly
-     * not part of regex escape sequences or other special constructs.
+     * This method handles both Unix-style forward slashes and Windows-style backslashes
+     * that may result from FilenameUtils.separatorsToSystem() conversion.
      * @param pattern the original regex pattern
      * @return normalized pattern that works on any OS
      */
     private static String normalizeRegexPattern(String pattern) 
     {
-        // Simple approach: replace forward slashes with character class that matches both / and \
-        // but be careful not to break valid regex patterns
-        
-        // Only replace forward slashes that are clearly path separators in common patterns:
-        // 1. .*/ followed by something -> .*/something becomes .*[/\\]something
-        // 2. /something at start -> /something becomes [/\\]something  
-        // 3. But leave complex regex patterns alone
+        // Handle both forward slashes (Unix) and single backslashes (Windows converted)
+        // but be careful not to break valid regex patterns with escaped sequences
         
         String result = pattern;
         
-        // Only do simple path separator replacement for the most common patterns
-        // that are clearly paths, not complex regex
-        if (pattern.matches(".*[^\\[]/.+") && !pattern.contains("[") && !pattern.contains("(")) {
-            // Simple case: replace / with [/\\] only if it's clearly a path separator
-            result = pattern.replace("/", "[\\\\/]");
+        // Check for simple path patterns that need normalization
+        boolean isSimplePathPattern = !pattern.contains("[") && !pattern.contains("(") && !pattern.contains("\\\\");
+        
+        if (isSimplePathPattern) {
+            // Handle forward slashes (Unix style or unconverted patterns)
+            if (pattern.contains("/")) {
+                result = result.replace("/", "[\\\\/]");
+            }
+            // Handle single backslashes (Windows converted patterns from FilenameUtils)
+            // Look for patterns like ".*\something" where \ is a single backslash
+            else if (pattern.matches(".*\\\\[^\\\\].+")) {
+                // Replace single backslash with character class, but avoid double backslashes
+                result = result.replaceAll("(?<!\\\\)\\\\(?!\\\\)", "[\\\\\\\\/]");
+            }
         }
         
         return result;

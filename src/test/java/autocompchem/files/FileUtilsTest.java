@@ -134,7 +134,7 @@ sub2_abc/subsub2_abc
 				0, 0, 9, 2, 5, 9,
 				0, 3, 5};
 		//NB: you can use this to print the actual matches
-		boolean debugLog = false;
+		boolean debugLog = true;
 		for (int i=0; i<expected.length; i++)
 		{
 			String osSpec = FilenameUtils.separatorsToSystem(pattern[i]);
