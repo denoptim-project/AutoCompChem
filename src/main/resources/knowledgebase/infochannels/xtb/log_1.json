@@ -1,5 +1,5 @@
 {
   "Implementation": "FILEASSOURCE",
   "infoChannelType": "LOGFEED",
-  "pathName": ".*(/|\\\\)[\\w-]+[\\w-\\.]*\\.out"
+  "pathName": ".*[/|\\\\][\\w-]+[\\w-\\.]*\\.out"
 }
