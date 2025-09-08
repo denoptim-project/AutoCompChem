@@ -213,7 +213,7 @@ public class LogUtilsTest
 				IOtools.readTXT(xmlConfig), false);
 		FileUtils.replaceString(myConfigFile, 
 				Pattern.compile("STRINGTOCHANGE"),
-				myLogFile.getAbsolutePath().replace("\\", "\\\\"));
+				myLogFile.getAbsolutePath().replace("\\", "/"));
 		
 		// Read the customized XML file into a configuration object
 		ConfigurationSource source = new ConfigurationSource(
