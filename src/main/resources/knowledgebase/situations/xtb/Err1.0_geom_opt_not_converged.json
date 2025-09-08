@@ -1,7 +1,7 @@
 {
   "type": "ERROR",
   "refName": "xtb-e1.0_GeomOptNotConverged",
-  "description": "Geometry optimization failed due to internal rotation error",
+  "description": "Geometry optimization failed due to internal rational function error",
   "context": [
     {
       "circumstance": "MatchText",
@@ -27,15 +27,7 @@
   "reaction": {
     "type": "REDO",
     "object": "FocusAndFollowingJobs",
-    "jobEditTasks": [
-      {
-        "task": "SET_JOB_PARAMETER",
-        "parameter": {
-          "reference": "___DUMMY____",
-          "value": "_______xtblast.sdf"
-        }
-      }
-    ],
+    "jobEditTasks": [],
     "jobArchivingRules": [
       {
         "type": "move",
