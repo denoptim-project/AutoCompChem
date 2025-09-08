@@ -191,8 +191,8 @@ sub2_abc/subsub2_abc
 				+ fileSeparator + ".file_abc"), "text", false);
 		
         assertEquals(6, FileUtils.findByREGEX(tempDir, ".*file_abc", true).size());
-        assertEquals(1, FileUtils.findByREGEX(tempDir, ".*[\\/]\\..+le_abc", true).size());
-        assertEquals(5, FileUtils.findByREGEX(tempDir, ".*[\\/][^\\.]\\w+le_abc", true).size());
+        assertEquals(1, FileUtils.findByREGEX(tempDir, ".*[\\\\/]\\..+le_abc", true).size());
+        assertEquals(5, FileUtils.findByREGEX(tempDir, ".*[\\\\/][^\\.]\\w+le_abc", true).size());
         assertEquals(2, FileUtils.findByGlob(tempDir, "*file_abc", true).size());
         assertEquals(1, FileUtils.findByGlob(tempDir, "*.file_abc", true).size());
         assertEquals(1, FileUtils.findByGlob(tempDir, "[!.]*ile_abc", true).size());
@@ -203,8 +203,8 @@ sub2_abc/subsub2_abc
 				+ fileSeparator + "ot-her.log"), "text", false);
 
 		assertEquals(12, FileUtils.findByREGEX(tempDir, ".*", false).size());
-		assertEquals(10, FileUtils.findByREGEX(tempDir, ".*[\\/][\\w-]+[\\w-\\.]*", false).size());
-		assertEquals(2, FileUtils.findByREGEX(tempDir, ".*[\\/]\\.[\\w-]+[\\w-\\.]*", false).size());
+		assertEquals(10, FileUtils.findByREGEX(tempDir, ".*[\\\\/][\\w-]+[\\w-\\.]*", false).size());
+		assertEquals(2, FileUtils.findByREGEX(tempDir, ".*[\\\\/]\\.[\\w-]+[\\w-\\.]*", false).size());
     }
 	
 //------------------------------------------------------------------------------
