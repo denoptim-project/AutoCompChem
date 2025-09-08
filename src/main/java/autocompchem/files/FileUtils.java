@@ -251,9 +251,10 @@ public class FileUtils
     			break;
     			
     		case "GLOB":
-    			// For glob, prepend the root path as before but handle separators
-    			processedPattern = root.getPath() + File.separator + pattern;
-    			// No need to manually escape - let PathMatcher handle it
+    			// For glob, prepend the root path but use forward slashes
+    			// GLOB patterns in Java always expect forward slashes, even on Windows
+    			String rootPath = root.getPath().replace("\\", "/");
+    			processedPattern = rootPath + "/" + pattern;
     			break;
     			
     		default:
