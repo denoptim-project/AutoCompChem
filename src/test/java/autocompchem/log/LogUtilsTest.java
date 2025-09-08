@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,8 +91,7 @@ public class LogUtilsTest
 		/*
 		 * Simple file appender
 		 */
-		File tmplConfigFile = new File(classLoader.getResource(
-				"log4j2_config-A.xml").getFile());
+		File tmplConfigFile = getResourceAsFile(classLoader, "log4j2_config-A.xml");
 		
 		Map<String,Integer> expectedHitsInLogFile = new HashMap<String,Integer>();
 		expectedHitsInLogFile.put("BuiltForTest*", 5);
@@ -105,8 +106,7 @@ public class LogUtilsTest
 		 * decoration, so they represent the STDOUT feed, while DEBUG and TRACE
 		 * levels are reported with a time stamp.
 		 */
-		tmplConfigFile = new File(classLoader.getResource(
-				"log4j2_config-B.xml").getFile());
+		tmplConfigFile = getResourceAsFile(classLoader, "log4j2_config-B.xml");
 		
 		expectedHitsInLogFile = new HashMap<String,Integer>();
 		expectedHitsInLogFile.put("default pattern*", 5);
@@ -120,8 +120,7 @@ public class LogUtilsTest
 		 * Configuration using rolling file: it creates files with limited size
 		 * to avoid filling the disk with log files.
 		 */
-		tmplConfigFile = new File(classLoader.getResource(
-				"log4j2_config-RollingFileAppender.xml").getFile());
+		tmplConfigFile = getResourceAsFile(classLoader, "log4j2_config-RollingFileAppender.xml");
 		
 		expectedHitsInLogFile = new HashMap<String,Integer>();
 		expectedHitsInLogFile.put("* Log entry number 999", 1);
@@ -300,6 +299,25 @@ public class LogUtilsTest
       	}
     }
     
+//------------------------------------------------------------------------------
+
+    /**
+     * Helper method to properly load resource files, handling URL encoding issues
+     * that occur when paths contain spaces (e.g., "OneDrive - University").
+     * 
+     * @param classLoader the class loader to use
+     * @param resourceName the name of the resource file
+     * @return File object pointing to the resource
+     * @throws RuntimeException if the resource cannot be found or accessed
+     */
+    private File getResourceAsFile(ClassLoader classLoader, String resourceName) {
+        try {
+            return Paths.get(classLoader.getResource(resourceName).toURI()).toFile();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Failed to load resource: " + resourceName, e);
+        }
+    }
+
 //------------------------------------------------------------------------------
 
 }
