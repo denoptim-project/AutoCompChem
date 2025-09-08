@@ -658,8 +658,7 @@ public class FileUtils
 	    // Check for wildcards and invalid characters that cannot be used in pathnames
 	    if (pathname.contains("*") || pathname.contains("?") || 
 	        pathname.contains("[") || pathname.contains("]") ||
-	        pathname.contains("^") || pathname.contains("@") ||
-	        (pathname.startsWith(".") && pathname.contains("\\"))) {
+	        pathname.contains("^") || pathname.contains("@")) {
 	        return false;
 	    }
 	    
