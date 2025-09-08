@@ -295,16 +295,31 @@ public class FileUtils
     
     /**
      * Normalizes regex patterns to be OS-independent by handling path separators.
-     * Converts Unix-style forward slashes to match both forward slashes and backslashes.
-     * This allows regex patterns written with Unix separators to work on Windows.
+     * This method is conservative and only replaces path separators that are clearly
+     * not part of regex escape sequences or other special constructs.
      * @param pattern the original regex pattern
      * @return normalized pattern that works on any OS
      */
     private static String normalizeRegexPattern(String pattern) 
     {
-        // Replace forward slashes with a character class that matches both / and \
-        // The Java NIO PathMatcher will handle the rest of the OS differences
-        return pattern.replace("/", "[\\\\/]");
+        // Simple approach: replace forward slashes with character class that matches both / and \
+        // but be careful not to break valid regex patterns
+        
+        // Only replace forward slashes that are clearly path separators in common patterns:
+        // 1. .*/ followed by something -> .*/something becomes .*[/\\]something
+        // 2. /something at start -> /something becomes [/\\]something  
+        // 3. But leave complex regex patterns alone
+        
+        String result = pattern;
+        
+        // Only do simple path separator replacement for the most common patterns
+        // that are clearly paths, not complex regex
+        if (pattern.matches(".*[^\\[]/.+") && !pattern.contains("[") && !pattern.contains("(")) {
+            // Simple case: replace / with [/\\] only if it's clearly a path separator
+            result = pattern.replace("/", "[\\\\/]");
+        }
+        
+        return result;
     }
     
 //------------------------------------------------------------------------------
