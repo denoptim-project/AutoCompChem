@@ -227,32 +227,33 @@ public class FileUtils
 
     /**
      * Finds files and folders that have a relative pathname matching the 
-     * pattern resulting
-     *  by appending the given pattern to the absolute pathname of the root 
-     *  folder and interpreting it as a 'regex' or a 'glob' according to
-     *  the 'mode' parameter.
+     * pattern using OS-independent path matching.
      * @param root file system location from which to start searching.
-     * @param pattern the patter to find in filenames.
+     * @param pattern the pattern to find in filenames.
      * @param maxdepth maximum depth in folder tree starting from the root.
      * @param collectFolders use <code>true</code> to collect both files and
      * directories.
-     * @param mode whether 'regex' or 'glob'. 
-     * See {@link FileSystem#getPathMatcher(String)}
+     * @param mode whether 'regex' or 'glob'. Uses OS-independent path matching
+     * that automatically handles path separator differences.
      * @return the list of file that match the criteria.
      */
     public static List<File> find(File root, String pattern, Integer maxdepth, 
     		boolean collectFolders, String mode)
     {
+        // Use a hybrid approach: Java NIO for path matching but with OS-independent patterns
+        String processedPattern;
+        
     	switch (mode.toUpperCase())
     	{
     		case "REGEX":
-    			//TODO-gg adjust code to the removal of this line
-    			//pattern = pattern.replace("\\", "\\\\");
+    			// Normalize regex patterns to be OS-independent
+    			processedPattern = normalizeRegexPattern(pattern);
     			break;
     			
     		case "GLOB":
-    			pattern = root.getPath() + File.separator + pattern;
-    			pattern = pattern.replace("\\", "\\\\");
+    			// For glob, prepend the root path as before but handle separators
+    			processedPattern = root.getPath() + File.separator + pattern;
+    			// No need to manually escape - let PathMatcher handle it
     			break;
     			
     		default:
@@ -260,32 +261,50 @@ public class FileUtils
     					+ "The mode for finding files can "
         				+ "only be 'regex' or 'glob', but you asked for '" 
     					+ mode + "'", -1);
-    			break;
+    			return new ArrayList<File>();
     	}
     	
-    	PathMatcher matcher = FileSystems.getDefault().getPathMatcher(
-    			mode.toLowerCase() + ":" + pattern);
-    	List<Path> paths;
-		try {
-			paths = Files.find(root.toPath(), maxdepth,
-			        (path, basicFileAttributes) ->  matcher.matches(path))
-					.collect(Collectors.toList());
-		} catch (IOException e) {
-			e.printStackTrace();
-			paths = new ArrayList<Path>();
-		}
-    	
-    	if (!collectFolders)
-    	{
-	    	paths = paths.stream()
-	    			.filter(p -> !Files.isDirectory(p, 
-	    					LinkOption.NOFOLLOW_LINKS))
-	    			.collect(Collectors.toList());
-    	}
-    	
-    	List<File> files = new ArrayList<File>();
-    	paths.stream().forEach(p -> files.add(new File(p.toString())));
-    	return files;
+        // Use Java NIO PathMatcher which handles OS differences automatically
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(
+                mode.toLowerCase() + ":" + processedPattern);
+        
+        List<Path> paths;
+        try {
+            paths = Files.find(root.toPath(), maxdepth,
+                    (path, basicFileAttributes) -> matcher.matches(path))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+            paths = new ArrayList<Path>();
+        }
+        
+        if (!collectFolders)
+        {
+            paths = paths.stream()
+                    .filter(p -> !Files.isDirectory(p, 
+                            LinkOption.NOFOLLOW_LINKS))
+                    .collect(Collectors.toList());
+        }
+        
+        List<File> files = new ArrayList<File>();
+        paths.stream().forEach(p -> files.add(new File(p.toString())));
+        return files;
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Normalizes regex patterns to be OS-independent by handling path separators.
+     * Converts Unix-style forward slashes to match both forward slashes and backslashes.
+     * This allows regex patterns written with Unix separators to work on Windows.
+     * @param pattern the original regex pattern
+     * @return normalized pattern that works on any OS
+     */
+    private static String normalizeRegexPattern(String pattern) 
+    {
+        // Replace forward slashes with a character class that matches both / and \
+        // The Java NIO PathMatcher will handle the rest of the OS differences
+        return pattern.replace("/", "[\\\\/]");
     }
     
 //------------------------------------------------------------------------------

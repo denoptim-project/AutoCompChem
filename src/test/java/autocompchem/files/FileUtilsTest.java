@@ -115,6 +115,7 @@ sub2_abc
 sub2_abc/subsub2_abc
    	 */
 		
+	    // NB: the separator is OS-independent (See use of FilenameUtils.separatorsToSystem below)
 		String[] pattern = {".*", ".*/.*", ".*", ".*/.*", ".*/.*/.*",
 				".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*", ".*ab.*",
 				"file.*", "file.*", ".*file.*", ".*file.*", ".*file.*", ".*file.*",
