@@ -493,8 +493,20 @@ sub2_abc/subsub2_abc
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
     	assertTrue(FileUtils.isAbsolutePath(tempDir.getAbsolutePath()));
-    	assertFalse(FileUtils.isAbsolutePath("foo/bar"));
-    	assertFalse(FileUtils.isAbsolutePath("../foo/bar"));
+    	// Create OS-specific absolute paths
+    	if (File.separator.equals("/")) {
+			assertTrue(FileUtils.isAbsolutePath("/foo.bar"));
+			assertTrue(FileUtils.isAbsolutePath("/foo/bar"));
+			assertTrue(FileUtils.isAbsolutePath("/"));
+			assertFalse(FileUtils.isAbsolutePath("[/path/file"));
+			assertFalse(FileUtils.isAbsolutePath("^/path/file"));
+		} else {
+			assertTrue(FileUtils.isAbsolutePath("C:\\foo.bar"));
+			assertTrue(FileUtils.isAbsolutePath("C:\\foo\\bar"));
+			assertTrue(FileUtils.isAbsolutePath("C:\\"));
+			assertFalse(FileUtils.isAbsolutePath("[C:\\path\\file"));
+			assertFalse(FileUtils.isAbsolutePath("^C:\\path\\file"));
+		}
     }
     
 //------------------------------------------------------------------------------
@@ -504,20 +516,40 @@ sub2_abc/subsub2_abc
     {
     	assertTrue(this.tempDir.isDirectory(),"Should be a directory ");
     	
-    	assertTrue(FileUtils.isRelativePath("foo/bar"));
-    	assertTrue(FileUtils.isRelativePath("../foo/bar"));
+    	// Test relative paths (should be true on all OS)
+    	assertTrue(FileUtils.isRelativePath("foo" + File.separator + "bar"));
+    	assertTrue(FileUtils.isRelativePath(".." + File.separator + "foo" + File.separator + "bar"));
     	assertTrue(FileUtils.isRelativePath("foo.bar"));
-
-    	assertFalse(FileUtils.isRelativePath(tempDir.getAbsolutePath()));
-    	assertFalse(FileUtils.isRelativePath("/foo.bar"));
-    	assertFalse(FileUtils.isRelativePath("/foo/bar"));
-    	assertFalse(FileUtils.isRelativePath("/"));
+    	assertTrue(FileUtils.isRelativePath("relative" + File.separator + "path"));
     	
+    	// Test with both separators to ensure cross-platform compatibility
+    	assertTrue(FileUtils.isRelativePath("foo/bar"));        // Unix style
+    	assertTrue(FileUtils.isRelativePath("foo\\bar"));       // Windows style
+
+    	// Test absolute paths (should be false on all OS)
+    	assertFalse(FileUtils.isRelativePath(tempDir.getAbsolutePath()));
+    	
+    	// Create OS-specific absolute paths
+    	if (File.separator.equals("/")) {
+    		// Unix/Linux/macOS absolute paths
+    		assertFalse(FileUtils.isRelativePath("/foo.bar"));
+    		assertFalse(FileUtils.isRelativePath("/foo/bar"));
+    		assertFalse(FileUtils.isRelativePath("/"));
+    		assertFalse(FileUtils.isRelativePath("[/path/file"));
+    		assertFalse(FileUtils.isRelativePath("^/path/file"));
+    	} else {
+    		// Windows absolute paths
+    		assertFalse(FileUtils.isRelativePath("C:\\foo.bar"));
+    		assertFalse(FileUtils.isRelativePath("C:\\foo\\bar"));
+    		assertFalse(FileUtils.isRelativePath("C:\\"));
+    		assertFalse(FileUtils.isRelativePath("[C:\\path\\file"));
+    		assertFalse(FileUtils.isRelativePath("^C:\\path\\file"));
+    	}
+    	
+    	// Test invalid paths (should be false on all OS)
     	assertFalse(FileUtils.isRelativePath(".*"));
     	assertFalse(FileUtils.isRelativePath(".*\\.out"));
     	assertFalse(FileUtils.isRelativePath("sdr@er.no"));
-    	assertFalse(FileUtils.isRelativePath("[/path/file"));
-    	assertFalse(FileUtils.isRelativePath("^/path/file"));
     }
     
 //------------------------------------------------------------------------------
