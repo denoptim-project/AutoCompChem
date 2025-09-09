@@ -353,7 +353,7 @@ public class Job implements Runnable
     			Terminator.withMsgAndStatus("ERROR! Could not make the "
     					+ "required subfolder '" + workDir + "'.",-1);
     		}
-    		logger.warn("WARNING: setting work directory to '"
+    		logger.trace("WARNING: setting work directory to '"
     				+ workDir + "'.");
     		this.setUserDirAndStdFiles(workDir);
     	}
@@ -1000,8 +1000,13 @@ public class Job implements Runnable
     	
     	// NB: this line in the log is used to detect the beginning of a job's
     	// step in the log of ACC jobs.
-    	logger.info(System.getProperty("line.separator") 
-    				+ "Initiating " + appID + " Job " + getId());
+    	String msg = System.getProperty("line.separator") 
+				+ "Initiating " + appID + " Job " + getId();
+    	if (!(new File(System.getProperty("user.dir"))).equals(customUserDir))
+    	{
+    		msg = msg + " (WorkDir: " + customUserDir + ")";
+    	}
+    	logger.info(msg);
     	
     	// Convert any request to fetch data from other jobs into the actual data
     	try {
