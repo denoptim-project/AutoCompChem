@@ -134,6 +134,7 @@ public class DeleteDirectiveComponentTest
     	DirComponentAddress adrs = DirComponentAddress.fromString(
     			"Dir:dA|Dir:nonexisting");
     	DeleteDirectiveComponent task = new DeleteDirectiveComponent(adrs);
+        
     	assertEquals(0, ccj.getDirectiveComponents(adrs).size());
     	task.applyChange(ccj);
     	assertEquals(0, ccj.getDirectiveComponents(adrs).size());

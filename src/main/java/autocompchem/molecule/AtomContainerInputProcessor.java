@@ -263,7 +263,6 @@ public class AtomContainerInputProcessor extends Worker
         				dataFromPrevStep.getValue();
             	prevData.atomContainers().forEach(i -> inMols.add(i));
         	} else {
-        		//TODO-gg add parameter to silence this message
         		logger.debug("No previous data to process. Running '" 
         				+ this.getClass().getSimpleName() 
         				+ "' without any input atom container.");

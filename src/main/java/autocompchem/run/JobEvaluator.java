@@ -590,7 +590,6 @@ public class JobEvaluator extends Worker
 		
 		// The info channel has been already made context-specific, so
 		// the pathname does not need to account for potential change of user.dir
-		//TODO-gg might need to change upon fixing the getNewFile()
 		File fileToParse = getNewFile(log.getPathName());
 		if (fileToParse.exists())
 		{

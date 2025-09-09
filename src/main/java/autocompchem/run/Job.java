@@ -610,7 +610,7 @@ public class Job implements Runnable
         }
         if (done)
         {
-        	logger.warn("Apparent work directory set to '" 
+        	logger.debug("Apparent work directory set to '" 
         			+ this.customUserDir + "'");
         } else {
         	logger.warn("Could not change apparent work directory. Keeping '" 
