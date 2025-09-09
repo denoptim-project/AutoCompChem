@@ -23,9 +23,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -182,6 +184,11 @@ public class Job implements Runnable
      * Custom working directory
      */
     protected File customUserDir = new File(System.getProperty("user.dir"));
+    
+    /**
+     * Files to copy to work dir
+     */
+    protected Map<File,File> filesToCopyOnWDir = new HashMap<File,File>();
     
     /**
      * Flag controlling redirect of STDOUT and STDERR
@@ -350,8 +357,6 @@ public class Job implements Runnable
     				+ workDir + "'.");
     		this.setUserDirAndStdFiles(workDir);
     	}
-
-    	//TODO-gg specify if cytowdir takes relative paths from initial or final dir
     	
     	if (params.contains(JobConstants.PARCOPYTOWORKDIR))
     	{
@@ -360,25 +365,12 @@ public class Job implements Runnable
     		String[] list = listAsStr.split(",");
     		for (int i=0; i<list.length; i++)
     		{
+    			
     			File source = new File(list[i].trim());
     			File dest = new File(this.customUserDir 
     					+ System.getProperty("file.separator")
     					+ source.getName());
-    			if (source.exists())
-    			{
-    				try {
-						com.google.common.io.Files.copy(source,dest);
-					} catch (IOException e) {
-						e.printStackTrace();
-						Terminator.withMsgAndStatus("ERROR! Could not copy "
-								+ "file '" + source + "' to work directory.",-1);
-					}
-    			} else {
-    				logger.warn("WARNING: file '" + source 
-    						+ "' was listed among "
-    						+ "those to copy into the work directory, "
-    						+ "but it does not exist. I'll skipp it.");
-    			}
+    			filesToCopyOnWDir.put(source, dest);
     		}
     	}
     }
@@ -1020,6 +1012,9 @@ public class Job implements Runnable
     		stopJob();
     	}
     	
+    	// Take copies of files than need copying
+    	copyFilesToWorkDir();
+    	
         // First do the work of this very Job
         runThisJobSubClassSpecific();
         
@@ -1044,6 +1039,38 @@ public class Job implements Runnable
 //------------------------------------------------------------------------------
 
     /**
+     * Does the actual copying of the files requested when defining this job.
+     */
+    protected void copyFilesToWorkDir() 
+    {
+    	for (Entry<File, File> pair : filesToCopyOnWDir.entrySet())
+    	{
+    		File source = pair.getKey();
+    		File dest = pair.getValue();
+			filesToCopyOnWDir.put(source, dest);
+			if (source.exists())
+			{
+				try {
+					com.google.common.io.Files.copy(source,dest);
+				} catch (IOException e) {
+					e.printStackTrace();
+					Terminator.withMsgAndStatus("ERROR! Could not copy "
+							+ "file '" + source + "' to work directory.",-1);
+				}
+			} else {
+				logger.warn("WARNING: file '" + source 
+						+ "' was listed among "
+						+ "those to copy into the work directory, "
+						+ "but it does not exist. I'll skipp it. (PWD='"
+						+ System.getProperty("user.dir") + "', CPWD='"
+						+ customUserDir + "')");
+			}
+    	}
+	}
+    
+//------------------------------------------------------------------------------
+
+	/**
      * Defines the conditions that makes this jobs use a parallel or serial
      * job execution service for the subjobs (i.e., the steps) defined within
      * this jobs.

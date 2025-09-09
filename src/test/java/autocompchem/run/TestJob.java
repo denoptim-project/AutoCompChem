@@ -112,6 +112,8 @@ public class TestJob extends Job
 		@Override
 		public void run() 
 		{
+			copyFilesToWorkDir();
+			
 			i++;
 			IOtools.writeLineAppend(stdout, 
 					prefix + ITERATIONKEY + " " + i, 

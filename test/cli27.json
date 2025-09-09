@@ -1,0 +1,83 @@
+{
+  "jobType": "ACCJob",
+  "steps": [
+    {
+      "jobType": "ACCJob",
+      "params": [
+        {
+          "reference": "TASK",
+          "value": "prepareinput"
+        },
+        {
+          "reference": "SOFTWAREID",
+          "value": "XTB"
+        },
+        {
+          "reference": "inFile",
+          "value": "cli27.sdf"
+        },
+        {
+          "reference": "copyToWorkDir",
+          "value": "../cli27.sdf"
+        },
+        {
+          "reference": "coordFile",
+          "value": "xtbinit.sdf"
+        },
+        {
+          "reference": "jobDetails",
+          "type": "JOB",
+          "value":
+          {
+            "jobType": "CompChemJob",
+            "directives": [
+              {
+                "name": "set",
+                "keywords": [
+                  {
+                    "reference": "runtyp",
+                    "value": "opt"
+                  }
+                ]
+              },
+              {
+                "name": "opt",
+                "keywords": [
+                  {
+                    "reference": "logfile",
+                    "value": "cli27_xtbtrj.xyz"
+                  },
+                  {
+                    "reference": "optlevel",
+                    "value": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "jobType": "ShellJob",
+      "params": [
+        {
+          "reference": "APP",
+          "value": "SHELL"
+        },
+        {
+          "reference": "workDir",
+          "value": "cli27_wdir"
+        },
+        {
+          "reference": "copyToWorkDir",
+          "value": "../cli27.sdf,xtbinit.sdf,cli27.xcontrol"
+        },
+        {
+          "reference": "CMD",
+          "value": "ls ../cli27_wdir/ . "
+        }
+      ]
+    }
+  ]
+}
