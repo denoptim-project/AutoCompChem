@@ -90,4 +90,10 @@ public class WIROConstants
 	 * data structure produced upon analyzing a job output.
 	 */
 	public static final String JOBOUTPUTDATA = "JOBOUTPUTDATA";
+
+	/**
+	 * Key for parameter requiring to terminate ACC with an error in case it
+	 * detects abnormal termination in the output being analyzed by ACC.
+	 */
+	public static final String REQUIRENORMALTERM = "REQUIRENORMALTERMINATION";
 }

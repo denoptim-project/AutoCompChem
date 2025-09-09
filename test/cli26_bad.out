@@ -1,0 +1,22 @@
+      -----------------------------------------------------------      
+     |                   =====================                   |     
+     |                           x T B                           |     
+     |                   =====================                   |     
+     |                         S. Grimme                         |     
+     |          Mulliken Center for Theoretical Chemistry        |     
+     |                    University of Bonn                     |     
+      -----------------------------------------------------------      
+
+   * xtb version 6.4.1 (afa7bdf) compiled by 'ehlert@majestix' on 2021-06-10
+
+...fake output file created just for tersting purposes
+
+########################################################################
+[ERROR] Program stopped due to fatal error
+-5- Geometry optimization failed
+-4- xtb_geoopt: Trying to recover from failed geometry optimization
+-3- xtb_geoopt: Geometry optimization did not converge
+-2- optimizer_ancopt: Could not relax structure
+-1- optimizer_relax: internal rational function error
+########################################################################
+abnormal termination of xtb

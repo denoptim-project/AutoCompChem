@@ -44,6 +44,7 @@ import autocompchem.perception.situation.SituationBase;
 import autocompchem.run.Job;
 import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
+import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 
@@ -91,6 +92,12 @@ public class OutputReader extends Worker
      * Flag recording normal termination of job under analysis
      */
     protected boolean normalTerminated = false;
+    
+    /**
+     * Flag controllign the behavior upon detecting abnormal termination of the
+     * analyzed output.
+     */
+    protected boolean requireNormalTermination = false;
 
     /**
      * Flag recording whether we have read the log or not
@@ -218,6 +225,15 @@ public class OutputReader extends Worker
         		outFileRootName = FileUtils.getRootOfFileName(inFile.getName());
         	}
         }
+        
+        //Flag controlling whether to terminate with error upon detecting 
+        //abnormal termination
+        if (params.contains(WIROConstants.REQUIRENORMALTERM))
+        {
+        	requireNormalTermination = StringUtils.parseBoolean(
+        			params.getParameter(WIROConstants.REQUIRENORMALTERM)
+        			.getValueAsString());
+        }
     }
     
 //------------------------------------------------------------------------------
@@ -333,6 +349,13 @@ public class OutputReader extends Worker
         			+ numSteps + " steps.");
         	logger.info("The overall run did " + strForlog 
         			+ "terminate normally!");
+        }
+        
+        if (!normalTerminated && requireNormalTermination)
+        {
+        	Terminator.withMsgAndStatus("Termination triggered by violation of "
+        			+ "the normal termination requirement (Keywod '" 
+        			+ WIROConstants.REQUIRENORMALTERM + "' was used).", -1);
         }
     }
     

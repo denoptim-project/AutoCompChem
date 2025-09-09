@@ -1,0 +1,31 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli26_bad_w.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "did NOT terminate normally" "cli26_bad_w.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Termination triggered by violation" "cli26_bad_w.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli26_bad_wo.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "did NOT terminate normally" "cli26_bad_wo.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "Final message: Normal Termination" "cli26_bad_wo.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "cli26_good_w.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "did terminate normally" "cli26_good_w.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli26_good_w.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
