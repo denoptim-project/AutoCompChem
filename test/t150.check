@@ -8,12 +8,12 @@ function not_passed() {
 
 if [ ! -f "t150_conformers.sdf" ] ; then not_passed $LINENO ; fi
 
-# We expect 3 conformations, i.e., 3 blocka of text
+# We expect 3 conformations, i.e., 3 blocks of text
 n=0; n=$(grep -c '$$$$' t150_conformers.sdf )
 if [ 18 != "$n" ] ; then not_passed $LINENO ; fi
 
 # All conformers are reordered so that the first atom is a nitrogen
-# and all come from conversion of ZMatrix to XYS, so the first atom
+# and all come from conversion of ZMatrix to XYZ, so the first atom
 # is located at the centroid of the Cartesian coords ref system
 n=0; n=$(grep -c -i "[[:space:]]*0.0*[[:space:]]*0.0*[[:space:]]*0.0 N " t150_conformers.sdf )
 if [ 18 != "$n" ] ; then not_passed $LINENO ; fi

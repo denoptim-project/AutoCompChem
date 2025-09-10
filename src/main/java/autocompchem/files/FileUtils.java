@@ -425,8 +425,27 @@ public class FileUtils
      */
     public static String getIdSpecPathName(File f, String id)
     {
+    	return getIdSpecPathName(f, "_", id);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Creates an id-specific pathname from a given pathname and an id. Adds the
+     * identifier to the last location in the
+     * original pathname before the last extension (i.e., last ".").
+     * @param f original pathname to be modified.
+     * @param sep the separator to use between the file basename 
+     * (i.e., the pathname without extension) and the identifier.
+     * @param id the identifier making the original pathname unique. NB: this
+     * method does not check for uniqueness.
+     * @return the pathname resulting from appending the identifier to the 
+     * original pathname before the extension (i.e., last ".").
+     */
+    public static String getIdSpecPathName(File f, String sep, String id)
+    {
     	String extension = getFileExtension(f);
-    	String newPathName = getFilePathnameWithoutExtension(f) + "_" + id;
+    	String newPathName = getFilePathnameWithoutExtension(f) + sep + id;
     	if (extension!=null)
     	{
     		newPathName = newPathName + extension;

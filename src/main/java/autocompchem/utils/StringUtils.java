@@ -357,7 +357,7 @@ public class StringUtils
      * Extract text in between parenthesis. Ignores nested parentheses.
      * @param input the text from which to extract the result.
      * @return the string contained in the first pair of parenthesis, or 
-     * <code>null</code> if no parethesis is found.
+     * <code>null</code> if no parenthesis is found.
      */
     
     public static String getParenthesesContent(String input) 

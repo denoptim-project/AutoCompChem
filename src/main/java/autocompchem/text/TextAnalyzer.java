@@ -1369,7 +1369,7 @@ public class TextAnalyzer
             	key = line.substring(0,indexKVSep);
             }
 
-            if (indexKVSep < line.length())
+            if (0 < indexKVSep && indexKVSep < line.length())
                 value = line.substring(indexKVSep + 1);
             
 
@@ -1386,7 +1386,6 @@ public class TextAnalyzer
             singleBlock.add(key);
             singleBlock.add(value);
             keysValues.add(singleBlock);
-
         } 
 
         return keysValues;

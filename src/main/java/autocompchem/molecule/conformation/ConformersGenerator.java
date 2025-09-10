@@ -1,5 +1,6 @@
 package autocompchem.molecule.conformation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import org.openscience.cdk.silent.AtomContainerSet;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
+import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularReorderer;
@@ -58,6 +60,16 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     	GENERATECONFORMERSTASK = 
     			Task.make(GENERATECONFORMERSTASKNAME);
     }
+    
+    /**
+     * Parameter requiring to write one conformer per file as output.
+     */
+    public static final String SINGLECONFOUTFILE = "SINGLECONFOUTFILES";
+    
+    /**
+     * Flag requesting to wrote single-conf output files
+     */
+    private boolean singleConfOutFiles = false;
 
 //-----------------------------------------------------------------------------
 	
@@ -88,6 +100,25 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     public Worker makeInstance(Job job) {
         return new ConformersGenerator();
     }
+
+//------------------------------------------------------------------------------
+
+    @Override
+    public void initialize() 
+    {
+    	super.initialize();
+    	
+        if (params.contains(SINGLECONFOUTFILE))
+        {
+        	String value = params.getParameterValue(SINGLECONFOUTFILE);
+        	if (value==null || value.isBlank())
+        	{
+        		singleConfOutFiles = true;
+        	} else {
+        		singleConfOutFiles = StringUtils.parseBoolean(value);
+        	}
+        }
+    }
     
 //------------------------------------------------------------------------------
 
@@ -113,7 +144,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 				csg = (ConformationalSpaceGenerator) 
 						WorkerFactory.createWorker(confSpaceParams, myJob);
 			} catch (ClassNotFoundException e) {
-				// If this happen thing are seriously broken
+				// If this happen things are seriously broken
 				throw new IllegalStateException(e);
 			}
     		ConformationalSpace cs = csg.createConformationalSpace(iac);
@@ -132,9 +163,22 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     	        exposeOutputData(new NamedData(
     	        		GENERATECONFORMERSTASK.ID + "-" + molID, conformers));
         	}
-    		
-    		tryWritingToOutfile(conformers);
-    		outFileAlreadyUsed = true;
+    		if (singleConfOutFiles && outFile!=null)
+    		{
+    			for (int iConf=0; iConf<conformers.getAtomContainerCount(); iConf++)
+    			{
+    				IOtools.writeAtomContainerToFile(new File(
+    						FileUtils.getIdSpecPathName(outFile, "_" + i, "_" + iConf)), 
+    						conformers.getAtomContainer(iConf), 
+    						outFormat, false);
+    			}
+    			// Since we write the conformer-spec files we do not write the
+    			// collective file 
+	    		outFileAlreadyUsed = true;
+    		} else {
+	    		tryWritingToOutfile(conformers);
+	    		outFileAlreadyUsed = true;
+    		}
     	} else {
     		dealWithTaskMismatch();
         }

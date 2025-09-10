@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ -f "t157_conformer.xyz" ] ; then not_passed $LINENO ; fi
+
+# We expect 36 mol-and-conformer-specific files
+if [ ! -f "t157_conformer_0_0.xyz" ] ; then not_passed $LINENO ; fi
+if [ ! -f "t157_conformer_0_35.xyz" ] ; then not_passed $LINENO ; fi
+n=0; n=$(ls t157_conformer_*.xyz | wc -l | awk '{print $1}' )
+if [ 36 != "$n" ] ; then not_passed $LINENO ; fi
+
+# The files must be different from each other
+n=0; n=$(diff t157_conformer_0_0.xyz t157_conformer_0_35.xyz | wc -l | awk '{print $1}' )
+if [ 80 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t157.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
