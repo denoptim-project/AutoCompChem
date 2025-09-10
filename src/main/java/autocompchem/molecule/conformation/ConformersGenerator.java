@@ -110,13 +110,8 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     	
         if (params.contains(SINGLECONFOUTFILE))
         {
-        	String value = params.getParameterValue(SINGLECONFOUTFILE);
-        	if (value==null || value.isBlank())
-        	{
-        		singleConfOutFiles = true;
-        	} else {
-        		singleConfOutFiles = StringUtils.parseBoolean(value);
-        	}
+        	String value = (String) params.getParameter(SINGLECONFOUTFILE).getValue();
+        	singleConfOutFiles = StringUtils.parseBoolean(value, true);
         }
     }
     

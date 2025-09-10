@@ -391,14 +391,51 @@ public class StringUtils
     
     /**
      * Parse a string into a boolean. Case insensitive, and understands Yes/True/Y
-     * @param value
-     * @return the boolean
+     * @param value the string to parse
+     * @return the corresponding boolean or <code>null</code> if the given 
+     * string is <code>null</code>.
+     * @throws IllegalArgumentException if the string cannot be parsed to 
+     * a boolean.
      */
     public static Boolean parseBoolean(String value) 
     {
-        if (value == null) {
-            return null;
-        }
+    	return parseBoolean(value, false);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Parse a string into a boolean. Case insensitive, and understands Yes/True/Y
+     * @param value the string to parse
+     * @param nullOrBlankToTrue use <code>true</code> to consider a 
+     * <code>null</code> or a blank input string as <code>true</code>. Otherwise, 
+     * <code>null</code>, returns <code>null</code>, while empty or blank 
+     * strings trigger an exception.
+     * @return the boolean or <code>null</code> if the given string is 
+     * <code>null</code> and the <code>nullOrBlankToTrue</code> is 
+     * <code>false</code>.
+     * @throws IllegalArgumentException if the string cannot be parsed to 
+     * a boolean.
+     */
+    public static Boolean parseBoolean(String value, boolean nullOrBlankToTrue) 
+    {
+    	if (value == null)
+    	{
+    		if (nullOrBlankToTrue)
+        	{
+        		return true;
+        	} else {
+        		return null;
+        	}
+    	}
+    	
+    	if (value.isBlank())
+    	{
+    		if (nullOrBlankToTrue)
+        	{
+        		return true;
+        	}
+    	}
         
         String normalized = value.trim().toUpperCase();
         

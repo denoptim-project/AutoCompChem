@@ -329,6 +329,17 @@ public class StringUtilsTest
     		hasTrhown = true;
     	}
     	assertTrue(hasTrhown);
+    	
+		assertTrue(StringUtils.parseBoolean(null, true));
+		assertNull(StringUtils.parseBoolean(null, false));
+		assertTrue(StringUtils.parseBoolean("", true));
+		hasTrhown = false;
+    	try {
+    		StringUtils.parseBoolean("", false);
+    	} catch (IllegalArgumentException iae) {
+    		hasTrhown = true;
+    	}
+    	assertTrue(hasTrhown);
     }
     
 //------------------------------------------------------------------------------

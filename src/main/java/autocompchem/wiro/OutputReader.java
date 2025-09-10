@@ -230,9 +230,9 @@ public class OutputReader extends Worker
         //abnormal termination
         if (params.contains(WIROConstants.REQUIRENORMALTERM))
         {
-        	requireNormalTermination = StringUtils.parseBoolean(
-        			params.getParameter(WIROConstants.REQUIRENORMALTERM)
-        			.getValueAsString());
+        	requireNormalTermination = StringUtils.parseBoolean( (String)
+        			params.getParameter(WIROConstants.REQUIRENORMALTERM).getValue(), 
+					true);
         }
     }
     

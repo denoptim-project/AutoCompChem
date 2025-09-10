@@ -194,21 +194,15 @@ public class MolecularMeter extends AtomContainerInputProcessor
 
         if (params.contains("ONLYBONDED"))
         {
-            String val = params.getParameter("ONLYBONDED").getValueAsString();
-            if (val.toUpperCase().equals("TRUE") 
-            		|| val.toUpperCase().equals("NULL")
-            		|| val.toUpperCase().equals("ONLYBONDED"))
-            {
-                this.onlyBonded = true;
-            }
+            String val = (String) params.getParameter("ONLYBONDED").getValue();
+            this.onlyBonded = StringUtils.parseBoolean(val, true);
         }
         
         if (params.contains("SAVEASPROPERTIES"))
         {
-        	String value = 
-        			params.getParameter("SAVEASPROPERTIES").getValueAsString();
-        	
-        	saveDescriptorsAsProperties = StringUtils.parseBoolean(value);
+        	String value = (String) params.getParameter("SAVEASPROPERTIES").getValue();
+        	System.out.println("value: "+value);
+        	saveDescriptorsAsProperties = StringUtils.parseBoolean(value, true);
         }
         
         if (params.contains(WorkerConstants.PAROUTDATAFILE))
