@@ -169,6 +169,9 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
 
     public void initialize()
     {
+    	// Handling of OUTFILE warnings is done here, so we silence the checks in
+    	// the superclass
+    	params.setParameter(WorkerConstants.PARNOOUTFILEMODE);
     	super.initialize();
         
         if (params.contains(ChemSoftConstants.PARCARTCOORDSFORMAT))
