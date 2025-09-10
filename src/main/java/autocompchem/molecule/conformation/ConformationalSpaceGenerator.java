@@ -179,7 +179,7 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
         {
     		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
     		{
-    	    	ParameterStorage labMakerParams = params.clone();
+    	    	ParameterStorage labMakerParams = params.copy();
     			labels = generateAtomLabels(mol, labMakerParams);
     			break;
     		}

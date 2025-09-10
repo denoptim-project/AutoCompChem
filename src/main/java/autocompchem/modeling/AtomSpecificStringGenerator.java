@@ -137,9 +137,11 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
     	if (task.equals(GETATOMSPECIFICSTRINGTASK))
     	{
 	    	// Adjust parameters to configure AtomTupleGenerator
-	        ParameterStorage tupleGenParams = params.clone();
+	        ParameterStorage tupleGenParams = params.copy();
 	        tupleGenParams.setParameter(WorkerConstants.PARTASK,
 	        		AtomTupleGenerator.GENERATEATOMTUPLESTASK.ID);
+	        tupleGenParams.removeData(WorkerConstants.PAROUTFILE);
+	        tupleGenParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 	        
 	        // Run tuple generator
 	        Worker embeddedWorker = null;

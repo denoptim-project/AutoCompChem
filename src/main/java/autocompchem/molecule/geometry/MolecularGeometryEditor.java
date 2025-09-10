@@ -988,10 +988,14 @@ public class MolecularGeometryEditor extends AtomContainerInputProcessor
         String outMolBasename = MolecularUtils.getNameOrID(iac);
         
         // Get the ZMatrix of the molecule to work with
-        ParameterStorage locPar = params.clone();
+        ParameterStorage locPar = params.copy();
         locPar.setParameter(WorkerConstants.PARTASK, 
         		ZMatrixHandler.CONVERTTOZMATTASK.ID);
+        locPar.removeData(WorkerConstants.PAROUTFILE);
+        locPar.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+        
         Worker w = WorkerFactory.createWorker(locPar, this.getMyJob());
+        
         ZMatrixHandler zmh = (ZMatrixHandler) w;
         ZMatrix inZMatMol = zmh.makeZMatrix(iac);
         String msg = "Original ZMatrix: " + NL;

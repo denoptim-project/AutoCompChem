@@ -44,6 +44,12 @@ public class WorkerConstants
 	public static final String PAROUTFILE = "OUTFILE";
 	
 	/**
+	 * Flag indicating that a worker should not warn the user when missing 
+	 * the PAROUTFILE parameter
+	 */
+	public static final String PARNOOUTFILEMODE = "NOOUTFILEMODE";
+	
+	/**
 	 * Key for parameter defining the pathname to an output file with raw data,
 	 * typically not a molecular structure file. If more
 	 * output files are needed these are dealt with by the specific 

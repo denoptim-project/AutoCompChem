@@ -177,11 +177,14 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 			
 			if (useAtomTags)
 			{
-				ParameterStorage labelsParams = params.clone();
+				ParameterStorage labelsParams = params.copy();
 				labelsParams.setParameter(WorkerConstants.PARTASK, 
 	    				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
 				labelsParams.setParameter(ChemSoftConstants.PARGEOM,
 	    				new ArrayList<IAtomContainer>(Arrays.asList(iac)));
+				labelsParams.removeData(WorkerConstants.PAROUTFILE);
+				labelsParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+				
 				AtomLabelsGenerator labGenerator = null;
 				try {
 					labGenerator = (AtomLabelsGenerator) 
@@ -200,9 +203,12 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	    	{    
 	        	case ZMAT:
 	        	{
-	        		ParameterStorage zmatMakerTask = params.clone();
+	        		ParameterStorage zmatMakerTask = params.copy();
 	        		zmatMakerTask.setParameter(WorkerConstants.PARTASK, 
 	        				ZMatrixHandler.CONVERTTOZMATTASK.ID);
+	        		zmatMakerTask.removeData(WorkerConstants.PAROUTFILE);
+	        		zmatMakerTask.setParameter(WorkerConstants.PARNOOUTFILEMODE);
+	        		
 	                Worker w = null;
 					try {
 						w = WorkerFactory.createWorker(zmatMakerTask,myJob);
@@ -215,9 +221,11 @@ public class MolecularGeometryHandler extends AtomContainerInputProcessor
 	                
 	                if (params.contains(ZMatrixConstants.SELECTORMODE))
 	                {
-	                	ParameterStorage cnstMakerTask = params.clone();
+	                	ParameterStorage cnstMakerTask = params.copy();
 	                	cnstMakerTask.setParameter(WorkerConstants.PARTASK, 
 	                			ConstraintsGenerator.GENERATECONSTRAINTSTASK.ID);
+	                	cnstMakerTask.removeData(WorkerConstants.PAROUTFILE);
+	                	cnstMakerTask.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 	
 	                    ConstraintsGenerator cnstrg = null;
 						try {

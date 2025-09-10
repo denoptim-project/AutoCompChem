@@ -239,9 +239,13 @@ public class AtomContainerInputProcessor extends Worker
 		        }
 	        }
         } else {
-        	logger.debug("WARNING: No " + WorkerConstants.PAROUTFILE 
-        			+ " parameter given. "
-        			+ "Results will be kept in the memory for further use.");
+        	if (!params.contains(WorkerConstants.PARNOOUTFILEMODE))
+        	{
+	        	logger.debug("WARNING: No " + WorkerConstants.PAROUTFILE 
+	        			+ " parameter given to " 
+	        			+ this.getClass().getSimpleName() + ". "
+	        			+ "Results will be kept in the memory for further use.");
+        	}
         }
         
         if (params.contains(WorkerConstants.PAROUTFORMAT))

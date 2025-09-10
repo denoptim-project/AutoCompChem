@@ -48,6 +48,7 @@ import autocompchem.wiro.WIROConstants;
 import autocompchem.wiro.chem.gaussian.GaussianConstants;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 /**
@@ -1150,11 +1151,13 @@ public class Directive implements IDirectiveComponent, Cloneable
     	
     	// We collect data from the job that contains the present
     	// directive into the parameters of the embedded job.
-    	ParameterStorage embeddeJobPars = params.clone();
+    	ParameterStorage embeddeJobPars = params.copy();
     	embeddeJobPars.setParameter(new NamedData(
     			ChemSoftConstants.PARGEOM, mols));
     	embeddeJobPars.setParameter(job.getParameter(
     			WIROConstants.PAROUTFILEROOT));
+    	embeddeJobPars.removeData(WorkerConstants.PAROUTFILE);
+    	embeddeJobPars.removeData(WorkerConstants.PAROUTFORMAT);
     	
     	// We run the embedded job, specifying that we want to receive the 
     	// resulting data.

@@ -244,7 +244,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	        {
 	    		if (r.hasValuelessAttribute(AtomTupleConstants.KEYGETATOMLABELS))
 	    		{
-	    	    	ParameterStorage labMakerParams = params.clone();
+	    	    	ParameterStorage labMakerParams = params.copy();
 	    			labels = generateAtomLabels(iac, labMakerParams);
 	    			break;
 	    		}
@@ -304,6 +304,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     {
 		labMakerParams.setParameter(WorkerConstants.PARTASK, 
 				AtomLabelsGenerator.GENERATEATOMLABELSTASK.ID);
+		labMakerParams.removeData(WorkerConstants.PAROUTFILE);
+		labMakerParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 		AtomLabelsGenerator labGenerator = null;
 		try {
 			labGenerator = (AtomLabelsGenerator) 

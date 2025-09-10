@@ -102,9 +102,10 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     		IAtomContainer orderedIAC = reorderer.reorderContainer(iac);
     		
     		// Generate the conformational space definition
-    		ParameterStorage confSpaceParams = params.clone();
+    		ParameterStorage confSpaceParams = params.copy();
     		confSpaceParams.setParameter(WorkerConstants.PARTASK, 
     				ConformationalSpaceGenerator.GENERATECONFORMATIONALSPACETASKNAME);
+    		confSpaceParams.setParameter(WorkerConstants.PARNOOUTFILEMODE);
     		confSpaceParams.removeData(WorkerConstants.PAROUTFILE);
     		confSpaceParams.removeData(WorkerConstants.PAROUTFORMAT);
     		ConformationalSpaceGenerator csg;
