@@ -47,6 +47,7 @@ import autocompchem.smarts.ManySMARTSQuery;
 import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -146,6 +147,8 @@ public class MolecularComparator extends AtomContainerInputProcessor
     @Override
     public void initialize()
     {
+    	// Outfile not used in this worker
+    	params.setParameter(WorkerConstants.PARNOOUTFILEMODE);
     	super.initialize();
 
         //Get and check the reference file

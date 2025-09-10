@@ -42,6 +42,7 @@ import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
+import autocompchem.worker.WorkerConstants;
 
 /**
  * Tool that analyzes interatomic distances and report
@@ -143,6 +144,8 @@ public class AtomClashAnalyzer extends AtomContainerInputProcessor
     @Override
     public void initialize()
     {
+    	// Outfile not used in this worker
+    	params.setParameter(WorkerConstants.PARNOOUTFILEMODE);
     	super.initialize();
 
         //Get the list of SMARTS to be matched
