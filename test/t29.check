@@ -1,36 +1,32 @@
 #!/bin/bash
 
-grep -q 'Mol.0 BESCAF  Dst.dist-0 Fe1:C19 = 3.432' t29.log
-if [ $? != 0 ] ; then
-  echo NOT Passed 1
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
   exit -1
-fi
-grep -q 'Mol.1 CEPKOZ  Dst.dist-0 Fe1:C69 = 3.540' t29.log
-if [ $? != 0 ] ; then
-  echo NOT Passed 2
-  exit -1
-fi
-grep -q 'Mol.1 CEPKOZ  Dst.dist-0 Fe2:C69 = 1.726' t29.log
-if [ $? != 0 ] ; then
-  echo NOT Passed 3
-  exit -1
-fi
-grep -q 'Mol.2 FEXKUQ  Dst.dist-0 Fe3:C21 = 3.251' t29.log
-if [ $? != 0 ] ; then
-  echo NOT Passed 4
-  exit -1
-fi
-grep -q 'Mol.2 FEXKUQ  Dst.dist-0 Fe3:C17 = 1.789' t29.log
-if [ $? != 0 ] ; then
-  echo NOT Passed 5
-  exit -1
-fi
+}
 
-grep -q 'Termination status: 0' t29.log
-if [ $? == 0 ] ; then 
-echo Passed
-exit 0
+if [ ! -f t29.log ] ; then not_passed $LINENO ; fi
+
+grep -q 'Mol.0 BESCAF  Dst.dist-0 Fe1:C19 = 3.432' t29.log
+if [ $? != 0 ] ; then not_passed $LINENO ; fi
+grep -q 'Mol.1 CEPKOZ  Dst.dist-0 Fe1:C69 = 3.540' t29.log
+if [ $? != 0 ] ; then not_passed $LINENO ; fi 
+grep -q 'Mol.1 CEPKOZ  Dst.dist-0 Fe2:C69 = 1.726' t29.log
+if [ $? != 0 ] ; then not_passed $LINENO ; fi
+grep -q 'Mol.2 FEXKUQ  Dst.dist-0 Fe3:C21 = 3.251' t29.log
+if [ $? != 0 ] ; then not_passed $LINENO ; fi 
+grep -q 'Mol.2 FEXKUQ  Dst.dist-0 Fe3:C17 = 1.789' t29.log
+if [ $? != 0 ] ; then not_passed $LINENO ; fi
+
+
+if [ ! -f t29.dat ] ; then not_passed $LINENO ; fi
+n=0; n=$(grep -c "dist-0" t29.dat)
+if [ 3 != "$n" ]; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' t29.log ; then
+  echo Passed
+  exit 0
 else
-echo NOT Passed 6
-exit -1
+  echo NOT Passed 99
+  exit -1
 fi

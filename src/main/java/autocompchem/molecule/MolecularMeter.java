@@ -156,6 +156,8 @@ public class MolecularMeter extends AtomContainerInputProcessor
 	@Override
 	public void initialize() 
 	{
+		// Can ignore OUTFILE as it is normally not needed, but may be used
+		params.setParameter(WorkerConstants.PARNOOUTFILEMODE);
 		super.initialize();
 
         //Get SMARTS based definition of quantities
@@ -301,7 +303,6 @@ public class MolecularMeter extends AtomContainerInputProcessor
     		
     		if (outTxtFile!=null)
             {
-            	outFileAlreadyUsed = true;
             	StringBuilder sb = new StringBuilder();
             	for (String descRef : descriptors.keySet())
 	    		{
@@ -309,7 +310,7 @@ public class MolecularMeter extends AtomContainerInputProcessor
     					.append(": ").append(descriptors.get(descRef))
 	    				.append(System.getProperty("line.separator"));
 	    		}
-            	IOtools.writeTXTAppend(outFile, sb.toString(), true);
+            	IOtools.writeTXTAppend(outTxtFile, sb.toString(), true);
             }
     		
             if (exposedOutputCollector != null)

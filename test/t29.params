@@ -7,3 +7,4 @@ INFILE: ../t29.sdf
 $STARTSMARTS: 
 dist [Fe] [$([#6;X2]~[#8;X1])]
 $END
+outDataFile: t29.dat
