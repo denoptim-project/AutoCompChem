@@ -1,0 +1,20 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ -f "t158_conformer.xyz" ] ; then not_passed $LINENO ; fi
+
+if [ ! -f "t158_conformer_0_0.xyz" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(ls t158_conformer_*.xyz | wc -l | awk '{print $1}' )
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(diff ../t158-ref.xyz t158_conformer_0_0.xyz | wc -l | awk '{print $1}' )
+if [ 0 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t158.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

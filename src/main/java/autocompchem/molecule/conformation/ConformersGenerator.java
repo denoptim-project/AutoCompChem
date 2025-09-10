@@ -156,6 +156,12 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     		
     		// Generate the actual conformers
     		conformers = generateConformers(orderedIAC, cs, logger);
+    		
+    		if (conformers.getAtomContainerCount()==0)
+    		{
+    			logger.info("No conformer generated. Returning the input geometry.");
+    			conformers.addAtomContainer(iac);
+    		}
             
             if (exposedOutputCollector != null)
         	{

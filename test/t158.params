@@ -1,0 +1,6 @@
+TASK: generateConformers
+verbosity:4
+INFILE: ../t158-mol.sdf
+SMARTS:[#15]-!@[#6;X4] fold=2
+outFile: t158_conformer.xyz
+singleConfOutFiles
