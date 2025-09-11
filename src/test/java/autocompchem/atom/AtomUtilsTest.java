@@ -68,6 +68,31 @@ public class AtomUtilsTest
 //------------------------------------------------------------------------------
 
     @Test
+    public void testMakeIAtom() throws Exception
+    {
+    	IAtom atm = AtomUtils.makeIAtom("C");
+    	assertTrue(atm instanceof Atom);
+    	assertNull(atm.getPoint2d());
+    	assertNull(atm.getPoint3d());
+    	
+    	atm = AtomUtils.makeIAtom("Dummy");
+    	assertTrue(atm instanceof PseudoAtom);
+    	assertNull(atm.getPoint2d());
+    	assertNull(atm.getPoint3d());
+    	
+    	Point3d p3d =  new Point3d(1.0, 2.0, 3.0);
+    	atm = AtomUtils.makeIAtom("C", p3d);
+    	assertTrue(atm instanceof Atom);
+    	assertTrue(closeEnough(atm.getPoint3d(),p3d));
+    	
+    	atm = AtomUtils.makeIAtom("Dummy", new Point3d(p3d));
+    	assertTrue(atm instanceof PseudoAtom);
+    	assertTrue(closeEnough(atm.getPoint3d(),p3d));
+    }
+    
+//------------------------------------------------------------------------------
+
+    @Test
     public void testGetSymbolOrLabel() throws Exception
     {
     	IAtom atm = new Atom();

@@ -123,7 +123,7 @@ public class ConformersGenerator extends AtomContainerInputProcessor
     	if (task.equals(GENERATECONFORMERSTASK))
     	{
     		// Reorder atom list to ensure generation of ZMatrix
-    		logger.warn("Reordering atom list. Atom Indexes wil lrefer to the new atom list");
+    		logger.warn("Reordering atom list. Atom indexes will refer to the new atom list.");
     		MolecularReorderer reorderer = new MolecularReorderer();
     		IAtomContainer orderedIAC = reorderer.reorderContainer(iac);
     		

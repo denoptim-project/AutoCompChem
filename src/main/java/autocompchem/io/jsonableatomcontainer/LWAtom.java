@@ -59,7 +59,7 @@ public class LWAtom
     
     /**
      * Constructor
-     * @param atm the atom from which we build this light-weigth representation.
+     * @param atm the atom from which we build this light-weight representation.
      */
     public LWAtom(IAtom atm)
     {
@@ -88,15 +88,7 @@ public class LWAtom
      */
     public IAtom toIAtom()
     {
-        IAtom atm = null;
-        if (AtomUtils.isElement(elSymbol))
-        {
-            atm = new Atom(elSymbol);
-        } else {
-            atm = new PseudoAtom(elSymbol);
-        }
-        atm.setPoint3d(new Point3d(p3d));
-        return atm;
+    	return AtomUtils.makeIAtom(elSymbol, p3d);
     }
     
 //------------------------------------------------------------------------------

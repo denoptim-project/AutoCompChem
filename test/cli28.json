@@ -1,0 +1,25 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "GenerateConformers"
+    },
+    {
+      "reference": "INPUTGEOMETRIESFILE",
+      "value": "../cli28.sdf"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "4"
+    },
+    {
+      "reference": "SMARTS",
+      "value": "[$([#6](~[#1])~[Ru])] [Ru] [$([#6](~[#7])~[Ru]),$([#6]1(~[#44])~[#6;X3]~[#6;X3]~[#7;X3]~[#6;X3]~[#6;X3]~1)] [$([#7]~[#6]~[Ru]),$([#6;X3]1~[#6;X3]~[#7;X3]~[#6;X3]~[#6;X3]~[#6;X3](~[#44])~1)] onlybonded fold: 2\n[$([#6]~[#15])] [#15] [Ru] [$([#6](~[#1])~[Ru])] onlybonded fold: 2"
+    },
+    {
+      "reference": "outFile",
+      "value": "cli28_conformers.sdf"
+    }
+  ]
+}

@@ -257,7 +257,42 @@ public class AtomUtils
 
         return true;
     }
-
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Creates an instance of {@link IAtom} that can be an actual {@link Atom}
+     * or as {@link PseudoAtom}, depending on the given symbol.
+     * @param symbol the elemental symbol of label for pseudoatoms.
+     * @return
+     */
+    public static IAtom makeIAtom(String symbol)
+    {
+    	return makeIAtom(symbol, null);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Creates an instance of {@link IAtom} that can be an actual {@link Atom}
+     * or as {@link PseudoAtom}, depending on the given symbol.
+     * @param symbol the elemental symbol of label for pseudoatoms.
+     * @param p3d the coordinates in 3D.
+     * @return
+     */
+    public static IAtom makeIAtom(String symbol, Point3d p3d)
+    {
+    	IAtom atm;
+        if (AtomUtils.isElement(symbol))
+        {
+            atm = new Atom(symbol);
+        } else {
+            atm = new PseudoAtom(symbol);
+        }
+        atm.setPoint3d(p3d);
+        return atm;
+    }
+    
 //------------------------------------------------------------------------------
 
     /**

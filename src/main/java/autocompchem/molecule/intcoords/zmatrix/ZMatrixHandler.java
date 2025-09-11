@@ -929,8 +929,8 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
                     }
                 }
             }
-
-            IAtom atm = new Atom(el,pt);
+ 
+            IAtom atm = AtomUtils.makeIAtom(el,pt);
             mol.addAtom(atm);
 
             if (i!=0)
