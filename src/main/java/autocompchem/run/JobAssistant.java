@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.ParameterStorage;
 import autocompchem.run.jobediting.Action;

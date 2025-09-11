@@ -30,7 +30,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
 
 /**
  * Interface for circumstance.

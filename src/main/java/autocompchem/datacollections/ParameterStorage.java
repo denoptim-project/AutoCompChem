@@ -37,7 +37,6 @@ import com.google.gson.reflect.TypeToken;
 
 import autocompchem.io.IOtools;
 import autocompchem.run.Terminator;
-import autocompchem.run.jobediting.SetJobParameter;
 import autocompchem.text.TextAnalyzer;
 import autocompchem.text.TextBlockIndexed;
 

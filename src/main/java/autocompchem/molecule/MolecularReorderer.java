@@ -1,6 +1,5 @@
 package autocompchem.molecule;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,9 +33,6 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import autocompchem.datacollections.NamedData;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;

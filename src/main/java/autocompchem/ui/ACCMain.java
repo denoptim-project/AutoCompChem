@@ -32,7 +32,6 @@ import autocompchem.log.LogUtils;
 import autocompchem.run.ACCJob;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
-import autocompchem.run.SoftwareId;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.TimeUtils;

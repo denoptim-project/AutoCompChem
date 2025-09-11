@@ -1,6 +1,5 @@
 package autocompchem.molecule.chelation;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +34,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import autocompchem.atom.AtomUtils;
-import autocompchem.files.FileUtils;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.molecule.connectivity.ConnectivityUtils;

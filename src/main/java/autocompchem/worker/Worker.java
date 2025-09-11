@@ -44,7 +44,6 @@ import autocompchem.run.IOutputExposer;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;
-import autocompchem.wiro.chem.ChemSoftConstants;
 
 
 /**

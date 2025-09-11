@@ -1,6 +1,5 @@
 package autocompchem.modeling;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +34,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import autocompchem.atom.AtomConstants;
 import autocompchem.atom.AtomUtils;
 import autocompchem.datacollections.NamedData;
-import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.run.Job;

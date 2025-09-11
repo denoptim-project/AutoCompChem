@@ -46,7 +46,6 @@ import autocompchem.perception.infochannel.JobDetailsAsSource.JobDetailsAsSource
 import autocompchem.perception.infochannel.ShortTextAsSource;
 import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceDeserializer;
 import autocompchem.perception.infochannel.ShortTextAsSource.ShortTextAsSourceSerializer;
-import autocompchem.perception.situation.Situation;
 import autocompchem.perception.situation.SituationBase;
 import autocompchem.perception.situation.SituationBase.SituationBaseDeserializer;
 import autocompchem.perception.situation.SituationBase.SituationBaseSerializer;

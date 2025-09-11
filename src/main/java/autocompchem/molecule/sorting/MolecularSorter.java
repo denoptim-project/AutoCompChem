@@ -1,7 +1,5 @@
 package autocompchem.molecule.sorting;
 
-import java.io.File;
-
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -27,11 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.silent.AtomContainerSet;
 
-import autocompchem.datacollections.NamedData;
-import autocompchem.files.FileUtils;
-import autocompchem.io.IOtools;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.molecule.MolecularUtils;
 import autocompchem.run.Job;

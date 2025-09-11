@@ -1,13 +1,11 @@
 package autocompchem.molecule.conformation;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
 import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.utils.NumberUtils;
-import autocompchem.utils.StringUtils;
 
 
 /**

@@ -1,6 +1,5 @@
 package autocompchem.perception.infochannel;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.List;
@@ -13,7 +12,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import autocompchem.io.ACCJson;
-import autocompchem.perception.situation.Situation;
 
 /*
  *   Copyright (C) 2018  Marco Foscato

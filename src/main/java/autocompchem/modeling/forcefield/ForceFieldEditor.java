@@ -41,7 +41,6 @@ import autocompchem.wiro.chem.tinker.TinkerForceFieldHandler;
 import autocompchem.wiro.chem.vibmodule.VibModuleOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerConstants;
 import autocompchem.worker.WorkerFactory;
 
 

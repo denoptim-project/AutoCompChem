@@ -27,7 +27,6 @@ import org.apache.commons.lang3.EnumUtils;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.IOtools.IACOutFormat;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
 import autocompchem.worker.WorkerConstants;

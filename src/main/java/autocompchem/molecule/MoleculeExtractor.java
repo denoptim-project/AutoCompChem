@@ -1,6 +1,13 @@
 package autocompchem.molecule;
 
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+
 /*   
  *   Copyright (C) 2016  Marco Foscato 
  *
@@ -21,18 +28,10 @@ package autocompchem.molecule;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import org.apache.logging.log4j.Logger;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.AtomContainerSet;
-import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
@@ -41,7 +40,6 @@ import autocompchem.molecule.connectivity.ConnectivityUtils;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;
-import autocompchem.smarts.MatchingIdxs;
 import autocompchem.smarts.SMARTS;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;

@@ -29,7 +29,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 import autocompchem.io.ACCJson;
-import autocompchem.perception.situation.Situation;
 import autocompchem.run.EvaluationJob;
 import autocompchem.run.Job;
 import autocompchem.run.jobediting.DataArchivingRule.ArchivingTaskType;

@@ -40,7 +40,6 @@ import autocompchem.molecule.vibrations.NormalModeSet;
 import autocompchem.run.Job;
 import autocompchem.run.JobFactory;
 import autocompchem.run.Terminator;
-import autocompchem.text.TextBlock;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.wiro.OutputReader;

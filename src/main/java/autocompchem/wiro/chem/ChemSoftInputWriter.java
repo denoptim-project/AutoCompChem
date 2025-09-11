@@ -29,7 +29,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import com.google.gson.Gson;
 
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.ACCFileType;
 import autocompchem.files.FileAnalyzer;
 import autocompchem.files.FileUtils;

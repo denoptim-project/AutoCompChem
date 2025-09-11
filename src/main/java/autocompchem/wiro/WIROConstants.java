@@ -1,5 +1,6 @@
 package autocompchem.wiro;
 
+import autocompchem.run.Job;
 
 /*   
  *   Copyright (C) 2014  Marco Foscato 

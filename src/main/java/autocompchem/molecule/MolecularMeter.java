@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.openscience.cdk.interfaces.IAtom;
@@ -39,8 +38,6 @@ import autocompchem.datacollections.ListOfDoubles;
 import autocompchem.datacollections.NamedData;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
-import autocompchem.io.IOtools.IACOutFormat;
-import autocompchem.modeling.atomtuple.AnnotatedAtomTuple;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.smarts.ManySMARTSQuery;

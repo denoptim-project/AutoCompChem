@@ -27,7 +27,6 @@ import autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.ListOfListsCombinations;
-import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;

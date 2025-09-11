@@ -1,12 +1,11 @@
 package autocompchem.perception.situation;
 
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,12 +39,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import autocompchem.files.FileUtils;
@@ -55,12 +52,9 @@ import autocompchem.io.ResourcesTools;
 import autocompchem.perception.TxtQuery;
 import autocompchem.perception.circumstance.ICircumstance;
 import autocompchem.perception.circumstance.MatchText;
-import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.InfoChannelTypeComparator;
-import autocompchem.worker.ConfigItem;
-import autocompchem.worker.Worker;
 
 
 /**

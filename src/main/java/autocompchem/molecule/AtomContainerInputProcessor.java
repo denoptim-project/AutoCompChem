@@ -36,11 +36,9 @@ import org.openscience.cdk.interfaces.IAtomContainerSet;
 
 import autocompchem.datacollections.NamedData;
 import autocompchem.datacollections.NamedDataCollector;
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.io.IOtools.IACOutFormat;
-import autocompchem.modeling.atomtuple.AtomTupleMatchingRule;
 import autocompchem.run.Job;
 import autocompchem.run.Terminator;
 import autocompchem.utils.NumberUtils;

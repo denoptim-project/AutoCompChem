@@ -34,16 +34,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
-import autocompchem.datacollections.ParameterStorage;
 import autocompchem.files.FileUtils;
-import autocompchem.perception.circumstance.MatchText;
-import autocompchem.run.Job;
 import autocompchem.run.Terminator;
-import autocompchem.run.jobediting.JobEditType;
 import autocompchem.utils.StringUtils;
-import autocompchem.wiro.chem.CompChemJob;
 
 /**
  * File as a source of information

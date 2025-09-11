@@ -1,12 +1,10 @@
 package autocompchem.perception.infochannel;
 
-import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /*
@@ -36,8 +34,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
-import autocompchem.files.FileUtils;
 
 
 /**
