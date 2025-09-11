@@ -1,5 +1,11 @@
 [
   {
+    "key": "SINGLECONFOUTFILES",
+    "casedKey": "singleConfOutFiles",
+    "type": "<boolean>",
+    "doc": "Defines whether to write each generated conformer is a dedicated file or to write all conformers in one single file. In both cases the name of the files is controlled by 'outFile', but when 'singleConfOutFiles' is present or set to 'true/yes' then the value of 'outFile' is used a base to define filenames according to this syntax '<basename>_<molID>_<confID><ext>'. Where 'basename' is the pathname of 'outFile' without extension, 'molID' is the index of the molecule in the input feed, 'confID' is the index of the conformer generated, and 'ext' is the file extension in 'outFile'."
+  },
+  {
     "embeddedWorker": "autocompchem.molecule.conformation.ConformationalSpaceGenerator",
     "tag": "the definition of the conformational space",
     "ignorableItems": [
