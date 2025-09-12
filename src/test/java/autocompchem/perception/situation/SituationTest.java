@@ -28,8 +28,6 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.molecule.conformation.ConformationalCoordinate;
-import autocompchem.molecule.conformation.ConformationalCoordinate.ConformationalCoordType;
 import autocompchem.perception.circumstance.Circumstance;
 import autocompchem.perception.circumstance.CountTextMatches;
 import autocompchem.perception.circumstance.MatchText;

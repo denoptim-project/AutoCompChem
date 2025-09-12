@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,8 +23,6 @@ import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelBase;
 import autocompchem.perception.infochannel.InfoChannelType;
-import autocompchem.perception.situation.Situation;
-import autocompchem.perception.situation.SituationBase;
 
 public class InfoChannelBaseTest 
 {

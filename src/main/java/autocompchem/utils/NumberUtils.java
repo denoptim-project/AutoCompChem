@@ -517,7 +517,8 @@ public class NumberUtils
                            */
                           private static final long serialVersionUID = 1L;
 
-                          @Override
+                          @SuppressWarnings("unchecked")
+						  @Override
                           public Object getValue(ELContext c) {
                               return oldValue;
                           }

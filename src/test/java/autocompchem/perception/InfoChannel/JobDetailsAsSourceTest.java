@@ -9,13 +9,10 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
-import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.JobDetailsAsSource;
 import autocompchem.wiro.chem.CompChemJob;
 import autocompchem.wiro.chem.CompChemJobTest;
-import autocompchem.wiro.chem.Directive;
-import autocompchem.perception.infochannel.FileAsSource;
 
 public class JobDetailsAsSourceTest {
     

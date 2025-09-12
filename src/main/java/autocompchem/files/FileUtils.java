@@ -294,44 +294,6 @@ public class FileUtils
 //------------------------------------------------------------------------------
     
     /**
-     * Normalizes regex patterns to be OS-independent by handling path separators.
-     * This method handles both Unix-style forward slashes and Windows-style backslashes
-     * that may result from FilenameUtils.separatorsToSystem() conversion.
-     * It carefully preserves regex constructs like character classes while normalizing path separators.
-     * @param pattern the original regex pattern
-     * @return normalized pattern that works on any OS
-     */
-    private static String normalizeRegexPattern(String pattern) 
-    {
-        // Handle both forward slashes (Unix) and single backslashes (Windows converted)
-        // but be careful not to break valid regex patterns with escaped sequences
-        
-        String result = pattern;
-        
-        // Be more intelligent about what patterns to normalize
-        // Avoid normalizing patterns with complex regex constructs like groups ()
-        // But allow character classes [] since they don't conflict with path separators
-        boolean hasComplexConstructs = pattern.contains("(") && !pattern.contains("\\\\\\\\");
-        
-        if (!hasComplexConstructs) {
-            // Handle forward slashes (Unix style or unconverted patterns)
-            if (pattern.contains("/")) {
-                result = result.replace("/", "[\\\\/]");
-            }
-            // Handle single backslashes (Windows converted patterns from FilenameUtils)
-            // Look for patterns like ".*\something" where \ is a single backslash
-            else if (pattern.matches(".*\\\\[^\\\\].+")) {
-                // Replace single backslash with character class, but avoid double backslashes
-                result = result.replaceAll("(?<!\\\\)\\\\(?!\\\\)", "[\\\\\\\\/]");
-            }
-        }
-        
-        return result;
-    }
-    
-//------------------------------------------------------------------------------
-    
-    /**
      * Get pathname without the last extension, i.e., the last string adter and
      * including the last index of the dot character.
      * @param file

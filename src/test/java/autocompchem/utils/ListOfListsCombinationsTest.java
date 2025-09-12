@@ -29,10 +29,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.JsonParseException;
-
-import autocompchem.worker.Worker;
-
 
 /**
  * Unit Test for iterator over combinations in a list of lists.

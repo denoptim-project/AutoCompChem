@@ -75,10 +75,8 @@ public class CoordinationGeometryUtils
         Collection<List<Integer>> perms = Collections2.permutations(listIdB);
         List<Integer> bestPerm = new ArrayList<Integer>();
         double lowestMad = Double.MAX_VALUE;
-        int i = 0;
         for (List<Integer> permB : perms)
         {
-            i++;
             double locMad = 0.0;            
             for (int posA=0; posA<cnA; posA++)
             {

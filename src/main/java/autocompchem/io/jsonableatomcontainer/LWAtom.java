@@ -29,8 +29,6 @@ import java.util.Objects;
 
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.PseudoAtom;
 import org.openscience.cdk.interfaces.IAtom;
 
 import autocompchem.atom.AtomUtils;

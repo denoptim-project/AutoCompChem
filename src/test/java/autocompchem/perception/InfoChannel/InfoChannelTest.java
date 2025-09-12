@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 import autocompchem.io.ACCJson;
+import autocompchem.perception.infochannel.FileAsSource;
 import autocompchem.perception.infochannel.InfoChannel;
 import autocompchem.perception.infochannel.InfoChannelType;
 import autocompchem.perception.infochannel.ShortTextAsSource;
-import autocompchem.perception.infochannel.FileAsSource;
 
 public class InfoChannelTest {
     

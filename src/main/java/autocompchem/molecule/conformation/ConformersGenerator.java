@@ -379,7 +379,8 @@ public class ConformersGenerator extends AtomContainerInputProcessor
         		{
             		atmA = coord.getAtomIDs().get(0);
             		atmB = coord.getAtomIDs().get(1);
-        		} else if (coord.getNumberOfIDs()==4) {
+        		} else if (coord.getNumberOfIDs()==4) 
+        		{
             		atmA = coord.getAtomIDs().get(1);
             		atmB = coord.getAtomIDs().get(2);
         		} else {

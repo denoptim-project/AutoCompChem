@@ -695,7 +695,7 @@ public class IOtools
                         + " In this version, you can read multiple "
                         + "chemical entities only from SDF, XYZ files, or "
                         + "any output from any of these: " 
-                        + builder.getRegisteredSoftwareIDs(), -1);
+                        + ReaderWriterFactory.getRegisteredSoftwareIDs(), -1);
         }
         return mols;
     }

@@ -967,6 +967,8 @@ public abstract class ChemSoftOutputReader extends OutputReader
 						.append(result).append(NL);
 					break;
 				}
+			default:
+				break;
     		}
         }
         

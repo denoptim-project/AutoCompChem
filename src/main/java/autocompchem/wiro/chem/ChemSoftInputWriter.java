@@ -550,19 +550,6 @@ public abstract class ChemSoftInputWriter extends AtomContainerInputProcessor
     
 //------------------------------------------------------------------------------
     
-    private List<IAtomContainer> makeAtomContainersWithAtomTags(
-    		List<IAtomContainer> mols)
-    {
-    	List<IAtomContainer> molsWithAtomTags = new ArrayList<IAtomContainer>();
-    	for (IAtomContainer iac : mols)
-    	{
-    		molsWithAtomTags.add(MolecularUtils.makeSimpleCopyWithAtomTags(iac));
-    	}
-    	return molsWithAtomTags;
-    }
-    
-//------------------------------------------------------------------------------
-    
     private void setChemicalSystemAsJobParam(CompChemJob job, 
     		List<IAtomContainer> mols)
     {

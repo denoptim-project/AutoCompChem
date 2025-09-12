@@ -13,8 +13,13 @@ public class AnnotatedAtomTupleList extends ArrayList<AnnotatedAtomTuple>
 	implements Cloneable
 {
 
-//------------------------------------------------------------------------------
+	/**
+	 * Version identifier for serialization
+	 */
+	private static final long serialVersionUID = -3515665116095772408L;
 
+//------------------------------------------------------------------------------
+	
 	/**
 	 * Constructor for an empty list.
 	 */

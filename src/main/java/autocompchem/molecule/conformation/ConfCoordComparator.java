@@ -73,6 +73,8 @@ public class ConfCoordComparator implements Comparator<ConformationalCoordinate>
 		case UNDEFINED:
 			result = 3;
 			break;
+		default:
+			break;
 		}
 		return result;
 	}

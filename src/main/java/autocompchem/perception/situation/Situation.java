@@ -301,7 +301,8 @@ public class Situation extends Concept implements Cloneable
                          */
                         private static final long serialVersionUID = 1L;
 
-                        @Override
+                        @SuppressWarnings("unchecked")
+						@Override
                         public Object getValue(ELContext context) {
                             if (vars.containsKey(varName))
                             {

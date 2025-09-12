@@ -175,6 +175,7 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
      * @return the content of this block of data
      */
 
+	@SuppressWarnings("unchecked")
 	public ArrayList<String> getLines()
     {
     	ArrayList<String> list = new ArrayList<String>();
@@ -272,7 +273,8 @@ public class DirectiveData extends NamedData implements IDirectiveComponent,
      * @return the list of lines for a job details file
      */
 
-    public ArrayList<String> toLinesJobDetails()
+    @SuppressWarnings("unchecked")
+	public ArrayList<String> toLinesJobDetails()
     {
       	ArrayList<String> toJD = new ArrayList<String>();
       	

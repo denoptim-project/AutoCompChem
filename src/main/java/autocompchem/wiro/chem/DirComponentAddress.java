@@ -34,7 +34,6 @@ public class DirComponentAddress implements Iterable<DirComponentTypeAndName>,
 	private List<DirComponentTypeAndName> path = 
 			new ArrayList<DirComponentTypeAndName> ();
 	
-	private static final String JSONFIELD = "Path";
 	private static final String TYPENAMESEPARATOR = ":";
 	private static final String PLACESEPARATOR = "|";
 	

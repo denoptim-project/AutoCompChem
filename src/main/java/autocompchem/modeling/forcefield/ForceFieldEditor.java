@@ -38,10 +38,8 @@ import autocompchem.run.Terminator;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberAwareStringComparator;
 import autocompchem.wiro.chem.tinker.TinkerForceFieldHandler;
-import autocompchem.wiro.chem.vibmodule.VibModuleOutputReader;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
-import autocompchem.worker.WorkerFactory;
 
 
 /**
@@ -408,6 +406,11 @@ public class ForceFieldEditor extends Worker
                 	ps.setParameter("VMFILE", vaFiles.get(imol));
                 	ps.setParameter(params.getParameter("INTCOORDBYSMARTS"));
                 	
+                	logger.fatal("Sorry...incomplete implementation. If you "
+                			+ "want this feature, get in contact with the "
+                			+ "development team.");
+                	
+                	/* Code stump
                 	Worker w;
 					try {
 						w = WorkerFactory.createWorker(ps, this.getMyJob());
@@ -416,12 +419,8 @@ public class ForceFieldEditor extends Worker
 								+ "VibModuleOutputHandler");
 					}
                 	VibModuleOutputReader vmoh = (VibModuleOutputReader) w;
-
-                    //TODO make vmoh produce ForceFieldParameterStats 
-                	//ffParStats.addAllFFParams(vmoh.getFFParams());
-                	logger.fatal("Sorry...incomplete implementation. If you "
-                			+ "want this feature, get in contact with the "
-                			+ "development team.");
+                	ffParStats.addAllFFParams(vmoh.getFFParams());
+                	*/
                 }
                 break;
 

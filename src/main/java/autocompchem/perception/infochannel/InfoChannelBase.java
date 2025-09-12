@@ -136,7 +136,6 @@ public class InfoChannelBase
   	{
       	Gson reader = ACCJson.getReader();
       	InfoChannelBase icb = new InfoChannelBase();
-    	ClassLoader cl = reader.getClass().getClassLoader();
         try 
         {
         	for (InputStream is : ResourcesTools.getAllResourceStreams(basepath))

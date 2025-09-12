@@ -275,7 +275,8 @@ public class LogUtilsTest
     /*
      * Utility meant to print some details of the configuration when debugging.
      */
-    private void printContextDetails(LoggerContext ctx) throws Exception
+    @SuppressWarnings("unused")
+	private void printContextDetails(LoggerContext ctx) throws Exception
     {
     	System.out.println("----------------------------------------------");
      	Configuration config = ctx.getConfiguration();
@@ -287,11 +288,10 @@ public class LogUtilsTest
       		Appender appender = config.getAppender(appenderName);
       		System.out.println("Appender "+appender.getName());
       		try {
-          		Method m = appender.getClass().getDeclaredMethod("getFileName", 
-          				null);
+          		Method m = appender.getClass().getDeclaredMethod("getFileName");
           		if (m!=null)
           		{
-          			System.out.println("  FileName:"+m.invoke(appender, null));
+          			System.out.println("  FileName:" + m.invoke(appender));
           		}
       		} catch (Throwable t) {
       			//Nothing

@@ -998,7 +998,6 @@ public class OrcaInputWriter extends ChemSoftInputWriter
 		DirComponentAddress address = new DirComponentAddress();
 		address.addStep(OrcaConstants.BASISSETDIRNAME, 
 				DirectiveComponentType.DIRECTIVE);
-		Set<Directive> dsToRemove = new HashSet<Directive>();
 		for (IDirectiveComponent dc : step.getDirectiveComponents(address))
 		{
 			if (!dc.getComponentType().equals(DirectiveComponentType.DIRECTIVE))

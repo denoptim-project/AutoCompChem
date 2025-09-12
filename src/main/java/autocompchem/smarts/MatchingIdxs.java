@@ -13,6 +13,11 @@ public class MatchingIdxs extends ArrayList<List<Integer>>
 {
 
 	/**
+	 * Version ID
+	 */
+	private static final long serialVersionUID = 3256936417325653948L;
+
+	/**
 	 * Checks if any set of indexes contains more than one entry, meaning that
 	 * a substructure larger than a single atom has been matched.
 	 * @return <code>true</code> is any of the set of indexes contains more

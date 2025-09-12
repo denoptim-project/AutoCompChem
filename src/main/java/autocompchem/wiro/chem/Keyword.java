@@ -233,7 +233,8 @@ public class Keyword extends DirectiveData implements IValueContainer, Cloneable
      * keyword in a job details file
      */
 
-    public String toStringJobDetails()
+    @SuppressWarnings("unchecked")
+	public String toStringJobDetails()
     {
         StringBuilder sb = new StringBuilder();
         if (isLoud)

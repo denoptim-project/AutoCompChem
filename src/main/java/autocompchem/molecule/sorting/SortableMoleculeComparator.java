@@ -31,9 +31,7 @@ public class SortableMoleculeComparator implements Comparator<SortableMolecule>
     @Override
     public int compare(SortableMolecule a, SortableMolecule b)
     {
-        final int FIRST = 1;
         final int EQUAL = 0;
-        final int LAST = -1;
 
         int res = EQUAL;
 

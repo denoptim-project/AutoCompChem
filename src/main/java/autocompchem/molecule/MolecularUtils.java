@@ -42,6 +42,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IBond.Order;
+import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
@@ -232,7 +233,7 @@ public class MolecularUtils
                 {
                     if (mol.getConnectedBondsCount(atm) == 3)
                     {
-                        if (atm.getFlag(CDKConstants.ISAROMATIC))
+                        if (atm.getFlag(IChemObject.AROMATIC))
                         {
                             int n = numOfBondsWithBO(atm,mol,"DOUBLE");
                             if (n == 0)

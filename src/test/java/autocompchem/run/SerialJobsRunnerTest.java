@@ -60,14 +60,6 @@ public class SerialJobsRunnerTest
     @TempDir 
     protected File tempDir;
     
-    // The ingredients to bake a perceptron
-    private ICircumstance c = new MatchText("Iteration 3",
-    		InfoChannelType.LOGFEED);
-    private Action a = new Action(ActionType.STOP, ActionObject.PARALLELJOB);
-    private Situation s = new Situation("SituationType","TestSituation", 
-    		new ArrayList<ICircumstance>(Arrays.asList(c)),a);
-
-
 //-----------------------------------------------------------------------------
 
     /*

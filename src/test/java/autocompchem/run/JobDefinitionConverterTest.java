@@ -19,7 +19,6 @@ package autocompchem.run;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -30,8 +29,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.ParameterConstants;
 import autocompchem.files.ACCFileType;
-import autocompchem.worker.DummyWorker;
-import autocompchem.worker.WorkerConstants;
 
 
 /**

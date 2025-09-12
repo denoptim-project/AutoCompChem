@@ -37,11 +37,9 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.datacollections.NamedData;
-import autocompchem.datacollections.NamedData.NamedDataType;
 import autocompchem.files.FileUtils;
 import autocompchem.io.IOtools;
 import autocompchem.utils.NumberUtils;
-import autocompchem.worker.WorkerConstants;
 
 
 /**
@@ -279,7 +277,8 @@ public class JobTest
     
 //------------------------------------------------------------------------------
     
-    @Test
+    @SuppressWarnings("serial")
+	@Test
     public void testGetExposedData() 
     {
     	Job job = new Job();
@@ -422,7 +421,8 @@ public class JobTest
     
 //------------------------------------------------------------------------------
     
-    @Test
+    @SuppressWarnings("serial")
+	@Test
     public void testGetExposedData_nestedJobs() 
     {
     	Job containerJob = new Job();

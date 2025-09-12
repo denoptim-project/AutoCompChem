@@ -422,7 +422,6 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         for (int i=0; i<nAtms; i++)
         {
             IAtom a = mol.getAtom(i);
-            List<IAtom> nbrs = mol.getConnectedAtomsList(a);
             for (int j=(i+1); j<nAtms; j++)
             {
                 IAtom b = mol.getAtom(j);

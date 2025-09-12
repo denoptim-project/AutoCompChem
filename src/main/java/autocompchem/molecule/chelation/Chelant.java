@@ -31,17 +31,17 @@ public class Chelant
     private String name;
 
     //Molecular representation
-    private IAtomContainer mol;
+    private IAtomContainer ligand;
     
     //Denticity
     private int denticity;
 
 //------------------------------------------------------------------------------
 
-    public Chelant(String name, IAtomContainer mol, int denticity)
+    public Chelant(String name, IAtomContainer ligand, int denticity)
     {
         this.name = name;
-        this.mol = mol;
+        this.ligand = ligand;
         this.denticity = denticity;
     }
 
@@ -66,6 +66,13 @@ public class Chelant
         String s = "Chelant [name: " + name + "; denticity:" + denticity + "] ";
         return s;
     }
+
+//------------------------------------------------------------------------------
+
+	public IAtomContainer getLigand() 
+	{
+		return ligand;
+	}
 
 //------------------------------------------------------------------------------
 }

@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
@@ -1067,7 +1066,6 @@ public class ZMatrixHandler extends AtomContainerInputProcessor
             }
         }
         Collections.sort(candidates, new ZAtomCandidateComparator());
-        int result = 0;
         try 
         {
             mol.indexOf(candidates.get(0).getAtom());

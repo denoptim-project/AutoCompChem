@@ -234,7 +234,6 @@ public class ActionApplierTest
       	parentJob.addStep(step1);
       	parentJob.addStep(step2);
       	parentJob.addStep(step3);
-      	List<Job> jobs = new ArrayList<>(Arrays.asList(parentJob));
       	
       	// Define the action that adds a pre-refinement workflow
       	Job pre1 = JobFactory.createJob(SoftwareId.ACC);

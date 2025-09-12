@@ -38,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import autocompchem.io.IOtools;
-import autocompchem.utils.StringUtils;
 
 
 /**
