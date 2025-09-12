@@ -234,7 +234,6 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 		ZMatrix originalZMat = zmh.makeZMatrix(iac, null);
 		
 		// Convert conformational coordinates into torsional steps
-		// WARNING: assumption that we have only torsional degrees of freedom!
 		if (!confSpace.containsOnlyTorsions())
 		{
 			String msgTors = "Can only generate conformers using "
@@ -280,8 +279,8 @@ public class ConformersGenerator extends AtomContainerInputProcessor
 		        	int fold = coord.getFold();
 	        		if (fold == 0 || (steps.length == 1 && steps[0] == 0))
 		        	{
-		        		// Just in case that for some reason we have coordinates that 
-		        		// are actually not doing anything.
+		        		// Just in case that for some reason we have coordinates  
+		        		// that are actually not doing anything.
 	        			logger.info("Ignoring ineffective coordinate with fold="
 	        					+ fold + " and steps " 
 	        					+ Arrays.toString(steps) + ".");
@@ -372,9 +371,23 @@ public class ConformersGenerator extends AtomContainerInputProcessor
         	for (ConformationalCoordinate coord : sortedCoords)
             {
         		double step = steps.get(i);
-        		// WARNING assumption we have only two atoms
-        		int atmA = coord.getAtomIDs().get(0);
-        		int atmB = coord.getAtomIDs().get(1);
+        		// Torsions may be defined by two or four atoms
+
+        		int atmA;
+        		int atmB;
+        		if (coord.getNumberOfIDs()==2)
+        		{
+            		atmA = coord.getAtomIDs().get(0);
+            		atmB = coord.getAtomIDs().get(1);
+        		} else if (coord.getNumberOfIDs()==4) {
+            		atmA = coord.getAtomIDs().get(1);
+            		atmB = coord.getAtomIDs().get(2);
+        		} else {
+	        		throw new IllegalArgumentException("Expecting torsional "
+	        				+ "degrees of freedom defined by either two or "
+	        				+ "four atoms, but found " + coord.getNumberOfIDs() 
+	        				+ " atoms.");
+        		}
         		for (ZMatrixAtom za : editedZMat.findAllTorsions(atmA, atmB))
         		{
         			za.getIC(2).setValue(za.getIC(2).getValue() + step);

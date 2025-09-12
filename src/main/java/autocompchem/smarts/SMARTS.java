@@ -2,6 +2,8 @@ package autocompchem.smarts;
 
 import java.util.Objects;
 
+import autocompchem.utils.StringUtils;
+
 /*
  *   Copyright (C) 2016  Marco Foscato
  *
@@ -108,19 +110,25 @@ public class SMARTS
     /**
      * Evaluates if the SMARTS query is a single-atom SMARTS. A single-atom
      * SMARTS is a query that is meant to match groups of atoms not larger than
-     * one atom. 
+     * one atom. We ignore the old-version SMARTS that allowed to use single 
+     * characters without square brackets (e.g., "C" is not considered a valid 
+     * SMARTS anymore).
      * @param s the string to analyze
      * @return <code>true</code> if the string looks like a single atom SMARTS
      */
 
     public static boolean isSingleAtomSMARTS(String s)
     {
-        boolean res = false;
-        if (s.trim().startsWith("[") && s.trim().endsWith("]"))
+    	s = s.trim();
+        String firstBraketedCpontent = StringUtils.getEnclosedContent(s,
+        		"[".charAt(0), "]".charAt(0));
+
+        if (firstBraketedCpontent!=null && s.equals(
+        		"[" + firstBraketedCpontent + "]"))
         {
-            res = true;
+            return true;
         }
-        return res;
+        return false;
     }
 
 //------------------------------------------------------------------------------

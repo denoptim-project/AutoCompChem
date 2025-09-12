@@ -21,7 +21,7 @@
     "key": "SMARTS",
     "casedKey": "SMARTS",
     "type": "<String>",
-    "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as a single SMARTS until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as SMARTS. The order of the SMARTS is retained."
+    "doc": "Defines one or more rules for identifying atom tuples and decorate them with annotations. Rules are separated by newline characters (i.e., each rule is defined in a single line). In each line, each space-separated string (i.e., a word) is interpreted as following: each word is interpreted as a single SMARTS until a word is found that corresponds to any keyword (keywords are defined by parameters VALUEDKEYWORDS and BOOLEANKEYWORDS, see the corresponding documentation). Once the first keyword is found no more words will be interpreted as SMARTS. There can be one or more SMARTS, and a single SMARTS can match more than one atom (e.g., [#6]-[#7] to match single-bonded carbon and nitrogen atoms). The order of multiple SMARTS is retained."
   },
   {
     "key": "ATOMIDS",

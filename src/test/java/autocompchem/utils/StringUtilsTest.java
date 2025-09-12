@@ -303,7 +303,29 @@ public class StringUtilsTest
     	result = StringUtils.getParenthesesContent(s);
     	assertNotNull(result);
     	assertEquals("content without end",result);
+    }
+    
+//------------------------------------------------------------------------------
+    
+    @Test
+    public void testGetEnclosedContent() throws Exception
+    {
+    	char openChar = "[".charAt(0);
+    	char closeChar = "%".charAt(0);
     	
+    	String s = "no match";
+    	String result = StringUtils.getEnclosedContent(s, openChar, closeChar);
+    	assertNull(result);
+    	
+    	s = "other [content with [nested%%";
+    	result = StringUtils.getEnclosedContent(s, openChar, closeChar);
+    	assertNotNull(result);
+    	assertEquals("content with [nested%",result);
+    	
+    	s = "other [content without end";
+    	result = StringUtils.getEnclosedContent(s, openChar, closeChar);
+    	assertNotNull(result);
+    	assertEquals("content without end",result);
     }
     
 //------------------------------------------------------------------------------

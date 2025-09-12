@@ -362,7 +362,25 @@ public class StringUtils
     
     public static String getParenthesesContent(String input) 
     {
-        int start = input.indexOf('(');
+    	return getEnclosedContent(input, "(".charAt(0), ")".charAt(0));
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Extract text in between two given characters. Ignores nested instances of
+     *  the two characters.
+     * @param input the text from which to extract the result.
+     * @param openingChar the character that opens the substring to extract
+     * @param closingChar the character that closes the substring to extract.
+     * @return the string contained in the first pair of opening and closing 
+     * characters, or <code>null</code> if no pair is found.
+     */
+    
+    public static String getEnclosedContent(String input, char openingChar, 
+    		char closingChar) 
+    {
+        int start = input.indexOf(openingChar);
         if (start == -1) return null;
         
         int count = 0;
@@ -371,8 +389,8 @@ public class StringUtils
         boolean foundEnd = false;
         for (int i = start; i < input.length(); i++) 
         {
-            if (input.charAt(i) == '(') count++;
-            if (input.charAt(i) == ')') count--;
+            if (input.charAt(i) == openingChar) count++;
+            if (input.charAt(i) == closingChar) count--;
             if (count == 0) {
             	foundEnd = true;
                 end = i;

@@ -7,12 +7,15 @@ function not_passed() {
 
 if [ ! -f "cli28.log" ] ; then not_passed $LINENO ; fi
 
-if ! grep -q -i "(#Conformers = 2)" "cli28.log" ; then not_passed $LINENO ; fi
+if ! grep -q -i "(#Conformers = 8)" "cli28.log" ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "ConformationalCoordinate" "cli28.log")
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
 
 if [ ! -f "cli28_conformers.sdf" ] ; then not_passed $LINENO ; fi
 
 n=0; n=$(grep -c -i "\$\$\$\$" "cli28_conformers.sdf")
-if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+if [ 8 != "$n" ] ; then not_passed $LINENO ; fi
 
 
 
