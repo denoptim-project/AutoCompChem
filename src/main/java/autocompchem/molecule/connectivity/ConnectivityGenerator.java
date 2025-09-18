@@ -76,6 +76,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         RICALCULATECONNECTIVITYTASK = 
                 Task.make(RICALCULATECONNECTIVITYTASKNAME);
     }
+    
     /**
      * String defining the task of adding bonds on a specific element
      */
@@ -90,6 +91,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         ADDBONDSFORSINGLEELEMENTTASK = 
                 Task.make(ADDBONDSFORSINGLEELEMENTTASKNAME);
     }
+    
     /**
      * String defining the task of imposing a connectivity table to a set of 
      * atoms
@@ -105,6 +107,7 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
     static {
         IMPOSECONNECTIONTABLETASK = Task.make(IMPOSECONNECTIONTABLETASKNAME);
     }
+    
     /**
      * String defining the task of checking consistency between bond lengths 
      * and connectivity table
@@ -118,6 +121,19 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
     public static final Task CHECKBONDLENGTHSTASK;
     static {
         CHECKBONDLENGTHSTASK = Task.make(CHECKBONDLENGTHSTASKNAME);
+    }
+    
+    /**
+     * String defining the task about producing the map of nearest neighbors
+     */
+    public static final String NEARESTNEIGHBORMAPTASKNAME = "makeNearestNeighborMap";
+
+    /**
+     * Task about about producing the map of nearest neighbors
+     */
+    public static final Task NEARESTNEIGHBORMAPTASK;
+    static {
+    	NEARESTNEIGHBORMAPTASK = Task.make(NEARESTNEIGHBORMAPTASKNAME);
     }
 
 //------------------------------------------------------------------------------
@@ -136,7 +152,8 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
                 Arrays.asList(RICALCULATECONNECTIVITYTASK,
                         ADDBONDSFORSINGLEELEMENTTASK,
                         IMPOSECONNECTIONTABLETASK, 
-                        CHECKBONDLENGTHSTASK)));
+                        CHECKBONDLENGTHSTASK,
+                        NEARESTNEIGHBORMAPTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -228,6 +245,8 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         	imposeConnectionTable(iac);
         } else if (task.equals(CHECKBONDLENGTHSTASK)) {
         	checkBondLengthsAgainstConnectivity(iac, i);
+        } else if (task.equals(NEARESTNEIGHBORMAPTASK)) {
+        	makeNearestNeighborMap(iac, i);
         } else {
         	dealWithTaskMismatch();
         }
@@ -244,6 +263,9 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
      * occurring after any molecular modeling that does not take into account 
      * connectivity in its input (e.g., any quantum mechanical driven 
      * molecular modeling engine).
+     * @param iac the atom container to alter.
+     * @param i the index used to identify the given atom container in log 
+     * messages.
      */
 
     public void checkBondLengthsAgainstConnectivity(IAtomContainer iac, int i)
@@ -273,6 +295,26 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
         {
             String molID = "mol-"+i;
             exposeOutputData(new NamedData(molID, result));
+        }
+    }
+    
+//------------------------------------------------------------------------------
+    
+    /**
+     * Generates the map of nearest neighbor atoms according to the connectivity
+     * defined in the given atom container. Does not alter or change the 
+     * connectivity in the given atom container.
+     * @param iac the atom container to alter.
+     * @param i the index used to identify the given atom container in log 
+     * messages.
+     */
+    public void makeNearestNeighborMap(IAtomContainer iac, int i)
+    {
+    	NearestNeighborMap nnm = new NearestNeighborMap(iac);
+    	if (exposedOutputCollector != null)
+        {
+            String molID = NEARESTNEIGHBORMAPTASKNAME.toUpperCase() + "_mol-"+i;
+            exposeOutputData(new NamedData(molID, nnm));
         }
     }
       
@@ -397,6 +439,8 @@ public class ConnectivityGenerator extends AtomContainerInputProcessor
      * This method works on all the atoms of the molecule (ignores any given 
      * target element symbol), but used the tolerance configured in this worker.
      * @param iac the atom container to alter.
+     * @param i the index used to identify the given atom container in log 
+     * messages.
      */
 
     public void ricalculateConnectivity(IAtomContainer iac, int i)

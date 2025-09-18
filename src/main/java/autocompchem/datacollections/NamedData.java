@@ -27,6 +27,7 @@ import autocompchem.modeling.atomtuple.AnnotatedAtomTupleList;
 import autocompchem.modeling.basisset.BasisSet;
 import autocompchem.modeling.constraints.ConstraintsSet;
 import autocompchem.molecule.conformation.ConformationalSpace;
+import autocompchem.molecule.connectivity.NearestNeighborMap;
 import autocompchem.molecule.intcoords.zmatrix.ZMatrix;
 import autocompchem.molecule.vibrations.NormalMode;
 import autocompchem.molecule.vibrations.NormalModeSet;
@@ -109,7 +110,8 @@ public class NamedData implements Cloneable
         PARAMETERSTORAGE, 
         CONSTRAINTSSET,
         ANNOTATEDATOMTUPLELIST,
-        CONFORMATIONALSPACE};
+        CONFORMATIONALSPACE,
+        NEARESTNEIGHBORMAP};
         
     /**
      * List of types that can be serailized to JSON
@@ -133,7 +135,8 @@ public class NamedData implements Cloneable
             		NamedDataType.SITUATIONBASE,
             		NamedDataType.INFOCHANNEL,
             		NamedDataType.INFOCHANNELBASE,
-            		NamedDataType.CONFORMATIONALSPACE));
+            		NamedDataType.CONFORMATIONALSPACE,
+            		NamedDataType.NEARESTNEIGHBORMAP));
     // NB: when extending the above list, remember to add the corresponding case
     // in the NamedDataDeserializer!
     
@@ -558,6 +561,10 @@ public class NamedData implements Cloneable
     		case ("ConformationalSpace"):
     			tp = NamedDataType.CONFORMATIONALSPACE;
     			break;
+    			
+    		case ("NearestNeighborMap"):
+    			tp = NamedDataType.NEARESTNEIGHBORMAP;
+    			break;
     		
     		default:
     			tp = NamedDataType.UNDEFINED;
@@ -697,6 +704,10 @@ public class NamedData implements Cloneable
 	        	
 	        case INFOCHANNELBASE:
 	        	cVal = ((InfoChannelBase) value).clone();
+	        	break;
+	        	
+	        case NEARESTNEIGHBORMAP:
+	        	cVal = ((NearestNeighborMap) value).clone();
 	        	break;
 	        	
 	        default:
@@ -899,6 +910,10 @@ public class NamedData implements Cloneable
 				case CONFORMATIONALSPACE:
 					joValue = context.deserialize(je, ConformationalSpace.class);
 					break;
+				case NEARESTNEIGHBORMAP:
+					joValue = context.deserialize(je, NearestNeighborMap.class);
+					break;
+					
 				default:
 					System.err.println("WARINING: attempt to deserialize "
 							+ "non-JSONable type '" + joType + "'");

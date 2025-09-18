@@ -44,7 +44,7 @@ import autocompchem.io.ACCJson;
  * @author Marco Foscato
  */
 
-public class ConnectivityTableTest 
+public class NearestNeighborMapTest 
 {
 
     private IChemObjectBuilder chemBuilder = 

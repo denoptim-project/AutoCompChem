@@ -1,0 +1,33 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "t159-mol.xcontrol" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *\$ffnb" t159-mol.xcontrol)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *nb =" t159-mol.xcontrol)
+if [ 61 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *nb =.*:[0-9]*, [0-9]*, [0-9]*, [0-9]*$" t159-mol.xcontrol)
+if [ 11 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *nb = 1:2, 3, 4, 7, 8, 15$" t159-mol.xcontrol)
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *distance: " t159-mol.xcontrol)
+if [ 6 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *angle: " t159-mol.xcontrol)
+if [ 15 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0;n=$(grep -c "^ *dihedral: " t159-mol.xcontrol)
+if [ 20 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "t159.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1
