@@ -19,7 +19,8 @@
   },
   {
     "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
-    "tag": "generation of annotated tuple of atom identifiers",
+    "tag": "generation of annotated lists of atom identifiers",
+    "task": "generateAtomSets",
     "ignorableWorkers": [
       "autocompchem.modeling.AtomLabelsGenerator",
       "autocompchem.molecule.AtomContainerInputProcessor"
@@ -37,6 +38,10 @@
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "outFormat",
+      "setProperties"
+    ]
   }
 ]

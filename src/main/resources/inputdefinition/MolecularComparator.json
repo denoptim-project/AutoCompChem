@@ -13,6 +13,11 @@
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
-    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+    "tag": "the importing of chemical objects (e.g., molecular geometries)",
+    "ignorableItems": [
+      "outFile",
+      "outFormat",
+      "setProperties"
+    ]
   }
 ]
