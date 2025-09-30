@@ -451,7 +451,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
             // The behavior in presence of a single multi-atom SMARTS is 
             // that of an  ordered list of single-atom SMARTS
             boolean useMultiAtomMatches = false;
-            if (atmIdxsForMR.size()==0)
+            if (atmIdxsForMR.size()==1)
             {
 	            for (MatchingIdxs mIdxs : atmIdxsForMR)
 	            {
