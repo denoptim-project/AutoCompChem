@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function not_passed() {
+  echo "NOT Passed: check condition leading to line '$1' of '$0'"
+  exit -1
+}
+
+if [ ! -f "cli29.log" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "mol-0_hit-" "cli29.log")
+if [ 2 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i "list A: 0-1,13,24-27" "cli29.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+n=0; n=$(grep -c -i " 16-23,34-37,49-56,69-72,76-79 list B" "cli29.log")
+if [ 1 != "$n" ] ; then not_passed $LINENO ; fi
+
+if grep -q 'Termination status: 0' "cli29.log" ; then echo Passed ; exit 0 ; fi
+not_passed $LINENO
+exit -1

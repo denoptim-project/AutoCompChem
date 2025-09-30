@@ -186,7 +186,8 @@ public class ConformationalSpaceGenerator extends AtomTupleGenerator
         }
         
     	ConformationalSpace confSpace = new ConformationalSpace();
-    	List<AnnotatedAtomTuple> tuples = createTuples(mol, rules, labels);
+    	List<AnnotatedAtomTuple> tuples = createTuples(mol, rules, labels, 
+    			Mode.TUPLES);
     	for (AnnotatedAtomTuple tuple : tuples)
     	{
     		confSpace.add(new ConformationalCoordinate(tuple));

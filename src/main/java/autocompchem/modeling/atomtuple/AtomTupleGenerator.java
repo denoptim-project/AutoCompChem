@@ -36,7 +36,7 @@ import autocompchem.worker.WorkerFactory;
 
 
 /**
- * Tool to generate lists (i.e., tuple) of atom pointers/identifiers 
+ * Tool to generate tuples (i.e., ordered lists) of atom pointers/identifiers 
  * decorated by attributes,
  * i.e., {@link AnnotatedAtomTuple}.
  * The rules on which atoms to collect, and in which order, and on what 
@@ -89,6 +89,24 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     	GENERATEATOMTUPLESTASK = Task.make(GENERATEATOMTUPLESTASKNAME);
     }
 
+    /**
+     * String defining the task of generating tuples of atoms
+     */
+    public static final String GENERATEATOMSETSTASKNAME = "generateAtomSets";
+
+    /**
+     * Task about generating tuples of atoms
+     */
+    public static final Task GENERATEATOMSETSTASK;
+    static {
+    	GENERATEATOMSETSTASK = Task.make(GENERATEATOMSETSTASKNAME);
+    }
+    
+    public enum Mode {
+    	TUPLES,
+    	SETS
+    }
+    
 //-----------------------------------------------------------------------------
 	
     /**
@@ -102,7 +120,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     @Override
     public Set<Task> getCapabilities() {
         return Collections.unmodifiableSet(new HashSet<Task>(
-             Arrays.asList(GENERATEATOMTUPLESTASK)));
+             Arrays.asList(GENERATEATOMTUPLESTASK,
+            		 GENERATEATOMSETSTASK)));
     }
 
 //------------------------------------------------------------------------------
@@ -236,7 +255,8 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	@Override
 	public IAtomContainer processOneAtomContainer(IAtomContainer iac, int i) 
 	{
-    	if (task.equals(GENERATEATOMTUPLESTASK))
+    	if (task.equals(GENERATEATOMTUPLESTASK) ||
+    			task.equals(GENERATEATOMSETSTASK))
     	{
 	        // If needed, generate atom labels
 	    	List<String> labels = null;
@@ -250,9 +270,16 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	    		}
 	        }
 	        
-	        // Now generate the tuple, possibly passing the atom labels data
-	        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels);
-	        logger.info(StringUtils.mergeListToString(tuples, 
+	        Mode mode = Mode.TUPLES;
+	        if (task.equals(GENERATEATOMSETSTASK))
+	        {
+	        	mode = Mode.SETS;
+	        }
+	        
+	        // Now generate the tuple/sets, possibly passing the atom labels data
+	        List<AnnotatedAtomTuple> tuples = createTuples(iac, rules, labels,
+	        		mode);
+	        logger.debug(StringUtils.mergeListToString(tuples, 
 	        			System.getProperty("line.separator")));
 	        AnnotatedAtomTupleList aatl = new AnnotatedAtomTupleList();
 	        if (tuples.size()>0)
@@ -268,7 +295,9 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	    		for (AnnotatedAtomTuple aat : aatl)
 	    		{
 	    			jj++;
-	    			sb.append("mol-").append(i).append("_tuple-").append(jj)
+	    			sb.append("mol-").append(i).append("_")
+	    				.append(mode.toString().toLowerCase())
+	    				.append("-").append(jj)
 	    				.append(": ").append(aat)
 	    				.append(System.getProperty("line.separator"));
 	    		}
@@ -278,8 +307,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
 	        if (exposedOutputCollector != null)
 	    	{
 				String molID = "mol-"+i;
-		        exposeOutputData(new NamedData(
-		        		GENERATEATOMTUPLESTASK.ID + "_" + molID, aatl));
+		        exposeOutputData(new NamedData(task.ID + "_" + molID, aatl));
 	    	}
 		} else {
 			dealWithTaskMismatch();
@@ -329,7 +357,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
     public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
     		List<AtomTupleMatchingRule> rules)
     {
-    	return createTuples(mol, rules, null);
+    	return createTuples(mol, rules, null, Mode.TUPLES);
     }
     
 //------------------------------------------------------------------------------
@@ -340,10 +368,15 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
      * @param mol the atom container for which we want to create atom tuples.
      * @param rules the tuple-defining rules to apply.
      * @param labels atom labels. Ignored if <code>null</code>.
+     * @param mode defines how to combine atoms to generated tuples or sets.
+     * In TUPLES mode, the atoms are collected in combinations of 
+     * ordered and fixed-size lists.
+     * In SETS mode, the atoms are collapsed into a single list that does not 
+     * include duplicates.
      * @return the list of tuples.
      */
     public static List<AnnotatedAtomTuple> createTuples(IAtomContainer mol,
-    		List<AtomTupleMatchingRule> rules, List<String> labels)
+    		List<AtomTupleMatchingRule> rules, List<String> labels, Mode mode)
     {
     	List<AnnotatedAtomTuple> result = new ArrayList<AnnotatedAtomTuple>();
     	
@@ -396,7 +429,7 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
         	allIDsForEachMR.putAll(matchesFromMR);
         }
         
-        //Define annotated tuples according to the matched atom
+        //Define annotated tuples/sets according to the matched atom
         for (AtomTupleMatchingRule r : rules)
         {
         	String key = r.getRefName();
@@ -415,52 +448,83 @@ public class AtomTupleGenerator extends AtomContainerInputProcessor
             	continue;
             }
             
-            // Allow multi-atom SMARTS to behave as an ordered list of 
-            // single-atom SMARTS. However, we cannot mix the two approaches.
-            boolean useMultiAtomMAtches = false;
-            for (MatchingIdxs mIdxs : atmIdxsForMR)
+            // The behavior in presence of a single multi-atom SMARTS is 
+            // that of an  ordered list of single-atom SMARTS
+            boolean useMultiAtomMatches = false;
+            if (atmIdxsForMR.size()==0)
             {
-            	if (mIdxs.hasMultiCenterMatches())
-            	{
-            		useMultiAtomMAtches = true;
-            		break;
-            	}
-            }
-            // Then we choose what to iterate over according to whether we 
-            // have single-/multi-atom matches
-            Iterator<List<IAtom>> iter = null;
-            List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
-            if (useMultiAtomMAtches)
-            {
-            	if (atmIdxsForMR.size()>1)
-            	{
-            		throw new IllegalArgumentException("ERROR! Only one "
-            				+ "multi-atom SMARTS can be used. Found multiple"
-            				+ "ones in rule '" + key + "'.");
-            	}
-            	for (List<Integer> multiAtomLst : atmIdxsForMR.get(0))
-            	{
-            		List<IAtom> atoms = new ArrayList<IAtom>();
-            		for (Integer idx : multiAtomLst)
-            		{
-            			atoms.add(mol.getAtom(idx));
-            		}
-	            	atmsForMR.add(atoms);
-            	}
-            	iter = atmsForMR.iterator();
-            } else {
 	            for (MatchingIdxs mIdxs : atmIdxsForMR)
 	            {
-	            	List<IAtom> atoms = new ArrayList<IAtom>();
-	            	for (List<Integer> lst : mIdxs)
+	            	if (mIdxs.hasMultiCenterMatches())
 	            	{
-	            		for (Integer idx : lst)
-	            			atoms.add(mol.getAtom(idx));
+	            		useMultiAtomMatches = true;
+	            		break;
 	            	}
-	            	atmsForMR.add(atoms);
 	            }
-	            iter = new ListOfListsCombinations<IAtom>(atmsForMR);
             }
+            
+            // Then we choose what to iterate over when making atom tuples
+            Iterator<List<IAtom>> iter = null;
+            switch (mode) {
+	            case TUPLES:
+	            {
+	            	if (useMultiAtomMatches)
+	                {
+	                    List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
+	                	for (List<Integer> multiAtomLst : atmIdxsForMR.get(0))
+	                	{
+	                		List<IAtom> atoms = new ArrayList<IAtom>();
+	                		for (Integer idx : multiAtomLst)
+	                		{
+	                			atoms.add(mol.getAtom(idx));
+	                		}
+	    	            	atmsForMR.add(atoms);
+	                	}
+	                	iter = atmsForMR.iterator();
+	                } else {
+	                    List<List<IAtom>> atmsForMR = new ArrayList<List<IAtom>>();
+	    	            for (MatchingIdxs mIdxs : atmIdxsForMR)
+	    	            {
+	    	            	List<IAtom> atoms = new ArrayList<IAtom>();
+	    	            	for (List<Integer> lst : mIdxs)
+	    	            	{
+	    	            		for (Integer idx : lst)
+	    	            			atoms.add(mol.getAtom(idx));
+	    	            	}
+	    	            	atmsForMR.add(atoms);
+	    	            }
+	    	            iter = new ListOfListsCombinations<IAtom>(atmsForMR);
+	                }
+	            	break;
+	            }
+	            
+	            case SETS:
+	            {
+	            	// We will iterate over a single item, hence the wrapper
+	            	List<List<IAtom>> wrapper = new ArrayList<List<IAtom>>();
+	            	List<IAtom> allMatchedAtoms = new ArrayList<IAtom>();
+    	            for (MatchingIdxs mIdxs : atmIdxsForMR)
+    	            {
+    	            	for (List<Integer> lst : mIdxs)
+    	            	{
+    	            		for (Integer idx : lst)
+    	            		{
+    	            			IAtom atm = mol.getAtom(idx);
+    	            			if (!allMatchedAtoms.contains(atm))
+    	            				allMatchedAtoms.add(atm);
+    	            		}
+    	            	}
+    	            }
+	            	wrapper.add(allMatchedAtoms);
+    	            iter = wrapper.iterator();
+    	            break;
+	            }
+	            
+	            default:
+	                throw new IllegalStateException(
+	                		"Unrecognized mode of action '" + mode + "'.");
+            }
+            
         	while (iter.hasNext())
         	{
         		List<IAtom> atoms = iter.next();

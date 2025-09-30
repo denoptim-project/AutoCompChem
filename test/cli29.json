@@ -1,0 +1,21 @@
+{
+  "jobType": "ACCJob",
+  "params": [
+    {
+      "reference": "TASK",
+      "value": "getAtomListString"
+    },
+    {
+      "reference": "INPUTGEOMETRIESFILE",
+      "value": "../cli29.sdf"
+    },
+    {
+      "reference": "VERBOSITY",
+      "value": "6"
+    },
+    {
+      "reference": "SMARTS",
+      "value": "[Ru]-[#6] [#8] [#44]~[*] prefix: list A:\n[#6](~[#1])([#1])[#1] suffix: list B4"
+    }
+  ]
+}

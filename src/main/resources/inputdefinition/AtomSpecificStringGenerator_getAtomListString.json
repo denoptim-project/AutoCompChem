@@ -3,13 +3,19 @@
     "key": "IDSEPARATOR",
     "casedKey": "idSeparator",
     "type": "<String>",
-    "doc": "The separator to use between identifiers of tuple's items."
+    "doc": "The separator to use between atom identifiers."
   },
   {
     "key": "FIELDSEPARATOR",
     "casedKey": "fieldSeparator",
     "type": "<String>",
-    "doc": "The separator to use between prefix/suffix and identifiers of tuple's items."
+    "doc": "The separator to use between prefix/suffix and identifiers of atom identifiers."
+  },
+  {
+    "key": "RANGESEPARATOR",
+    "casedKey": "rangeSeparator",
+    "type": "<String>",
+    "doc": "The separator to use between the beginning and the end of a range of identifiers (e.g., the '-' in '1-4')."
   },
   {
     "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",

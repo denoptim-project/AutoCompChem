@@ -96,6 +96,72 @@ public class StringUtils
         }
         return result;
     }
+        
+//------------------------------------------------------------------------------
+
+    /**
+     * Converts a list of integers into a string representation
+     * where consecutive integers are formatted as ranges and non-consecutive 
+     * integers are listed separately.
+     * @param sortedList the naturally sorted list of integers to format
+     * @param idSeparator separator to use between non-consecutive items/ranges
+     * @param rangeSeparator separator to use between the extremes of a range
+     * @return formatted string with ranges (e.g., "1-3,6-7,9" for [1,3,2,9,6,7])
+     */
+    public static String formatIntegerListWithRanges(List<Integer> indexes, 
+            String idSeparator, String rangeSeparator)
+    {
+        List<Integer> sortedList = new ArrayList<Integer>(indexes);
+        Collections.sort(sortedList);
+        if (sortedList == null || sortedList.isEmpty()) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        int start = sortedList.get(0);
+        int end = start;
+        
+        for (int i = 1; i < sortedList.size(); i++) {
+            int current = sortedList.get(i);
+            
+            // Check if current number is consecutive to the previous one
+            if (current == end + 1) {
+                end = current;
+            } else {
+                // End of current range, append it to result
+                if (sb.length() > 0) {
+                    sb.append(idSeparator);
+                }
+                
+                if (start == end) {
+                    // Single number
+                    sb.append(start);
+                } else {
+                    // Range
+                    sb.append(start).append(rangeSeparator).append(end);
+                }
+                
+                // Start new range
+                start = current;
+                end = current;
+            }
+        }
+        
+        // Append the last range
+        if (sb.length() > 0) {
+            sb.append(idSeparator);
+        }
+        
+        if (start == end) {
+            // Single number
+            sb.append(start);
+        } else {
+            // Range
+            sb.append(start).append(rangeSeparator).append(end);
+        }
+        
+        return sb.toString();
+    }
     
 //------------------------------------------------------------------------------
 

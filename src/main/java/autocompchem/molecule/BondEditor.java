@@ -138,10 +138,10 @@ public class BondEditor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Parses the formatted text defining {@link BondEditingRule} and adds
+     * Parses the formatted text defining {@link BondEditingRuled} and adds
      * the resulting rules to this instance.
      * @param text the text (i.e., multiple lines) to be parsed into 
-     * {@link BondEditingRule}s.
+     * {@link BondEditingRuled}s.
      */
 
     protected void parseRules(String text)
@@ -154,10 +154,10 @@ public class BondEditor extends AtomContainerInputProcessor
 //------------------------------------------------------------------------------
 
     /**
-     * Parses the formatted text defining {@link BondEditingRule} and adds
+     * Parses the formatted text defining {@link BondEditingRuled} and adds
      * the resulting rules to this instance.
      * @param lines the lines of text to be parsed into 
-     * {@link BondEditingRule}s.
+     * {@link BondEditingRuled}s.
      */
 
     protected void parseRules(List<String> lines)

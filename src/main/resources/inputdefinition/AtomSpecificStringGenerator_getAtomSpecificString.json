@@ -1,0 +1,36 @@
+[
+  {
+    "key": "IDSEPARATOR",
+    "casedKey": "idSeparator",
+    "type": "<String>",
+    "doc": "The separator to use between atom identifiers."
+  },
+  {
+    "key": "FIELDSEPARATOR",
+    "casedKey": "fieldSeparator",
+    "type": "<String>",
+    "doc": "The separator to use between prefix/suffix and identifiers of atom identifiers."
+  },
+  {
+    "embeddedWorker": "autocompchem.modeling.atomtuple.AtomTupleGenerator",
+    "tag": "generation of annotated tuple of atom identifiers",
+    "ignorableWorkers": [
+      "autocompchem.modeling.AtomLabelsGenerator",
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
+  },
+  {
+    "embeddedWorker": "autocompchem.modeling.AtomLabelsGenerator",
+    "tag": "generation of atom labels",
+    "ignorableItems": [
+      "separator"
+    ],
+    "ignorableWorkers": [
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
+  },
+  {
+    "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
+    "tag": "the importing of chemical objects (e.g., molecular geometries)"
+  }
+]

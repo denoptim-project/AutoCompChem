@@ -18,6 +18,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
+import autocompchem.modeling.atomtuple.AtomTupleGenerator.Mode;
 import autocompchem.smarts.SMARTS;
 import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
@@ -258,6 +259,43 @@ public class AtomTupleGeneratorTest
 			s = s + key + "=" + tuple.getValueOfAttribute(key)+ ",";
 		}
 		return s;
+    }
+
+//------------------------------------------------------------------------------
+
+    @Test
+    public void testCreateTuples_setsMode() throws Exception
+    {
+    	List<AtomTupleMatchingRule> rules = 
+    			new ArrayList<AtomTupleMatchingRule>();
+    	AtomTupleMatchingRule rule1 = new AtomTupleMatchingRule("idBased_1", 
+    			new int[] {1, 2, 3, 7});
+    	rules.add(rule1);
+    	AtomTupleMatchingRule rule3 = new AtomTupleMatchingRule("smBased_1", 
+    			new SMARTS[]{new SMARTS("[#1,#6]"), new SMARTS("[#6,#7,#8]")});
+    	rules.add(rule3);
+    	AtomTupleMatchingRule rule4 = new AtomTupleMatchingRule("smBased_2", 
+    			new SMARTS[]{new SMARTS("[#1][#6][Cl]"), new SMARTS("[#8]"),
+    					new SMARTS("[Mo]~[#7]")});
+    	rules.add(rule4);
+    	
+        /**
+         * 
+         * <pre>
+         *      H      H
+         *     /      /
+         * Cl-C-O-Mo=N-F
+         *     \
+         *      H
+         * </pre>
+         */
+    	List<AnnotatedAtomTuple> tuples = AtomTupleGenerator.createTuples(
+    			getTestIAtomContainer(), rules, null, Mode.SETS);
+    
+    	assertEquals(3, tuples.size());
+    	assertEquals(4, tuples.get(0).getNumberOfIDs());
+    	assertEquals(6, tuples.get(1).getNumberOfIDs());
+    	assertEquals(7, tuples.get(2).getNumberOfIDs());
     }
     
 //------------------------------------------------------------------------------
