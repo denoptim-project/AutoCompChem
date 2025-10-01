@@ -3,7 +3,9 @@ package autocompchem.modeling;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -17,6 +19,7 @@ import autocompchem.modeling.atomtuple.AtomTupleGenerator;
 import autocompchem.molecule.AtomContainerInputProcessor;
 import autocompchem.run.Job;
 import autocompchem.text.TextBlock;
+import autocompchem.utils.NumberUtils;
 import autocompchem.utils.StringUtils;
 import autocompchem.worker.Task;
 import autocompchem.worker.Worker;
@@ -52,7 +55,12 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
      * Separator between the extremes of a range (e.g., the '-' in '1-3')
      */
     private String rangeSeparator = "";
-
+    
+    /**
+     * boolean defining whether to format ranges (e.g., 1-4) or not (e.g., 1,2,3,4).
+     */
+    private boolean formatRanges = true;
+    
     /**
      * String defining the task of generating tuples of atoms
      */
@@ -153,6 +161,12 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
         	rangeSeparator = params.getParameter("RANGESEPARATOR")
         		.getValueAsString();
         }
+        
+        if (params.contains("RANGEFORMAT"))
+        {
+        	formatRanges = StringUtils.parseBoolean(params.getParameter(
+        			"RANGEFORMAT").getValueAsString(), true);
+        }
     }
     
 //-----------------------------------------------------------------------------
@@ -219,7 +233,8 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
 	    				if (task.equals(GETATOMLISTSTRINGTASK))
 	    	    		{
 	    					stringsForThisMol.add(convertTupleToAtomListString(
-	    						tuple));
+	    						tuple, idSeparator, fieldSeparator,
+	    						rangeSeparator, formatRanges));
 	    	    		} else {
 	    					stringsForThisMol.add(convertTupleToAtomSpecString(
 	    						tuple));
@@ -307,20 +322,6 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
     	
     	return sb.toString();
     }
-	
-  //------------------------------------------------------------------------------
-      
-    /**
-     * Generated the string representation of the tuple using the separators 
-     * configured in this instance.
-     * @param tuple the atom tuple to process
-     * @return the resulting string.
-     */
-    public String convertTupleToAtomListString(AnnotatedAtomTuple tuple)
-    {
-      	return convertTupleToAtomListString(tuple, idSeparator, fieldSeparator,
-      			rangeSeparator);
-    }
       
 //------------------------------------------------------------------------------
       
@@ -333,16 +334,54 @@ public class AtomSpecificStringGenerator extends AtomContainerInputProcessor
      * @return the resulting string.
      */
     public static String convertTupleToAtomListString(AnnotatedAtomTuple tuple,
-      		String idSeparator, String fieldSeparator, String rangeSeparator)
+      		String idSeparator, String fieldSeparator, String rangeSeparator,
+      		boolean collapseRanges)
     {
       	String ids = null;
       	if (tuple.getAtmLabels()!=null)
       	{
-      		ids = StringUtils.mergeListToString(tuple.getAtmLabels(), 
-      				idSeparator, true);
+			boolean idsAreIndxes = true;
+			for (String label : tuple.getAtmLabels())
+			{
+				if (!NumberUtils.isParsableToInt(label))
+				{
+					idsAreIndxes = false;
+					break;
+				}
+			}
+			List<Integer> labelsAsInts = null;
+			if (idsAreIndxes)
+			{
+				labelsAsInts = tuple.getAtmLabels().stream()
+					.map(Integer::parseInt)
+					.collect(Collectors.toList());
+				Collections.sort(labelsAsInts);
+				// For the integers to be used as indexes, we need to make sure
+				// there are no duplicates
+				Set<Integer> labelsAsIntsSet = new HashSet<Integer>(labelsAsInts);
+				if (labelsAsIntsSet.size() != labelsAsInts.size())
+				{
+					idsAreIndxes = false;
+				}
+			}
+
+			if (collapseRanges && idsAreIndxes)
+      		{
+	      		ids = StringUtils.formatIntegerListWithRanges(labelsAsInts, 
+	      				idSeparator, rangeSeparator);
+      		} else {
+				ids = StringUtils.mergeListToString(tuple.getAtmLabels(), 
+						idSeparator, true);
+      		}
       	} else {
-      		ids = StringUtils.formatIntegerListWithRanges(tuple.getAtomIDs(), 
-      				idSeparator, rangeSeparator);
+      		if (collapseRanges)
+      		{
+	      		ids = StringUtils.formatIntegerListWithRanges(tuple.getAtomIDs(), 
+	      				idSeparator, rangeSeparator);
+      		} else {
+      			ids = StringUtils.mergeListToString(tuple.getAtomIDs(), 
+          				idSeparator, true);
+      		}
       	}
       	
       	StringBuilder sb = new StringBuilder();
