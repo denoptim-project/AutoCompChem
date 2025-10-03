@@ -191,8 +191,38 @@ public class SituationBase implements Cloneable
       	{
       		dbRoot = dbRoot + "/" + prefix.toLowerCase();
       	}
-    	return getSituationDB(dbRoot);
+
+      	SituationBase defaultSitDB = getSituationDB(dbRoot);
+      	
+      	for (Situation s : getSituationsFromDefaultLocation().allSituations)
+      	{
+      		defaultSitDB.addSituation(s);
+      	}
+      	
+      	return defaultSitDB;
 	}
+	
+//------------------------------------------------------------------------------
+      	
+    /**
+     * Get situations from the default HOME location.
+     * @return the collection of all the situations that could be imported from 
+     * the default location under HOME.
+     * @throws IOException when failing to read resources
+     */
+    public static SituationBase getSituationsFromDefaultLocation() 
+      			throws IOException
+  	{
+    	File defaultSitDBLocation = new File (System.getProperty("user.home") 
+    			+ System.getProperty("file.separator")
+    			+ ".acc"
+    			+ System.getProperty("file.separator")
+    			+ "situations");
+    	if (defaultSitDBLocation.exists())
+    		return new SituationBase(defaultSitDBLocation);
+    	else 
+    		return new SituationBase();
+  	}
 	
 //------------------------------------------------------------------------------
   	
