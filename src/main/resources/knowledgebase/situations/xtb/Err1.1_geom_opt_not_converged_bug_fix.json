@@ -1,0 +1,44 @@
+{
+  "type": "ERROR",
+  "refName": "xtb-e1.1_GeomOptNotConverged_highGradBugFix",
+  "description": "Geometry optimization failed due to high-gradient bug. This error msg has been observed for lengthy geometry optimizations that have really nothing wrong, but suddenly the gradient is reported to be sky-high.",
+  "context": [
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Program stopped due to fatal error"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Geometry optimization failed"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "Geometry optimization did not converge"
+    },
+    {
+      "circumstance": "MatchText",
+      "channel": "LOGFEED",
+      "pattern": "optimizer_relax: .grad. > 500, something is totally wrong"
+    }
+  ],
+  "reaction": {
+    "type": "REDO",
+    "object": "FocusAndFollowingJobs",
+    "jobEditTasks": [],
+    "jobArchivingRules": [
+      {
+        "type": "move",
+        "pattern": "[!.]*"
+      },
+      {
+        "type": "copy",
+        "pattern": "*.sdf"
+      }
+    ],
+    "prerefinementSteps": [],
+    "inheritedSettings": []
+  }
+}
