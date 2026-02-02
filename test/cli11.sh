@@ -12,13 +12,22 @@ while IFS= read task <&3; do
     echo NOT Passed: error while getting help for task $task
     break
   fi
+  # Check for duplicate options in help message
+  duplicates=$(grep "^ *-> " cli11_$task.log | awk '{print $2}' | sort | uniq -d)
+  if [ -n "$duplicates" ]; then
+    echo "NOT Passed: duplicate options found in help for task $task:"
+    echo "$duplicates" | while read dup; do
+      echo "  - $dup"
+    done
+    break
+  fi
 done 3< cli11_taskList
 
 function testArgCombinations() {
   args=$1
   logName=$2
   echo Task: $logName
-  "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -h -t prepareInput --SOFTWAREID Gaussian  > cli11_$logName.log 2>&1
+  "$javaDir/java" -jar "$ACCHome/target/autocompchem-$accVersion-jar-with-dependencies.jar" -h $args > cli11_$logName.log 2>&1
   if ! grep -q "Termination status: 0" cli11_$logName.log ; then
     echo NOT Passed: check cli11_$logName.log
   fi

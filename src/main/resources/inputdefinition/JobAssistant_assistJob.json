@@ -25,7 +25,8 @@
     "embeddedWorker": "autocompchem.wiro.InputWriter",
     "tag": "the writing of the input for a job",
     "ignorableItems": [
-      "jobDetailsFile"
+      "jobDetailsFile",
+      "verbosity"
     ]
   },
   {
