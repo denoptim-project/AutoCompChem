@@ -27,11 +27,14 @@
     "key": "ZMATRIXMOVE",
     "casedKey": "ZMatrixMove",
     "type": "<String>",
-    "doc": "Pathname to a file defining the components of the geometric change in terms of internal coordinates using a ZMatrix. The file format consists of a ZMatrix where entries correspond to how much each internal coordinate changes. ."
+    "doc": "Pathname to a file defining the components of the geometric change in terms of internal coordinates using a ZMatrix. The file format consists of a ZMatrix where entries correspond to how much each internal coordinate changes."
   },
   {
     "embeddedWorker": "autocompchem.molecule.intcoords.zmatrix.ZMatrixHandler",
-    "tag": "generation of ZMatrix"
+    "tag": "generation of ZMatrix",
+    "ignorableWorkers": [
+      "autocompchem.molecule.AtomContainerInputProcessor"
+    ]
   },
   {
     "embeddedWorker": "autocompchem.molecule.AtomContainerInputProcessor",
